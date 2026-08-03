@@ -125,44 +125,103 @@ if (heldGeometry?.format_version !== "1.16.0") {
   errors.push("Attachable binding requires geometry format_version 1.16.0");
 }
 const heldBones = heldGeometry?.["minecraft:geometry"]?.[0]?.bones ?? [];
-if (heldBones.length !== 1) {
-  errors.push("Diagnostic held geometry must contain exactly one bone");
+if (heldBones.length !== 2) {
+  errors.push("Pose-calibration geometry must contain one bound root and one visual child");
 }
-const debugBone = heldBones[0];
-if (debugBone?.name !== "aspergillum_debug") {
-  errors.push("Diagnostic held geometry requires the aspergillum_debug bone");
+const boundBone = heldBones.find((bone) => bone.name === "aspergillum_bound");
+const visualBone = heldBones.find((bone) => bone.name === "aspergillum_visual");
+if (boundBone?.name !== "aspergillum_bound") {
+  errors.push("Pose-calibration geometry requires the aspergillum_bound root");
 }
-if (debugBone?.binding !== "q.item_slot_to_bone_name(context.item_slot)") {
-  errors.push("Diagnostic bone must use the exact documented item-slot binding expression");
+if (boundBone?.binding !== "q.item_slot_to_bone_name(context.item_slot)") {
+  errors.push("Bound bone must use the exact documented item-slot binding expression");
 }
-if (JSON.stringify(debugBone?.pivot) !== JSON.stringify([0, 0, 0])) {
-  errors.push("Diagnostic bone pivot must remain at the origin");
+if (JSON.stringify(boundBone?.pivot) !== JSON.stringify([0, 0, 0])) {
+  errors.push("Bound root must retain a neutral pivot");
 }
-for (const forbidden of ["parent", "rotation", "locators", "inflate", "mirror"]) {
-  if (debugBone?.[forbidden] !== undefined) {
-    errors.push(`Diagnostic bone must not define ${forbidden}`);
+for (const forbidden of ["parent", "locators", "inflate", "mirror", "cubes", "rotation"]) {
+  if (boundBone?.[forbidden] !== undefined) {
+    errors.push(`Bound root must not define ${forbidden}`);
   }
 }
-const cubes = debugBone?.cubes ?? [];
-if (
-  cubes.length !== 1 ||
-  JSON.stringify(cubes[0]?.origin) !== JSON.stringify([-1, 0, -1]) ||
-  JSON.stringify(cubes[0]?.size) !== JSON.stringify([2, 8, 2])
-) {
-  errors.push("Diagnostic geometry must contain only the canonical 2x8x2 rod");
+if (visualBone?.parent !== "aspergillum_bound") {
+  errors.push("Visual bone must inherit directly from the proven bound root");
 }
-if (attachableSource.includes('"animations"') || attachableSource.includes('"scripts"')) {
-  errors.push("Attachable binding isolation must not be overridden by display animations");
+if (visualBone?.binding !== undefined || visualBone?.locators !== undefined) {
+  errors.push("Visual bone must not replace the binding or introduce a locator during pose calibration");
+}
+if (JSON.stringify(visualBone?.pivot) !== JSON.stringify([-6, 24, 1])) {
+  errors.push("Visual pivot must coincide with the empirically calibrated dark-handle grip");
+}
+if (JSON.stringify(visualBone?.rotation) !== JSON.stringify([25, 0, -12])) {
+  errors.push("Visual bone must retain the controlled sign-inverted third-person pose");
+}
+const cubes = visualBone?.cubes ?? [];
+if (cubes.length !== 8) {
+  errors.push("Visual bone must contain the eight real aspergillum cubes");
+} else {
+  const grip = [-6, 24, 1];
+  const handleContainsGrip = grip.every(
+    (coordinate, axis) => cubes[0].origin[axis] <= coordinate && cubes[0].origin[axis] + cubes[0].size[axis] >= coordinate,
+  );
+  if (!handleContainsGrip) errors.push("Dark handle must contain the empirically calibrated grip point");
+  const minY = Math.min(...cubes.map((cube) => cube.origin[1]));
+  const maxY = Math.max(...cubes.map((cube) => cube.origin[1] + cube.size[1]));
+  const maxWidth = Math.max(...cubes.map((cube) => cube.size[0]));
+  if (Math.abs(maxY - minY - 15.6) > 1e-6 || maxWidth > 5) {
+    errors.push("Real mesh must preserve the validated hand-scale envelope");
+  }
+  if (cubes.some((cube) => cube.size.some((dimension) => dimension <= 0))) {
+    errors.push("Real mesh must not contain zero-thickness or negative-size cubes");
+  }
+  if (cubes.some((cube) => !Array.isArray(cube.uv) || cube.uv.length !== 2)) {
+    errors.push("Real mesh must use complete box UV mapping for every cube");
+  }
 }
 const attachableDefinition = JSON.parse(attachableSource)?.["minecraft:attachable"]?.description;
+const expectedAnimations = {
+  hold_first_person: "animation.aspergillum.hold_first_person",
+  hold_third_person: "animation.aspergillum.hold_third_person",
+};
+if (JSON.stringify(attachableDefinition?.animations) !== JSON.stringify(expectedAnimations)) {
+  errors.push("Attachable must expose exactly the two perspective-specific hold poses");
+}
+const expectedAnimateScript = [
+  { hold_first_person: "context.is_first_person == 1.0" },
+  { hold_third_person: "context.is_first_person == 0.0" },
+];
+if (JSON.stringify(attachableDefinition?.scripts?.animate) !== JSON.stringify(expectedAnimateScript)) {
+  errors.push("Attachable must select exactly one hold pose from the active perspective");
+}
 if (attachableDefinition?.materials?.default !== "entity") {
-  errors.push("Diagnostic attachable must use the opaque entity material");
+  errors.push("Pose-calibration attachable must use the opaque entity material");
+}
+
+const holdAnimations = JSON.parse(
+  fs.readFileSync(path.join(packRoots[1], "animations", "aspergillum.hold.animation.json"), "utf8"),
+)?.animations;
+const firstPersonPose = holdAnimations?.["animation.aspergillum.hold_first_person"];
+const thirdPersonPose = holdAnimations?.["animation.aspergillum.hold_third_person"];
+if (JSON.stringify(firstPersonPose?.bones?.aspergillum_visual?.rotation) !== JSON.stringify([180, 0, 0])) {
+  errors.push("First-person pose must perform the controlled end-for-end inversion");
+}
+if (JSON.stringify(thirdPersonPose?.bones?.aspergillum_visual?.rotation) !== JSON.stringify([0, 0, 0])) {
+  errors.push("Third-person pose must preserve the calibrated geometry rest pose");
+}
+for (const [name, pose] of Object.entries({ firstPersonPose, thirdPersonPose })) {
+  if (pose?.loop !== true || Object.keys(pose?.bones ?? {}).join() !== "aspergillum_visual") {
+    errors.push(`${name} must be a continuous visual-child-only presentation pose`);
+  }
+  const transform = pose?.bones?.aspergillum_visual ?? {};
+  if (transform.position !== undefined || transform.scale !== undefined) {
+    errors.push(`${name} must not add an unverified position or scale offset`);
+  }
 }
 if (fs.existsSync(path.join(packRoots[1], "animations", "player.animation.json"))) {
-  errors.push("Diagnostic pack must not contain custom player animations");
+  errors.push("Pose-calibration pack must not contain custom player action animations");
 }
 if (fs.existsSync(path.join(packRoots[1], "particles", "holy_water_droplet.particle.json"))) {
-  errors.push("Diagnostic pack must not contain the holy-water particle effect");
+  errors.push("Pose-calibration pack must not contain the holy-water particle effect");
 }
 
 const itemDefinition = JSON.parse(
@@ -178,7 +237,7 @@ if (itemComponents?.["minecraft:swing_duration"]?.value !== itemComponents?.["mi
 
 const compiledScript = fs.readFileSync(path.join(packRoots[0], "scripts", "main.js"), "utf8");
 if (compiledScript.includes("playAnimation") || compiledScript.includes("spawnParticle")) {
-  errors.push("Diagnostic script must not trigger animations or particles");
+  errors.push("Pose-calibration script must not trigger action animations or particles");
 }
 
 const required = [
@@ -188,17 +247,26 @@ const required = [
   "packs/resource/textures/items/aspergillum.png",
   "packs/resource/textures/entity/aspergillum.png",
   "packs/resource/textures/blocks/aspersorium.png",
-  "packs/resource/textures/particle/holy_water.png",
   "packs/resource/models/blocks/aspersorium.rotations.geo.json",
+  "packs/resource/animations/aspergillum.hold.animation.json",
   "packs/resource/render_controllers/aspergillum.render_controllers.json",
 ];
 for (const relative of required) if (!fs.existsSync(path.join(root, relative))) errors.push(`Missing generated asset: ${relative}`);
 
+const entityTexturePath = path.join(packRoots[1], "textures", "entity", "aspergillum.png");
 for (const file of walk(path.join(root, "packs", "resource", "textures")).filter((entry) => entry.endsWith(".png"))) {
   try {
     const image = PNG.sync.read(fs.readFileSync(file));
     const powerOfTwo = (value) => value > 0 && (value & (value - 1)) === 0;
     if (!powerOfTwo(image.width) || !powerOfTwo(image.height)) errors.push(`Non-power-of-two texture: ${path.relative(root, file)}`);
+    if (file === entityTexturePath) {
+      for (let alpha = 3; alpha < image.data.length; alpha += 4) {
+        if (image.data[alpha] !== 255) {
+          errors.push("Held aspergillum texture must be fully opaque");
+          break;
+        }
+      }
+    }
   } catch (error) {
     errors.push(`Unreadable PNG ${path.relative(root, file)}: ${error.message}`);
   }

@@ -26,10 +26,27 @@ A geometria da 1.0.6 declarava `format_version: 1.12.0`. O schema oficial `geome
 - material opaco `entity`;
 - nenhuma hierarquia filha, transformação, animação, partícula ou locator.
 
+O teste físico confirmou que o bastão herda integralmente o braço direito. Sua distância constante de aproximadamente 12–16 unidades abaixo do punho demonstrou que o binding transfere a transformação do holder, enquanto os vértices continuam no espaço de modelo do jogador. `[0, 0, 0]` corresponde à base do modelo, não ao centro da mão.
+
+## Integração controlada 1.0.8
+
+A malha real volta diretamente ao osso comprovado, sem introduzir child bones. O grip foi deslocado para `[-6, 15, 1]`, pivô documentado do `rightItem` na geometria humanoide. Todos os cubos foram transladados em torno desse ponto; assim, a mão deve fechar sobre o centro do cabo e a rotação `[-25, 0, 12]` deve afastar a cabeça do corpo sem criar um raio orbital.
+
+Animações, locator e partículas permanecem ausentes. O objetivo desta revisão é validar três fatos isoladamente: contato do cabo com o punho, comportamento da malha real durante o swing vanilla e integridade de todas as faces sob material `entity` opaco.
+
+## Calibração controlada 1.0.9
+
+O teste físico da 1.0.8 confirmou o binding e a escala, mas mostrou o centro do cabo entre cinco e oito unidades abaixo do punho, com pitch/roll visualmente invertidos. A correção não toca no binding: `aspergillum_bound` passa a ser uma raiz neutra sem malha, enquanto `aspergillum_visual` herda esse transform e concentra todas as decisões artísticas.
+
+Os oito cubos foram movidos em `+9Y`, de modo que o centro do cabo e o pivô visual ocupem `[-6, 24, 1]`. A pose de repouso foi invertida para `[25, 0, -12]`. A primeira pessoa recebe exclusivamente uma rotação end-for-end de 180° no filho visual; a terceira pessoa não acrescenta rotação de animação.
+
+A auditoria de renderização agora é verificável: todos os cubos têm três dimensões positivas, todos usam box UV `[u, v]` — que gera as seis faces — e a textura entity tem alfa 255 em cada pixel. Isso elimina omissão per-face, plano de espessura zero e transparência como causas na fonte empacotada. Se a cabeça ainda desaparecer após sair de trás da manga, a próxima evidência necessária será um Content Log e imagens de órbita da 1.0.9.
+
 ## Invariantes
 
 - a versão da geometria permanece `1.16.0` ou superior;
-- o binding e o cubo permanecem no mesmo e único osso durante o diagnóstico;
-- não existem parent, rotation, locator, animações ou partículas;
+- o binding permanece exclusivamente no root neutro e a malha exclusivamente no filho visual;
+- o grip e pivô empíricos permanecem em `[-6, 24, 1]` durante esta calibração;
+- não existem locator, animações de ação ou partículas;
 - a expressão de binding não é abreviada nem substituída por literal;
 - `minecraft:swing_duration` permanece igual à duração do cooldown de ataque.

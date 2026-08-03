@@ -17,13 +17,16 @@
 
 O teste físico ainda é obrigatório porque entrada, câmera e feedback vanilla variam por plataforma.
 
-### Critério exclusivo da versão 1.0.7
+### Critério exclusivo da versão 1.0.9
 
-- [ ] ao selecionar o item, aparece um bastão simples 2×8×2;
-- [ ] em terceira pessoa, o bastão nasce na mão direita, nunca nos pés;
-- [ ] um ataque vanilla leva o bastão junto com a mão por todo o arco;
-- [ ] em primeira pessoa, o bastão e a mão ficam visíveis;
-- [ ] não aparecem partículas nem animações próprias — isso é intencional nesta revisão;
+- [ ] ao selecionar o item, aparece a malha real em escala reduzida;
+- [ ] em terceira pessoa, o centro do cabo escuro atravessa o centro do punho direito;
+- [ ] em terceira pessoa, a cabeça aponta para frente e para fora, sem ficar atrás da manga;
+- [ ] um ataque vanilla leva a malha junto com a mão sem arco orbital remoto;
+- [ ] em primeira pessoa, o cabo fica na região inferior direita e a cabeça aparece acima/à frente, sem inversão;
+- [ ] trocar de primeira para terceira pessoa não produz um frame de pose errada ou salto persistente;
+- [ ] nenhuma face da cabeça desaparece em órbita frontal, lateral ou traseira;
+- [ ] não aparecem partículas nem animações próprias de ação — isso é intencional nesta revisão;
 
 ### Instalação e conteúdo
 

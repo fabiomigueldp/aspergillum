@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.0.9 — 2026-08-03
+
+- preservados integralmente o schema `1.16.0`, o osso vinculado e a expressão de item-slot que já seguem corretamente o braço;
+- separado o osso vinculado, agora neutro e sem cubos, do filho artístico `aspergillum_visual`;
+- deslocada toda a malha em `+9Y`, colocando o centro do cabo escuro no grip empírico `[-6, 24, 1]` indicado pelos testes das versões 1.0.7 e 1.0.8;
+- invertidos de forma controlada os sinais da orientação de repouso para `[25, 0, -12]`, corrigindo pitch e roll que apontavam para trás e para dentro;
+- adicionadas poses de apresentação separadas: terceira pessoa preserva a pose da geometria e primeira pessoa aplica inversão end-for-end de 180° ao filho visual;
+- adotado `format_version` `1.10.0` para o documento de animação, formato recomendado pelo validador oficial e pela documentação de upgrade;
+- auditadas automaticamente as oito peças: dimensões estritamente positivas, box UV completo e textura empunhada integralmente opaca;
+- mantidas desativadas animações de ação, locator, efeito e textura de partículas, isolando o teste de grip, orientação, enquadramento e faces.
+
+## 1.0.8 — 2026-08-03
+
+- preservados sem alteração o schema `1.16.0` e a expressão de binding comprovados pela 1.0.7;
+- substituído o bastão diagnóstico pela malha real reduzida de 15,6 unidades, diretamente no mesmo osso vinculado;
+- transladado o ponto de pega da origem dos pés `[0, 0, 0]` para o pivô oficial do `rightItem` `[-6, 15, 1]`;
+- posicionados todos os cubos em torno desse grip, em vez de tentar deslocar o binding ou compensar a posição do root;
+- aplicada somente uma rotação neutra de `[-25, 0, 12]`, dentro dos limites recomendados de pitch e roll e com pivô no cabo;
+- mantidos material opaco, ausência de hierarquia filha, animações, locator e partículas para que o teste isole encaixe, faces e swing vanilla da malha real.
+
 ## 1.0.7 — 2026-08-03
 
 - confirmado no diretório real do mundo que a 1.0.6 instalada era byte a byte idêntica ao pacote e que nenhum Resource Pack concorrente estava ativo;

@@ -34,11 +34,11 @@ Antes da colocação, `beforeOnPlayerPlace` converte o yaw do jogador em um dos 
 5. `entityHurt` cancela qualquer dano de ataque enquanto o item estiver empunhado.
 6. `playerBreakBlock` cancela a quebra final com o item.
 
-Na versão diagnóstica 1.0.7, animações e partículas estão deliberadamente desativadas para que nenhuma transformação ou VFX interfira no teste do binding.
+Na versão de calibração 1.0.9, animações de ação e partículas continuam deliberadamente desativadas para que nenhum gesto ou VFX interfira no teste do encaixe físico da malha real.
 
-O modelo empunhado diagnóstico declara geometry `1.16.0` e possui apenas o osso `aspergillum_debug`. Esse mesmo osso contém o bastão 2×8×2 e o binding exato `q.item_slot_to_bone_name(context.item_slot)`. Não há parent, rotação, locator, escala nem animação. A estrutura reproduz literalmente o menor caso oficial necessário para distinguir suporte semântico ao binding de problemas artísticos.
+O modelo empunhado declara geometry `1.16.0`. `aspergillum_bound` possui apenas o binding exato `q.item_slot_to_bone_name(context.item_slot)`: não contém cubos nem transformação artística. Seu filho `aspergillum_visual` contém a malha real, o pivô/grip empírico `[-6, 24, 1]` e a orientação `[25, 0, -12]`. Uma animação de apresentação contínua aplica apenas a inversão de 180° necessária na primeira pessoa; a terceira pessoa conserva a pose da geometria. Não há locator, escala ou animação de ação.
 
-Após o bastão acompanhar a mão em primeira e terceira pessoa, a malha real será restaurada diretamente nesse osso comprovado. Poses, animações e o emissor por locator voltarão incrementalmente, com uma variável por revisão.
+Após confirmar o grip da malha real em primeira e terceira pessoa, animações de carregamento/aspersão e o emissor por locator voltarão incrementalmente, sem alterar o osso vinculado.
 
 ## Persistência
 
