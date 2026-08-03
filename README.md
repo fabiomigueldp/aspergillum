@@ -1,11 +1,13 @@
 # Aspergillum
 
-Add-On de produção para Minecraft: Bedrock Edition 26.34/35 que adiciona um **aspersório litúrgico funcional** e uma **caldeirinha (aspersorium) colocável**. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
+Add-On para Minecraft: Bedrock Edition 26.34/35 que adiciona um **aspersório litúrgico funcional** e uma **caldeirinha (aspersorium) colocável**. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
+
+> **Versão 1.0.7 de diagnóstico:** o modelo empunhado foi temporariamente substituído por um bastão 2×8×2, sem animações ou partículas. O objetivo único é comprovar o binding da mão usando o schema correto antes de restaurar a arte final.
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/Aspergillum-1.0.5.mcaddon`](dist/Aspergillum-1.0.5.mcaddon) com o Minecraft.
+2. Abra [`dist/Aspergillum-1.0.7.mcaddon`](dist/Aspergillum-1.0.7.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
@@ -14,7 +16,7 @@ O alvo mínimo é Creator `1.26.30`, correspondente à linha pública Bedrock 26
 ## Como usar
 
 - Fabrique o **Aspersório** com gravetos e pepitas de ferro.
-- Fabrique a **Caldeirinha** com lingotes de ferro e coloque-a sobre uma superfície.
+- Fabrique a **Caldeirinha** com lingotes de ferro e uma corrente, e coloque-a sobre uma superfície.
 - Use um balde d'água na caldeirinha para enchê-la com três níveis.
 - Com o aspersório na mão, use-o na caldeirinha para carregar até três aspersões. A transferência acontece no instante de contato da animação.
 - Use a ação **Atacar/Minar** para aspergir. O gesto não causa dano nem quebra blocos.
@@ -23,12 +25,12 @@ O alvo mínimo é Creator `1.26.30`, correspondente à linha pública Bedrock 26
 
 As cargas permanecem gravadas no item. Ao acomodá-lo, cargas restantes retornam à caldeirinha até o limite de três. Ao quebrar uma caldeirinha com o aspersório acomodado, ambos os objetos são recuperados; a água é descartada intencionalmente.
 
-## Qualidade visual
+## Arquitetura visual de diagnóstico
 
-- modelo 3D próprio para o item empunhado;
-- modelo vinculado dinamicamente ao slot da mão, com osso exclusivo, controller de perspectiva e poses derivadas do tridente vanilla;
-- animações de carregamento e aspersão com antecipação, impacto e recuperação;
-- 24 gotas de água por gesto, com alcance ampliado, gravidade, arrasto e colisão;
+- geometria `1.16.0`, primeira versão cujo schema oficial documenta o campo `binding`;
+- um único osso renderizável com `q.item_slot_to_bone_name(context.item_slot)`;
+- um único cubo 2×8×2, sem parent, rotação, locator, animação, controller ou VFX;
+- material opaco `entity`, eliminando alpha e culling como variáveis do teste;
 - quatro níveis visuais de água e versão decorativa com o aspersório acomodado;
 - rotação visual em 16 direções por estado próprio e geometrias estáveis, sem traits de rotação experimentais;
 - texturas convencionais como fallback e texture sets PBR para Vibrant Visuals;

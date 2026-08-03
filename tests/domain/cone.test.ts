@@ -23,11 +23,11 @@ describe("sprinkle cone", () => {
     const facingNorth = aspergillumTipOrigin(head, { x: 0, y: 0, z: -1 });
     const facingEast = aspergillumTipOrigin(head, { x: 1, y: 0, z: 0 });
 
-    expect(facingNorth.x).toBeCloseTo(0.3);
-    expect(facingNorth.y).toBeCloseTo(1.2);
-    expect(facingNorth.z).toBeCloseTo(-0.72);
-    expect(facingEast.x).toBeCloseTo(0.72);
-    expect(facingEast.y).toBeCloseTo(1.2);
-    expect(facingEast.z).toBeCloseTo(0.3);
+    expect(facingNorth.x).toBeCloseTo(0.55);
+    expect(facingNorth.y).toBeCloseTo(1.42);
+    expect(facingNorth.z).toBeCloseTo(-0.43);
+    expect(facingEast.x).toBeCloseTo(0.43);
+    expect(facingEast.y).toBeCloseTo(1.42);
+    expect(facingEast.z).toBeCloseTo(0.55);
   });
 });

@@ -30,9 +30,9 @@ export function aspergillumTipOrigin(head: Vector3, direction: Vector3): Vector3
     : { x: 1, y: 0, z: 0 };
 
   return add(head, {
-    x: view.x * 0.72 + right.x * 0.3,
-    y: -0.42 + view.y * 0.24,
-    z: view.z * 0.72 + right.z * 0.3,
+    x: view.x * 0.43 + right.x * 0.55,
+    y: -0.2,
+    z: view.z * 0.43 + right.z * 0.55,
   });
 }
 

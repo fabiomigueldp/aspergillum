@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.0.7 — 2026-08-03
+
+- confirmado no diretório real do mundo que a 1.0.6 instalada era byte a byte idêntica ao pacote e que nenhum Resource Pack concorrente estava ativo;
+- identificado que a geometria empunhada ainda declarava `format_version` `1.12.0`, enquanto o campo `binding` só é documentado no schema `1.16.0` e todos os exemplos oficiais vinculados usam `1.16.0`;
+- criado teste controlado com um único osso renderizável, binding oficial completo e um único bastão 2×8×2;
+- removidos temporariamente filho visual, rotação, locator, animações, controllers de animação e partículas;
+- substituído `entity_alphatest` por `entity` opaco para eliminar transparência e cutout como variáveis;
+- adicionadas validações que impedem qualquer recurso extra de entrar no pacote diagnóstico.
+
+## 1.0.6 — 2026-08-03
+
+- descartadas as transformações incompatíveis do tridente usadas na 1.0.5;
+- separado o attachable em uma âncora sem malha ligada diretamente a `rightItem` e um osso visual filho, garantindo herança da cadeia do braço sem sobrescrever o binding;
+- movido o ponto de pega para a origem local do cabo e redimensionada fisicamente a geometria para 15,6 unidades de comprimento e 4,94 unidades de largura máxima;
+- removidos controller e animações de exibição que aplicavam grandes compensações ao próprio osso vinculado; as animações cerimoniais continuam movendo `rightarm` e `rightitem` do jogador;
+- unificado o método de renderização dos materiais da caldeirinha, eliminando o aviso de `MaterialInstances`;
+- acrescentada uma corrente à receita da caldeirinha, diferenciando-a da receita vanilla do caldeirão;
+- recalculada a origem das gotas a partir do envelope da nova malha e distribuídas 24 gotas por seis frames, formando um leque de 0,25 segundo em vez de uma nuvem instantânea;
+- reforçadas as validações para a hierarquia âncora → malha, escala física, ausência de overrides do binding, material uniforme e receita exclusiva.
+
 ## 1.0.5 — 2026-08-03
 
 - reconstruído o attachable com base no tridente vanilla, substituindo o osso colidente `root` pelo osso exclusivo `aspergillum`;

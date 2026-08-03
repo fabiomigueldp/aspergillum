@@ -30,16 +30,15 @@ Antes da colocação, `beforeOnPlayerPlace` converte o yaw do jogador em um dos 
 1. `playerSwingStart` filtra somente `Attack` e `Mine` com o item correto.
 2. O domínio valida cooldown e carga.
 3. A carga é consumida no slot principal.
-4. A animação do jogador é iniciada.
-5. Quatro ticks depois, som e 24 gotas de água são emitidos no vetor de visão.
-6. `entityHurt` cancela qualquer dano de ataque enquanto o item estiver empunhado.
-7. `playerBreakBlock` cancela a quebra final com o item.
+4. O feedback sonoro e textual é emitido.
+5. `entityHurt` cancela qualquer dano de ataque enquanto o item estiver empunhado.
+6. `playerBreakBlock` cancela a quebra final com o item.
 
-Partículas são apenas representação. Não há entidade/projétil por gota nem polling global por tick.
+Na versão diagnóstica 1.0.7, animações e partículas estão deliberadamente desativadas para que nenhuma transformação ou VFX interfira no teste do binding.
 
-O modelo empunhado usa o mesmo referencial de um item vanilla longo: extensão aproximada de 31 unidades e pivô `[0, 24, 0]`. Seu único osso se chama `aspergillum` — nunca `root`, `body` ou outro nome pertencente ao jogador — e é vinculado ao slot retornado por `q.item_slot_to_bone_name(c.item_slot)`. Um animation controller mantém poses independentes de primeira e terceira pessoa, derivadas das transformações estáveis do tridente. As animações cerimoniais movem `rightarm` e `rightitem` em conjunto; o binding faz o modelo herdar também a cadeia `rightArm → rightItem` do jogador.
+O modelo empunhado diagnóstico declara geometry `1.16.0` e possui apenas o osso `aspergillum_debug`. Esse mesmo osso contém o bastão 2×8×2 e o binding exato `q.item_slot_to_bone_name(context.item_slot)`. Não há parent, rotação, locator, escala nem animação. A estrutura reproduz literalmente o menor caso oficial necessário para distinguir suporte semântico ao binding de problemas artísticos.
 
-As partículas criadas pela Script API usam uma aproximação autoritativa da ponta: 0,72 bloco à frente, 0,30 bloco para a direita e 0,42 bloco abaixo dos olhos, com correção pelo pitch. Locators de attachable não são expostos como coordenadas mundiais à Script API; por isso o locator `tip` permanece como referência visual, enquanto o emissor de gameplay usa essa transformação calculada.
+Após o bastão acompanhar a mão em primeira e terceira pessoa, a malha real será restaurada diretamente nesse osso comprovado. Poses, animações e o emissor por locator voltarão incrementalmente, com uma variável por revisão.
 
 ## Persistência
 

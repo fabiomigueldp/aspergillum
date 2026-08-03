@@ -67,7 +67,6 @@ function loadItem(player: Player, block: Block): void {
     return;
   }
 
-  player.playAnimation("animation.aspergillum.player.load", { blendOutTime: 0.2 });
   player.playSound("armor.equip_chain", { pitch: 1.18, volume: 0.32 });
   action(player, "§7Carregando o aspersório…", "§7Loading the aspergillum…");
 

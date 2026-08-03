@@ -87,19 +87,28 @@ const rotationState = block?.description?.states?.["aspergillum:rotation"];
 if (!Array.isArray(rotationState) || rotationState.length !== 16) {
   errors.push("Aspersorium requires sixteen values in its stable custom rotation state");
 }
+const materialInstances = block?.components?.["minecraft:material_instances"] ?? {};
+const renderMethods = new Set(
+  Object.values(materialInstances)
+    .map((instance) => instance?.render_method)
+    .filter(Boolean),
+);
+if (renderMethods.size > 1) {
+  errors.push("All Aspersorium material instances must use the same render method");
+}
 
 for (const recipeName of ["aspergillum.recipe.json", "aspersorium.recipe.json"]) {
   const recipe = JSON.parse(fs.readFileSync(path.join(packRoots[0], "recipes", recipeName), "utf8"));
   const unlock = recipe["minecraft:recipe_shaped"]?.unlock;
   if (!Array.isArray(unlock) || unlock.length === 0) errors.push(`${recipeName} requires unlock data`);
 }
-
-for (const particleName of ["holy_water_droplet.particle.json"]) {
-  const source = fs.readFileSync(path.join(packRoots[1], "particles", particleName), "utf8");
-  if (/q\.(?:particle_age|particle_lifetime)/.test(source)) {
-    errors.push(`${particleName} uses entity queries instead of particle variables`);
-  }
+const aspersoriumRecipe = JSON.parse(
+  fs.readFileSync(path.join(packRoots[0], "recipes", "aspersorium.recipe.json"), "utf8"),
+)["minecraft:recipe_shaped"];
+if (aspersoriumRecipe?.key?.C?.item !== "minecraft:chain") {
+  errors.push("Aspersorium recipe must remain distinct from the vanilla cauldron recipe");
 }
+
 const attachableSource = fs.readFileSync(
   path.join(packRoots[1], "attachables", "aspergillum.attachable.json"),
   "utf8",
@@ -112,75 +121,64 @@ if (!attachableSource.includes("controller.render.aspergillum.held")) {
 const heldGeometry = JSON.parse(
   fs.readFileSync(path.join(packRoots[1], "models", "entity", "aspergillum.geo.json"), "utf8"),
 );
-const heldBone = heldGeometry?.["minecraft:geometry"]?.[0]?.bones?.[0];
-if (heldBone?.name !== "aspergillum") {
-  errors.push("Held geometry must use a unique non-player bone name");
+if (heldGeometry?.format_version !== "1.16.0") {
+  errors.push("Attachable binding requires geometry format_version 1.16.0");
 }
-if (heldBone?.binding !== "q.item_slot_to_bone_name(c.item_slot)") {
-  errors.push("Held geometry must bind to the canonical item-slot bone");
+const heldBones = heldGeometry?.["minecraft:geometry"]?.[0]?.bones ?? [];
+if (heldBones.length !== 1) {
+  errors.push("Diagnostic held geometry must contain exactly one bone");
 }
-if (JSON.stringify(heldBone?.pivot) !== JSON.stringify([0, 24, 0])) {
-  errors.push("Held geometry must share the vanilla long-item coordinate frame");
+const debugBone = heldBones[0];
+if (debugBone?.name !== "aspergillum_debug") {
+  errors.push("Diagnostic held geometry requires the aspergillum_debug bone");
 }
-
-const displayAnimations = JSON.parse(
-  fs.readFileSync(path.join(packRoots[1], "animations", "aspergillum.animation.json"), "utf8"),
-).animations;
-const firstPersonBone = displayAnimations?.["animation.aspergillum.held.hold_first_person"]?.bones?.aspergillum;
-const thirdPersonBone = displayAnimations?.["animation.aspergillum.held.hold_third_person"]?.bones?.aspergillum;
+if (debugBone?.binding !== "q.item_slot_to_bone_name(context.item_slot)") {
+  errors.push("Diagnostic bone must use the exact documented item-slot binding expression");
+}
+if (JSON.stringify(debugBone?.pivot) !== JSON.stringify([0, 0, 0])) {
+  errors.push("Diagnostic bone pivot must remain at the origin");
+}
+for (const forbidden of ["parent", "rotation", "locators", "inflate", "mirror"]) {
+  if (debugBone?.[forbidden] !== undefined) {
+    errors.push(`Diagnostic bone must not define ${forbidden}`);
+  }
+}
+const cubes = debugBone?.cubes ?? [];
 if (
-  JSON.stringify(firstPersonBone?.position) !== JSON.stringify([-7, -3, -2]) ||
-  JSON.stringify(firstPersonBone?.rotation) !== JSON.stringify([152, -9, 25])
+  cubes.length !== 1 ||
+  JSON.stringify(cubes[0]?.origin) !== JSON.stringify([-1, 0, -1]) ||
+  JSON.stringify(cubes[0]?.size) !== JSON.stringify([2, 8, 2])
 ) {
-  errors.push("First-person attachable must use the proven vanilla trident pose");
+  errors.push("Diagnostic geometry must contain only the canonical 2x8x2 rod");
 }
-if (
-  JSON.stringify(thirdPersonBone?.position) !== JSON.stringify([1.5, -2.5, -10.5]) ||
-  JSON.stringify(thirdPersonBone?.rotation) !== JSON.stringify([97, -1.5, -49])
-) {
-  errors.push("Third-person attachable must use the proven vanilla trident pose");
+if (attachableSource.includes('"animations"') || attachableSource.includes('"scripts"')) {
+  errors.push("Attachable binding isolation must not be overridden by display animations");
 }
-
-const wieldController = JSON.parse(
-  fs.readFileSync(
-    path.join(packRoots[1], "animation_controllers", "aspergillum.animation_controllers.json"),
-    "utf8",
-  ),
-)?.animation_controllers?.["controller.animation.aspergillum.wield"];
-if (!wieldController?.states?.first_person || !wieldController?.states?.third_person) {
-  errors.push("Attachable requires a first/third-person wield controller");
+const attachableDefinition = JSON.parse(attachableSource)?.["minecraft:attachable"]?.description;
+if (attachableDefinition?.materials?.default !== "entity") {
+  errors.push("Diagnostic attachable must use the opaque entity material");
 }
-if (!attachableSource.includes('"animate": ["wield"]')) {
-  errors.push("Attachable must run its perspective controller continuously");
+if (fs.existsSync(path.join(packRoots[1], "animations", "player.animation.json"))) {
+  errors.push("Diagnostic pack must not contain custom player animations");
+}
+if (fs.existsSync(path.join(packRoots[1], "particles", "holy_water_droplet.particle.json"))) {
+  errors.push("Diagnostic pack must not contain the holy-water particle effect");
 }
 
 const itemDefinition = JSON.parse(
   fs.readFileSync(path.join(packRoots[0], "items", "aspergillum.item.json"), "utf8"),
 );
 const itemComponents = itemDefinition?.["minecraft:item"]?.components;
+if (itemComponents?.["minecraft:allow_off_hand"] !== false) {
+  errors.push("Direct rightItem binding requires off-hand use to remain disabled");
+}
 if (itemComponents?.["minecraft:swing_duration"]?.value !== itemComponents?.["minecraft:cooldown"]?.duration) {
   errors.push("Aspergillum swing duration and attack cooldown must remain synchronized");
 }
 
-const playerAnimations = JSON.parse(
-  fs.readFileSync(path.join(packRoots[1], "animations", "player.animation.json"), "utf8"),
-).animations;
-for (const animationName of ["animation.aspergillum.player.sprinkle", "animation.aspergillum.player.load"]) {
-  const bones = playerAnimations?.[animationName]?.bones;
-  if (!bones?.rightarm || !bones?.rightitem) {
-    errors.push(`${animationName} must animate canonical rightarm and rightitem bones together`);
-  }
-}
-
 const compiledScript = fs.readFileSync(path.join(packRoots[0], "scripts", "main.js"), "utf8");
-if (compiledScript.includes("minecraft:water_splash_particle")) {
-  errors.push("Compiled script must not spawn the variable-dependent vanilla water splash particle");
-}
-if (compiledScript.includes("holy_water_mist")) {
-  errors.push("Compiled script must not spawn the removed mist effect");
-}
-if (fs.existsSync(path.join(packRoots[1], "particles", "holy_water_mist.particle.json"))) {
-  errors.push("Removed mist particle definition is still present");
+if (compiledScript.includes("playAnimation") || compiledScript.includes("spawnParticle")) {
+  errors.push("Diagnostic script must not trigger animations or particles");
 }
 
 const required = [
@@ -192,7 +190,6 @@ const required = [
   "packs/resource/textures/blocks/aspersorium.png",
   "packs/resource/textures/particle/holy_water.png",
   "packs/resource/models/blocks/aspersorium.rotations.geo.json",
-  "packs/resource/animation_controllers/aspergillum.animation_controllers.json",
   "packs/resource/render_controllers/aspergillum.render_controllers.json",
 ];
 for (const relative of required) if (!fs.existsSync(path.join(root, relative))) errors.push(`Missing generated asset: ${relative}`);
