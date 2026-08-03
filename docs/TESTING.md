@@ -17,7 +17,7 @@
 
 O teste físico ainda é obrigatório porque entrada, câmera e feedback vanilla variam por plataforma.
 
-### Critério exclusivo da versão 1.0.10
+### Critério exclusivo da versão 1.0.11
 
 - [ ] ao selecionar o item, aparece a malha real em escala reduzida;
 - [ ] em terceira pessoa, o centro do cabo escuro atravessa o centro do punho direito;
@@ -27,10 +27,12 @@ O teste físico ainda é obrigatório porque entrada, câmera e feedback vanilla
 - [ ] trocar de primeira para terceira pessoa não produz um frame de pose errada ou salto persistente;
 - [ ] nenhuma face da cabeça desaparece em órbita frontal, lateral ou traseira;
 - [ ] cada carga produz uma única rajada contínua, sem aparecer como uma nuvem instantânea;
-- [ ] aproximadamente 30 gotas azul/ciano aparecem por aspersão, sem fumaça ou tonalidade verde;
+- [ ] aproximadamente 36 gotas azul/ciano, maiores e bem legíveis, aparecem por aspersão, sem fumaça ou tonalidade verde;
 - [ ] a liberação começa perto do avanço do swing e o som de splash coincide com as primeiras gotas;
 - [ ] em primeira e terceira pessoa, a origem permanece próxima do lado direito/ponta visual e não no centro do tórax ou nos pés;
-- [ ] as gotas formam leque estreito, percorrem vários blocos, caem por gravidade e desaparecem ao tocar o terreno;
+- [ ] as gotas formam um leque visivelmente mais aberto que na revisão anterior, percorrem aproximadamente um bloco a mais que a 1.0.6, caem por gravidade e desaparecem ao tocar o terreno;
+- [ ] a emissão parte abaixo da linha dos olhos, no lado direito e à frente, sem o arco excessivamente alto da 1.0.10;
+- [ ] as gotas permanecem legíveis de frente, de lado e durante a queda, sem ficarem finas ou desaparecerem conforme o ângulo da câmera;
 - [ ] girar ou mover-se durante a rajada desloca os frames seguintes com o jogador, sem deixar uma nuvem estacionária;
 - [ ] não aparece animação litúrgica própria — ela continua fora do escopo desta revisão;
 

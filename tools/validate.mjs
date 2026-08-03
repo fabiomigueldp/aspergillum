@@ -234,19 +234,33 @@ if (!fs.existsSync(dropletPath)) {
   if (droplet?.description?.identifier !== "aspergillum:holy_water_droplet") {
     errors.push("Holy-water droplet particle identifier is invalid");
   }
-  if (droplet?.description?.basic_render_parameters?.material !== "particles_blend") {
-    errors.push("Holy-water droplet must use the translucent particles_blend material");
+  if (droplet?.description?.basic_render_parameters?.material !== "particles_alpha") {
+    errors.push("Holy-water droplet must preserve the crisp particles_alpha presentation proven in 1.0.6");
   }
   if (droplet?.description?.basic_render_parameters?.texture !== "textures/particle/holy_water") {
     errors.push("Holy-water droplet must use its dedicated texture");
   }
   const billboard = dropletComponents["minecraft:particle_appearance_billboard"];
-  if (billboard?.facing_camera_mode !== "direction_y" || billboard?.direction?.mode !== "derive_from_velocity") {
-    errors.push("Holy-water droplets must align their long axis with their velocity");
+  if (billboard?.facing_camera_mode !== "rotate_xyz" || billboard?.direction !== undefined) {
+    errors.push("Holy-water droplets must remain fully camera-facing like the proven 1.0.6 presentation");
+  }
+  if (JSON.stringify(billboard?.size) !== JSON.stringify([
+    "0.044 * variable.aspergillum_scale",
+    "0.105 * variable.aspergillum_scale",
+  ])) {
+    errors.push("Holy-water droplets must preserve the enlarged 1.0.11 billboard dimensions");
+  }
+  const lifetime = dropletComponents["minecraft:particle_lifetime_expression"]?.max_lifetime;
+  if (lifetime !== "1.05 + math.random(0.0, 0.35)") {
+    errors.push("Holy-water droplets must preserve the proven 1.0.6 lifetime envelope");
+  }
+  const motion = dropletComponents["minecraft:particle_motion_dynamic"];
+  if (JSON.stringify(motion?.linear_acceleration) !== JSON.stringify([0, -7.2, 0]) || motion?.linear_drag_coefficient !== 0.035) {
+    errors.push("Holy-water droplets must preserve the proven 1.0.6 gravity and drag");
   }
   const collision = dropletComponents["minecraft:particle_motion_collision"];
-  if (collision?.enabled !== true || collision?.expire_on_contact !== true) {
-    errors.push("Holy-water droplets must collide with terrain and expire on contact");
+  if (collision?.enabled !== true || collision?.expire_on_contact !== true || collision?.collision_radius !== 0.025) {
+    errors.push("Holy-water droplets must preserve terrain collision and the 1.0.6 collision radius");
   }
   if (!dropletComponents["minecraft:particle_appearance_lighting"]) {
     errors.push("Holy-water droplets must respond to environmental lighting");
@@ -274,6 +288,9 @@ if (compiledScript.includes("playAnimation")) {
 }
 if (!compiledScript.includes("spawnParticle") || !compiledScript.includes("aspergillum:holy_water_droplet")) {
   errors.push("Compiled script must emit the namespaced holy-water droplet particle");
+}
+if (!compiledScript.includes("SPRAY_DROPLET_COUNT = 36")) {
+  errors.push("Compiled spray must emit the complete 36-droplet 1.0.11 burst");
 }
 if (!compiledScript.includes("random.splash")) {
   errors.push("Compiled spray must synchronize the water release sound");

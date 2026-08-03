@@ -50,13 +50,19 @@ Trinta direções determinísticas formam um leque estreito e levemente elevado.
 
 Essa restauração não recupera a névoa verde nem as antigas queries `q.particle_age`/`q.particle_lifetime`. Também não reintroduz as animações do jogador que foram removidas durante o diagnóstico do binding.
 
+## Recuperação balística 1.0.11
+
+A observação física da 1.0.10 mostrou que sua reconstrução havia perdido qualidades visuais da 1.0.6. A auditoria do mundo instalado recuperou os parâmetros exatos antigos: origem baixa fixa em `0,72F + 0,30R`, deslocamento vertical `-0,42 + 0,24F.y`, 24 direções em grupos contíguos, leque com elevação `0,055`, velocidades de `11,50–12,78`, gravidade `-7,2`, arrasto `0,035`, billboard `rotate_xyz`, material `particles_alpha` e sprite radial de 16×16.
+
+A 1.0.11 conserva esses fundamentos e os expande de forma controlada. São 36 gotas, seis por frame, raio de dispersão `0,04 + 0,19√t`, velocidades de `12,70–13,98`, dimensões `0,044 × 0,105` e escala individual `0,84–1,08`. A simulação determinística em terreno plano estima alcance mediano de aproximadamente `9,26` blocos, contra `8,28` na 1.0.6, além de um leque aproximadamente 20% mais aberto. O sprite radial tem alfa máximo 240 para permanecer visível, mas continua exclusivamente azul/ciano e sem névoa.
+
 ## Invariantes
 
 - a versão da geometria permanece `1.16.0` ou superior;
 - o binding permanece exclusivamente no root neutro e a malha exclusivamente no filho visual;
 - o grip e pivô empíricos permanecem em `[-6, 24, 1]` durante esta calibração;
 - não existem locator nem animações de ação; as partículas são emitidas autoritativamente pelo script;
-- cada aspersão válida emite 30 gotas em seis frames e toca um único splash no primeiro frame;
+- cada aspersão válida emite 36 gotas em seis frames contíguos e toca um único splash no primeiro frame;
 - a partícula usa apenas variáveis suportadas `variable.particle_age` e `variable.particle_lifetime`;
 - a expressão de binding não é abreviada nem substituída por literal;
 - `minecraft:swing_duration` permanece igual à duração do cooldown de ataque.

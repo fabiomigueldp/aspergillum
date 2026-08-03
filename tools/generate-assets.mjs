@@ -97,18 +97,12 @@ for (let i = 0; i < 32; i += 1) setPixel(water, i, (i * 3 + 5) % 32, [164, 229, 
 write("packs/resource/textures/blocks/holy_water.png", water);
 
 const particle = png(16, 16, (x, y) => {
-  const dx = (x - 7.5) / 3.5;
-  const dy = (y - 7.5) / 7.2;
+  const dx = (x - 7.5) / 7.5;
+  const dy = (y - 7.5) / 7.5;
   const distance = Math.sqrt(dx * dx + dy * dy);
-  if (distance >= 1) return [0, 0, 0, 0];
-  const edge = Math.max(0, 1 - distance);
-  const highlight = Math.max(0, 1 - Math.hypot((x - 6.4) / 2.2, (y - 5.2) / 4.5));
-  return [
-    Math.round(132 + highlight * 92),
-    Math.round(211 + highlight * 38),
-    Math.round(239 + highlight * 16),
-    Math.round(232 * edge ** 0.55),
-  ];
+  if (distance > 1) return [0, 0, 0, 0];
+  const alpha = Math.round(240 * (1 - distance ** 1.7));
+  return [185, 236, 251, alpha];
 });
 write("packs/resource/textures/particle/holy_water.png", particle);
 

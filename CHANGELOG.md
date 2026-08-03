@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.11 — 2026-08-03
+
+- recuperados e comparados os arquivos efetivamente instalados da 1.0.6, em vez de reconstruir a trajetória por aproximação;
+- restaurada a origem comprovada da aspersão: `0,72` bloco à frente, `0,30` à direita e `0,42` abaixo da cabeça, evitando o jato excessivamente alto da 1.0.10;
+- restaurada a emissão em grupos contíguos de direções ao longo de seis frames, preservando a progressão espacial mais natural da rajada antiga;
+- ampliada a rajada de 24 gotas na 1.0.6 e 30 na 1.0.10 para 36 gotas, seis por frame;
+- aumentado o raio do leque para maior dispersão e elevada a velocidade para `12,70–13,98` blocos/s; a simulação determinística indica cerca de um bloco adicional de alcance mediano em relação à 1.0.6;
+- restaurados gravidade `-7,2`, arrasto `0,035`, colisão de raio `0,025`, duração e elevação vertical da 1.0.6;
+- restaurados o sprite radial cheio, o material nítido `particles_alpha` e o billboard sempre voltado para a câmera;
+- aumentadas as dimensões visuais para `0,044 × 0,105`, com escala individual de `0,84–1,08`, tornando as gotas substancialmente mais legíveis sem reintroduzir névoa verde;
+- preservados o fade por variáveis suportadas, a iluminação ambiental, a colisão, o som sincronizado e toda a arquitetura de binding/pose da 1.0.10.
+
 ## 1.0.10 — 2026-08-03
 
 - restaurada a aspersão visível sem alterar binding, hierarquia, grip, escala ou poses da 1.0.9;

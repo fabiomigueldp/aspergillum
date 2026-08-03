@@ -22,18 +22,18 @@ export function dot(a: Vector3, b: Vector3): number {
   return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-export function aspergillumTipOrigin(head: Vector3, direction: Vector3, releaseProgress = 0.5): Vector3 {
+export function aspergillumTipOrigin(head: Vector3, direction: Vector3): Vector3 {
   const view = normalize(direction);
   const horizontalLength = Math.hypot(view.x, view.z);
   const right = horizontalLength > 1e-5
     ? { x: -view.z / horizontalLength, y: 0, z: view.x / horizontalLength }
     : { x: 1, y: 0, z: 0 };
-  const progress = Math.max(0, Math.min(1, releaseProgress));
-  const forwardDistance = 0.62 + progress * 0.12;
-  const lateralDistance = 0.36 - progress * 0.12;
-  const lift = -0.1 + Math.sin(progress * Math.PI) * 0.06;
 
-  return add(head, add(scale(view, forwardDistance), add(scale(right, lateralDistance), { x: 0, y: lift, z: 0 })));
+  return add(head, {
+    x: view.x * 0.72 + right.x * 0.3,
+    y: -0.42 + view.y * 0.24,
+    z: view.z * 0.72 + right.z * 0.3,
+  });
 }
 
 export function isInsideCone(
@@ -50,7 +50,7 @@ export function isInsideCone(
   return cosine >= Math.cos((halfAngleDegrees * Math.PI) / 180);
 }
 
-export function deterministicDropletDirections(direction: Vector3, count = 30): Vector3[] {
+export function deterministicDropletDirections(direction: Vector3, count = 36): Vector3[] {
   const forward = normalize(direction);
   const worldUp: Vector3 = Math.abs(forward.y) > 0.95 ? { x: 1, y: 0, z: 0 } : { x: 0, y: 1, z: 0 };
   const right = normalize({
@@ -66,18 +66,21 @@ export function deterministicDropletDirections(direction: Vector3, count = 30): 
 
   return Array.from({ length: count }, (_, index) => {
     const phase = index * 2.399963229728653;
-    const radius = 0.03 + 0.14 * Math.sqrt((index + 0.5) / count);
-    return normalize(add(forward, add(scale(right, Math.cos(phase) * radius), scale(up, Math.sin(phase) * radius + 0.11))));
+    const radius = 0.04 + 0.19 * Math.sqrt((index + 0.5) / count);
+    return normalize(add(forward, add(scale(right, Math.cos(phase) * radius), scale(up, Math.sin(phase) * radius + 0.055))));
   });
 }
 
 export function dropletIndicesForFrame(dropletCount: number, frameCount: number, frameIndex: number): number[] {
   if (dropletCount <= 0 || frameCount <= 0 || frameIndex < 0 || frameIndex >= frameCount) return [];
-  return Array.from({ length: dropletCount }, (_, index) => index).filter((index) => index % frameCount === frameIndex);
+  const baseSize = Math.floor(dropletCount / frameCount);
+  const remainder = dropletCount % frameCount;
+  const first = frameIndex * baseSize + Math.min(frameIndex, remainder);
+  const size = baseSize + (frameIndex < remainder ? 1 : 0);
+  return Array.from({ length: size }, (_, offset) => first + offset);
 }
 
-export function deterministicDropletSpeed(dropletIndex: number, frameCount: number, frameIndex: number): number {
-  if (dropletIndex < 0 || frameCount <= 0 || frameIndex < 0 || frameIndex >= frameCount) return 0;
-  const speedBand = Math.floor(dropletIndex / frameCount) % 5;
-  return 11.4 + speedBand * 0.38 + frameIndex * 0.06;
+export function deterministicDropletSpeed(dropletIndex: number): number {
+  if (dropletIndex < 0) return 0;
+  return 12.7 + (dropletIndex % 5) * 0.32;
 }

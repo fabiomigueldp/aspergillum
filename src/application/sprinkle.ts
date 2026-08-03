@@ -18,7 +18,7 @@ import { getMainhand, isAspergillum, readAspergillumState, writeAspergillumState
 import { action } from "../infrastructure/messaging";
 
 const lastSprinkleTick = new Map<string, number>();
-const SPRAY_DROPLET_COUNT = 30;
+const SPRAY_DROPLET_COUNT = 36;
 const SPRAY_FRAME_COUNT = 6;
 const SPRAY_RELEASE_DELAY_TICKS = 4;
 
@@ -26,17 +26,16 @@ function emitWaterFrame(player: Player, frameIndex: number): void {
   if (!player.isValid) return;
 
   const direction = player.getViewDirection();
-  const releaseProgress = frameIndex / (SPRAY_FRAME_COUNT - 1);
-  const origin = aspergillumTipOrigin(player.getHeadLocation(), direction, releaseProgress);
+  const origin = aspergillumTipOrigin(player.getHeadLocation(), direction);
   const directions = deterministicDropletDirections(direction, SPRAY_DROPLET_COUNT);
 
   for (const dropletIndex of dropletIndicesForFrame(SPRAY_DROPLET_COUNT, SPRAY_FRAME_COUNT, frameIndex)) {
     const dropletDirection = directions[dropletIndex];
     if (!dropletDirection) continue;
     const variables = new MolangVariableMap();
-    const speed = deterministicDropletSpeed(dropletIndex, SPRAY_FRAME_COUNT, frameIndex);
+    const speed = deterministicDropletSpeed(dropletIndex);
     variables.setSpeedAndDirection("variable.aspergillum_motion", speed, dropletDirection);
-    variables.setFloat("variable.aspergillum_scale", 0.72 + (dropletIndex % 5) * 0.07);
+    variables.setFloat("variable.aspergillum_scale", 0.84 + (dropletIndex % 4) * 0.08);
     player.dimension.spawnParticle(DROPLET_PARTICLE, origin, variables);
   }
 }
