@@ -42,11 +42,21 @@ Os oito cubos foram movidos em `+9Y`, de modo que o centro do cabo e o pivô vis
 
 A auditoria de renderização agora é verificável: todos os cubos têm três dimensões positivas, todos usam box UV `[u, v]` — que gera as seis faces — e a textura entity tem alfa 255 em cada pixel. Isso elimina omissão per-face, plano de espessura zero e transparência como causas na fonte empacotada. Se a cabeça ainda desaparecer após sair de trás da manga, a próxima evidência necessária será um Content Log e imagens de órbita da 1.0.9.
 
+## Restauração da aspersão 1.0.10
+
+O VFX retorna sem modificar o attachable comprovado. Como o Script API não expõe ao servidor a transformação mundial de um locator interno da geometria empunhada, a emissão usa uma origem matemática próxima da ponta: parte à direita da câmera, avança 0,62 → 0,74 bloco e converge lateralmente 0,36 → 0,24 bloco ao longo dos seis frames. A origem é recalculada em cada tick, acompanhando movimento e rotação do jogador.
+
+Trinta direções determinísticas formam um leque estreito e levemente elevado. Os índices são intercalados por frame, evitando anéis ou blocos espaciais perceptíveis. A partícula usa `direction_y` derivado da velocidade, material translúcido, textura exclusivamente azul/ciano, fade com variáveis próprias de partículas, gravidade, arrasto, iluminação e colisão.
+
+Essa restauração não recupera a névoa verde nem as antigas queries `q.particle_age`/`q.particle_lifetime`. Também não reintroduz as animações do jogador que foram removidas durante o diagnóstico do binding.
+
 ## Invariantes
 
 - a versão da geometria permanece `1.16.0` ou superior;
 - o binding permanece exclusivamente no root neutro e a malha exclusivamente no filho visual;
 - o grip e pivô empíricos permanecem em `[-6, 24, 1]` durante esta calibração;
-- não existem locator, animações de ação ou partículas;
+- não existem locator nem animações de ação; as partículas são emitidas autoritativamente pelo script;
+- cada aspersão válida emite 30 gotas em seis frames e toca um único splash no primeiro frame;
+- a partícula usa apenas variáveis suportadas `variable.particle_age` e `variable.particle_lifetime`;
 - a expressão de binding não é abreviada nem substituída por literal;
 - `minecraft:swing_duration` permanece igual à duração do cooldown de ataque.

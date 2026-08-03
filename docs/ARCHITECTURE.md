@@ -34,11 +34,11 @@ Antes da colocação, `beforeOnPlayerPlace` converte o yaw do jogador em um dos 
 5. `entityHurt` cancela qualquer dano de ataque enquanto o item estiver empunhado.
 6. `playerBreakBlock` cancela a quebra final com o item.
 
-Na versão de calibração 1.0.9, animações de ação e partículas continuam deliberadamente desativadas para que nenhum gesto ou VFX interfira no teste do encaixe físico da malha real.
+Na versão 1.0.10, o consumo de carga agenda a liberação visual quatro ticks após o ataque. A rajada contém 30 gotas, divididas em seis frames consecutivos com cinco gotas cada. A cada frame, posição da cabeça e direção do jogador são relidas; a origem percorre um arco curto para frente e para dentro, reduzindo o desacoplamento observado nas versões antigas.
 
 O modelo empunhado declara geometry `1.16.0`. `aspergillum_bound` possui apenas o binding exato `q.item_slot_to_bone_name(context.item_slot)`: não contém cubos nem transformação artística. Seu filho `aspergillum_visual` contém a malha real, o pivô/grip empírico `[-6, 24, 1]` e a orientação `[25, 0, -12]`. Uma animação de apresentação contínua aplica apenas a inversão de 180° necessária na primeira pessoa; a terceira pessoa conserva a pose da geometria. Não há locator, escala ou animação de ação.
 
-Após confirmar o grip da malha real em primeira e terceira pessoa, animações de carregamento/aspersão e o emissor por locator voltarão incrementalmente, sem alterar o osso vinculado.
+Cada chamada a `Dimension.spawnParticle` recebe velocidade e direção por `MolangVariableMap`. A definição do Resource Pack aplica orientação pela velocidade, aceleração gravitacional, arrasto, iluminação e colisão com terreno. Esse caminho é autoritativo, multiplayer e independente das transformações do attachable. Após confirmar definitivamente o grip, uma futura animação litúrgica e eventual locator poderão refinar a coincidência visual sem substituir este fallback robusto.
 
 ## Persistência
 

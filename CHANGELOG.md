@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.10 — 2026-08-03
+
+- restaurada a aspersão visível sem alterar binding, hierarquia, grip, escala ou poses da 1.0.9;
+- implementada emissão autoritativa pelo Script API estável com `Dimension.spawnParticle` e `MolangVariableMap`, mantendo o efeito visível aos jogadores da dimensão;
+- ampliada a rajada para 30 gotas distribuídas exatamente uma vez em seis frames equilibrados, iniciados quatro ticks após o ataque;
+- substituída a origem fixa por um arco curto que avança e se aproxima do centro durante a liberação, recalculado a partir da cabeça e direção atuais do jogador;
+- criado leque determinístico mais sustentado, com velocidades entre 11,4 e 13,2 blocos/s variadas dentro de cada frame, gravidade, arrasto e colisão com expiração no contato;
+- orientado o eixo longo de cada gota pela própria velocidade e adotado material `particles_blend`, iluminação ambiental e fade por `variable.particle_age / variable.particle_lifetime`;
+- recriada textura azul/ciano de gota com bordas suaves; a névoa verde continua ausente e uma validação impede sua regressão;
+- restaurados o som de splash no instante de liberação e testes que garantem distribuição completa das gotas, origem móvel e vetores normalizados;
+- substituídas as proibições diagnósticas por invariantes que exigem partícula, textura, colisão, orientação, fade e emissão compilada.
+
 ## 1.0.9 — 2026-08-03
 
 - preservados integralmente o schema `1.16.0`, o osso vinculado e a expressão de item-slot que já seguem corretamente o braço;

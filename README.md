@@ -2,12 +2,12 @@
 
 Add-On para Minecraft: Bedrock Edition 26.34/35 que adiciona um **aspersório litúrgico funcional** e uma **caldeirinha (aspersorium) colocável**. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão 1.0.9 de calibração controlada:** o binding comprovado permanece intocado. A malha real foi movida para o grip empírico do cabo, recebeu orientação corrigida e agora possui poses de apresentação separadas para primeira e terceira pessoa. Animações de ação, locator e partículas continuam temporariamente desativados até a confirmação física do encaixe.
+> **Versão 1.0.10:** preserva integralmente o binding, a malha e as poses da 1.0.9 e restaura a aspersão visível: 30 gotas azuis emitidas em seis frames, com origem móvel, direção individual, gravidade, arrasto, iluminação e colisão.
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/Aspergillum-1.0.9.mcaddon`](dist/Aspergillum-1.0.9.mcaddon) com o Minecraft.
+2. Abra [`dist/Aspergillum-1.0.10.mcaddon`](dist/Aspergillum-1.0.10.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
@@ -32,7 +32,9 @@ As cargas permanecem gravadas no item. Ao acomodá-lo, cargas restantes retornam
 - filho `aspergillum_visual`, no qual ficam exclusivamente a malha e as correções artísticas;
 - malha real de 15,6 unidades autorada ao redor do grip empírico `[-6, 24, 1]`, nove unidades acima da pose da 1.0.8;
 - orientação de terceira pessoa `[25, 0, -12]` e inversão controlada de 180° apenas na primeira pessoa;
-- sem animação de ação, locator ou VFX nesta etapa;
+- emissão autoritativa de 30 gotas em seis frames, sincronizada quatro ticks após o ataque e visível no multiplayer;
+- gotas orientadas pela velocidade, com material translúcido, iluminação, gravidade, arrasto e colisão;
+- sem animação litúrgica de ação ou locator nesta etapa; o VFX usa uma origem matemática calibrada e não altera o attachable;
 - material opaco `entity`, textura com alfa integral, cubos com espessura positiva e box UV completo nas seis faces;
 - quatro níveis visuais de água e versão decorativa com o aspersório acomodado;
 - rotação visual em 16 direções por estado próprio e geometrias estáveis, sem traits de rotação experimentais;

@@ -220,8 +220,41 @@ for (const [name, pose] of Object.entries({ firstPersonPose, thirdPersonPose }))
 if (fs.existsSync(path.join(packRoots[1], "animations", "player.animation.json"))) {
   errors.push("Pose-calibration pack must not contain custom player action animations");
 }
-if (fs.existsSync(path.join(packRoots[1], "particles", "holy_water_droplet.particle.json"))) {
-  errors.push("Pose-calibration pack must not contain the holy-water particle effect");
+
+const dropletPath = path.join(packRoots[1], "particles", "holy_water_droplet.particle.json");
+if (!fs.existsSync(dropletPath)) {
+  errors.push("Holy-water droplet particle definition is required");
+} else {
+  const dropletSource = fs.readFileSync(dropletPath, "utf8");
+  const droplet = JSON.parse(dropletSource)?.particle_effect;
+  const dropletComponents = droplet?.components ?? {};
+  if (/q\.(?:particle_age|particle_lifetime)/.test(dropletSource)) {
+    errors.push("Holy-water droplet must use particle variables instead of unsupported entity queries");
+  }
+  if (droplet?.description?.identifier !== "aspergillum:holy_water_droplet") {
+    errors.push("Holy-water droplet particle identifier is invalid");
+  }
+  if (droplet?.description?.basic_render_parameters?.material !== "particles_blend") {
+    errors.push("Holy-water droplet must use the translucent particles_blend material");
+  }
+  if (droplet?.description?.basic_render_parameters?.texture !== "textures/particle/holy_water") {
+    errors.push("Holy-water droplet must use its dedicated texture");
+  }
+  const billboard = dropletComponents["minecraft:particle_appearance_billboard"];
+  if (billboard?.facing_camera_mode !== "direction_y" || billboard?.direction?.mode !== "derive_from_velocity") {
+    errors.push("Holy-water droplets must align their long axis with their velocity");
+  }
+  const collision = dropletComponents["minecraft:particle_motion_collision"];
+  if (collision?.enabled !== true || collision?.expire_on_contact !== true) {
+    errors.push("Holy-water droplets must collide with terrain and expire on contact");
+  }
+  if (!dropletComponents["minecraft:particle_appearance_lighting"]) {
+    errors.push("Holy-water droplets must respond to environmental lighting");
+  }
+  const interpolant = dropletComponents["minecraft:particle_appearance_tinting"]?.color?.interpolant;
+  if (interpolant !== "variable.particle_age / variable.particle_lifetime") {
+    errors.push("Holy-water droplet fade must use supported particle lifetime variables");
+  }
 }
 
 const itemDefinition = JSON.parse(
@@ -236,8 +269,14 @@ if (itemComponents?.["minecraft:swing_duration"]?.value !== itemComponents?.["mi
 }
 
 const compiledScript = fs.readFileSync(path.join(packRoots[0], "scripts", "main.js"), "utf8");
-if (compiledScript.includes("playAnimation") || compiledScript.includes("spawnParticle")) {
-  errors.push("Pose-calibration script must not trigger action animations or particles");
+if (compiledScript.includes("playAnimation")) {
+  errors.push("Particle restoration must not reintroduce uncalibrated player action animations");
+}
+if (!compiledScript.includes("spawnParticle") || !compiledScript.includes("aspergillum:holy_water_droplet")) {
+  errors.push("Compiled script must emit the namespaced holy-water droplet particle");
+}
+if (!compiledScript.includes("random.splash")) {
+  errors.push("Compiled spray must synchronize the water release sound");
 }
 
 const required = [
@@ -247,13 +286,16 @@ const required = [
   "packs/resource/textures/items/aspergillum.png",
   "packs/resource/textures/entity/aspergillum.png",
   "packs/resource/textures/blocks/aspersorium.png",
+  "packs/resource/textures/particle/holy_water.png",
   "packs/resource/models/blocks/aspersorium.rotations.geo.json",
   "packs/resource/animations/aspergillum.hold.animation.json",
+  "packs/resource/particles/holy_water_droplet.particle.json",
   "packs/resource/render_controllers/aspergillum.render_controllers.json",
 ];
 for (const relative of required) if (!fs.existsSync(path.join(root, relative))) errors.push(`Missing generated asset: ${relative}`);
 
 const entityTexturePath = path.join(packRoots[1], "textures", "entity", "aspergillum.png");
+const particleTexturePath = path.join(packRoots[1], "textures", "particle", "holy_water.png");
 for (const file of walk(path.join(root, "packs", "resource", "textures")).filter((entry) => entry.endsWith(".png"))) {
   try {
     const image = PNG.sync.read(fs.readFileSync(file));
@@ -266,6 +308,18 @@ for (const file of walk(path.join(root, "packs", "resource", "textures")).filter
           break;
         }
       }
+    }
+    if (file === particleTexturePath) {
+      let visiblePixels = 0;
+      for (let offset = 0; offset < image.data.length; offset += 4) {
+        if (image.data[offset + 3] === 0) continue;
+        visiblePixels += 1;
+        if (image.data[offset + 2] < image.data[offset + 1] || image.data[offset + 1] < image.data[offset]) {
+          errors.push("Holy-water texture must remain blue/cyan and must not regress to green mist");
+          break;
+        }
+      }
+      if (visiblePixels < 40) errors.push("Holy-water droplet texture has insufficient visible coverage");
     }
   } catch (error) {
     errors.push(`Unreadable PNG ${path.relative(root, file)}: ${error.message}`);

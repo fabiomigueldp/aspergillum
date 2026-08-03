@@ -96,6 +96,22 @@ const water = png(32, 32, (x, y) => {
 for (let i = 0; i < 32; i += 1) setPixel(water, i, (i * 3 + 5) % 32, [164, 229, 242, 210]);
 write("packs/resource/textures/blocks/holy_water.png", water);
 
+const particle = png(16, 16, (x, y) => {
+  const dx = (x - 7.5) / 3.5;
+  const dy = (y - 7.5) / 7.2;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+  if (distance >= 1) return [0, 0, 0, 0];
+  const edge = Math.max(0, 1 - distance);
+  const highlight = Math.max(0, 1 - Math.hypot((x - 6.4) / 2.2, (y - 5.2) / 4.5));
+  return [
+    Math.round(132 + highlight * 92),
+    Math.round(211 + highlight * 38),
+    Math.round(239 + highlight * 16),
+    Math.round(232 * edge ** 0.55),
+  ];
+});
+write("packs/resource/textures/particle/holy_water.png", particle);
+
 const item = png(32, 32, () => [0, 0, 0, 0]);
 const outline = [34, 39, 39, 255];
 const metalDark = [104, 109, 106, 255];
