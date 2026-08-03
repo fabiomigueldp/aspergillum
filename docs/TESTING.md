@@ -17,21 +17,22 @@
 
 O teste físico ainda é obrigatório porque entrada, câmera e feedback vanilla variam por plataforma.
 
-### Critério exclusivo da versão 1.0.11
+### Critério exclusivo da versão 1.0.12
 
 - [ ] ao selecionar o item, aparece a malha real em escala reduzida;
-- [ ] em terceira pessoa, o centro do cabo escuro atravessa o centro do punho direito;
-- [ ] em terceira pessoa, a cabeça aponta para frente e para fora, sem ficar atrás da manga;
+- [ ] em terceira pessoa, o centro do cabo escuro atravessa o centro do punho direito após `position [5, -2.5, -1]`;
+- [ ] em terceira pessoa, a cabeça aponta para frente e para fora com pose efetiva próxima de `[31, 0, -12]`, sem ficar atrás da manga;
 - [ ] um ataque vanilla leva a malha junto com a mão sem arco orbital remoto;
 - [ ] em primeira pessoa, o cabo fica na região inferior direita e a cabeça aparece acima/à frente, sem inversão;
 - [ ] trocar de primeira para terceira pessoa não produz um frame de pose errada ou salto persistente;
 - [ ] nenhuma face da cabeça desaparece em órbita frontal, lateral ou traseira;
 - [ ] cada carga produz uma única rajada contínua, sem aparecer como uma nuvem instantânea;
-- [ ] aproximadamente 36 gotas azul/ciano, maiores e bem legíveis, aparecem por aspersão, sem fumaça ou tonalidade verde;
+- [ ] aproximadamente 36 gotas azul/ciano, bem legíveis mas sem crescer excessivamente junto à câmera, aparecem por aspersão;
 - [ ] a liberação começa perto do avanço do swing e o som de splash coincide com as primeiras gotas;
 - [ ] em primeira e terceira pessoa, a origem permanece próxima do lado direito/ponta visual e não no centro do tórax ou nos pés;
-- [ ] as gotas formam um leque visivelmente mais aberto que na revisão anterior, percorrem aproximadamente um bloco a mais que a 1.0.6, caem por gravidade e desaparecem ao tocar o terreno;
-- [ ] a emissão parte abaixo da linha dos olhos, no lado direito e à frente, sem o arco excessivamente alto da 1.0.10;
+- [ ] as gotas formam um leque horizontal, não um halo, anel, círculo, domo ou nuvem em torno da mira;
+- [ ] a largura horizontal é claramente maior que a altura vertical, preservando alcance, gravidade e colisão;
+- [ ] a emissão parte aproximadamente da cabeça visível do instrumento, à direita e à frente, sem nascer no rosto, torso ou pés;
 - [ ] as gotas permanecem legíveis de frente, de lado e durante a queda, sem ficarem finas ou desaparecerem conforme o ângulo da câmera;
 - [ ] girar ou mover-se durante a rajada desloca os frames seguintes com o jogador, sem deixar uma nuvem estacionária;
 - [ ] não aparece animação litúrgica própria — ela continua fora do escopo desta revisão;

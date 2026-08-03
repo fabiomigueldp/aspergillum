@@ -205,17 +205,23 @@ const thirdPersonPose = holdAnimations?.["animation.aspergillum.hold_third_perso
 if (JSON.stringify(firstPersonPose?.bones?.aspergillum_visual?.rotation) !== JSON.stringify([180, 0, 0])) {
   errors.push("First-person pose must perform the controlled end-for-end inversion");
 }
-if (JSON.stringify(thirdPersonPose?.bones?.aspergillum_visual?.rotation) !== JSON.stringify([0, 0, 0])) {
-  errors.push("Third-person pose must preserve the calibrated geometry rest pose");
+if (JSON.stringify(thirdPersonPose?.bones?.aspergillum_visual?.position) !== JSON.stringify([5, -2.5, -1])) {
+  errors.push("Third-person pose must apply only the measured grip translation");
+}
+if (JSON.stringify(thirdPersonPose?.bones?.aspergillum_visual?.rotation) !== JSON.stringify([6, 0, 0])) {
+  errors.push("Third-person pose must apply only the measured forward-pitch correction");
 }
 for (const [name, pose] of Object.entries({ firstPersonPose, thirdPersonPose })) {
   if (pose?.loop !== true || Object.keys(pose?.bones ?? {}).join() !== "aspergillum_visual") {
     errors.push(`${name} must be a continuous visual-child-only presentation pose`);
   }
   const transform = pose?.bones?.aspergillum_visual ?? {};
-  if (transform.position !== undefined || transform.scale !== undefined) {
-    errors.push(`${name} must not add an unverified position or scale offset`);
+  if (transform.scale !== undefined) {
+    errors.push(`${name} must not add an unverified scale offset`);
   }
+}
+if (firstPersonPose?.bones?.aspergillum_visual?.position !== undefined) {
+  errors.push("The validated first-person pose must remain positionally frozen");
 }
 if (fs.existsSync(path.join(packRoots[1], "animations", "player.animation.json"))) {
   errors.push("Pose-calibration pack must not contain custom player action animations");
@@ -245,10 +251,10 @@ if (!fs.existsSync(dropletPath)) {
     errors.push("Holy-water droplets must remain fully camera-facing like the proven 1.0.6 presentation");
   }
   if (JSON.stringify(billboard?.size) !== JSON.stringify([
-    "0.044 * variable.aspergillum_scale",
-    "0.105 * variable.aspergillum_scale",
+    "0.042 * variable.aspergillum_scale",
+    "0.1 * variable.aspergillum_scale",
   ])) {
-    errors.push("Holy-water droplets must preserve the enlarged 1.0.11 billboard dimensions");
+    errors.push("Holy-water droplets must preserve the camera-safe 1.0.12 billboard dimensions");
   }
   const lifetime = dropletComponents["minecraft:particle_lifetime_expression"]?.max_lifetime;
   if (lifetime !== "1.05 + math.random(0.0, 0.35)") {
@@ -290,7 +296,10 @@ if (!compiledScript.includes("spawnParticle") || !compiledScript.includes("asper
   errors.push("Compiled script must emit the namespaced holy-water droplet particle");
 }
 if (!compiledScript.includes("SPRAY_DROPLET_COUNT = 36")) {
-  errors.push("Compiled spray must emit the complete 36-droplet 1.0.11 burst");
+  errors.push("Compiled spray must emit the complete 36-droplet burst");
+}
+if (!compiledScript.includes("horizontalSpread = horizontalUnit * 0.26") || !compiledScript.includes("verticalSpread = 0.035 + verticalBand * 0.055")) {
+  errors.push("Compiled spray must retain the wide-horizontal, narrow-vertical fan");
 }
 if (!compiledScript.includes("random.splash")) {
   errors.push("Compiled spray must synchronize the water release sound");

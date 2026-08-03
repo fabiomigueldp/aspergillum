@@ -56,11 +56,19 @@ A observação física da 1.0.10 mostrou que sua reconstrução havia perdido qu
 
 A 1.0.11 conserva esses fundamentos e os expande de forma controlada. São 36 gotas, seis por frame, raio de dispersão `0,04 + 0,19√t`, velocidades de `12,70–13,98`, dimensões `0,044 × 0,105` e escala individual `0,84–1,08`. A simulação determinística em terreno plano estima alcance mediano de aproximadamente `9,26` blocos, contra `8,28` na 1.0.6, além de um leque aproximadamente 20% mais aberto. O sprite radial tem alfa máximo 240 para permanecer visível, mas continua exclusivamente azul/ciano e sem névoa.
 
+## Calibração de grip e leque 1.0.12
+
+O teste físico da 1.0.11 aprovou binding, escala, primeira pessoa e integridade das faces. A distância residual do cabo ao punho foi medida em aproximadamente cinco unidades para fora, 2,5 unidades acima e uma unidade para trás. A correção entra somente na animação contínua de terceira pessoa como `position [5, -2.5, -1]` e `rotation [6, 0, 0]`; a geometria, o root vinculado e a primeira pessoa não mudam.
+
+O vídeo também mostrou que o leque radial da 1.0.11 podia formar um domo em torno da mira. A distribuição da 1.0.12 é elíptica: sequência quase uniforme de `±0,26` no eixo horizontal e somente `-0,02 → 0,09` no eixo vertical. Cada um dos seis frames ainda contém seis gotas, mas já representa a largura completa do leque. A origem matemática foi aproximada da cabeça real do instrumento e os billboards passaram para `0,042 × 0,100`, escalados entre `0,78–0,99`.
+
+A documentação oficial confirma `particle_effects` em attachables e locators orientados por animação. O desafio restante não é suporte de formato, mas o gatilho: `variable.attack_time` também ocorre com zero cargas. O candidato estável é combiná-lo com `query.cooldown_time_remaining('main_hand')`, pois o script inicia o cooldown somente após consumir uma carga. Essa arquitetura será testada separadamente antes de substituir o emissor autoritativo.
+
 ## Invariantes
 
 - a versão da geometria permanece `1.16.0` ou superior;
 - o binding permanece exclusivamente no root neutro e a malha exclusivamente no filho visual;
-- o grip e pivô empíricos permanecem em `[-6, 24, 1]` durante esta calibração;
+- o grip e pivô empíricos permanecem em `[-6, 24, 1]`; apenas a apresentação de terceira pessoa aplica a correção medida;
 - não existem locator nem animações de ação; as partículas são emitidas autoritativamente pelo script;
 - cada aspersão válida emite 36 gotas em seis frames contíguos e toca um único splash no primeiro frame;
 - a partícula usa apenas variáveis suportadas `variable.particle_age` e `variable.particle_lifetime`;

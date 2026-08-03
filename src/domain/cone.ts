@@ -30,9 +30,9 @@ export function aspergillumTipOrigin(head: Vector3, direction: Vector3): Vector3
     : { x: 1, y: 0, z: 0 };
 
   return add(head, {
-    x: view.x * 0.72 + right.x * 0.3,
-    y: -0.42 + view.y * 0.24,
-    z: view.z * 0.72 + right.z * 0.3,
+    x: view.x * 0.55 + right.x * 0.48,
+    y: -0.15 + view.y * 0.2,
+    z: view.z * 0.55 + right.z * 0.48,
   });
 }
 
@@ -65,9 +65,11 @@ export function deterministicDropletDirections(direction: Vector3, count = 36): 
   });
 
   return Array.from({ length: count }, (_, index) => {
-    const phase = index * 2.399963229728653;
-    const radius = 0.04 + 0.19 * Math.sqrt((index + 0.5) / count);
-    return normalize(add(forward, add(scale(right, Math.cos(phase) * radius), scale(up, Math.sin(phase) * radius + 0.055))));
+    const horizontalUnit = ((((index + 0.5) * 0.6180339887498949) % 1) * 2) - 1;
+    const verticalBand = ((index % 6) - 2.5) / 2.5;
+    const horizontalSpread = horizontalUnit * 0.26;
+    const verticalSpread = 0.035 + verticalBand * 0.055;
+    return normalize(add(forward, add(scale(right, horizontalSpread), scale(up, verticalSpread))));
   });
 }
 

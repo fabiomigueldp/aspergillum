@@ -35,7 +35,7 @@ function emitWaterFrame(player: Player, frameIndex: number): void {
     const variables = new MolangVariableMap();
     const speed = deterministicDropletSpeed(dropletIndex);
     variables.setSpeedAndDirection("variable.aspergillum_motion", speed, dropletDirection);
-    variables.setFloat("variable.aspergillum_scale", 0.84 + (dropletIndex % 4) * 0.08);
+    variables.setFloat("variable.aspergillum_scale", 0.78 + (dropletIndex % 4) * 0.07);
     player.dimension.spawnParticle(DROPLET_PARTICLE, origin, variables);
   }
 }

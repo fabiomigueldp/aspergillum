@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.12 — 2026-08-03
+
+- congelada a pose de primeira pessoa aprovada na 1.0.11, sem qualquer translação, escala ou rotação adicional;
+- aplicada exclusivamente à apresentação de terceira pessoa a correção medida `position [5, -2.5, -1]`, trazendo o cabo para dentro e para baixo no punho e ligeiramente à frente do torso;
+- aplicado exclusivamente à terceira pessoa o pitch aditivo `[6, 0, 0]`, produzindo orientação efetiva aproximada `[31, 0, -12]` sem tocar no binding nem no pivô;
+- deslocada a origem matemática da aspersão para `0,55` bloco à frente, `0,48` à direita e `0,15` abaixo dos olhos, aproximação derivada da posição final do punho e do vetor punho→cabeça do instrumento;
+- substituído o leque radial por uma distribuição anisotrópica de 36 gotas: maior dispersão horizontal e menos de um terço da dispersão vertical anterior;
+- limitada a abertura vertical a aproximadamente `5,2°`, eliminando o aspecto de halo, anel ou domo em torno da mira e do jogador;
+- preservada abertura horizontal máxima de aproximadamente `14,5°`, mantendo uma aspersão ampla e direcional;
+- reduzido em cerca de 12% o maior billboard próximo da câmera, ainda mantendo as gotas maiores que as da 1.0.6;
+- mantidos o alcance, gravidade, arrasto, colisão, iluminação, fade, material e sprite azul/ciano aprovados na 1.0.11;
+- documentada a viabilidade oficial de locator no attachable; sua integração continua isolada para a etapa seguinte, depois da validação física do grip e do gatilho carregado/vazio.
+
 ## 1.0.11 — 2026-08-03
 
 - recuperados e comparados os arquivos efetivamente instalados da 1.0.6, em vez de reconstruir a trajetória por aproximação;

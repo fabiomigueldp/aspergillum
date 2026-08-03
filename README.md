@@ -2,12 +2,12 @@
 
 Add-On para Minecraft: Bedrock Edition 26.34/35 que adiciona um **aspersório litúrgico funcional** e uma **caldeirinha (aspersorium) colocável**. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão 1.0.11:** recupera diretamente a linguagem visual e balística das gotas da 1.0.6 e a aprimora: 36 gotas maiores em seis frames, leque mais aberto, cerca de um bloco adicional de alcance típico, gravidade, arrasto, iluminação e colisão.
+> **Versão 1.0.12:** mantém a primeira pessoa aprovada, aplica exclusivamente em terceira pessoa a correção medida de grip e pitch, e transforma as 36 gotas num leque horizontal direcionado, com origem matemática mais próxima da cabeça do aspersório.
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/Aspergillum-1.0.11.mcaddon`](dist/Aspergillum-1.0.11.mcaddon) com o Minecraft.
+2. Abra [`dist/Aspergillum-1.0.12.mcaddon`](dist/Aspergillum-1.0.12.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
@@ -31,10 +31,11 @@ As cargas permanecem gravadas no item. Ao acomodá-lo, cargas restantes retornam
 - raiz sem malha `aspergillum_bound` com `q.item_slot_to_bone_name(context.item_slot)`, preservando exatamente o caminho comprovado na 1.0.7;
 - filho `aspergillum_visual`, no qual ficam exclusivamente a malha e as correções artísticas;
 - malha real de 15,6 unidades autorada ao redor do grip empírico `[-6, 24, 1]`, nove unidades acima da pose da 1.0.8;
-- orientação de terceira pessoa `[25, 0, -12]` e inversão controlada de 180° apenas na primeira pessoa;
+- geometria base `[25, 0, -12]`, correção de apresentação exclusiva da terceira pessoa `position [5, -2.5, -1]`/`rotation [6, 0, 0]` e primeira pessoa aprovada preservada sem translação;
 - emissão autoritativa de 36 gotas em seis grupos espaciais contínuos, sincronizada quatro ticks após o ataque e visível no multiplayer;
-- origem baixa e estável recuperada da 1.0.6, leque 20% mais aberto e velocidades recalibradas para aproximadamente um bloco adicional de alcance mediano;
-- gotas maiores e sempre voltadas para a câmera, com sprite radial azul/ciano, material `particles_alpha`, iluminação, gravidade, arrasto e colisão;
+- origem aproximada da ponta em `0,55` bloco à frente, `0,48` à direita e `0,15` abaixo dos olhos, recalculada a cada frame;
+- leque anisotrópico: abertura horizontal máxima aproximada de `14,5°`, vertical máxima inferior a `5,2°`, sem halo circular;
+- gotas legíveis e sempre voltadas para a câmera, com tamanho máximo moderado, sprite radial azul/ciano, material `particles_alpha`, iluminação, gravidade, arrasto e colisão;
 - sem animação litúrgica de ação ou locator nesta etapa; o VFX usa uma origem matemática calibrada e não altera o attachable;
 - material opaco `entity`, textura com alfa integral, cubos com espessura positiva e box UV completo nas seis faces;
 - quatro níveis visuais de água e versão decorativa com o aspersório acomodado;
