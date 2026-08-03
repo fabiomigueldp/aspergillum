@@ -1,0 +1,10 @@
+export const ASPERGILLUM_ITEM = "aspergillum:aspergillum";
+export const ASPERSORIUM_BLOCK = "aspergillum:aspersorium";
+export const CHARGES_PROPERTY = "aspergillum:charges";
+export const SCHEMA_PROPERTY = "aspergillum:schema_version";
+export const WATER_LEVEL_STATE = "aspergillum:water_level";
+export const DOCKED_STATE = "aspergillum:has_aspergillum";
+export const ROTATION_STATE = "aspergillum:rotation";
+export const ASPERSORIUM_COMPONENT = "aspergillum:aspersorium_interaction";
+export const ASPERGILLUM_COMPONENT = "aspergillum:aspergillum_use";
+export const DROPLET_PARTICLE = "aspergillum:holy_water_droplet";

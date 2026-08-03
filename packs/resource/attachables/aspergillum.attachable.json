@@ -1,0 +1,29 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:attachable": {
+    "description": {
+      "identifier": "aspergillum:aspergillum",
+      "item": {
+        "aspergillum:aspergillum": "q.is_owner_identifier_any('minecraft:player')"
+      },
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/aspergillum"
+      },
+      "geometry": {
+        "default": "geometry.aspergillum.held"
+      },
+      "animations": {
+        "wield": "controller.animation.aspergillum.wield",
+        "hold_first_person": "animation.aspergillum.held.hold_first_person",
+        "hold_third_person": "animation.aspergillum.held.hold_third_person"
+      },
+      "scripts": {
+        "animate": ["wield"]
+      },
+      "render_controllers": ["controller.render.aspergillum.held"]
+    }
+  }
+}

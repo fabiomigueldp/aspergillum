@@ -1,0 +1,32 @@
+{
+  "name": "aspergillum-bedrock-addon",
+  "version": "1.0.5",
+  "private": true,
+  "description": "A production-grade liturgical aspergillum and aspersorium Add-On for Minecraft Bedrock Edition.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "clean": "node tools/clean.mjs",
+    "generate:assets": "node tools/generate-assets.mjs",
+    "build:script": "esbuild src/bootstrap/main.ts --bundle --format=esm --platform=neutral --external:@minecraft/server --target=es2022 --outfile=packs/behavior/scripts/main.js",
+    "build": "npm run generate:assets && npm run build:script && npm run validate",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "validate": "node tools/validate.mjs",
+    "validate:mcaddon": "node tools/validate-minecraft.mjs",
+    "package": "npm run build && node tools/package.mjs && npm run validate:mcaddon",
+    "check": "npm run typecheck && npm test && npm run build"
+  },
+  "devDependencies": {
+    "@minecraft/creator-tools": "0.17.7",
+    "@minecraft/server": "2.8.0",
+    "@types/node": "^22.15.0",
+    "archiver": "^7.0.1",
+    "esbuild": "^0.28.1",
+    "pngjs": "^7.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

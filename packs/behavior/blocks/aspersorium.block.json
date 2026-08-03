@@ -1,0 +1,341 @@
+{
+  "format_version": "1.26.30",
+  "minecraft:block": {
+    "description": {
+      "identifier": "aspergillum:aspersorium",
+      "menu_category": {
+        "category": "construction",
+        "group": "minecraft:itemGroup.name.decorations"
+      },
+      "states": {
+        "aspergillum:water_level": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "aspergillum:has_aspergillum": [
+          false,
+          true
+        ],
+        "aspergillum:rotation": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ]
+      }
+    },
+    "permutations": [
+      {
+        "condition": "q.block_state('aspergillum:has_aspergillum') == true",
+        "components": {
+          "minecraft:loot": "loot_tables/blocks/aspersorium_docked.loot.json"
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 1",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_1",
+            "uv_lock": false,
+            "bone_visibility": {
+              "water_low": "q.block_state('aspergillum:water_level') == 1",
+              "water_mid": "q.block_state('aspergillum:water_level') == 2",
+              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 2",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_2",
+            "uv_lock": false,
+            "bone_visibility": {
+              "water_low": "q.block_state('aspergillum:water_level') == 1",
+              "water_mid": "q.block_state('aspergillum:water_level') == 2",
+              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 3",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_3",
+            "uv_lock": false,
+            "bone_visibility": {
+              "water_low": "q.block_state('aspergillum:water_level') == 1",
+              "water_mid": "q.block_state('aspergillum:water_level') == 2",
+              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 4",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_4",
+            "uv_lock": false,
+            "bone_visibility": {
+              "water_low": "q.block_state('aspergillum:water_level') == 1",
+              "water_mid": "q.block_state('aspergillum:water_level') == 2",
+              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 5",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_5",
+            "uv_lock": false,
+            "bone_visibility": {
+              "water_low": "q.block_state('aspergillum:water_level') == 1",
+              "water_mid": "q.block_state('aspergillum:water_level') == 2",
+              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 6",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_6",
+            "uv_lock": false,
+            "bone_visibility": {
+              "water_low": "q.block_state('aspergillum:water_level') == 1",
+              "water_mid": "q.block_state('aspergillum:water_level') == 2",
+              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 7",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_7",
+            "uv_lock": false,
+            "bone_visibility": {
+              "water_low": "q.block_state('aspergillum:water_level') == 1",
+              "water_mid": "q.block_state('aspergillum:water_level') == 2",
+              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 8",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_8",
+            "uv_lock": false,
+            "bone_visibility": {
+              "water_low": "q.block_state('aspergillum:water_level') == 1",
+              "water_mid": "q.block_state('aspergillum:water_level') == 2",
+              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 9",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_9",
+            "uv_lock": false,
+            "bone_visibility": {
+              "water_low": "q.block_state('aspergillum:water_level') == 1",
+              "water_mid": "q.block_state('aspergillum:water_level') == 2",
+              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 10",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_10",
+            "uv_lock": false,
+            "bone_visibility": {
+              "water_low": "q.block_state('aspergillum:water_level') == 1",
+              "water_mid": "q.block_state('aspergillum:water_level') == 2",
+              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 11",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_11",
+            "uv_lock": false,
+            "bone_visibility": {
+              "water_low": "q.block_state('aspergillum:water_level') == 1",
+              "water_mid": "q.block_state('aspergillum:water_level') == 2",
+              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 12",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_12",
+            "uv_lock": false,
+            "bone_visibility": {
+              "water_low": "q.block_state('aspergillum:water_level') == 1",
+              "water_mid": "q.block_state('aspergillum:water_level') == 2",
+              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 13",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_13",
+            "uv_lock": false,
+            "bone_visibility": {
+              "water_low": "q.block_state('aspergillum:water_level') == 1",
+              "water_mid": "q.block_state('aspergillum:water_level') == 2",
+              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 14",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_14",
+            "uv_lock": false,
+            "bone_visibility": {
+              "water_low": "q.block_state('aspergillum:water_level') == 1",
+              "water_mid": "q.block_state('aspergillum:water_level') == 2",
+              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 15",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_15",
+            "uv_lock": false,
+            "bone_visibility": {
+              "water_low": "q.block_state('aspergillum:water_level') == 1",
+              "water_mid": "q.block_state('aspergillum:water_level') == 2",
+              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
+            }
+          }
+        }
+      }
+    ],
+    "components": {
+      "minecraft:display_name": "tile.aspergillum:aspersorium.name",
+      "minecraft:geometry": {
+        "identifier": "geometry.aspergillum.aspersorium.rotation_0",
+        "uv_lock": false,
+        "bone_visibility": {
+          "water_low": "q.block_state('aspergillum:water_level') == 1",
+          "water_mid": "q.block_state('aspergillum:water_level') == 2",
+          "water_full": "q.block_state('aspergillum:water_level') == 3",
+          "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
+        }
+      },
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "aspersorium",
+          "render_method": "alpha_test"
+        },
+        "water": {
+          "texture": "aspergillum_holy_water",
+          "render_method": "blend"
+        }
+      },
+      "minecraft:collision_box": {
+        "origin": [
+          -6,
+          0,
+          -6
+        ],
+        "size": [
+          12,
+          11,
+          12
+        ]
+      },
+      "minecraft:selection_box": {
+        "origin": [
+          -7,
+          0,
+          -7
+        ],
+        "size": [
+          14,
+          16,
+          14
+        ]
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 1.4
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 6
+      },
+      "minecraft:map_color": "#9b9b91",
+      "minecraft:light_dampening": 0,
+      "minecraft:placement_filter": {
+        "conditions": [
+          {
+            "allowed_faces": [
+              "up"
+            ]
+          }
+        ]
+      },
+      "minecraft:loot": "loot_tables/blocks/aspersorium.loot.json",
+      "aspergillum:aspersorium_interaction": {}
+    }
+  }
+}
