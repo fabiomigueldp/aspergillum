@@ -1,6 +1,18 @@
 # Changelog
 
-## Não publicado — organização e documentação
+## 1.0.15 — 2026-08-03
+
+- preservados integralmente geometry `1.16.0`, `aspergillum_bound`, item-slot binding, grip, escala e poses aprovadas de primeira/terceira pessoa;
+- introduzida a hierarquia `aspergillum_presentation → aspergillum_action → handle/sprinkler_head`, sem translação no osso vinculado e sem locator prematuro;
+- adicionadas animações one-shot próprias de carregamento (`0,8 s`) e aspersão (`0,9 s`), limitadas aos bones `rightarm` e `rightitem` e acionadas por `Entity.playAnimation()` estável;
+- separada a aspersão em reserva no swing e commit no release do tick 4: cancelamento anterior não consome carga; cancelamento posterior interrompe pulsos sem reembolso;
+- introduzidos `SprinkleSession` e `ActionLease`, impedindo concorrência entre carregamento e aspersão e limpando timers/leases no ciclo de vida do jogador;
+- mantido o cooldown nativo somente para tentativas com carga real; tentativa vazia continua sem água e com feedback seco;
+- externalizado o perfil físico `standard`, preservando 36 gotas, seis pulsos, velocidades, escala, dispersão, origem, resposta `0.8` e giro máximo de `30°`;
+- o primeiro pulso agora é suavizado desde a direção capturada no início do gesto, em vez de saltar diretamente para a câmera no release;
+- implementado transporte paralelo da base lateral entre pulsos, eliminando a troca abrupta de eixo ao atravessar pitches verticais;
+- ampliados testes para 20 casos e validações estruturais para hierarquia, timelines, bones animados, perfil, reserva/commit e invariantes do pacote;
+- tornado o `.mcaddon` reprodutível, com ordem de arquivos e timestamps ZIP determinísticos;
 
 - consolidado o estado real da v1.0.14, separando baseline comprovada, limitações atuais e arquitetura-alvo;
 - formalizados os contratos congelados de binding, poses, escala, estado e curvatura controlada da rajada;

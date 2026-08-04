@@ -2,13 +2,13 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.0.14`
+- **Versão de referência:** `1.0.15`
 - **Engine mínima:** Creator `1.26.30`
 - **Script API:** `@minecraft/server` `2.8.0`, estável
 - **Experimentos:** nenhum
 - **Conteúdo:** aspersório funcional, caldeirinha colocável, carregamento, três cargas, docking decorativo e spray visual
 
-A v1.0.14 encerrou a investigação estrutural do attachable. Binding, escala, primeira pessoa, herança do braço, geometria opaca e trajetória controlável constituem a base consolidada. O projeto ainda não atingiu a V1 final de excelência: faltam animações próprias, origem visual exata no modelo e persistência completa do item acomodado.
+A v1.0.14 encerrou a investigação estrutural do attachable. A v1.0.15 preserva essa base e inaugura a fase de produto: introduz hierarquia de apresentação/ação, gestos one-shot, commit da carga no release e transporte estável do leque. O projeto ainda não atingiu a V1 final: faltam validar fisicamente as novas animações, levar a origem visual ao locator e preservar integralmente o item acomodado.
 
 ## O que está resolvido
 
@@ -20,17 +20,19 @@ A v1.0.14 encerrou a investigação estrutural do attachable. Binding, escala, p
 - Sobrevivência e Aventura consomem cargas; Criativo preserva uma carga real já existente; Espectador é negado.
 - O carregamento usa `instance_id`, uma sessão por jogador, lock leve por bloco, revalidação e rollback defensivo.
 - A rajada usa 36 gotas em seis pulsos, leque anisotrópico, gravidade, colisão e direção suavizada conforme a câmera.
+- O primeiro pulso transita desde a direção capturada no início do gesto; os demais transportam a base lateral sem flip vertical.
+- A carga é reservada no swing e consumida/preservada somente no release do tick 4.
+- `ActionLease` impede que carregar e aspergir concorram para o mesmo jogador.
+- Carregamento e aspersão acionam animações one-shot estáveis sobre `rightarm` e `rightitem`.
 - Trocar item ou dimensão cancela os pulsos restantes.
 
 ## Limitações conhecidas
 
 | Área | Situação atual | Consequência |
 | --- | --- | --- |
-| Carregamento | movimento vanilla genérico | a cabeça pode atravessar ombro/rosto e não mergulha de forma legível |
-| Aspersão | swing vanilla genérico | o gesto ainda parece ataque, não uma ação litúrgica |
+| Carregamento | gesto próprio recém-integrado | trajetória e clipping ainda precisam de validação física em wide/slim e primeira/terceira pessoa |
+| Aspersão | gesto litúrgico próprio recém-integrado | sobreposição com animações vanilla e leitura do arco ainda precisam do teste no runtime |
 | Origem das gotas | aproximação por cabeça + direção do jogador | não coincide exatamente com a cabeça animada do modelo |
-| Primeiro pulso | parte da direção lida no momento de liberação | a transição desde a direção no início do swing ainda pode ser refinada |
-| Base do leque | reconstruída por pulso | pitches extremos ainda merecem transporte paralelo para eliminar roll descontínuo |
 | Docking | bloco guarda apenas `has_aspergillum` | `nameTag`, identidade e futuras variantes podem se perder ao acomodar |
 | Overflow | cargas podem exceder espaço livre ao acomodar | água pode ser descartada sem intenção se não for recusado |
 | Schema/lore | schema ainda não é uma migração completa; lore é textual | compatibilidade futura e localização persistente ainda não estão concluídas |
@@ -38,10 +40,11 @@ A v1.0.14 encerrou a investigação estrutural do attachable. Binding, escala, p
 
 ## Próxima mudança autorizada
 
-O próximo marco é a fundação de animação descrita em [ROADMAP.md](ROADMAP.md): introduzir `aspergillum_action`, separar reserva e commit da aspersão no instante de liberação e criar animações próprias sem alterar binding, escala ou primeira pessoa.
+O próximo marco de implementação é a v1.0.16 descrita em [ROADMAP.md](ROADMAP.md): validar o gatilho client-side, adicionar `spray_aim`/`aspergillum_tip` e aproximar a origem visual da cabeça real sem perder steering ou multiplayer.
 
 Não faz parte do próximo marco:
 
+- recalibrar as animações antes do relatório físico da v1.0.15;
 - refazer a malha;
 - trocar o binding;
 - substituir toda a arquitetura de uma vez;

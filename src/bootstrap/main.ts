@@ -12,7 +12,12 @@ import {
 } from "@minecraft/server";
 import { handleAspersoriumInteraction } from "../application/aspersorium";
 import { yawToSixteenWayRotation } from "../domain/rotation";
-import { cancelWaterSpray, clearSprinklePlayerState, trySprinkle } from "../application/sprinkle";
+import {
+  cancelWaterSpray,
+  clearSprinklePlayerState,
+  getSprinkleSession,
+  trySprinkle,
+} from "../application/sprinkle";
 import {
   ASPERGILLUM_COMPONENT,
   ASPERGILLUM_ITEM,
@@ -124,10 +129,23 @@ world.afterEvents.playerGameModeChange.subscribe((event) => {
 
 world.afterEvents.playerInventoryItemChange.subscribe((event) => {
   if (event.inventoryType !== PlayerInventoryType.Hotbar) return;
-  const session = getLoadingSession(event.player.id);
-  if (session === undefined || session.slot !== event.slot) return;
-  if (!isAspergillum(event.itemStack) || readAspergillumInstanceId(event.itemStack) !== session.itemInstanceId) {
+  const loadingSession = getLoadingSession(event.player.id);
+  if (
+    loadingSession !== undefined
+    && loadingSession.slot === event.slot
+    && (!isAspergillum(event.itemStack)
+      || readAspergillumInstanceId(event.itemStack) !== loadingSession.itemInstanceId)
+  ) {
     cancelLoadingSession(event.player.id);
+  }
+  const sprinkleSession = getSprinkleSession(event.player.id);
+  if (
+    sprinkleSession !== undefined
+    && sprinkleSession.slot === event.slot
+    && (!isAspergillum(event.itemStack)
+      || readAspergillumInstanceId(event.itemStack) !== sprinkleSession.itemInstanceId)
+  ) {
+    cancelWaterSpray(event.player.id);
   }
 });
 

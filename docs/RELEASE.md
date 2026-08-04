@@ -32,6 +32,14 @@ dist/
 
 `dist/releases` e `dist/validation` são gerados e ignorados pelo Git. O código distribuído vem exclusivamente de `packs/behavior` e `packs/resource`; `src`, `tests`, `docs`, `assets-src` e `.research` não entram no pacote.
 
+O empacotador ordena todos os caminhos e usa timestamps ZIP fixos. Duas execuções sobre a mesma árvore devem produzir bytes e SHA-256 idênticos.
+
+### Avisos offline conhecidos
+
+O Creator Tools em modo `--offline` não possui o catálogo completo do jogo nem resolve o item implícito de um custom block. Por isso, o relatório atual contém exatamente seis avisos `UNLINK 323`: quatro ingredientes vanilla (`stick`, `iron_nugget`, `chain`, `iron_ingot`) e duas referências ao item do bloco `aspergillum:aspersorium` nas loot tables. A v1.0.14 apresentava a mesma lista.
+
+`validate-minecraft.mjs` aceita somente esses seis casos conhecidos e falha diante de qualquer warning novo, Error ou Failure. Eles não substituem o Content Log real, que deve permanecer limpo no teste do usuário.
+
 ## Release de desenvolvimento
 
 1. Atualize versão em `package.json`, `package-lock.json` e nos dois manifests.

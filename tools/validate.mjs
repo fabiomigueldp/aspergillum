@@ -125,11 +125,14 @@ if (heldGeometry?.format_version !== "1.16.0") {
   errors.push("Attachable binding requires geometry format_version 1.16.0");
 }
 const heldBones = heldGeometry?.["minecraft:geometry"]?.[0]?.bones ?? [];
-if (heldBones.length !== 2) {
-  errors.push("Pose-calibration geometry must contain one bound root and one visual child");
+if (heldBones.length !== 5) {
+  errors.push("Held geometry must contain bound, presentation, action, handle, and sprinkler-head bones");
 }
 const boundBone = heldBones.find((bone) => bone.name === "aspergillum_bound");
-const visualBone = heldBones.find((bone) => bone.name === "aspergillum_visual");
+const presentationBone = heldBones.find((bone) => bone.name === "aspergillum_presentation");
+const actionBone = heldBones.find((bone) => bone.name === "aspergillum_action");
+const handleBone = heldBones.find((bone) => bone.name === "handle");
+const sprinklerHeadBone = heldBones.find((bone) => bone.name === "sprinkler_head");
 if (boundBone?.name !== "aspergillum_bound") {
   errors.push("Pose-calibration geometry requires the aspergillum_bound root");
 }
@@ -144,21 +147,33 @@ for (const forbidden of ["parent", "locators", "inflate", "mirror", "cubes", "ro
     errors.push(`Bound root must not define ${forbidden}`);
   }
 }
-if (visualBone?.parent !== "aspergillum_bound") {
-  errors.push("Visual bone must inherit directly from the proven bound root");
+if (presentationBone?.parent !== "aspergillum_bound") {
+  errors.push("Presentation bone must inherit directly from the proven bound root");
 }
-if (visualBone?.binding !== undefined || visualBone?.locators !== undefined) {
-  errors.push("Visual bone must not replace the binding or introduce a locator during pose calibration");
+if (presentationBone?.binding !== undefined || presentationBone?.locators !== undefined || presentationBone?.cubes !== undefined) {
+  errors.push("Presentation bone must contain only the perspective-neutral structural transform");
 }
-if (JSON.stringify(visualBone?.pivot) !== JSON.stringify([-6, 24, 1])) {
-  errors.push("Visual pivot must coincide with the empirically calibrated dark-handle grip");
+if (JSON.stringify(presentationBone?.pivot) !== JSON.stringify([-6, 24, 1])) {
+  errors.push("Presentation pivot must coincide with the empirically calibrated dark-handle grip");
 }
-if (JSON.stringify(visualBone?.rotation) !== JSON.stringify([25, 0, -12])) {
-  errors.push("Visual bone must retain the controlled sign-inverted third-person pose");
+if (JSON.stringify(presentationBone?.rotation) !== JSON.stringify([25, 0, -12])) {
+  errors.push("Presentation bone must retain the controlled structural pose");
 }
-const cubes = visualBone?.cubes ?? [];
+if (actionBone?.parent !== "aspergillum_presentation"
+  || JSON.stringify(actionBone?.pivot) !== JSON.stringify([-6, 24, 1])
+  || actionBone?.cubes !== undefined
+  || actionBone?.binding !== undefined) {
+  errors.push("Action bone must be a neutral grip-centred child of the presentation bone");
+}
+if (handleBone?.parent !== "aspergillum_action" || sprinklerHeadBone?.parent !== "aspergillum_action") {
+  errors.push("Handle and sprinkler head must inherit from the action bone");
+}
+if (handleBone?.locators !== undefined || sprinklerHeadBone?.locators !== undefined) {
+  errors.push("The animation foundation must not introduce the locator prematurely");
+}
+const cubes = [...(handleBone?.cubes ?? []), ...(sprinklerHeadBone?.cubes ?? [])];
 if (cubes.length !== 8) {
-  errors.push("Visual bone must contain the eight real aspergillum cubes");
+  errors.push("Handle and sprinkler head must preserve the eight real aspergillum cubes");
 } else {
   const grip = [-6, 24, 1];
   const handleContainsGrip = grip.every(
@@ -202,29 +217,52 @@ const holdAnimations = JSON.parse(
 )?.animations;
 const firstPersonPose = holdAnimations?.["animation.aspergillum.hold_first_person"];
 const thirdPersonPose = holdAnimations?.["animation.aspergillum.hold_third_person"];
-if (JSON.stringify(firstPersonPose?.bones?.aspergillum_visual?.rotation) !== JSON.stringify([180, 0, 0])) {
+if (JSON.stringify(firstPersonPose?.bones?.aspergillum_presentation?.rotation) !== JSON.stringify([180, 0, 0])) {
   errors.push("First-person pose must perform the controlled end-for-end inversion");
 }
-if (JSON.stringify(thirdPersonPose?.bones?.aspergillum_visual?.position) !== JSON.stringify([5, -1.5, -2.25])) {
+if (JSON.stringify(thirdPersonPose?.bones?.aspergillum_presentation?.position) !== JSON.stringify([5, -1.5, -2.25])) {
   errors.push("Third-person pose must apply only the measured grip translation");
 }
-if (JSON.stringify(thirdPersonPose?.bones?.aspergillum_visual?.rotation) !== JSON.stringify([10, 0, 0])) {
+if (JSON.stringify(thirdPersonPose?.bones?.aspergillum_presentation?.rotation) !== JSON.stringify([10, 0, 0])) {
   errors.push("Third-person pose must apply only the measured forward-pitch correction");
 }
 for (const [name, pose] of Object.entries({ firstPersonPose, thirdPersonPose })) {
-  if (pose?.loop !== true || Object.keys(pose?.bones ?? {}).join() !== "aspergillum_visual") {
-    errors.push(`${name} must be a continuous visual-child-only presentation pose`);
+  if (pose?.loop !== true || Object.keys(pose?.bones ?? {}).join() !== "aspergillum_presentation") {
+    errors.push(`${name} must be a continuous presentation-bone-only pose`);
   }
-  const transform = pose?.bones?.aspergillum_visual ?? {};
+  const transform = pose?.bones?.aspergillum_presentation ?? {};
   if (transform.scale !== undefined) {
     errors.push(`${name} must not add an unverified scale offset`);
   }
 }
-if (firstPersonPose?.bones?.aspergillum_visual?.position !== undefined) {
+if (firstPersonPose?.bones?.aspergillum_presentation?.position !== undefined) {
   errors.push("The validated first-person pose must remain positionally frozen");
 }
-if (fs.existsSync(path.join(packRoots[1], "animations", "player.animation.json"))) {
-  errors.push("Pose-calibration pack must not contain custom player action animations");
+
+const actionAnimationPath = path.join(packRoots[1], "animations", "aspergillum.action.animation.json");
+const actionAnimations = fs.existsSync(actionAnimationPath)
+  ? JSON.parse(fs.readFileSync(actionAnimationPath, "utf8"))?.animations
+  : undefined;
+const loadAnimation = actionAnimations?.["animation.aspergillum.player.load"];
+const sprinkleAnimation = actionAnimations?.["animation.aspergillum.player.sprinkle"];
+if (loadAnimation?.animation_length !== 0.8 || sprinkleAnimation?.animation_length !== 0.9) {
+  errors.push("Action animations must preserve the 16-tick load and 18-tick sprinkle timelines");
+}
+for (const [name, animation] of Object.entries({ loadAnimation, sprinkleAnimation })) {
+  if (animation?.override_previous_animation !== true) {
+    errors.push(`${name} must override the vanilla action on its targeted bones`);
+  }
+  if (Object.keys(animation?.bones ?? {}).sort().join() !== "rightarm,rightitem") {
+    errors.push(`${name} must target only the right arm and right item holder bones`);
+  }
+  for (const boneName of ["rightarm", "rightitem"]) {
+    const rotation = animation?.bones?.[boneName]?.rotation;
+    const finalKey = String(animation?.animation_length);
+    if (JSON.stringify(rotation?.["0.0"]) !== JSON.stringify([0, 0, 0])
+      || JSON.stringify(rotation?.[finalKey]) !== JSON.stringify([0, 0, 0])) {
+      errors.push(`${name}/${boneName} must start and finish at the neutral pose`);
+    }
+  }
 }
 
 const dropletPath = path.join(packRoots[1], "particles", "holy_water_droplet.particle.json");
@@ -289,20 +327,27 @@ if (itemComponents?.["minecraft:swing_duration"]?.value !== itemComponents?.["mi
 }
 
 const compiledScript = fs.readFileSync(path.join(packRoots[0], "scripts", "main.js"), "utf8");
-if (compiledScript.includes("playAnimation")) {
-  errors.push("Particle restoration must not reintroduce uncalibrated player action animations");
+if (!compiledScript.includes("playAnimation")
+  || !compiledScript.includes("animation.aspergillum.player.load")
+  || !compiledScript.includes("animation.aspergillum.player.sprinkle")) {
+  errors.push("Compiled script must coordinate both stable one-shot player action animations");
 }
 if (!compiledScript.includes("spawnParticle") || !compiledScript.includes("aspergillum:holy_water_droplet")) {
   errors.push("Compiled script must emit the namespaced holy-water droplet particle");
 }
-if (!compiledScript.includes("SPRAY_DROPLET_COUNT = 36")) {
+if (!compiledScript.includes("dropletCount: 36") || !compiledScript.includes("pulseCount: 6")) {
   errors.push("Compiled spray must emit the complete 36-droplet burst");
 }
-if (!compiledScript.includes("horizontalSpread = horizontalUnit * 0.26") || !compiledScript.includes("verticalSpread = 0.035 + verticalBand * 0.055")) {
+if (!compiledScript.includes("horizontalSpread: 0.26")
+  || !compiledScript.includes("verticalCenter: 0.035")
+  || !compiledScript.includes("verticalSpread: 0.055")) {
   errors.push("Compiled spray must retain the wide-horizontal, narrow-vertical fan");
 }
-if (!compiledScript.includes("responsiveness = 0.8") || !compiledScript.includes("maximumTurnDegrees = 30")) {
+if (!compiledScript.includes("steeringResponsiveness: 0.8") || !compiledScript.includes("maximumTurnDegrees: 30")) {
   errors.push("Compiled spray must retain the controlled camera-steering profile");
+}
+if (!compiledScript.includes("transportSprayBasis") || !compiledScript.includes('phase: "reserved"')) {
+  errors.push("Compiled spray must preserve transported steering and reserve-before-release semantics");
 }
 if (!compiledScript.includes("random.splash")) {
   errors.push("Compiled spray must synchronize the water release sound");
@@ -317,6 +362,7 @@ const required = [
   "packs/resource/textures/blocks/aspersorium.png",
   "packs/resource/textures/particle/holy_water.png",
   "packs/resource/models/blocks/aspersorium.rotations.geo.json",
+  "packs/resource/animations/aspergillum.action.animation.json",
   "packs/resource/animations/aspergillum.hold.animation.json",
   "packs/resource/particles/holy_water_droplet.particle.json",
   "packs/resource/render_controllers/aspergillum.render_controllers.json",

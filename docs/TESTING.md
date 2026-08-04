@@ -82,7 +82,7 @@ Antes de testes extensos:
 
 Se o smoke test falhar, interrompa a matriz e capture a menor reprodução possível.
 
-## Baseline v1.0.14
+## Baseline v1.0.15
 
 - [ ] malha real aparece em escala correta nas duas perspectivas;
 - [ ] bound root acompanha integralmente a mão direita;
@@ -101,8 +101,13 @@ Se o smoke test falhar, interrompa a matriz e capture a menor reprodução poss�
 - [ ] Spectator não interage;
 - [ ] troca de item/slot/dimensão durante carga cancela sem alterar recursos;
 - [ ] dois jogadores não carregam simultaneamente no mesmo bloco.
+- [ ] carregamento executa gesto próprio de 0,8 s e confirma a transferência na imersão do tick 10;
+- [ ] aspersão executa gesto próprio de 0,9 s, distinto do ataque vanilla;
+- [ ] trocar de item antes do tick 4 não consome carga nem emite água;
+- [ ] trocar depois do release conserva a carga consumida e cancela apenas pulsos restantes;
+- [ ] atravessar o olhar vertical não inverte subitamente o leque;
 
-É esperado na baseline: gesto vanilla e origem matemática aproximada. Esses fatos são limitações documentadas, não regressões novas.
+Ainda é esperado na baseline: origem matemática aproximada. O locator permanece fora do escopo desta revisão.
 
 ## Matriz final manual
 

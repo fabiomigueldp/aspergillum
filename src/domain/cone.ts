@@ -1,3 +1,5 @@
+import { STANDARD_SPRAY_PROFILE, type SprayProfile } from "./spray-profile";
+
 export interface Vector3 {
   readonly x: number;
   readonly y: number;
@@ -39,11 +41,63 @@ function leastAlignedAxis(direction: Vector3): Vector3 {
   return { x: 0, y: 0, z: 1 };
 }
 
+export interface SprayBasis {
+  readonly forward: Vector3;
+  readonly right: Vector3;
+  readonly up: Vector3;
+}
+
+function length(value: Vector3): number {
+  return Math.hypot(value.x, value.y, value.z);
+}
+
+function subtract(a: Vector3, b: Vector3): Vector3 {
+  return { x: a.x - b.x, y: a.y - b.y, z: a.z - b.z };
+}
+
+function projectOntoPlane(value: Vector3, normal: Vector3): Vector3 {
+  return subtract(value, scale(normal, dot(value, normal)));
+}
+
+function rotateAroundAxis(value: Vector3, axisInput: Vector3, angle: number): Vector3 {
+  const axis = normalize(axisInput);
+  const cosine = Math.cos(angle);
+  const sine = Math.sin(angle);
+  return add(
+    add(scale(value, cosine), scale(cross(axis, value), sine)),
+    scale(axis, dot(axis, value) * (1 - cosine)),
+  );
+}
+
+export function createSprayBasis(forwardInput: Vector3, rightHint?: Vector3): SprayBasis {
+  const forward = normalize(forwardInput);
+  let right = rightHint === undefined ? undefined : projectOntoPlane(rightHint, forward);
+  if (right === undefined || length(right) < 1e-6) {
+    const worldUp = { x: 0, y: 1, z: 0 };
+    const reference = Math.abs(dot(forward, worldUp)) < 0.95 ? worldUp : leastAlignedAxis(forward);
+    right = cross(forward, reference);
+  }
+  right = normalize(right);
+  const up = normalize(cross(right, forward));
+  return { forward, right, up };
+}
+
+export function transportSprayBasis(previous: SprayBasis, nextForwardInput: Vector3): SprayBasis {
+  const nextForward = normalize(nextForwardInput);
+  const cosine = Math.max(-1, Math.min(1, dot(previous.forward, nextForward)));
+  if (cosine > 1 - 1e-6) return createSprayBasis(nextForward, previous.right);
+
+  let axis = cross(previous.forward, nextForward);
+  if (length(axis) < 1e-6) axis = previous.up;
+  const transportedRight = rotateAroundAxis(previous.right, axis, Math.acos(cosine));
+  return createSprayBasis(nextForward, transportedRight);
+}
+
 export function steerDirection(
   previousInput: Vector3,
   targetInput: Vector3,
-  responsiveness = 0.8,
-  maximumTurnDegrees = 30,
+  responsiveness = STANDARD_SPRAY_PROFILE.steeringResponsiveness,
+  maximumTurnDegrees = STANDARD_SPRAY_PROFILE.maximumTurnDegrees,
 ): Vector3 {
   const previous = normalize(previousInput);
   const target = normalize(targetInput);
@@ -70,17 +124,22 @@ export function steerDirection(
   });
 }
 
-export function aspergillumTipOrigin(head: Vector3, direction: Vector3): Vector3 {
-  const view = normalize(direction);
-  const horizontalLength = Math.hypot(view.x, view.z);
-  const right = horizontalLength > 1e-5
-    ? { x: -view.z / horizontalLength, y: 0, z: view.x / horizontalLength }
-    : { x: 1, y: 0, z: 0 };
+export function aspergillumTipOrigin(
+  head: Vector3,
+  direction: Vector3,
+  rightHint?: Vector3,
+  profile: SprayProfile = STANDARD_SPRAY_PROFILE,
+): Vector3 {
+  const basis = createSprayBasis(direction, rightHint);
+  const view = basis.forward;
+  const right = basis.right;
 
   return add(head, {
-    x: view.x * 0.55 + right.x * 0.48,
-    y: -0.15 + view.y * 0.2,
-    z: view.z * 0.55 + right.z * 0.48,
+    x: view.x * profile.forwardOriginOffset + right.x * profile.rightOriginOffset,
+    y: profile.verticalOriginOffset
+      + view.y * profile.pitchedOriginOffset
+      + right.y * profile.rightOriginOffset,
+    z: view.z * profile.forwardOriginOffset + right.z * profile.rightOriginOffset,
   });
 }
 
@@ -98,25 +157,19 @@ export function isInsideCone(
   return cosine >= Math.cos((halfAngleDegrees * Math.PI) / 180);
 }
 
-export function deterministicDropletDirections(direction: Vector3, count = 36): Vector3[] {
-  const forward = normalize(direction);
-  const worldUp: Vector3 = Math.abs(forward.y) > 0.95 ? { x: 1, y: 0, z: 0 } : { x: 0, y: 1, z: 0 };
-  const right = normalize({
-    x: forward.y * worldUp.z - forward.z * worldUp.y,
-    y: forward.z * worldUp.x - forward.x * worldUp.z,
-    z: forward.x * worldUp.y - forward.y * worldUp.x,
-  });
-  const up = normalize({
-    x: right.y * forward.z - right.z * forward.y,
-    y: right.z * forward.x - right.x * forward.z,
-    z: right.x * forward.y - right.y * forward.x,
-  });
+export function deterministicDropletDirections(
+  direction: Vector3,
+  count = STANDARD_SPRAY_PROFILE.dropletCount,
+  rightHint?: Vector3,
+  profile: SprayProfile = STANDARD_SPRAY_PROFILE,
+): Vector3[] {
+  const { forward, right, up } = createSprayBasis(direction, rightHint);
 
   return Array.from({ length: count }, (_, index) => {
     const horizontalUnit = ((((index + 0.5) * 0.6180339887498949) % 1) * 2) - 1;
     const verticalBand = ((index % 6) - 2.5) / 2.5;
-    const horizontalSpread = horizontalUnit * 0.26;
-    const verticalSpread = 0.035 + verticalBand * 0.055;
+    const horizontalSpread = horizontalUnit * profile.horizontalSpread;
+    const verticalSpread = profile.verticalCenter + verticalBand * profile.verticalSpread;
     return normalize(add(forward, add(scale(right, horizontalSpread), scale(up, verticalSpread))));
   });
 }
@@ -130,7 +183,10 @@ export function dropletIndicesForFrame(dropletCount: number, frameCount: number,
   return Array.from({ length: size }, (_, offset) => first + offset);
 }
 
-export function deterministicDropletSpeed(dropletIndex: number): number {
+export function deterministicDropletSpeed(
+  dropletIndex: number,
+  profile: SprayProfile = STANDARD_SPRAY_PROFILE,
+): number {
   if (dropletIndex < 0) return 0;
-  return 12.7 + (dropletIndex % 5) * 0.32;
+  return profile.minimumSpeed + (dropletIndex % profile.speedVariants) * profile.speedStep;
 }

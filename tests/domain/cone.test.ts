@@ -1,12 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
   aspergillumTipOrigin,
+  createSprayBasis,
   deterministicDropletDirections,
   deterministicDropletSpeed,
   dropletIndicesForFrame,
   isInsideCone,
   steerDirection,
+  transportSprayBasis,
 } from "../../src/domain/cone";
+import { STANDARD_SPRAY_PROFILE } from "../../src/domain/spray-profile";
 
 describe("sprinkle cone", () => {
   it("includes targets in front and excludes targets behind or too far away", () => {
@@ -85,5 +88,29 @@ describe("sprinkle cone", () => {
       expect(Math.hypot(tracked.x, tracked.y, tracked.z)).toBeCloseTo(1);
     }
     expect(tracked.z).toBeLessThan(-0.99);
+  });
+
+  it("transports the fan basis through vertical aim without a roll flip", () => {
+    let basis = createSprayBasis({ x: 0, y: 0, z: 1 });
+    let previousRight = basis.right;
+    for (const degrees of [30, 60, 85, 89, 91, 95, 120, 150]) {
+      const radians = degrees * Math.PI / 180;
+      basis = transportSprayBasis(basis, { x: 0, y: Math.sin(radians), z: Math.cos(radians) });
+      expect(Math.hypot(basis.forward.x, basis.forward.y, basis.forward.z)).toBeCloseTo(1);
+      expect(Math.hypot(basis.right.x, basis.right.y, basis.right.z)).toBeCloseTo(1);
+      expect(Math.abs(basis.forward.x * basis.right.x + basis.forward.y * basis.right.y + basis.forward.z * basis.right.z)).toBeLessThan(1e-6);
+      expect(basis.right.x * previousRight.x + basis.right.y * previousRight.y + basis.right.z * previousRight.z).toBeGreaterThan(0.99);
+      previousRight = basis.right;
+    }
+  });
+
+  it("keeps the standard spray profile explicit and internally balanced", () => {
+    expect(STANDARD_SPRAY_PROFILE.id).toBe("standard");
+    expect(STANDARD_SPRAY_PROFILE.dropletCount).toBe(36);
+    expect(STANDARD_SPRAY_PROFILE.pulseCount).toBe(6);
+    expect(STANDARD_SPRAY_PROFILE.releaseDelayTicks).toBe(4);
+    expect(STANDARD_SPRAY_PROFILE.actionDurationTicks).toBe(18);
+    expect(STANDARD_SPRAY_PROFILE.steeringResponsiveness).toBe(0.8);
+    expect(STANDARD_SPRAY_PROFILE.maximumTurnDegrees).toBe(30);
   });
 });

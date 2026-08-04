@@ -37,14 +37,19 @@ src/
 ├── domain/
 │   ├── aspergillum.ts
 │   ├── cone.ts
-│   └── rotation.ts
-└── infrastructure/
-    ├── constants.ts
-    ├── game-mode-policy.ts
-    ├── item-state.ts
-    ├── loading-session.ts
-    ├── messaging.ts
-    └── minecraft-transaction.ts
+│   ├── rotation.ts
+│   └── spray-profile.ts
+├── infrastructure/
+│   ├── action-lease.ts
+│   ├── constants.ts
+│   ├── game-mode-policy.ts
+│   ├── item-state.ts
+│   ├── loading-session.ts
+│   ├── messaging.ts
+│   ├── minecraft-transaction.ts
+│   └── sprinkle-session.ts
+└── presentation/
+    └── animation-coordinator.ts
 ```
 
 Essa estrutura já mantém o domínio testável, mas application e infrastructure ainda acumulam responsabilidades. Não é necessário mover arquivos antes de modificar um caso de uso; a mudança deve pagar por si mesma com uma fronteira, teste ou capacidade concreta.
@@ -97,36 +102,37 @@ Regras de dependência:
 
 1. O custom component do bloco recebe a interação.
 2. Application valida item, capacidade, água e modo.
-3. Uma `LoadingSession` reserva jogador e bloco por dez ticks.
+3. Uma `LoadingSession` e um `ActionLease` reservam jogador e bloco durante o gesto de 16 ticks.
 4. O commit revalida dimensão, slot, `instance_id`, distância, bloco, ocupação e água.
 5. Domain resolve a transferência com política `consume` ou `retain`.
 6. Infrastructure grava item e bloco com rollback defensivo.
 7. Sessão e lock são liberados em sucesso, falha ou cancelamento.
 
-O commit no tick 10 será sincronizado com a futura imersão visual. Consulte [Estado e concorrência](STATE_AND_CONCURRENCY.md).
+O commit no tick 10 coincide com a fase de imersão da animação one-shot. A falha visual não altera o resultado autoritativo. Consulte [Estado e concorrência](STATE_AND_CONCURRENCY.md).
 
 ## Fluxo de aspersão atual
 
 1. `playerSwingStart` aceita apenas Attack/Mine com o item correto.
 2. O domínio verifica carga, cooldown e política do modo.
-3. A carga é consumida/preservada e o cooldown de 18 ticks é iniciado.
-4. A liberação visual começa quatro ticks depois.
-5. Seis pulsos atualizam uma direção suavizada em direção à câmera.
-6. Cada gota passa a simular em world-space; troca de item/dimensão cancela apenas pulsos futuros.
-7. `entityHurt` e `playerBreakBlock` impedem dano e quebra.
+3. Uma `SprinkleSession` e um `ActionLease` reservam a instância sem consumir carga; o cooldown de 18 ticks e o gesto one-shot começam.
+4. No tick 4, item, slot, dimensão, modo e carga são revalidados; somente então a carga é consumida/preservada.
+5. Seis pulsos atualizam direção e base transportada em direção à câmera.
+6. Cada gota passa a simular em world-space; troca de item/dimensão cancela apenas pulsos futuros e não reembolsa um release já confirmado.
+7. Cancelamento anterior ao tick 4 não consome carga nem emite água.
+8. `entityHurt` e `playerBreakBlock` impedem dano e quebra.
 
-O alvo separa reserva no swing e commit no release, mantendo as mesmas garantias de steering. Partículas visuais permanecem independentes de qualquer cone lógico de gameplay futuro.
+Partículas visuais permanecem independentes de qualquer cone lógico de gameplay futuro.
 
 ## Attachable e animação
 
-O contrato atual e os valores numéricos estão em [Contrato visual](VISUAL_CONTRACT.md). A evolução adiciona duas camadas sem alterar `aspergillum_bound`:
+O contrato atual e os valores numéricos estão em [Contrato visual](VISUAL_CONTRACT.md). A v1.0.15 adiciona duas camadas sem alterar `aspergillum_bound`:
 
 - `aspergillum_presentation`: pose estática por perspectiva;
-- `aspergillum_action`: carregar e aspergir ao redor do grip.
+- `aspergillum_action`: raiz neutra das peças `handle` e `sprinkler_head`, preparada para ação/locator.
 
-Timeline-alvo de carregamento (`0.70–0.80 s`): antecipação, avanço/descida, imersão, commit no tick 10, retenção e retorno.
+Timeline de carregamento (`0.80 s`): antecipação, avanço/descida, imersão, commit no tick 10, retenção e retorno.
 
-Timeline-alvo de aspersão (`18 ticks/0.90 s`): preparação 0–2, arco 2–6, água 5–9, follow-through 9–12 e retorno 12–18. O braço conduz o gesto; o item adiciona apenas correção local, evitando rotação duplicada.
+Timeline de aspersão (`18 ticks/0.90 s`): preparação, arco, release no tick 4, follow-through e retorno. As animações one-shot atingem somente `rightarm` e `rightitem`, com `override_previous_animation`; falhas são capturadas pela camada de apresentação sem interferir no estado.
 
 ## Partículas
 
@@ -147,7 +153,7 @@ O docking atual converte carga em água e guarda ocupação booleana. A V1 final
 
 ## Perfis e extensibilidade
 
-O comportamento do spray será externalizado em `SprayProfile`. O perfil `standard` registra quantidade, pulsos, janela, velocidades, dispersão, gravidade, steering e escala. Cosmético (`cosmeticId`) e regulagem (`sprayProfileId`) são IDs separados: aparência não deve mudar física implicitamente.
+O comportamento do spray está externalizado em `SprayProfile`. O perfil `standard` registra quantidade, pulsos, janela, velocidades, dispersão, origem, steering e escala. Cosmético (`cosmeticId`) e regulagem (`sprayProfileId`) continuam IDs separados na evolução do schema.
 
 ## Dependências fixadas
 

@@ -2,12 +2,12 @@
 
 Add-On para Minecraft: Bedrock Edition 26.34/35 que adiciona um **aspersório litúrgico funcional** e uma **caldeirinha (aspersorium) colocável**. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão 1.0.14:** preserva toda a base aprovada da 1.0.13 e devolve ao jogador o controle gestual da rajada: os pulsos acompanham a câmera com direção suavizada e limite angular, formando uma curva fluida em vez de uma quebra brusca.
+> **Versão 1.0.15:** adiciona gestos próprios de carregamento e aspersão sobre a hierarquia comprovada, consome a carga somente no instante físico de liberação e preserva o controle curvo da rajada com uma base estável até em pitches extremos.
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/releases/Aspergillum-1.0.14.mcaddon`](dist/releases/Aspergillum-1.0.14.mcaddon) com o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.0.15.mcaddon`](dist/releases/Aspergillum-1.0.15.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
@@ -18,7 +18,7 @@ O alvo mínimo é Creator `1.26.30`, correspondente à linha pública Bedrock 26
 - Fabrique o **Aspersório** com gravetos e pepitas de ferro.
 - Fabrique a **Caldeirinha** com lingotes de ferro e uma corrente, e coloque-a sobre uma superfície.
 - Use um balde d'água na caldeirinha para enchê-la com três níveis.
-- Com o aspersório na mão, use-o na caldeirinha para carregar até três aspersões. A transferência é confirmada após uma preparação autoritativa de dez ticks; a animação litúrgica própria permanece reservada para a próxima etapa.
+- Com o aspersório na mão, use-o na caldeirinha para carregar até três aspersões. Um gesto próprio conduz o braço para baixo e para a frente; a transferência continua sendo confirmada autoritativamente no tick 10.
 - Use a ação **Atacar/Minar** para aspergir. O gesto não causa dano nem quebra blocos.
 - No modo Criativo, uma carga real já presente não é consumida e a caldeirinha não perde água ao carregar; ao voltar ao Sobrevivência, permanece apenas o número finito de cargas gravado no item.
 - Agache e use o aspersório na caldeirinha para acomodá-lo como decoração. Interaja novamente para retirá-lo.
@@ -30,14 +30,18 @@ As cargas permanecem gravadas no item. Ao acomodá-lo, cargas restantes retornam
 
 - geometria `1.16.0`, primeira versão cujo schema oficial documenta o campo `binding`;
 - raiz sem malha `aspergillum_bound` com `q.item_slot_to_bone_name(context.item_slot)`, preservando exatamente o caminho comprovado na 1.0.7;
-- filho `aspergillum_visual`, no qual ficam exclusivamente a malha e as correções artísticas;
+- filho `aspergillum_presentation`, responsável somente pelas poses aprovadas por perspectiva;
+- filho neutro `aspergillum_action`, com malha separada em `handle` e `sprinkler_head`, preparando locator e VFX sem tocar no binding;
 - malha real de 15,6 unidades autorada ao redor do grip empírico `[-6, 24, 1]`, nove unidades acima da pose da 1.0.8;
 - geometria base `[25, 0, -12]`, correção de apresentação exclusiva da terceira pessoa `position [5, -1.5, -2.25]`/`rotation [10, 0, 0]` e primeira pessoa aprovada preservada sem translação;
-- emissão autoritativa de 36 gotas em seis grupos espaciais contínuos, sincronizada quatro ticks após o ataque e visível no multiplayer;
-- origem aproximada da ponta em `0,55` bloco à frente, `0,48` à direita e `0,15` abaixo dos olhos; cada pulso acompanha novamente a câmera com resposta de 80% e no máximo 30° de giro, produzindo controle contínuo sem estalos;
+- gesto litúrgico one-shot de 18 ticks e carregamento de 16 ticks acionados pela Script API estável sobre `rightarm`/`rightitem`;
+- aspersão reservada no swing e confirmada no tick 4: cancelamento anterior não consome carga e cancelamento posterior não reembolsa;
+- emissão autoritativa de 36 gotas em seis grupos espaciais contínuos, sincronizada ao release e visível no multiplayer;
+- origem aproximada da ponta em `0,55` bloco à frente, `0,48` à direita e `0,15` abaixo dos olhos; inclusive o primeiro pulso parte da direção capturada no início do gesto, com resposta de 80% e no máximo 30° de giro;
+- base lateral transportada paralelamente entre pulsos, evitando inversão do leque ao atravessar o olhar vertical;
 - leque anisotrópico: abertura horizontal máxima aproximada de `14,5°`, vertical máxima inferior a `5,2°`, sem halo circular;
 - gotas legíveis e sempre voltadas para a câmera, com tamanho máximo moderado, sprite radial azul/ciano, material `particles_alpha`, iluminação, gravidade, arrasto e colisão;
-- sem animação litúrgica de ação ou locator nesta etapa; o VFX usa uma origem matemática calibrada e não altera o attachable;
+- sem locator nesta etapa; o VFX mantém a origem matemática calibrada como fallback comprovado até a próxima integração;
 - material opaco `entity`, textura com alfa integral, cubos com espessura positiva e box UV completo nas seis faces;
 - quatro níveis visuais de água e versão decorativa com o aspersório acomodado;
 - rotação visual em 16 direções por estado próprio e geometrias estáveis, sem traits de rotação experimentais;

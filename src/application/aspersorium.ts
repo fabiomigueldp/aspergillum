@@ -7,6 +7,7 @@ import {
   system,
 } from "@minecraft/server";
 import { loadFromAspersorium, MAX_CHARGES } from "../domain/aspergillum";
+import { getActionLease } from "../infrastructure/action-lease";
 import { ASPERSORIUM_BLOCK, DOCKED_STATE, WATER_LEVEL_STATE } from "../infrastructure/constants";
 import { resolvePlayerPolicies } from "../infrastructure/game-mode-policy";
 import {
@@ -27,6 +28,7 @@ import {
 } from "../infrastructure/loading-session";
 import { action } from "../infrastructure/messaging";
 import { commitMainhandAndBlock } from "../infrastructure/minecraft-transaction";
+import { playLoadingAnimation } from "../presentation/animation-coordinator";
 
 function getNumberState(block: Block, state: string): number {
   const value = block.permutation.getAllStates()[state];
@@ -72,30 +74,30 @@ function fillFromBucket(player: Player, block: Block): void {
   action(player, "§bCaldeirinha cheia", "§bAspersorium filled");
 }
 
-function commitLoading(player: Player, session: LoadingSession): void {
-  if (!player.isValid || player.id !== session.playerId) return;
-  if (player.dimension.id !== session.dimensionId || player.selectedSlotIndex !== session.slot) return;
+function commitLoading(player: Player, session: LoadingSession): boolean {
+  if (!player.isValid || player.id !== session.playerId) return false;
+  if (player.dimension.id !== session.dimensionId || player.selectedSlotIndex !== session.slot) return false;
   const block = player.dimension.getBlock(session.blockLocation);
-  if (block === undefined || !block.isValid || block.typeId !== ASPERSORIUM_BLOCK) return;
-  if (!isWithinLoadingRange(player, block) || getBooleanState(block, DOCKED_STATE)) return;
+  if (block === undefined || !block.isValid || block.typeId !== ASPERSORIUM_BLOCK) return false;
+  if (!isWithinLoadingRange(player, block) || getBooleanState(block, DOCKED_STATE)) return false;
 
   const currentItem = getMainhand(player);
-  if (!isAspergillum(currentItem)) return;
-  if (readAspergillumInstanceId(currentItem) !== session.itemInstanceId) return;
+  if (!isAspergillum(currentItem)) return false;
+  if (readAspergillumInstanceId(currentItem) !== session.itemInstanceId) return false;
   const currentLevel = getNumberState(block, WATER_LEVEL_STATE);
-  if (currentLevel <= 0 || currentLevel !== session.expectedWaterLevel) return;
+  if (currentLevel <= 0 || currentLevel !== session.expectedWaterLevel) return false;
 
   const policies = resolvePlayerPolicies(player);
-  if (policies.denied) return;
+  if (policies.denied) return false;
   const result = loadFromAspersorium(readAspergillumState(currentItem), currentLevel, policies.waterPolicy);
-  if (result.transferred === 0) return;
+  if (result.transferred === 0) return false;
 
   const originalPermutation = block.permutation;
   const updatedPermutation = withState(originalPermutation, WATER_LEVEL_STATE, result.nextWater);
   const updatedItem = writeAspergillumState(currentItem, result.state, player);
   if (!commitMainhandAndBlock(player, currentItem, updatedItem, block, originalPermutation, updatedPermutation)) {
     action(player, "§cO carregamento foi cancelado com segurança.", "§cLoading was safely cancelled.");
-    return;
+    return false;
   }
   player.playSound("cauldron.takewater", { pitch: 1.32, volume: 0.78 });
   action(
@@ -103,6 +105,7 @@ function commitLoading(player: Player, session: LoadingSession): void {
     policies.creative ? "§bÁgua benta: ∞ §7• Criativo" : `§b${result.state.charges}§7/3 cargas`,
     policies.creative ? "§bHoly water: ∞ §7• Creative" : `§b${result.state.charges}§7/3 charges`,
   );
+  return true;
 }
 
 function loadItem(player: Player, block: Block): void {
@@ -136,6 +139,7 @@ function loadItem(player: Player, block: Block): void {
     },
     (session) => commitLoading(player, session),
     10,
+    16,
   );
   if (started.status === "player_busy") {
     action(player, "§7O aspersório já está sendo carregado.", "§7The aspergillum is already loading.");
@@ -147,6 +151,7 @@ function loadItem(player: Player, block: Block): void {
   }
 
   player.playSound("armor.equip_chain", { pitch: 1.18, volume: 0.32 });
+  playLoadingAnimation(player);
   action(player, "§7Carregando o aspersório…", "§7Loading the aspergillum…");
 }
 
@@ -179,6 +184,11 @@ export function handleAspersoriumInteraction(event: BlockComponentPlayerInteract
     if (!player.isValid || !event.block.isValid) return;
     const block = event.block;
     const item = getMainhand(player);
+    const activeAction = getActionLease(player.id);
+    if (activeAction !== undefined) {
+      action(player, "§7Aguarde a ação atual terminar.", "§7Wait for the current action to finish.");
+      return;
+    }
     const lockOwner = getLoadingBlockOwner(block.dimension.id, block.location);
     if (lockOwner !== undefined) {
       action(

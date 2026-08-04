@@ -8,7 +8,7 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
-## v1.0.15 — Fundação de animação e semântica de release
+## v1.0.15 — Fundação de animação e semântica de release — implementada
 
 Escopo:
 
@@ -21,7 +21,7 @@ Escopo:
 - suavizar também o primeiro pulso e usar transporte paralelo da base;
 - externalizar constantes em `SprayProfile` (`standard`).
 
-Gate de saída:
+Gate de saída automatizado concluído; validação física pendente:
 
 - primeira pessoa inalterada;
 - cabo permanece no punho durante todo o gesto;

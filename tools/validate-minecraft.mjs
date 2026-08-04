@@ -20,4 +20,28 @@ const result = spawnSync(
 );
 
 if (result.error) throw result.error;
-process.exit(result.status ?? 1);
+if ((result.status ?? 1) !== 0) process.exit(result.status ?? 1);
+
+const csvPath = path.join(reportDirectory, `aspergillum-${version}.csv`);
+if (!fs.existsSync(csvPath)) throw new Error(`Creator Tools did not produce ${csvPath}`);
+const reportLines = fs.readFileSync(csvPath, "utf8").split(/\r?\n/);
+const failures = reportLines.filter((line) => /,"?(?:Error|Failure)"?,/i.test(line));
+const warnings = reportLines.filter((line) => /,"?Warning"?,/i.test(line));
+const knownOfflineLinks = [
+  "`aspergillum:aspersorium`",
+  "`minecraft:iron_nugget`",
+  "`minecraft:stick`",
+  "`minecraft:chain`",
+  "`minecraft:iron_ingot`",
+];
+const unexpectedWarnings = warnings.filter((line) =>
+  !line.includes("Link to item type is not found in this pack")
+  || !knownOfflineLinks.some((identifier) => line.includes(identifier)),
+);
+
+if (failures.length > 0 || unexpectedWarnings.length > 0) {
+  if (failures.length > 0) console.error(`Creator Tools failures:\n${failures.join("\n")}`);
+  if (unexpectedWarnings.length > 0) console.error(`Unexpected Creator Tools warnings:\n${unexpectedWarnings.join("\n")}`);
+  process.exit(1);
+}
+console.log(`Creator Tools report accepted (${warnings.length} known offline link warnings, 0 unexpected warnings).`);

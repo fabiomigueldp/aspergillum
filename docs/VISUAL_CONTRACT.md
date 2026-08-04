@@ -1,14 +1,16 @@
 # Contrato visual congelado
 
-Este documento registra os valores comprovados até a v1.0.14. Eles são baseline, não sugestões de calibração.
+Este documento registra os valores estruturais comprovados até a v1.0.14 e preservados na v1.0.15. Eles são baseline, não sugestões de calibração.
 
 ## Attachable
 
 ```text
 rightItem (holder)
 └── aspergillum_bound
-    └── aspergillum_visual
-        └── malha atual
+    └── aspergillum_presentation
+        └── aspergillum_action
+            ├── handle
+            └── sprinkler_head
 ```
 
 | Propriedade | Valor protegido |
@@ -16,6 +18,8 @@ rightItem (holder)
 | Geometry format | `1.16.0` |
 | Binding | `q.item_slot_to_bone_name(context.item_slot)` |
 | Osso vinculado | `aspergillum_bound`, neutro, sem cubos ou ajuste artístico |
+| Apresentação | `aspergillum_presentation`, poses por perspectiva |
+| Ação | `aspergillum_action`, neutro e centrado no grip |
 | Grip/pivot empírico | `[-6, 24, 1]` |
 | Rotação estrutural | `[25, 0, -12]` |
 | Escala | `1` |
@@ -30,13 +34,13 @@ rightItem (holder)
 ### Regras de mudança
 
 - `aspergillum_bound` recebe somente o binding.
-- Ajuste de perspectiva pertence a `aspergillum_visual` ou à futura `aspergillum_presentation`.
-- Movimento de ação pertence à futura `aspergillum_action`, com pivô no grip.
+- Ajuste de perspectiva pertence a `aspergillum_presentation`.
+- A raiz local de ação é `aspergillum_action`, neutra e com pivô no grip; o gesto atual move os bones do holder.
 - Pivot altera o centro de rotação; não substitui a posição dos vértices.
 - A pose de primeira pessoa não deve ser afetada por correções de terceira pessoa.
 - Não se transplanta pose de tridente, lança ou outra malha vanilla como se fosse universal.
 
-## Spray v1.0.14
+## Spray v1.0.15
 
 | Propriedade | Baseline |
 | --- | --- |
@@ -50,6 +54,8 @@ rightItem (holder)
 | Abertura vertical máxima | inferior a `5.2°` |
 | Velocidade | `12.70–13.98` blocos/s |
 | Cancelamento | troca de item ou dimensão |
+| Release transacional | reserva no tick 0; commit no tick 4 |
+| Base do leque | transporte paralelo entre pulsos |
 
 A curvatura conforme a câmera é intencional e deve ser preservada. Ela oferece controle gestual durante a janela de liberação. O limite angular e a interpolação esférica impedem estalos; partículas já emitidas não mudam de trajetória.
 
@@ -65,7 +71,7 @@ aspergillum_bound          binding, sempre neutro
                 └── locator aspergillum_tip
 ```
 
-Essa hierarquia é planejada. Ela deve ser introduzida incrementalmente e validada após cada camada. `spray_aim` permite que o locator preserve a direção gestual do usuário sem arrastar gotas já emitidas.
+Até `sprinkler_head`, essa hierarquia existe na v1.0.15. `spray_aim` e o locator permanecem planejados para a v1.0.16, permitindo preservar a direção gestual sem arrastar gotas já emitidas.
 
 ## Critérios de aceitação visual
 

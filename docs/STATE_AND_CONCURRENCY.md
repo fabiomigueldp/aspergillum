@@ -65,9 +65,9 @@ Cancelamentos obrigatórios:
 - bloco quebrado, substituído ou ocupado;
 - sessão expirada.
 
-## Aspersão-alvo
+## Aspersão atual
 
-A implementação atual consome a carga ao autorizar o swing e inicia o spray quatro ticks depois. O próximo estágio separará:
+A v1.0.15 separa:
 
 1. **reserva no tick 0**: cria `SprinkleSession` e impede ação concorrente;
 2. **commit no tick 4**: revalida e consome/preserva a carga no instante físico de liberação;
@@ -79,7 +79,7 @@ Semântica:
 - cancelamento depois do release: carga permanece consumida; apenas pulsos futuros são interrompidos;
 - tentativa vazia: feedback seco e cooldown lógico, sem cooldown visual válido e sem água.
 
-Um futuro `ActionLease` unificará exclusão mútua entre carregar, aspergir, acomodar e retirar. Ele substitui Maps dispersos gradualmente, sem reescrever todos os casos de uso de uma vez.
+`ActionLease` já unifica a exclusão entre carregar e aspergir. Docking e undocking serão incorporados quando ganharem snapshots transacionais; a migração continua incremental.
 
 ## Curvatura controlada
 
@@ -91,7 +91,7 @@ A direção deve continuar respondendo à câmera entre pulsos. Isso é um recur
 - somente pulsos futuros respondem; gotas emitidas simulam em world-space;
 - primeira direção também transita desde a orientação capturada no início do gesto.
 
-A evolução recomendada usa transporte paralelo do vetor lateral anterior. Escolher o eixo mundial menos alinhado com o forward fica restrito ao caso degenerado inicial.
+A implementação transporta paralelamente o vetor lateral anterior. O eixo mundial menos alinhado com o forward é usado apenas no caso degenerado inicial.
 
 ## Docking e persistência-alvo
 
