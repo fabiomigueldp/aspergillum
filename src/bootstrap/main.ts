@@ -10,7 +10,11 @@ import {
   system,
   world,
 } from "@minecraft/server";
-import { handleAspersoriumBreak, handleAspersoriumInteraction } from "../application/aspersorium";
+import {
+  handleAspergillumUseOn,
+  handleAspersoriumBreak,
+  handleAspersoriumInteraction,
+} from "../application/aspersorium";
 import { yawToSixteenWayRotation } from "../domain/rotation";
 import {
   cancelWaterSpray,
@@ -63,6 +67,16 @@ const aspergillumUse: ItemCustomComponent = {
         ? "§7Holy water: §b∞ §7• Creative"
         : `§7Charges: §b${state.charges}§7/3 • Attack to sprinkle`,
     );
+  },
+  onUseOn(event) {
+    if (event.block.typeId !== ASPERSORIUM_BLOCK || !(event.source instanceof Player)) return;
+    let isSneaking: boolean;
+    try {
+      isSneaking = event.source.isSneaking;
+    } catch {
+      return;
+    }
+    handleAspergillumUseOn(event.source, event.block, isSneaking);
   },
 };
 

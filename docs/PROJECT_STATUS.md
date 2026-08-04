@@ -2,13 +2,13 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.0.17` (revisão numérica dos packs `[1, 0, 23]`)
+- **Versão de referência:** `1.0.17a` (revisão numérica dos packs `[1, 0, 24]`)
 - **Engine mínima:** Creator `1.26.30`
 - **Script API:** `@minecraft/server` `2.8.0`, estável
 - **Experimentos:** nenhum
 - **Conteúdo:** aspersório funcional, caldeirinha colocável, carregamento, três cargas, docking decorativo e spray visual
 
-A v1.0.17 encerra a dívida estrutural de persistência: itens antigos migram para schema 2, lore é traduzida pelo cliente, IDs duplicados no inventário são reparados e o docking preserva o ItemStack por snapshot persistente. Overflow é recusado, a caldeirinha é imóvel por pistões e quebra/explosão usam recuperação script-side sem duplicar a loot table. A baseline visual da v1.0.16c e o refinamento cromático subsequente permanecem intactos. Esta revisão aguarda QA dentro do Minecraft antes da v1.0.18 Release Candidate.
+A v1.0.17a mantém a persistência da 1.0.17 e corrige seu gate de entrada: usar o aspersório sobre a caldeirinha agora chega tanto pelo `onUseOn` estável do item quanto pelo `onPlayerInteract` do bloco. O agachamento é amostrado no evento, antes do callback diferido, e uma claim curta elimina a possível duplicidade entre as duas rotas. Overflow, snapshots, recuperação, baseline visual e VFX permanecem intactos. Esta revisão aguarda QA dentro do Minecraft antes da v1.0.18 Release Candidate.
 
 ## O que está resolvido
 
@@ -45,11 +45,12 @@ A v1.0.17 encerra a dívida estrutural de persistência: itens antigos migram pa
 | Persistência | registry por chunk é novo | precisa de QA de reload, quebra, explosão e inventário cheio no runtime |
 | Recuperação | `onBreak` estável cobre destruição; água continua não sendo um item | confirmar fisicamente explosão e comandos `destroy` sem duplicação |
 | Schema/lore | migração e `RawMessage` estão implementados | confirmar renderização `%%1/%%2` em clientes pt_BR e en_US |
+| Input de docking | rota dupla `onUseOn` + `onPlayerInteract` implementada | confirmar agachar + usar em teclado/mouse, controle e toque sem execução duplicada |
 | Entrada vanilla | `playerSwingStart` é after-event | alguns dispositivos podem mostrar feedback breve de mineração |
 
 ## Próxima mudança autorizada
 
-A v1.0.17 está implementada e deve passar pelo gate de persistência descrito em [TESTING.md](TESTING.md). Depois da aprovação física, o próximo marco é a v1.0.18 de UX, desempenho e Release Candidate descrita em [ROADMAP.md](ROADMAP.md).
+A v1.0.17a está implementada e deve passar pelo gate de input e persistência descrito em [TESTING.md](TESTING.md). Depois da aprovação física, o próximo marco é a v1.0.18 de UX, desempenho e Release Candidate descrita em [ROADMAP.md](ROADMAP.md).
 
 Não faz parte do próximo marco:
 

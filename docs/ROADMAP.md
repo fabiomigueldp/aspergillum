@@ -173,6 +173,22 @@ Gate de saída:
 - mundos antigos migram sem regressão;
 - schema futuro não é sobrescrito.
 
+## v1.0.17a — Correção do input de docking — implementada; QA físico pendente
+
+Escopo:
+
+- receber uso do aspersório sobre a caldeirinha por `ItemCustomComponent.onUseOn`;
+- capturar a intenção de agachamento durante o dispatch do evento;
+- preservar `onPlayerInteract` como fallback e para balde/mão vazia;
+- deduplicar as duas rotas sem tocar na transação persistente.
+
+Gate de saída:
+
+- agachar + usar acomoda em teclado/mouse, controle e toque;
+- uso normal continua carregando;
+- cada gesto produz no máximo uma operação, uma mensagem e um snapshot;
+- Content Log permanece limpo.
+
 ## v1.0.18 — UX, desempenho e Release Candidate
 
 Escopo:

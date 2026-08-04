@@ -103,13 +103,14 @@ Regras de dependência:
 
 ## Fluxo de carregamento atual
 
-1. O custom component do bloco recebe a interação.
-2. Application valida item, capacidade, água e modo.
-3. Uma `LoadingSession` e um `ActionLease` reservam jogador e bloco durante o gesto de 16 ticks.
-4. O commit revalida dimensão, slot, `instance_id`, distância, bloco, ocupação e água.
-5. Domain resolve a transferência com política `consume` ou `retain`.
-6. Infrastructure grava item e bloco com rollback defensivo.
-7. Sessão e lock são liberados em sucesso, falha ou cancelamento.
+1. Usar o aspersório sobre a caldeirinha entra por `ItemCustomComponent.onUseOn`; o custom component do bloco mantém `onPlayerInteract` para balde, mão vazia e fallback entre dispositivos.
+2. A intenção de carregar ou acomodar captura `isSneaking` sincronicamente e ambas as rotas passam por uma claim curta por jogador/bloco, impedindo commit duplicado.
+3. Application valida item, capacidade, água e modo.
+4. Uma `LoadingSession` e um `ActionLease` reservam jogador e bloco durante o gesto de 16 ticks.
+5. O commit revalida dimensão, slot, `instance_id`, distância, bloco, ocupação e água.
+6. Domain resolve a transferência com política `consume` ou `retain`.
+7. Infrastructure grava item e bloco com rollback defensivo.
+8. Sessão e lock são liberados em sucesso, falha ou cancelamento.
 
 O commit no tick 10 coincide com a fase de imersão da animação one-shot. A falha visual não altera o resultado autoritativo. Consulte [Estado e concorrência](STATE_AND_CONCURRENCY.md).
 

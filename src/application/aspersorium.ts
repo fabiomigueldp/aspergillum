@@ -41,6 +41,29 @@ import { action } from "../infrastructure/messaging";
 import { commitMainhandAndBlock } from "../infrastructure/minecraft-transaction";
 import { playLoadingAnimation } from "../presentation/animation-coordinator";
 
+type AspersoriumInteractionIntent = "load" | "dock";
+
+const INTERACTION_DEDUPE_TICKS = 2;
+const interactionClaims = new Map<string, number>();
+
+function interactionClaimKey(player: Player, block: Block): string {
+  const { x, y, z } = block.location;
+  return `${player.id}|${block.dimension.id}|${x},${y},${z}`;
+}
+
+function claimAspersoriumInteraction(player: Player, block: Block): boolean {
+  const key = interactionClaimKey(player, block);
+  const tick = system.currentTick;
+  const previousTick = interactionClaims.get(key);
+  if (previousTick !== undefined && tick - previousTick <= INTERACTION_DEDUPE_TICKS) return false;
+
+  interactionClaims.set(key, tick);
+  system.runTimeout(() => {
+    if (interactionClaims.get(key) === tick) interactionClaims.delete(key);
+  }, INTERACTION_DEDUPE_TICKS + 1);
+  return true;
+}
+
 function getNumberState(block: Block, state: string): number {
   const value = block.permutation.getAllStates()[state];
   return typeof value === "number" ? value : 0;
@@ -281,13 +304,14 @@ export function handleAspersoriumBreak(event: BlockComponentBlockBreakEvent): vo
   });
 }
 
-export function handleAspersoriumInteraction(event: BlockComponentPlayerInteractEvent): void {
-  const player = event.player;
-  if (player === undefined) return;
-
+function scheduleAspersoriumInteraction(
+  player: Player,
+  block: Block,
+  intent: AspersoriumInteractionIntent,
+): void {
+  if (!claimAspersoriumInteraction(player, block)) return;
   system.run(() => {
-    if (!player.isValid || !event.block.isValid || event.block.typeId !== ASPERSORIUM_BLOCK) return;
-    const block = event.block;
+    if (!player.isValid || !block.isValid || block.typeId !== ASPERSORIUM_BLOCK) return;
     const item = getMainhand(player);
     const activeAction = getActionLease(player.id);
     if (activeAction !== undefined) {
@@ -318,10 +342,30 @@ export function handleAspersoriumInteraction(event: BlockComponentPlayerInteract
       return;
     }
     if (isAspergillum(item)) {
-      if (player.isSneaking) dockItem(player, block);
+      if (intent === "dock") dockItem(player, block);
       else loadItem(player, block);
       return;
     }
     action(player, "§7Use um balde d'água ou o aspersório.", "§7Use a water bucket or the aspergillum.");
   });
+}
+
+export function handleAspergillumUseOn(player: Player, block: Block, isSneaking: boolean): void {
+  if (block.typeId !== ASPERSORIUM_BLOCK) return;
+  scheduleAspersoriumInteraction(player, block, isSneaking ? "dock" : "load");
+}
+
+export function handleAspersoriumInteraction(event: BlockComponentPlayerInteractEvent): void {
+  const player = event.player;
+  if (player === undefined || event.block.typeId !== ASPERSORIUM_BLOCK) return;
+
+  // Capture the input intent while the engine event is being dispatched. Reading
+  // isSneaking only in the deferred callback races the player's next input state.
+  let isSneaking: boolean;
+  try {
+    isSneaking = player.isSneaking;
+  } catch {
+    return;
+  }
+  scheduleAspersoriumInteraction(player, event.block, isSneaking ? "dock" : "load");
 }

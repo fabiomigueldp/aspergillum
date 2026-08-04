@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.17a — 2026-08-04
+
+- corrigido o docking que podia não receber nenhuma interação ao agachar e usar o aspersório na caldeirinha;
+- adicionado `ItemCustomComponent.onUseOn`, rota estável específica para o item usado sobre o bloco, sem remover o fallback `onPlayerInteract` do custom component da caldeirinha;
+- a intenção carregar/acomodar agora captura `Player.isSneaking` sincronicamente durante o evento, evitando que a leitura diferida observe outro estado de input;
+- ambas as rotas convergem no mesmo dispatcher e usam uma claim curta por jogador/bloco para impedir execução duplicada quando o runtime emite os dois eventos;
+- preservados integralmente snapshots, overflow, cargas, animações, partículas, poses e todos os identificadores públicos;
+- o rótulo distribuído é `1.0.17a`; a revisão monotônica dos packs é `[1,0,24]`.
+
 ## 1.0.17 — 2026-08-04
 
 - introduzido schema 2 para itens, preservando cargas finitas e adicionando `cosmetic_id`, `spray_profile_id` e migração real de schemas ausente/0/1;

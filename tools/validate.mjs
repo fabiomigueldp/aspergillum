@@ -424,6 +424,11 @@ if (!compiledScript.includes("getDynamicPropertyIds")
   || !compiledScript.includes("onBreak")) {
   errors.push("Compiled script must preserve custom metadata, localized lore migration, and break recovery");
 }
+if (!compiledScript.includes("onUseOn")
+  || !compiledScript.includes("handleAspergillumUseOn")
+  || !compiledScript.includes("claimAspersoriumInteraction")) {
+  errors.push("Compiled docking input must route stable item use-on and deduplicate it against block interaction");
+}
 
 for (const locale of ["pt_BR", "en_US"]) {
   const lang = fs.readFileSync(path.join(packRoots[1], "texts", `${locale}.lang`), "utf8");

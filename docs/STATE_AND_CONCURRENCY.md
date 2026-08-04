@@ -121,6 +121,8 @@ Prioridade de interação:
 4. livre + aspersório + agachado acomoda;
 5. livre + aspersório normal carrega.
 
+O input do aspersório sobre o bloco possui duas portas estáveis que convergem nessa mesma prioridade: `ItemCustomComponent.onUseOn` é a rota primária do item e `BlockCustomComponent.onPlayerInteract` permanece como fallback e como rota de balde/mão vazia. A intenção de agachamento é capturada antes de `system.run`; uma claim efêmera de dois ticks por jogador, dimensão e coordenada impede que os dois eventos executem a mesma operação duas vezes.
+
 Ocupado com outro item na mão não retira nada; a interface solicita mão vazia. A loot table ocupada não fornece um aspersório genérico: `onBreak` restaura o snapshot, evitando duplicação e preservando metadados. Blocos ocupados legados sem snapshot recuperam um item V2 vazio como fallback compatível.
 
 ## Schema 2 implementado

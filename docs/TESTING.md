@@ -68,6 +68,15 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 - quebra, explosão, reload e limpeza de snapshot;
 - pistão recusado ou registro movido de forma íntegra.
 
+## Gate de input v1.0.17a
+
+- [ ] com caldeirinha livre, segurar o aspersório, agachar e usar acomoda o item e remove-o da mão;
+- [ ] a confirmação “Aspersório acomodado na caldeirinha” aparece exatamente uma vez;
+- [ ] usar sem agachar continua iniciando o carregamento e nunca acomoda acidentalmente;
+- [ ] mão vazia numa caldeirinha ocupada retira exatamente um item preservado;
+- [ ] repetir em teclado/mouse, controle e toque quando disponíveis;
+- [ ] Content Log não registra erro de `onUseOn`, custom component ou acesso a `isSneaking`.
+
 ## Gate de persistência v1.0.17
 
 - [ ] item antigo/schema 1 mantém carga e recebe lore traduzida após entrar no inventário;
