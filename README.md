@@ -7,7 +7,7 @@ Add-On para Minecraft: Bedrock Edition 26.34/35 que adiciona um **aspersório li
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/Aspergillum-1.0.14.mcaddon`](dist/Aspergillum-1.0.14.mcaddon) com o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.0.14.mcaddon`](dist/releases/Aspergillum-1.0.14.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
@@ -78,9 +78,12 @@ src/bootstrap/        registro único de componentes e eventos
 tests/                testes unitários sem dependência do jogo
 tools/                geração, validação e empacotamento
 assets-src/           referências de produção não distribuídas
+docs/                 estado, contratos, arquitetura, roadmap, QA e release
+dist/releases/        pacotes e hashes gerados (ignorados pelo Git)
+dist/validation/      relatórios oficiais por versão (ignorados pelo Git)
 ```
 
-Veja também [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) e [`docs/TESTING.md`](docs/TESTING.md).
+Comece pelo [índice da documentação](docs/README.md), pelo [estado atual](docs/PROJECT_STATUS.md) e pelo [roadmap da V1](docs/ROADMAP.md).
 
 ## Limite conhecido da plataforma
 

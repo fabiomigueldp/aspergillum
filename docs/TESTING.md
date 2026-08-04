@@ -1,95 +1,175 @@
-# Plano de testes
+# Estratégia de testes e QA
 
-## Testes automatizados
+## Princípio
 
-`npm run check` cobre:
+Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
 
-- tipos da Script API estável;
-- transições de carga e cooldown;
-- limites e normalização do estado persistente;
-- geometria matemática do cone e dispersão determinística;
-- sintaxe e referências essenciais dos packs;
-- dimensões válidas dos PNGs;
-- bundle JavaScript ESM;
-- schemas, manifests, geometrias, animações, partículas e compatibilidade estrita pelo Minecraft Creator Tools.
+## Pipeline automatizado
 
-## Checklist dentro do Minecraft
+`npm run check` deve cobrir:
 
-O teste físico ainda é obrigatório porque entrada, câmera e feedback vanilla variam por plataforma.
+- TypeScript contra `@minecraft/server` estável fixado;
+- testes unitários do domínio;
+- links e invariantes básicos da documentação;
+- geração determinística de assets;
+- bundle ESM;
+- sintaxe, referências, manifests, geometrias, animações, partículas e PNGs.
 
-### Critério exclusivo da versão 1.0.14
+`npm run package` também cria o `.mcaddon`, SHA-256 e relatórios oficiais em `dist/validation/<versão>/`.
 
-- [ ] ao selecionar o item, aparece a malha real em escala reduzida;
-- [ ] em terceira pessoa, o centro do cabo escuro atravessa o centro do punho direito após `position [5, -1.5, -2.25]`;
-- [ ] em terceira pessoa, a cabeça aponta para frente e para fora com pose efetiva próxima de `[35, 0, -12]`, sem ficar atrás da manga;
-- [ ] um ataque vanilla leva a malha junto com a mão sem arco orbital remoto;
-- [ ] em primeira pessoa, o cabo fica na região inferior direita e a cabeça aparece acima/à frente, sem inversão;
-- [ ] trocar de primeira para terceira pessoa não produz um frame de pose errada ou salto persistente;
-- [ ] nenhuma face da cabeça desaparece em órbita frontal, lateral ou traseira;
-- [ ] cada carga produz uma única rajada contínua, sem aparecer como uma nuvem instantânea;
-- [ ] aproximadamente 36 gotas azul/ciano, bem legíveis mas sem crescer excessivamente junto à câmera, aparecem por aspersão;
-- [ ] a liberação começa perto do avanço do swing e o som de splash coincide com as primeiras gotas;
-- [ ] em primeira e terceira pessoa, a origem permanece próxima do lado direito/ponta visual e não no centro do tórax ou nos pés;
-- [ ] as gotas formam um leque horizontal, não um halo, anel, círculo, domo ou nuvem em torno da mira;
-- [ ] a largura horizontal é claramente maior que a altura vertical, preservando alcance, gravidade e colisão;
-- [ ] a emissão parte aproximadamente da cabeça visível do instrumento, à direita e à frente, sem nascer no rosto, torso ou pés;
-- [ ] as gotas permanecem legíveis de frente, de lado e durante a queda, sem ficarem finas ou desaparecerem conforme o ângulo da câmera;
-- [ ] girar a câmera lentamente durante a rajada curva o leque de maneira contínua e controlável;
-- [ ] um giro rápido produz transição limitada, sem salto instantâneo, inversão ou vetor inválido;
-- [ ] manter a câmera imóvel preserva uma trajetória reta e repetível;
-- [ ] trocar de item ou dimensão cancela os pulsos restantes;
-- [ ] não aparece animação litúrgica própria — ela continua fora do escopo desta revisão;
-- [ ] em Sobrevivência e Aventura, cada aspersão consome exatamente uma carga;
-- [ ] em Criativo, uma carga finita já presente permite aspersões sem consumo e o carregamento não reduz a água da caldeirinha;
-- [ ] um aspergillum com zero cargas continua sem emitir água no Criativo;
-- [ ] ao voltar do Criativo ao Sobrevivência, reaparece exatamente a quantidade finita anteriormente preservada;
-- [ ] trocar de slot, item, dimensão ou modo durante os dez ticks cancela o carregamento sem alterar item ou água;
-- [ ] duas pessoas não conseguem iniciar carregamento simultâneo na mesma caldeirinha;
+## Cobertura automatizada a expandir
 
-### Instalação e conteúdo
+### Cargas e políticas
 
-- [ ] remover dos Armazenamentos do Minecraft os dois packs de desenvolvimento anteriores antes de importar uma revisão;
-- [ ] importar o `.mcaddon` sem erro;
-- [ ] ativar apenas o Behavior Pack e confirmar carregamento automático do Resource Pack;
-- [ ] abrir mundo sem experimentos;
-- [ ] encontrar os dois objetos no inventário criativo;
-- [ ] fabricar ambas as receitas em sobrevivência.
+- todas as 16 combinações de carga/água (`0..3 × 0..3`);
+- normalização de negativos, frações, `NaN`, infinito, strings e valores acima do máximo;
+- Survival/Adventure consomem; Creative retém; Spectator nega;
+- zero cargas nunca asperge, inclusive em Creative;
+- carga Creative parcial permanece parcial ao voltar a Survival;
+- cálculo de load soma sobre o valor normalizado.
 
-### Caldeirinha
+### Identidade e schema
 
-- [ ] colocar em bloco completo, laje, mesa de outro add-on e pedestal;
-- [ ] confirmar rotação em 16 direções;
-- [ ] encher com balde em sobrevivência e criativo;
-- [ ] confirmar níveis 3 → 2 → 1 → 0 ao carregar;
-- [ ] agachar + usar para acomodar;
-- [ ] retirar com mão vazia e com inventário cheio;
-- [ ] quebrar vazia, cheia e com aspersório acomodado;
-- [ ] testar dois jogadores carregando simultaneamente.
+- item bruto e schema ausente;
+- migração `0 → 2` e `1 → 2`;
+- schema 2 normalizado;
+- schema futuro preservado e sinalizado;
+- clone de atualização preserva ID e propriedades;
+- cópia independente recebe novo ID;
+- lore `RawMessage` regenerada.
 
-### Aspersão
+### Sessões e concorrência
 
-- [ ] ataque no ar, em entidade e contra bloco;
-- [ ] confirmar ausência de dano, knockback e quebra;
-- [ ] conferir gesto vazio, cooldown e consumo exato;
-- [ ] inspecionar origem, leque, queda e colisão das gotas;
-- [ ] verificar primeira e terceira pessoa;
-- [ ] correr, agachar, nadar, voar e usar elytra durante o gesto;
-- [ ] trocar de slot, morrer, desconectar ou mudar de dimensão durante a animação.
+- item A inicia e item B ocupa o slot;
+- troca de slot, dimensão, modo, distância, morte e saída;
+- bloco quebrado, substituído, esvaziado ou ocupado;
+- duas tentativas do mesmo jogador;
+- dois jogadores no mesmo bloco;
+- rollback na falha da primeira e da segunda escrita;
+- cleanup e expiração de sessões/locks.
 
-### Plataformas e gráficos
+### Aspersão e matemática
 
-- [ ] mouse e teclado;
-- [ ] controle;
-- [ ] toque clássico e controles novos;
-- [ ] personagem canhoto;
-- [ ] FOV mínimo e máximo;
+- reserva, commit no release e cancelamento pré/pós-release;
+- cooldown vazio versus cooldown válido;
+- 36 gotas, seis pulsos e valores finitos;
+- leque horizontal simétrico e vertical limitado;
+- slerp pelo menor arco, resposta e limite angular;
+- primeiro pulso suavizado;
+- transporte paralelo sem flip em olhar vertical;
+- partículas emitidas não mudam com a câmera;
+- troca de item/dimensão cancela apenas pulsos futuros.
+
+### Docking
+
+- overflow recusado;
+- nome, ID, cosmético, perfil e propriedades preservados;
+- retirada com inventário cheio;
+- quebra, explosão, reload e limpeza de snapshot;
+- pistão recusado ou registro movido de forma íntegra.
+
+## Smoke test por revisão
+
+Antes de testes extensos:
+
+1. remover packs antigos e fechar o jogo;
+2. importar o `.mcaddon` exato da revisão;
+3. criar mundo sem experimentos;
+4. executar `/function aspergillum/dev_kit`;
+5. confirmar item, bloco, receitas e Content Log sem erro;
+6. preencher, carregar, aspergir três vezes, tentar vazio, acomodar, retirar e quebrar;
+7. repetir uma vez em primeira pessoa e uma vez em terceira pessoa.
+
+Se o smoke test falhar, interrompa a matriz e capture a menor reprodução possível.
+
+## Baseline v1.0.14
+
+- [ ] malha real aparece em escala correta nas duas perspectivas;
+- [ ] bound root acompanha integralmente a mão direita;
+- [ ] cabo atravessa o punho em terceira pessoa com pose efetiva `[35, 0, -12]`;
+- [ ] primeira pessoa mantém posição inferior direita e não bloqueia a mira;
+- [ ] nenhuma face desaparece durante órbita completa;
+- [ ] cada ação válida emite uma única rajada de aproximadamente 36 gotas;
+- [ ] leque é mais largo horizontalmente e não forma halo/domo;
+- [ ] câmera lenta durante a emissão curva os pulsos de forma suave e controlável;
+- [ ] giro rápido fica limitado, sem estalo, inversão ou vetor inválido;
+- [ ] câmera imóvel produz trajetória reta e repetível;
+- [ ] gotas já emitidas não giram com a câmera;
+- [ ] troca de item/dimensão cancela pulsos futuros;
+- [ ] Survival/Adventure consomem exatamente uma carga;
+- [ ] Creative preserva carga real e água, mas zero continua vazio;
+- [ ] Spectator não interage;
+- [ ] troca de item/slot/dimensão durante carga cancela sem alterar recursos;
+- [ ] dois jogadores não carregam simultaneamente no mesmo bloco.
+
+É esperado na baseline: gesto vanilla e origem matemática aproximada. Esses fatos são limitações documentadas, não regressões novas.
+
+## Matriz final manual
+
+### Modelos e câmera
+
+- [ ] Steve/wide, Alex/slim e Persona;
+- [ ] primeira pessoa, terceira traseira, frontal e lateral exata;
+- [ ] FOV mínimo, padrão e máximo;
+- [ ] 16:9, ultrawide e tela mobile;
+- [ ] mão canhota, se suportada pela configuração testada.
+
+### Movimento
+
+- [ ] repouso, caminhada, corrida, agachamento e salto;
+- [ ] voo, queda, natação, elytra e montaria;
+- [ ] carregar/aspergir olhando horizontalmente, verticalmente e em diagonais;
+- [ ] girar câmera lenta e rapidamente durante os pulsos.
+
+### Bloco e inventário
+
+- [ ] colocar em bloco, laje, mesa e pedestal; validar 16 rotações;
+- [ ] níveis de água 0, 1, 2 e 3;
+- [ ] acomodar/retirar repetidamente com nome e propriedades;
+- [ ] overflow recusado sem perda;
+- [ ] inventário cheio;
+- [ ] quebrar vazio, cheio e ocupado;
+- [ ] explosão, reload e tentativa de pistão.
+
+### Gameplay e ciclo de vida
+
+- [ ] ataque no ar, entidade e bloco sem dano, knockback ou quebra;
+- [ ] Survival, Adventure, Creative, Spectator e troca de modo carregado;
+- [ ] troca de slot, morte, respawn, logout e mudança de dimensão em cada fase;
+- [ ] dois jogadores no mesmo bloco e aspersões simultâneas;
+- [ ] mundo local, multiplayer e Realm quando disponível.
+
+### Plataforma e desempenho
+
+- [ ] mouse/teclado, controle e toque;
 - [ ] gráficos convencionais e Vibrant Visuals;
-- [ ] celular de baixo desempenho, console e PC;
-- [ ] mundo local, multiplayer e Realm.
+- [ ] PC, console e celular de baixo desempenho;
+- [ ] 1, 4, 8 e 16 jogadores: medir profiler antes de criar LOD;
+- [ ] nenhuma emissão duplicada, vazamento de sessão ou crescimento persistente de registry.
 
-## Diagnóstico
+## QA específico de animação
 
-Ative o Content Log nas configurações de Creator. Com cheats, use:
+- [ ] carregamento conduz a cabeça para baixo/frente e confirma no tick de imersão;
+- [ ] aspersão dura 18 ticks, tem preparação, arco, release, follow-through e retorno;
+- [ ] braço e item começam/terminam juntos sem duplicar rotações;
+- [ ] cabeça nunca cruza rosto, ombro, tórax ou câmera;
+- [ ] cancelar antes do release não consome; depois do release não reembolsa;
+- [ ] vazio toca feedback seco e nunca aciona partículas.
+
+## QA específico de locator/VFX
+
+- [ ] origem fica a no máximo `0.10` bloco da ponta renderizada;
+- [ ] primeira e terceira pessoa usam origem correta;
+- [ ] locator acompanha a ação, mas partículas emitidas ficam em world-space;
+- [ ] steering entre pulsos é preservado;
+- [ ] nenhuma gota nasce atrás do jogador ou dentro do corpo;
+- [ ] tamanho próximo à câmera permanece menor que a cabeça do avatar;
+- [ ] sprites alongados alinham-se à velocidade;
+- [ ] micro-splash é discreto e não duplica gameplay.
+
+## Content Log e profiler
+
+Com cheats:
 
 ```text
 /function aspergillum/dev_kit
@@ -98,6 +178,23 @@ Ative o Content Log nas configurações de Creator. Com cheats, use:
 /script profiler stop
 ```
 
-O Content Log preserva mensagens antigas durante a sessão. Antes de validar uma correção, feche completamente o jogo, remova os dois packs antigos em **Configurações → Armazenamento**, importe a nova versão e limpe o Content Log. Se ainda aparecer `q.particle_age`, `q.is_swinging` ou `controller.render.item_default`, o jogo carregou uma cópia antiga do Resource Pack: essas expressões não existem mais nos arquivos atuais.
+Limpe o histórico antes de cada revisão. Mensagens antigas como `q.particle_age`, `q.is_swinging` ou `controller.render.item_default` indicam pack antigo: essas expressões não existem na baseline atual.
 
-Erros devem ser registrados com versão do jogo, plataforma, esquema de controle, perspectiva, passos mínimos e trecho correspondente do Content Log.
+## Formato mínimo do relatório
+
+```text
+Add-on: 1.0.x
+Minecraft/plataforma:
+Controle/FOV/modelo:
+Perspectiva e modo:
+Artefato/hash:
+Pré-condição:
+Passos mínimos:
+Esperado:
+Observado:
+Timestamp/screenshot:
+Content Log:
+Reproduzibilidade:
+```
+
+Vídeo ajuda a medir pose e sincronização; o Content Log ajuda a identificar parsing/recursos; o pacote e seu hash provam qual artefato foi testado. Os três tipos de evidência se complementam.

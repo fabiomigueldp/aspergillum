@@ -1,5 +1,7 @@
 # Investigação do attachable empunhado
 
+> Documento histórico de investigação. Para o contrato vigente, consulte [Contrato visual](VISUAL_CONTRACT.md); para o estado real da versão atual, consulte [Estado do projeto](PROJECT_STATUS.md). Hipóteses intermediárias abaixo não substituem a baseline comprovada.
+
 ## Evidência e correção de hipótese
 
 Os testes físicos das versões 1.0.4 e 1.0.5 mostraram que tornar a geometria semelhante ao tridente não torna seus referenciais intercambiáveis. Na 1.0.5, o modelo passou a aparecer em primeira pessoa, mas ficou enorme, sofreu clipping no plano próximo e permaneceu visualmente desacoplado do punho em terceira pessoa.

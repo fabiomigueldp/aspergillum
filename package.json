@@ -15,9 +15,10 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "validate": "node tools/validate.mjs",
+    "validate:docs": "node tools/validate-docs.mjs",
     "validate:mcaddon": "node tools/validate-minecraft.mjs",
     "package": "npm run build && node tools/package.mjs && npm run validate:mcaddon",
-    "check": "npm run typecheck && npm test && npm run build"
+    "check": "npm run typecheck && npm test && npm run validate:docs && npm run build"
   },
   "devDependencies": {
     "@minecraft/creator-tools": "0.17.7",

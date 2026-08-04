@@ -3,7 +3,8 @@ import path from "node:path";
 
 const root = path.resolve(import.meta.dirname, "..");
 const targets = [
-  "dist",
+  "dist/releases",
+  "dist/validation",
   "packs/behavior/scripts/main.js",
   "packs/behavior/pack_icon.png",
   "packs/resource/pack_icon.png",

@@ -5,8 +5,8 @@ import path from "node:path";
 const root = path.resolve(import.meta.dirname, "..");
 const { version } = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
 const cli = path.join(root, "node_modules", "@minecraft", "creator-tools", "cli", "index.mjs");
-const addon = path.join(root, "dist", `Aspergillum-${version}.mcaddon`);
-const reportDirectory = path.join(root, "dist", "validation");
+const addon = path.join(root, "dist", "releases", `Aspergillum-${version}.mcaddon`);
+const reportDirectory = path.join(root, "dist", "validation", version);
 
 if (!reportDirectory.startsWith(`${root}${path.sep}`)) {
   throw new Error(`Refusing to clean validation reports outside the workspace: ${reportDirectory}`);

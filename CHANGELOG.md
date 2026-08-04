@@ -1,5 +1,15 @@
 # Changelog
 
+## Não publicado — organização e documentação
+
+- consolidado o estado real da v1.0.14, separando baseline comprovada, limitações atuais e arquitetura-alvo;
+- formalizados os contratos congelados de binding, poses, escala, estado e curvatura controlada da rajada;
+- criado roadmap incremental da v1.0.15 à v1.0.18, com gates, riscos e Definition of Done da V1;
+- documentadas políticas de carga por modo, identidade, sessões, release point, docking persistente, schema 2 e concorrência;
+- ampliada a estratégia de testes automatizados e a matriz manual de release;
+- organizados pacotes em `dist/releases/`, relatórios em `dist/validation/<versão>/` e pesquisa local em `.research/`;
+- adicionados `AGENTS.md`, índice documental, referências, lições aprendidas e validação automática de links/documentos.
+
 ## 1.0.14 — 2026-08-03
 
 - restaurado o acompanhamento da câmera entre os seis pulsos da aspersão, recuperando a sensação de condução e controle solicitada após o teste da 1.0.13;

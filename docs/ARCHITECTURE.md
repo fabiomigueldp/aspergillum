@@ -1,61 +1,161 @@
 # Arquitetura
 
-## Decisões permanentes
+## Visão geral
+
+O projeto separa regras puras, coordenação de casos de uso e integração Bedrock. A migração para a arquitetura-alvo é incremental: o layout atual continua válido enquanto cada caso de uso ganha limites mais explícitos.
+
+```text
+Entrada Bedrock
+    │
+    ▼
+bootstrap ──► application ──► domain
+                   │
+                   ├──► infrastructure (item, bloco, mundo, sessões)
+                   └──► presentation (mensagens, som, animação, VFX — alvo)
+```
+
+O servidor é autoritativo para carga, água, cooldown e permissões. Resource Pack, attachable, animações e partículas representam o resultado, mas nunca concedem estado.
+
+## Identificadores e compatibilidade
 
 - Namespace: `aspergillum`.
-- Item funcional: `aspergillum:aspergillum`.
-- Bloco colocável: `aspergillum:aspersorium`.
-- Estados persistentes do bloco: `aspergillum:water_level` e `aspergillum:has_aspergillum`.
-- Estado visual de colocação: `aspergillum:rotation`, com 16 setores definidos por script estável.
-- Propriedades persistentes do item: `aspergillum:charges`, `aspergillum:schema_version` e a identidade única `aspergillum:instance_id`.
-- UUIDs dos manifests não devem ser alterados após publicação.
-- Nenhum arquivo vanilla é sobrescrito.
-- Nenhuma API `beta`, preview ou feature experimental é usada.
+- Item: `aspergillum:aspergillum`.
+- Bloco: `aspergillum:aspersorium`.
+- Block states: `aspergillum:water_level`, `aspergillum:has_aspergillum`, `aspergillum:rotation`.
+- Item properties: `aspergillum:charges`, `aspergillum:schema_version`, `aspergillum:instance_id`.
+- UUIDs, identifiers públicos e states publicados permanecem estáveis.
+- Nenhum conteúdo vanilla é sobrescrito; nenhuma feature experimental é requisito.
 
-## Fluxo de carregamento
+## Estrutura atual
+
+```text
+src/
+├── bootstrap/main.ts
+├── application/
+│   ├── aspersorium.ts
+│   └── sprinkle.ts
+├── domain/
+│   ├── aspergillum.ts
+│   ├── cone.ts
+│   └── rotation.ts
+└── infrastructure/
+    ├── constants.ts
+    ├── game-mode-policy.ts
+    ├── item-state.ts
+    ├── loading-session.ts
+    ├── messaging.ts
+    └── minecraft-transaction.ts
+```
+
+Essa estrutura já mantém o domínio testável, mas application e infrastructure ainda acumulam responsabilidades. Não é necessário mover arquivos antes de modificar um caso de uso; a mudança deve pagar por si mesma com uma fronteira, teste ou capacidade concreta.
+
+## Arquitetura-alvo
+
+```text
+src/
+├── domain/
+│   ├── charges.ts
+│   ├── charge-policy.ts
+│   ├── load-resolution.ts
+│   ├── docking-resolution.ts
+│   ├── cooldown.ts
+│   └── spray-profile.ts
+├── application/
+│   ├── load-aspergillum.ts
+│   ├── sprinkle.ts
+│   ├── dock-aspergillum.ts
+│   ├── undock-aspergillum.ts
+│   └── initialize-aspergillum.ts
+├── infrastructure/
+│   ├── item-state-repository.ts
+│   ├── loading-session-repository.ts
+│   ├── action-lease-repository.ts
+│   ├── cooldown-repository.ts
+│   ├── docked-item-registry.ts
+│   ├── game-mode-policy.ts
+│   └── minecraft-transaction.ts
+├── presentation/
+│   ├── messages.ts
+│   ├── sounds.ts
+│   ├── animation-coordinator.ts
+│   └── spray-coordinator.ts
+└── bootstrap/
+    ├── components.ts
+    ├── events.ts
+    └── main.ts
+```
+
+Regras de dependência:
+
+- Domain não conhece Minecraft API, timers, áudio ou partículas.
+- Application depende de interfaces e coordena uma operação autoritativa.
+- Infrastructure implementa leitura/escrita e ciclo de vida da plataforma.
+- Presentation contém somente feedback; não muda carga ou água.
+- Bootstrap registra e conecta dependências; não vira um “god file”.
+
+## Fluxo de carregamento atual
 
 1. O custom component do bloco recebe a interação.
-2. A aplicação verifica item, água e capacidade.
-3. O feedback de preparação começa e uma sessão exclusiva reserva o jogador e a coordenada da caldeirinha.
-4. Dez ticks depois, jogador, dimensão, slot, `instance_id`, bloco, ocupação, água e distância são revalidados.
-5. A transferência é resolvida pela política do modo de jogo e confirmada de forma autoritativa.
-6. Item e bloco são gravados por um helper coordenado com rollback defensivo; a sessão e o lock são liberados em qualquer término.
+2. Application valida item, capacidade, água e modo.
+3. Uma `LoadingSession` reserva jogador e bloco por dez ticks.
+4. O commit revalida dimensão, slot, `instance_id`, distância, bloco, ocupação e água.
+5. Domain resolve a transferência com política `consume` ou `retain`.
+6. Infrastructure grava item e bloco com rollback defensivo.
+7. Sessão e lock são liberados em sucesso, falha ou cancelamento.
 
-A revalidação impede duplicação se dois jogadores usarem a mesma caldeirinha ou se o bloco/item mudar durante a animação. Sobrevivência e Aventura consomem água; Criativo preserva o nível, mas transfere apenas a quantidade finita que realmente cabe no item. Espectador é negado.
+O commit no tick 10 será sincronizado com a futura imersão visual. Consulte [Estado e concorrência](STATE_AND_CONCURRENCY.md).
 
-Antes da colocação, `beforeOnPlayerPlace` converte o yaw do jogador em um dos 16 valores de `aspergillum:rotation`. Cada valor seleciona uma geometria já rotacionada; assim, a orientação precisa não depende de `minecraft:sixteen_way_rotation`, `n_way_visual_rotation` ou qualquer Creator Feature experimental.
+## Fluxo de aspersão atual
 
-## Fluxo de aspersão
+1. `playerSwingStart` aceita apenas Attack/Mine com o item correto.
+2. O domínio verifica carga, cooldown e política do modo.
+3. A carga é consumida/preservada e o cooldown de 18 ticks é iniciado.
+4. A liberação visual começa quatro ticks depois.
+5. Seis pulsos atualizam uma direção suavizada em direção à câmera.
+6. Cada gota passa a simular em world-space; troca de item/dimensão cancela apenas pulsos futuros.
+7. `entityHurt` e `playerBreakBlock` impedem dano e quebra.
 
-1. `playerSwingStart` filtra somente `Attack` e `Mine` com o item correto.
-2. O domínio valida cooldown e carga.
-3. A política do modo autoriza a aspersão: Sobrevivência/Aventura consomem uma carga; Criativo preserva a carga finita; Espectador é negado.
-4. O feedback sonoro e textual é emitido.
-5. `entityHurt` cancela qualquer dano de ataque enquanto o item estiver empunhado.
-6. `playerBreakBlock` cancela a quebra final com o item.
+O alvo separa reserva no swing e commit no release, mantendo as mesmas garantias de steering. Partículas visuais permanecem independentes de qualquer cone lógico de gameplay futuro.
 
-Na versão 1.0.14, uma aspersão válida agenda a liberação visual quatro ticks após o ataque. A rajada contém 36 gotas, divididas em seis frames consecutivos com seis gotas cada. A aproximação da ponta fica `0,55` bloco à frente, `0,48` à direita e `0,15` abaixo dos olhos. A cada pulso, posição e direção-alvo são relidas; a direção efetiva percorre o menor arco esférico com resposta de `0,8` e giro máximo de `30°`. Isso devolve controle ao jogador sem permitir mudanças descontínuas. Item ou dimensão diferentes ainda cancelam os pulsos restantes.
+## Attachable e animação
 
-O modelo empunhado declara geometry `1.16.0`. `aspergillum_bound` possui apenas o binding exato `q.item_slot_to_bone_name(context.item_slot)`: não contém cubos nem transformação artística. Seu filho `aspergillum_visual` contém a malha real, o pivô/grip empírico `[-6, 24, 1]` e a orientação base `[25, 0, -12]`. A primeira pessoa conserva somente a inversão aprovada de 180°. A terceira pessoa acrescenta `position [5, -1.5, -2.25]` e `rotation [10, 0, 0]`, sem modificar a perspectiva já aprovada. Não há escala ou animação de ação.
+O contrato atual e os valores numéricos estão em [Contrato visual](VISUAL_CONTRACT.md). A evolução adiciona duas camadas sem alterar `aspergillum_bound`:
 
-Cada chamada a `Dimension.spawnParticle` recebe velocidade e direção por `MolangVariableMap`. A definição do Resource Pack usa um billboard sempre voltado à câmera e um sprite radial cheio, além de aceleração gravitacional, arrasto, iluminação e colisão. O leque deixou de ser circular: a abertura horizontal média é aproximadamente `7,5°`, chegando a `14,5°`, enquanto a abertura vertical média é `2,4°` e permanece abaixo de `5,2°`. A faixa de velocidade `12,70–13,98` preserva o alcance da 1.0.11. Esse caminho é autoritativo, multiplayer e independente das transformações do attachable.
+- `aspergillum_presentation`: pose estática por perspectiva;
+- `aspergillum_action`: carregar e aspergir ao redor do grip.
 
-O schema oficial de attachables admite `particle_effects`, e locators podem orientar emissores acionados por timelines. A integração final deve combinar o progresso do ataque com o cooldown iniciado apenas numa aspersão válida; usar somente `variable.attack_time` faria um item vazio emitir água. Por isso, o locator será introduzido como uma etapa isolada após a confirmação física desta pose, mantendo este emissor matemático como fallback até lá.
+Timeline-alvo de carregamento (`0.70–0.80 s`): antecipação, avanço/descida, imersão, commit no tick 10, retenção e retorno.
 
-## Persistência
+Timeline-alvo de aspersão (`18 ticks/0.90 s`): preparação 0–2, arco 2–6, água 5–9, follow-through 9–12 e retorno 12–18. O braço conduz o gesto; o item adiciona apenas correção local, evitando rotação duplicada.
 
-O item é não empilhável, requisito para propriedades dinâmicas independentes por stack. O bloco usa somente states, evitando block entities experimentais. O encaixe converte cargas restantes em água para que nenhum dado invisível precise ser guardado no bloco.
+## Partículas
 
-## Compatibilidade e evolução
+O emissor matemático atual é multiplayer e controlável, mas usa origem aproximada. A arquitetura final prefere `sprinkler_head -> spray_aim -> aspergillum_tip`:
 
-Mudanças compatíveis incrementam a versão SemVer dos packs. Identificadores, states e UUIDs devem permanecer estáveis. Novos efeitos de gameplay — por exemplo, interação opcional com mobs — devem entrar como caso de uso separado e nunca transformar silenciosamente o comportamento cerimonial padrão.
+- `aspergillum_tip` fornece posição visual exata;
+- `spray_aim` mantém o steering deliberado entre pulsos;
+- partículas emitidas abandonam o espaço local e seguem no mundo;
+- cooldown válido ou uma ponte explícita impede VFX em tentativa vazia.
 
-Dependências e formatos atuais:
+Não remover o emissor atual até locator, condição de disparo, primeira/terceira pessoa e multiplayer provarem equivalência. Uma solução híbrida — locator para origem/impacto e script para as 36 gotas guiadas — é aceitável se preservar melhor o controle.
+
+## Bloco
+
+Antes da colocação, `beforeOnPlayerPlace` converte yaw em 16 setores e escolhe uma geometria pré-rotacionada. Isso evita traits experimentais. O bloco possui quatro níveis de água e variante visual ocupada.
+
+O docking atual converte carga em água e guarda ocupação booleana. A V1 final adicionará um registry persistente para preservar o item real e futuras variantes, conforme [Estado e concorrência](STATE_AND_CONCURRENCY.md).
+
+## Perfis e extensibilidade
+
+O comportamento do spray será externalizado em `SprayProfile`. O perfil `standard` registra quantidade, pulsos, janela, velocidades, dispersão, gravidade, steering e escala. Cosmético (`cosmeticId`) e regulagem (`sprayProfileId`) são IDs separados: aparência não deve mudar física implicitamente.
+
+## Dependências fixadas
 
 | Área | Versão |
 | --- | --- |
 | Engine mínima | `1.26.30` |
 | Manifest | `2` |
+| Geometry attachable | `1.16.0` |
 | Script API | `@minecraft/server` `2.8.0` |
 | TypeScript | `5.9.x` |
-| Minecraft Creator Tools | `0.17.7` |
+| Creator Tools | `0.17.7` |

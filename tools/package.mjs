@@ -4,10 +4,10 @@ import path from "node:path";
 import archiver from "archiver";
 
 const root = path.resolve(import.meta.dirname, "..");
-const dist = path.join(root, "dist");
-fs.mkdirSync(dist, { recursive: true });
+const releases = path.join(root, "dist", "releases");
+fs.mkdirSync(releases, { recursive: true });
 const { version } = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
-const outputPath = path.join(dist, `Aspergillum-${version}.mcaddon`);
+const outputPath = path.join(releases, `Aspergillum-${version}.mcaddon`);
 
 await new Promise((resolve, reject) => {
   const output = fs.createWriteStream(outputPath);
