@@ -184,15 +184,10 @@ function validateChannel({
   return metrics;
 }
 
-if (body?.animation_length !== 0.82 || firstPerson?.animation_length !== 0.82 || thirdPerson?.animation_length !== 0.82) {
+if (firstPerson?.animation_length !== 0.82 || thirdPerson?.animation_length !== 0.82) {
   errors.push("Sprinkle choreography must settle at 0.82 seconds and leave the cooldown buffer untouched");
 }
-if (body?.override_previous_animation !== false) errors.push("Player sprinkle correction must be additive");
-if (Object.keys(body?.bones ?? {}).join() !== "rightarm") errors.push("Player sprinkle correction must target only rightarm");
-if (body?.bones?.rightitem !== undefined) errors.push("Player sprinkle correction must never animate rightitem");
-if (typeof body?.blend_weight !== "string" || !body.blend_weight.includes("q.anim_time")) {
-  errors.push("Player sprinkle correction requires an explicit time-based blend-weight envelope");
-}
+if (body !== undefined) errors.push("Sprinkle must not script player bones; the native swing owns the complete arm recovery");
 for (const [label, animation] of [["first-person action", firstPerson], ["third-person action", thirdPerson]]) {
   if (Object.keys(animation?.bones ?? {}).join() !== "aspergillum_action") {
     errors.push(`${label} must animate only aspergillum_action`);
@@ -200,20 +195,6 @@ for (const [label, animation] of [["first-person action", firstPerson], ["third-
 }
 
 const summaries = [];
-summaries.push(["body", validateChannel({
-  animation: body,
-  bone: "rightarm",
-  channelName: "rotation",
-  label: "body/rightarm rotation",
-  maximumMagnitude: 25,
-  endpointTolerance: 0.1,
-  maximumFrameDelta: 10,
-  maximumVelocity: 300,
-  maximumAcceleration: 7500,
-  minimumSpeed: 5,
-  maximumDirectionChange: 90,
-  heroTime: 0.38,
-})]);
 for (const [label, animation] of [["first-person", firstPerson], ["third-person", thirdPerson]]) {
   summaries.push([`${label} rotation`, validateChannel({
     animation,
@@ -279,5 +260,5 @@ const summary = summaries
   .filter(([, metrics]) => metrics !== undefined)
   .map(([label, metrics]) => `${label}: v=${metrics.maximumVelocity.toFixed(1)}, a=${metrics.maximumAcceleration.toFixed(1)}, turn=${metrics.maximumDirectionChange.toFixed(1)}°, reversals=${metrics.activeReversals}`)
   .join("; ");
-console.log("Validated additive body motion, perspective-specific item choreography, cooldown gating, and release continuity.");
+console.log("Validated native-only arm recovery, perspective-specific item choreography, cooldown gating, and release continuity.");
 console.log(`Choreography metrics (120 Hz): ${summary}`);

@@ -38,7 +38,6 @@ import {
   trackSprinkleRun,
   type SprinkleSession,
 } from "../infrastructure/sprinkle-session";
-import { playSprinkleAnimation } from "../presentation/animation-coordinator";
 
 const lastSprinkleTick = new Map<string, number>();
 
@@ -213,7 +212,6 @@ export function trySprinkle(player: Player): void {
     console.warn(`[Aspergillum] Unable to start native cooldown for ${player.id}: ${String(error)}`);
   }
   player.playSound("armor.equip_chain", { pitch: 1.42, volume: 0.42 });
-  playSprinkleAnimation(player);
   scheduleSprinkle(player, started.session);
 }
 

@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.15c — 2026-08-04
+
+- preservados integralmente binding, geometria, poses estáticas, grip, carregamento, coreografias locais FP/TP, controller, release no tick 5, partículas, steering, sessões e políticas de estado da 1.0.15b;
+- removida somente a correção corporal de aspersão disparada por `Entity.playAnimation()`, pois o teste físico confirmou que sua timeline tardia terminava fora de fase com o recovery vanilla e causava o solavanco final;
+- tornado o swing vanilla o único proprietário do movimento e do retorno do braço, evitando disputa entre duas timelines sem reduzir a duração, a agilidade ou a amplitude do gesto nativo;
+- mantido `aspergillum_action` como proprietário exclusivo da antecipação, flick, pose heroica, follow-through e settle do instrumento, com coreografias independentes em primeira e terceira pessoa;
+- reforçados os validadores para rejeitar qualquer animação corporal de aspersão, referência compilada a `playSprinkleAnimation` ou retorno de `rightarm/rightitem` à coreografia local;
+- preservada a animação one-shot de carregamento, que é um fluxo separado e não participou do defeito observado;
+- o rótulo distribuído é `1.0.15c`; a revisão monotônica dos packs é `[1,0,17]`.
+
 ## 1.0.15b — 2026-08-04
 
 - preservados integralmente binding, geometria, malha, grip, escala, poses estáticas, carregamento, estado, partículas, steering e build determinístico da 1.0.15;

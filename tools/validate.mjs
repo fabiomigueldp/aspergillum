@@ -256,10 +256,8 @@ if (loadAnimation?.animation_length !== 0.8
 const bodySprinkle = actionAnimations?.["animation.aspergillum.player.sprinkle.body"];
 const firstPersonSprinkle = actionAnimations?.["animation.aspergillum.action.sprinkle.first_person"];
 const thirdPersonSprinkle = actionAnimations?.["animation.aspergillum.action.sprinkle.third_person"];
-if (bodySprinkle?.animation_length !== 0.82
-  || bodySprinkle?.override_previous_animation !== false
-  || Object.keys(bodySprinkle?.bones ?? {}).join() !== "rightarm") {
-  errors.push("Sprinkle body correction must be additive, settle by 0.82 seconds, and target only rightarm");
+if (bodySprinkle !== undefined) {
+  errors.push("Sprinkle must leave player bones entirely to the native swing recovery");
 }
 for (const [name, animation] of Object.entries({ firstPersonSprinkle, thirdPersonSprinkle })) {
   if (animation?.animation_length !== 0.82 || Object.keys(animation?.bones ?? {}).join() !== "aspergillum_action") {
@@ -339,9 +337,12 @@ if (itemComponents?.["minecraft:swing_duration"]?.value !== itemComponents?.["mi
 
 const compiledScript = fs.readFileSync(path.join(packRoots[0], "scripts", "main.js"), "utf8");
 if (!compiledScript.includes("playAnimation")
-  || !compiledScript.includes("animation.aspergillum.player.load")
-  || !compiledScript.includes("animation.aspergillum.player.sprinkle.body")) {
-  errors.push("Compiled script must coordinate both stable one-shot player action animations");
+  || !compiledScript.includes("animation.aspergillum.player.load")) {
+  errors.push("Compiled script must preserve the accepted one-shot loading animation");
+}
+if (compiledScript.includes("animation.aspergillum.player.sprinkle.body")
+  || compiledScript.includes("playSprinkleAnimation")) {
+  errors.push("Compiled sprinkle flow must not layer a late scripted animation over the native arm swing");
 }
 if (!compiledScript.includes("spawnParticle") || !compiledScript.includes("aspergillum:holy_water_droplet")) {
   errors.push("Compiled script must emit the namespaced holy-water droplet particle");

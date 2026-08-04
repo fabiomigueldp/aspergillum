@@ -2,20 +2,20 @@
 
 ## Objetivo
 
-A aspersão deve ser uma frase visual única — antecipação, condução, flick, release, follow-through e settle — sem lutar contra o swing iniciado pelo motor. Este contrato protege a v1.0.15b e orienta refinamentos futuros.
+A aspersão deve ser uma frase visual única — antecipação, condução, flick, release, follow-through e settle — sem lutar contra o swing iniciado pelo motor. Este contrato protege a v1.0.15c e orienta refinamentos futuros.
 
 ## Composição obrigatória
 
 ```text
 swing vanilla de 0,90 s
-+ correção corporal aditiva de baixa amplitude em rightarm
 + pose estática por perspectiva em aspergillum_presentation
 + coreografia local FP/TP em aspergillum_action
 ```
 
 - `aspergillum_bound` contém somente o binding e nunca é animado.
 - `aspergillum_presentation` contém somente a pose estática aprovada.
-- A correção corporal não usa `override_previous_animation` e não contém `rightitem`.
+- O swing vanilla é o único proprietário de `rightarm` e `rightitem` durante a aspersão.
+- Não existe `playSprinkleAnimation()`, animação corporal de aspersão ou segunda timeline de recovery.
 - `aspergillum_action` contém antecipação, flick, follow-through e settle do instrumento.
 - Falha de animação nunca muda carga, cooldown, água ou sessão.
 
@@ -39,7 +39,6 @@ O contrato transacional é indivisível: `commit da carga = som splash = primeir
 
 | Canal | Limite automatizado |
 | --- | ---: |
-| Correção total de `rightarm` | magnitude `≤ 25°` |
 | Rotação local de `aspergillum_action` | magnitude `≤ 18°` |
 | Translação local | magnitude `≤ 0,5` unidade de modelo |
 | Mudança por frame a 30 FPS | `≤ 10°` |
@@ -65,13 +64,15 @@ O validador amostra curvas Catmull-Rom a 120 Hz. Poses neutras duplicadas em `0,
 - nenhuma interseção com rosto, ombro ou tórax;
 - silhueta legível em wide, slim, frontal, traseira e lateral.
 
-## Controller e fallback
+## Controller e recuperação nativa
 
 O controller `idle → sprinkle → recovery` é processado continuamente pelo attachable. Ele usa a categoria `aspergillum_sprinkle` na mão principal; tentativa vazia não inicia esse cooldown. Cada estado usa crossfade de `0,08 s` e menor caminho Euler.
 
 O contexto Molang precisa ser confirmado no Content Log do cliente. Se o controller não resolver a categoria/slot, a lógica autoritativa e as gotas script-side continuam funcionando; a revisão deve retornar a um gatilho visual comprovado antes de remover qualquer fallback.
 
-Se a correção corporal ainda produzir solavanco no runtime, remova somente `playSprinkleAnimation()`: mantenha swing vanilla e ação local FP/TP. Não reintroduza reset absoluto nem `rightitem`.
+O fallback previsto na 1.0.15b tornou-se a arquitetura oficial da 1.0.15c: swing vanilla puro no braço e ação local FP/TP no instrumento. O validador deve falhar se reaparecer `playSprinkleAnimation()`, `animation.aspergillum.player.sprinkle.body` ou qualquer canal de aspersão em `rightarm`/`rightitem`.
+
+Uma futura correção corporal só pode ser reavaliada em build diagnóstico isolado que demonstre entrada e saída sincronizadas com a timeline nativa nas perspectivas FP/TP. Ela não é dependência da coreografia, do release nem do estado.
 
 ## Gate de revisão
 

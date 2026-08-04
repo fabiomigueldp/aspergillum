@@ -50,6 +50,27 @@ Gate de saída físico:
 - água começa durante o flick no tick 5;
 - Content Log não acusa query, controller, animação ou bone desconhecido.
 
+## v1.0.15c — Recovery nativo integral — implementada; QA físico pendente
+
+Hipótese confirmada no runtime:
+
+- mesmo sem reset absoluto, a correção corporal iniciada pelo after-event possuía uma timeline independente;
+- ao terminar fora de fase com o recovery vanilla, sua influência desaparecia e o braço saltava para a pose nativa corrente.
+
+Escopo:
+
+- remover exclusivamente a chamada e a definição da correção corporal de aspersão;
+- deixar o swing vanilla como único proprietário de `rightarm` e `rightitem` durante toda a ação;
+- preservar as coreografias FP/TP de `aspergillum_action`, o controller, o release no tick 5 e todo o perfil das gotas;
+- tornar a ausência de animação corporal de aspersão um gate estrutural automatizado.
+
+Gate de saída físico:
+
+- braço completa o retorno sem solavanco ou teleporte no último quarto da ação;
+- flick local continua ágil, dinâmico e legível nas duas perspectivas;
+- não há regressão de viewport, grip, release, partículas ou steering;
+- carregamento permanece idêntico à revisão anterior.
+
 ## v1.0.16 — Locator e VFX final
 
 Escopo:

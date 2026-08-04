@@ -2,13 +2,13 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.0.15b` (revisão numérica dos packs `[1, 0, 16]`)
+- **Versão de referência:** `1.0.15c` (revisão numérica dos packs `[1, 0, 17]`)
 - **Engine mínima:** Creator `1.26.30`
 - **Script API:** `@minecraft/server` `2.8.0`, estável
 - **Experimentos:** nenhum
 - **Conteúdo:** aspersório funcional, caldeirinha colocável, carregamento, três cargas, docking decorativo e spray visual
 
-A v1.0.14 encerrou a investigação estrutural do attachable. A v1.0.15 introduziu a semântica transacional e revelou, no teste físico, que substituir tardiamente o swing vanilla por uma animação absoluta causava dupla partida e removia o item do viewport. A v1.0.15b preserva toda a base lógica e redesenha somente a aspersão como composição híbrida aditiva, com ação local específica por perspectiva. O projeto ainda não atingiu a V1 final: essa nova coreografia precisa do teste físico, e continuam pendentes locator e docking persistente.
+A v1.0.14 encerrou a investigação estrutural do attachable. A v1.0.15 revelou que substituir tardiamente o swing vanilla causava dupla partida; a v1.0.15b removeu o reset e introduziu ação local por perspectiva, mas o teste físico mostrou que a timeline corporal aditiva ainda terminava fora de fase com o recovery nativo. A v1.0.15c executa o fallback arquitetural previsto: o swing vanilla é o único proprietário do braço e `aspergillum_action` é o único proprietário do flick do instrumento. O projeto ainda não atingiu a V1 final: essa composição precisa do teste físico, e continuam pendentes locator e docking persistente.
 
 ## O que está resolvido
 
@@ -23,7 +23,7 @@ A v1.0.14 encerrou a investigação estrutural do attachable. A v1.0.15 introduz
 - O primeiro pulso transita desde a direção capturada no início do gesto; os demais transportam a base lateral sem flip vertical.
 - A carga é reservada no swing e consumida/preservada somente no release do tick 5.
 - `ActionLease` impede que carregar e aspergir concorram para o mesmo jogador.
-- O carregamento preserva a trajetória anterior; a aspersão combina swing vanilla, correção aditiva somente em `rightarm` e flick no `aspergillum_action`.
+- O carregamento preserva a trajetória anterior; a aspersão usa recovery vanilla íntegro no braço e flick exclusivamente local em `aspergillum_action`.
 - Trocar item ou dimensão cancela os pulsos restantes.
 
 ## Limitações conhecidas
@@ -31,7 +31,7 @@ A v1.0.14 encerrou a investigação estrutural do attachable. A v1.0.15 introduz
 | Área | Situação atual | Consequência |
 | --- | --- | --- |
 | Carregamento | gesto próprio recém-integrado | trajetória e clipping ainda precisam de validação física em wide/slim e primeira/terceira pessoa |
-| Aspersão | redesign híbrido 1.0.15b integrado | controller de cooldown, permanência no viewport e silhueta FP/TP ainda precisam do teste no runtime |
+| Aspersão | composição 1.0.15c sem timeline corporal concorrente | ausência do solavanco final e continuidade FP/TP ainda precisam do teste no runtime |
 | Origem das gotas | aproximação por cabeça + direção do jogador | não coincide exatamente com a cabeça animada do modelo |
 | Docking | bloco guarda apenas `has_aspergillum` | `nameTag`, identidade e futuras variantes podem se perder ao acomodar |
 | Overflow | cargas podem exceder espaço livre ao acomodar | água pode ser descartada sem intenção se não for recusado |
@@ -40,7 +40,7 @@ A v1.0.14 encerrou a investigação estrutural do attachable. A v1.0.15 introduz
 
 ## Próxima mudança autorizada
 
-Após a aprovação física da v1.0.15b, o próximo marco é a v1.0.16 descrita em [ROADMAP.md](ROADMAP.md): adicionar `spray_aim`/`aspergillum_tip` e aproximar a origem visual da cabeça real sem perder steering ou multiplayer.
+Após a aprovação física da v1.0.15c, o próximo marco é a v1.0.16 descrita em [ROADMAP.md](ROADMAP.md): adicionar `spray_aim`/`aspergillum_tip` e aproximar a origem visual da cabeça real sem perder steering ou multiplayer.
 
 Não faz parte do próximo marco:
 

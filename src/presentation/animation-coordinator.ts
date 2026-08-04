@@ -1,7 +1,6 @@
 import type { Player } from "@minecraft/server";
 
 export const LOAD_ANIMATION = "animation.aspergillum.player.load";
-export const SPRINKLE_ANIMATION = "animation.aspergillum.player.sprinkle.body";
 
 function playActionAnimation(player: Player, animation: string): void {
   try {
@@ -14,8 +13,4 @@ function playActionAnimation(player: Player, animation: string): void {
 
 export function playLoadingAnimation(player: Player): void {
   playActionAnimation(player, LOAD_ANIMATION);
-}
-
-export function playSprinkleAnimation(player: Player): void {
-  playActionAnimation(player, SPRINKLE_ANIMATION);
 }

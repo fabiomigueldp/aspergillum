@@ -82,7 +82,7 @@ Antes de testes extensos:
 
 Se o smoke test falhar, interrompa a matriz e capture a menor reprodução possível.
 
-## Baseline v1.0.15b
+## Baseline v1.0.15c
 
 - [ ] malha real aparece em escala correta nas duas perspectivas;
 - [ ] bound root acompanha integralmente a mão direita;
@@ -102,13 +102,14 @@ Se o smoke test falhar, interrompa a matriz e capture a menor reprodução poss�
 - [ ] troca de item/slot/dimensão durante carga cancela sem alterar recursos;
 - [ ] dois jogadores não carregam simultaneamente no mesmo bloco.
 - [ ] carregamento executa gesto próprio de 0,8 s e confirma a transferência na imersão do tick 10;
-- [ ] aspersão executa gesto próprio de 0,9 s, distinto do ataque vanilla;
+- [ ] braço executa um único swing vanilla de 0,9 s, sem timeline corporal tardia;
 - [ ] trocar de item antes do tick 5 não consome carga nem emite água;
 - [ ] trocar depois do release conserva a carga consumida e cancela apenas pulsos restantes;
 - [ ] atravessar o olhar vertical não inverte subitamente o leque;
 - [ ] primeira pessoa mantém o item visível em 100% dos frames da aspersão;
-- [ ] terceira pessoa apresenta um único início, sem reset entre swing vanilla e correção aditiva;
+- [ ] terceira pessoa apresenta um único início e um único retorno, sem reset ou solavanco final;
 - [ ] `aspergillum_action` produz flick curto sem o cabo abandonar o punho;
+- [ ] o flick local preserva a agilidade e assenta naturalmente antes do fim do swing nativo;
 - [ ] água, som e commit começam juntos no tick 5;
 - [ ] controller não dispara em ataque vazio nem ao reequipar durante cooldown residual;
 

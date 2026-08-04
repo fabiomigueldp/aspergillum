@@ -114,7 +114,7 @@ O commit no tick 10 coincide com a fase de imersão da animação one-shot. A fa
 
 1. `playerSwingStart` aceita apenas Attack/Mine com o item correto.
 2. O domínio verifica carga, cooldown e política do modo.
-3. Uma `SprinkleSession` e um `ActionLease` reservam a instância sem consumir carga; o cooldown de 18 ticks e o gesto one-shot começam.
+3. Uma `SprinkleSession` e um `ActionLease` reservam a instância sem consumir carga; o cooldown de 18 ticks começa, o braço segue o swing nativo e o controller inicia a ação local do instrumento.
 4. No tick 5, item, slot, dimensão, modo e carga são revalidados; somente então a carga é consumida/preservada.
 5. Seis pulsos atualizam direção e base transportada em direção à câmera.
 6. Cada gota passa a simular em world-space; troca de item/dimensão cancela apenas pulsos futuros e não reembolsa um release já confirmado.
@@ -132,7 +132,7 @@ O contrato atual e os valores numéricos estão em [Contrato visual](VISUAL_CONT
 
 Timeline de carregamento (`0.80 s`): antecipação, avanço/descida, imersão, commit no tick 10, retenção e retorno.
 
-Timeline de aspersão (`18 ticks/0.90 s`): o swing vanilla fornece o movimento base; `playAnimation()` acrescenta uma correção pequena somente em `rightarm`; um controller do attachable seleciona a coreografia FP/TP de `aspergillum_action`. A ação local assenta em `0,82 s`, deixando `0,08 s` de buffer, e o release ocorre no tick 5. Falhas de apresentação continuam sem interferir no estado.
+Timeline de aspersão (`18 ticks/0.90 s`): o swing vanilla é o único movimento do braço e completa o retorno sem disputa com `playAnimation()`; um controller do attachable seleciona a coreografia FP/TP de `aspergillum_action`. A ação local assenta em `0,82 s`, deixando `0,08 s` de buffer, e o release ocorre no tick 5. Falhas de apresentação continuam sem interferir no estado.
 
 O controller usa a categoria de cooldown válida como ponte visual. Tentativa vazia não inicia o cooldown nativo e, portanto, não entra no estado `sprinkle`. A sintaxe e o contexto exatos permanecem sujeitos ao Content Log do pacote importado; o emissor script-side continua autoritativo e não depende do controller.
 
