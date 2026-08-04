@@ -118,7 +118,7 @@ Se o smoke test falhar, interrompa a matriz e capture a menor reprodução poss�
 
 Esses três itens foram confirmados pelo usuário no pacote 1.0.15d. Os demais continuam como regressão manual recorrente, não como pendência estrutural da animação.
 
-## Baseline VFX v1.0.16b
+## Baseline VFX v1.0.16c
 
 - [ ] `holy_water_release` nasce na face da cabeça em primeira pessoa;
 - [ ] `holy_water_release` nasce na face da cabeça em terceira pessoa local;
@@ -141,6 +141,9 @@ Esses três itens foram confirmados pelo usuário no pacote 1.0.15d. Os demais c
 - [ ] repetir o teste cromático em sol, sombra, junto a tocha/fonte quente e com Vibrant Visuals quando disponível;
 - [ ] a retirada de lighting local não transforma a água em um efeito branco ou excessivamente emissivo no escuro;
 - [ ] fade continua suave e natural, sem mudança de trajetória, velocidade, lifetime ou tamanho em relação à 1.0.16a.
+- [ ] a gota nasce azul aquático saturado, não branca/cinza ou ciano lavado;
+- [ ] observar especificamente os últimos frames: nenhuma chave pode ser interpretada como amarelo/verde;
+- [ ] o micro-splash no chão usa o mesmo idioma azul e desaparece sem mudança de matiz;
 
 ## Matriz final manual
 

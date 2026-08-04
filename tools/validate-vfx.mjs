@@ -12,20 +12,20 @@ function readJson(relative) {
 
 const approvedWaterPalettes = {
   droplet: {
-    "0.0": "#CDEBFFFF",
-    "0.52": "#72C6F5F8",
-    "0.82": "#438FD8D0",
-    "1.0": "#2A66B000",
+    "0.0": [0.12, 0.52, 0.88, 1.0],
+    "0.55": [0.08, 0.4, 0.76, 0.98],
+    "0.88": [0.04, 0.29, 0.64, 0.86],
+    "1.0": [0.04, 0.24, 0.58, 0.0],
   },
   release: {
-    "0.0": "#DDF3FFFF",
-    "0.58": "#86D0F8EE",
-    "1.0": "#438FD800",
+    "0.0": [0.25, 0.65, 0.95, 1.0],
+    "0.6": [0.1, 0.46, 0.82, 0.94],
+    "1.0": [0.05, 0.3, 0.65, 0.0],
   },
   splash: {
-    "0.0": "#9AD8FFF5",
-    "0.55": "#5BAEE8CC",
-    "1.0": "#2F70BE00",
+    "0.0": [0.1, 0.5, 0.88, 1.0],
+    "0.62": [0.04, 0.32, 0.7, 0.9],
+    "1.0": [0.03, 0.25, 0.58, 0.0],
   },
 };
 
@@ -33,6 +33,20 @@ function validateWaterColor(components, palette, label) {
   const gradient = components?.["minecraft:particle_appearance_tinting"]?.color?.gradient;
   if (JSON.stringify(gradient) !== JSON.stringify(palette)) {
     errors.push(`${label} must preserve the approved cool-blue water palette`);
+  }
+  for (const rgba of Object.values(gradient ?? {})) {
+    if (!Array.isArray(rgba) || rgba.length !== 4) {
+      errors.push(`${label} must use explicit RGBA arrays instead of ambiguous eight-digit hex colors`);
+      break;
+    }
+    if (rgba.some((channel) => !Number.isFinite(channel) || channel < 0 || channel > 1)) {
+      errors.push(`${label} RGBA channels must remain finite normalized numbers`);
+      break;
+    }
+    if (rgba[2] <= rgba[1] || rgba[1] <= rgba[0]) {
+      errors.push(`${label} must keep blue dominant over green and red at every lifetime key`);
+      break;
+    }
   }
   if (components?.["minecraft:particle_appearance_lighting"] !== undefined) {
     errors.push(`${label} must keep its hue independent from local colored lighting`);

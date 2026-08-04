@@ -2,12 +2,12 @@
 
 Add-On para Minecraft: Bedrock Edition 26.34/35 que adiciona um **aspersório litúrgico funcional** e uma **caldeirinha (aspersorium) colocável**. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão 1.0.16b:** fixa a identidade cromática da água em azul frio, eliminando o desvio verde/amarelo das gotas distantes e dos micro-respingos sem alterar animação, trajetória, 36 gotas, steering, alcance ou multiplayer.
+> **Versão 1.0.16c:** corrige definitivamente a ordem ambígua dos canais de cor com RGBA numérico explícito e usa azul aquático saturado, sem branco excessivo nem verde/amarelo no fim da vida ou nos impactos.
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/releases/Aspergillum-1.0.16b.mcaddon`](dist/releases/Aspergillum-1.0.16b.mcaddon) com o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.0.16c.mcaddon`](dist/releases/Aspergillum-1.0.16c.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 

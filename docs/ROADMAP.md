@@ -94,7 +94,7 @@ Gate de saída físico:
 
 O usuário confirmou no runtime que o teleporte final foi eliminado. A composição do swing, a ponte de recovery e as coreografias locais ficam congeladas como baseline.
 
-## v1.0.16/1.0.16a/1.0.16b — Locator e VFX final — correções implementadas; QA cromático pendente
+## v1.0.16/1.0.16a/1.0.16b/1.0.16c — Locator e VFX final — correções implementadas; QA cromático pendente
 
 Escopo:
 
@@ -128,6 +128,13 @@ Correção cromática 1.0.16b:
 - gradientes dedicados de azul frio aplicados ao bridge, leque e micro-splash;
 - removido somente o tint por iluminação local das partículas de água, evitando verde/amarelo em luz colorida;
 - movimento, escala, lifetime, colisão, quantidade e steering permanecem idênticos à 1.0.16a.
+
+Correção cromática 1.0.16c:
+
+- o teste físico demonstrou que o hex de oito dígitos foi lido como `AARRGGBB`, tornando verdes as chaves escritas como se fossem `RRGGBBAA` e quase branca a chave inicial;
+- todos os gradientes passam a usar arrays `[r,g,b,a]` normalizados, sem ordem implícita de bytes;
+- o azul nasce saturado, permanece dominante durante toda a vida e termina com alfa zero sem mudar para verde;
+- a física e toda a apresentação não cromática permanecem idênticas à 1.0.16a.
 
 Gate de saída:
 

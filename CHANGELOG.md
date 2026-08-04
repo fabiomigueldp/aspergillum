@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.16c — 2026-08-04
+
+- diagnosticada a causa exata da regressão cromática da 1.0.16b: o runtime interpretou os oito dígitos dos gradientes como `#AARRGGBB`, convertendo as chaves finais `#2A66B000`/`#2F70BE00` em verde e a chave inicial `#CDEBFFFF` em quase branco;
+- substituídas todas as chaves hexadecimais de oito dígitos por arrays RGBA normalizados `[r,g,b,a]`, removendo a ambiguidade entre referências antigas e atuais do schema;
+- recalibradas gotas principais para azul aquático saturado desde `[0.12,0.52,0.88,1]`, com azul dominante em todas as fases da vida;
+- recalibrados separadamente bridge e micro-splash para leitura azul natural, sem branco excessivo no nascimento nem amarelo/verde no impacto;
+- preservados integralmente textura radial, material, física, trajetória, velocidade, lifetime, tamanho, colisão, 36 gotas, seis pulsos, steering, animação, locator e áudio;
+- validadores agora rejeitam cores hexadecimais ambíguas, canais fora de `0..1` e qualquer keyframe onde azul não domine verde e vermelho;
+- o rótulo distribuído é `1.0.16c`; a revisão monotônica dos packs é `[1,0,22]`.
+
 ## 1.0.16b — 2026-08-04
 
 - corrigida a dominante verde/amarela percebida no fade das gotas e nos micro-respingos de impacto;

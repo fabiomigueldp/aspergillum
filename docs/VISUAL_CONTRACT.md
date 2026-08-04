@@ -1,6 +1,6 @@
 # Contrato visual congelado
 
-Este documento registra os valores estruturais comprovados até a v1.0.15d e a integração VFX corrigida até a v1.0.16b. Eles são baseline, não sugestões de calibração.
+Este documento registra os valores estruturais comprovados até a v1.0.15d e a integração VFX corrigida até a v1.0.16c. Eles são baseline, não sugestões de calibração.
 
 ## Attachable
 
@@ -42,7 +42,7 @@ rightItem (holder)
 - A pose de primeira pessoa não deve ser afetada por correções de terceira pessoa.
 - Não se transplanta pose de tridente, lança ou outra malha vanilla como se fosse universal.
 
-## Spray v1.0.16b
+## Spray v1.0.16c
 
 | Propriedade | Baseline |
 | --- | --- |
@@ -64,7 +64,7 @@ rightItem (holder)
 | Billboard do bridge | `0.028 × 0.060`, `rotate_xyz` |
 | Billboard principal | `0.042 × 0.100` bloco, `rotate_xyz`, escala do perfil |
 | Impacto | `1` micro-splash cosmético por colisão elegível |
-| Cor | gradientes azul-frio dedicados; azul permanece dominante até o fade |
+| Cor | arrays RGBA normalizados; azul permanece dominante até o fade |
 | Textura-fonte | radial neutra `RGB [245,249,255]`; o gradiente é a única fonte cromática |
 | Iluminação | sem `particle_appearance_lighting`; luz local não pode deslocar água para verde/amarelo |
 
@@ -95,7 +95,7 @@ aspergillum_bound          binding, sempre neutro
                 └── locator aspergillum_tip
 ```
 
-Toda a hierarquia existe na v1.0.16b. `spray_aim` é um bone técnico sem cubos, filho da cabeça; `aspergillum_tip` fica uma unidade além da face superior. O efeito herda posição e rotação juntas no instante de criação — combinação exigida pelo runtime — e o evento usa `bind_to_actor: false`, de modo que o emissor destacado não acompanha o braço.
+Toda a hierarquia existe na v1.0.16c. `spray_aim` é um bone técnico sem cubos, filho da cabeça; `aspergillum_tip` fica uma unidade além da face superior. O efeito herda posição e rotação juntas no instante de criação — combinação exigida pelo runtime — e o evento usa `bind_to_actor: false`, de modo que o emissor destacado não acompanha o braço.
 
 ## Critérios de aceitação visual
 

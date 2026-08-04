@@ -10,6 +10,10 @@ As 36 gotas principais continuam no script porque esse caminho já prova steerin
 
 Fontes oficiais reconfirmadas em 2026-08-04: particle/entity integration para locators e timelines, billboard para `derive_from_velocity`, emitter local space para desacoplar a emissão do ator, collision events e custom emitter shape. Links canônicos: [REFERENCES.md](REFERENCES.md).
 
+### Correção cromática 1.0.16c
+
+O runtime forneceu uma prova diagnóstica excepcional: `#CDEBFFFF`, escrito como `RRGGBBAA`, apareceu quase branco porque foi lido como alfa `CD` + RGB `EBFFFF`; `#2A66B000` e `#2F70BE00` apareceram verdes porque se tornaram alfa `2A`/`2F` + RGB `66B000`/`70BE00`. Isso corresponde exatamente à convenção histórica `AARRGGBB`, apesar de a referência gerada mais recente mostrar `RRGGBBAA`. A solução não escolhe um dos formatos: remove a ambiguidade com arrays RGBA `[r,g,b,a]`, que o schema também suporta. A nova paleta inicia em azul aquático saturado e conserva `B > G > R` em todos os keyframes.
+
 ### Correção cromática 1.0.16b
 
 O teste físico da 1.0.16a aprovou a correção de local-space e a presença visual, mas revelou dominante verde/amarela nas gotas distantes e no micro-splash. A auditoria encontrou três multiplicadores sobre a mesma cor: textura ciano `[185,236,251]`, gradientes ciano de baixa saturação e `minecraft:particle_appearance_lighting`, que a documentação oficial define como tint pelas condições locais. A 1.0.16b torna o sprite neutro `[245,249,255]`, concentra a identidade em gradientes azul-frio e omite lighting somente nesses três efeitos. Física, locator, tamanho e timeline não mudam.

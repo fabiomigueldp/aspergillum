@@ -4,7 +4,7 @@
 
 A água deve nascer da cabeça visível do aspergillum, formar um leque litúrgico legível e conservar o steering deliberado da câmera sem gerar uma segunda rajada, governar gameplay ou seguir o braço depois da emissão.
 
-## Arquitetura híbrida da v1.0.16b
+## Arquitetura híbrida da v1.0.16c
 
 ```text
 sprinkler_head
@@ -54,6 +54,7 @@ Tentativa vazia não inicia a categoria válida e não pode emitir bridge ou som
 
 - a textura radial é neutra (`RGB [245,249,255]`) e não impõe um segundo ciano sobre o tint;
 - `holy_water_droplet`, `holy_water_release` e `holy_water_micro_splash` têm gradientes próprios de azul frio, com azul dominante até alfa zero;
+- cada cor é um array normalizado `[r,g,b,a]`; hex de oito dígitos é proibido porque referências do formato e o runtime divergem entre `RRGGBBAA` e `AARRGGBB`;
 - os três efeitos omitem `minecraft:particle_appearance_lighting`: esse componente tinge a partícula pelas condições locais e pode deslocar água clara para verde/amarelo sob iluminação colorida;
 - o fade continua sendo produzido por `variable.particle_age / variable.particle_lifetime` e pelo canal alfa, sem alterar lifetime, tamanho ou movimento;
 - a água pode variar em luminosidade perceptual pelo fundo e transparência, mas não em identidade cromática.

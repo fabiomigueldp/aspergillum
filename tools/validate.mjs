@@ -339,12 +339,15 @@ if (!fs.existsSync(dropletPath)) {
   }
   const gradient = dropletComponents["minecraft:particle_appearance_tinting"]?.color?.gradient;
   if (JSON.stringify(gradient) !== JSON.stringify({
-    "0.0": "#CDEBFFFF",
-    "0.52": "#72C6F5F8",
-    "0.82": "#438FD8D0",
-    "1.0": "#2A66B000",
+    "0.0": [0.12, 0.52, 0.88, 1.0],
+    "0.55": [0.08, 0.4, 0.76, 0.98],
+    "0.88": [0.04, 0.29, 0.64, 0.86],
+    "1.0": [0.04, 0.24, 0.58, 0.0],
   })) {
     errors.push("Holy-water droplets must preserve the approved cool-blue lifetime palette");
+  }
+  if (Object.values(gradient ?? {}).some((rgba) => !Array.isArray(rgba) || rgba.length !== 4)) {
+    errors.push("Holy-water tint keys must use explicit RGBA arrays instead of ambiguous eight-digit hex colors");
   }
   const interpolant = dropletComponents["minecraft:particle_appearance_tinting"]?.color?.interpolant;
   if (interpolant !== "variable.particle_age / variable.particle_lifetime") {
