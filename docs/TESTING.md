@@ -68,6 +68,23 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 - quebra, explosão, reload e limpeza de snapshot;
 - pistão recusado ou registro movido de forma íntegra.
 
+## Gate de persistência v1.0.17
+
+- [ ] item antigo/schema 1 mantém carga e recebe lore traduzida após entrar no inventário;
+- [ ] mudar o idioma do cliente entre `pt_BR` e `en_US` muda a lore sem recriar o item;
+- [ ] item com nome customizado conserva nome e `instance_id` após acomodar, sair do mundo e retirar;
+- [ ] cosmético/perfil e uma propriedade customizada de teste sobrevivem ao ciclo de docking;
+- [ ] `water_level + charges > 3` recusa o encaixe sem mudar bloco ou item;
+- [ ] bloco ocupado + aspersório informa ocupação; bloco ocupado + outro item solicita mão vazia;
+- [ ] inventário cheio faz o item ser entregue na mão vazia, inventário ou chão sem perda;
+- [ ] quebrar a caldeirinha ocupada entrega uma caldeirinha e exatamente um aspersório preservado;
+- [ ] explosão e `/setblock ... destroy` não duplicam nem perdem o snapshot;
+- [ ] pistão não move a caldeirinha;
+- [ ] reload do mundo preserva snapshots; retirada limpa o shard correspondente;
+- [ ] dois itens com ID duplicado no mesmo inventário terminam com IDs distintos;
+- [ ] item com schema maior que 2 permanece byte-logicamente intocado e ações mutáveis são recusadas;
+- [ ] Content Log não contém erro/warning de dynamic property, `RawMessage`, custom component ou loot.
+
 ## Smoke test por revisão
 
 Antes de testes extensos:

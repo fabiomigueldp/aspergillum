@@ -22,7 +22,8 @@ O servidor é autoritativo para carga, água, cooldown e permissões. Resource P
 - Item: `aspergillum:aspergillum`.
 - Bloco: `aspergillum:aspersorium`.
 - Block states: `aspergillum:water_level`, `aspergillum:has_aspergillum`, `aspergillum:rotation`.
-- Item properties: `aspergillum:charges`, `aspergillum:schema_version`, `aspergillum:instance_id`.
+- Item properties: `aspergillum:charges`, `aspergillum:schema_version`, `aspergillum:instance_id`, `aspergillum:cosmetic_id`, `aspergillum:spray_profile_id`.
+- World properties: shards `aspergillum:docked_<dimensão>_<chunkX>_<chunkZ>` do registry persistente.
 - UUIDs, identifiers públicos e states publicados permanecem estáveis.
 - Nenhum conteúdo vanilla é sobrescrito; nenhuma feature experimental é requisito.
 
@@ -37,11 +38,13 @@ src/
 ├── domain/
 │   ├── aspergillum.ts
 │   ├── cone.ts
+│   ├── docking.ts
 │   ├── rotation.ts
 │   └── spray-profile.ts
 ├── infrastructure/
 │   ├── action-lease.ts
 │   ├── constants.ts
+│   ├── docked-item-registry.ts
 │   ├── game-mode-policy.ts
 │   ├── item-state.ts
 │   ├── loading-session.ts
@@ -156,7 +159,11 @@ O bridge não é um segundo leque e não substitui o emissor matemático. Não r
 
 Antes da colocação, `beforeOnPlayerPlace` converte yaw em 16 setores e escolhe uma geometria pré-rotacionada. Isso evita traits experimentais. O bloco possui quatro níveis de água e variante visual ocupada.
 
-O docking atual converte carga em água e guarda ocupação booleana. A V1 final adicionará um registry persistente para preservar o item real e futuras variantes, conforme [Estado e concorrência](STATE_AND_CONCURRENCY.md).
+O docking converte carga em água somente quando a soma cabe integralmente. A ocupação booleana governa a aparência; um registry persistente por dimensão/chunk preserva o item real e futuras variantes. A retirada com mão vazia reconstrói o ItemStack, e `onBreak` recupera o snapshot depois da destruição. A loot table ocupada entrega somente o bloco, e `minecraft:movable = immovable` protege o endereço persistente contra pistões. Consulte [Estado e concorrência](STATE_AND_CONCURRENCY.md).
+
+## Schema e inicialização
+
+O schema atual é 2. Itens brutos, schema ausente e schema 1 são normalizados em todos os slots do inventário, preservando cargas e identidade válida; cosmético/perfil recebem defaults estáveis. Lore é uma apresentação `RawMessage` traduzida pelo cliente. Schemas futuros não são regravados e operações que mudariam seu estado são recusadas.
 
 ## Perfis e extensibilidade
 

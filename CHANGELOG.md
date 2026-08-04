@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.17 — 2026-08-04
+
+- introduzido schema 2 para itens, preservando cargas finitas e adicionando `cosmetic_id`, `spray_profile_id` e migração real de schemas ausente/0/1;
+- schemas futuros deixam de ser sobrescritos e operações mutáveis são recusadas com feedback explícito;
+- lore convertida para `RawMessage` com tradução client-side em português e inglês;
+- inicialização ampliada para todo o inventário, com reparo defensivo de `instance_id` duplicado;
+- implementado `DockedItemRegistry` persistente em dynamic properties do mundo, com shards por dimensão/chunk e sanitização de dados;
+- docking passa a preservar `nameTag`, identidade, perfil, cosmético e propriedades dinâmicas customizadas serializáveis;
+- overflow de água é recusado sem alterar item ou bloco; retirada passa a exigir mão vazia e possui rollback defensivo;
+- caldeirinha tornada imóvel por pistões; quebra, explosão e destruição recuperam o item real pelo `onBreak`, enquanto a loot table evita duplicação;
+- adicionados testes exaustivos de docking, migração, corrupção de registry e invariantes de persistência no validador do pacote;
+- incorporado o refinamento cromático solicitado após a 1.0.16c, reduzindo a saturação do azul sem alterar física, lifetime ou escala das gotas;
+- o rótulo distribuído é `1.0.17`; a revisão monotônica dos packs é `[1,0,23]`.
+
 ## 1.0.16c — 2026-08-04
 
 - diagnosticada a causa exata da regressão cromática da 1.0.16b: o runtime interpretou os oito dígitos dos gradientes como `#AARRGGBB`, convertendo as chaves finais `#2A66B000`/`#2F70BE00` em verde e a chave inicial `#CDEBFFFF` em quase branco;

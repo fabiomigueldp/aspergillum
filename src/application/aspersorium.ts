@@ -1,31 +1,42 @@
 import {
   Block,
   BlockPermutation,
+  BlockComponentBlockBreakEvent,
   BlockComponentPlayerInteractEvent,
   ItemStack,
   Player,
   system,
 } from "@minecraft/server";
 import { loadFromAspersorium, MAX_CHARGES } from "../domain/aspergillum";
+import { resolveDocking } from "../domain/docking";
 import { getActionLease } from "../infrastructure/action-lease";
 import { ASPERSORIUM_BLOCK, DOCKED_STATE, WATER_LEVEL_STATE } from "../infrastructure/constants";
 import { resolvePlayerPolicies } from "../infrastructure/game-mode-policy";
 import {
+  captureDockedAspergillum,
   createAspergillum,
   getMainhand,
   giveOrDrop,
   initializeAspergillum,
   isAspergillum,
+  isAspergillumSchemaSupported,
   readAspergillumInstanceId,
   readAspergillumState,
+  restoreDockedAspergillum,
   setMainhand,
   writeAspergillumState,
 } from "../infrastructure/item-state";
 import {
+  cancelLoadingAtBlock,
   getLoadingBlockOwner,
   startLoadingSession,
   type LoadingSession,
 } from "../infrastructure/loading-session";
+import {
+  deleteDockedSnapshot,
+  getDockedSnapshot,
+  setDockedSnapshot,
+} from "../infrastructure/docked-item-registry";
 import { action } from "../infrastructure/messaging";
 import { commitMainhandAndBlock } from "../infrastructure/minecraft-transaction";
 import { playLoadingAnimation } from "../presentation/animation-coordinator";
@@ -94,7 +105,7 @@ function commitLoading(player: Player, session: LoadingSession): boolean {
 
   const originalPermutation = block.permutation;
   const updatedPermutation = withState(originalPermutation, WATER_LEVEL_STATE, result.nextWater);
-  const updatedItem = writeAspergillumState(currentItem, result.state, player);
+  const updatedItem = writeAspergillumState(currentItem, result.state);
   if (!commitMainhandAndBlock(player, currentItem, updatedItem, block, originalPermutation, updatedPermutation)) {
     action(player, "§cO carregamento foi cancelado com segurança.", "§cLoading was safely cancelled.");
     return false;
@@ -113,7 +124,11 @@ function loadItem(player: Player, block: Block): void {
   if (policies.denied) return;
   const rawItem = getMainhand(player);
   if (!isAspergillum(rawItem)) return;
-  const initialItem = initializeAspergillum(rawItem, player);
+  if (!isAspergillumSchemaSupported(rawItem)) {
+    action(player, "§cEste aspersório pertence a uma versão mais recente.", "§cThis aspergillum belongs to a newer version.");
+    return;
+  }
+  const initialItem = initializeAspergillum(rawItem);
   setMainhand(player, initialItem);
   const instanceId = readAspergillumInstanceId(initialItem);
   if (instanceId === undefined) return;
@@ -156,24 +171,114 @@ function loadItem(player: Player, block: Block): void {
 }
 
 function dockItem(player: Player, block: Block): void {
-  const item = getMainhand(player);
-  if (!isAspergillum(item) || getBooleanState(block, DOCKED_STATE)) return;
+  const originalItem = getMainhand(player);
+  if (!isAspergillum(originalItem) || getBooleanState(block, DOCKED_STATE)) return;
+  if (!isAspergillumSchemaSupported(originalItem)) {
+    action(player, "§cEste aspersório pertence a uma versão mais recente.", "§cThis aspergillum belongs to a newer version.");
+    return;
+  }
+  const item = initializeAspergillum(originalItem);
   const itemState = readAspergillumState(item);
   const level = getNumberState(block, WATER_LEVEL_STATE);
-  const returned = Math.min(MAX_CHARGES, level + itemState.charges);
-  setState(block, WATER_LEVEL_STATE, returned);
-  setState(block, DOCKED_STATE, true);
-  setMainhand(player, undefined);
+  const resolution = resolveDocking(level, itemState.charges);
+  if (!resolution.allowed) {
+    action(
+      player,
+      "§cNão há espaço para toda a água do aspersório.",
+      "§cThere is not enough room for all water in the aspergillum.",
+    );
+    return;
+  }
+  const dimensionId = block.dimension.id;
+  let previousSnapshot;
+  try {
+    previousSnapshot = getDockedSnapshot(dimensionId, block.location);
+  } catch (error) {
+    console.error(`[Aspergillum] Docked registry could not be read: ${String(error)}`);
+    action(player, "§cOs dados persistentes da caldeirinha precisam de reparo.", "§cThe aspersorium's persistent data requires repair.");
+    return;
+  }
+  if (previousSnapshot !== undefined) {
+    console.error(`[Aspergillum] Refusing to overwrite orphaned docked snapshot at ${dimensionId} ${JSON.stringify(block.location)}`);
+    action(player, "§cA caldeirinha precisa ser recuperada antes do uso.", "§cThe aspersorium must be recovered before use.");
+    return;
+  }
+  const snapshot = captureDockedAspergillum(item);
+  const originalPermutation = block.permutation;
+  const updatedPermutation = withState(
+    withState(originalPermutation, WATER_LEVEL_STATE, resolution.nextWater),
+    DOCKED_STATE,
+    true,
+  );
+  try {
+    setDockedSnapshot(dimensionId, block.location, snapshot);
+    setMainhand(player, undefined);
+    block.setPermutation(updatedPermutation);
+  } catch (error) {
+    try { setMainhand(player, originalItem); } catch { /* defensive rollback */ }
+    try { block.setPermutation(originalPermutation); } catch { /* defensive rollback */ }
+    try { deleteDockedSnapshot(dimensionId, block.location); } catch { /* defensive rollback */ }
+    console.error(`[Aspergillum] Dock transaction failed: ${String(error)}`);
+    action(player, "§cO encaixe foi cancelado com segurança.", "§cDocking was safely cancelled.");
+    return;
+  }
   player.playSound("armor.equip_chain", { pitch: 0.92, volume: 0.58 });
   action(player, "§7Aspersório acomodado na caldeirinha.", "§7Aspergillum placed in the aspersorium.");
 }
 
 function undockItem(player: Player, block: Block): void {
   if (!getBooleanState(block, DOCKED_STATE)) return;
-  setState(block, DOCKED_STATE, false);
-  giveOrDrop(player, createAspergillum(0, player));
+  const dimensionId = block.dimension.id;
+  let snapshot;
+  try {
+    snapshot = getDockedSnapshot(dimensionId, block.location);
+  } catch (error) {
+    console.error(`[Aspergillum] Docked registry could not be read: ${String(error)}`);
+    action(player, "§cOs dados persistentes da caldeirinha precisam de reparo.", "§cThe aspersorium's persistent data requires repair.");
+    return;
+  }
+  const restoredItem = snapshot === undefined ? createAspergillum(0) : restoreDockedAspergillum(snapshot);
+  const originalPermutation = block.permutation;
+  const updatedPermutation = withState(originalPermutation, DOCKED_STATE, false);
+  try {
+    block.setPermutation(updatedPermutation);
+    if (snapshot !== undefined) deleteDockedSnapshot(dimensionId, block.location);
+    giveOrDrop(player, restoredItem);
+  } catch (error) {
+    try { block.setPermutation(originalPermutation); } catch { /* defensive rollback */ }
+    if (snapshot !== undefined) {
+      try { setDockedSnapshot(dimensionId, block.location, snapshot); } catch { /* defensive rollback */ }
+    }
+    console.error(`[Aspergillum] Undock transaction failed: ${String(error)}`);
+    action(player, "§cA retirada foi cancelada com segurança.", "§cRetrieval was safely cancelled.");
+    return;
+  }
   player.playSound("armor.equip_chain", { pitch: 1.12, volume: 0.55 });
   action(player, "§7Aspersório retirado.", "§7Aspergillum retrieved.");
+}
+
+export function handleAspersoriumBreak(event: BlockComponentBlockBreakEvent): void {
+  if (event.brokenBlockPermutation.type.id !== ASPERSORIUM_BLOCK) return;
+  const location = { ...event.block.location };
+  const dimension = event.dimension;
+  const dimensionId = dimension.id;
+  cancelLoadingAtBlock(dimensionId, location);
+  if (event.brokenBlockPermutation.getAllStates()[DOCKED_STATE] !== true) return;
+
+  system.run(() => {
+    try {
+      const snapshot = getDockedSnapshot(dimensionId, location);
+      const recovered = snapshot === undefined ? createAspergillum(0) : restoreDockedAspergillum(snapshot);
+      dimension.spawnItem(recovered, {
+        x: location.x + 0.5,
+        y: location.y + 0.35,
+        z: location.z + 0.5,
+      });
+      if (snapshot !== undefined) deleteDockedSnapshot(dimensionId, location);
+    } catch (error) {
+      console.error(`[Aspergillum] Could not recover docked item after block destruction: ${String(error)}`);
+    }
+  });
 }
 
 export function handleAspersoriumInteraction(event: BlockComponentPlayerInteractEvent): void {
@@ -181,7 +286,7 @@ export function handleAspersoriumInteraction(event: BlockComponentPlayerInteract
   if (player === undefined) return;
 
   system.run(() => {
-    if (!player.isValid || !event.block.isValid) return;
+    if (!player.isValid || !event.block.isValid || event.block.typeId !== ASPERSORIUM_BLOCK) return;
     const block = event.block;
     const item = getMainhand(player);
     const activeAction = getActionLease(player.id);
@@ -204,7 +309,12 @@ export function handleAspersoriumInteraction(event: BlockComponentPlayerInteract
       return;
     }
     if (getBooleanState(block, DOCKED_STATE)) {
-      undockItem(player, block);
+      if (item === undefined) undockItem(player, block);
+      else if (isAspergillum(item)) {
+        action(player, "§7A caldeirinha já contém um aspersório.", "§7The aspersorium already contains an aspergillum.");
+      } else {
+        action(player, "§7Use a mão vazia para retirar o aspersório.", "§7Use an empty hand to retrieve the aspergillum.");
+      }
       return;
     }
     if (isAspergillum(item)) {

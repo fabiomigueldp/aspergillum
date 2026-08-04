@@ -96,6 +96,15 @@ const renderMethods = new Set(
 if (renderMethods.size > 1) {
   errors.push("All Aspersorium material instances must use the same render method");
 }
+if (block?.components?.["minecraft:movable"]?.movement_type !== "immovable") {
+  errors.push("Persistent docked metadata requires the Aspersorium to remain immovable");
+}
+const dockedLoot = JSON.parse(
+  fs.readFileSync(path.join(packRoots[0], "loot_tables", "blocks", "aspersorium_docked.loot.json"), "utf8"),
+);
+if (JSON.stringify(dockedLoot).includes("aspergillum:aspergillum")) {
+  errors.push("Docked loot must not duplicate the script-recovered metadata-bearing aspergillum");
+}
 
 for (const recipeName of ["aspergillum.recipe.json", "aspersorium.recipe.json"]) {
   const recipe = JSON.parse(fs.readFileSync(path.join(packRoots[0], "recipes", recipeName), "utf8"));
@@ -339,10 +348,10 @@ if (!fs.existsSync(dropletPath)) {
   }
   const gradient = dropletComponents["minecraft:particle_appearance_tinting"]?.color?.gradient;
   if (JSON.stringify(gradient) !== JSON.stringify({
-    "0.0": [0.12, 0.52, 0.88, 1.0],
-    "0.55": [0.08, 0.4, 0.76, 0.98],
-    "0.88": [0.04, 0.29, 0.64, 0.86],
-    "1.0": [0.04, 0.24, 0.58, 0.0],
+    "0.0": [0.28, 0.62, 0.84, 1.0],
+    "0.55": [0.18, 0.5, 0.75, 0.98],
+    "0.88": [0.11, 0.38, 0.65, 0.86],
+    "1.0": [0.09, 0.32, 0.58, 0.0],
   })) {
     errors.push("Holy-water droplets must preserve the approved cool-blue lifetime palette");
   }
@@ -398,6 +407,33 @@ if (!compiledScript.includes("transportSprayBasis") || !compiledScript.includes(
 }
 if (compiledScript.includes("random.splash")) {
   errors.push("Compiled spray must not duplicate the locator-timed release sound");
+}
+for (const contract of [
+  "aspergillum:schema_version",
+  "aspergillum:instance_id",
+  "aspergillum:cosmetic_id",
+  "aspergillum:spray_profile_id",
+  "aspergillum:docked_",
+  "Unsupported future aspergillum schema",
+  "There is not enough room for all water in the aspergillum.",
+]) {
+  if (!compiledScript.includes(contract)) errors.push(`Compiled persistence contract is missing: ${contract}`);
+}
+if (!compiledScript.includes("getDynamicPropertyIds")
+  || !compiledScript.includes("getRawLore")
+  || !compiledScript.includes("onBreak")) {
+  errors.push("Compiled script must preserve custom metadata, localized lore migration, and break recovery");
+}
+
+for (const locale of ["pt_BR", "en_US"]) {
+  const lang = fs.readFileSync(path.join(packRoots[1], "texts", `${locale}.lang`), "utf8");
+  for (const key of [
+    "item.aspergillum.lore.charges",
+    "item.aspergillum.lore.instructions",
+    "item.aspergillum.lore.creative",
+  ]) {
+    if (!lang.includes(`${key}=`)) errors.push(`${locale}.lang is missing localized lore key ${key}`);
+  }
 }
 
 const required = [

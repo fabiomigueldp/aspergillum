@@ -1,9 +1,26 @@
 export const MAX_CHARGES = 3;
 export const SPRINKLE_COOLDOWN_TICKS = 18;
+export const CURRENT_SCHEMA_VERSION = 2;
+export const DEFAULT_COSMETIC_ID = "classic";
+export const DEFAULT_SPRAY_PROFILE_ID = "standard";
 
 export interface AspergillumState {
   readonly charges: number;
-  readonly schemaVersion: 1;
+  readonly schemaVersion: number;
+  readonly cosmeticId: string;
+  readonly sprayProfileId: string;
+}
+
+export interface RawAspergillumState {
+  readonly charges?: unknown;
+  readonly schemaVersion?: unknown;
+  readonly cosmeticId?: unknown;
+  readonly sprayProfileId?: unknown;
+}
+
+export interface AspergillumMigration {
+  readonly status: "current" | "migrated" | "future";
+  readonly state: AspergillumState;
 }
 
 export interface LoadResult {
@@ -26,6 +43,39 @@ export function normalizeCharges(value: unknown): number {
   return Math.max(0, Math.min(MAX_CHARGES, Math.trunc(value)));
 }
 
+function normalizeSchemaVersion(value: unknown): number {
+  if (typeof value !== "number" || !Number.isFinite(value)) return 0;
+  return Math.max(0, Math.trunc(value));
+}
+
+function normalizeIdentifier(value: unknown, fallback: string): string {
+  return typeof value === "string" && /^[a-z0-9_.-]{1,64}$/.test(value) ? value : fallback;
+}
+
+export function createDefaultAspergillumState(charges: unknown = 0): AspergillumState {
+  return {
+    charges: normalizeCharges(charges),
+    schemaVersion: CURRENT_SCHEMA_VERSION,
+    cosmeticId: DEFAULT_COSMETIC_ID,
+    sprayProfileId: DEFAULT_SPRAY_PROFILE_ID,
+  };
+}
+
+export function migrateAspergillumState(raw: RawAspergillumState): AspergillumMigration {
+  const sourceSchema = normalizeSchemaVersion(raw.schemaVersion);
+  const state: AspergillumState = {
+    charges: normalizeCharges(raw.charges),
+    schemaVersion: sourceSchema > CURRENT_SCHEMA_VERSION ? sourceSchema : CURRENT_SCHEMA_VERSION,
+    cosmeticId: normalizeIdentifier(raw.cosmeticId, DEFAULT_COSMETIC_ID),
+    sprayProfileId: normalizeIdentifier(raw.sprayProfileId, DEFAULT_SPRAY_PROFILE_ID),
+  };
+  if (sourceSchema > CURRENT_SCHEMA_VERSION) return { status: "future", state };
+  return {
+    status: sourceSchema === CURRENT_SCHEMA_VERSION ? "current" : "migrated",
+    state,
+  };
+}
+
 export function loadFromAspersorium(
   state: AspergillumState,
   availableWater: number,
@@ -37,7 +87,7 @@ export function loadFromAspersorium(
   const transferred = Math.min(water, capacity);
 
   return {
-    state: { charges: charges + transferred, schemaVersion: 1 },
+    state: { ...state, charges: charges + transferred },
     transferred,
     nextWater: policy === "retain" ? water : water - transferred,
   };
@@ -51,20 +101,20 @@ export function resolveSprinkle(
   if (charges === 0) {
     return {
       allowed: false,
-      state: { charges: 0, schemaVersion: 1 },
+      state: { ...state, charges: 0 },
       consumed: 0,
     };
   }
   if (policy === "retain") {
     return {
       allowed: true,
-      state: { charges, schemaVersion: 1 },
+      state: { ...state, charges },
       consumed: 0,
     };
   }
   return {
     allowed: true,
-    state: { charges: charges - 1, schemaVersion: 1 },
+    state: { ...state, charges: charges - 1 },
     consumed: 1,
   };
 }
@@ -76,11 +126,4 @@ export function consumeCharge(state: AspergillumState): AspergillumState | undef
 
 export function canSprinkle(lastTick: number | undefined, currentTick: number): boolean {
   return lastTick === undefined || currentTick - lastTick >= SPRINKLE_COOLDOWN_TICKS;
-}
-
-export function chargeLore(charges: number, locale: "pt_BR" | "en_US" = "pt_BR"): string[] {
-  const safe = normalizeCharges(charges);
-  return locale === "pt_BR"
-    ? [`§7Água benta: §b${safe}§7/${MAX_CHARGES}`, "§8Ataque: aspergir • Usar na caldeirinha: carregar"]
-    : [`§7Holy water: §b${safe}§7/${MAX_CHARGES}`, "§8Attack: sprinkle • Use on aspersorium: load"];
 }

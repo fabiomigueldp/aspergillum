@@ -22,6 +22,7 @@ import {
   getMainhand,
   initializeAspergillum,
   isAspergillum,
+  isAspergillumSchemaSupported,
   readAspergillumInstanceId,
   readAspergillumState,
   setMainhand,
@@ -127,7 +128,7 @@ function commitSprinkleRelease(player: Player, session: SprinkleSession): void {
   }
 
   try {
-    setMainhand(player, writeAspergillumState(currentItem, resolution.state, player));
+    setMainhand(player, writeAspergillumState(currentItem, resolution.state));
   } catch (error) {
     console.error(`[Aspergillum] Sprinkle release commit failed for ${player.id}: ${String(error)}`);
     cancelSprinkleSession(player.id);
@@ -173,7 +174,11 @@ export function trySprinkle(player: Player): void {
   if (policies.denied) return;
   const rawItem = getMainhand(player);
   if (!isAspergillum(rawItem)) return;
-  const item = initializeAspergillum(rawItem, player);
+  if (!isAspergillumSchemaSupported(rawItem)) {
+    action(player, "§cEste aspersório pertence a uma versão mais recente.", "§cThis aspergillum belongs to a newer version.");
+    return;
+  }
+  const item = initializeAspergillum(rawItem);
   setMainhand(player, item);
   const itemInstanceId = readAspergillumInstanceId(item);
   if (itemInstanceId === undefined) return;

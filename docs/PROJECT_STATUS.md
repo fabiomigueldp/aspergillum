@@ -2,13 +2,13 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.0.16c` (revisão numérica dos packs `[1, 0, 22]`)
+- **Versão de referência:** `1.0.17` (revisão numérica dos packs `[1, 0, 23]`)
 - **Engine mínima:** Creator `1.26.30`
 - **Script API:** `@minecraft/server` `2.8.0`, estável
 - **Experimentos:** nenhum
 - **Conteúdo:** aspersório funcional, caldeirinha colocável, carregamento, três cargas, docking decorativo e spray visual
 
-A v1.0.15d encerrou a fase de animação. A v1.0.16 integrou `spray_aim`/`aspergillum_tip`; a v1.0.16a corrigiu a herança local e restaurou o billboard legível. O teste da v1.0.16b revelou que cores hexadecimais de oito dígitos foram interpretadas no runtime em ordem distinta da assumida, transformando exatamente as chaves finais em verde e a inicial em quase branco. A v1.0.16c substitui todo o pipeline por arrays RGBA inequívocos e azul aquático saturado. O emissor script-side continua preservando 36 gotas, steering e multiplayer. O projeto ainda não atingiu a V1 final: esta revisão cromática aguarda QA físico e docking persistente permanece pendente.
+A v1.0.17 encerra a dívida estrutural de persistência: itens antigos migram para schema 2, lore é traduzida pelo cliente, IDs duplicados no inventário são reparados e o docking preserva o ItemStack por snapshot persistente. Overflow é recusado, a caldeirinha é imóvel por pistões e quebra/explosão usam recuperação script-side sem duplicar a loot table. A baseline visual da v1.0.16c e o refinamento cromático subsequente permanecem intactos. Esta revisão aguarda QA dentro do Minecraft antes da v1.0.18 Release Candidate.
 
 ## O que está resolvido
 
@@ -29,6 +29,10 @@ A v1.0.15d encerrou a fase de animação. A v1.0.16 integrou `spray_aim`/`asperg
 - Bridge, gotas e micro-splash usam arrays RGBA explícitos e azul dominante em cada keyframe, sem hex de oito dígitos ambíguo nem tint por iluminação local.
 - Preparação e release usam eventos sonoros próprios na timeline do attachable; o script não duplica o splash válido.
 - Trocar item ou dimensão cancela os pulsos restantes.
+- Itens brutos e schemas 0/1 migram para schema 2 em qualquer slot do inventário; schema futuro permanece intocado.
+- Lore usa `RawMessage` e chaves `pt_BR`/`en_US`, sem congelar o idioma no ItemStack.
+- Docking guarda `instance_id`, `nameTag`, cosmético, perfil e propriedades customizadas em shards persistentes por dimensão/chunk.
+- Overflow é recusado sem alterar água ou item; retirada exige mão vazia e quebra recupera o snapshot real.
 
 ## Limitações conhecidas
 
@@ -38,14 +42,14 @@ A v1.0.15d encerrou a fase de animação. A v1.0.16 integrou `spray_aim`/`asperg
 | Aspersão | composição 1.0.15d fisicamente aprovada e congelada | nenhuma limitação estrutural conhecida; manter testes de regressão FP/TP |
 | Origem das gotas | bridge corrigido nasce em `aspergillum_tip`; leque balístico mantém origem matemática | QA recorrente deve confirmar ligação visual e comportamento remoto |
 | Cor das gotas | RGBA explícito e azul dominante durante toda a vida | QA da 1.0.16c deve confirmar ausência de branco excessivo e de verde/amarelo em gotas e impactos |
-| Docking | bloco guarda apenas `has_aspergillum` | `nameTag`, identidade e futuras variantes podem se perder ao acomodar |
-| Overflow | cargas podem exceder espaço livre ao acomodar | água pode ser descartada sem intenção se não for recusado |
-| Schema/lore | schema ainda não é uma migração completa; lore é textual | compatibilidade futura e localização persistente ainda não estão concluídas |
+| Persistência | registry por chunk é novo | precisa de QA de reload, quebra, explosão e inventário cheio no runtime |
+| Recuperação | `onBreak` estável cobre destruição; água continua não sendo um item | confirmar fisicamente explosão e comandos `destroy` sem duplicação |
+| Schema/lore | migração e `RawMessage` estão implementados | confirmar renderização `%%1/%%2` em clientes pt_BR e en_US |
 | Entrada vanilla | `playerSwingStart` é after-event | alguns dispositivos podem mostrar feedback breve de mineração |
 
 ## Próxima mudança autorizada
 
-A v1.0.16c está implementada e deve passar pelo gate cromático descrito em [TESTING.md](TESTING.md). Após sua aprovação, o próximo marco autorizado é a v1.0.17 de persistência, schema e docking descrita em [ROADMAP.md](ROADMAP.md).
+A v1.0.17 está implementada e deve passar pelo gate de persistência descrito em [TESTING.md](TESTING.md). Depois da aprovação física, o próximo marco é a v1.0.18 de UX, desempenho e Release Candidate descrita em [ROADMAP.md](ROADMAP.md).
 
 Não faz parte do próximo marco:
 

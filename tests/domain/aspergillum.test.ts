@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
+  CURRENT_SCHEMA_VERSION,
   canSprinkle,
   consumeCharge,
+  createDefaultAspergillumState,
   loadFromAspersorium,
+  migrateAspergillumState,
   normalizeCharges,
   resolveSprinkle,
 } from "../../src/domain/aspergillum";
@@ -15,21 +18,46 @@ describe("aspergillum domain", () => {
     expect(normalizeCharges("3")).toBe(0);
   });
 
+  it("migrates legacy state without losing finite charges", () => {
+    expect(migrateAspergillumState({ charges: 2, schemaVersion: 1 })).toEqual({
+      status: "migrated",
+      state: {
+        charges: 2,
+        schemaVersion: CURRENT_SCHEMA_VERSION,
+        cosmeticId: "classic",
+        sprayProfileId: "standard",
+      },
+    });
+  });
+
+  it("does not downgrade a future schema", () => {
+    expect(migrateAspergillumState({ charges: 2, schemaVersion: 99 })).toEqual({
+      status: "future",
+      state: {
+        charges: 2,
+        schemaVersion: 99,
+        cosmeticId: "classic",
+        sprayProfileId: "standard",
+      },
+    });
+  });
+
   it("transfers only the available capacity", () => {
-    const result = loadFromAspersorium({ charges: 2, schemaVersion: 1 }, 3);
-    expect(result).toEqual({ state: { charges: 3, schemaVersion: 1 }, transferred: 1, nextWater: 2 });
+    const state = createDefaultAspergillumState(2);
+    const result = loadFromAspersorium(state, 3);
+    expect(result).toEqual({ state: { ...state, charges: 3 }, transferred: 1, nextWater: 2 });
   });
 
   it("always adds to the normalized charge value", () => {
-    expect(loadFromAspersorium({ charges: -99, schemaVersion: 1 }, 2).state.charges).toBe(2);
-    expect(loadFromAspersorium({ charges: 99, schemaVersion: 1 }, 3).state.charges).toBe(3);
-    expect(loadFromAspersorium({ charges: Number.NaN, schemaVersion: 1 }, 1).state.charges).toBe(1);
+    expect(loadFromAspersorium({ ...createDefaultAspergillumState(), charges: -99 }, 2).state.charges).toBe(2);
+    expect(loadFromAspersorium({ ...createDefaultAspergillumState(), charges: 99 }, 3).state.charges).toBe(3);
+    expect(loadFromAspersorium({ ...createDefaultAspergillumState(), charges: Number.NaN }, 1).state.charges).toBe(1);
   });
 
   it("resolves all finite charge and water combinations without loss", () => {
     for (let charges = 0; charges <= 3; charges += 1) {
       for (let water = 0; water <= 3; water += 1) {
-        const result = loadFromAspersorium({ charges, schemaVersion: 1 }, water);
+        const result = loadFromAspersorium(createDefaultAspergillumState(charges), water);
         const expectedTransfer = Math.min(water, 3 - charges);
         expect(result.transferred).toBe(expectedTransfer);
         expect(result.state.charges).toBe(charges + expectedTransfer);
@@ -39,22 +67,24 @@ describe("aspergillum domain", () => {
   });
 
   it("retains aspersorium water under the Creative policy", () => {
-    const result = loadFromAspersorium({ charges: 1, schemaVersion: 1 }, 2, "retain");
-    expect(result).toEqual({ state: { charges: 3, schemaVersion: 1 }, transferred: 2, nextWater: 2 });
+    const state = createDefaultAspergillumState(1);
+    const result = loadFromAspersorium(state, 2, "retain");
+    expect(result).toEqual({ state: { ...state, charges: 3 }, transferred: 2, nextWater: 2 });
   });
 
   it("consumes a charge and rejects an empty sprinkle", () => {
-    expect(consumeCharge({ charges: 1, schemaVersion: 1 })?.charges).toBe(0);
-    expect(consumeCharge({ charges: 0, schemaVersion: 1 })).toBeUndefined();
+    expect(consumeCharge(createDefaultAspergillumState(1))?.charges).toBe(0);
+    expect(consumeCharge(createDefaultAspergillumState(0))).toBeUndefined();
   });
 
   it("retains finite charges under the Creative policy", () => {
-    expect(resolveSprinkle({ charges: 1, schemaVersion: 1 }, "retain")).toEqual({
+    const state = createDefaultAspergillumState(1);
+    expect(resolveSprinkle(state, "retain")).toEqual({
       allowed: true,
-      state: { charges: 1, schemaVersion: 1 },
+      state,
       consumed: 0,
     });
-    expect(resolveSprinkle({ charges: 0, schemaVersion: 1 }, "retain").allowed).toBe(false);
+    expect(resolveSprinkle(createDefaultAspergillumState(0), "retain").allowed).toBe(false);
   });
 
   it("enforces the recovery window", () => {

@@ -10,7 +10,7 @@ import {
   system,
   world,
 } from "@minecraft/server";
-import { handleAspersoriumInteraction } from "../application/aspersorium";
+import { handleAspersoriumBreak, handleAspersoriumInteraction } from "../application/aspersorium";
 import { yawToSixteenWayRotation } from "../domain/rotation";
 import {
   cancelWaterSpray,
@@ -30,8 +30,11 @@ import {
   getMainhand,
   initializeAspergillum,
   isAspergillum,
+  isAspergillumSchemaSupported,
+  needsAspergillumInitialization,
   readAspergillumInstanceId,
   readAspergillumState,
+  reissueAspergillumInstanceId,
   setMainhand,
 } from "../infrastructure/item-state";
 import {
@@ -43,7 +46,11 @@ import { action } from "../infrastructure/messaging";
 
 const aspergillumUse: ItemCustomComponent = {
   onUse(event) {
-    const initialized = event.itemStack ? initializeAspergillum(event.itemStack, event.source) : undefined;
+    if (event.itemStack !== undefined && !isAspergillumSchemaSupported(event.itemStack)) {
+      action(event.source, "§cEste aspersório pertence a uma versão mais recente.", "§cThis aspergillum belongs to a newer version.");
+      return;
+    }
+    const initialized = event.itemStack ? initializeAspergillum(event.itemStack) : undefined;
     if (initialized !== undefined) setMainhand(event.source, initialized);
     const state = initialized ? readAspergillumState(initialized) : { charges: 0 };
     const policies = resolvePlayerPolicies(event.source);
@@ -69,12 +76,51 @@ function clearTransientPlayerState(playerId: string): void {
   clearSprinklePlayerState(playerId);
 }
 
-function initializeSelectedAspergillum(player: Player): void {
+function initializeInventorySlot(player: Player, slot: number): void {
   system.run(() => {
     if (!player.isValid) return;
-    const item = getMainhand(player);
-    if (!isAspergillum(item) || readAspergillumInstanceId(item) !== undefined) return;
-    setMainhand(player, initializeAspergillum(item, player));
+    const inventory = player.getComponent(EntityComponentTypes.Inventory)?.container;
+    if (inventory === undefined || slot < 0 || slot >= inventory.size) return;
+    const item = inventory.getItem(slot);
+    if (!isAspergillum(item)) return;
+    let updated = needsAspergillumInitialization(item) ? initializeAspergillum(item) : item;
+    const instanceId = readAspergillumInstanceId(updated);
+    if (instanceId !== undefined) {
+      for (let otherSlot = 0; otherSlot < inventory.size; otherSlot += 1) {
+        if (otherSlot === slot) continue;
+        const other = inventory.getItem(otherSlot);
+        if (isAspergillum(other) && readAspergillumInstanceId(other) === instanceId) {
+          updated = reissueAspergillumInstanceId(updated);
+          break;
+        }
+      }
+    }
+    if (updated !== item) inventory.setItem(slot, updated);
+  });
+}
+
+function initializeSelectedAspergillum(player: Player): void {
+  initializeInventorySlot(player, player.selectedSlotIndex);
+}
+
+function initializePlayerInventory(player: Player): void {
+  system.run(() => {
+    if (!player.isValid) return;
+    const inventory = player.getComponent(EntityComponentTypes.Inventory)?.container;
+    if (inventory === undefined) return;
+    const seenInstanceIds = new Set<string>();
+    for (let slot = 0; slot < inventory.size; slot += 1) {
+      const item = inventory.getItem(slot);
+      if (!isAspergillum(item)) continue;
+      let updated = needsAspergillumInitialization(item) ? initializeAspergillum(item) : item;
+      const instanceId = readAspergillumInstanceId(updated);
+      if (instanceId !== undefined && seenInstanceIds.has(instanceId)) {
+        updated = reissueAspergillumInstanceId(updated);
+      }
+      const finalId = readAspergillumInstanceId(updated);
+      if (finalId !== undefined) seenInstanceIds.add(finalId);
+      if (updated !== item) inventory.setItem(slot, updated);
+    }
   });
 }
 
@@ -91,6 +137,7 @@ system.beforeEvents.startup.subscribe((event) => {
   event.itemComponentRegistry.registerCustomComponent(ASPERGILLUM_COMPONENT, aspergillumUse);
   event.blockComponentRegistry.registerCustomComponent(ASPERSORIUM_COMPONENT, {
     beforeOnPlayerPlace: orientAspersorium,
+    onBreak: handleAspersoriumBreak,
     onPlayerInteract: handleAspersoriumInteraction,
   });
 });
@@ -128,6 +175,7 @@ world.afterEvents.playerGameModeChange.subscribe((event) => {
 });
 
 world.afterEvents.playerInventoryItemChange.subscribe((event) => {
+  if (isAspergillum(event.itemStack)) initializeInventorySlot(event.player, event.slot);
   if (event.inventoryType !== PlayerInventoryType.Hotbar) return;
   const loadingSession = getLoadingSession(event.player.id);
   if (
@@ -160,7 +208,7 @@ world.afterEvents.entityDie.subscribe((event) => {
 
 world.afterEvents.playerSpawn.subscribe((event) => {
   if (!event.initialSpawn) clearTransientPlayerState(event.player.id);
-  initializeSelectedAspergillum(event.player);
+  initializePlayerInventory(event.player);
 });
 
 world.afterEvents.playerLeave.subscribe((event) => {

@@ -39,7 +39,8 @@ Cada item possui `aspergillum:instance_id`. Operações atrasadas devem identifi
 
 - Atualizar o mesmo item: clonar e preservar ID/propriedades.
 - Criar uma cópia independente: gerar novo ID.
-- Item bruto: inicializar de forma preguiçosa no primeiro acesso autoritativo; no futuro, também por evento de inventário com debounce.
+- Item bruto: inicializar no primeiro acesso autoritativo e por evento/varredura de inventário.
+- IDs duplicados no inventário do mesmo jogador são detectados e a ocorrência recebida posteriormente ganha nova identidade.
 - Schema futuro desconhecido: não sobrescrever destrutivamente.
 
 ## Carregamento atual
@@ -79,7 +80,7 @@ Semântica:
 - cancelamento depois do release: carga permanece consumida; apenas pulsos futuros são interrompidos;
 - tentativa vazia: feedback seco e cooldown lógico, sem cooldown visual válido e sem água.
 
-`ActionLease` já unifica a exclusão entre carregar e aspergir. Docking e undocking serão incorporados quando ganharem snapshots transacionais; a migração continua incremental.
+`ActionLease` unifica a exclusão entre carregar e aspergir. Docking e undocking usam escrita defensiva própria porque são operações imediatas: snapshot, ItemStack e permutação são restaurados quando uma etapa lança erro.
 
 ## Curvatura controlada
 
@@ -93,22 +94,22 @@ A direção deve continuar respondendo à câmera entre pulsos. Isso é um recur
 
 A implementação transporta paralelamente o vetor lateral anterior. O eixo mundial menos alinhado com o forward é usado apenas no caso degenerado inicial.
 
-## Docking e persistência-alvo
+## Docking e persistência atual
 
-O estado booleano `has_aspergillum` é suficiente para renderização, mas não preserva um `ItemStack`. Antes da V1 final, o mundo deve manter um snapshot por bloco ocupado:
+O estado booleano `has_aspergillum` continua responsável somente pela renderização. O mundo preserva o item num snapshot por bloco ocupado:
 
 ```ts
 interface DockedAspergillumSnapshot {
-  schemaVersion: 2;
+  schemaVersion: 1; // schema independente do ItemStack V2
   instanceId: string;
   nameTag?: string;
   cosmeticId: string;
   sprayProfileId: string;
-  customProperties: Record<string, boolean | number | string>;
+  customProperties: Record<string, boolean | number | string | SerializedVector3>;
 }
 ```
 
-Use propriedades dinâmicas do mundo, preferencialmente agrupadas por dimensão/chunk. Ao retirar ou quebrar, reconstrua o item, restaure metadados, force `charges = 0` e remova o snapshot. Explosões precisam do mesmo caminho; para a V1, a caldeirinha deve ser imóvel por pistões.
+O `DockedItemRegistry` usa propriedades dinâmicas do mundo agrupadas por dimensão/chunk e limita cada blob a 30.000 caracteres. Ao retirar ou quebrar, reconstrói o item, restaura metadados, força `charges = 0` — as cargas já foram devolvidas à água — e remove o snapshot somente depois da recuperação. A caldeirinha declara `minecraft:movable` como `immovable`, evitando deslocar o endereço persistente por pistões.
 
 Docking só é permitido se `water_level + charges <= 3`. Caso contrário, deve ser recusado sem alterar item ou bloco.
 
@@ -120,7 +121,9 @@ Prioridade de interação:
 4. livre + aspersório + agachado acomoda;
 5. livre + aspersório normal carrega.
 
-## Schema 2 planejado
+Ocupado com outro item na mão não retira nada; a interface solicita mão vazia. A loot table ocupada não fornece um aspersório genérico: `onBreak` restaura o snapshot, evitando duplicação e preservando metadados. Blocos ocupados legados sem snapshot recuperam um item V2 vazio como fallback compatível.
+
+## Schema 2 implementado
 
 | Entrada | Migração |
 | --- | --- |
@@ -129,4 +132,4 @@ Prioridade de interação:
 | 2 | validar e normalizar |
 | maior que 2 | não fazer downgrade; retornar compatibilidade futura |
 
-Estado V2 inclui `instanceId`, `charges`, `cosmeticId: "classic"` e `sprayProfileId: "standard"`. Lore deve usar `RawMessage` localizado e ser regenerada a partir do estado, nunca tratada como fonte de verdade.
+Estado V2 inclui `instanceId`, `charges`, `cosmeticId: "classic"` e `sprayProfileId: "standard"`. Lore usa `RawMessage` localizado e é regenerada a partir do estado, nunca tratada como fonte de verdade. Um schema maior que 2 é lido apenas para diagnóstico e bloqueado para operações mutáveis; o item não é regravado.

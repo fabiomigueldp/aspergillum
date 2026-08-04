@@ -144,7 +144,7 @@ Gate de saída:
 - nenhuma gota nasce no rosto/tórax e nenhuma acompanha o braço depois de emitida.
 - gotas distantes e micro-splashes permanecem azuis em sol, sombra, luz quente e Vibrant Visuals.
 
-## v1.0.17 — Persistência, schema e docking
+## v1.0.17 — Persistência, schema e docking — implementada; QA físico pendente
 
 Escopo:
 
@@ -155,6 +155,16 @@ Escopo:
 - recusa de overflow e prioridade clara de interação;
 - recuperação em quebra/explosão e política de pistão;
 - testes de IDs duplicados, inventário cheio e reload.
+
+Implementação:
+
+- schema 2 preserva cargas finitas e adiciona `cosmeticId`/`sprayProfileId`, sem fazer downgrade de schema futuro;
+- todo o inventário é inicializado/migrado e duplicatas locais de `instance_id` recebem nova identidade;
+- lore usa `RawMessage` e chaves do Resource Pack;
+- `DockedItemRegistry` usa propriedades dinâmicas do mundo agrupadas por dimensão/chunk;
+- snapshots preservam nome, identidade, IDs de extensão e propriedades customizadas serializáveis;
+- docking recusa overflow, retirada exige mão vazia, pistões são bloqueados e `onBreak` recupera o item real;
+- a loot table ocupada entrega somente a caldeirinha, impedindo duplicação com a recuperação script-side.
 
 Gate de saída:
 
