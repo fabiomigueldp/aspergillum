@@ -3,9 +3,23 @@ import {
   EquipmentSlot,
   ItemStack,
   Player,
+  system,
 } from "@minecraft/server";
 import { chargeLore, normalizeCharges, type AspergillumState } from "../domain/aspergillum";
-import { ASPERGILLUM_ITEM, CHARGES_PROPERTY, SCHEMA_PROPERTY } from "./constants";
+import { ASPERGILLUM_ITEM, CHARGES_PROPERTY, INSTANCE_ID_PROPERTY, SCHEMA_PROPERTY } from "./constants";
+
+let instanceSequence = 0;
+
+function createInstanceId(): string {
+  instanceSequence = (instanceSequence + 1) % 0x1000000;
+  const random = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString(36);
+  return `ag-${system.currentTick.toString(36)}-${instanceSequence.toString(36)}-${random}`;
+}
+
+export function readAspergillumInstanceId(item: ItemStack): string | undefined {
+  const value = item.getDynamicProperty(INSTANCE_ID_PROPERTY);
+  return typeof value === "string" && value.length > 0 ? value : undefined;
+}
 
 export function readAspergillumState(item: ItemStack): AspergillumState {
   return {
@@ -18,9 +32,14 @@ export function writeAspergillumState(item: ItemStack, state: AspergillumState, 
   const updated = item.clone();
   updated.setDynamicProperty(CHARGES_PROPERTY, normalizeCharges(state.charges));
   updated.setDynamicProperty(SCHEMA_PROPERTY, 1);
+  updated.setDynamicProperty(INSTANCE_ID_PROPERTY, readAspergillumInstanceId(item) ?? createInstanceId());
   const locale = player?.clientSystemInfo.locale?.toLowerCase().startsWith("pt") ? "pt_BR" : "en_US";
   updated.setLore(chargeLore(state.charges, locale));
   return updated;
+}
+
+export function initializeAspergillum(item: ItemStack, player?: Player): ItemStack {
+  return writeAspergillumState(item, readAspergillumState(item), player);
 }
 
 export function getMainhand(player: Player): ItemStack | undefined {

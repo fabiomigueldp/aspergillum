@@ -5,8 +5,9 @@ import {
   MolangVariableMap,
   Player,
   system,
+  type Vector3,
 } from "@minecraft/server";
-import { canSprinkle, consumeCharge } from "../domain/aspergillum";
+import { canSprinkle, resolveSprinkle } from "../domain/aspergillum";
 import {
   aspergillumTipOrigin,
   deterministicDropletDirections,
@@ -14,7 +15,16 @@ import {
   dropletIndicesForFrame,
 } from "../domain/cone";
 import { DROPLET_PARTICLE } from "../infrastructure/constants";
-import { getMainhand, isAspergillum, readAspergillumState, writeAspergillumState } from "../infrastructure/item-state";
+import { resolvePlayerPolicies } from "../infrastructure/game-mode-policy";
+import {
+  getMainhand,
+  initializeAspergillum,
+  isAspergillum,
+  readAspergillumInstanceId,
+  readAspergillumState,
+  setMainhand,
+  writeAspergillumState,
+} from "../infrastructure/item-state";
 import { action } from "../infrastructure/messaging";
 
 const lastSprinkleTick = new Map<string, number>();
@@ -22,44 +32,114 @@ const SPRAY_DROPLET_COUNT = 36;
 const SPRAY_FRAME_COUNT = 6;
 const SPRAY_RELEASE_DELAY_TICKS = 4;
 
-function emitWaterFrame(player: Player, frameIndex: number): void {
-  if (!player.isValid) return;
+interface SpraySnapshot {
+  readonly itemInstanceId: string;
+  readonly dimensionId: string;
+  readonly origin: Vector3;
+  readonly directions: readonly Vector3[];
+}
 
-  const direction = player.getViewDirection();
-  const origin = aspergillumTipOrigin(player.getHeadLocation(), direction);
-  const directions = deterministicDropletDirections(direction, SPRAY_DROPLET_COUNT);
+interface SpraySchedule {
+  readonly itemInstanceId: string;
+  readonly dimensionId: string;
+  readonly runIds: number[];
+}
+
+const spraySchedules = new Map<string, SpraySchedule>();
+
+function hasAuthorizedItem(player: Player, itemInstanceId: string, dimensionId: string): boolean {
+  if (!player.isValid || player.dimension.id !== dimensionId) return false;
+  const item = getMainhand(player);
+  return isAspergillum(item) && readAspergillumInstanceId(item) === itemInstanceId;
+}
+
+function emitWaterFrame(player: Player, snapshot: SpraySnapshot, frameIndex: number): void {
+  if (!hasAuthorizedItem(player, snapshot.itemInstanceId, snapshot.dimensionId)) return;
 
   for (const dropletIndex of dropletIndicesForFrame(SPRAY_DROPLET_COUNT, SPRAY_FRAME_COUNT, frameIndex)) {
-    const dropletDirection = directions[dropletIndex];
+    const dropletDirection = snapshot.directions[dropletIndex];
     if (!dropletDirection) continue;
     const variables = new MolangVariableMap();
     const speed = deterministicDropletSpeed(dropletIndex);
     variables.setSpeedAndDirection("variable.aspergillum_motion", speed, dropletDirection);
     variables.setFloat("variable.aspergillum_scale", 0.78 + (dropletIndex % 4) * 0.07);
-    player.dimension.spawnParticle(DROPLET_PARTICLE, origin, variables);
+    player.dimension.spawnParticle(DROPLET_PARTICLE, snapshot.origin, variables);
   }
 }
 
-function scheduleWaterSpray(player: Player): void {
-  for (let frameIndex = 0; frameIndex < SPRAY_FRAME_COUNT; frameIndex += 1) {
-    system.runTimeout(() => {
-      if (!player.isValid) return;
-      if (frameIndex === 0) player.playSound("random.splash", { pitch: 1.38, volume: 0.58 });
-      emitWaterFrame(player, frameIndex);
-    }, SPRAY_RELEASE_DELAY_TICKS + frameIndex);
+export function cancelWaterSpray(playerId: string): void {
+  const schedule = spraySchedules.get(playerId);
+  if (schedule === undefined) return;
+  spraySchedules.delete(playerId);
+  for (const runId of schedule.runIds) system.clearRun(runId);
+}
+
+function scheduleWaterSpray(player: Player, itemInstanceId: string): void {
+  cancelWaterSpray(player.id);
+  const schedule: SpraySchedule = {
+    itemInstanceId,
+    dimensionId: player.dimension.id,
+    runIds: [],
+  };
+  spraySchedules.set(player.id, schedule);
+  schedule.runIds.push(system.runTimeout(() => {
+    if (!hasAuthorizedItem(player, schedule.itemInstanceId, schedule.dimensionId)) {
+      cancelWaterSpray(player.id);
+      return;
+    }
+    const direction = player.getViewDirection();
+    const snapshot: SpraySnapshot = {
+      itemInstanceId: schedule.itemInstanceId,
+      dimensionId: schedule.dimensionId,
+      origin: aspergillumTipOrigin(player.getHeadLocation(), direction),
+      directions: deterministicDropletDirections(direction, SPRAY_DROPLET_COUNT),
+    };
+    player.playSound("random.splash", { pitch: 1.38, volume: 0.58 });
+    emitWaterFrame(player, snapshot, 0);
+    for (let frameIndex = 1; frameIndex < SPRAY_FRAME_COUNT; frameIndex += 1) {
+      schedule.runIds.push(system.runTimeout(() => {
+        if (!hasAuthorizedItem(player, schedule.itemInstanceId, schedule.dimensionId)) {
+          cancelWaterSpray(player.id);
+          return;
+        }
+        emitWaterFrame(player, snapshot, frameIndex);
+        if (frameIndex === SPRAY_FRAME_COUNT - 1 && spraySchedules.get(player.id) === schedule) {
+          spraySchedules.delete(player.id);
+        }
+      }, frameIndex));
+    }
+  }, SPRAY_RELEASE_DELAY_TICKS));
+}
+
+export function clearSprinklePlayerState(playerId: string): void {
+  lastSprinkleTick.delete(playerId);
+  cancelWaterSpray(playerId);
+}
+
+function presentChargeState(player: Player, charges: number, creative: boolean): void {
+  if (creative) {
+    action(player, "§bÁgua benta: ∞ §7• Criativo", "§bHoly water: ∞ §7• Creative");
+    return;
   }
+  action(player, `§b${charges}§7/3 cargas restantes`, `§b${charges}§7/3 charges remaining`);
 }
 
 export function trySprinkle(player: Player): void {
-  const item = getMainhand(player);
-  if (!isAspergillum(item)) return;
+  const policies = resolvePlayerPolicies(player);
+  if (policies.denied) return;
+  const rawItem = getMainhand(player);
+  if (!isAspergillum(rawItem)) return;
+  const item = initializeAspergillum(rawItem, player);
+  setMainhand(player, item);
+  const itemInstanceId = readAspergillumInstanceId(item);
+  if (itemInstanceId === undefined) return;
 
   const now = system.currentTick;
   if (!canSprinkle(lastSprinkleTick.get(player.id), now)) return;
 
   const state = readAspergillumState(item);
-  const next = consumeCharge(state);
-  if (next === undefined) {
+  const resolution = resolveSprinkle(state, policies.chargePolicy);
+  if (!resolution.allowed) {
     lastSprinkleTick.set(player.id, now);
     player.playSound("random.click", { pitch: 0.72, volume: 0.45 });
     action(player, "§7O aspersório está vazio. Use-o numa caldeirinha com água.", "§7The aspergillum is empty. Use it on a filled aspersorium.");
@@ -68,10 +148,11 @@ export function trySprinkle(player: Player): void {
 
   lastSprinkleTick.set(player.id, now);
   const equippable = player.getComponent(EntityComponentTypes.Equippable);
-  equippable?.setEquipment(EquipmentSlot.Mainhand, writeAspergillumState(item, next, player));
-  item.getComponent(ItemComponentTypes.Cooldown)?.startCooldown(player);
+  const updatedItem = writeAspergillumState(item, resolution.state, player);
+  equippable?.setEquipment(EquipmentSlot.Mainhand, updatedItem);
+  updatedItem.getComponent(ItemComponentTypes.Cooldown)?.startCooldown(player);
 
   player.playSound("armor.equip_chain", { pitch: 1.42, volume: 0.42 });
-  scheduleWaterSpray(player);
-  action(player, `§b${next.charges}§7/3 cargas restantes`, `§b${next.charges}§7/3 charges remaining`);
+  scheduleWaterSpray(player, itemInstanceId);
+  presentChargeState(player, resolution.state.charges, policies.creative);
 }

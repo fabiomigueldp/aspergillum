@@ -17,11 +17,11 @@
 
 O teste físico ainda é obrigatório porque entrada, câmera e feedback vanilla variam por plataforma.
 
-### Critério exclusivo da versão 1.0.12
+### Critério exclusivo da versão 1.0.13
 
 - [ ] ao selecionar o item, aparece a malha real em escala reduzida;
-- [ ] em terceira pessoa, o centro do cabo escuro atravessa o centro do punho direito após `position [5, -2.5, -1]`;
-- [ ] em terceira pessoa, a cabeça aponta para frente e para fora com pose efetiva próxima de `[31, 0, -12]`, sem ficar atrás da manga;
+- [ ] em terceira pessoa, o centro do cabo escuro atravessa o centro do punho direito após `position [5, -1.5, -2.25]`;
+- [ ] em terceira pessoa, a cabeça aponta para frente e para fora com pose efetiva próxima de `[35, 0, -12]`, sem ficar atrás da manga;
 - [ ] um ataque vanilla leva a malha junto com a mão sem arco orbital remoto;
 - [ ] em primeira pessoa, o cabo fica na região inferior direita e a cabeça aparece acima/à frente, sem inversão;
 - [ ] trocar de primeira para terceira pessoa não produz um frame de pose errada ou salto persistente;
@@ -34,8 +34,14 @@ O teste físico ainda é obrigatório porque entrada, câmera e feedback vanilla
 - [ ] a largura horizontal é claramente maior que a altura vertical, preservando alcance, gravidade e colisão;
 - [ ] a emissão parte aproximadamente da cabeça visível do instrumento, à direita e à frente, sem nascer no rosto, torso ou pés;
 - [ ] as gotas permanecem legíveis de frente, de lado e durante a queda, sem ficarem finas ou desaparecerem conforme o ângulo da câmera;
-- [ ] girar ou mover-se durante a rajada desloca os frames seguintes com o jogador, sem deixar uma nuvem estacionária;
+- [ ] girar a câmera durante a rajada não curva os pulsos já autorizados; trocar de item ou dimensão cancela os pulsos restantes;
 - [ ] não aparece animação litúrgica própria — ela continua fora do escopo desta revisão;
+- [ ] em Sobrevivência e Aventura, cada aspersão consome exatamente uma carga;
+- [ ] em Criativo, uma carga finita já presente permite aspersões sem consumo e o carregamento não reduz a água da caldeirinha;
+- [ ] um aspergillum com zero cargas continua sem emitir água no Criativo;
+- [ ] ao voltar do Criativo ao Sobrevivência, reaparece exatamente a quantidade finita anteriormente preservada;
+- [ ] trocar de slot, item, dimensão ou modo durante os dez ticks cancela o carregamento sem alterar item ou água;
+- [ ] duas pessoas não conseguem iniciar carregamento simultâneo na mesma caldeirinha;
 
 ### Instalação e conteúdo
 

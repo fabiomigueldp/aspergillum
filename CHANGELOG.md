@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.13 — 2026-08-03
+
+- preservados sem alteração o binding `rightItem`, a geometria `1.16.0`, o grip base e a pose aprovada de primeira pessoa;
+- refinada apenas a apresentação de terceira pessoa para `position [5, -1.5, -2.25]` e `rotation [10, 0, 0]`, produzindo pose efetiva aproximada `[35, 0, -12]`;
+- corrigida a soma de carregamento para usar sempre a carga normalizada, inclusive diante de propriedades persistidas inválidas;
+- introduzidas políticas explícitas de consumo: Sobrevivência/Aventura consomem água e cargas, Criativo retém ambas e Espectador é negado;
+- mantidas cargas persistentes finitas no Criativo: o símbolo `∞` é somente feedback contextual e nunca um valor gravado no item;
+- adicionado `aspergillum:instance_id` persistente a cada ItemStack para impedir que um item diferente receba o resultado de um carregamento iniciado por outro;
+- implementadas sessões únicas por jogador, lock temporário por caldeirinha e revalidação de dimensão, slot, identidade, distância, água, ocupação e modo no commit de dez ticks;
+- adicionada escrita coordenada de item e bloco com rollback defensivo em caso de falha parcial;
+- canceladas sessões e rajadas em troca de slot, dimensão, modo, morte, respawn, saída ou alteração do item autorizado;
+- congeladas a origem e a base vetorial da rajada no instante da liberação, impedindo que os seis pulsos se curvem quando a câmera gira;
+- ampliada a suíte pura para 14 testes, cobrindo as 16 combinações de carga/água, normalização corrompida e políticas de retenção.
+
 ## 1.0.12 — 2026-08-03
 
 - congelada a pose de primeira pessoa aprovada na 1.0.11, sem qualquer translação, escala ou rotação adicional;

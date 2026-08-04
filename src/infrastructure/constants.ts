@@ -2,6 +2,7 @@ export const ASPERGILLUM_ITEM = "aspergillum:aspergillum";
 export const ASPERSORIUM_BLOCK = "aspergillum:aspersorium";
 export const CHARGES_PROPERTY = "aspergillum:charges";
 export const SCHEMA_PROPERTY = "aspergillum:schema_version";
+export const INSTANCE_ID_PROPERTY = "aspergillum:instance_id";
 export const WATER_LEVEL_STATE = "aspergillum:water_level";
 export const DOCKED_STATE = "aspergillum:has_aspergillum";
 export const ROTATION_STATE = "aspergillum:rotation";

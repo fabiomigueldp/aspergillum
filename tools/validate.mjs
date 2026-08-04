@@ -205,10 +205,10 @@ const thirdPersonPose = holdAnimations?.["animation.aspergillum.hold_third_perso
 if (JSON.stringify(firstPersonPose?.bones?.aspergillum_visual?.rotation) !== JSON.stringify([180, 0, 0])) {
   errors.push("First-person pose must perform the controlled end-for-end inversion");
 }
-if (JSON.stringify(thirdPersonPose?.bones?.aspergillum_visual?.position) !== JSON.stringify([5, -2.5, -1])) {
+if (JSON.stringify(thirdPersonPose?.bones?.aspergillum_visual?.position) !== JSON.stringify([5, -1.5, -2.25])) {
   errors.push("Third-person pose must apply only the measured grip translation");
 }
-if (JSON.stringify(thirdPersonPose?.bones?.aspergillum_visual?.rotation) !== JSON.stringify([6, 0, 0])) {
+if (JSON.stringify(thirdPersonPose?.bones?.aspergillum_visual?.rotation) !== JSON.stringify([10, 0, 0])) {
   errors.push("Third-person pose must apply only the measured forward-pitch correction");
 }
 for (const [name, pose] of Object.entries({ firstPersonPose, thirdPersonPose })) {

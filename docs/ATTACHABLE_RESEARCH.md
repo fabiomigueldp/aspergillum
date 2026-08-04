@@ -64,6 +64,12 @@ O vídeo também mostrou que o leque radial da 1.0.11 podia formar um domo em to
 
 A documentação oficial confirma `particle_effects` em attachables e locators orientados por animação. O desafio restante não é suporte de formato, mas o gatilho: `variable.attack_time` também ocorre com zero cargas. O candidato estável é combiná-lo com `query.cooldown_time_remaining('main_hand')`, pois o script inicia o cooldown somente após consumir uma carga. Essa arquitetura será testada separadamente antes de substituir o emissor autoritativo.
 
+## Fechamento estático e estado 1.0.13
+
+O teste físico da 1.0.12 aprovou definitivamente binding, primeira pessoa, escala e integridade das faces. O ajuste final continua restrito ao filho visual de terceira pessoa: `position [5, -1.5, -2.25]` e `rotation [10, 0, 0]`, resultando numa orientação efetiva próxima de `[35, 0, -12]`. O root vinculado, a geometria e a primeira pessoa permanecem congelados.
+
+O estado de gameplay passa a separar valor persistente de política contextual. `charges` continua estritamente em `0…3`; Criativo apenas retém água e carga durante uma operação autorizada. Cada item recebe `aspergillum:instance_id`, e o carregamento captura jogador, slot, dimensão, coordenada e identidade. Uma sessão por jogador e um lock curto por bloco eliminam callbacks concorrentes e o caso A→B. A rajada matemática permanece como fallback nesta etapa, mas sua origem e base são agora capturadas uma única vez no frame de liberação.
+
 ## Invariantes
 
 - a versão da geometria permanece `1.16.0` ou superior;

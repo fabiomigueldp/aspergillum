@@ -2,12 +2,12 @@
 
 Add-On para Minecraft: Bedrock Edition 26.34/35 que adiciona um **aspersório litúrgico funcional** e uma **caldeirinha (aspersorium) colocável**. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão 1.0.12:** mantém a primeira pessoa aprovada, aplica exclusivamente em terceira pessoa a correção medida de grip e pitch, e transforma as 36 gotas num leque horizontal direcionado, com origem matemática mais próxima da cabeça do aspersório.
+> **Versão 1.0.13:** congela o binding e a primeira pessoa aprovados, conclui a calibração estática de terceira pessoa e fortalece cargas, identidade e carregamento concorrente, incluindo consumo infinito contextual no modo Criativo.
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/Aspergillum-1.0.12.mcaddon`](dist/Aspergillum-1.0.12.mcaddon) com o Minecraft.
+2. Abra [`dist/Aspergillum-1.0.13.mcaddon`](dist/Aspergillum-1.0.13.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
@@ -18,8 +18,9 @@ O alvo mínimo é Creator `1.26.30`, correspondente à linha pública Bedrock 26
 - Fabrique o **Aspersório** com gravetos e pepitas de ferro.
 - Fabrique a **Caldeirinha** com lingotes de ferro e uma corrente, e coloque-a sobre uma superfície.
 - Use um balde d'água na caldeirinha para enchê-la com três níveis.
-- Com o aspersório na mão, use-o na caldeirinha para carregar até três aspersões. A transferência acontece no instante de contato da animação.
+- Com o aspersório na mão, use-o na caldeirinha para carregar até três aspersões. A transferência é confirmada após uma preparação autoritativa de dez ticks; a animação litúrgica própria permanece reservada para a próxima etapa.
 - Use a ação **Atacar/Minar** para aspergir. O gesto não causa dano nem quebra blocos.
+- No modo Criativo, uma carga real já presente não é consumida e a caldeirinha não perde água ao carregar; ao voltar ao Sobrevivência, permanece apenas o número finito de cargas gravado no item.
 - Agache e use o aspersório na caldeirinha para acomodá-lo como decoração. Interaja novamente para retirá-lo.
 - Para testes rápidos com cheats: `/function aspergillum/dev_kit`.
 
@@ -31,9 +32,9 @@ As cargas permanecem gravadas no item. Ao acomodá-lo, cargas restantes retornam
 - raiz sem malha `aspergillum_bound` com `q.item_slot_to_bone_name(context.item_slot)`, preservando exatamente o caminho comprovado na 1.0.7;
 - filho `aspergillum_visual`, no qual ficam exclusivamente a malha e as correções artísticas;
 - malha real de 15,6 unidades autorada ao redor do grip empírico `[-6, 24, 1]`, nove unidades acima da pose da 1.0.8;
-- geometria base `[25, 0, -12]`, correção de apresentação exclusiva da terceira pessoa `position [5, -2.5, -1]`/`rotation [6, 0, 0]` e primeira pessoa aprovada preservada sem translação;
+- geometria base `[25, 0, -12]`, correção de apresentação exclusiva da terceira pessoa `position [5, -1.5, -2.25]`/`rotation [10, 0, 0]` e primeira pessoa aprovada preservada sem translação;
 - emissão autoritativa de 36 gotas em seis grupos espaciais contínuos, sincronizada quatro ticks após o ataque e visível no multiplayer;
-- origem aproximada da ponta em `0,55` bloco à frente, `0,48` à direita e `0,15` abaixo dos olhos, recalculada a cada frame;
+- origem aproximada da ponta em `0,55` bloco à frente, `0,48` à direita e `0,15` abaixo dos olhos; posição e base direcional são capturadas uma vez no instante de liberação para impedir rajadas curvadas pela câmera;
 - leque anisotrópico: abertura horizontal máxima aproximada de `14,5°`, vertical máxima inferior a `5,2°`, sem halo circular;
 - gotas legíveis e sempre voltadas para a câmera, com tamanho máximo moderado, sprite radial azul/ciano, material `particles_alpha`, iluminação, gravidade, arrasto e colisão;
 - sem animação litúrgica de ação ou locator nesta etapa; o VFX usa uma origem matemática calibrada e não altera o attachable;

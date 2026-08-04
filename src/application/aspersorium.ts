@@ -2,25 +2,31 @@ import {
   Block,
   BlockPermutation,
   BlockComponentPlayerInteractEvent,
-  EntityComponentTypes,
-  EquipmentSlot,
-  GameMode,
   ItemStack,
   Player,
   system,
 } from "@minecraft/server";
 import { loadFromAspersorium, MAX_CHARGES } from "../domain/aspergillum";
 import { ASPERSORIUM_BLOCK, DOCKED_STATE, WATER_LEVEL_STATE } from "../infrastructure/constants";
+import { resolvePlayerPolicies } from "../infrastructure/game-mode-policy";
 import {
   createAspergillum,
   getMainhand,
   giveOrDrop,
+  initializeAspergillum,
   isAspergillum,
+  readAspergillumInstanceId,
   readAspergillumState,
   setMainhand,
   writeAspergillumState,
 } from "../infrastructure/item-state";
+import {
+  getLoadingBlockOwner,
+  startLoadingSession,
+  type LoadingSession,
+} from "../infrastructure/loading-session";
 import { action } from "../infrastructure/messaging";
+import { commitMainhandAndBlock } from "../infrastructure/minecraft-transaction";
 
 function getNumberState(block: Block, state: string): number {
   const value = block.permutation.getAllStates()[state];
@@ -31,34 +37,86 @@ function getBooleanState(block: Block, state: string): boolean {
   return block.permutation.getAllStates()[state] === true;
 }
 
-function setState(block: Block, state: string, value: number | boolean): void {
+function withState(permutation: BlockPermutation, state: string, value: number | boolean): BlockPermutation {
   // The generated API typings enumerate only vanilla state names; Bedrock supports
   // namespaced custom states at runtime, so this cast is intentionally isolated here.
-  const withCustomState = block.permutation.withState as unknown as (
+  const withCustomState = permutation.withState as unknown as (
     name: string,
     stateValue: number | boolean | string,
   ) => BlockPermutation;
-  block.setPermutation(withCustomState.call(block.permutation, state, value));
+  return withCustomState.call(permutation, state, value);
+}
+
+function setState(block: Block, state: string, value: number | boolean): void {
+  block.setPermutation(withState(block.permutation, state, value));
+}
+
+function isWithinLoadingRange(player: Player, block: Block): boolean {
+  const dx = player.location.x - (block.location.x + 0.5);
+  const dy = player.location.y - (block.location.y + 0.5);
+  const dz = player.location.z - (block.location.z + 0.5);
+  return dx * dx + dy * dy + dz * dz <= 36;
 }
 
 function fillFromBucket(player: Player, block: Block): void {
+  const policies = resolvePlayerPolicies(player);
+  if (policies.denied) return;
   if (getNumberState(block, WATER_LEVEL_STATE) >= MAX_CHARGES) {
     action(player, "§7A caldeirinha já está cheia.", "§7The aspersorium is already full.");
     return;
   }
 
   setState(block, WATER_LEVEL_STATE, MAX_CHARGES);
-  if (player.getGameMode() !== GameMode.Creative) setMainhand(player, new ItemStack("minecraft:bucket", 1));
+  if (!policies.creative) setMainhand(player, new ItemStack("minecraft:bucket", 1));
   player.playSound("bucket.empty_water", { pitch: 1.08, volume: 0.75 });
   action(player, "§bCaldeirinha cheia", "§bAspersorium filled");
 }
 
+function commitLoading(player: Player, session: LoadingSession): void {
+  if (!player.isValid || player.id !== session.playerId) return;
+  if (player.dimension.id !== session.dimensionId || player.selectedSlotIndex !== session.slot) return;
+  const block = player.dimension.getBlock(session.blockLocation);
+  if (block === undefined || !block.isValid || block.typeId !== ASPERSORIUM_BLOCK) return;
+  if (!isWithinLoadingRange(player, block) || getBooleanState(block, DOCKED_STATE)) return;
+
+  const currentItem = getMainhand(player);
+  if (!isAspergillum(currentItem)) return;
+  if (readAspergillumInstanceId(currentItem) !== session.itemInstanceId) return;
+  const currentLevel = getNumberState(block, WATER_LEVEL_STATE);
+  if (currentLevel <= 0 || currentLevel !== session.expectedWaterLevel) return;
+
+  const policies = resolvePlayerPolicies(player);
+  if (policies.denied) return;
+  const result = loadFromAspersorium(readAspergillumState(currentItem), currentLevel, policies.waterPolicy);
+  if (result.transferred === 0) return;
+
+  const originalPermutation = block.permutation;
+  const updatedPermutation = withState(originalPermutation, WATER_LEVEL_STATE, result.nextWater);
+  const updatedItem = writeAspergillumState(currentItem, result.state, player);
+  if (!commitMainhandAndBlock(player, currentItem, updatedItem, block, originalPermutation, updatedPermutation)) {
+    action(player, "§cO carregamento foi cancelado com segurança.", "§cLoading was safely cancelled.");
+    return;
+  }
+  player.playSound("cauldron.takewater", { pitch: 1.32, volume: 0.78 });
+  action(
+    player,
+    policies.creative ? "§bÁgua benta: ∞ §7• Criativo" : `§b${result.state.charges}§7/3 cargas`,
+    policies.creative ? "§bHoly water: ∞ §7• Creative" : `§b${result.state.charges}§7/3 charges`,
+  );
+}
+
 function loadItem(player: Player, block: Block): void {
-  const initialItem = getMainhand(player);
-  if (!isAspergillum(initialItem)) return;
+  const policies = resolvePlayerPolicies(player);
+  if (policies.denied) return;
+  const rawItem = getMainhand(player);
+  if (!isAspergillum(rawItem)) return;
+  const initialItem = initializeAspergillum(rawItem, player);
+  setMainhand(player, initialItem);
+  const instanceId = readAspergillumInstanceId(initialItem);
+  if (instanceId === undefined) return;
   const initialLevel = getNumberState(block, WATER_LEVEL_STATE);
-  const preview = loadFromAspersorium(readAspergillumState(initialItem), initialLevel);
-  if (preview.waterConsumed === 0) {
+  const preview = loadFromAspersorium(readAspergillumState(initialItem), initialLevel, policies.waterPolicy);
+  if (preview.transferred === 0) {
     action(
       player,
       initialLevel === 0 ? "§7A caldeirinha está vazia." : "§7O aspersório já está carregado.",
@@ -67,22 +125,29 @@ function loadItem(player: Player, block: Block): void {
     return;
   }
 
+  const started = startLoadingSession(
+    {
+      playerId: player.id,
+      itemInstanceId: instanceId,
+      slot: player.selectedSlotIndex,
+      dimensionId: player.dimension.id,
+      blockLocation: block.location,
+      expectedWaterLevel: initialLevel,
+    },
+    (session) => commitLoading(player, session),
+    10,
+  );
+  if (started.status === "player_busy") {
+    action(player, "§7O aspersório já está sendo carregado.", "§7The aspergillum is already loading.");
+    return;
+  }
+  if (started.status === "block_busy") {
+    action(player, "§7A caldeirinha já está sendo usada.", "§7The aspersorium is already in use.");
+    return;
+  }
+
   player.playSound("armor.equip_chain", { pitch: 1.18, volume: 0.32 });
   action(player, "§7Carregando o aspersório…", "§7Loading the aspergillum…");
-
-  system.runTimeout(() => {
-    if (!player.isValid || !block.isValid || block.typeId !== ASPERSORIUM_BLOCK) return;
-    const currentItem = getMainhand(player);
-    if (!isAspergillum(currentItem)) return;
-    const currentLevel = getNumberState(block, WATER_LEVEL_STATE);
-    const result = loadFromAspersorium(readAspergillumState(currentItem), currentLevel);
-    if (result.waterConsumed === 0) return;
-
-    setMainhand(player, writeAspergillumState(currentItem, result.state, player));
-    setState(block, WATER_LEVEL_STATE, currentLevel - result.waterConsumed);
-    player.playSound("cauldron.takewater", { pitch: 1.32, volume: 0.78 });
-    action(player, `§b${result.state.charges}§7/3 cargas`, `§b${result.state.charges}§7/3 charges`);
-  }, 10);
 }
 
 function dockItem(player: Player, block: Block): void {
@@ -114,6 +179,15 @@ export function handleAspersoriumInteraction(event: BlockComponentPlayerInteract
     if (!player.isValid || !event.block.isValid) return;
     const block = event.block;
     const item = getMainhand(player);
+    const lockOwner = getLoadingBlockOwner(block.dimension.id, block.location);
+    if (lockOwner !== undefined) {
+      action(
+        player,
+        lockOwner === player.id ? "§7O aspersório já está sendo carregado." : "§7A caldeirinha já está sendo usada.",
+        lockOwner === player.id ? "§7The aspergillum is already loading." : "§7The aspersorium is already in use.",
+      );
+      return;
+    }
 
     if (item?.typeId === "minecraft:water_bucket") {
       fillFromBucket(player, block);
