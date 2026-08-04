@@ -301,6 +301,9 @@ if (!compiledScript.includes("SPRAY_DROPLET_COUNT = 36")) {
 if (!compiledScript.includes("horizontalSpread = horizontalUnit * 0.26") || !compiledScript.includes("verticalSpread = 0.035 + verticalBand * 0.055")) {
   errors.push("Compiled spray must retain the wide-horizontal, narrow-vertical fan");
 }
+if (!compiledScript.includes("responsiveness = 0.8") || !compiledScript.includes("maximumTurnDegrees = 30")) {
+  errors.push("Compiled spray must retain the controlled camera-steering profile");
+}
 if (!compiledScript.includes("random.splash")) {
   errors.push("Compiled spray must synchronize the water release sound");
 }

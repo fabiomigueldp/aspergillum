@@ -70,6 +70,10 @@ O teste físico da 1.0.12 aprovou definitivamente binding, primeira pessoa, esca
 
 O estado de gameplay passa a separar valor persistente de política contextual. `charges` continua estritamente em `0…3`; Criativo apenas retém água e carga durante uma operação autorizada. Cada item recebe `aspergillum:instance_id`, e o carregamento captura jogador, slot, dimensão, coordenada e identidade. Uma sessão por jogador e um lock curto por bloco eliminam callbacks concorrentes e o caso A→B. A rajada matemática permanece como fallback nesta etapa, mas sua origem e base são agora capturadas uma única vez no frame de liberação.
 
+## Direção conduzida 1.0.14
+
+O congelamento integral da 1.0.13 eliminou a curvatura, mas também retirou uma forma útil de expressão do jogador. A 1.0.14 restaura o acompanhamento por pulso com uma restrição geométrica: a direção atual é conduzida até a câmera pelo menor arco esférico, usando 80% do erro restante e no máximo 30° por tick de emissão. Assim, movimentos lentos acompanham quase imediatamente; movimentos rápidos deixam um arco legível e nunca uma descontinuidade. A origem acompanha a cabeça atual, mas partículas já emitidas permanecem em world-space.
+
 ## Invariantes
 
 - a versão da geometria permanece `1.16.0` ou superior;

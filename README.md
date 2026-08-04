@@ -2,12 +2,12 @@
 
 Add-On para Minecraft: Bedrock Edition 26.34/35 que adiciona um **aspersório litúrgico funcional** e uma **caldeirinha (aspersorium) colocável**. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão 1.0.13:** congela o binding e a primeira pessoa aprovados, conclui a calibração estática de terceira pessoa e fortalece cargas, identidade e carregamento concorrente, incluindo consumo infinito contextual no modo Criativo.
+> **Versão 1.0.14:** preserva toda a base aprovada da 1.0.13 e devolve ao jogador o controle gestual da rajada: os pulsos acompanham a câmera com direção suavizada e limite angular, formando uma curva fluida em vez de uma quebra brusca.
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/Aspergillum-1.0.13.mcaddon`](dist/Aspergillum-1.0.13.mcaddon) com o Minecraft.
+2. Abra [`dist/Aspergillum-1.0.14.mcaddon`](dist/Aspergillum-1.0.14.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
@@ -34,7 +34,7 @@ As cargas permanecem gravadas no item. Ao acomodá-lo, cargas restantes retornam
 - malha real de 15,6 unidades autorada ao redor do grip empírico `[-6, 24, 1]`, nove unidades acima da pose da 1.0.8;
 - geometria base `[25, 0, -12]`, correção de apresentação exclusiva da terceira pessoa `position [5, -1.5, -2.25]`/`rotation [10, 0, 0]` e primeira pessoa aprovada preservada sem translação;
 - emissão autoritativa de 36 gotas em seis grupos espaciais contínuos, sincronizada quatro ticks após o ataque e visível no multiplayer;
-- origem aproximada da ponta em `0,55` bloco à frente, `0,48` à direita e `0,15` abaixo dos olhos; posição e base direcional são capturadas uma vez no instante de liberação para impedir rajadas curvadas pela câmera;
+- origem aproximada da ponta em `0,55` bloco à frente, `0,48` à direita e `0,15` abaixo dos olhos; cada pulso acompanha novamente a câmera com resposta de 80% e no máximo 30° de giro, produzindo controle contínuo sem estalos;
 - leque anisotrópico: abertura horizontal máxima aproximada de `14,5°`, vertical máxima inferior a `5,2°`, sem halo circular;
 - gotas legíveis e sempre voltadas para a câmera, com tamanho máximo moderado, sprite radial azul/ciano, material `particles_alpha`, iluminação, gravidade, arrasto e colisão;
 - sem animação litúrgica de ação ou locator nesta etapa; o VFX usa uma origem matemática calibrada e não altera o attachable;

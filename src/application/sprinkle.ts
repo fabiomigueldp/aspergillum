@@ -13,6 +13,8 @@ import {
   deterministicDropletDirections,
   deterministicDropletSpeed,
   dropletIndicesForFrame,
+  normalize,
+  steerDirection,
 } from "../domain/cone";
 import { DROPLET_PARTICLE } from "../infrastructure/constants";
 import { resolvePlayerPolicies } from "../infrastructure/game-mode-policy";
@@ -32,17 +34,11 @@ const SPRAY_DROPLET_COUNT = 36;
 const SPRAY_FRAME_COUNT = 6;
 const SPRAY_RELEASE_DELAY_TICKS = 4;
 
-interface SpraySnapshot {
-  readonly itemInstanceId: string;
-  readonly dimensionId: string;
-  readonly origin: Vector3;
-  readonly directions: readonly Vector3[];
-}
-
 interface SpraySchedule {
   readonly itemInstanceId: string;
   readonly dimensionId: string;
   readonly runIds: number[];
+  steeringDirection: Vector3 | undefined;
 }
 
 const spraySchedules = new Map<string, SpraySchedule>();
@@ -53,17 +49,23 @@ function hasAuthorizedItem(player: Player, itemInstanceId: string, dimensionId: 
   return isAspergillum(item) && readAspergillumInstanceId(item) === itemInstanceId;
 }
 
-function emitWaterFrame(player: Player, snapshot: SpraySnapshot, frameIndex: number): void {
-  if (!hasAuthorizedItem(player, snapshot.itemInstanceId, snapshot.dimensionId)) return;
+function emitWaterFrame(player: Player, schedule: SpraySchedule, frameIndex: number): void {
+  if (!hasAuthorizedItem(player, schedule.itemInstanceId, schedule.dimensionId)) return;
+  const targetDirection = player.getViewDirection();
+  schedule.steeringDirection = schedule.steeringDirection === undefined
+    ? normalize(targetDirection)
+    : steerDirection(schedule.steeringDirection, targetDirection);
+  const origin = aspergillumTipOrigin(player.getHeadLocation(), schedule.steeringDirection);
+  const directions = deterministicDropletDirections(schedule.steeringDirection, SPRAY_DROPLET_COUNT);
 
   for (const dropletIndex of dropletIndicesForFrame(SPRAY_DROPLET_COUNT, SPRAY_FRAME_COUNT, frameIndex)) {
-    const dropletDirection = snapshot.directions[dropletIndex];
+    const dropletDirection = directions[dropletIndex];
     if (!dropletDirection) continue;
     const variables = new MolangVariableMap();
     const speed = deterministicDropletSpeed(dropletIndex);
     variables.setSpeedAndDirection("variable.aspergillum_motion", speed, dropletDirection);
     variables.setFloat("variable.aspergillum_scale", 0.78 + (dropletIndex % 4) * 0.07);
-    player.dimension.spawnParticle(DROPLET_PARTICLE, snapshot.origin, variables);
+    player.dimension.spawnParticle(DROPLET_PARTICLE, origin, variables);
   }
 }
 
@@ -80,6 +82,7 @@ function scheduleWaterSpray(player: Player, itemInstanceId: string): void {
     itemInstanceId,
     dimensionId: player.dimension.id,
     runIds: [],
+    steeringDirection: undefined,
   };
   spraySchedules.set(player.id, schedule);
   schedule.runIds.push(system.runTimeout(() => {
@@ -87,22 +90,15 @@ function scheduleWaterSpray(player: Player, itemInstanceId: string): void {
       cancelWaterSpray(player.id);
       return;
     }
-    const direction = player.getViewDirection();
-    const snapshot: SpraySnapshot = {
-      itemInstanceId: schedule.itemInstanceId,
-      dimensionId: schedule.dimensionId,
-      origin: aspergillumTipOrigin(player.getHeadLocation(), direction),
-      directions: deterministicDropletDirections(direction, SPRAY_DROPLET_COUNT),
-    };
     player.playSound("random.splash", { pitch: 1.38, volume: 0.58 });
-    emitWaterFrame(player, snapshot, 0);
+    emitWaterFrame(player, schedule, 0);
     for (let frameIndex = 1; frameIndex < SPRAY_FRAME_COUNT; frameIndex += 1) {
       schedule.runIds.push(system.runTimeout(() => {
         if (!hasAuthorizedItem(player, schedule.itemInstanceId, schedule.dimensionId)) {
           cancelWaterSpray(player.id);
           return;
         }
-        emitWaterFrame(player, snapshot, frameIndex);
+        emitWaterFrame(player, schedule, frameIndex);
         if (frameIndex === SPRAY_FRAME_COUNT - 1 && spraySchedules.get(player.id) === schedule) {
           spraySchedules.delete(player.id);
         }

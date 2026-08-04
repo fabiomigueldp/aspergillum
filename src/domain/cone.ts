@@ -22,6 +22,54 @@ export function dot(a: Vector3, b: Vector3): number {
   return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
+export function cross(a: Vector3, b: Vector3): Vector3 {
+  return {
+    x: a.y * b.z - a.z * b.y,
+    y: a.z * b.x - a.x * b.z,
+    z: a.x * b.y - a.y * b.x,
+  };
+}
+
+function leastAlignedAxis(direction: Vector3): Vector3 {
+  const ax = Math.abs(direction.x);
+  const ay = Math.abs(direction.y);
+  const az = Math.abs(direction.z);
+  if (ax <= ay && ax <= az) return { x: 1, y: 0, z: 0 };
+  if (ay <= ax && ay <= az) return { x: 0, y: 1, z: 0 };
+  return { x: 0, y: 0, z: 1 };
+}
+
+export function steerDirection(
+  previousInput: Vector3,
+  targetInput: Vector3,
+  responsiveness = 0.8,
+  maximumTurnDegrees = 30,
+): Vector3 {
+  const previous = normalize(previousInput);
+  const target = normalize(targetInput);
+  const cosine = Math.max(-1, Math.min(1, dot(previous, target)));
+  const angle = Math.acos(cosine);
+  if (angle < 1e-5) return target;
+
+  const safeResponsiveness = Math.max(0, Math.min(1, responsiveness));
+  const maximumTurn = Math.max(0, maximumTurnDegrees) * Math.PI / 180;
+  const step = Math.min(angle * safeResponsiveness, maximumTurn);
+  if (step < 1e-6) return previous;
+
+  let axis = cross(previous, target);
+  if (Math.hypot(axis.x, axis.y, axis.z) < 1e-6) axis = cross(previous, leastAlignedAxis(previous));
+  axis = normalize(axis);
+  const cosineStep = Math.cos(step);
+  const sineStep = Math.sin(step);
+  const axisProjection = dot(axis, previous) * (1 - cosineStep);
+  const perpendicular = cross(axis, previous);
+  return normalize({
+    x: previous.x * cosineStep + perpendicular.x * sineStep + axis.x * axisProjection,
+    y: previous.y * cosineStep + perpendicular.y * sineStep + axis.y * axisProjection,
+    z: previous.z * cosineStep + perpendicular.z * sineStep + axis.z * axisProjection,
+  });
+}
+
 export function aspergillumTipOrigin(head: Vector3, direction: Vector3): Vector3 {
   const view = normalize(direction);
   const horizontalLength = Math.hypot(view.x, view.z);

@@ -5,6 +5,7 @@ import {
   deterministicDropletSpeed,
   dropletIndicesForFrame,
   isInsideCone,
+  steerDirection,
 } from "../../src/domain/cone";
 
 describe("sprinkle cone", () => {
@@ -61,5 +62,28 @@ describe("sprinkle cone", () => {
       expect(Math.min(...speeds)).toBeGreaterThanOrEqual(12.7);
       expect(Math.max(...speeds)).toBeLessThanOrEqual(13.98);
     }
+  });
+
+  it("steers successive pulses smoothly toward camera movement", () => {
+    const initial = { x: 0, y: 0, z: 1 };
+    const right = { x: 1, y: 0, z: 0 };
+    const first = steerDirection(initial, right);
+    const firstTurn = Math.acos(first.z) * 180 / Math.PI;
+    expect(firstTurn).toBeCloseTo(30, 5);
+
+    let tracked = initial;
+    for (let pulse = 0; pulse < 5; pulse += 1) tracked = steerDirection(tracked, right);
+    expect(tracked.x).toBeGreaterThan(0.999);
+    expect(Math.hypot(tracked.x, tracked.y, tracked.z)).toBeCloseTo(1);
+  });
+
+  it("remains finite through a complete camera reversal", () => {
+    let tracked = { x: 0, y: 0, z: 1 };
+    for (let pulse = 0; pulse < 6; pulse += 1) {
+      tracked = steerDirection(tracked, { x: 0, y: 0, z: -1 });
+      expect(Number.isFinite(tracked.x + tracked.y + tracked.z)).toBe(true);
+      expect(Math.hypot(tracked.x, tracked.y, tracked.z)).toBeCloseTo(1);
+    }
+    expect(tracked.z).toBeLessThan(-0.99);
   });
 });

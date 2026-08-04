@@ -34,7 +34,7 @@ Antes da colocação, `beforeOnPlayerPlace` converte o yaw do jogador em um dos 
 5. `entityHurt` cancela qualquer dano de ataque enquanto o item estiver empunhado.
 6. `playerBreakBlock` cancela a quebra final com o item.
 
-Na versão 1.0.13, uma aspersão válida agenda a liberação visual quatro ticks após o ataque. A rajada contém 36 gotas, divididas em seis frames consecutivos com seis gotas cada. A aproximação da ponta fica `0,55` bloco à frente, `0,48` à direita e `0,15` abaixo dos olhos. Origem e base direcional são capturadas uma única vez no instante da liberação; os pulsos seguintes não se curvam com a câmera e são cancelados se item ou dimensão mudarem.
+Na versão 1.0.14, uma aspersão válida agenda a liberação visual quatro ticks após o ataque. A rajada contém 36 gotas, divididas em seis frames consecutivos com seis gotas cada. A aproximação da ponta fica `0,55` bloco à frente, `0,48` à direita e `0,15` abaixo dos olhos. A cada pulso, posição e direção-alvo são relidas; a direção efetiva percorre o menor arco esférico com resposta de `0,8` e giro máximo de `30°`. Isso devolve controle ao jogador sem permitir mudanças descontínuas. Item ou dimensão diferentes ainda cancelam os pulsos restantes.
 
 O modelo empunhado declara geometry `1.16.0`. `aspergillum_bound` possui apenas o binding exato `q.item_slot_to_bone_name(context.item_slot)`: não contém cubos nem transformação artística. Seu filho `aspergillum_visual` contém a malha real, o pivô/grip empírico `[-6, 24, 1]` e a orientação base `[25, 0, -12]`. A primeira pessoa conserva somente a inversão aprovada de 180°. A terceira pessoa acrescenta `position [5, -1.5, -2.25]` e `rotation [10, 0, 0]`, sem modificar a perspectiva já aprovada. Não há escala ou animação de ação.
 

@@ -17,7 +17,7 @@
 
 O teste físico ainda é obrigatório porque entrada, câmera e feedback vanilla variam por plataforma.
 
-### Critério exclusivo da versão 1.0.13
+### Critério exclusivo da versão 1.0.14
 
 - [ ] ao selecionar o item, aparece a malha real em escala reduzida;
 - [ ] em terceira pessoa, o centro do cabo escuro atravessa o centro do punho direito após `position [5, -1.5, -2.25]`;
@@ -34,7 +34,10 @@ O teste físico ainda é obrigatório porque entrada, câmera e feedback vanilla
 - [ ] a largura horizontal é claramente maior que a altura vertical, preservando alcance, gravidade e colisão;
 - [ ] a emissão parte aproximadamente da cabeça visível do instrumento, à direita e à frente, sem nascer no rosto, torso ou pés;
 - [ ] as gotas permanecem legíveis de frente, de lado e durante a queda, sem ficarem finas ou desaparecerem conforme o ângulo da câmera;
-- [ ] girar a câmera durante a rajada não curva os pulsos já autorizados; trocar de item ou dimensão cancela os pulsos restantes;
+- [ ] girar a câmera lentamente durante a rajada curva o leque de maneira contínua e controlável;
+- [ ] um giro rápido produz transição limitada, sem salto instantâneo, inversão ou vetor inválido;
+- [ ] manter a câmera imóvel preserva uma trajetória reta e repetível;
+- [ ] trocar de item ou dimensão cancela os pulsos restantes;
 - [ ] não aparece animação litúrgica própria — ela continua fora do escopo desta revisão;
 - [ ] em Sobrevivência e Aventura, cada aspersão consome exatamente uma carga;
 - [ ] em Criativo, uma carga finita já presente permite aspersões sem consumo e o carregamento não reduz a água da caldeirinha;

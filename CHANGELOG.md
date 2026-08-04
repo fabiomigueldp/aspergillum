@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.14 — 2026-08-03
+
+- restaurado o acompanhamento da câmera entre os seis pulsos da aspersão, recuperando a sensação de condução e controle solicitada após o teste da 1.0.13;
+- substituída a leitura bruta de direção por interpolação esférica determinística, com resposta de 80% e limite de 30° por pulso;
+- a origem matemática volta a acompanhar a posição atual do jogador, enquanto cada gota já emitida continua livre em world-space;
+- preservados os cancelamentos por troca de item/dimensão, impedindo que uma rajada continue sem o aspergillum autorizado;
+- mantidos sem alteração binding, poses, escala, quantidade, dispersão, velocidade, gravidade e cooldown;
+- adicionados testes de curva de 90° e reversão completa de 180°, garantindo vetores unitários e finitos em todos os pulsos.
+
 ## 1.0.13 — 2026-08-03
 
 - preservados sem alteração o binding `rightItem`, a geometria `1.16.0`, o grip base e a pose aprovada de primeira pessoa;
