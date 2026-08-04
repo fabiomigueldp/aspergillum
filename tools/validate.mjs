@@ -309,16 +309,14 @@ if (!fs.existsSync(dropletPath)) {
     errors.push("Holy-water droplet must use its dedicated texture");
   }
   const billboard = dropletComponents["minecraft:particle_appearance_billboard"];
-  if (billboard?.facing_camera_mode !== "direction_y"
-    || billboard?.direction?.mode !== "derive_from_velocity"
-    || billboard?.direction?.min_speed_threshold !== 0.01) {
-    errors.push("Holy-water droplets must align their long axis with velocity");
+  if (billboard?.facing_camera_mode !== "rotate_xyz" || billboard?.direction !== undefined) {
+    errors.push("Holy-water droplets must preserve the camera-readable v1.0.15d billboard orientation");
   }
   if (JSON.stringify(billboard?.size) !== JSON.stringify([
-    "0.034 * variable.aspergillum_scale * (0.78 + 0.22 * math.sin(math.min(variable.particle_age / variable.particle_lifetime, 1.0) * 180.0))",
-    "0.082 * variable.aspergillum_scale * (0.78 + 0.22 * math.sin(math.min(variable.particle_age / variable.particle_lifetime, 1.0) * 180.0))",
+    "0.042 * variable.aspergillum_scale",
+    "0.1 * variable.aspergillum_scale",
   ])) {
-    errors.push("Holy-water droplets must preserve the v1.0.16 camera-safe growth envelope");
+    errors.push("Holy-water droplets must preserve the physically approved visible size envelope");
   }
   const lifetime = dropletComponents["minecraft:particle_lifetime_expression"]?.max_lifetime;
   if (lifetime !== "1.05 + math.random(0.0, 0.35)") {
@@ -336,8 +334,17 @@ if (!fs.existsSync(dropletPath)) {
     || droplet?.events?.["aspergillum:micro_splash"]?.particle_effect?.effect !== "aspergillum:holy_water_micro_splash") {
     errors.push("Holy-water collision must emit exactly the dedicated micro-splash effect");
   }
-  if (!dropletComponents["minecraft:particle_appearance_lighting"]) {
-    errors.push("Holy-water droplets must respond to environmental lighting");
+  if (dropletComponents["minecraft:particle_appearance_lighting"] !== undefined) {
+    errors.push("Holy-water droplets must keep their blue hue independent from local colored lighting");
+  }
+  const gradient = dropletComponents["minecraft:particle_appearance_tinting"]?.color?.gradient;
+  if (JSON.stringify(gradient) !== JSON.stringify({
+    "0.0": "#CDEBFFFF",
+    "0.52": "#72C6F5F8",
+    "0.82": "#438FD8D0",
+    "1.0": "#2A66B000",
+  })) {
+    errors.push("Holy-water droplets must preserve the approved cool-blue lifetime palette");
   }
   const interpolant = dropletComponents["minecraft:particle_appearance_tinting"]?.color?.interpolant;
   if (interpolant !== "variable.particle_age / variable.particle_lifetime") {

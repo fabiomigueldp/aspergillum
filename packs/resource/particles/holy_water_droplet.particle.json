@@ -46,15 +46,10 @@
       },
       "minecraft:particle_appearance_billboard": {
         "size": [
-          "0.034 * variable.aspergillum_scale * (0.78 + 0.22 * math.sin(math.min(variable.particle_age / variable.particle_lifetime, 1.0) * 180.0))",
-          "0.082 * variable.aspergillum_scale * (0.78 + 0.22 * math.sin(math.min(variable.particle_age / variable.particle_lifetime, 1.0) * 180.0))"
+          "0.042 * variable.aspergillum_scale",
+          "0.1 * variable.aspergillum_scale"
         ],
-        "facing_camera_mode": "direction_y",
-        "direction": {
-          "mode": "derive_from_velocity",
-          "custom_direction": [0, 1, 0],
-          "min_speed_threshold": 0.01
-        },
+        "facing_camera_mode": "rotate_xyz",
         "uv": {
           "texture_width": 16,
           "texture_height": 16,
@@ -65,14 +60,14 @@
       "minecraft:particle_appearance_tinting": {
         "color": {
           "gradient": {
-            "0.0": "#D8F4FFFF",
-            "0.72": "#8FD9F0F2",
-            "1.0": "#D8F4FF00"
+            "0.0": "#CDEBFFFF",
+            "0.52": "#72C6F5F8",
+            "0.82": "#438FD8D0",
+            "1.0": "#2A66B000"
           },
           "interpolant": "variable.particle_age / variable.particle_lifetime"
         }
-      },
-      "minecraft:particle_appearance_lighting": {}
+      }
     },
     "events": {
       "aspergillum:micro_splash": {

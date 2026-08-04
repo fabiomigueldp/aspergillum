@@ -5,6 +5,7 @@
 - [Attachables — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/documents/attachables?view=minecraft-bedrock-stable): binding por item slot, geometrias e poses distintas por perspectiva.
 - [Particle effects in animations — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/particlesreference/particleentityintegration?view=minecraft-bedrock-stable): locators, controllers e timelines de partículas.
 - [Particle appearance billboard — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/particlesreference/examples/particlecomponents/particle_appearance_billboard?view=minecraft-bedrock-stable): `direction_y` e orientação derivada da velocidade.
+- [Particle appearance lighting — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/particlesreference/particlecomponents/minecraftparticle_appearance_lighting?view=minecraft-bedrock-stable): a presença do componente tinge a partícula pelas condições locais de iluminação; omitido na 1.0.16b para preservar o azul da água.
 - [Emitter local space — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/particlesreference/examples/particlecomponents/emitter_local_space_proxy?view=minecraft-bedrock-stable): herança independente de posição, rotação e velocidade.
 - [Particle motion collision — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/particlesreference/examples/particlecomponents/particle_motion_collision?view=minecraft-bedrock-stable): eventos de colisão e limiar de velocidade.
 - [Emitter shape custom — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/particlesreference/examples/particlecomponents/emitter_shape_custom?view=minecraft-bedrock-stable): offset e direção Molang de emissão.
@@ -43,4 +44,4 @@ Ao pesquisar uma API, prefira nesta ordem:
 
 Registre no documento técnico afetado a data, versão/commit e conclusão relevante quando uma decisão depender de comportamento que possa mudar.
 
-As referências de partículas acima foram reconfirmadas em `2026-08-04`; os schemas e samples locais oficiais também confirmaram eventos de colisão, `derive_from_velocity` e `bind_to_actor: false` usados pela v1.0.16.
+As referências de partículas acima foram reconfirmadas em `2026-08-04`. Os schemas e samples locais oficiais confirmaram eventos de colisão e `bind_to_actor: false`; os samples que herdam rotação local também herdam posição. O Content Log da 1.0.16 tornou esse último vínculo um contrato explícito da 1.0.16a; a documentação de lighting fundamenta a independência cromática da 1.0.16b.

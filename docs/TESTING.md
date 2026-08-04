@@ -118,7 +118,7 @@ Se o smoke test falhar, interrompa a matriz e capture a menor reprodução poss�
 
 Esses três itens foram confirmados pelo usuário no pacote 1.0.15d. Os demais continuam como regressão manual recorrente, não como pendência estrutural da animação.
 
-## Baseline VFX v1.0.16
+## Baseline VFX v1.0.16b
 
 - [ ] `holy_water_release` nasce na face da cabeça em primeira pessoa;
 - [ ] `holy_water_release` nasce na face da cabeça em terceira pessoa local;
@@ -127,12 +127,20 @@ Esses três itens foram confirmados pelo usuário no pacote 1.0.15d. Os demais c
 - [ ] cada ação válida mantém exatamente uma rajada balística de 36 gotas em seis pulsos;
 - [ ] ataque vazio não toca splash, não cria bridge e não cria gotas;
 - [ ] preparação e release têm um único som próprio cada, sem splash duplicado;
-- [ ] gotas alongadas acompanham o vetor de velocidade;
+- [ ] gotas mantêm área aparente legível em trajetórias frontais, laterais e oblíquas;
 - [ ] billboards próximos da câmera permanecem menores que a cabeça do avatar;
 - [ ] micro-splash é discreto, aparece somente no contato e não cria gameplay;
 - [ ] bridge, gota e splash já emitidos ficam em world-space;
 - [ ] steering lento/rápido continua com resposta `0.8` e limite `30°`;
 - [ ] Content Log não acusa locator, efeito, evento, som ou Molang desconhecido.
+- [ ] Content Log não contém `We do not support rotation being true and position being false`;
+- [ ] o leque principal recupera visibilidade e suavidade equivalentes à 1.0.15d;
+- [ ] a velocidade aparente é agradável sem perda do alcance anterior;
+- [ ] o bridge lento permanece subordinado ao leque e não parece uma segunda ação.
+- [ ] bridge, gotas distantes e micro-splashes permanecem azuis, sem dominante verde/amarela;
+- [ ] repetir o teste cromático em sol, sombra, junto a tocha/fonte quente e com Vibrant Visuals quando disponível;
+- [ ] a retirada de lighting local não transforma a água em um efeito branco ou excessivamente emissivo no escuro;
+- [ ] fade continua suave e natural, sem mudança de trajetória, velocidade, lifetime ou tamanho em relação à 1.0.16a.
 
 ## Matriz final manual
 
@@ -196,7 +204,7 @@ Esses três itens foram confirmados pelo usuário no pacote 1.0.15d. Os demais c
 - [ ] steering entre pulsos é preservado;
 - [ ] nenhuma gota nasce atrás do jogador ou dentro do corpo;
 - [ ] tamanho próximo à câmera permanece menor que a cabeça do avatar;
-- [ ] sprites alongados alinham-se à velocidade;
+- [ ] sprites não colapsam de perfil nem desaparecem em ângulos oblíquos;
 - [ ] micro-splash é discreto e não duplica gameplay.
 - [ ] bridge contém quatro microgotas e não duplica o leque de 36;
 - [ ] sons próprios ocorrem uma vez nos tempos `0.08` e `0.25`;

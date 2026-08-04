@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.0.16b — 2026-08-04
+
+- corrigida a dominante verde/amarela percebida no fade das gotas e nos micro-respingos de impacto;
+- substituída a dupla coloração ciano por um sprite-base neutro e gradientes azul-frio dedicados ao bridge, leque balístico e splash;
+- removido `minecraft:particle_appearance_lighting` exclusivamente das partículas de água, impedindo que luz local colorida altere seu matiz; transparência e gradiente continuam controlando o desaparecimento;
+- preservados integralmente quantidade, trajetória, velocidade, gravidade, lifetime, tamanho, colisão, steering, animação, locator e áudio da 1.0.16a;
+- ampliada a validação para congelar a paleta aprovada, a neutralidade da textura-fonte e a independência cromática da iluminação local;
+- o rótulo distribuído é `1.0.16b`; a revisão monotônica dos packs é `[1,0,21]`.
+
+## 1.0.16a — 2026-08-04
+
+- corrigido o erro de runtime de `minecraft:emitter_local_space`: o bridge agora herda posição e rotação juntas, combinação suportada pelo Bedrock;
+- restaurados no leque principal o billboard `rotate_xyz` e o envelope `0.042 × 0.100` da 1.0.15d, revertendo a perda de visibilidade causada pelo streak menor e orientado pela velocidade;
+- preservados velocidade, gravidade, lifetime, alcance, 36 gotas, seis pulsos e steering; a sensação excessivamente rápida era perceptual, não uma alteração da balística;
+- desacelerado o bridge da ponta para `1.35–1.75` blocos/s, ampliado para `0.028 × 0.060` e estendido para `0.26–0.38 s`, criando uma conexão legível e suave sem formar um segundo leque;
+- ampliado o validador para bloquear novamente a combinação inválida `rotation: true`/`position: false` e qualquer regressão do perfil visual aprovado;
+- o rótulo distribuído é `1.0.16a`; a revisão monotônica dos packs é `[1,0,20]`.
+
 ## 1.0.16 — 2026-08-04
 
 - congelada integralmente a animação 1.0.15d depois da confirmação física de que o solavanco final foi eliminado;

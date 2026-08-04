@@ -136,17 +136,18 @@ Timeline de carregamento (`0.80 s`): antecipação, avanço/descida, imersão, c
 
 Timeline de aspersão (`18 ticks/0.90 s`): o swing vanilla fornece o movimento amplo; uma animação finita de `1,10 s`, iniciada somente para aspersão autorizada, soma em terceira pessoa uma compensação Hermite a `rightarm.y` entre 50% e 100% de `variable.attack_time`. Ela cancela o ramo final de `-30°` da curva oficial sem resetar a pose, sem tocar em `rightitem` e sem alterar a primeira pessoa. Um controller do attachable seleciona a coreografia FP/TP de `aspergillum_action`; a ação local assenta em `0,82 s`, deixa `0,08 s` de buffer e libera água no tick 5. Falhas de apresentação continuam sem interferir no estado.
 
-O controller usa a categoria de cooldown válida como ponte visual. Tentativa vazia não inicia o cooldown nativo e, portanto, não entra no estado `sprinkle`. Na v1.0.16, a mesma timeline dispara o bridge em `aspergillum_tip` e os sons próprios. A sintaxe e o contexto exatos permanecem sujeitos ao Content Log do pacote importado; autorização e leque balístico continuam independentes do controller.
+O controller usa a categoria de cooldown válida como ponte visual. Tentativa vazia não inicia o cooldown nativo e, portanto, não entra no estado `sprinkle`. Na v1.0.16b, a mesma timeline dispara o bridge corrigido em `aspergillum_tip` e os sons próprios. A sintaxe e o contexto exatos permanecem sujeitos ao Content Log do pacote importado; autorização e leque balístico continuam independentes do controller.
 
 ## Partículas
 
-A v1.0.16 implementa uma arquitetura híbrida `sprinkler_head -> spray_aim -> aspergillum_tip`:
+A v1.0.16b mantém a arquitetura híbrida `sprinkler_head -> spray_aim -> aspergillum_tip` e corrige sua integração física e cromática:
 
 - `aspergillum_tip` fornece a origem física do bridge de quatro microgotas;
-- `bind_to_actor: false` solta o bridge no mundo imediatamente;
+- `emitter_local_space` herda posição e rotação como par suportado; `bind_to_actor: false` mantém o emissor destacado depois da criação;
 - o script mantém as 36 gotas balísticas, seis pulsos e steering deliberado;
-- gotas principais derivam a orientação do vetor de velocidade;
+- gotas principais usam o billboard camera-readable aprovado, evitando que a área aparente colapse em vistas oblíquas;
 - colisões elegíveis produzem um micro-splash cosmético;
+- textura-base neutra e gradientes azul-frio tornam a cor autoritativa no Resource Pack; as partículas de água omitem lighting local para impedir dominantes verdes/amarelas;
 - o cooldown válido impede bridge e som molhado em tentativa vazia.
 
 O bridge não é um segundo leque e não substitui o emissor matemático. Não remover as 36 gotas atuais até locator, condição de disparo, primeira/terceira pessoa e multiplayer provarem equivalência. O contrato detalhado está em [Contrato de VFX](VFX_DESIGN_CONTRACT.md).

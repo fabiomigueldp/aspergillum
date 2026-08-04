@@ -94,7 +94,7 @@ Gate de saída físico:
 
 O usuário confirmou no runtime que o teleporte final foi eliminado. A composição do swing, a ponte de recovery e as coreografias locais ficam congeladas como baseline.
 
-## v1.0.16 — Locator e VFX final — implementada; QA físico/multiplayer pendente
+## v1.0.16/1.0.16a/1.0.16b — Locator e VFX final — correções implementadas; QA cromático pendente
 
 Escopo:
 
@@ -115,12 +115,27 @@ Implementação escolhida:
 - áudio próprio de preparação e release na timeline válida;
 - emissão molhada e splash script-side duplicado removidos.
 
+Resultado físico da 1.0.16 e correção 1.0.16a:
+
+- o runtime rejeitou `rotation: true` com `position: false`; a revisão passa a herdar ambas juntas;
+- o billboard menor/orientado pela velocidade perdeu presença e fez a trajetória parecer excessivamente rápida;
+- restaurados `rotate_xyz` e `0.042 × 0.100` da baseline aprovada, sem alterar a balística;
+- desacelerado e ampliado somente o bridge para tornar a origem legível.
+
+Correção cromática 1.0.16b:
+
+- sprite radial convertido em fonte neutra para evitar multiplicação ciano sobre ciano;
+- gradientes dedicados de azul frio aplicados ao bridge, leque e micro-splash;
+- removido somente o tint por iluminação local das partículas de água, evitando verde/amarelo em luz colorida;
+- movimento, escala, lifetime, colisão, quantidade e steering permanecem idênticos à 1.0.16a.
+
 Gate de saída:
 
 - origem a até `0.10` bloco da cabeça visual;
 - nenhum disparo vazio ou duplicado;
 - 36 gotas e controle entre pulsos preservados, ou fallback híbrido documentado;
 - nenhuma gota nasce no rosto/tórax e nenhuma acompanha o braço depois de emitida.
+- gotas distantes e micro-splashes permanecem azuis em sol, sombra, luz quente e Vibrant Visuals.
 
 ## v1.0.17 — Persistência, schema e docking
 

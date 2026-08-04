@@ -1,6 +1,6 @@
 # Contrato visual congelado
 
-Este documento registra os valores estruturais comprovados até a v1.0.15d e a integração VFX controlada da v1.0.16. Eles são baseline, não sugestões de calibração.
+Este documento registra os valores estruturais comprovados até a v1.0.15d e a integração VFX corrigida até a v1.0.16b. Eles são baseline, não sugestões de calibração.
 
 ## Attachable
 
@@ -42,7 +42,7 @@ rightItem (holder)
 - A pose de primeira pessoa não deve ser afetada por correções de terceira pessoa.
 - Não se transplanta pose de tridente, lança ou outra malha vanilla como se fosse universal.
 
-## Spray v1.0.16
+## Spray v1.0.16b
 
 | Propriedade | Baseline |
 | --- | --- |
@@ -59,9 +59,14 @@ rightItem (holder)
 | Release transacional | reserva no tick 0; commit no tick 5 |
 | Base do leque | transporte paralelo entre pulsos |
 | Origem visual | `aspergillum_tip`, `1` unidade além da tampa da cabeça |
-| Bridge no release | `4` microgotas, lifetime `0.12–0.18 s`, world-space |
-| Billboard principal | `0.034 × 0.082` bloco, curva de escala e eixo Y pela velocidade |
+| Bridge no release | `4` microgotas, `1.35–1.75` blocos/s, lifetime `0.26–0.38 s` |
+| Local space do bridge | posição e rotação herdadas juntas; `velocity: false` |
+| Billboard do bridge | `0.028 × 0.060`, `rotate_xyz` |
+| Billboard principal | `0.042 × 0.100` bloco, `rotate_xyz`, escala do perfil |
 | Impacto | `1` micro-splash cosmético por colisão elegível |
+| Cor | gradientes azul-frio dedicados; azul permanece dominante até o fade |
+| Textura-fonte | radial neutra `RGB [245,249,255]`; o gradiente é a única fonte cromática |
+| Iluminação | sem `particle_appearance_lighting`; luz local não pode deslocar água para verde/amarelo |
 
 A curvatura conforme a câmera é intencional e deve ser preservada. Ela oferece controle gestual durante a janela de liberação. O limite angular e a interpolação esférica impedem estalos; partículas já emitidas não mudam de trajetória.
 
@@ -90,7 +95,7 @@ aspergillum_bound          binding, sempre neutro
                 └── locator aspergillum_tip
 ```
 
-Toda a hierarquia existe na v1.0.16. `spray_aim` é um bone técnico sem cubos, filho da cabeça; `aspergillum_tip` fica uma unidade além da face superior. O evento de release usa `bind_to_actor: false`, portanto a emissão já criada permanece no mundo em vez de acompanhar o braço.
+Toda a hierarquia existe na v1.0.16b. `spray_aim` é um bone técnico sem cubos, filho da cabeça; `aspergillum_tip` fica uma unidade além da face superior. O efeito herda posição e rotação juntas no instante de criação — combinação exigida pelo runtime — e o evento usa `bind_to_actor: false`, de modo que o emissor destacado não acompanha o braço.
 
 ## Critérios de aceitação visual
 
@@ -100,3 +105,4 @@ Toda a hierarquia existe na v1.0.16. `spray_aim` é um bone técnico sem cubos, 
 - Steve/wide, Alex/slim e Persona apresentam pose aceitável.
 - O spray nasce a até `0.10` bloco da ponta renderizada, forma leque horizontal, não gera halo e não produz gotas gigantes próximas à câmera.
 - Mover a câmera durante os pulsos curva o leque de modo suave, limitado e previsível.
+- Gotas distantes, fade e respingos no chão permanecem azuis sob sol, sombra, tochas e Vibrant Visuals, sem leitura verde/amarela.

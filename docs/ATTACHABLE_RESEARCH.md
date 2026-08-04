@@ -6,9 +6,17 @@
 
 A integração final não substitui prematuramente o emissor matemático. `spray_aim` é filho de `sprinkler_head` e hospeda `aspergillum_tip` uma unidade além da face superior. No release válido de `0.25 s`, cada animação por perspectiva dispara quatro microgotas com `bind_to_actor: false`; elas materializam a origem real e passam imediatamente a simular em world-space.
 
-As 36 gotas principais continuam no script porque esse caminho já prova steering gradual entre seis pulsos, cancelamento de pulsos futuros e visibilidade multiplayer. O locator não gera um segundo leque. Gotas principais agora usam billboard `direction_y` derivado da velocidade, escala menor e micro-splash de colisão. A remoção futura do fallback depende de equivalência física em primeira pessoa, terceira pessoa e observador remoto.
+As 36 gotas principais continuam no script porque esse caminho já prova steering gradual entre seis pulsos, cancelamento de pulsos futuros e visibilidade multiplayer. O locator não gera um segundo leque. A primeira integração experimentou billboard `direction_y` e escala menor, mantendo micro-splash de colisão; o teste físico abaixo reprovou essa apresentação. A remoção futura do fallback depende de equivalência física em primeira pessoa, terceira pessoa e observador remoto.
 
 Fontes oficiais reconfirmadas em 2026-08-04: particle/entity integration para locators e timelines, billboard para `derive_from_velocity`, emitter local space para desacoplar a emissão do ator, collision events e custom emitter shape. Links canônicos: [REFERENCES.md](REFERENCES.md).
+
+### Correção cromática 1.0.16b
+
+O teste físico da 1.0.16a aprovou a correção de local-space e a presença visual, mas revelou dominante verde/amarela nas gotas distantes e no micro-splash. A auditoria encontrou três multiplicadores sobre a mesma cor: textura ciano `[185,236,251]`, gradientes ciano de baixa saturação e `minecraft:particle_appearance_lighting`, que a documentação oficial define como tint pelas condições locais. A 1.0.16b torna o sprite neutro `[245,249,255]`, concentra a identidade em gradientes azul-frio e omite lighting somente nesses três efeitos. Física, locator, tamanho e timeline não mudam.
+
+### Correção física 1.0.16a
+
+O Content Log provou que o runtime não suporta `rotation: true` com `position: false` em `minecraft:emitter_local_space`. Samples oficiais usam posição e rotação verdadeiras quando a orientação local é necessária. O teste também refutou a escolha de `direction_y` para este sprite: embora a velocidade numérica permanecesse idêntica, a largura caiu de `0.042` para um mínimo efetivo próximo de `0.021` e a orientação podia reduzir ainda mais sua área aparente. A 1.0.16a herda posição/rotação juntas, restaura `rotate_xyz`/`0.042 × 0.100` e desacelera somente o bridge.
 
 ## Evidência e correção de hipótese
 

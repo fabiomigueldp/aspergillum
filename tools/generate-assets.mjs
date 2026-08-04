@@ -102,7 +102,9 @@ const particle = png(16, 16, (x, y) => {
   const distance = Math.sqrt(dx * dx + dy * dy);
   if (distance > 1) return [0, 0, 0, 0];
   const alpha = Math.round(240 * (1 - distance ** 1.7));
-  return [185, 236, 251, alpha];
+  // Keep the source sprite chromatically neutral. The particle definitions own
+  // the final water palette, avoiding an accidental double-cyan multiplication.
+  return [245, 249, 255, alpha];
 });
 write("packs/resource/textures/particle/holy_water.png", particle);
 

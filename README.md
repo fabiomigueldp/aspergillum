@@ -2,12 +2,12 @@
 
 Add-On para Minecraft: Bedrock Edition 26.34/35 que adiciona um **aspersório litúrgico funcional** e uma **caldeirinha (aspersorium) colocável**. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão 1.0.16:** preserva integralmente a animação aprovada da 1.0.15d e integra a ponta real do modelo ao VFX: um bridge curto nasce em `aspergillum_tip`, enquanto as 36 gotas balísticas mantêm steering, alcance e multiplayer.
+> **Versão 1.0.16b:** fixa a identidade cromática da água em azul frio, eliminando o desvio verde/amarelo das gotas distantes e dos micro-respingos sem alterar animação, trajetória, 36 gotas, steering, alcance ou multiplayer.
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/releases/Aspergillum-1.0.16.mcaddon`](dist/releases/Aspergillum-1.0.16.mcaddon) com o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.0.16b.mcaddon`](dist/releases/Aspergillum-1.0.16b.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
@@ -38,11 +38,11 @@ As cargas permanecem gravadas no item. Ao acomodá-lo, cargas restantes retornam
 - `aspergillum_action` executa um flick compacto de primeira pessoa ou uma silhueta mais ampla de terceira pessoa, selecionados por controller e pelo contexto da perspectiva;
 - aspersão reservada no swing e confirmada no tick 5: cancelamento anterior não consome carga e cancelamento posterior não reembolsa;
 - emissão balística de 36 gotas em seis grupos espaciais contínuos, sincronizada ao release e visível no multiplayer;
-- bridge visual de quatro microgotas nasce exatamente no locator no tick 5, confirma a ligação cabeça→leque e se dissipa antes de formar uma segunda rajada;
+- bridge visual de quatro microgotas nasce exatamente no locator no tick 5, herda posição/rotação juntas, avança lentamente e confirma a ligação cabeça→leque sem formar uma segunda rajada;
 - origem aproximada da ponta em `0,55` bloco à frente, `0,48` à direita e `0,15` abaixo dos olhos; inclusive o primeiro pulso parte da direção capturada no início do gesto, com resposta de 80% e no máximo 30° de giro;
 - base lateral transportada paralelamente entre pulsos, evitando inversão do leque ao atravessar o olhar vertical;
 - leque anisotrópico: abertura horizontal máxima aproximada de `14,5°`, vertical máxima inferior a `5,2°`, sem halo circular;
-- gotas alongadas orientadas pela velocidade, com billboard reduzido, curva de escala, sprite azul/ciano, material `particles_alpha`, iluminação, gravidade, arrasto e colisão;
+- gotas com billboard `rotate_xyz` e envelope `0.042 × 0.100`, restaurando a legibilidade aprovada em qualquer ângulo sem alterar velocidade, gravidade, arrasto ou alcance;
 - micro-splash cosmético discreto no contato e sons próprios de preparação/liberação disparados pela mesma timeline válida do attachable;
 - arquitetura híbrida deliberada: o locator governa a origem visual e o script conserva o leque controlável; não há uma segunda fan de 36 gotas nem emissão em tentativa vazia;
 - material opaco `entity`, textura com alfa integral, cubos com espessura positiva e box UV completo nas seis faces;
