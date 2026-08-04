@@ -197,16 +197,20 @@ const attachableDefinition = JSON.parse(attachableSource)?.["minecraft:attachabl
 const expectedAnimations = {
   hold_first_person: "animation.aspergillum.hold_first_person",
   hold_third_person: "animation.aspergillum.hold_third_person",
+  sprinkle_first_person: "animation.aspergillum.action.sprinkle.first_person",
+  sprinkle_third_person: "animation.aspergillum.action.sprinkle.third_person",
+  action_controller: "controller.animation.aspergillum.action",
 };
 if (JSON.stringify(attachableDefinition?.animations) !== JSON.stringify(expectedAnimations)) {
-  errors.push("Attachable must expose exactly the two perspective-specific hold poses");
+  errors.push("Attachable must expose the frozen hold poses and perspective-specific action controller resources");
 }
 const expectedAnimateScript = [
   { hold_first_person: "context.is_first_person == 1.0" },
   { hold_third_person: "context.is_first_person == 0.0" },
+  "action_controller",
 ];
 if (JSON.stringify(attachableDefinition?.scripts?.animate) !== JSON.stringify(expectedAnimateScript)) {
-  errors.push("Attachable must select exactly one hold pose from the active perspective");
+  errors.push("Attachable must select one hold pose and continuously evaluate its action controller");
 }
 if (attachableDefinition?.materials?.default !== "entity") {
   errors.push("Pose-calibration attachable must use the opaque entity material");
@@ -244,25 +248,32 @@ const actionAnimations = fs.existsSync(actionAnimationPath)
   ? JSON.parse(fs.readFileSync(actionAnimationPath, "utf8"))?.animations
   : undefined;
 const loadAnimation = actionAnimations?.["animation.aspergillum.player.load"];
-const sprinkleAnimation = actionAnimations?.["animation.aspergillum.player.sprinkle"];
-if (loadAnimation?.animation_length !== 0.8 || sprinkleAnimation?.animation_length !== 0.9) {
-  errors.push("Action animations must preserve the 16-tick load and 18-tick sprinkle timelines");
+if (loadAnimation?.animation_length !== 0.8
+  || loadAnimation?.override_previous_animation !== true
+  || Object.keys(loadAnimation?.bones ?? {}).sort().join() !== "rightarm,rightitem") {
+  errors.push("The accepted 16-tick loading choreography must remain unchanged");
 }
-for (const [name, animation] of Object.entries({ loadAnimation, sprinkleAnimation })) {
-  if (animation?.override_previous_animation !== true) {
-    errors.push(`${name} must override the vanilla action on its targeted bones`);
+const bodySprinkle = actionAnimations?.["animation.aspergillum.player.sprinkle.body"];
+const firstPersonSprinkle = actionAnimations?.["animation.aspergillum.action.sprinkle.first_person"];
+const thirdPersonSprinkle = actionAnimations?.["animation.aspergillum.action.sprinkle.third_person"];
+if (bodySprinkle?.animation_length !== 0.82
+  || bodySprinkle?.override_previous_animation !== false
+  || Object.keys(bodySprinkle?.bones ?? {}).join() !== "rightarm") {
+  errors.push("Sprinkle body correction must be additive, settle by 0.82 seconds, and target only rightarm");
+}
+for (const [name, animation] of Object.entries({ firstPersonSprinkle, thirdPersonSprinkle })) {
+  if (animation?.animation_length !== 0.82 || Object.keys(animation?.bones ?? {}).join() !== "aspergillum_action") {
+    errors.push(`${name} must settle by 0.82 seconds and target only aspergillum_action`);
   }
-  if (Object.keys(animation?.bones ?? {}).sort().join() !== "rightarm,rightitem") {
-    errors.push(`${name} must target only the right arm and right item holder bones`);
-  }
-  for (const boneName of ["rightarm", "rightitem"]) {
-    const rotation = animation?.bones?.[boneName]?.rotation;
-    const finalKey = String(animation?.animation_length);
-    if (JSON.stringify(rotation?.["0.0"]) !== JSON.stringify([0, 0, 0])
-      || JSON.stringify(rotation?.[finalKey]) !== JSON.stringify([0, 0, 0])) {
-      errors.push(`${name}/${boneName} must start and finish at the neutral pose`);
-    }
-  }
+}
+
+const actionControllerPath = path.join(packRoots[1], "animation_controllers", "aspergillum.animation_controllers.json");
+const actionController = fs.existsSync(actionControllerPath)
+  ? JSON.parse(fs.readFileSync(actionControllerPath, "utf8"))?.animation_controllers?.["controller.animation.aspergillum.action"]
+  : undefined;
+if (actionController?.initial_state !== "idle"
+  || Object.keys(actionController?.states ?? {}).join() !== "idle,sprinkle,recovery") {
+  errors.push("Attachable action controller must expose the controlled idle/sprinkle/recovery lifecycle");
 }
 
 const dropletPath = path.join(packRoots[1], "particles", "holy_water_droplet.particle.json");
@@ -329,7 +340,7 @@ if (itemComponents?.["minecraft:swing_duration"]?.value !== itemComponents?.["mi
 const compiledScript = fs.readFileSync(path.join(packRoots[0], "scripts", "main.js"), "utf8");
 if (!compiledScript.includes("playAnimation")
   || !compiledScript.includes("animation.aspergillum.player.load")
-  || !compiledScript.includes("animation.aspergillum.player.sprinkle")) {
+  || !compiledScript.includes("animation.aspergillum.player.sprinkle.body")) {
   errors.push("Compiled script must coordinate both stable one-shot player action animations");
 }
 if (!compiledScript.includes("spawnParticle") || !compiledScript.includes("aspergillum:holy_water_droplet")) {
@@ -364,6 +375,7 @@ const required = [
   "packs/resource/models/blocks/aspersorium.rotations.geo.json",
   "packs/resource/animations/aspergillum.action.animation.json",
   "packs/resource/animations/aspergillum.hold.animation.json",
+  "packs/resource/animation_controllers/aspergillum.animation_controllers.json",
   "packs/resource/particles/holy_water_droplet.particle.json",
   "packs/resource/render_controllers/aspergillum.render_controllers.json",
 ];

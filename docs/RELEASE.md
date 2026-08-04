@@ -34,6 +34,8 @@ dist/
 
 O empacotador ordena todos os caminhos e usa timestamps ZIP fixos. Duas execuções sobre a mesma árvore devem produzir bytes e SHA-256 idênticos.
 
+Revisões com sufixo diagnóstico usam `package.json > aspergillum.releaseLabel` no nome do artefato e do relatório. Como o manifest Bedrock aceita apenas `[major, minor, patch]` numérico, `1.0.15b` corresponde à revisão monotônica `[1,0,16]` dos packs; o próximo pacote nunca deve reutilizar essa trinca.
+
 ### Avisos offline conhecidos
 
 O Creator Tools em modo `--offline` não possui o catálogo completo do jogo nem resolve o item implícito de um custom block. Por isso, o relatório atual contém exatamente seis avisos `UNLINK 323`: quatro ingredientes vanilla (`stick`, `iron_nugget`, `chain`, `iron_ingot`) e duas referências ao item do bloco `aspergillum:aspersorium` nas loot tables. A v1.0.14 apresentava a mesma lista.

@@ -25,7 +25,7 @@ export const STANDARD_SPRAY_PROFILE: SprayProfile = Object.freeze({
   id: "standard",
   dropletCount: 36,
   pulseCount: 6,
-  releaseDelayTicks: 4,
+  releaseDelayTicks: 5,
   actionDurationTicks: 18,
   steeringResponsiveness: 0.8,
   maximumTurnDegrees: 30,

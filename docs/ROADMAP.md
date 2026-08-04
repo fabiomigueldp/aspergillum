@@ -30,6 +30,26 @@ Gate de saída automatizado concluído; validação física pendente:
 - cancelamento pós-release não reembolsa;
 - curvatura da câmera permanece controlável e suave.
 
+## v1.0.15b — Redesign híbrido da aspersão — implementada; QA físico pendente
+
+Escopo:
+
+- preservar integralmente carregamento, binding, pose, estado e spray da 1.0.15;
+- remover reset absoluto e `rightitem` da animação corporal de aspersão;
+- manter o swing vanilla e adicionar correção pequena somente em `rightarm`;
+- animar `aspergillum_action` com coreografias distintas FP/TP;
+- acionar a ação local por cooldown válido num controller com crossfade;
+- mover commit e seis pulsos para os ticks 5–10;
+- validar matematicamente envelopes, endpoints, bones e continuidade.
+
+Gate de saída físico:
+
+- item permanece visível em todos os frames de primeira pessoa;
+- existe apenas um começo, sem reset ou teleporte;
+- cabeça não cruza rosto/ombro e grip permanece na mão;
+- água começa durante o flick no tick 5;
+- Content Log não acusa query, controller, animação ou bone desconhecido.
+
 ## v1.0.16 — Locator e VFX final
 
 Escopo:

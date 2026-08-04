@@ -17,7 +17,10 @@
       },
       "animations": {
         "hold_first_person": "animation.aspergillum.hold_first_person",
-        "hold_third_person": "animation.aspergillum.hold_third_person"
+        "hold_third_person": "animation.aspergillum.hold_third_person",
+        "sprinkle_first_person": "animation.aspergillum.action.sprinkle.first_person",
+        "sprinkle_third_person": "animation.aspergillum.action.sprinkle.third_person",
+        "action_controller": "controller.animation.aspergillum.action"
       },
       "scripts": {
         "animate": [
@@ -26,7 +29,8 @@
           },
           {
             "hold_third_person": "context.is_first_person == 0.0"
-          }
+          },
+          "action_controller"
         ]
       },
       "render_controllers": ["controller.render.aspergillum.held"]

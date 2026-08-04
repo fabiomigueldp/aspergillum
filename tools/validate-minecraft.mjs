@@ -3,7 +3,8 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = path.resolve(import.meta.dirname, "..");
-const { version } = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+const metadata = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+const version = metadata.aspergillum?.releaseLabel ?? metadata.version;
 const cli = path.join(root, "node_modules", "@minecraft", "creator-tools", "cli", "index.mjs");
 const addon = path.join(root, "dist", "releases", `Aspergillum-${version}.mcaddon`);
 const reportDirectory = path.join(root, "dist", "validation", version);

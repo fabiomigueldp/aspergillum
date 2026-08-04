@@ -70,8 +70,8 @@ Cancelamentos obrigatórios:
 A v1.0.15 separa:
 
 1. **reserva no tick 0**: cria `SprinkleSession` e impede ação concorrente;
-2. **commit no tick 4**: revalida e consome/preserva a carga no instante físico de liberação;
-3. **pulsos nos ticks 4–9**: continuam apenas se item e dimensão permanecerem válidos.
+2. **commit no tick 5**: revalida e consome/preserva a carga no instante físico de liberação;
+3. **pulsos nos ticks 5–10**: continuam apenas se item e dimensão permanecerem válidos.
 
 Semântica:
 

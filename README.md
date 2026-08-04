@@ -2,12 +2,12 @@
 
 Add-On para Minecraft: Bedrock Edition 26.34/35 que adiciona um **aspersório litúrgico funcional** e uma **caldeirinha (aspersorium) colocável**. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão 1.0.15:** adiciona gestos próprios de carregamento e aspersão sobre a hierarquia comprovada, consome a carga somente no instante físico de liberação e preserva o controle curvo da rajada com uma base estável até em pitches extremos.
+> **Versão 1.0.15b:** redesenha a aspersão como uma composição híbrida — swing vanilla, correção corporal aditiva e flick local específico para primeira/terceira pessoa — sem alterar binding, grip, poses estáticas ou partículas.
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/releases/Aspergillum-1.0.15.mcaddon`](dist/releases/Aspergillum-1.0.15.mcaddon) com o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.0.15b.mcaddon`](dist/releases/Aspergillum-1.0.15b.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
@@ -34,8 +34,9 @@ As cargas permanecem gravadas no item. Ao acomodá-lo, cargas restantes retornam
 - filho neutro `aspergillum_action`, com malha separada em `handle` e `sprinkler_head`, preparando locator e VFX sem tocar no binding;
 - malha real de 15,6 unidades autorada ao redor do grip empírico `[-6, 24, 1]`, nove unidades acima da pose da 1.0.8;
 - geometria base `[25, 0, -12]`, correção de apresentação exclusiva da terceira pessoa `position [5, -1.5, -2.25]`/`rotation [10, 0, 0]` e primeira pessoa aprovada preservada sem translação;
-- gesto litúrgico one-shot de 18 ticks e carregamento de 16 ticks acionados pela Script API estável sobre `rightarm`/`rightitem`;
-- aspersão reservada no swing e confirmada no tick 4: cancelamento anterior não consome carga e cancelamento posterior não reembolsa;
+- carregamento de 16 ticks preservado; na aspersão, `playAnimation()` acrescenta somente uma correção de baixa amplitude em `rightarm`, sem resetar o swing vanilla e sem animar `rightitem`;
+- `aspergillum_action` executa um flick compacto de primeira pessoa ou uma silhueta mais ampla de terceira pessoa, selecionados por controller e pelo contexto da perspectiva;
+- aspersão reservada no swing e confirmada no tick 5: cancelamento anterior não consome carga e cancelamento posterior não reembolsa;
 - emissão autoritativa de 36 gotas em seis grupos espaciais contínuos, sincronizada ao release e visível no multiplayer;
 - origem aproximada da ponta em `0,55` bloco à frente, `0,48` à direita e `0,15` abaixo dos olhos; inclusive o primeiro pulso parte da direção capturada no início do gesto, com resposta de 80% e no máximo 30° de giro;
 - base lateral transportada paralelamente entre pulsos, evitando inversão do leque ao atravessar o olhar vertical;
@@ -65,6 +66,7 @@ Comandos importantes:
 | `npm run typecheck` | Verifica TypeScript contra Script API 2.8.0 |
 | `npm test` | Executa os testes unitários do domínio |
 | `npm run build` | Gera assets, compila o script e valida o conteúdo |
+| `npm run validate:animation` | Amostra a coreografia a 120 Hz e verifica envelopes/continuidade |
 | `npm run package` | Cria e valida oficialmente o `.mcaddon` |
 | `npm run clean` | Remove somente artefatos gerados conhecidos |
 

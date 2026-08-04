@@ -108,7 +108,7 @@ describe("sprinkle cone", () => {
     expect(STANDARD_SPRAY_PROFILE.id).toBe("standard");
     expect(STANDARD_SPRAY_PROFILE.dropletCount).toBe(36);
     expect(STANDARD_SPRAY_PROFILE.pulseCount).toBe(6);
-    expect(STANDARD_SPRAY_PROFILE.releaseDelayTicks).toBe(4);
+    expect(STANDARD_SPRAY_PROFILE.releaseDelayTicks).toBe(5);
     expect(STANDARD_SPRAY_PROFILE.actionDurationTicks).toBe(18);
     expect(STANDARD_SPRAY_PROFILE.steeringResponsiveness).toBe(0.8);
     expect(STANDARD_SPRAY_PROFILE.maximumTurnDegrees).toBe(30);

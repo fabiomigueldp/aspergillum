@@ -49,7 +49,8 @@ for (const file of markdownFiles) {
   }
 }
 
-const { version } = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+const metadata = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+const version = metadata.aspergillum?.releaseLabel ?? metadata.version;
 const readme = fs.readFileSync(path.join(root, "README.md"), "utf8");
 const expectedRelease = `dist/releases/Aspergillum-${version}.mcaddon`;
 if (!readme.includes(expectedRelease)) missing.push(`README.md -> expected current release link ${expectedRelease}`);
@@ -62,6 +63,7 @@ for (const required of [
   "docs/ROADMAP.md",
   "docs/TESTING.md",
   "docs/RELEASE.md",
+  "docs/ANIMATION_DESIGN_CONTRACT.md",
 ]) {
   if (!fs.existsSync(path.join(root, required))) missing.push(`required documentation missing: ${required}`);
 }

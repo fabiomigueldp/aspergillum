@@ -1,7 +1,7 @@
 import type { Player } from "@minecraft/server";
 
 export const LOAD_ANIMATION = "animation.aspergillum.player.load";
-export const SPRINKLE_ANIMATION = "animation.aspergillum.player.sprinkle";
+export const SPRINKLE_ANIMATION = "animation.aspergillum.player.sprinkle.body";
 
 function playActionAnimation(player: Player, animation: string): void {
   try {

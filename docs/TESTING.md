@@ -82,7 +82,7 @@ Antes de testes extensos:
 
 Se o smoke test falhar, interrompa a matriz e capture a menor reprodução possível.
 
-## Baseline v1.0.15
+## Baseline v1.0.15b
 
 - [ ] malha real aparece em escala correta nas duas perspectivas;
 - [ ] bound root acompanha integralmente a mão direita;
@@ -103,9 +103,14 @@ Se o smoke test falhar, interrompa a matriz e capture a menor reprodução poss�
 - [ ] dois jogadores não carregam simultaneamente no mesmo bloco.
 - [ ] carregamento executa gesto próprio de 0,8 s e confirma a transferência na imersão do tick 10;
 - [ ] aspersão executa gesto próprio de 0,9 s, distinto do ataque vanilla;
-- [ ] trocar de item antes do tick 4 não consome carga nem emite água;
+- [ ] trocar de item antes do tick 5 não consome carga nem emite água;
 - [ ] trocar depois do release conserva a carga consumida e cancela apenas pulsos restantes;
 - [ ] atravessar o olhar vertical não inverte subitamente o leque;
+- [ ] primeira pessoa mantém o item visível em 100% dos frames da aspersão;
+- [ ] terceira pessoa apresenta um único início, sem reset entre swing vanilla e correção aditiva;
+- [ ] `aspergillum_action` produz flick curto sem o cabo abandonar o punho;
+- [ ] água, som e commit começam juntos no tick 5;
+- [ ] controller não dispara em ataque vazio nem ao reequipar durante cooldown residual;
 
 Ainda é esperado na baseline: origem matemática aproximada. O locator permanece fora do escopo desta revisão.
 
@@ -160,6 +165,8 @@ Ainda é esperado na baseline: origem matemática aproximada. O locator permanec
 - [ ] cabeça nunca cruza rosto, ombro, tórax ou câmera;
 - [ ] cancelar antes do release não consome; depois do release não reembolsa;
 - [ ] vazio toca feedback seco e nunca aciona partículas.
+- [ ] captura a 60 FPS confirma variação aparente inferior a aproximadamente `10°` por frame;
+- [ ] repetir três vezes em FP, TP frontal e TP lateral com Steve/wide e Alex/slim;
 
 ## QA específico de locator/VFX
 

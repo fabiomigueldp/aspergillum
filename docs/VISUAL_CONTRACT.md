@@ -1,6 +1,6 @@
 # Contrato visual congelado
 
-Este documento registra os valores estruturais comprovados até a v1.0.14 e preservados na v1.0.15. Eles são baseline, não sugestões de calibração.
+Este documento registra os valores estruturais comprovados até a v1.0.14 e preservados na v1.0.15b. Eles são baseline, não sugestões de calibração.
 
 ## Attachable
 
@@ -40,13 +40,13 @@ rightItem (holder)
 - A pose de primeira pessoa não deve ser afetada por correções de terceira pessoa.
 - Não se transplanta pose de tridente, lança ou outra malha vanilla como se fosse universal.
 
-## Spray v1.0.15
+## Spray v1.0.15b
 
 | Propriedade | Baseline |
 | --- | --- |
 | Total | `36` gotas |
 | Pulsos | `6`, com `6` gotas por pulso |
-| Janela atual | ticks `+4` a `+9` |
+| Janela atual | ticks `+5` a `+10` |
 | Resposta direcional | `0.8` |
 | Giro máximo por atualização | `30°` |
 | Espaço após emissão | world-space |
@@ -54,10 +54,20 @@ rightItem (holder)
 | Abertura vertical máxima | inferior a `5.2°` |
 | Velocidade | `12.70–13.98` blocos/s |
 | Cancelamento | troca de item ou dimensão |
-| Release transacional | reserva no tick 0; commit no tick 4 |
+| Release transacional | reserva no tick 0; commit no tick 5 |
 | Base do leque | transporte paralelo entre pulsos |
 
 A curvatura conforme a câmera é intencional e deve ser preservada. Ela oferece controle gestual durante a janela de liberação. O limite angular e a interpolação esférica impedem estalos; partículas já emitidas não mudam de trajetória.
+
+## Contrato de animação 1.0.15b
+
+- O swing vanilla de `0,9 s` é a fundação inevitável; a animação corporal é aditiva.
+- `animation.aspergillum.player.sprinkle.body` anima somente `rightarm`, nunca `rightitem`, e não usa reset absoluto.
+- `aspergillum_action` é o único bone da coreografia fina do instrumento.
+- Primeira e terceira pessoa usam animações locais distintas e retornam a zero até `0,82 s`.
+- O controller local cruza estados em `0,08 s` pelo menor caminho e só entra na ação diante do cooldown válido.
+- O primeiro pulso, o commit e o som concordam no tick 5.
+- Consulte [Contrato de design de animação](ANIMATION_DESIGN_CONTRACT.md) para envelopes e gates matemáticos.
 
 ## Hierarquia-alvo
 

@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.15b — 2026-08-04
+
+- preservados integralmente binding, geometria, malha, grip, escala, poses estáticas, carregamento, estado, partículas, steering e build determinístico da 1.0.15;
+- substituída a aspersão absoluta sobre `rightarm/rightitem` por uma correção corporal aditiva de baixa amplitude, limitada exclusivamente a `rightarm` e sem `override_previous_animation`;
+- mantido o swing vanilla como fundação fluida, eliminando a sequência determinística “swing → reset → segundo começo” observada na 1.0.15;
+- ativado o osso `aspergillum_action` como raiz real da coreografia do instrumento, sem mover `aspergillum_bound` ou `aspergillum_presentation`;
+- adicionadas coreografias locais distintas: primeira pessoa compacta e camera-safe; terceira pessoa com antecipação, flick, pose heroica, follow-through e settle;
+- adicionado controller `idle → sprinkle → recovery`, condicionado ao cooldown válido da mão principal, com crossfade de `0,08 s` e rotação pelo menor caminho;
+- adotada interpolação Catmull-Rom com poses neutras duplicadas nas bordas e breakdown TP adicional para limitar a mudança a menos de `10°` por frame a 30 FPS;
+- deslocados commit, som e primeiro pulso do tick 4 para o tick 5; os seis pulsos agora ocupam os ticks 5–10, preservando 36 gotas e a curvatura controlada;
+- criado `validate-animation-choreography.mjs`, que amostra a 120 Hz e bloqueia `rightitem`, reset absoluto, amplitudes excessivas, translação local acima de `0,5`, endpoints não neutros e desalinhamento do release;
+- o rótulo distribuído é `1.0.15b`; como manifests Bedrock aceitam somente trincas numéricas monotônicas, a revisão interna dos packs é `[1,0,16]`.
+
 ## 1.0.15 — 2026-08-03
 
 - preservados integralmente geometry `1.16.0`, `aspergillum_bound`, item-slot binding, grip, escala e poses aprovadas de primeira/terceira pessoa;

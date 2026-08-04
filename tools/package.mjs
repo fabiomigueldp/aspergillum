@@ -6,8 +6,9 @@ import archiver from "archiver";
 const root = path.resolve(import.meta.dirname, "..");
 const releases = path.join(root, "dist", "releases");
 fs.mkdirSync(releases, { recursive: true });
-const { version } = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
-const outputPath = path.join(releases, `Aspergillum-${version}.mcaddon`);
+const metadata = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+const releaseLabel = metadata.aspergillum?.releaseLabel ?? metadata.version;
+const outputPath = path.join(releases, `Aspergillum-${releaseLabel}.mcaddon`);
 // ZIP timestamps are stored in local DOS time. A date well after the 1980
 // lower bound remains stable in every supported timezone.
 const archiveDate = new Date("2000-01-01T00:00:00.000Z");
