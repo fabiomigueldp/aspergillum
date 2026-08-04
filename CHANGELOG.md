@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.0.16 — 2026-08-04
+
+- congelada integralmente a animação 1.0.15d depois da confirmação física de que o solavanco final foi eliminado;
+- adicionados o bone técnico `spray_aim` e o locator `aspergillum_tip`, uma unidade além da face da cabeça e sem qualquer alteração em binding, grip, malha ou poses;
+- introduzido um bridge world-space de quatro microgotas no release do tick 5 para ligar visualmente a cabeça renderizada ao leque, sem criar uma segunda aspersão;
+- preservadas as 36 gotas balísticas em seis pulsos, resposta de steering `0.8`, limite de `30°`, transporte paralelo e comportamento multiplayer do emissor script-side;
+- orientadas as gotas principais pela velocidade, reduzido o billboard próximo da câmera e adicionada curva de escala ao longo da vida;
+- adicionado micro-splash cosmético em colisões elegíveis, sem autoridade sobre gameplay;
+- adicionados eventos sonoros próprios de preparação e release na timeline válida do attachable; removido o splash válido do script para impedir duplicação;
+- criado `VFX_DESIGN_CONTRACT.md` e `validate-vfx.mjs`, bloqueando perda do locator, duplicação do leque, regressão das 36 gotas e inconsistências de timeline;
+- o rótulo distribuído é `1.0.16`; a revisão monotônica dos packs é `[1,0,19]`.
+
+## 1.0.15d — 2026-08-04
+
+- identificado no `player.animation.json` oficial que o swing vanilla de terceira pessoa mantém `rightarm.y` próximo de `-30°` até o último instante e então o zera por um ramo condicional, explicando o teleporte que persistiu sem qualquer timeline corporal customizada;
+- adicionada uma ponte de recuperação estritamente aditiva e limitada a `rightarm.y`, dirigida pelo mesmo `variable.attack_time` público usado pelo player vanilla;
+- mantida a ponte neutra durante a primeira metade do swing; entre 50% e 100%, uma curva Hermite compensa progressivamente o viés de `-30°`, preservando follow-through e chegando ao repouso com velocidade nula;
+- aplicada proteção explícita para primeira pessoa e para os endpoints `attack_time <= 0`/`>= 1`, de modo que a pose aprovada de câmera permaneça intocada e a animação finita expire já em zero;
+- preservados integralmente binding, grip, poses estáticas, `aspergillum_action`, release no tick 5, 36 gotas, steering, carregamento, estado e concorrência;
+- ampliado o validador de coreografia para reproduzir a costura vanilla de `30°`, comprovar a neutralização antes do reset, limitar a recuperação a `3,82°` por frame a 30 FPS e permitir somente uma reversão intencional entre follow-through e retorno;
+- o rótulo distribuído é `1.0.15d`; a revisão monotônica dos packs é `[1,0,18]`.
+
 ## 1.0.15c — 2026-08-04
 
 - preservados integralmente binding, geometria, poses estáticas, grip, carregamento, coreografias locais FP/TP, controller, release no tick 5, partículas, steering, sessões e políticas de estado da 1.0.15b;

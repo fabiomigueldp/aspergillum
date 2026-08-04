@@ -64,6 +64,7 @@ for (const required of [
   "docs/TESTING.md",
   "docs/RELEASE.md",
   "docs/ANIMATION_DESIGN_CONTRACT.md",
+  "docs/VFX_DESIGN_CONTRACT.md",
 ]) {
   if (!fs.existsSync(path.join(root, required))) missing.push(`required documentation missing: ${required}`);
 }

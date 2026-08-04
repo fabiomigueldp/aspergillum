@@ -11,7 +11,7 @@ Entrada Bedrock
 bootstrap ──► application ──► domain
                    │
                    ├──► infrastructure (item, bloco, mundo, sessões)
-                   └──► presentation (mensagens, som, animação, VFX — alvo)
+                   └──► presentation (mensagens, som, animação e VFX)
 ```
 
 O servidor é autoritativo para carga, água, cooldown e permissões. Resource Pack, attachable, animações e partículas representam o resultado, mas nunca concedem estado.
@@ -114,12 +114,13 @@ O commit no tick 10 coincide com a fase de imersão da animação one-shot. A fa
 
 1. `playerSwingStart` aceita apenas Attack/Mine com o item correto.
 2. O domínio verifica carga, cooldown e política do modo.
-3. Uma `SprinkleSession` e um `ActionLease` reservam a instância sem consumir carga; o cooldown de 18 ticks começa, o braço segue o swing nativo e o controller inicia a ação local do instrumento.
+3. Uma `SprinkleSession` e um `ActionLease` reservam a instância sem consumir carga; o cooldown de 18 ticks começa, o braço segue o arco nativo com uma ponte aditiva de continuidade no recovery e o controller inicia a ação local do instrumento.
 4. No tick 5, item, slot, dimensão, modo e carga são revalidados; somente então a carga é consumida/preservada.
-5. Seis pulsos atualizam direção e base transportada em direção à câmera.
-6. Cada gota passa a simular em world-space; troca de item/dimensão cancela apenas pulsos futuros e não reembolsa um release já confirmado.
-7. Cancelamento anterior ao tick 5 não consome carga nem emite água.
-8. `entityHurt` e `playerBreakBlock` impedem dano e quebra.
+5. A timeline válida dispara no locator um bridge curto e o som próprio de release, ambos puramente visuais.
+6. Seis pulsos script-side atualizam direção e base transportada em direção à câmera.
+7. Cada gota passa a simular em world-space; troca de item/dimensão cancela apenas pulsos futuros e não reembolsa um release já confirmado.
+8. Cancelamento anterior ao tick 5 não consome carga nem emite água.
+9. `entityHurt` e `playerBreakBlock` impedem dano e quebra.
 
 Partículas visuais permanecem independentes de qualquer cone lógico de gameplay futuro.
 
@@ -128,24 +129,27 @@ Partículas visuais permanecem independentes de qualquer cone lógico de gamepla
 O contrato atual e os valores numéricos estão em [Contrato visual](VISUAL_CONTRACT.md). A v1.0.15 adiciona duas camadas sem alterar `aspergillum_bound`:
 
 - `aspergillum_presentation`: pose estática por perspectiva;
-- `aspergillum_action`: raiz neutra das peças `handle` e `sprinkler_head`, preparada para ação/locator.
+- `aspergillum_action`: raiz neutra das peças `handle` e `sprinkler_head`, responsável pela ação local;
+- `spray_aim`: filho técnico da cabeça que hospeda `aspergillum_tip` sem malha.
 
 Timeline de carregamento (`0.80 s`): antecipação, avanço/descida, imersão, commit no tick 10, retenção e retorno.
 
-Timeline de aspersão (`18 ticks/0.90 s`): o swing vanilla é o único movimento do braço e completa o retorno sem disputa com `playAnimation()`; um controller do attachable seleciona a coreografia FP/TP de `aspergillum_action`. A ação local assenta em `0,82 s`, deixando `0,08 s` de buffer, e o release ocorre no tick 5. Falhas de apresentação continuam sem interferir no estado.
+Timeline de aspersão (`18 ticks/0.90 s`): o swing vanilla fornece o movimento amplo; uma animação finita de `1,10 s`, iniciada somente para aspersão autorizada, soma em terceira pessoa uma compensação Hermite a `rightarm.y` entre 50% e 100% de `variable.attack_time`. Ela cancela o ramo final de `-30°` da curva oficial sem resetar a pose, sem tocar em `rightitem` e sem alterar a primeira pessoa. Um controller do attachable seleciona a coreografia FP/TP de `aspergillum_action`; a ação local assenta em `0,82 s`, deixa `0,08 s` de buffer e libera água no tick 5. Falhas de apresentação continuam sem interferir no estado.
 
-O controller usa a categoria de cooldown válida como ponte visual. Tentativa vazia não inicia o cooldown nativo e, portanto, não entra no estado `sprinkle`. A sintaxe e o contexto exatos permanecem sujeitos ao Content Log do pacote importado; o emissor script-side continua autoritativo e não depende do controller.
+O controller usa a categoria de cooldown válida como ponte visual. Tentativa vazia não inicia o cooldown nativo e, portanto, não entra no estado `sprinkle`. Na v1.0.16, a mesma timeline dispara o bridge em `aspergillum_tip` e os sons próprios. A sintaxe e o contexto exatos permanecem sujeitos ao Content Log do pacote importado; autorização e leque balístico continuam independentes do controller.
 
 ## Partículas
 
-O emissor matemático atual é multiplayer e controlável, mas usa origem aproximada. A arquitetura final prefere `sprinkler_head -> spray_aim -> aspergillum_tip`:
+A v1.0.16 implementa uma arquitetura híbrida `sprinkler_head -> spray_aim -> aspergillum_tip`:
 
-- `aspergillum_tip` fornece posição visual exata;
-- `spray_aim` mantém o steering deliberado entre pulsos;
-- partículas emitidas abandonam o espaço local e seguem no mundo;
-- cooldown válido ou uma ponte explícita impede VFX em tentativa vazia.
+- `aspergillum_tip` fornece a origem física do bridge de quatro microgotas;
+- `bind_to_actor: false` solta o bridge no mundo imediatamente;
+- o script mantém as 36 gotas balísticas, seis pulsos e steering deliberado;
+- gotas principais derivam a orientação do vetor de velocidade;
+- colisões elegíveis produzem um micro-splash cosmético;
+- o cooldown válido impede bridge e som molhado em tentativa vazia.
 
-Não remover o emissor atual até locator, condição de disparo, primeira/terceira pessoa e multiplayer provarem equivalência. Uma solução híbrida — locator para origem/impacto e script para as 36 gotas guiadas — é aceitável se preservar melhor o controle.
+O bridge não é um segundo leque e não substitui o emissor matemático. Não remover as 36 gotas atuais até locator, condição de disparo, primeira/terceira pessoa e multiplayer provarem equivalência. O contrato detalhado está em [Contrato de VFX](VFX_DESIGN_CONTRACT.md).
 
 ## Bloco
 

@@ -125,14 +125,15 @@ if (heldGeometry?.format_version !== "1.16.0") {
   errors.push("Attachable binding requires geometry format_version 1.16.0");
 }
 const heldBones = heldGeometry?.["minecraft:geometry"]?.[0]?.bones ?? [];
-if (heldBones.length !== 5) {
-  errors.push("Held geometry must contain bound, presentation, action, handle, and sprinkler-head bones");
+if (heldBones.length !== 6) {
+  errors.push("Held geometry must contain bound, presentation, action, handle, sprinkler-head, and spray-aim bones");
 }
 const boundBone = heldBones.find((bone) => bone.name === "aspergillum_bound");
 const presentationBone = heldBones.find((bone) => bone.name === "aspergillum_presentation");
 const actionBone = heldBones.find((bone) => bone.name === "aspergillum_action");
 const handleBone = heldBones.find((bone) => bone.name === "handle");
 const sprinklerHeadBone = heldBones.find((bone) => bone.name === "sprinkler_head");
+const sprayAimBone = heldBones.find((bone) => bone.name === "spray_aim");
 if (boundBone?.name !== "aspergillum_bound") {
   errors.push("Pose-calibration geometry requires the aspergillum_bound root");
 }
@@ -169,7 +170,14 @@ if (handleBone?.parent !== "aspergillum_action" || sprinklerHeadBone?.parent !==
   errors.push("Handle and sprinkler head must inherit from the action bone");
 }
 if (handleBone?.locators !== undefined || sprinklerHeadBone?.locators !== undefined) {
-  errors.push("The animation foundation must not introduce the locator prematurely");
+  errors.push("Only the dedicated spray-aim bone may own the release locator");
+}
+if (sprayAimBone?.parent !== "sprinkler_head"
+  || JSON.stringify(sprayAimBone?.pivot) !== JSON.stringify([-6, 36.8, 1])
+  || JSON.stringify(sprayAimBone?.locators?.aspergillum_tip) !== JSON.stringify([-6, 37.8, 1])
+  || sprayAimBone?.cubes !== undefined
+  || sprayAimBone?.binding !== undefined) {
+  errors.push("Spray-aim must be a non-rendering sprinkler-head child with the calibrated aspergillum_tip locator");
 }
 const cubes = [...(handleBone?.cubes ?? []), ...(sprinklerHeadBone?.cubes ?? [])];
 if (cubes.length !== 8) {
@@ -214,6 +222,13 @@ if (JSON.stringify(attachableDefinition?.scripts?.animate) !== JSON.stringify(ex
 }
 if (attachableDefinition?.materials?.default !== "entity") {
   errors.push("Pose-calibration attachable must use the opaque entity material");
+}
+if (attachableDefinition?.particle_effects?.holy_water_release !== "aspergillum:holy_water_release") {
+  errors.push("Attachable must map the locator-bound holy-water release effect");
+}
+if (attachableDefinition?.sound_effects?.sprinkle_prepare !== "aspergillum.sprinkle.prepare"
+  || attachableDefinition?.sound_effects?.sprinkle_release !== "aspergillum.sprinkle.release") {
+  errors.push("Attachable must map the two custom sprinkle sound events");
 }
 
 const holdAnimations = JSON.parse(
@@ -294,14 +309,16 @@ if (!fs.existsSync(dropletPath)) {
     errors.push("Holy-water droplet must use its dedicated texture");
   }
   const billboard = dropletComponents["minecraft:particle_appearance_billboard"];
-  if (billboard?.facing_camera_mode !== "rotate_xyz" || billboard?.direction !== undefined) {
-    errors.push("Holy-water droplets must remain fully camera-facing like the proven 1.0.6 presentation");
+  if (billboard?.facing_camera_mode !== "direction_y"
+    || billboard?.direction?.mode !== "derive_from_velocity"
+    || billboard?.direction?.min_speed_threshold !== 0.01) {
+    errors.push("Holy-water droplets must align their long axis with velocity");
   }
   if (JSON.stringify(billboard?.size) !== JSON.stringify([
-    "0.042 * variable.aspergillum_scale",
-    "0.1 * variable.aspergillum_scale",
+    "0.034 * variable.aspergillum_scale * (0.78 + 0.22 * math.sin(math.min(variable.particle_age / variable.particle_lifetime, 1.0) * 180.0))",
+    "0.082 * variable.aspergillum_scale * (0.78 + 0.22 * math.sin(math.min(variable.particle_age / variable.particle_lifetime, 1.0) * 180.0))",
   ])) {
-    errors.push("Holy-water droplets must preserve the camera-safe 1.0.12 billboard dimensions");
+    errors.push("Holy-water droplets must preserve the v1.0.16 camera-safe growth envelope");
   }
   const lifetime = dropletComponents["minecraft:particle_lifetime_expression"]?.max_lifetime;
   if (lifetime !== "1.05 + math.random(0.0, 0.35)") {
@@ -314,6 +331,10 @@ if (!fs.existsSync(dropletPath)) {
   const collision = dropletComponents["minecraft:particle_motion_collision"];
   if (collision?.enabled !== true || collision?.expire_on_contact !== true || collision?.collision_radius !== 0.025) {
     errors.push("Holy-water droplets must preserve terrain collision and the 1.0.6 collision radius");
+  }
+  if (collision?.events?.[0]?.event !== "aspergillum:micro_splash"
+    || droplet?.events?.["aspergillum:micro_splash"]?.particle_effect?.effect !== "aspergillum:holy_water_micro_splash") {
+    errors.push("Holy-water collision must emit exactly the dedicated micro-splash effect");
   }
   if (!dropletComponents["minecraft:particle_appearance_lighting"]) {
     errors.push("Holy-water droplets must respond to environmental lighting");
@@ -342,7 +363,11 @@ if (!compiledScript.includes("playAnimation")
 }
 if (compiledScript.includes("animation.aspergillum.player.sprinkle.body")
   || compiledScript.includes("playSprinkleAnimation")) {
-  errors.push("Compiled sprinkle flow must not layer a late scripted animation over the native arm swing");
+  errors.push("Compiled sprinkle flow must not restore the absolute player-body choreography");
+}
+if (!compiledScript.includes("animation.aspergillum.player.sprinkle.recovery_bridge")
+  || !compiledScript.includes("playSprinkleRecoveryBridge")) {
+  errors.push("Compiled sprinkle flow must include the attack-time recovery bridge");
 }
 if (!compiledScript.includes("spawnParticle") || !compiledScript.includes("aspergillum:holy_water_droplet")) {
   errors.push("Compiled script must emit the namespaced holy-water droplet particle");
@@ -361,8 +386,8 @@ if (!compiledScript.includes("steeringResponsiveness: 0.8") || !compiledScript.i
 if (!compiledScript.includes("transportSprayBasis") || !compiledScript.includes('phase: "reserved"')) {
   errors.push("Compiled spray must preserve transported steering and reserve-before-release semantics");
 }
-if (!compiledScript.includes("random.splash")) {
-  errors.push("Compiled spray must synchronize the water release sound");
+if (compiledScript.includes("random.splash")) {
+  errors.push("Compiled spray must not duplicate the locator-timed release sound");
 }
 
 const required = [
@@ -378,7 +403,10 @@ const required = [
   "packs/resource/animations/aspergillum.hold.animation.json",
   "packs/resource/animation_controllers/aspergillum.animation_controllers.json",
   "packs/resource/particles/holy_water_droplet.particle.json",
+  "packs/resource/particles/holy_water_release.particle.json",
+  "packs/resource/particles/holy_water_micro_splash.particle.json",
   "packs/resource/render_controllers/aspergillum.render_controllers.json",
+  "packs/resource/sounds/sound_definitions.json",
 ];
 for (const relative of required) if (!fs.existsSync(path.join(root, relative))) errors.push(`Missing generated asset: ${relative}`);
 

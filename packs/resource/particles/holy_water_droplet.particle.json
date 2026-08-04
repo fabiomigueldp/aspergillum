@@ -36,14 +36,25 @@
         "collision_drag": 0.35,
         "coefficient_of_restitution": 0.02,
         "collision_radius": 0.025,
-        "expire_on_contact": true
+        "expire_on_contact": true,
+        "events": [
+          {
+            "event": "aspergillum:micro_splash",
+            "min_speed": 2.0
+          }
+        ]
       },
       "minecraft:particle_appearance_billboard": {
         "size": [
-          "0.042 * variable.aspergillum_scale",
-          "0.1 * variable.aspergillum_scale"
+          "0.034 * variable.aspergillum_scale * (0.78 + 0.22 * math.sin(math.min(variable.particle_age / variable.particle_lifetime, 1.0) * 180.0))",
+          "0.082 * variable.aspergillum_scale * (0.78 + 0.22 * math.sin(math.min(variable.particle_age / variable.particle_lifetime, 1.0) * 180.0))"
         ],
-        "facing_camera_mode": "rotate_xyz",
+        "facing_camera_mode": "direction_y",
+        "direction": {
+          "mode": "derive_from_velocity",
+          "custom_direction": [0, 1, 0],
+          "min_speed_threshold": 0.01
+        },
         "uv": {
           "texture_width": 16,
           "texture_height": 16,
@@ -62,6 +73,14 @@
         }
       },
       "minecraft:particle_appearance_lighting": {}
+    },
+    "events": {
+      "aspergillum:micro_splash": {
+        "particle_effect": {
+          "effect": "aspergillum:holy_water_micro_splash",
+          "type": "emitter"
+        }
+      }
     }
   }
 }

@@ -29,8 +29,38 @@
         }
       }
     },
+    "animation.aspergillum.player.sprinkle.recovery_bridge": {
+      "animation_length": 1.1,
+      "override_previous_animation": false,
+      "bones": {
+        "rightarm": {
+          "rotation": [
+            0,
+            "(variable.is_first_person || variable.attack_time <= 0.0 || variable.attack_time >= 1.0) ? 0.0 : 30.0 * math.hermite_blend(math.clamp((variable.attack_time - 0.5) / 0.5, 0.0, 1.0))",
+            0
+          ]
+        }
+      }
+    },
     "animation.aspergillum.action.sprinkle.first_person": {
       "animation_length": 0.82,
+      "particle_effects": {
+        "0.25": {
+          "effect": "holy_water_release",
+          "locator": "aspergillum_tip",
+          "bind_to_actor": false
+        }
+      },
+      "sound_effects": {
+        "0.08": {
+          "effect": "sprinkle_prepare",
+          "locator": "aspergillum_tip"
+        },
+        "0.25": {
+          "effect": "sprinkle_release",
+          "locator": "aspergillum_tip"
+        }
+      },
       "bones": {
         "aspergillum_action": {
           "rotation": {
@@ -60,6 +90,23 @@
     },
     "animation.aspergillum.action.sprinkle.third_person": {
       "animation_length": 0.82,
+      "particle_effects": {
+        "0.25": {
+          "effect": "holy_water_release",
+          "locator": "aspergillum_tip",
+          "bind_to_actor": false
+        }
+      },
+      "sound_effects": {
+        "0.08": {
+          "effect": "sprinkle_prepare",
+          "locator": "aspergillum_tip"
+        },
+        "0.25": {
+          "effect": "sprinkle_release",
+          "locator": "aspergillum_tip"
+        }
+      },
       "bones": {
         "aspergillum_action": {
           "rotation": {

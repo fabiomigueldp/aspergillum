@@ -2,12 +2,12 @@
 
 Add-On para Minecraft: Bedrock Edition 26.34/35 que adiciona um **aspersório litúrgico funcional** e uma **caldeirinha (aspersorium) colocável**. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão 1.0.15c:** preserva integralmente o recovery nativo do braço e mantém o flick local específico para primeira/terceira pessoa, eliminando a camada corporal tardia que ainda causava um solavanco no final da aspersão.
+> **Versão 1.0.16:** preserva integralmente a animação aprovada da 1.0.15d e integra a ponta real do modelo ao VFX: um bridge curto nasce em `aspergillum_tip`, enquanto as 36 gotas balísticas mantêm steering, alcance e multiplayer.
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/releases/Aspergillum-1.0.15c.mcaddon`](dist/releases/Aspergillum-1.0.15c.mcaddon) com o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.0.16.mcaddon`](dist/releases/Aspergillum-1.0.16.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
@@ -31,18 +31,20 @@ As cargas permanecem gravadas no item. Ao acomodá-lo, cargas restantes retornam
 - geometria `1.16.0`, primeira versão cujo schema oficial documenta o campo `binding`;
 - raiz sem malha `aspergillum_bound` com `q.item_slot_to_bone_name(context.item_slot)`, preservando exatamente o caminho comprovado na 1.0.7;
 - filho `aspergillum_presentation`, responsável somente pelas poses aprovadas por perspectiva;
-- filho neutro `aspergillum_action`, com malha separada em `handle` e `sprinkler_head`, preparando locator e VFX sem tocar no binding;
+- filho neutro `aspergillum_action`, com malha separada em `handle` e `sprinkler_head`; a cabeça hospeda `spray_aim` e o locator `aspergillum_tip` sem tocar no binding;
 - malha real de 15,6 unidades autorada ao redor do grip empírico `[-6, 24, 1]`, nove unidades acima da pose da 1.0.8;
 - geometria base `[25, 0, -12]`, correção de apresentação exclusiva da terceira pessoa `position [5, -1.5, -2.25]`/`rotation [10, 0, 0]` e primeira pessoa aprovada preservada sem translação;
-- carregamento de 16 ticks preservado; na aspersão, o swing vanilla é o único responsável pelo braço e completa naturalmente seu próprio recovery, sem uma segunda timeline corporal tardia;
+- carregamento de 16 ticks preservado; na aspersão, o swing vanilla fornece o arco principal e uma ponte aditiva exclusiva de terceira pessoa neutraliza progressivamente sua costura final em `rightarm.y`, sem reset nem segunda coreografia absoluta;
 - `aspergillum_action` executa um flick compacto de primeira pessoa ou uma silhueta mais ampla de terceira pessoa, selecionados por controller e pelo contexto da perspectiva;
 - aspersão reservada no swing e confirmada no tick 5: cancelamento anterior não consome carga e cancelamento posterior não reembolsa;
-- emissão autoritativa de 36 gotas em seis grupos espaciais contínuos, sincronizada ao release e visível no multiplayer;
+- emissão balística de 36 gotas em seis grupos espaciais contínuos, sincronizada ao release e visível no multiplayer;
+- bridge visual de quatro microgotas nasce exatamente no locator no tick 5, confirma a ligação cabeça→leque e se dissipa antes de formar uma segunda rajada;
 - origem aproximada da ponta em `0,55` bloco à frente, `0,48` à direita e `0,15` abaixo dos olhos; inclusive o primeiro pulso parte da direção capturada no início do gesto, com resposta de 80% e no máximo 30° de giro;
 - base lateral transportada paralelamente entre pulsos, evitando inversão do leque ao atravessar o olhar vertical;
 - leque anisotrópico: abertura horizontal máxima aproximada de `14,5°`, vertical máxima inferior a `5,2°`, sem halo circular;
-- gotas legíveis e sempre voltadas para a câmera, com tamanho máximo moderado, sprite radial azul/ciano, material `particles_alpha`, iluminação, gravidade, arrasto e colisão;
-- sem locator nesta etapa; o VFX mantém a origem matemática calibrada como fallback comprovado até a próxima integração;
+- gotas alongadas orientadas pela velocidade, com billboard reduzido, curva de escala, sprite azul/ciano, material `particles_alpha`, iluminação, gravidade, arrasto e colisão;
+- micro-splash cosmético discreto no contato e sons próprios de preparação/liberação disparados pela mesma timeline válida do attachable;
+- arquitetura híbrida deliberada: o locator governa a origem visual e o script conserva o leque controlável; não há uma segunda fan de 36 gotas nem emissão em tentativa vazia;
 - material opaco `entity`, textura com alfa integral, cubos com espessura positiva e box UV completo nas seis faces;
 - quatro níveis visuais de água e versão decorativa com o aspersório acomodado;
 - rotação visual em 16 direções por estado próprio e geometrias estáveis, sem traits de rotação experimentais;
@@ -67,6 +69,7 @@ Comandos importantes:
 | `npm test` | Executa os testes unitários do domínio |
 | `npm run build` | Gera assets, compila o script e valida o conteúdo |
 | `npm run validate:animation` | Amostra a coreografia a 120 Hz e verifica envelopes/continuidade |
+| `npm run validate:vfx` | Verifica locator, bridge, orientação, impacto, sons e fallback de 36 gotas |
 | `npm run package` | Cria e valida oficialmente o `.mcaddon` |
 | `npm run clean` | Remove somente artefatos gerados conhecidos |
 

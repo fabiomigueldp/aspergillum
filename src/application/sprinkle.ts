@@ -38,6 +38,7 @@ import {
   trackSprinkleRun,
   type SprinkleSession,
 } from "../infrastructure/sprinkle-session";
+import { playSprinkleRecoveryBridge } from "../presentation/animation-coordinator";
 
 const lastSprinkleTick = new Map<string, number>();
 
@@ -133,7 +134,6 @@ function commitSprinkleRelease(player: Player, session: SprinkleSession): void {
     return;
   }
   if (!markSprinkleReleased(session)) return;
-  player.playSound("random.splash", { pitch: 1.38, volume: 0.58 });
   presentChargeState(player, resolution.state.charges, policies.creative);
   emitWaterFrame(player, session, 0);
 
@@ -206,12 +206,12 @@ export function trySprinkle(player: Player): void {
   if (started.status === "busy") return;
 
   lastSprinkleTick.set(player.id, now);
+  playSprinkleRecoveryBridge(player);
   try {
     item.getComponent(ItemComponentTypes.Cooldown)?.startCooldown(player);
   } catch (error) {
     console.warn(`[Aspergillum] Unable to start native cooldown for ${player.id}: ${String(error)}`);
   }
-  player.playSound("armor.equip_chain", { pitch: 1.42, volume: 0.42 });
   scheduleSprinkle(player, started.session);
 }
 

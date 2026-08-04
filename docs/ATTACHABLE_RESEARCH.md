@@ -2,6 +2,14 @@
 
 > Documento histórico de investigação. Para o contrato vigente, consulte [Contrato visual](VISUAL_CONTRACT.md); para o estado real da versão atual, consulte [Estado do projeto](PROJECT_STATUS.md). Hipóteses intermediárias abaixo não substituem a baseline comprovada.
 
+## v1.0.16 — locator híbrido sem perda de steering
+
+A integração final não substitui prematuramente o emissor matemático. `spray_aim` é filho de `sprinkler_head` e hospeda `aspergillum_tip` uma unidade além da face superior. No release válido de `0.25 s`, cada animação por perspectiva dispara quatro microgotas com `bind_to_actor: false`; elas materializam a origem real e passam imediatamente a simular em world-space.
+
+As 36 gotas principais continuam no script porque esse caminho já prova steering gradual entre seis pulsos, cancelamento de pulsos futuros e visibilidade multiplayer. O locator não gera um segundo leque. Gotas principais agora usam billboard `direction_y` derivado da velocidade, escala menor e micro-splash de colisão. A remoção futura do fallback depende de equivalência física em primeira pessoa, terceira pessoa e observador remoto.
+
+Fontes oficiais reconfirmadas em 2026-08-04: particle/entity integration para locators e timelines, billboard para `derive_from_velocity`, emitter local space para desacoplar a emissão do ator, collision events e custom emitter shape. Links canônicos: [REFERENCES.md](REFERENCES.md).
+
 ## Evidência e correção de hipótese
 
 Os testes físicos das versões 1.0.4 e 1.0.5 mostraram que tornar a geometria semelhante ao tridente não torna seus referenciais intercambiáveis. Na 1.0.5, o modelo passou a aparecer em primeira pessoa, mas ficou enorme, sofreu clipping no plano próximo e permaneceu visualmente desacoplado do punho em terceira pessoa.

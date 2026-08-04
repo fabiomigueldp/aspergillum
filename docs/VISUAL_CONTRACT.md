@@ -1,6 +1,6 @@
 # Contrato visual congelado
 
-Este documento registra os valores estruturais comprovados até a v1.0.14 e preservados na v1.0.15c. Eles são baseline, não sugestões de calibração.
+Este documento registra os valores estruturais comprovados até a v1.0.15d e a integração VFX controlada da v1.0.16. Eles são baseline, não sugestões de calibração.
 
 ## Attachable
 
@@ -11,6 +11,8 @@ rightItem (holder)
         └── aspergillum_action
             ├── handle
             └── sprinkler_head
+                └── spray_aim
+                    └── locator aspergillum_tip
 ```
 
 | Propriedade | Valor protegido |
@@ -40,7 +42,7 @@ rightItem (holder)
 - A pose de primeira pessoa não deve ser afetada por correções de terceira pessoa.
 - Não se transplanta pose de tridente, lança ou outra malha vanilla como se fosse universal.
 
-## Spray v1.0.15c
+## Spray v1.0.16
 
 | Propriedade | Baseline |
 | --- | --- |
@@ -56,20 +58,27 @@ rightItem (holder)
 | Cancelamento | troca de item ou dimensão |
 | Release transacional | reserva no tick 0; commit no tick 5 |
 | Base do leque | transporte paralelo entre pulsos |
+| Origem visual | `aspergillum_tip`, `1` unidade além da tampa da cabeça |
+| Bridge no release | `4` microgotas, lifetime `0.12–0.18 s`, world-space |
+| Billboard principal | `0.034 × 0.082` bloco, curva de escala e eixo Y pela velocidade |
+| Impacto | `1` micro-splash cosmético por colisão elegível |
 
 A curvatura conforme a câmera é intencional e deve ser preservada. Ela oferece controle gestual durante a janela de liberação. O limite angular e a interpolação esférica impedem estalos; partículas já emitidas não mudam de trajetória.
 
-## Contrato de animação 1.0.15c
+A integração é híbrida por contrato: o bridge curto confirma a origem física na ponta, enquanto o script mantém exclusivamente o leque balístico de 36 gotas. O bridge não é uma segunda aspersão, não governa gameplay e não substitui o fallback antes do gate físico/multiplayer. Consulte [Contrato de VFX](VFX_DESIGN_CONTRACT.md).
 
-- O swing vanilla de `0,9 s` é o único proprietário do braço e completa seu próprio recovery sem timeline corporal concorrente.
-- A aspersão não chama `Entity.playAnimation()` nem anima `rightarm`/`rightitem`; a animação one-shot permanece exclusiva do carregamento.
+## Contrato de animação 1.0.15d
+
+- O swing vanilla de `0,9 s` fornece o arco principal do braço; sua costura final de aproximadamente `30°` em `rightarm.y` é neutralizada por uma ponte aditiva dirigida pelo mesmo `variable.attack_time`.
+- A ponte não é uma segunda coreografia: permanece zero até 50% do swing, afeta somente `rightarm.y`, usa `override_previous_animation: false`, é nula em primeira pessoa e expira já neutra.
+- A aspersão não anima `rightitem`, não restaura `animation.aspergillum.player.sprinkle.body` e não usa keyframes absolutos de braço; a animação one-shot completa permanece exclusiva do carregamento.
 - `aspergillum_action` é o único bone da coreografia fina do instrumento.
 - Primeira e terceira pessoa usam animações locais distintas e retornam a zero até `0,82 s`.
 - O controller local cruza estados em `0,08 s` pelo menor caminho e só entra na ação diante do cooldown válido.
 - O primeiro pulso, o commit e o som concordam no tick 5.
 - Consulte [Contrato de design de animação](ANIMATION_DESIGN_CONTRACT.md) para envelopes e gates matemáticos.
 
-## Hierarquia-alvo
+## Hierarquia implementada
 
 ```text
 aspergillum_bound          binding, sempre neutro
@@ -81,7 +90,7 @@ aspergillum_bound          binding, sempre neutro
                 └── locator aspergillum_tip
 ```
 
-Até `sprinkler_head`, essa hierarquia existe na v1.0.15. `spray_aim` e o locator permanecem planejados para a v1.0.16, permitindo preservar a direção gestual sem arrastar gotas já emitidas.
+Toda a hierarquia existe na v1.0.16. `spray_aim` é um bone técnico sem cubos, filho da cabeça; `aspergillum_tip` fica uma unidade além da face superior. O evento de release usa `bind_to_actor: false`, portanto a emissão já criada permanece no mundo em vez de acompanhar o braço.
 
 ## Critérios de aceitação visual
 

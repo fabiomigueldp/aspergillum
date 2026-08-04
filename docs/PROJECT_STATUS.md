@@ -2,13 +2,13 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.0.15c` (revisão numérica dos packs `[1, 0, 17]`)
+- **Versão de referência:** `1.0.16` (revisão numérica dos packs `[1, 0, 19]`)
 - **Engine mínima:** Creator `1.26.30`
 - **Script API:** `@minecraft/server` `2.8.0`, estável
 - **Experimentos:** nenhum
 - **Conteúdo:** aspersório funcional, caldeirinha colocável, carregamento, três cargas, docking decorativo e spray visual
 
-A v1.0.14 encerrou a investigação estrutural do attachable. A v1.0.15 revelou que substituir tardiamente o swing vanilla causava dupla partida; a v1.0.15b removeu o reset e introduziu ação local por perspectiva, mas o teste físico mostrou que a timeline corporal aditiva ainda terminava fora de fase com o recovery nativo. A v1.0.15c executa o fallback arquitetural previsto: o swing vanilla é o único proprietário do braço e `aspergillum_action` é o único proprietário do flick do instrumento. O projeto ainda não atingiu a V1 final: essa composição precisa do teste físico, e continuam pendentes locator e docking persistente.
+A v1.0.15d encerrou a fase de animação: o usuário confirmou no runtime que a ponte aditiva removeu o teleporte final sem degradar o gesto. A v1.0.16 congela essa composição e integra `spray_aim`/`aspergillum_tip`, um bridge de liberação na ponta, gotas orientadas pela velocidade, micro-splash e áudio próprio. O leque principal continua deliberadamente no emissor script-side para preservar as 36 gotas, o steering entre pulsos e a previsibilidade multiplayer até a equivalência física do locator ser comprovada. O projeto ainda não atingiu a V1 final: a v1.0.16 aguarda QA físico e docking persistente permanece pendente.
 
 ## O que está resolvido
 
@@ -23,7 +23,10 @@ A v1.0.14 encerrou a investigação estrutural do attachable. A v1.0.15 revelou 
 - O primeiro pulso transita desde a direção capturada no início do gesto; os demais transportam a base lateral sem flip vertical.
 - A carga é reservada no swing e consumida/preservada somente no release do tick 5.
 - `ActionLease` impede que carregar e aspergir concorram para o mesmo jogador.
-- O carregamento preserva a trajetória anterior; a aspersão usa recovery vanilla íntegro no braço e flick exclusivamente local em `aspergillum_action`.
+- O carregamento preserva a trajetória anterior; a aspersão usa o swing vanilla como arco principal, uma ponte Hermite exclusiva de `rightarm.y` para continuidade final e flick local em `aspergillum_action`.
+- `spray_aim` e `aspergillum_tip` acompanham a cabeça animada; uma emissão curta e world-space conecta visualmente a ponta ao leque no release válido.
+- As gotas principais usam eixo longo derivado da velocidade, escala reduzida perto da câmera e micro-splash puramente cosmético na colisão.
+- Preparação e release usam eventos sonoros próprios na timeline do attachable; o script não duplica o splash válido.
 - Trocar item ou dimensão cancela os pulsos restantes.
 
 ## Limitações conhecidas
@@ -31,8 +34,8 @@ A v1.0.14 encerrou a investigação estrutural do attachable. A v1.0.15 revelou 
 | Área | Situação atual | Consequência |
 | --- | --- | --- |
 | Carregamento | gesto próprio recém-integrado | trajetória e clipping ainda precisam de validação física em wide/slim e primeira/terceira pessoa |
-| Aspersão | composição 1.0.15c sem timeline corporal concorrente | ausência do solavanco final e continuidade FP/TP ainda precisam do teste no runtime |
-| Origem das gotas | aproximação por cabeça + direção do jogador | não coincide exatamente com a cabeça animada do modelo |
+| Aspersão | composição 1.0.15d fisicamente aprovada e congelada | nenhuma limitação estrutural conhecida; manter testes de regressão FP/TP |
+| Origem das gotas | bridge nasce em `aspergillum_tip`; leque balístico mantém origem matemática | QA deve confirmar ligação visual ≤ `0.10` bloco, ausência de duplicação e comportamento remoto |
 | Docking | bloco guarda apenas `has_aspergillum` | `nameTag`, identidade e futuras variantes podem se perder ao acomodar |
 | Overflow | cargas podem exceder espaço livre ao acomodar | água pode ser descartada sem intenção se não for recusado |
 | Schema/lore | schema ainda não é uma migração completa; lore é textual | compatibilidade futura e localização persistente ainda não estão concluídas |
@@ -40,15 +43,15 @@ A v1.0.14 encerrou a investigação estrutural do attachable. A v1.0.15 revelou 
 
 ## Próxima mudança autorizada
 
-Após a aprovação física da v1.0.15c, o próximo marco é a v1.0.16 descrita em [ROADMAP.md](ROADMAP.md): adicionar `spray_aim`/`aspergillum_tip` e aproximar a origem visual da cabeça real sem perder steering ou multiplayer.
+A v1.0.16 está implementada e deve passar pelo gate físico descrito em [TESTING.md](TESTING.md). Após sua aprovação, o próximo marco autorizado é a v1.0.17 de persistência, schema e docking descrita em [ROADMAP.md](ROADMAP.md).
 
 Não faz parte do próximo marco:
 
-- recalibrar as animações antes do relatório físico da v1.0.15;
+- recalibrar a animação aprovada da v1.0.15d;
 - refazer a malha;
 - trocar o binding;
 - substituir toda a arquitetura de uma vez;
-- remover o emissor matemático antes de um locator equivalente estar validado;
+- remover o emissor matemático antes de o locator provar equivalência em FP, TP e multiplayer;
 - adicionar efeitos de gameplay sobre mobs ou blocos.
 
 ## Evidência necessária para avançar

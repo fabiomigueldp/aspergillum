@@ -11,9 +11,28 @@
 ```powershell
 npm run check
 npm run package
+npm run sync:game -- --dry-run
+npm run sync:game -- --apply
 ```
 
 `check` executa tipos, testes, documentação, geração, bundle e validação estrutural. `package` repete o build, cria o `.mcaddon`, grava SHA-256 e executa o Minecraft Creator Tools em modo offline.
+
+## Sincronização local rápida
+
+Depois que o pipeline já aprovou a revisão atual, a troca local pode ser feita diretamente a partir de `packs/`:
+
+```powershell
+# mostra os quatro alvos sem alterar nada
+npm run sync:game -- --dry-run
+
+# substitui Shared e o mundo devtest, atualiza vínculos/históricos e regenera o mapa
+npm run sync:game -- --apply
+
+# opcional: aplica a revisão atual em todos os mundos que já usam Aspergillum
+npm run sync:game -- --apply --all-worlds
+```
+
+A ferramenta é deliberadamente operacional: não faz backup, não extrai o `.mcaddon` e não executa o pipeline. Ela copia os packs aprovados de `packs/behavior` e `packs/resource`, atualiza as versões numéricas em `world_behavior_packs.json`, `world_resource_packs.json` e seus históricos, e reescreve `docs/LOCAL_INSTALLATION_MAP.md`. Feche o Minecraft antes de usar `--apply`. O rótulo vem de `package.json > aspergillum.releaseLabel` e a versão Bedrock vem de `package.json > version`.
 
 ## Artefatos
 
@@ -34,7 +53,7 @@ dist/
 
 O empacotador ordena todos os caminhos e usa timestamps ZIP fixos. Duas execuções sobre a mesma árvore devem produzir bytes e SHA-256 idênticos.
 
-Revisões com sufixo diagnóstico usam `package.json > aspergillum.releaseLabel` no nome do artefato e do relatório. Como o manifest Bedrock aceita apenas `[major, minor, patch]` numérico, `1.0.15b` corresponde a `[1,0,16]` e `1.0.15c` a `[1,0,17]`; o próximo pacote nunca deve reutilizar essas trincas.
+Revisões com sufixo diagnóstico usam `package.json > aspergillum.releaseLabel` no nome do artefato e do relatório. Como o manifest Bedrock aceita apenas `[major, minor, patch]` numérico, `1.0.15b` corresponde a `[1,0,16]`, `1.0.15c` a `[1,0,17]`, `1.0.15d` a `[1,0,18]` e `1.0.16` a `[1,0,19]`; o próximo pacote nunca deve reutilizar essas trincas.
 
 ### Avisos offline conhecidos
 

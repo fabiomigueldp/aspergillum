@@ -50,7 +50,7 @@ Gate de saída físico:
 - água começa durante o flick no tick 5;
 - Content Log não acusa query, controller, animação ou bone desconhecido.
 
-## v1.0.15c — Recovery nativo integral — implementada; QA físico pendente
+## v1.0.15c — Recovery nativo integral — implementada; gate físico não atendido
 
 Hipótese confirmada no runtime:
 
@@ -71,7 +71,30 @@ Gate de saída físico:
 - não há regressão de viewport, grip, release, partículas ou steering;
 - carregamento permanece idêntico à revisão anterior.
 
-## v1.0.16 — Locator e VFX final
+O teste físico demonstrou que remover a timeline concorrente não bastava: a própria animação oficial do player mantém `rightarm.y` próximo de `-30°` até o último instante de `variable.attack_time` e então salta para zero.
+
+## v1.0.15d — Ponte de continuidade do swing — implementada e aprovada fisicamente
+
+Escopo:
+
+- preservar o swing vanilla como arco amplo e toda a coreografia local FP/TP da 1.0.15c;
+- adicionar uma compensação aditiva somente em `rightarm.y`, sem `rightitem`, keyframes absolutos ou reset de pose;
+- dirigir a compensação pelo `variable.attack_time` público do player, mantendo-a zero até 50% e em primeira pessoa;
+- usar Hermite para cancelar progressivamente a costura de `-30°`, chegar neutro antes do reset e manter velocidade final nula;
+- preservar release no tick 5, seis pulsos, steering, partículas, estado, carregamento e poses;
+- validar numericamente a curva composta e bloquear regressão para a animação corporal absoluta.
+
+Gate de saída físico:
+
+- Content Log não acusa `variable.attack_time`, `variable.is_first_person` ou `math.hermite_blend` desconhecidos;
+- terceira pessoa apresenta um único follow-through e retorno, sem teleporte no endpoint;
+- primeira pessoa permanece visualmente idêntica à 1.0.15c;
+- grip, flick, release, partículas e steering não regridem;
+- carregamento permanece idêntico.
+
+O usuário confirmou no runtime que o teleporte final foi eliminado. A composição do swing, a ponte de recovery e as coreografias locais ficam congeladas como baseline.
+
+## v1.0.16 — Locator e VFX final — implementada; QA físico/multiplayer pendente
 
 Escopo:
 
@@ -81,6 +104,16 @@ Escopo:
 - reduzir billboards próximos da câmera e adicionar micro-splash discreto;
 - introduzir sons próprios;
 - testar multiplayer e manter solução híbrida se o locator não preservar steering.
+
+Implementação escolhida:
+
+- `spray_aim`/`aspergillum_tip` integrados sem alterar binding, grip ou animação;
+- bridge world-space de quatro microgotas no tick 5, em vez de um segundo leque;
+- 36 gotas script-side preservadas com resposta `0.8`, limite `30°` e seis pulsos;
+- billboards principais menores e orientados pela velocidade;
+- micro-splash cosmético em colisão;
+- áudio próprio de preparação e release na timeline válida;
+- emissão molhada e splash script-side duplicado removidos.
 
 Gate de saída:
 

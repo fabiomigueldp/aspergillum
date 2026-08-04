@@ -82,7 +82,7 @@ Antes de testes extensos:
 
 Se o smoke test falhar, interrompa a matriz e capture a menor reprodução possível.
 
-## Baseline v1.0.15c
+## Baseline de animação v1.0.15d — aprovada fisicamente
 
 - [ ] malha real aparece em escala correta nas duas perspectivas;
 - [ ] bound root acompanha integralmente a mão direita;
@@ -102,18 +102,37 @@ Se o smoke test falhar, interrompa a matriz e capture a menor reprodução poss�
 - [ ] troca de item/slot/dimensão durante carga cancela sem alterar recursos;
 - [ ] dois jogadores não carregam simultaneamente no mesmo bloco.
 - [ ] carregamento executa gesto próprio de 0,8 s e confirma a transferência na imersão do tick 10;
-- [ ] braço executa um único swing vanilla de 0,9 s, sem timeline corporal tardia;
+- [x] braço executa um único swing vanilla de 0,9 s, sem reset nem segunda coreografia corporal;
+- [ ] ponte de recuperação permanece invisível em primeira pessoa e neutra durante a primeira metade do swing;
+- [x] em terceira pessoa, o follow-through alcança um único extremo e retorna continuamente à neutralidade antes do reset nativo;
+- [ ] Content Log não acusa `variable.attack_time`, `variable.is_first_person`, `math.hermite_blend` ou bone desconhecido;
 - [ ] trocar de item antes do tick 5 não consome carga nem emite água;
 - [ ] trocar depois do release conserva a carga consumida e cancela apenas pulsos restantes;
 - [ ] atravessar o olhar vertical não inverte subitamente o leque;
 - [ ] primeira pessoa mantém o item visível em 100% dos frames da aspersão;
-- [ ] terceira pessoa apresenta um único início e um único retorno, sem reset ou solavanco final;
+- [x] terceira pessoa apresenta um único início e um único retorno, sem reset ou solavanco final;
 - [ ] `aspergillum_action` produz flick curto sem o cabo abandonar o punho;
 - [ ] o flick local preserva a agilidade e assenta naturalmente antes do fim do swing nativo;
 - [ ] água, som e commit começam juntos no tick 5;
 - [ ] controller não dispara em ataque vazio nem ao reequipar durante cooldown residual;
 
-Ainda é esperado na baseline: origem matemática aproximada. O locator permanece fora do escopo desta revisão.
+Esses três itens foram confirmados pelo usuário no pacote 1.0.15d. Os demais continuam como regressão manual recorrente, não como pendência estrutural da animação.
+
+## Baseline VFX v1.0.16
+
+- [ ] `holy_water_release` nasce na face da cabeça em primeira pessoa;
+- [ ] `holy_water_release` nasce na face da cabeça em terceira pessoa local;
+- [ ] observador remoto vê a mesma origem e apenas uma aspersão;
+- [ ] o bridge de quatro microgotas é uma conexão curta, não um segundo leque;
+- [ ] cada ação válida mantém exatamente uma rajada balística de 36 gotas em seis pulsos;
+- [ ] ataque vazio não toca splash, não cria bridge e não cria gotas;
+- [ ] preparação e release têm um único som próprio cada, sem splash duplicado;
+- [ ] gotas alongadas acompanham o vetor de velocidade;
+- [ ] billboards próximos da câmera permanecem menores que a cabeça do avatar;
+- [ ] micro-splash é discreto, aparece somente no contato e não cria gameplay;
+- [ ] bridge, gota e splash já emitidos ficam em world-space;
+- [ ] steering lento/rápido continua com resposta `0.8` e limite `30°`;
+- [ ] Content Log não acusa locator, efeito, evento, som ou Molang desconhecido.
 
 ## Matriz final manual
 
@@ -179,6 +198,9 @@ Ainda é esperado na baseline: origem matemática aproximada. O locator permanec
 - [ ] tamanho próximo à câmera permanece menor que a cabeça do avatar;
 - [ ] sprites alongados alinham-se à velocidade;
 - [ ] micro-splash é discreto e não duplica gameplay.
+- [ ] bridge contém quatro microgotas e não duplica o leque de 36;
+- [ ] sons próprios ocorrem uma vez nos tempos `0.08` e `0.25`;
+- [ ] tentativa vazia conserva apenas o feedback seco.
 
 ## Content Log e profiler
 

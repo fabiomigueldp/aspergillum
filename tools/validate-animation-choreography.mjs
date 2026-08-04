@@ -11,6 +11,7 @@ const errors = [];
 const animations = JSON.parse(fs.readFileSync(animationPath, "utf8")).animations;
 const controllers = JSON.parse(fs.readFileSync(controllerPath, "utf8")).animation_controllers;
 const body = animations["animation.aspergillum.player.sprinkle.body"];
+const recoveryBridge = animations["animation.aspergillum.player.sprinkle.recovery_bridge"];
 const firstPerson = animations["animation.aspergillum.action.sprinkle.first_person"];
 const thirdPerson = animations["animation.aspergillum.action.sprinkle.third_person"];
 const controller = controllers["controller.animation.aspergillum.action"];
@@ -87,6 +88,26 @@ function angleDegrees(a, b) {
   if (denominator <= 1e-9) return 0;
   const cosine = Math.max(-1, Math.min(1, a.reduce((sum, value, axis) => sum + value * b[axis], 0) / denominator));
   return Math.acos(cosine) * 180 / Math.PI;
+}
+
+function hermiteBlend(value) {
+  return 3 * value * value - 2 * value * value * value;
+}
+
+function vanillaPlayerAttackY(attackTime) {
+  if (attackTime <= 0 || attackTime >= 1) return 0;
+  const phase = Math.sin((1 - Math.pow(1 - attackTime, 4)) * Math.PI);
+  return Math.abs(phase) <= 1e-12 ? 0 : 90 * phase - 30;
+}
+
+function recoveryBridgeY(attackTime) {
+  if (attackTime <= 0 || attackTime >= 1) return 0;
+  const progress = Math.max(0, Math.min(1, (attackTime - 0.5) / 0.5));
+  return 30 * hermiteBlend(progress);
+}
+
+function composedPlayerAttackY(attackTime) {
+  return vanillaPlayerAttackY(attackTime) + recoveryBridgeY(attackTime);
 }
 
 function motionMetrics(frames, duration, minimumSpeed, heroTime) {
@@ -187,7 +208,60 @@ function validateChannel({
 if (firstPerson?.animation_length !== 0.82 || thirdPerson?.animation_length !== 0.82) {
   errors.push("Sprinkle choreography must settle at 0.82 seconds and leave the cooldown buffer untouched");
 }
-if (body !== undefined) errors.push("Sprinkle must not script player bones; the native swing owns the complete arm recovery");
+if (body !== undefined) errors.push("Sprinkle must not restore the absolute player-body choreography");
+if (recoveryBridge?.animation_length !== 1.1 || recoveryBridge?.override_previous_animation !== false) {
+  errors.push("Recovery bridge must remain a finite 1.1-second additive animation without pose reset");
+}
+if (Object.keys(recoveryBridge?.bones ?? {}).join() !== "rightarm") {
+  errors.push("Recovery bridge must compensate only rightarm");
+}
+const bridgeRotation = recoveryBridge?.bones?.rightarm?.rotation;
+const bridgeExpression = Array.isArray(bridgeRotation) ? bridgeRotation[1] : undefined;
+if (!Array.isArray(bridgeRotation)
+  || bridgeRotation[0] !== 0
+  || bridgeRotation[2] !== 0
+  || typeof bridgeExpression !== "string"
+  || !bridgeExpression.includes("variable.is_first_person")
+  || !bridgeExpression.includes("variable.attack_time <= 0.0")
+  || !bridgeExpression.includes("variable.attack_time >= 1.0")
+  || !bridgeExpression.includes("math.hermite_blend")
+  || !bridgeExpression.includes("(variable.attack_time - 0.5) / 0.5")
+  || !bridgeExpression.includes("30.0")) {
+  errors.push("Recovery bridge must apply the guarded third-person Hermite Y compensation driven by attack_time");
+}
+
+const preResetAttackTime = 0.999;
+const vanillaEndpointJump = Math.abs(vanillaPlayerAttackY(preResetAttackTime) - vanillaPlayerAttackY(0));
+if (vanillaEndpointJump < 29.9) {
+  errors.push("Vanilla attack reference no longer reproduces the documented ~30-degree endpoint seam");
+}
+if (Math.abs(composedPlayerAttackY(0.9)) > 3.2
+  || Math.abs(composedPlayerAttackY(0.95)) > 0.9
+  || Math.abs(composedPlayerAttackY(preResetAttackTime)) > 0.01
+  || composedPlayerAttackY(0) !== 0) {
+  errors.push("Recovery bridge must converge the composed arm to neutral before the native reset");
+}
+let recoveryMaximumFrameDelta = 0;
+let recoveryReversals = 0;
+let previousVelocitySign = 0;
+const recoveryStep = 1 / 120;
+for (let attackTime = 0.5 + recoveryStep; attackTime < preResetAttackTime; attackTime += recoveryStep) {
+  const velocity = (composedPlayerAttackY(attackTime) - composedPlayerAttackY(attackTime - recoveryStep)) / recoveryStep;
+  if (Math.abs(velocity) > 1) {
+    const sign = Math.sign(velocity);
+    if (previousVelocitySign !== 0 && sign !== previousVelocitySign) recoveryReversals += 1;
+    previousVelocitySign = sign;
+  }
+}
+for (let attackTime = 0.5 + 1 / 30; attackTime < preResetAttackTime; attackTime += 1 / 30) {
+  recoveryMaximumFrameDelta = Math.max(
+    recoveryMaximumFrameDelta,
+    Math.abs(composedPlayerAttackY(attackTime) - composedPlayerAttackY(attackTime - 1 / 30)),
+  );
+}
+if (recoveryReversals > 1 || recoveryMaximumFrameDelta > 5) {
+  errors.push(`Recovery bridge violates continuity budget (reversals=${recoveryReversals}, frame delta=${recoveryMaximumFrameDelta.toFixed(2)}°)`);
+}
 for (const [label, animation] of [["first-person action", firstPerson], ["third-person action", thirdPerson]]) {
   if (Object.keys(animation?.bones ?? {}).join() !== "aspergillum_action") {
     errors.push(`${label} must animate only aspergillum_action`);
@@ -260,5 +334,6 @@ const summary = summaries
   .filter(([, metrics]) => metrics !== undefined)
   .map(([label, metrics]) => `${label}: v=${metrics.maximumVelocity.toFixed(1)}, a=${metrics.maximumAcceleration.toFixed(1)}, turn=${metrics.maximumDirectionChange.toFixed(1)}°, reversals=${metrics.activeReversals}`)
   .join("; ");
-console.log("Validated native-only arm recovery, perspective-specific item choreography, cooldown gating, and release continuity.");
+console.log("Validated seam-compensated native arm recovery, perspective-specific item choreography, cooldown gating, and release continuity.");
+console.log(`Recovery bridge: native seam=${vanillaEndpointJump.toFixed(2)}°, composed frame delta=${recoveryMaximumFrameDelta.toFixed(2)}°, reversals=${recoveryReversals}.`);
 console.log(`Choreography metrics (120 Hz): ${summary}`);
