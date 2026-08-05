@@ -2,13 +2,13 @@
 
 ## Identidade
 
-- Release Candidate: `1.0.18a`.
-- Revisão dos packs: `[1, 0, 26]`.
+- Release Candidate: `1.0.18b`.
+- Revisão dos packs: `[1, 0, 27]`.
 - Baseline física herdada: `1.0.17a`, validada pelo usuário.
 - Experimentos: nenhum.
 - Autoridade: servidor para estado; cliente somente para apresentação.
 
-Esta revisão não reabre binding, grip, poses, aspersão, steering, partículas principais, schema ou snapshots. Ela corrige exclusivamente a composição dinâmica da carga em primeira pessoa: sem reset, sem canal `rightitem` e com contribuição reduzida por perspectiva.
+Esta revisão não reabre binding, grip, poses, aspersão, steering, partículas principais, schema ou snapshots. Ela preserva a composição camera-safe da carga e neutraliza exclusivamente sua costura vanilla final em terceira pessoa.
 
 ## Preflight automatizado
 
@@ -25,7 +25,7 @@ O gate falha quando versões divergem, catálogos `pt_BR`/`en_US` deixam de ser 
 
 1. Registrar o SHA-256 do artefato.
 2. Fechar o Minecraft e remover os dois packs antigos em Armazenamento.
-3. Importar somente `Aspergillum-1.0.18a.mcaddon`.
+3. Importar somente `Aspergillum-1.0.18b.mcaddon`.
 4. Criar ou duplicar um mundo de teste sem experimentos.
 5. Limpar o Content Log antes de entrar.
 6. Executar `/function aspergillum/dev_kit`.
@@ -35,7 +35,7 @@ O gate falha quando versões divergem, catálogos `pt_BR`/`en_US` deixam de ser 
 | Caso | Critério de aprovação |
 | --- | --- |
 | Encher | água aparece, balde/política Creative corretos, mensagem localizada única |
-| Carregar | item sempre visível em FP, dip legível em TP, commit no tick 10, duas microgotas discretas dentro do vaso e nenhum recurso duplicado |
+| Carregar | item sempre visível em FP, dip e retorno contínuos em TP, commit no tick 10, duas microgotas discretas dentro do vaso e nenhum recurso duplicado |
 | Aspergir | animação e 36 gotas preservadas, carga/cooldown corretos |
 | Vazio | clique seco e mensagem localizada; nenhuma água |
 | Acomodar | agachar + usar funciona uma vez, preserva identidade e recusa overflow |

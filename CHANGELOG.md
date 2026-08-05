@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.18b — 2026-08-05
+
+- corrigido o solavanco final do braço em terceira pessoa durante o carregamento, sem alterar a coreografia visível aprovada na 1.0.18a;
+- incorporada à própria carga uma ponte Hermite exclusiva de `rightarm.y`, nula em primeira pessoa e dirigida pelo mesmo `variable.attack_time` da curva vanilla;
+- o gesto continua assentando em `0,80 s`; o contêiner técnico permanece ativo até `1,10 s` apenas para cancelar a descontinuidade vanilla de aproximadamente `-30° → 0°`;
+- mantidos `override_previous_animation: false`, ausência de canal `rightitem`, peso FP `0.32`, amplitude TP integral e fade defensivo reduzido para `0,05 s`;
+- ampliado o validador para preservar os keyframes locais, conferir a expressão em cada amostra e medir a soma vanilla + ponte: costura Y inferior a `0,001°` e erro vetorial total pré-reset de aproximadamente `0,094°`;
+- preservados binding, grip, poses, duração autoritativa de 16 ticks, commit no tick 10, cargas, água, sessões, partículas, sons e aspersão;
+- o rótulo distribuído é `1.0.18b`; a revisão monotônica dos packs é `[1,0,27]`.
+
 ## 1.0.18a — 2026-08-04
 
 - corrigido o desaparecimento do aspersório durante o carregamento em primeira pessoa, sem alterar binding, grip ou pose estática;

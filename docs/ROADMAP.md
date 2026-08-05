@@ -189,7 +189,19 @@ Gate de saída:
 - cada gesto produz no máximo uma operação, uma mensagem e um snapshot;
 - Content Log permanece limpo.
 
-## v1.0.18a — correção camera-safe do carregamento — implementada; QA físico pendente
+## v1.0.18b — recuperação composta do carregamento — implementada; QA físico pendente
+
+Escopo fechado:
+
+- preservar integralmente o dip camera-safe da 1.0.18a e o settle local em `0,80 s`;
+- identificar e neutralizar a descontinuidade vanilla de aproximadamente `30°` em `rightarm.y`;
+- incorporar uma ponte Hermite TP à mesma animação, sem segundo `playAnimation()`, controller concorrente ou canal `rightitem`;
+- manter a ponte nula em primeira pessoa e o contêiner finito em `1,10 s`;
+- validar a pose composta, não apenas os keyframes isolados.
+
+Gate de saída: retorno TP contínuo até a pose neutra, sem segundo extremo, overshoot ou pop; FP idêntica à 1.0.18a; estado e Content Log intactos.
+
+## v1.0.18a — correção camera-safe do carregamento — implementada; sucedida pela recuperação 1.0.18b
 
 Escopo fechado:
 

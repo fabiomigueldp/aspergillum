@@ -16,6 +16,7 @@ const recoveryBridge = animations["animation.aspergillum.player.sprinkle.recover
 const firstPerson = animations["animation.aspergillum.action.sprinkle.first_person"];
 const thirdPerson = animations["animation.aspergillum.action.sprinkle.third_person"];
 const controller = controllers["controller.animation.aspergillum.action"];
+const RECOVERY_BRIDGE_EXPRESSION = "(variable.is_first_person || variable.attack_time <= 0.0 || variable.attack_time >= 1.0) ? 0.0 : 30.0 * math.hermite_blend(math.clamp((variable.attack_time - 0.5) / 0.5, 0.0, 1.0))";
 
 function vector(value) {
   if (Array.isArray(value)) return value.map(Number);
@@ -98,7 +99,13 @@ function hermiteBlend(value) {
 function vanillaPlayerAttackY(attackTime) {
   if (attackTime <= 0 || attackTime >= 1) return 0;
   const phase = Math.sin((1 - Math.pow(1 - attackTime, 4)) * Math.PI);
-  return Math.abs(phase) <= 1e-12 ? 0 : 90 * phase - 30;
+  return 90 * phase - 30;
+}
+
+function vanillaPlayerAttackX(attackTime) {
+  if (attackTime <= 0 || attackTime >= 1) return 0;
+  const phase = Math.sin((1 - Math.pow(1 - attackTime, 4)) * Math.PI);
+  return -(phase * 1.2 + Math.sin(attackTime * Math.PI)) * 30;
 }
 
 function recoveryBridgeY(attackTime) {
@@ -206,29 +213,69 @@ function validateChannel({
   return metrics;
 }
 
-if (loading?.animation_length !== 0.8
+if (loading?.animation_length !== 1.1
   || loading?.override_previous_animation !== false
   || loading?.blend_weight !== "variable.is_first_person ? 0.32 : 1.0") {
-  errors.push("Loading must be an additive 0.8-second action with the camera-safe first-person weight");
+  errors.push("Loading must keep an additive 0.8-second visible action plus a finite 1.1-second recovery tail");
 }
 if (Object.keys(loading?.bones ?? {}).join() !== "rightarm") {
   errors.push("Loading may animate only rightarm; rightitem must remain owned by the held-item hierarchy");
 }
-const loadingFrames = parseChannel(loading?.bones?.rightarm?.rotation, "loading/rightarm rotation");
-if (loadingFrames.some((frame) => frame.mode !== "catmullrom")) {
-  errors.push("Loading must use Catmull-Rom interpolation throughout its single controlled arc");
+const loadingBaseKeyframes = {
+  "0.0": [0, 0, 0],
+  "0.04": [0, 0, 0],
+  "0.1": [-2, -1, 1],
+  "0.24": [-8, -3, 2],
+  "0.36": [-14, -4, 3],
+  "0.46": [-19, -4, 3],
+  "0.5": [-20, -4, 3],
+  "0.54": [-20, -4, 3],
+  "0.58": [-19, -3, 2],
+  "0.68": [-9, -1, 1],
+  "0.76": [0, 0, 0],
+  "0.8": [0, 0, 0],
+};
+
+function loadingYExpression(base) {
+  return base === 0 ? RECOVERY_BRIDGE_EXPRESSION : `${base.toFixed(1)} + (${RECOVERY_BRIDGE_EXPRESSION})`;
 }
-for (const time of [0, 0.04, 0.76, 0.8]) {
-  const frame = loadingFrames.find((candidate) => Math.abs(candidate.time - time) <= 1e-6);
-  if (!frame || !isNeutral(frame.value, 0.01)) {
-    errors.push(`Loading requires a neutral camera-safe boundary pose at ${time.toFixed(2)} seconds`);
+
+const loadingRotation = loading?.bones?.rightarm?.rotation;
+const expectedLoadingTimes = [...Object.keys(loadingBaseKeyframes), "1.1"];
+if (Object.keys(loadingRotation ?? {}).join() !== expectedLoadingTimes.join()) {
+  errors.push("Loading must preserve the approved visible keyframes and add only the 1.1-second recovery tail");
+}
+for (const [time, base] of Object.entries({ ...loadingBaseKeyframes, "1.1": [0, 0, 0] })) {
+  const frame = loadingRotation?.[time];
+  const value = frame?.post;
+  if (frame?.lerp_mode !== "catmullrom"
+    || !Array.isArray(value)
+    || value[0] !== base[0]
+    || value[1] !== loadingYExpression(base[1])
+    || value[2] !== base[2]) {
+    errors.push(`Loading keyframe ${time} must equal the approved local pose plus the guarded Y recovery bridge`);
   }
 }
+const loadingBaseAnimation = {
+  animation_length: 0.8,
+  bones: {
+    rightarm: {
+      rotation: Object.fromEntries(Object.entries(loadingBaseKeyframes).map(([time, post]) => [
+        time,
+        { post, lerp_mode: "catmullrom" },
+      ])),
+    },
+  },
+};
+const loadingBaseFrames = parseChannel(
+  loadingBaseAnimation.bones.rightarm.rotation,
+  "loading/visible rightarm rotation metrics",
+);
 const loadingMetrics = validateChannel({
-  animation: loading,
+  animation: loadingBaseAnimation,
   bone: "rightarm",
   channelName: "rotation",
-  label: "loading/rightarm rotation",
+  label: "loading/visible rightarm rotation",
   maximumMagnitude: 21.5,
   endpointTolerance: 0.01,
   maximumFrameDelta: 6,
@@ -240,6 +287,39 @@ const loadingMetrics = validateChannel({
 });
 if (loadingMetrics && loadingMetrics.maximumVelocity * 0.32 > 60) {
   errors.push("First-person loading exceeds its reduced camera-safe velocity envelope");
+}
+
+const nativeSwingSeconds = 0.9;
+function composedLoadingPose(timeSeconds) {
+  const attackTime = Math.max(0, Math.min(1, timeSeconds / nativeSwingSeconds));
+  const local = sample(loadingBaseFrames, Math.min(timeSeconds, 0.8));
+  return [
+    local[0] + vanillaPlayerAttackX(attackTime),
+    local[1] + vanillaPlayerAttackY(attackTime) + recoveryBridgeY(attackTime),
+    local[2],
+  ];
+}
+
+const preResetLoadingPose = composedLoadingPose(nativeSwingSeconds * 0.999);
+if (length(preResetLoadingPose) > 0.11) {
+  errors.push(`Loading composite must converge before the native reset (${length(preResetLoadingPose).toFixed(3)}° > 0.11°)`);
+}
+let loadingRecoveryMaximumFrameDelta = 0;
+let loadingRecoveryMaximumFrameTime = 0;
+let loadingTerminalMaximumFrameDelta = 0;
+for (let time = 0.5 + 1 / 30; time <= nativeSwingSeconds + 1e-6; time += 1 / 30) {
+  const delta = length(subtract(composedLoadingPose(Math.min(time, nativeSwingSeconds)), composedLoadingPose(time - 1 / 30)));
+  if (delta > loadingRecoveryMaximumFrameDelta) {
+    loadingRecoveryMaximumFrameDelta = delta;
+    loadingRecoveryMaximumFrameTime = time;
+  }
+  if (time >= 0.8) loadingTerminalMaximumFrameDelta = Math.max(loadingTerminalMaximumFrameDelta, delta);
+}
+if (loadingRecoveryMaximumFrameDelta > 9) {
+  errors.push(`Loading composite recovery changes ${loadingRecoveryMaximumFrameDelta.toFixed(3)}° in one 30 FPS frame at ${loadingRecoveryMaximumFrameTime.toFixed(3)} s`);
+}
+if (loadingTerminalMaximumFrameDelta > 5) {
+  errors.push(`Loading terminal bridge changes ${loadingTerminalMaximumFrameDelta.toFixed(3)}° in one 30 FPS frame`);
 }
 
 if (firstPerson?.animation_length !== 0.82 || thirdPerson?.animation_length !== 0.82) {
@@ -257,13 +337,7 @@ const bridgeExpression = Array.isArray(bridgeRotation) ? bridgeRotation[1] : und
 if (!Array.isArray(bridgeRotation)
   || bridgeRotation[0] !== 0
   || bridgeRotation[2] !== 0
-  || typeof bridgeExpression !== "string"
-  || !bridgeExpression.includes("variable.is_first_person")
-  || !bridgeExpression.includes("variable.attack_time <= 0.0")
-  || !bridgeExpression.includes("variable.attack_time >= 1.0")
-  || !bridgeExpression.includes("math.hermite_blend")
-  || !bridgeExpression.includes("(variable.attack_time - 0.5) / 0.5")
-  || !bridgeExpression.includes("30.0")) {
+  || bridgeExpression !== RECOVERY_BRIDGE_EXPRESSION) {
   errors.push("Recovery bridge must apply the guarded third-person Hermite Y compensation driven by attack_time");
 }
 
@@ -373,7 +447,7 @@ const summary = summaries
   .join("; ");
 console.log("Validated camera-safe loading, seam-compensated native arm recovery, perspective-specific item choreography, cooldown gating, and release continuity.");
 if (loadingMetrics) {
-  console.log(`Loading metrics (120 Hz): v=${loadingMetrics.maximumVelocity.toFixed(1)}, a=${loadingMetrics.maximumAcceleration.toFixed(1)}, turn=${loadingMetrics.maximumDirectionChange.toFixed(1)}°, FP weighted v=${(loadingMetrics.maximumVelocity * 0.32).toFixed(1)}.`);
+  console.log(`Loading metrics (120 Hz): visible v=${loadingMetrics.maximumVelocity.toFixed(1)}, a=${loadingMetrics.maximumAcceleration.toFixed(1)}, turn=${loadingMetrics.maximumDirectionChange.toFixed(1)}°, FP weighted v=${(loadingMetrics.maximumVelocity * 0.32).toFixed(1)}, composed seam=${length(preResetLoadingPose).toFixed(3)}°, recovery/terminal frame delta=${loadingRecoveryMaximumFrameDelta.toFixed(3)}°/${loadingTerminalMaximumFrameDelta.toFixed(3)}°.`);
 }
 console.log(`Recovery bridge: native seam=${vanillaEndpointJump.toFixed(2)}°, composed frame delta=${recoveryMaximumFrameDelta.toFixed(2)}°, reversals=${recoveryReversals}.`);
 console.log(`Choreography metrics (120 Hz): ${summary}`);

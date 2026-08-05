@@ -78,7 +78,7 @@ A integração é híbrida por contrato: o bridge curto confirma a origem físic
 - A ponte não é uma segunda coreografia: permanece zero até 50% do swing, afeta somente `rightarm.y`, usa `override_previous_animation: false`, é nula em primeira pessoa e expira já neutra.
 - Nem carga nem aspersão animam `rightitem`. A carga da 1.0.18a soma somente um arco moderado em `rightarm`, com 32% do peso em primeira pessoa e sem reset; a aspersão não restaura `animation.aspergillum.player.sprinkle.body` nem usa keyframes absolutos de braço.
 - Durante a carga em primeira pessoa, mão e instrumento permanecem visíveis em todos os frames, à direita da mira e sem tocar a borda superior. A pose estática aprovada não recebe compensação.
-- Em terceira pessoa, a mesma carga usa amplitude integral, descreve um único dip e retorna à neutralidade antes de `0,8 s`, sem atravessar rosto ou ombro.
+- Em terceira pessoa, a mesma carga usa amplitude integral, descreve um único dip e assenta visualmente antes de `0,8 s`; uma cauda Hermite exclusiva de `rightarm.y` neutraliza a costura vanilla sem criar segunda intenção, atravessar rosto ou mover o item em primeira pessoa.
 - `aspergillum_action` é o único bone da coreografia fina do instrumento.
 - Primeira e terceira pessoa usam animações locais distintas e retornam a zero até `0,82 s`.
 - O controller local cruza estados em `0,08 s` pelo menor caminho e só entra na ação diante do cooldown válido.

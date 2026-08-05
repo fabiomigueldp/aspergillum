@@ -13,7 +13,9 @@ function playActionAnimation(player: Player, animation: string, blendOutTime = 0
 }
 
 export function playLoadingAnimation(player: Player): void {
-  playActionAnimation(player, LOAD_ANIMATION);
+  // The visible dip settles by 0.8 s; the remaining expression-only tail
+  // closes the native third-person attack seam before this defensive fade.
+  playActionAnimation(player, LOAD_ANIMATION, 0.05);
 }
 
 export function playSprinkleRecoveryBridge(player: Player): void {

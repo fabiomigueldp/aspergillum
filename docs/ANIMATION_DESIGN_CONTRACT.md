@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-A aspersão deve ser uma frase visual única — antecipação, condução, flick, release, follow-through e settle — sem lutar contra o swing iniciado pelo motor. Este contrato protege a v1.0.15d, aprovada fisicamente pelo usuário, e também a composição camera-safe de carregamento introduzida na v1.0.18a.
+A aspersão deve ser uma frase visual única — antecipação, condução, flick, release, follow-through e settle — sem lutar contra o swing iniciado pelo motor. Este contrato protege a v1.0.15d, aprovada fisicamente pelo usuário, e a composição camera-safe de carregamento concluída na v1.0.18b.
 
 ## Carregamento camera-safe
 
@@ -12,11 +12,26 @@ O carregamento é uma correção aditiva de `0,8 s` aplicada sobre o movimento d
 - único bone permitido: `rightarm`;
 - `rightitem` pertence exclusivamente à hierarquia de item segurado e nunca é animado pela carga;
 - `blend_weight` é `0.32` em primeira pessoa e `1.0` em terceira pessoa;
-- curvas Catmull-Rom começam neutras em `0,00/0,04 s`, desaceleram na imersão e assentam em `0,76/0,80 s`;
+- curvas Catmull-Rom começam neutras em `0,00/0,04 s`, desaceleram na imersão e assentam visualmente em `0,76/0,80 s`;
 - magnitude de rotação bruta `≤ 21,5°`, mudança `≤ 6°` por frame a 30 FPS e no máximo uma reversão principal;
 - o commit transacional continua no tick 10 e não depende da animação ser reproduzida.
 
 O peso reduzido em primeira pessoa é parte do envelope de câmera, não uma pose estática alternativa. O item deve permanecer visível em todos os frames; a terceira pessoa conserva o arco completo para comunicar o movimento de descida e imersão. Falha visual permanece fail-soft e não altera água, cargas, sessão ou lock.
+
+### Recuperação composta da carga
+
+A curva visível estar em zero não basta: `animation.player.attack.rotations` tende a aproximadamente `-30°` em `rightarm.y` imediatamente antes de `attack_time` zerar. A v1.0.18b mantém o contêiner da carga até `1,10 s` e soma, em cada keyframe Y, a compensação:
+
+```text
+p = clamp((attack_time - 0,50) / 0,50, 0, 1)
+bridge_y = third_person && 0 < attack_time < 1
+  ? 30° * hermite_blend(p)
+  : 0°
+```
+
+O gesto local continua zero depois de `0,80 s`; somente essa expressão permanece. Em primeira pessoa ela é sempre zero. Em terceira, aproxima-se de `+30°` com velocidade nula e cancela a costura nativa antes que ambas as camadas desapareçam. O fade de `0,05 s` é limpeza defensiva, não proprietário do retorno.
+
+O gate automatizado deve medir a soma nativa completa com a curva local, exigir erro pré-reset `< 0,11°`, no máximo uma reversão, variação composta `< 9°` durante o recovery expressivo e `< 5°` por frame no trecho terminal após `0,80 s`.
 
 ## Composição obrigatória
 

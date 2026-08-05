@@ -272,11 +272,19 @@ const actionAnimations = fs.existsSync(actionAnimationPath)
   ? JSON.parse(fs.readFileSync(actionAnimationPath, "utf8"))?.animations
   : undefined;
 const loadAnimation = actionAnimations?.["animation.aspergillum.player.load"];
-if (loadAnimation?.animation_length !== 0.8
+if (loadAnimation?.animation_length !== 1.1
   || loadAnimation?.override_previous_animation !== false
   || loadAnimation?.blend_weight !== "variable.is_first_person ? 0.32 : 1.0"
   || Object.keys(loadAnimation?.bones ?? {}).join() !== "rightarm") {
-  errors.push("Loading must remain a camera-safe additive rightarm-only choreography");
+  errors.push("Loading must remain a camera-safe additive rightarm-only choreography with a finite recovery tail");
+}
+const loadSource = JSON.stringify(loadAnimation);
+if (!loadSource.includes("variable.is_first_person")
+  || !loadSource.includes("variable.attack_time <= 0.0")
+  || !loadSource.includes("variable.attack_time >= 1.0")
+  || !loadSource.includes("math.hermite_blend")
+  || !loadSource.includes("(variable.attack_time - 0.5) / 0.5")) {
+  errors.push("Loading must close the native third-person arm seam with the guarded Hermite bridge");
 }
 const bodySprinkle = actionAnimations?.["animation.aspergillum.player.sprinkle.body"];
 const firstPersonSprinkle = actionAnimations?.["animation.aspergillum.action.sprinkle.first_person"];
