@@ -63,6 +63,7 @@ for (const required of [
   "docs/ROADMAP.md",
   "docs/TESTING.md",
   "docs/RELEASE.md",
+  "docs/RELEASE_CANDIDATE.md",
   "docs/ANIMATION_DESIGN_CONTRACT.md",
   "docs/VFX_DESIGN_CONTRACT.md",
 ]) {

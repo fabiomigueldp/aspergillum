@@ -83,6 +83,10 @@ A integração é híbrida por contrato: o bridge curto confirma a origem físic
 - O primeiro pulso, o commit e o som concordam no tick 5.
 - Consulte [Contrato de design de animação](ANIMATION_DESIGN_CONTRACT.md) para envelopes e gates matemáticos.
 
+## Feedback molhado do carregamento 1.0.18
+
+No commit válido do tick 10, duas instâncias do `holy_water_micro_splash` aparecem dentro da área central da caldeirinha. Esse cue é deliberadamente mínimo, reutiliza a paleta azul validada e não representa uma segunda transferência de água. Falha de partícula ou som não reverte nem concede carga; pose, trajetória de carregamento e níveis visuais do bloco permanecem congelados.
+
 ## Hierarquia implementada
 
 ```text

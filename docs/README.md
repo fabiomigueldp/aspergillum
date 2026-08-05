@@ -14,6 +14,7 @@ Este diretório é a fonte canônica de conhecimento técnico do projeto. Os doc
 | [Roadmap](ROADMAP.md) | Sequência de versões, riscos, gates e Definition of Done |
 | [Plano de testes](TESTING.md) | Automação, QA manual, multiplayer e relatório de evidência |
 | [Release](RELEASE.md) | Build, empacotamento, validação, instalação limpa e publicação |
+| [Release Candidate](RELEASE_CANDIDATE.md) | Runbook de go/no-go, evidência mínima e promoção da V1 |
 | [Mapa da instalação local](LOCAL_INSTALLATION_MAP.md) | Caminhos reais do Bedrock, packs instalados e auditoria do mundo `devtest` |
 | [Lições aprendidas](LESSONS_LEARNED.md) | Conhecimento acumulado para evitar a repetição de falhas |
 | [Pesquisa do attachable](ATTACHABLE_RESEARCH.md) | Histórico experimental detalhado das versões anteriores |

@@ -1,8 +1,8 @@
 {
   "name": "aspergillum-bedrock-addon",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "aspergillum": {
-    "releaseLabel": "1.0.17a"
+    "releaseLabel": "1.0.18"
   },
   "private": true,
   "description": "A production-grade liturgical aspergillum and aspersorium Add-On for Minecraft Bedrock Edition.",
@@ -17,9 +17,10 @@
     "build": "npm run generate:assets && npm run build:script && npm run validate",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "validate": "node tools/validate.mjs && node tools/validate-animation-choreography.mjs && node tools/validate-vfx.mjs",
+    "validate": "node tools/validate.mjs && node tools/validate-animation-choreography.mjs && node tools/validate-vfx.mjs && node tools/validate-release-readiness.mjs",
     "validate:animation": "node tools/validate-animation-choreography.mjs",
     "validate:vfx": "node tools/validate-vfx.mjs",
+    "validate:release": "node tools/validate-release-readiness.mjs",
     "validate:docs": "node tools/validate-docs.mjs",
     "validate:mcaddon": "node tools/validate-minecraft.mjs",
     "sync:game": "node tools/sync-installed-addon.mjs",

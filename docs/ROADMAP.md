@@ -189,7 +189,7 @@ Gate de saída:
 - cada gesto produz no máximo uma operação, uma mensagem e um snapshot;
 - Content Log permanece limpo.
 
-## v1.0.18 — UX, desempenho e Release Candidate
+## v1.0.18 — UX, desempenho e Release Candidate — implementada; QA final pendente
 
 Escopo:
 
@@ -199,7 +199,16 @@ Escopo:
 - matriz completa Steve/Alex/Persona, plataformas, FOVs e movimento;
 - Content Log limpo, documentação de instalação, changelog e artefato final.
 
-Gate de saída: todos os itens da Definition of Done abaixo.
+Implementação:
+
+- catálogo tipado com 25 mensagens `RawMessage`, paridade obrigatória `pt_BR`/`en_US` e ausência de seleção manual de locale;
+- lore final explica carregar, acomodar e retirar; botão contextual comunica uso direto, não menu;
+- seis cues sonoros script-side passam por um coordenador único e fail-soft;
+- commit de carregamento emite somente duas microgotas dentro da caldeirinha como feedback molhado mínimo;
+- gate `validate:release` fiscaliza versão, catálogos, caminhos de apresentação, lore e ausência de `runInterval` ilimitado;
+- LOD não foi introduzido porque ainda não há perfil físico demonstrando necessidade.
+
+Gate de saída: runbook de [Release Candidate](RELEASE_CANDIDATE.md) e todos os itens aplicáveis da Definition of Done abaixo.
 
 ## Definition of Done da V1
 

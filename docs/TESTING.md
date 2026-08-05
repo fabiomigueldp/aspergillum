@@ -108,6 +108,19 @@ Antes de testes extensos:
 
 Se o smoke test falhar, interrompa a matriz e capture a menor reprodução possível.
 
+## Gate do Release Candidate v1.0.18
+
+- [ ] importar `Aspergillum-1.0.18.mcaddon` após remover packs antigos;
+- [ ] selecionar o item mostra quatro linhas de lore, incluindo agachar + usar e mão vazia;
+- [ ] `pt_BR` e `en_US` traduzem lore e todas as mensagens do action bar no cliente correspondente;
+- [ ] carregar com sucesso mantém animação/estado anteriores e acrescenta apenas duas microgotas discretas dentro da caldeirinha;
+- [ ] falha de apresentação nunca altera carga, água, snapshot ou cooldown;
+- [ ] carregar, aspergir, vazio, encher, acomodar, retirar, overflow e concorrência mantêm um único feedback coerente;
+- [ ] Content Log não contém `RawMessageError`, sound event ausente, particle effect ausente ou erro do add-on;
+- [ ] profiler com 1, 4, 8 e 16 jogadores é registrado antes de qualquer decisão de LOD;
+- [ ] SHA-256 do pacote testado coincide com o entregue;
+- [ ] decisão go/no-go é registrada em `docs/RELEASE_CANDIDATE.md` ou relatório derivado.
+
 ## Baseline de animação v1.0.15d — aprovada fisicamente
 
 - [ ] malha real aparece em escala correta nas duas perspectivas;

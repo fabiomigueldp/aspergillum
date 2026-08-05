@@ -415,7 +415,7 @@ for (const contract of [
   "aspergillum:spray_profile_id",
   "aspergillum:docked_",
   "Unsupported future aspergillum schema",
-  "There is not enough room for all water in the aspergillum.",
+  "message.aspergillum.docking_overflow",
 ]) {
   if (!compiledScript.includes(contract)) errors.push(`Compiled persistence contract is missing: ${contract}`);
 }
@@ -435,6 +435,7 @@ for (const locale of ["pt_BR", "en_US"]) {
   for (const key of [
     "item.aspergillum.lore.charges",
     "item.aspergillum.lore.instructions",
+    "item.aspergillum.lore.docking",
     "item.aspergillum.lore.creative",
   ]) {
     if (!lang.includes(`${key}=`)) errors.push(`${locale}.lang is missing localized lore key ${key}`);

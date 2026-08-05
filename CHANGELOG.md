@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.18 — 2026-08-04
+
+- promovida a baseline validada da 1.0.17a ao primeiro Release Candidate da V1, sem alterar binding, poses, animação, spray, steering ou persistência;
+- substituída a seleção manual português/inglês por 25 mensagens `RawMessage` traduzidas pelo próprio cliente no action bar;
+- lore ampliada com instruções explícitas de carregar, acomodar e retirar; itens existentes de três linhas são atualizados de forma lazy sem novo schema;
+- texto do botão contextual alterado de “Examinar” para “Usar aspersório”, eliminando a impressão de que a caldeirinha possui menu ou inventário próprio;
+- centralizados os seis cues sonoros script-side num mix tipado e fail-soft, mantendo exatamente os eventos, pitches e volumes já aprovados;
+- adicionado feedback molhado mínimo de duas microgotas dentro da caldeirinha no commit válido do carregamento;
+- adicionado gate automatizado de Release Candidate para paridade de localização, caminhos únicos de som/HUD, ausência de intervalos ilimitados, lore final e consistência de versões;
+- adicionados testes de catálogo UX, envelope sonoro e orçamento do feedback molhado; LOD continua deliberadamente ausente até haver medição física com 1/4/8/16 jogadores;
+- criado runbook de go/no-go da V1 e atualizado o plano de QA manual final;
+- o rótulo distribuído é `1.0.18`; a revisão monotônica dos packs é `[1,0,25]`.
+
 ## 1.0.17a — 2026-08-04
 
 - corrigido o docking que podia não receber nenhuma interação ao agachar e usar o aspersório na caldeirinha;

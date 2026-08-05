@@ -2,12 +2,12 @@
 
 Add-On para Minecraft: Bedrock Edition 26.34/35 que adiciona um **aspersório litúrgico funcional** e uma **caldeirinha (aspersorium) colocável**. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão 1.0.17a:** mantém o docking persistente da 1.0.17 e corrige o roteamento de agachar + usar por meio do evento estável do próprio item, com captura síncrona da intenção e deduplicação contra a interação do bloco.
+> **Versão 1.0.18 RC:** consolida a baseline validada com mensagens totalmente localizadas pelo cliente, instruções de docking na lore, mix sonoro fail-soft e feedback molhado discreto no carregamento. Nenhum contrato visual ou de estado foi reaberto.
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/releases/Aspergillum-1.0.17a.mcaddon`](dist/releases/Aspergillum-1.0.17a.mcaddon) com o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.0.18.mcaddon`](dist/releases/Aspergillum-1.0.18.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
@@ -22,6 +22,7 @@ O alvo mínimo é Creator `1.26.30`, correspondente à linha pública Bedrock 26
 - Use a ação **Atacar/Minar** para aspergir. O gesto não causa dano nem quebra blocos.
 - No modo Criativo, uma carga real já presente não é consumida e a caldeirinha não perde água ao carregar; ao voltar ao Sobrevivência, permanece apenas o número finito de cargas gravado no item.
 - Agache e use o aspersório na caldeirinha para acomodá-lo como decoração. A operação é recusada se as cargas não couberem na água restante. Use a mão vazia para retirá-lo.
+- A caldeirinha não possui menu ou inventário: carregar, acomodar e retirar são interações diretas no mundo.
 - Para testes rápidos com cheats: `/function aspergillum/dev_kit`.
 
 As cargas permanecem gravadas no item. Ao acomodá-lo, cargas restantes retornam integralmente à caldeirinha; nome, identidade e propriedades são preservados num registro persistente por chunk. Ao quebrar uma caldeirinha ocupada, o bloco cai pela loot table e o script recupera exatamente o aspersório registrado; a água é descartada intencionalmente.

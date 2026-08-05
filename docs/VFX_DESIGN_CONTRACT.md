@@ -50,6 +50,8 @@ Tentativa vazia não inicia a categoria válida e não pode emitir bridge ou som
 - gravidade, arrasto, collision radius e balística existentes preservados;
 - ao colidir com velocidade mínima `2.0`, dispara um único `holy_water_micro_splash` cosmético.
 
+Na v1.0.18, o mesmo micro-splash é reutilizado exatamente duas vezes no commit de um carregamento válido, em offsets fixos dentro da caldeirinha. Esse feedback de “cabeça molhada” não pertence à rajada, não acompanha o jogador e não altera nenhuma invariante de 36 gotas/bridge.
+
 ## Contrato cromático
 
 - a textura radial é neutra (`RGB [245,249,255]`) e não impõe um segundo ciano sobre o tint;
@@ -69,6 +71,7 @@ Tentativa vazia não inicia a categoria válida e não pode emitir bridge ou som
 - nenhum segundo leque, som splash duplicado ou autoridade de gameplay no cliente;
 - origem visual a até `0.10` bloco da cabeça renderizada no pacote final.
 - nenhuma fase da gota ou do impacto pode adquirir dominante verde/amarela por iluminação local.
+- feedback de carregamento limitado a duas microgotas por commit válido; nenhuma emissão em cancelamento.
 
 ## Gate físico
 

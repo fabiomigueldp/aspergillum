@@ -11,3 +11,4 @@ export const ROTATION_STATE = "aspergillum:rotation";
 export const ASPERSORIUM_COMPONENT = "aspergillum:aspersorium_interaction";
 export const ASPERGILLUM_COMPONENT = "aspergillum:aspergillum_use";
 export const DROPLET_PARTICLE = "aspergillum:holy_water_droplet";
+export const MICRO_SPLASH_PARTICLE = "aspergillum:holy_water_micro_splash";

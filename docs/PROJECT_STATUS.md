@@ -2,13 +2,13 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.0.17a` (revisão numérica dos packs `[1, 0, 24]`)
+- **Versão de referência:** `1.0.18` Release Candidate (revisão numérica dos packs `[1, 0, 25]`)
 - **Engine mínima:** Creator `1.26.30`
 - **Script API:** `@minecraft/server` `2.8.0`, estável
 - **Experimentos:** nenhum
 - **Conteúdo:** aspersório funcional, caldeirinha colocável, carregamento, três cargas, docking decorativo e spray visual
 
-A v1.0.17a mantém a persistência da 1.0.17 e corrige seu gate de entrada: usar o aspersório sobre a caldeirinha agora chega tanto pelo `onUseOn` estável do item quanto pelo `onPlayerInteract` do bloco. O agachamento é amostrado no evento, antes do callback diferido, e uma claim curta elimina a possível duplicidade entre as duas rotas. Overflow, snapshots, recuperação, baseline visual e VFX permanecem intactos. Esta revisão aguarda QA dentro do Minecraft antes da v1.0.18 Release Candidate.
+A v1.0.18 é o primeiro Release Candidate da V1. A baseline física validada da 1.0.17a permanece congelada; a revisão finaliza a apresentação textual e sonora, explicita o docking na lore e adiciona dois micro-respingos no commit válido do carregamento. Vinte e cinco mensagens do HUD agora usam tradução client-side, e um gate automatizado fiscaliza localização, mix, feedback limitado e consistência de release. Não existe LOD especulativo: desempenho deve ser medido no Minecraft antes de qualquer degradação adaptativa.
 
 ## O que está resolvido
 
@@ -33,6 +33,8 @@ A v1.0.17a mantém a persistência da 1.0.17 e corrige seu gate de entrada: usar
 - Lore usa `RawMessage` e chaves `pt_BR`/`en_US`, sem congelar o idioma no ItemStack.
 - Docking guarda `instance_id`, `nameTag`, cosmético, perfil e propriedades customizadas em shards persistentes por dimensão/chunk.
 - Overflow é recusado sem alterar água ou item; retirada exige mão vazia e quebra recupera o snapshot real.
+- Mensagens do action bar e lore são traduzidas pelo Resource Pack do próprio cliente; não há ramificação manual por locale.
+- Cues sonoros script-side passam por um único coordenador fail-soft; feedback de carga adiciona somente duas microgotas limitadas à caldeirinha.
 
 ## Limitações conhecidas
 
@@ -45,12 +47,14 @@ A v1.0.17a mantém a persistência da 1.0.17 e corrige seu gate de entrada: usar
 | Persistência | registry por chunk é novo | precisa de QA de reload, quebra, explosão e inventário cheio no runtime |
 | Recuperação | `onBreak` estável cobre destruição; água continua não sendo um item | confirmar fisicamente explosão e comandos `destroy` sem duplicação |
 | Schema/lore | migração e `RawMessage` estão implementados | confirmar renderização `%%1/%%2` em clientes pt_BR e en_US |
-| Input de docking | rota dupla `onUseOn` + `onPlayerInteract` implementada | confirmar agachar + usar em teclado/mouse, controle e toque sem execução duplicada |
+| Input de docking | rota dupla `onUseOn` + `onPlayerInteract` validada pelo usuário na 1.0.17a | manter como regressão no RC |
+| UX localizada | catálogo tipado de 25 mensagens e lore de quatro linhas | confirmar `pt_BR` e `en_US` dentro do jogo |
+| Desempenho | nenhum LOD sem evidência | medir profiler com 1, 4, 8 e 16 jogadores antes de autorizar alteração |
 | Entrada vanilla | `playerSwingStart` é after-event | alguns dispositivos podem mostrar feedback breve de mineração |
 
 ## Próxima mudança autorizada
 
-A v1.0.17a está implementada e deve passar pelo gate de input e persistência descrito em [TESTING.md](TESTING.md). Depois da aprovação física, o próximo marco é a v1.0.18 de UX, desempenho e Release Candidate descrita em [ROADMAP.md](ROADMAP.md).
+A v1.0.18 está implementada como Release Candidate e deve passar pelo runbook [RELEASE_CANDIDATE.md](RELEASE_CANDIDATE.md) e pela matriz de [TESTING.md](TESTING.md). Se não houver blocker, o próximo passo é promover os mesmos bytes à V1; qualquer correção encontrada recebe uma revisão RC incremental sem reabrir contratos aprovados.
 
 Não faz parte do próximo marco:
 

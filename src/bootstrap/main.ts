@@ -46,27 +46,20 @@ import {
   cancelLoadingSession,
   getLoadingSession,
 } from "../infrastructure/loading-session";
-import { action } from "../infrastructure/messaging";
+import { ACTION_MESSAGES, action } from "../presentation/messaging";
 
 const aspergillumUse: ItemCustomComponent = {
   onUse(event) {
     if (event.itemStack !== undefined && !isAspergillumSchemaSupported(event.itemStack)) {
-      action(event.source, "§cEste aspersório pertence a uma versão mais recente.", "§cThis aspergillum belongs to a newer version.");
+      action(event.source, ACTION_MESSAGES.futureSchema);
       return;
     }
     const initialized = event.itemStack ? initializeAspergillum(event.itemStack) : undefined;
     if (initialized !== undefined) setMainhand(event.source, initialized);
     const state = initialized ? readAspergillumState(initialized) : { charges: 0 };
     const policies = resolvePlayerPolicies(event.source);
-    action(
-      event.source,
-      policies.creative && state.charges > 0
-        ? "§7Água benta: §b∞ §7• Criativo"
-        : `§7Cargas: §b${state.charges}§7/3 • Ataque para aspergir`,
-      policies.creative && state.charges > 0
-        ? "§7Holy water: §b∞ §7• Creative"
-        : `§7Charges: §b${state.charges}§7/3 • Attack to sprinkle`,
-    );
+    if (policies.creative && state.charges > 0) action(event.source, ACTION_MESSAGES.chargesCreative);
+    else action(event.source, ACTION_MESSAGES.chargesInspect, state.charges);
   },
   onUseOn(event) {
     if (event.block.typeId !== ASPERSORIUM_BLOCK || !(event.source instanceof Player)) return;

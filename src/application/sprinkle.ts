@@ -28,7 +28,6 @@ import {
   setMainhand,
   writeAspergillumState,
 } from "../infrastructure/item-state";
-import { action } from "../infrastructure/messaging";
 import {
   cancelSprinkleSession,
   completeSprinkleSession,
@@ -40,6 +39,8 @@ import {
   type SprinkleSession,
 } from "../infrastructure/sprinkle-session";
 import { playSprinkleRecoveryBridge } from "../presentation/animation-coordinator";
+import { ACTION_MESSAGES, action } from "../presentation/messaging";
+import { playSoundCue } from "../presentation/sound-coordinator";
 
 const lastSprinkleTick = new Map<string, number>();
 
@@ -99,10 +100,10 @@ function emitWaterFrame(player: Player, session: SprinkleSession, pulseIndex: nu
 
 function presentChargeState(player: Player, charges: number, creative: boolean): void {
   if (creative) {
-    action(player, "§bÁgua benta: ∞ §7• Criativo", "§bHoly water: ∞ §7• Creative");
+    action(player, ACTION_MESSAGES.chargesCreative);
     return;
   }
-  action(player, `§b${charges}§7/3 cargas restantes`, `§b${charges}§7/3 charges remaining`);
+  action(player, ACTION_MESSAGES.chargesRemaining, charges);
 }
 
 function commitSprinkleRelease(player: Player, session: SprinkleSession): void {
@@ -175,7 +176,7 @@ export function trySprinkle(player: Player): void {
   const rawItem = getMainhand(player);
   if (!isAspergillum(rawItem)) return;
   if (!isAspergillumSchemaSupported(rawItem)) {
-    action(player, "§cEste aspersório pertence a uma versão mais recente.", "§cThis aspergillum belongs to a newer version.");
+    action(player, ACTION_MESSAGES.futureSchema);
     return;
   }
   const item = initializeAspergillum(rawItem);
@@ -190,12 +191,8 @@ export function trySprinkle(player: Player): void {
   const preview = resolveSprinkle(readAspergillumState(item), policies.chargePolicy);
   if (!preview.allowed) {
     lastSprinkleTick.set(player.id, now);
-    player.playSound("random.click", { pitch: 0.72, volume: 0.45 });
-    action(
-      player,
-      "§7O aspersório está vazio. Use-o numa caldeirinha com água.",
-      "§7The aspergillum is empty. Use it on a filled aspersorium.",
-    );
+    playSoundCue(player, "dry");
+    action(player, ACTION_MESSAGES.empty);
     return;
   }
 

@@ -65,6 +65,7 @@ function loreFor(charges: number): RawMessage[] {
       with: [String(normalizeCharges(charges)), "3"],
     },
     { translate: "item.aspergillum.lore.instructions" },
+    { translate: "item.aspergillum.lore.docking" },
     { translate: "item.aspergillum.lore.creative" },
   ];
 }
@@ -92,7 +93,7 @@ export function needsAspergillumInitialization(item: ItemStack): boolean {
     || storedCharges !== migration.state.charges
     || item.getDynamicProperty(COSMETIC_ID_PROPERTY) !== migration.state.cosmeticId
     || item.getDynamicProperty(SPRAY_PROFILE_ID_PROPERTY) !== migration.state.sprayProfileId
-    || item.getRawLore().length !== 3;
+    || item.getRawLore().length !== 4;
 }
 
 export function initializeAspergillum(item: ItemStack): ItemStack {

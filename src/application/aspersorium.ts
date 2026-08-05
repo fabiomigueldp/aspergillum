@@ -37,9 +37,11 @@ import {
   getDockedSnapshot,
   setDockedSnapshot,
 } from "../infrastructure/docked-item-registry";
-import { action } from "../infrastructure/messaging";
 import { commitMainhandAndBlock } from "../infrastructure/minecraft-transaction";
 import { playLoadingAnimation } from "../presentation/animation-coordinator";
+import { ACTION_MESSAGES, action } from "../presentation/messaging";
+import { playSoundCue } from "../presentation/sound-coordinator";
+import { presentLoadedAspergillum } from "../presentation/wet-feedback";
 
 type AspersoriumInteractionIntent = "load" | "dock";
 
@@ -98,14 +100,14 @@ function fillFromBucket(player: Player, block: Block): void {
   const policies = resolvePlayerPolicies(player);
   if (policies.denied) return;
   if (getNumberState(block, WATER_LEVEL_STATE) >= MAX_CHARGES) {
-    action(player, "§7A caldeirinha já está cheia.", "§7The aspersorium is already full.");
+    action(player, ACTION_MESSAGES.aspersoriumAlreadyFull);
     return;
   }
 
   setState(block, WATER_LEVEL_STATE, MAX_CHARGES);
   if (!policies.creative) setMainhand(player, new ItemStack("minecraft:bucket", 1));
-  player.playSound("bucket.empty_water", { pitch: 1.08, volume: 0.75 });
-  action(player, "§bCaldeirinha cheia", "§bAspersorium filled");
+  playSoundCue(player, "aspersoriumFill");
+  action(player, ACTION_MESSAGES.aspersoriumFilled);
 }
 
 function commitLoading(player: Player, session: LoadingSession): boolean {
@@ -130,15 +132,13 @@ function commitLoading(player: Player, session: LoadingSession): boolean {
   const updatedPermutation = withState(originalPermutation, WATER_LEVEL_STATE, result.nextWater);
   const updatedItem = writeAspergillumState(currentItem, result.state);
   if (!commitMainhandAndBlock(player, currentItem, updatedItem, block, originalPermutation, updatedPermutation)) {
-    action(player, "§cO carregamento foi cancelado com segurança.", "§cLoading was safely cancelled.");
+    action(player, ACTION_MESSAGES.loadingCancelled);
     return false;
   }
-  player.playSound("cauldron.takewater", { pitch: 1.32, volume: 0.78 });
-  action(
-    player,
-    policies.creative ? "§bÁgua benta: ∞ §7• Criativo" : `§b${result.state.charges}§7/3 cargas`,
-    policies.creative ? "§bHoly water: ∞ §7• Creative" : `§b${result.state.charges}§7/3 charges`,
-  );
+  playSoundCue(player, "loadCommit");
+  presentLoadedAspergillum(player, block.location);
+  if (policies.creative) action(player, ACTION_MESSAGES.chargesCreative);
+  else action(player, ACTION_MESSAGES.chargesLoaded, result.state.charges);
   return true;
 }
 
@@ -148,7 +148,7 @@ function loadItem(player: Player, block: Block): void {
   const rawItem = getMainhand(player);
   if (!isAspergillum(rawItem)) return;
   if (!isAspergillumSchemaSupported(rawItem)) {
-    action(player, "§cEste aspersório pertence a uma versão mais recente.", "§cThis aspergillum belongs to a newer version.");
+    action(player, ACTION_MESSAGES.futureSchema);
     return;
   }
   const initialItem = initializeAspergillum(rawItem);
@@ -158,11 +158,7 @@ function loadItem(player: Player, block: Block): void {
   const initialLevel = getNumberState(block, WATER_LEVEL_STATE);
   const preview = loadFromAspersorium(readAspergillumState(initialItem), initialLevel, policies.waterPolicy);
   if (preview.transferred === 0) {
-    action(
-      player,
-      initialLevel === 0 ? "§7A caldeirinha está vazia." : "§7O aspersório já está carregado.",
-      initialLevel === 0 ? "§7The aspersorium is empty." : "§7The aspergillum is already loaded.",
-    );
+    action(player, initialLevel === 0 ? ACTION_MESSAGES.aspersoriumEmpty : ACTION_MESSAGES.alreadyLoaded);
     return;
   }
 
@@ -180,24 +176,24 @@ function loadItem(player: Player, block: Block): void {
     16,
   );
   if (started.status === "player_busy") {
-    action(player, "§7O aspersório já está sendo carregado.", "§7The aspergillum is already loading.");
+    action(player, ACTION_MESSAGES.alreadyLoading);
     return;
   }
   if (started.status === "block_busy") {
-    action(player, "§7A caldeirinha já está sendo usada.", "§7The aspersorium is already in use.");
+    action(player, ACTION_MESSAGES.aspersoriumBusy);
     return;
   }
 
-  player.playSound("armor.equip_chain", { pitch: 1.18, volume: 0.32 });
+  playSoundCue(player, "loadPrepare");
   playLoadingAnimation(player);
-  action(player, "§7Carregando o aspersório…", "§7Loading the aspergillum…");
+  action(player, ACTION_MESSAGES.loading);
 }
 
 function dockItem(player: Player, block: Block): void {
   const originalItem = getMainhand(player);
   if (!isAspergillum(originalItem) || getBooleanState(block, DOCKED_STATE)) return;
   if (!isAspergillumSchemaSupported(originalItem)) {
-    action(player, "§cEste aspersório pertence a uma versão mais recente.", "§cThis aspergillum belongs to a newer version.");
+    action(player, ACTION_MESSAGES.futureSchema);
     return;
   }
   const item = initializeAspergillum(originalItem);
@@ -205,11 +201,7 @@ function dockItem(player: Player, block: Block): void {
   const level = getNumberState(block, WATER_LEVEL_STATE);
   const resolution = resolveDocking(level, itemState.charges);
   if (!resolution.allowed) {
-    action(
-      player,
-      "§cNão há espaço para toda a água do aspersório.",
-      "§cThere is not enough room for all water in the aspergillum.",
-    );
+    action(player, ACTION_MESSAGES.dockingOverflow);
     return;
   }
   const dimensionId = block.dimension.id;
@@ -218,12 +210,12 @@ function dockItem(player: Player, block: Block): void {
     previousSnapshot = getDockedSnapshot(dimensionId, block.location);
   } catch (error) {
     console.error(`[Aspergillum] Docked registry could not be read: ${String(error)}`);
-    action(player, "§cOs dados persistentes da caldeirinha precisam de reparo.", "§cThe aspersorium's persistent data requires repair.");
+    action(player, ACTION_MESSAGES.registryRepairRequired);
     return;
   }
   if (previousSnapshot !== undefined) {
     console.error(`[Aspergillum] Refusing to overwrite orphaned docked snapshot at ${dimensionId} ${JSON.stringify(block.location)}`);
-    action(player, "§cA caldeirinha precisa ser recuperada antes do uso.", "§cThe aspersorium must be recovered before use.");
+    action(player, ACTION_MESSAGES.registryRecoveryRequired);
     return;
   }
   const snapshot = captureDockedAspergillum(item);
@@ -242,11 +234,11 @@ function dockItem(player: Player, block: Block): void {
     try { block.setPermutation(originalPermutation); } catch { /* defensive rollback */ }
     try { deleteDockedSnapshot(dimensionId, block.location); } catch { /* defensive rollback */ }
     console.error(`[Aspergillum] Dock transaction failed: ${String(error)}`);
-    action(player, "§cO encaixe foi cancelado com segurança.", "§cDocking was safely cancelled.");
+    action(player, ACTION_MESSAGES.dockingCancelled);
     return;
   }
-  player.playSound("armor.equip_chain", { pitch: 0.92, volume: 0.58 });
-  action(player, "§7Aspersório acomodado na caldeirinha.", "§7Aspergillum placed in the aspersorium.");
+  playSoundCue(player, "dock");
+  action(player, ACTION_MESSAGES.docked);
 }
 
 function undockItem(player: Player, block: Block): void {
@@ -257,7 +249,7 @@ function undockItem(player: Player, block: Block): void {
     snapshot = getDockedSnapshot(dimensionId, block.location);
   } catch (error) {
     console.error(`[Aspergillum] Docked registry could not be read: ${String(error)}`);
-    action(player, "§cOs dados persistentes da caldeirinha precisam de reparo.", "§cThe aspersorium's persistent data requires repair.");
+    action(player, ACTION_MESSAGES.registryRepairRequired);
     return;
   }
   const restoredItem = snapshot === undefined ? createAspergillum(0) : restoreDockedAspergillum(snapshot);
@@ -273,11 +265,11 @@ function undockItem(player: Player, block: Block): void {
       try { setDockedSnapshot(dimensionId, block.location, snapshot); } catch { /* defensive rollback */ }
     }
     console.error(`[Aspergillum] Undock transaction failed: ${String(error)}`);
-    action(player, "§cA retirada foi cancelada com segurança.", "§cRetrieval was safely cancelled.");
+    action(player, ACTION_MESSAGES.undockingCancelled);
     return;
   }
-  player.playSound("armor.equip_chain", { pitch: 1.12, volume: 0.55 });
-  action(player, "§7Aspersório retirado.", "§7Aspergillum retrieved.");
+  playSoundCue(player, "undock");
+  action(player, ACTION_MESSAGES.undocked);
 }
 
 export function handleAspersoriumBreak(event: BlockComponentBlockBreakEvent): void {
@@ -315,16 +307,12 @@ function scheduleAspersoriumInteraction(
     const item = getMainhand(player);
     const activeAction = getActionLease(player.id);
     if (activeAction !== undefined) {
-      action(player, "§7Aguarde a ação atual terminar.", "§7Wait for the current action to finish.");
+      action(player, ACTION_MESSAGES.actionBusy);
       return;
     }
     const lockOwner = getLoadingBlockOwner(block.dimension.id, block.location);
     if (lockOwner !== undefined) {
-      action(
-        player,
-        lockOwner === player.id ? "§7O aspersório já está sendo carregado." : "§7A caldeirinha já está sendo usada.",
-        lockOwner === player.id ? "§7The aspergillum is already loading." : "§7The aspersorium is already in use.",
-      );
+      action(player, lockOwner === player.id ? ACTION_MESSAGES.alreadyLoading : ACTION_MESSAGES.aspersoriumBusy);
       return;
     }
 
@@ -335,9 +323,9 @@ function scheduleAspersoriumInteraction(
     if (getBooleanState(block, DOCKED_STATE)) {
       if (item === undefined) undockItem(player, block);
       else if (isAspergillum(item)) {
-        action(player, "§7A caldeirinha já contém um aspersório.", "§7The aspersorium already contains an aspergillum.");
+        action(player, ACTION_MESSAGES.aspersoriumAlreadyContains);
       } else {
-        action(player, "§7Use a mão vazia para retirar o aspersório.", "§7Use an empty hand to retrieve the aspergillum.");
+        action(player, ACTION_MESSAGES.emptyHandRequired);
       }
       return;
     }
@@ -346,7 +334,7 @@ function scheduleAspersoriumInteraction(
       else loadItem(player, block);
       return;
     }
-    action(player, "§7Use um balde d'água ou o aspersório.", "§7Use a water bucket or the aspergillum.");
+    action(player, ACTION_MESSAGES.interactionHint);
   });
 }
 

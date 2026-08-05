@@ -48,11 +48,13 @@ src/
 │   ├── game-mode-policy.ts
 │   ├── item-state.ts
 │   ├── loading-session.ts
-│   ├── messaging.ts
 │   ├── minecraft-transaction.ts
 │   └── sprinkle-session.ts
 └── presentation/
-    └── animation-coordinator.ts
+    ├── animation-coordinator.ts
+    ├── messaging.ts
+    ├── sound-coordinator.ts
+    └── wet-feedback.ts
 ```
 
 Essa estrutura já mantém o domínio testável, mas application e infrastructure ainda acumulam responsabilidades. Não é necessário mover arquivos antes de modificar um caso de uso; a mudança deve pagar por si mesma com uma fronteira, teste ou capacidade concreta.
@@ -100,6 +102,8 @@ Regras de dependência:
 - Infrastructure implementa leitura/escrita e ciclo de vida da plataforma.
 - Presentation contém somente feedback; não muda carga ou água.
 - Bootstrap registra e conecta dependências; não vira um “god file”.
+
+Mensagens de gameplay usam um catálogo tipado de translation keys e `RawMessage`; o cliente resolve o idioma no momento da apresentação. Sons chamados pelo script passam por `sound-coordinator`, e qualquer falha de HUD, áudio ou micro-VFX é fail-soft. A carga e a água já foram decididas antes desses recursos de apresentação e nunca dependem deles.
 
 ## Fluxo de carregamento atual
 
