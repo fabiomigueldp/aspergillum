@@ -53,7 +53,7 @@ dist/
 
 O empacotador ordena todos os caminhos e usa timestamps ZIP fixos. Duas execuções sobre a mesma árvore devem produzir bytes e SHA-256 idênticos.
 
-Revisões com sufixo diagnóstico usam `package.json > aspergillum.releaseLabel` no nome do artefato e do relatório. Como o manifest Bedrock aceita apenas `[major, minor, patch]` numérico, `1.0.15b` corresponde a `[1,0,16]`, `1.0.15c` a `[1,0,17]`, `1.0.15d` a `[1,0,18]`, `1.0.16` a `[1,0,19]`, `1.0.16a` a `[1,0,20]`, `1.0.16b` a `[1,0,21]`, `1.0.16c` a `[1,0,22]`, `1.0.17` a `[1,0,23]`, `1.0.17a` a `[1,0,24]`, `1.0.18` a `[1,0,25]`, `1.0.18a` a `[1,0,26]` e `1.0.18b` a `[1,0,27]`; o próximo pacote nunca deve reutilizar essas trincas.
+Revisões com sufixo diagnóstico usam `package.json > aspergillum.releaseLabel` no nome do artefato e do relatório. Como o manifest Bedrock aceita apenas `[major, minor, patch]` numérico, `1.0.15b` corresponde a `[1,0,16]`, `1.0.15c` a `[1,0,17]`, `1.0.15d` a `[1,0,18]`, `1.0.16` a `[1,0,19]`, `1.0.16a` a `[1,0,20]`, `1.0.16b` a `[1,0,21]`, `1.0.16c` a `[1,0,22]`, `1.0.17` a `[1,0,23]`, `1.0.17a` a `[1,0,24]`, `1.0.18` a `[1,0,25]`, `1.0.18a` a `[1,0,26]`, `1.0.18b` a `[1,0,27]` e `1.0.18c` a `[1,0,28]`; o próximo pacote nunca deve reutilizar essas trincas.
 
 ### Avisos offline conhecidos
 

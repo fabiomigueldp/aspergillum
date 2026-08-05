@@ -7,21 +7,11 @@
       "override_previous_animation": false,
       "bones": {
         "rightarm": {
-          "rotation": {
-            "0.0": { "post": [0, "(variable.is_first_person || variable.attack_time <= 0.0 || variable.attack_time >= 1.0) ? 0.0 : 30.0 * math.hermite_blend(math.clamp((variable.attack_time - 0.5) / 0.5, 0.0, 1.0))", 0], "lerp_mode": "catmullrom" },
-            "0.04": { "post": [0, "(variable.is_first_person || variable.attack_time <= 0.0 || variable.attack_time >= 1.0) ? 0.0 : 30.0 * math.hermite_blend(math.clamp((variable.attack_time - 0.5) / 0.5, 0.0, 1.0))", 0], "lerp_mode": "catmullrom" },
-            "0.1": { "post": [-2, "-1.0 + ((variable.is_first_person || variable.attack_time <= 0.0 || variable.attack_time >= 1.0) ? 0.0 : 30.0 * math.hermite_blend(math.clamp((variable.attack_time - 0.5) / 0.5, 0.0, 1.0)))", 1], "lerp_mode": "catmullrom" },
-            "0.24": { "post": [-8, "-3.0 + ((variable.is_first_person || variable.attack_time <= 0.0 || variable.attack_time >= 1.0) ? 0.0 : 30.0 * math.hermite_blend(math.clamp((variable.attack_time - 0.5) / 0.5, 0.0, 1.0)))", 2], "lerp_mode": "catmullrom" },
-            "0.36": { "post": [-14, "-4.0 + ((variable.is_first_person || variable.attack_time <= 0.0 || variable.attack_time >= 1.0) ? 0.0 : 30.0 * math.hermite_blend(math.clamp((variable.attack_time - 0.5) / 0.5, 0.0, 1.0)))", 3], "lerp_mode": "catmullrom" },
-            "0.46": { "post": [-19, "-4.0 + ((variable.is_first_person || variable.attack_time <= 0.0 || variable.attack_time >= 1.0) ? 0.0 : 30.0 * math.hermite_blend(math.clamp((variable.attack_time - 0.5) / 0.5, 0.0, 1.0)))", 3], "lerp_mode": "catmullrom" },
-            "0.5": { "post": [-20, "-4.0 + ((variable.is_first_person || variable.attack_time <= 0.0 || variable.attack_time >= 1.0) ? 0.0 : 30.0 * math.hermite_blend(math.clamp((variable.attack_time - 0.5) / 0.5, 0.0, 1.0)))", 3], "lerp_mode": "catmullrom" },
-            "0.54": { "post": [-20, "-4.0 + ((variable.is_first_person || variable.attack_time <= 0.0 || variable.attack_time >= 1.0) ? 0.0 : 30.0 * math.hermite_blend(math.clamp((variable.attack_time - 0.5) / 0.5, 0.0, 1.0)))", 3], "lerp_mode": "catmullrom" },
-            "0.58": { "post": [-19, "-3.0 + ((variable.is_first_person || variable.attack_time <= 0.0 || variable.attack_time >= 1.0) ? 0.0 : 30.0 * math.hermite_blend(math.clamp((variable.attack_time - 0.5) / 0.5, 0.0, 1.0)))", 2], "lerp_mode": "catmullrom" },
-            "0.68": { "post": [-9, "-1.0 + ((variable.is_first_person || variable.attack_time <= 0.0 || variable.attack_time >= 1.0) ? 0.0 : 30.0 * math.hermite_blend(math.clamp((variable.attack_time - 0.5) / 0.5, 0.0, 1.0)))", 1], "lerp_mode": "catmullrom" },
-            "0.76": { "post": [0, "(variable.is_first_person || variable.attack_time <= 0.0 || variable.attack_time >= 1.0) ? 0.0 : 30.0 * math.hermite_blend(math.clamp((variable.attack_time - 0.5) / 0.5, 0.0, 1.0))", 0], "lerp_mode": "catmullrom" },
-            "0.8": { "post": [0, "(variable.is_first_person || variable.attack_time <= 0.0 || variable.attack_time >= 1.0) ? 0.0 : 30.0 * math.hermite_blend(math.clamp((variable.attack_time - 0.5) / 0.5, 0.0, 1.0))", 0], "lerp_mode": "catmullrom" },
-            "1.1": { "post": [0, "(variable.is_first_person || variable.attack_time <= 0.0 || variable.attack_time >= 1.0) ? 0.0 : 30.0 * math.hermite_blend(math.clamp((variable.attack_time - 0.5) / 0.5, 0.0, 1.0))", 0], "lerp_mode": "catmullrom" }
-          }
+          "rotation": [
+            "-20.0 * (query.anim_time <= 0.04 ? 0.0 : query.anim_time < 0.46 ? math.hermite_blend(math.clamp((query.anim_time - 0.04) / 0.42, 0.0, 1.0)) : query.anim_time <= 0.54 ? 1.0 : query.anim_time < 0.78 ? 1.0 - math.hermite_blend(math.clamp((query.anim_time - 0.54) / 0.24, 0.0, 1.0)) : 0.0)",
+            "-4.0 * (query.anim_time <= 0.04 ? 0.0 : query.anim_time < 0.46 ? math.hermite_blend(math.clamp((query.anim_time - 0.04) / 0.42, 0.0, 1.0)) : query.anim_time <= 0.54 ? 1.0 : query.anim_time < 0.78 ? 1.0 - math.hermite_blend(math.clamp((query.anim_time - 0.54) / 0.24, 0.0, 1.0)) : 0.0) + ((variable.is_first_person || variable.attack_time <= 0.0 || variable.attack_time >= 1.0) ? 0.0 : 30.0 * math.hermite_blend(math.clamp((variable.attack_time - 0.5) / 0.5, 0.0, 1.0)))",
+            "3.0 * (query.anim_time <= 0.04 ? 0.0 : query.anim_time < 0.46 ? math.hermite_blend(math.clamp((query.anim_time - 0.04) / 0.42, 0.0, 1.0)) : query.anim_time <= 0.54 ? 1.0 : query.anim_time < 0.78 ? 1.0 - math.hermite_blend(math.clamp((query.anim_time - 0.54) / 0.24, 0.0, 1.0)) : 0.0)"
+          ]
         }
       }
     },

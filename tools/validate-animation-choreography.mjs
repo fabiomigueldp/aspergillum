@@ -17,6 +17,7 @@ const firstPerson = animations["animation.aspergillum.action.sprinkle.first_pers
 const thirdPerson = animations["animation.aspergillum.action.sprinkle.third_person"];
 const controller = controllers["controller.animation.aspergillum.action"];
 const RECOVERY_BRIDGE_EXPRESSION = "(variable.is_first_person || variable.attack_time <= 0.0 || variable.attack_time >= 1.0) ? 0.0 : 30.0 * math.hermite_blend(math.clamp((variable.attack_time - 0.5) / 0.5, 0.0, 1.0))";
+const LOAD_CURVE_EXPRESSION = "query.anim_time <= 0.04 ? 0.0 : query.anim_time < 0.46 ? math.hermite_blend(math.clamp((query.anim_time - 0.04) / 0.42, 0.0, 1.0)) : query.anim_time <= 0.54 ? 1.0 : query.anim_time < 0.78 ? 1.0 - math.hermite_blend(math.clamp((query.anim_time - 0.54) / 0.24, 0.0, 1.0)) : 0.0";
 
 function vector(value) {
   if (Array.isArray(value)) return value.map(Number);
@@ -158,6 +159,46 @@ function motionMetrics(frames, duration, minimumSpeed, heroTime) {
   };
 }
 
+function sampledMotionMetrics(sampler, duration, minimumSpeed, heroTime) {
+  const step = 1 / 120;
+  const samples = [];
+  for (let index = 0; index <= Math.ceil(duration / step); index += 1) {
+    const time = Math.min(duration, index * step);
+    samples.push({ time, value: sampler(time) });
+  }
+  const velocities = samples.slice(1).map((entry, index) => ({
+    time: entry.time,
+    value: scale(subtract(entry.value, samples[index].value), 1 / step),
+  }));
+  const accelerations = velocities.slice(1).map((entry, index) => ({
+    time: entry.time,
+    value: scale(subtract(entry.value, velocities[index].value), 1 / step),
+  }));
+  const maximumVelocity = Math.max(...velocities.map((entry) => length(entry.value)));
+  const settledSpeed = Math.max(minimumSpeed, maximumVelocity * 0.15);
+  let maximumDirectionChange = 0;
+  for (let index = 1; index < velocities.length; index += 1) {
+    if (length(velocities[index - 1].value) < settledSpeed || length(velocities[index].value) < settledSpeed) continue;
+    maximumDirectionChange = Math.max(maximumDirectionChange, angleDegrees(velocities[index - 1].value, velocities[index].value));
+  }
+  let activeReversals = 0;
+  let previousSign = 0;
+  for (const velocity of velocities) {
+    if (velocity.time > heroTime) break;
+    const dominant = velocity.value[0];
+    if (Math.abs(dominant) < settledSpeed) continue;
+    const sign = Math.sign(dominant);
+    if (previousSign !== 0 && sign !== previousSign) activeReversals += 1;
+    previousSign = sign;
+  }
+  return {
+    maximumVelocity,
+    maximumAcceleration: Math.max(...accelerations.map((entry) => length(entry.value))),
+    maximumDirectionChange,
+    activeReversals,
+  };
+}
+
 function validateChannel({
   animation,
   bone,
@@ -221,78 +262,62 @@ if (loading?.animation_length !== 1.1
 if (Object.keys(loading?.bones ?? {}).join() !== "rightarm") {
   errors.push("Loading may animate only rightarm; rightitem must remain owned by the held-item hierarchy");
 }
-const loadingBaseKeyframes = {
-  "0.0": [0, 0, 0],
-  "0.04": [0, 0, 0],
-  "0.1": [-2, -1, 1],
-  "0.24": [-8, -3, 2],
-  "0.36": [-14, -4, 3],
-  "0.46": [-19, -4, 3],
-  "0.5": [-20, -4, 3],
-  "0.54": [-20, -4, 3],
-  "0.58": [-19, -3, 2],
-  "0.68": [-9, -1, 1],
-  "0.76": [0, 0, 0],
-  "0.8": [0, 0, 0],
-};
-
-function loadingYExpression(base) {
-  return base === 0 ? RECOVERY_BRIDGE_EXPRESSION : `${base.toFixed(1)} + (${RECOVERY_BRIDGE_EXPRESSION})`;
-}
-
 const loadingRotation = loading?.bones?.rightarm?.rotation;
-const expectedLoadingTimes = [...Object.keys(loadingBaseKeyframes), "1.1"];
-if (Object.keys(loadingRotation ?? {}).join() !== expectedLoadingTimes.join()) {
-  errors.push("Loading must preserve the approved visible keyframes and add only the 1.1-second recovery tail");
+const expectedLoadingRotation = [
+  `-20.0 * (${LOAD_CURVE_EXPRESSION})`,
+  `-4.0 * (${LOAD_CURVE_EXPRESSION}) + (${RECOVERY_BRIDGE_EXPRESSION})`,
+  `3.0 * (${LOAD_CURVE_EXPRESSION})`,
+];
+if (JSON.stringify(loadingRotation) !== JSON.stringify(expectedLoadingRotation)) {
+  errors.push("Loading must use the runtime-safe analytic Hermite curve plus the guarded Y recovery bridge");
 }
-for (const [time, base] of Object.entries({ ...loadingBaseKeyframes, "1.1": [0, 0, 0] })) {
-  const frame = loadingRotation?.[time];
-  const value = frame?.post;
-  if (frame?.lerp_mode !== "catmullrom"
-    || !Array.isArray(value)
-    || value[0] !== base[0]
-    || value[1] !== loadingYExpression(base[1])
-    || value[2] !== base[2]) {
-    errors.push(`Loading keyframe ${time} must equal the approved local pose plus the guarded Y recovery bridge`);
-  }
+if (JSON.stringify(loading).includes('"lerp_mode":"catmullrom"')) {
+  errors.push("Loading must not combine dynamic Molang with precomputed Catmull-Rom interpolation");
 }
-const loadingBaseAnimation = {
-  animation_length: 0.8,
-  bones: {
-    rightarm: {
-      rotation: Object.fromEntries(Object.entries(loadingBaseKeyframes).map(([time, post]) => [
-        time,
-        { post, lerp_mode: "catmullrom" },
-      ])),
-    },
-  },
-};
-const loadingBaseFrames = parseChannel(
-  loadingBaseAnimation.bones.rightarm.rotation,
-  "loading/visible rightarm rotation metrics",
-);
-const loadingMetrics = validateChannel({
-  animation: loadingBaseAnimation,
-  bone: "rightarm",
-  channelName: "rotation",
-  label: "loading/visible rightarm rotation",
-  maximumMagnitude: 21.5,
-  endpointTolerance: 0.01,
-  maximumFrameDelta: 6,
-  maximumVelocity: 180,
-  maximumAcceleration: 7500,
-  minimumSpeed: 4,
-  maximumDirectionChange: 90,
-  heroTime: 0.55,
-});
-if (loadingMetrics && loadingMetrics.maximumVelocity * 0.32 > 60) {
+
+function loadingEnvelope(time) {
+  if (time <= 0.04) return 0;
+  if (time < 0.46) return hermiteBlend(Math.max(0, Math.min(1, (time - 0.04) / 0.42)));
+  if (time <= 0.54) return 1;
+  if (time < 0.78) return 1 - hermiteBlend(Math.max(0, Math.min(1, (time - 0.54) / 0.24)));
+  return 0;
+}
+
+function loadingLocalPose(time) {
+  const envelope = loadingEnvelope(time);
+  return [-20 * envelope, -4 * envelope, 3 * envelope];
+}
+
+let loadingMaximumMagnitude = 0;
+let loadingMaximumFrameDelta = 0;
+for (let time = 0; time <= 1.1 + 1e-6; time += 1 / 120) {
+  const pose = loadingLocalPose(Math.min(time, 1.1));
+  loadingMaximumMagnitude = Math.max(loadingMaximumMagnitude, length(pose));
+}
+for (let time = 1 / 30; time <= 1.1 + 1e-6; time += 1 / 30) {
+  loadingMaximumFrameDelta = Math.max(
+    loadingMaximumFrameDelta,
+    length(subtract(loadingLocalPose(Math.min(time, 1.1)), loadingLocalPose(time - 1 / 30))),
+  );
+}
+const loadingMetrics = sampledMotionMetrics(loadingLocalPose, 1.1, 4, 0.55);
+if (loadingMaximumMagnitude > 21.5 || loadingMaximumFrameDelta > 6) {
+  errors.push(`Loading analytic curve exceeds its motion envelope (magnitude=${loadingMaximumMagnitude.toFixed(2)}, frame delta=${loadingMaximumFrameDelta.toFixed(2)})`);
+}
+if (loadingMetrics.maximumVelocity > 180
+  || loadingMetrics.maximumAcceleration > 7500
+  || loadingMetrics.maximumDirectionChange > 90
+  || loadingMetrics.activeReversals > 1) {
+  errors.push(`Loading analytic curve violates continuity budget (v=${loadingMetrics.maximumVelocity.toFixed(1)}, a=${loadingMetrics.maximumAcceleration.toFixed(1)}, turn=${loadingMetrics.maximumDirectionChange.toFixed(1)}°, reversals=${loadingMetrics.activeReversals})`);
+}
+if (loadingMetrics.maximumVelocity * 0.32 > 60) {
   errors.push("First-person loading exceeds its reduced camera-safe velocity envelope");
 }
 
 const nativeSwingSeconds = 0.9;
 function composedLoadingPose(timeSeconds) {
   const attackTime = Math.max(0, Math.min(1, timeSeconds / nativeSwingSeconds));
-  const local = sample(loadingBaseFrames, Math.min(timeSeconds, 0.8));
+  const local = loadingLocalPose(timeSeconds);
   return [
     local[0] + vanillaPlayerAttackX(attackTime),
     local[1] + vanillaPlayerAttackY(attackTime) + recoveryBridgeY(attackTime),

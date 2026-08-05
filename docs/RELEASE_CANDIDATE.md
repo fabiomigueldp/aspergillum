@@ -2,13 +2,13 @@
 
 ## Identidade
 
-- Release Candidate: `1.0.18b`.
-- Revisão dos packs: `[1, 0, 27]`.
+- Release Candidate: `1.0.18c`.
+- Revisão dos packs: `[1, 0, 28]`.
 - Baseline física herdada: `1.0.17a`, validada pelo usuário.
 - Experimentos: nenhum.
 - Autoridade: servidor para estado; cliente somente para apresentação.
 
-Esta revisão não reabre binding, grip, poses, aspersão, steering, partículas principais, schema ou snapshots. Ela preserva a composição camera-safe da carga e neutraliza exclusivamente sua costura vanilla final em terceira pessoa.
+Esta revisão não reabre binding, grip, poses, aspersão, steering, partículas principais, schema ou snapshots. Ela preserva a composição camera-safe e a costura TP da carga, substituindo apenas a interpolação cúbica dinâmica incompatível por uma curva analítica.
 
 ## Preflight automatizado
 
@@ -25,7 +25,7 @@ O gate falha quando versões divergem, catálogos `pt_BR`/`en_US` deixam de ser 
 
 1. Registrar o SHA-256 do artefato.
 2. Fechar o Minecraft e remover os dois packs antigos em Armazenamento.
-3. Importar somente `Aspergillum-1.0.18b.mcaddon`.
+3. Importar somente `Aspergillum-1.0.18c.mcaddon`.
 4. Criar ou duplicar um mundo de teste sem experimentos.
 5. Limpar o Content Log antes de entrar.
 6. Executar `/function aspergillum/dev_kit`.

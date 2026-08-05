@@ -279,12 +279,19 @@ if (loadAnimation?.animation_length !== 1.1
   errors.push("Loading must remain a camera-safe additive rightarm-only choreography with a finite recovery tail");
 }
 const loadSource = JSON.stringify(loadAnimation);
-if (!loadSource.includes("variable.is_first_person")
+const loadRotation = loadAnimation?.bones?.rightarm?.rotation;
+if (!Array.isArray(loadRotation)
+  || loadRotation.length !== 3
+  || !loadSource.includes("query.anim_time")
+  || !loadSource.includes("variable.is_first_person")
   || !loadSource.includes("variable.attack_time <= 0.0")
   || !loadSource.includes("variable.attack_time >= 1.0")
   || !loadSource.includes("math.hermite_blend")
   || !loadSource.includes("(variable.attack_time - 0.5) / 0.5")) {
-  errors.push("Loading must close the native third-person arm seam with the guarded Hermite bridge");
+  errors.push("Loading must use a runtime-safe analytic motion curve and close the native third-person arm seam with the guarded Hermite bridge");
+}
+if (loadSource.includes('"lerp_mode":"catmullrom"')) {
+  errors.push("Loading cannot combine dynamic Molang values with precomputed Catmull-Rom keyframes");
 }
 const bodySprinkle = actionAnimations?.["animation.aspergillum.player.sprinkle.body"];
 const firstPersonSprinkle = actionAnimations?.["animation.aspergillum.action.sprinkle.first_person"];

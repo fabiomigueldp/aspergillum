@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.18c — 2026-08-05
+
+- corrigido o erro de runtime `Precomputed cubic interpolation requires keyframes have constant data` introduzido na carga da 1.0.18b;
+- substituída somente a combinação incompatível Catmull-Rom + Molang dinâmico por um envelope Hermite analítico dirigido por `query.anim_time`, avaliado a cada frame;
+- preservados amplitude, peso por perspectiva, dip, retenção, settle, ponte TP de `rightarm.y`, duração autoritativa, commit no tick 10 e todos os contratos de estado;
+- adicionado gate que rejeita Catmull-Rom pré-computado dentro da animação dinâmica de carregamento e valida a curva analítica a 120 Hz;
+- o rótulo distribuído é `1.0.18c`; a revisão monotônica dos packs é `[1,0,28]`.
+
 ## 1.0.18b — 2026-08-05
 
 - corrigido o solavanco final do braço em terceira pessoa durante o carregamento, sem alterar a coreografia visível aprovada na 1.0.18a;

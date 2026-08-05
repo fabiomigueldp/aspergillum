@@ -189,7 +189,18 @@ Gate de saída:
 - cada gesto produz no máximo uma operação, uma mensagem e um snapshot;
 - Content Log permanece limpo.
 
-## v1.0.18b — recuperação composta do carregamento — implementada; QA físico pendente
+## v1.0.18c — curva de carregamento compatível com o runtime — implementada; QA físico pendente
+
+Escopo fechado:
+
+- remover a combinação inválida de Molang dinâmico com Catmull-Rom pré-computado;
+- preservar o mesmo envelope visual por uma curva Hermite analítica dirigida por `query.anim_time`;
+- manter a ponte TP, peso FP, duração, commit e contratos autoritativos intactos;
+- rejeitar automaticamente qualquer retorno de interpolação cúbica dinâmica à carga.
+
+Gate de saída: Content Log sem `Precomputed cubic interpolation requires keyframes have constant data`; item visível em FP; retorno TP contínuo; transferência única no tick 10.
+
+## v1.0.18b — recuperação composta do carregamento — implementada; sucedida pela correção runtime 1.0.18c
 
 Escopo fechado:
 
@@ -209,7 +220,7 @@ Escopo fechado:
 - remover reset de pose e qualquer canal `rightitem` da carga;
 - recompor o gesto como correção aditiva de `rightarm`, reduzida em primeira pessoa e integral em terceira;
 - preservar duração de 16 ticks, commit no tick 10, sessões, locks, água, cargas, som e micro-splash;
-- validar automaticamente bones, peso por perspectiva, Catmull-Rom, envelopes e settle.
+- validar automaticamente bones, peso por perspectiva, envelopes e settle.
 
 Gate de saída: item visível em 100% dos frames FP, dip ainda legível em TP, nenhuma dupla partida ou pop, transferência única no tick 10 e Content Log limpo.
 

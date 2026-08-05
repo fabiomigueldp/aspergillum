@@ -2,13 +2,13 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.0.18b` Release Candidate (revisão numérica dos packs `[1, 0, 27]`)
+- **Versão de referência:** `1.0.18c` Release Candidate (revisão numérica dos packs `[1, 0, 28]`)
 - **Engine mínima:** Creator `1.26.30`
 - **Script API:** `@minecraft/server` `2.8.0`, estável
 - **Experimentos:** nenhum
 - **Conteúdo:** aspersório funcional, caldeirinha colocável, carregamento, três cargas, docking decorativo e spray visual
 
-A v1.0.18b preserva integralmente o gesto camera-safe da 1.0.18a e corrige sua última costura em terceira pessoa. A curva própria já assentava em zero; o salto vinha de `animation.player.attack.rotations`, cujo `rightarm.y` tende a `-30°` antes de zerar instantaneamente. Uma ponte Hermite condicionada à perspectiva e ao mesmo `attack_time` cancela essa descontinuidade sem prolongar visualmente o dip.
+A v1.0.18c preserva o gesto camera-safe e a recuperação composta da 1.0.18b, corrigindo a incompatibilidade que o runtime detectou entre Catmull-Rom pré-computado e valores Molang dinâmicos. O dip agora é uma curva Hermite analítica dirigida por `query.anim_time`; a ponte final continua condicionada à perspectiva e ao mesmo `attack_time`.
 
 ## O que está resolvido
 
@@ -23,7 +23,7 @@ A v1.0.18b preserva integralmente o gesto camera-safe da 1.0.18a e corrige sua �
 - O primeiro pulso transita desde a direção capturada no início do gesto; os demais transportam a base lateral sem flip vertical.
 - A carga é reservada no swing e consumida/preservada somente no release do tick 5.
 - `ActionLease` impede que carregar e aspergir concorram para o mesmo jogador.
-- O carregamento usa uma correção aditiva de `rightarm`, sem reset ou canal `rightitem`; a contribuição cai para 32% em primeira pessoa, mantém o arco completo em terceira e fecha a costura vanilla com uma cauda Hermite invisível.
+- O carregamento usa uma correção aditiva analítica de `rightarm`, sem reset, canal `rightitem` ou interpolação cúbica pré-computada; a contribuição cai para 32% em primeira pessoa, mantém o arco completo em terceira e fecha a costura vanilla com uma cauda Hermite invisível.
 - A aspersão usa o swing vanilla como arco principal, uma ponte Hermite exclusiva de `rightarm.y` para continuidade final e flick local em `aspergillum_action`.
 - `spray_aim` e `aspergillum_tip` acompanham a cabeça animada; uma emissão curta e world-space conecta visualmente a ponta ao leque no release válido.
 - As gotas principais preservam o billboard camera-readable `0.042 × 0.100` fisicamente aprovado; micro-splash permanece puramente cosmético.
@@ -41,7 +41,7 @@ A v1.0.18b preserva integralmente o gesto camera-safe da 1.0.18a e corrige sua �
 
 | Área | Situação atual | Consequência |
 | --- | --- | --- |
-| Carregamento | composição camera-safe e recuperação TP da 1.0.18b implementadas | confirmar no pacote final visibilidade FP e retorno TP contínuo, sem pop ao final |
+| Carregamento | composição camera-safe e recuperação TP da 1.0.18c implementadas em curva runtime-safe | confirmar no pacote final ausência do erro cúbico, visibilidade FP e retorno TP contínuo |
 | Aspersão | composição 1.0.15d fisicamente aprovada e congelada | nenhuma limitação estrutural conhecida; manter testes de regressão FP/TP |
 | Origem das gotas | bridge corrigido nasce em `aspergillum_tip`; leque balístico mantém origem matemática | QA recorrente deve confirmar ligação visual e comportamento remoto |
 | Cor das gotas | RGBA explícito e azul dominante durante toda a vida | QA da 1.0.16c deve confirmar ausência de branco excessivo e de verde/amarelo em gotas e impactos |
@@ -55,7 +55,7 @@ A v1.0.18b preserva integralmente o gesto camera-safe da 1.0.18a e corrige sua �
 
 ## Próxima mudança autorizada
 
-A v1.0.18b está implementada como correção do Release Candidate e deve passar pelo runbook [RELEASE_CANDIDATE.md](RELEASE_CANDIDATE.md), com prioridade para o gate de carregamento de [TESTING.md](TESTING.md). Se não houver novo blocker, o próximo passo é promover os mesmos bytes à V1.
+A v1.0.18c está implementada como correção do Release Candidate e deve passar pelo runbook [RELEASE_CANDIDATE.md](RELEASE_CANDIDATE.md), com prioridade para o gate de carregamento de [TESTING.md](TESTING.md). Se não houver novo blocker, o próximo passo é promover os mesmos bytes à V1.
 
 Não faz parte do próximo marco:
 

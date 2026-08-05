@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-A aspersão deve ser uma frase visual única — antecipação, condução, flick, release, follow-through e settle — sem lutar contra o swing iniciado pelo motor. Este contrato protege a v1.0.15d, aprovada fisicamente pelo usuário, e a composição camera-safe de carregamento concluída na v1.0.18b.
+A aspersão deve ser uma frase visual única — antecipação, condução, flick, release, follow-through e settle — sem lutar contra o swing iniciado pelo motor. Este contrato protege a v1.0.15d, aprovada fisicamente pelo usuário, e a composição camera-safe de carregamento concluída na v1.0.18c.
 
 ## Carregamento camera-safe
 
@@ -12,7 +12,8 @@ O carregamento é uma correção aditiva de `0,8 s` aplicada sobre o movimento d
 - único bone permitido: `rightarm`;
 - `rightitem` pertence exclusivamente à hierarquia de item segurado e nunca é animado pela carga;
 - `blend_weight` é `0.32` em primeira pessoa e `1.0` em terceira pessoa;
-- curvas Catmull-Rom começam neutras em `0,00/0,04 s`, desaceleram na imersão e assentam visualmente em `0,76/0,80 s`;
+- um envelope Hermite analítico começa neutro até `0,04 s`, desacelera na imersão, sustenta brevemente a pose e assenta visualmente até `0,78/0,80 s`;
+- a curva dinâmica é um canal Molang direto dirigido por `query.anim_time`; Catmull-Rom é proibido aqui porque o runtime pré-computa a interpolação cúbica e exige dados constantes;
 - magnitude de rotação bruta `≤ 21,5°`, mudança `≤ 6°` por frame a 30 FPS e no máximo uma reversão principal;
 - o commit transacional continua no tick 10 e não depende da animação ser reproduzida.
 
@@ -20,7 +21,7 @@ O peso reduzido em primeira pessoa é parte do envelope de câmera, não uma pos
 
 ### Recuperação composta da carga
 
-A curva visível estar em zero não basta: `animation.player.attack.rotations` tende a aproximadamente `-30°` em `rightarm.y` imediatamente antes de `attack_time` zerar. A v1.0.18b mantém o contêiner da carga até `1,10 s` e soma, em cada keyframe Y, a compensação:
+A curva visível estar em zero não basta: `animation.player.attack.rotations` tende a aproximadamente `-30°` em `rightarm.y` imediatamente antes de `attack_time` zerar. A v1.0.18c mantém o contêiner da carga até `1,10 s` e soma diretamente no canal Y a compensação:
 
 ```text
 p = clamp((attack_time - 0,50) / 0,50, 0, 1)
