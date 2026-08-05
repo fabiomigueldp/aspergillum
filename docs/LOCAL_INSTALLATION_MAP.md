@@ -1,6 +1,6 @@
 # Mapa da instalação local
 
-Mapa gerado por `tools/sync-installed-addon.mjs` em **2026-08-05T03:37:50.450Z**.
+Mapa gerado por `tools/sync-installed-addon.mjs` em **2026-08-05T03:38:37.926Z**.
 A sincronização usa diretamente `packs/`, substitui os diretórios locais e atualiza os vínculos do mundo selecionado.
 
 ## Instalação do Minecraft
