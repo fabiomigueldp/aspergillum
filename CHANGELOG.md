@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.18g — 2026-08-05
+
+- corrigida a rejeição runtime da caldeirinha causada pelo state `aspergillum:water_level` com dezessete valores, acima do limite de dezesseis observado no Bedrock 26.40;
+- preservada a capacidade lógica exata `0..16` por um codec radix-9 em dois states pequenos: `aspergillum:water_base` (`0|9`) e `aspergillum:water_offset` (`0..8`);
+- centralizadas leitura, codificação e escrita da água na infraestrutura; application e domínio continuam trabalhando somente com unidades lógicas `0..16`;
+- as duas parcelas são aplicadas à mesma `BlockPermutation` e gravadas uma única vez, preservando commit e rollback transacionais;
+- o espaço cartesiano do bloco passa a 576 combinações, com gate automatizado de cardinalidade máxima de dezesseis valores por state;
+- adicionados testes de round-trip para as dezessete quantidades e normalização defensiva da única combinação não canônica;
+- preservados capacidade `4/16`, quatro quartos visuais, animação, VFX, binding, sessões, locks, docking e APIs estáveis da 1.0.18f;
+- o rótulo distribuído é `1.0.18g`; a revisão monotônica dos packs é `[1,0,32]`.
+
 ## 1.0.18f — 2026-08-05
 
 - alinhado o alvo dos manifests com o lançamento estável Minecraft Bedrock 26.40 (`min_engine_version` `1.26.40`);

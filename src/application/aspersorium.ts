@@ -1,6 +1,5 @@
 import {
   Block,
-  BlockPermutation,
   BlockComponentBlockBreakEvent,
   BlockComponentPlayerInteractEvent,
   ItemStack,
@@ -11,7 +10,9 @@ import { loadFromAspersorium } from "../domain/aspergillum";
 import { ASPERSORIUM_CAPACITY, WATER_BUCKET_FILL } from "../domain/aspersorium-water";
 import { resolveDocking } from "../domain/docking";
 import { getActionLease } from "../infrastructure/action-lease";
-import { ASPERSORIUM_BLOCK, DOCKED_STATE, WATER_LEVEL_STATE } from "../infrastructure/constants";
+import { ASPERSORIUM_BLOCK, DOCKED_STATE } from "../infrastructure/constants";
+import { readBooleanBlockState, withCustomBlockState } from "../infrastructure/block-state";
+import { readAspersoriumWater, withAspersoriumWater } from "../infrastructure/aspersorium-water-state";
 import { resolvePlayerPolicies } from "../infrastructure/game-mode-policy";
 import {
   captureDockedAspergillum,
@@ -67,27 +68,8 @@ function claimAspersoriumInteraction(player: Player, block: Block): boolean {
   return true;
 }
 
-function getNumberState(block: Block, state: string): number {
-  const value = block.permutation.getAllStates()[state];
-  return typeof value === "number" ? value : 0;
-}
-
 function getBooleanState(block: Block, state: string): boolean {
-  return block.permutation.getAllStates()[state] === true;
-}
-
-function withState(permutation: BlockPermutation, state: string, value: number | boolean): BlockPermutation {
-  // The generated API typings enumerate only vanilla state names; Bedrock supports
-  // namespaced custom states at runtime, so this cast is intentionally isolated here.
-  const withCustomState = permutation.withState as unknown as (
-    name: string,
-    stateValue: number | boolean | string,
-  ) => BlockPermutation;
-  return withCustomState.call(permutation, state, value);
-}
-
-function setState(block: Block, state: string, value: number | boolean): void {
-  block.setPermutation(withState(block.permutation, state, value));
+  return readBooleanBlockState(block.permutation.getAllStates(), state);
 }
 
 function isWithinLoadingRange(player: Player, block: Block): boolean {
@@ -100,12 +82,12 @@ function isWithinLoadingRange(player: Player, block: Block): boolean {
 function fillFromBucket(player: Player, block: Block): void {
   const policies = resolvePlayerPolicies(player);
   if (policies.denied) return;
-  if (getNumberState(block, WATER_LEVEL_STATE) >= ASPERSORIUM_CAPACITY) {
+  if (readAspersoriumWater(block) >= ASPERSORIUM_CAPACITY) {
     action(player, ACTION_MESSAGES.aspersoriumAlreadyFull);
     return;
   }
 
-  setState(block, WATER_LEVEL_STATE, WATER_BUCKET_FILL);
+  block.setPermutation(withAspersoriumWater(block.permutation, WATER_BUCKET_FILL));
   if (!policies.creative) setMainhand(player, new ItemStack("minecraft:bucket", 1));
   playSoundCue(player, "aspersoriumFill");
   action(player, ACTION_MESSAGES.aspersoriumFilled);
@@ -121,7 +103,7 @@ function commitLoading(player: Player, session: LoadingSession): boolean {
   const currentItem = getMainhand(player);
   if (!isAspergillum(currentItem)) return false;
   if (readAspergillumInstanceId(currentItem) !== session.itemInstanceId) return false;
-  const currentLevel = getNumberState(block, WATER_LEVEL_STATE);
+  const currentLevel = readAspersoriumWater(block);
   if (currentLevel <= 0 || currentLevel !== session.expectedWaterLevel) return false;
 
   const policies = resolvePlayerPolicies(player);
@@ -130,7 +112,7 @@ function commitLoading(player: Player, session: LoadingSession): boolean {
   if (result.transferred === 0) return false;
 
   const originalPermutation = block.permutation;
-  const updatedPermutation = withState(originalPermutation, WATER_LEVEL_STATE, result.nextWater);
+  const updatedPermutation = withAspersoriumWater(originalPermutation, result.nextWater);
   const updatedItem = writeAspergillumState(currentItem, result.state);
   if (!commitMainhandAndBlock(player, currentItem, updatedItem, block, originalPermutation, updatedPermutation)) {
     action(player, ACTION_MESSAGES.loadingCancelled);
@@ -156,7 +138,7 @@ function loadItem(player: Player, block: Block): void {
   setMainhand(player, initialItem);
   const instanceId = readAspergillumInstanceId(initialItem);
   if (instanceId === undefined) return;
-  const initialLevel = getNumberState(block, WATER_LEVEL_STATE);
+  const initialLevel = readAspersoriumWater(block);
   const preview = loadFromAspersorium(readAspergillumState(initialItem), initialLevel, policies.waterPolicy);
   if (preview.transferred === 0) {
     action(player, initialLevel === 0 ? ACTION_MESSAGES.aspersoriumEmpty : ACTION_MESSAGES.alreadyLoaded);
@@ -199,7 +181,7 @@ function dockItem(player: Player, block: Block): void {
   }
   const item = initializeAspergillum(originalItem);
   const itemState = readAspergillumState(item);
-  const level = getNumberState(block, WATER_LEVEL_STATE);
+  const level = readAspersoriumWater(block);
   const resolution = resolveDocking(level, itemState.charges);
   if (!resolution.allowed) {
     action(player, ACTION_MESSAGES.dockingOverflow);
@@ -221,8 +203,8 @@ function dockItem(player: Player, block: Block): void {
   }
   const snapshot = captureDockedAspergillum(item);
   const originalPermutation = block.permutation;
-  const updatedPermutation = withState(
-    withState(originalPermutation, WATER_LEVEL_STATE, resolution.nextWater),
+  const updatedPermutation = withCustomBlockState(
+    withAspersoriumWater(originalPermutation, resolution.nextWater),
     DOCKED_STATE,
     true,
   );
@@ -255,7 +237,7 @@ function undockItem(player: Player, block: Block): void {
   }
   const restoredItem = snapshot === undefined ? createAspergillum(0) : restoreDockedAspergillum(snapshot);
   const originalPermutation = block.permutation;
-  const updatedPermutation = withState(originalPermutation, DOCKED_STATE, false);
+  const updatedPermutation = withCustomBlockState(originalPermutation, DOCKED_STATE, false);
   try {
     block.setPermutation(updatedPermutation);
     if (snapshot !== undefined) deleteDockedSnapshot(dimensionId, block.location);

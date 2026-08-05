@@ -92,16 +92,35 @@ const rotationState = block?.description?.states?.["aspergillum:rotation"];
 if (!Array.isArray(rotationState) || rotationState.length !== 16) {
   errors.push("Aspersorium requires sixteen values in its stable custom rotation state");
 }
-const waterState = block?.description?.states?.["aspergillum:water_level"];
-const expectedWaterState = Array.from({ length: 17 }, (_, index) => index);
-if (JSON.stringify(waterState) !== JSON.stringify(expectedWaterState)) {
-  errors.push("Aspersorium water_level must persist every exact unit from 0 through 16");
+const blockStates = block?.description?.states ?? {};
+const waterBaseState = blockStates["aspergillum:water_base"];
+const waterOffsetState = blockStates["aspergillum:water_offset"];
+if (JSON.stringify(waterBaseState) !== JSON.stringify([0, 9])) {
+  errors.push("Aspersorium water_base must use the compact numeric bases 0 and 9");
+}
+if (JSON.stringify(waterOffsetState) !== JSON.stringify(Array.from({ length: 9 }, (_, index) => index))) {
+  errors.push("Aspersorium water_offset must use values 0 through 8");
+}
+if ("aspergillum:water_level" in blockStates) {
+  errors.push("Aspersorium must not restore the invalid seventeen-value water_level state");
+}
+for (const [stateName, values] of Object.entries(blockStates)) {
+  if (Array.isArray(values) && values.length > 16) {
+    errors.push(`Block state ${stateName} exceeds Bedrock's sixteen-value runtime limit`);
+  }
+}
+const blockStateSpace = Object.values(blockStates).reduce(
+  (product, values) => product * (Array.isArray(values) ? values.length : 1),
+  1,
+);
+if (blockStateSpace !== 576) {
+  errors.push(`Aspersorium must expose the reviewed 576-state permutation space, found ${blockStateSpace}`);
 }
 const expectedWaterVisibility = {
-  water_low: "q.block_state('aspergillum:water_level') >= 1 && q.block_state('aspergillum:water_level') <= 4",
-  water_mid: "q.block_state('aspergillum:water_level') >= 5 && q.block_state('aspergillum:water_level') <= 8",
-  water_high: "q.block_state('aspergillum:water_level') >= 9 && q.block_state('aspergillum:water_level') <= 12",
-  water_full: "q.block_state('aspergillum:water_level') >= 13",
+  water_low: "q.block_state('aspergillum:water_base') == 0 && q.block_state('aspergillum:water_offset') >= 1 && q.block_state('aspergillum:water_offset') <= 4",
+  water_mid: "q.block_state('aspergillum:water_base') == 0 && q.block_state('aspergillum:water_offset') >= 5",
+  water_high: "q.block_state('aspergillum:water_base') == 9 && q.block_state('aspergillum:water_offset') <= 3",
+  water_full: "q.block_state('aspergillum:water_base') == 9 && q.block_state('aspergillum:water_offset') >= 4",
 };
 const baseBoneVisibility = baseGeometry?.bone_visibility ?? {};
 for (const [bone, condition] of Object.entries(expectedWaterVisibility)) {

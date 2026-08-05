@@ -189,6 +189,9 @@ writeJson("packs/resource/models/blocks/aspersorium.rotations.geo.json", {
 const blockPath = path.join(root, "packs/behavior/blocks/aspersorium.block.json");
 const blockDefinition = JSON.parse(fs.readFileSync(blockPath, "utf8"));
 const blockContent = blockDefinition["minecraft:block"];
+delete blockContent.description.states["aspergillum:water_level"];
+blockContent.description.states["aspergillum:water_base"] = [0, 9];
+blockContent.description.states["aspergillum:water_offset"] = Array.from({ length: 9 }, (_, index) => index);
 blockContent.description.states["aspergillum:rotation"] = Array.from({ length: 16 }, (_, index) => index);
 if (blockContent.description.traits) {
   delete blockContent.description.traits["minecraft:placement_direction"];

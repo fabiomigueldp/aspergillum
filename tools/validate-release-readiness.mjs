@@ -114,12 +114,21 @@ if (!wetFeedbackSource.includes("MICRO_SPLASH_PARTICLE") || !wetFeedbackSource.i
 }
 const aspergillumDomainSource = fs.readFileSync(path.join(root, "src", "domain", "aspergillum.ts"), "utf8");
 const aspersoriumDomainSource = fs.readFileSync(path.join(root, "src", "domain", "aspersorium-water.ts"), "utf8");
+const aspersoriumStateSource = fs.readFileSync(
+  path.join(root, "src", "infrastructure", "aspersorium-water-state.ts"),
+  "utf8",
+);
 if (!aspergillumDomainSource.includes("ASPERGILLUM_CAPACITY = 4")) {
   errors.push("The RC requires an explicit four-charge aspergillum capacity");
 }
 if (!aspersoriumDomainSource.includes("ASPERSORIUM_CAPACITY = 16")
   || !aspersoriumDomainSource.includes("WATER_BUCKET_FILL = ASPERSORIUM_CAPACITY")) {
   errors.push("The RC requires an independent sixteen-unit aspersorium reservoir");
+}
+if (!aspersoriumStateSource.includes("WATER_HIGH_BASE = 9")
+  || !aspersoriumStateSource.includes("withAspersoriumWater")
+  || !aspersoriumStateSource.includes("decodeAspersoriumWater")) {
+  errors.push("The RC requires the compact radix-nine block-state water adapter");
 }
 
 for (const documentation of ["README.md", "CHANGELOG.md", "docs/PROJECT_STATUS.md"]) {

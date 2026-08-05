@@ -6,7 +6,7 @@ O estado persistido nunca representa infinito:
 
 ```text
 charges ∈ {0, 1, 2, 3, 4}
-water_level ∈ {0, 1, ..., 16}
+water_units ∈ {0, 1, ..., 16}
 ```
 
 As políticas dependem do modo atual do jogador:
@@ -111,7 +111,7 @@ interface DockedAspergillumSnapshot {
 
 O `DockedItemRegistry` usa propriedades dinâmicas do mundo agrupadas por dimensão/chunk e limita cada blob a 30.000 caracteres. Ao retirar ou quebrar, reconstrói o item, restaura metadados, força `charges = 0` — as cargas já foram devolvidas à água — e remove o snapshot somente depois da recuperação. A caldeirinha declara `minecraft:movable` como `immovable`, evitando deslocar o endereço persistente por pistões.
 
-Docking só é permitido se `water_level + charges <= 16`. Caso contrário, deve ser recusado sem alterar item ou bloco.
+Docking só é permitido se `water_units + charges <= 16`. Caso contrário, deve ser recusado sem alterar item ou bloco.
 
 Prioridade de interação:
 
@@ -139,7 +139,15 @@ Estado V3 inclui `instanceId`, `charges`, `cosmeticId: "classic"` e `sprayProfil
 
 ## Capacidade visual do reservatório
 
-O block state conserva a quantidade exata, enquanto a geometria apresenta quartos estáveis:
+O domínio conserva a quantidade exata e a infraestrutura a codifica canonicamente em dois block states:
+
+```text
+water_base ∈ {0, 9}
+water_offset ∈ {0, 1, ..., 8}
+water_units = normalize(water_base + water_offset)
+```
+
+Quantidades `0..8` usam base `0`; quantidades `9..16` usam base `9` e offset `0..7`. O par não canônico `9+8` falha de modo seguro para `16` e é canonicalizado na próxima escrita. Os dois states são montados numa única `BlockPermutation`, portanto nenhuma metade intermediária é publicada no mundo. A geometria apresenta quartos estáveis:
 
 | Unidades | Superfície visível |
 | --- | --- |

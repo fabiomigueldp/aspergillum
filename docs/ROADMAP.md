@@ -8,6 +8,22 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
+## v1.0.18g — codec compacto do reservatório — implementada; QA físico pendente
+
+Escopo fechado:
+
+- corrigir o blocker runtime da 1.0.18e, cujo `water_level` enumerava dezessete valores onde o Bedrock 26.40 aceita no máximo dezesseis por state;
+- manter a semântica exata `0..16` no domínio e codificá-la em `water_base` (`0|9`) + `water_offset` (`0..8`) na infraestrutura;
+- compor ambos os states numa única `BlockPermutation`, preservando commit, rollback, Creative, docking e locks;
+- limitar o espaço cartesiano a 576 combinações e bloquear regressões de cardinalidade no validador;
+- preservar integralmente a baseline visual/funcional e o alinhamento estável da 1.0.18f.
+
+Gate de saída:
+
+- bloco, item, receita, função e componente registrados sem erro ou warning no Content Log;
+- round-trip `0..16`, sequência `16→12→8→4→0`, quartos visuais e 85 combinações de carga/água corretos;
+- nenhuma referência runtime a `aspergillum:water_level` e nenhuma regressão de animação, VFX, docking ou persistência.
+
 ## v1.0.18f — alinhamento com Bedrock 26.40 — implementada; QA físico pendente
 
 Escopo fechado:

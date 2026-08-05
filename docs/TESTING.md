@@ -119,10 +119,24 @@ Se o smoke test falhar, interrompa a matriz e capture a menor reprodução poss�
 - [ ] repetir primeira/terceira pessoa local e observador multiplayer disponível;
 - [ ] registrar hash do `.mcaddon`, versão AppX/Bedrock e sinais observados antes de declarar GO.
 
+## Gate do codec de água — v1.0.18g
+
+- [ ] importar somente `Aspergillum-1.0.18g.mcaddon` após fechar o jogo e remover revisões anteriores;
+- [ ] Content Log não contém `too many input elements`, `expected an object`, bloco/receita inexistente, componente não utilizado ou falha de `dev_kit`;
+- [ ] `/function aspergillum/dev_kit` fornece item e caldeirinha sem erro;
+- [ ] um balde produz 16 unidades e superfície cheia;
+- [ ] quatro carregamentos completos produzem `16→12→8→4→0`, cada um concedendo `4/4`;
+- [ ] docking com cargas parciais prova quantidades ímpares e atravessa corretamente a fronteira radix `8↔9`;
+- [ ] quatro superfícies representam `1..4`, `5..8`, `9..12` e `13..16`;
+- [ ] Criativo preserva água e carga; Survival/Adventure consomem; Spectator permanece negado;
+- [ ] overflow acima de 16 é recusado sem alterar item, states ou snapshot;
+- [ ] reload preserva exatamente a quantidade e não registra warning atribuível ao add-on;
+- [ ] binding, poses, animações, 36 gotas/seis pulsos, bridge, sons e docking permanecem visualmente idênticos à 1.0.18f.
+
 ## Gate da revisão v1.0.18e — capacidade 4/16
 
 - [ ] importar somente `Aspergillum-1.0.18e.mcaddon` após fechar o jogo e remover revisões antigas;
-- [ ] um balde produz `water_level = 16` e a superfície cheia;
+- [ ] um balde produz 16 unidades lógicas e a superfície cheia;
 - [ ] quatro carregamentos completos produzem `16→12→8→4→0`, cada um concedendo `4/4`;
 - [ ] as superfícies mudam em `13..16` cheia, `9..12` ¾, `5..8` ½, `1..4` ¼ e `0` vazia;
 - [ ] aspersões mostram `4/4`, `3/4`, `2/4`, `1/4`, `0/4`, sem `%` residual;
@@ -170,7 +184,7 @@ Se o smoke test falhar, interrompa a matriz e capture a menor reprodução poss�
 
 ## Gate do Release Candidate v1.0.18
 
-- [ ] importar `Aspergillum-1.0.18f.mcaddon` após remover packs antigos;
+- [ ] importar `Aspergillum-1.0.18g.mcaddon` após remover packs antigos;
 - [ ] selecionar o item mostra quatro linhas de lore, incluindo agachar + usar e mão vazia;
 - [ ] `pt_BR` e `en_US` traduzem lore e todas as mensagens do action bar no cliente correspondente;
 - [ ] carregar com sucesso mantém animação/estado anteriores e acrescenta apenas duas microgotas discretas dentro da caldeirinha;
