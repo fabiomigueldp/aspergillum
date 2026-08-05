@@ -7,7 +7,8 @@ import {
   Player,
   system,
 } from "@minecraft/server";
-import { loadFromAspersorium, MAX_CHARGES } from "../domain/aspergillum";
+import { loadFromAspersorium } from "../domain/aspergillum";
+import { ASPERSORIUM_CAPACITY, WATER_BUCKET_FILL } from "../domain/aspersorium-water";
 import { resolveDocking } from "../domain/docking";
 import { getActionLease } from "../infrastructure/action-lease";
 import { ASPERSORIUM_BLOCK, DOCKED_STATE, WATER_LEVEL_STATE } from "../infrastructure/constants";
@@ -99,12 +100,12 @@ function isWithinLoadingRange(player: Player, block: Block): boolean {
 function fillFromBucket(player: Player, block: Block): void {
   const policies = resolvePlayerPolicies(player);
   if (policies.denied) return;
-  if (getNumberState(block, WATER_LEVEL_STATE) >= MAX_CHARGES) {
+  if (getNumberState(block, WATER_LEVEL_STATE) >= ASPERSORIUM_CAPACITY) {
     action(player, ACTION_MESSAGES.aspersoriumAlreadyFull);
     return;
   }
 
-  setState(block, WATER_LEVEL_STATE, MAX_CHARGES);
+  setState(block, WATER_LEVEL_STATE, WATER_BUCKET_FILL);
   if (!policies.creative) setMainhand(player, new ItemStack("minecraft:bucket", 1));
   playSoundCue(player, "aspersoriumFill");
   action(player, ACTION_MESSAGES.aspersoriumFilled);

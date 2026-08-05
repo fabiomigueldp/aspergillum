@@ -75,6 +75,16 @@ for (const locale of ["pt_BR", "en_US"]) {
       errors.push(`${locale}.lang ${key} must use exactly ${expectedCount} sequential %s placeholder(s)`);
     }
   }
+  for (const key of [
+    "message.aspergillum.charges_inspect",
+    "message.aspergillum.charges_loaded",
+    "message.aspergillum.charges_remaining",
+  ]) {
+    const value = entries.get(key) ?? "";
+    if (!value.includes("/4") || value.includes("/3")) {
+      errors.push(`${locale}.lang ${key} must present the four-charge capacity`);
+    }
+  }
 }
 
 const sourceFiles = walk(path.join(root, "src")).filter((file) => file.endsWith(".ts"));
@@ -101,6 +111,15 @@ if (!itemStateSource.includes("item.aspergillum.lore.docking")
 const wetFeedbackSource = fs.readFileSync(path.join(root, "src", "presentation", "wet-feedback.ts"), "utf8");
 if (!wetFeedbackSource.includes("MICRO_SPLASH_PARTICLE") || !wetFeedbackSource.includes("LOAD_SPLASH_OFFSETS")) {
   errors.push("The RC requires bounded wet feedback after a successful load");
+}
+const aspergillumDomainSource = fs.readFileSync(path.join(root, "src", "domain", "aspergillum.ts"), "utf8");
+const aspersoriumDomainSource = fs.readFileSync(path.join(root, "src", "domain", "aspersorium-water.ts"), "utf8");
+if (!aspergillumDomainSource.includes("ASPERGILLUM_CAPACITY = 4")) {
+  errors.push("The RC requires an explicit four-charge aspergillum capacity");
+}
+if (!aspersoriumDomainSource.includes("ASPERSORIUM_CAPACITY = 16")
+  || !aspersoriumDomainSource.includes("WATER_BUCKET_FILL = ASPERSORIUM_CAPACITY")) {
+  errors.push("The RC requires an independent sixteen-unit aspersorium reservoir");
 }
 
 for (const documentation of ["README.md", "CHANGELOG.md", "docs/PROJECT_STATUS.md"]) {

@@ -189,7 +189,20 @@ Gate de saída:
 - cada gesto produz no máximo uma operação, uma mensagem e um snapshot;
 - Content Log permanece limpo.
 
-## v1.0.18d — correção localizada e legibilidade da lore — implementada; QA físico pendente
+## v1.0.18e — capacidade 4/16 e quartos visuais — implementada; QA físico pendente
+
+Escopo fechado:
+
+- separar capacidade do aspersório (`4`) e capacidade da caldeirinha (`16`) em domínios independentes;
+- expandir `aspergillum:water_level` para `0..16`, sem migração de caldeirinhas antigas por decisão explícita;
+- fazer um balde fornecer quatro carregamentos completos de quatro cargas;
+- representar a quantidade exata em quatro quartos visuais, adicionando `water_high`;
+- elevar o item ao schema 3, preservando cargas finitas de schemas anteriores e regenerando `/4`;
+- adequar loading, Criativo, docking, overflow, textos, testes e documentação sem tocar em animação ou VFX.
+
+Gate de saída: `0/4..4/4` corretos; sequência de reservatório `16→12→8→4→0`; quatro alturas visuais; overflow somente acima de 16; Content Log limpo.
+
+## v1.0.18d — correção localizada e legibilidade da lore — implementada; sucedida pela revisão 1.0.18e
 
 Escopo fechado:
 
@@ -276,7 +289,7 @@ Gate de saída: runbook de [Release Candidate](RELEASE_CANDIDATE.md) e todos os 
 ### Estado e concorrência
 
 - políticas Survival/Adventure/Creative/Spectator corretas;
-- identidade preservada e cargas sempre em `0..3`;
+- identidade preservada e cargas sempre em `0..4`;
 - carregamento e aspersão transacionais em seus respectivos release points;
 - sessões, locks, cancelamentos e cleanup cobertos;
 - docking preserva metadados, recusa overflow e sobrevive a reload/quebra.

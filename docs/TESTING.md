@@ -21,7 +21,7 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 
 ### Cargas e políticas
 
-- todas as 16 combinações de carga/água (`0..3 × 0..3`);
+- todas as 85 combinações de carga/água (`0..4 × 0..16`);
 - normalização de negativos, frações, `NaN`, infinito, strings e valores acima do máximo;
 - Survival/Adventure consomem; Creative retém; Spectator nega;
 - zero cargas nunca asperge, inclusive em Creative;
@@ -32,7 +32,7 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 
 - item bruto e schema ausente;
 - migração `0 → 2` e `1 → 2`;
-- schema 2 normalizado;
+- schemas 2→3 e schema 3 normalizado;
 - schema futuro preservado e sinalizado;
 - clone de atualização preserva ID e propriedades;
 - cópia independente recebe novo ID;
@@ -83,7 +83,7 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 - [ ] mudar o idioma do cliente entre `pt_BR` e `en_US` muda a lore sem recriar o item;
 - [ ] item com nome customizado conserva nome e `instance_id` após acomodar, sair do mundo e retirar;
 - [ ] cosmético/perfil e uma propriedade customizada de teste sobrevivem ao ciclo de docking;
-- [ ] `water_level + charges > 3` recusa o encaixe sem mudar bloco ou item;
+- [ ] `water_level + charges > 16` recusa o encaixe sem mudar bloco ou item;
 - [ ] bloco ocupado + aspersório informa ocupação; bloco ocupado + outro item solicita mão vazia;
 - [ ] inventário cheio faz o item ser entregue na mão vazia, inventário ou chão sem perda;
 - [ ] quebrar a caldeirinha ocupada entrega uma caldeirinha e exatamente um aspersório preservado;
@@ -91,7 +91,7 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 - [ ] pistão não move a caldeirinha;
 - [ ] reload do mundo preserva snapshots; retirada limpa o shard correspondente;
 - [ ] dois itens com ID duplicado no mesmo inventário terminam com IDs distintos;
-- [ ] item com schema maior que 2 permanece byte-logicamente intocado e ações mutáveis são recusadas;
+- [ ] item com schema maior que 3 permanece byte-logicamente intocado e ações mutáveis são recusadas;
 - [ ] Content Log não contém erro/warning de dynamic property, `RawMessage`, custom component ou loot.
 
 ## Smoke test por revisão
@@ -103,14 +103,27 @@ Antes de testes extensos:
 3. criar mundo sem experimentos;
 4. executar `/function aspergillum/dev_kit`;
 5. confirmar item, bloco, receitas e Content Log sem erro;
-6. preencher, carregar, aspergir três vezes, tentar vazio, acomodar, retirar e quebrar;
+6. preencher, carregar, aspergir quatro vezes, tentar vazio, acomodar, retirar e quebrar;
 7. repetir uma vez em primeira pessoa e uma vez em terceira pessoa.
 
 Se o smoke test falhar, interrompa a matriz e capture a menor reprodução possível.
 
+## Gate da revisão v1.0.18e — capacidade 4/16
+
+- [ ] importar somente `Aspergillum-1.0.18e.mcaddon` após fechar o jogo e remover revisões antigas;
+- [ ] um balde produz `water_level = 16` e a superfície cheia;
+- [ ] quatro carregamentos completos produzem `16→12→8→4→0`, cada um concedendo `4/4`;
+- [ ] as superfícies mudam em `13..16` cheia, `9..12` ¾, `5..8` ½, `1..4` ¼ e `0` vazia;
+- [ ] aspersões mostram `4/4`, `3/4`, `2/4`, `1/4`, `0/4`, sem `%` residual;
+- [ ] item schema 2 com três cargas torna-se schema 3 com `3/4`, sem receber carga gratuita;
+- [ ] no Criativo, carregar preserva a água exata e aspergir preserva a carga finita;
+- [ ] acomodar devolve `0..4` unidades; soma acima de 16 é recusada sem alterar item ou bloco;
+- [ ] animações, partículas, sons, binding, grip, sessões e snapshots permanecem idênticos à 1.0.18d;
+- [ ] Content Log não contém erro de block state, bone `water_high`, Molang, lore ou schema.
+
 ## Gate da correção v1.0.18d — placeholders e tipografia localizada
 
-- [ ] importar somente `Aspergillum-1.0.18d.mcaddon` após fechar o jogo e remover revisões antigas;
+- [ ] importar somente `Aspergillum-1.0.18e.mcaddon` após fechar o jogo e remover revisões antigas;
 - [ ] inspecionar itens com `0/3`, `1/3`, `2/3` e `3/3`: nenhum valor contém `%` antes do número;
 - [ ] carregar e aspergir nas mesmas quatro cargas: action bar mostra somente `n/3`, sem `%` residual;
 - [ ] as quatro linhas da lore usam peso normal, sem inclinação itálica herdada;
@@ -134,7 +147,7 @@ Se o smoke test falhar, interrompa a matriz e capture a menor reprodução poss�
 
 ## Gate da correção v1.0.18a — carregamento em primeira pessoa
 
-- [ ] importar somente `Aspergillum-1.0.18d.mcaddon`, fechar e reabrir o jogo antes do teste;
+- [ ] importar somente `Aspergillum-1.0.18e.mcaddon`, fechar e reabrir o jogo antes do teste;
 - [ ] em primeira pessoa, manter a câmera imóvel e carregar três vezes: item e mão permanecem visíveis do início ao settle;
 - [ ] repetir olhando levemente para cima, em frente e para baixo: o item não cruza a mira, borda superior nem desaparece;
 - [ ] confirmar que não existe reset, dupla partida ou pop no começo/fim;
@@ -146,7 +159,7 @@ Se o smoke test falhar, interrompa a matriz e capture a menor reprodução poss�
 
 ## Gate do Release Candidate v1.0.18
 
-- [ ] importar `Aspergillum-1.0.18d.mcaddon` após remover packs antigos;
+- [ ] importar `Aspergillum-1.0.18e.mcaddon` após remover packs antigos;
 - [ ] selecionar o item mostra quatro linhas de lore, incluindo agachar + usar e mão vazia;
 - [ ] `pt_BR` e `en_US` traduzem lore e todas as mensagens do action bar no cliente correspondente;
 - [ ] carregar com sucesso mantém animação/estado anteriores e acrescenta apenas duas microgotas discretas dentro da caldeirinha;
@@ -240,7 +253,7 @@ Esses três itens foram confirmados pelo usuário no pacote 1.0.15d. Os demais c
 ### Bloco e inventário
 
 - [ ] colocar em bloco, laje, mesa e pedestal; validar 16 rotações;
-- [ ] níveis de água 0, 1, 2 e 3;
+- [ ] níveis exatos `0..16` e quartos visuais `0`, `1..4`, `5..8`, `9..12`, `13..16`;
 - [ ] acomodar/retirar repetidamente com nome e propriedades;
 - [ ] overflow recusado sem perda;
 - [ ] inventário cheio;

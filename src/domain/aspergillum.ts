@@ -1,6 +1,8 @@
-export const MAX_CHARGES = 3;
+import { normalizeWaterUnits } from "./aspersorium-water";
+
+export const ASPERGILLUM_CAPACITY = 4;
 export const SPRINKLE_COOLDOWN_TICKS = 18;
-export const CURRENT_SCHEMA_VERSION = 2;
+export const CURRENT_SCHEMA_VERSION = 3;
 export const DEFAULT_COSMETIC_ID = "classic";
 export const DEFAULT_SPRAY_PROFILE_ID = "standard";
 
@@ -40,7 +42,7 @@ export interface SprinkleResolution {
 
 export function normalizeCharges(value: unknown): number {
   if (typeof value !== "number" || !Number.isFinite(value)) return 0;
-  return Math.max(0, Math.min(MAX_CHARGES, Math.trunc(value)));
+  return Math.max(0, Math.min(ASPERGILLUM_CAPACITY, Math.trunc(value)));
 }
 
 function normalizeSchemaVersion(value: unknown): number {
@@ -81,9 +83,9 @@ export function loadFromAspersorium(
   availableWater: number,
   policy: WaterPolicy = "consume",
 ): LoadResult {
-  const water = normalizeCharges(availableWater);
+  const water = normalizeWaterUnits(availableWater);
   const charges = normalizeCharges(state.charges);
-  const capacity = MAX_CHARGES - charges;
+  const capacity = ASPERGILLUM_CAPACITY - charges;
   const transferred = Math.min(water, capacity);
 
   return {

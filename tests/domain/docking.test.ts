@@ -5,13 +5,15 @@ import {
   parseDockedRegistryShard,
   resolveDocking,
 } from "../../src/domain/docking";
+import { ASPERGILLUM_CAPACITY } from "../../src/domain/aspergillum";
+import { ASPERSORIUM_CAPACITY } from "../../src/domain/aspersorium-water";
 
 describe("docking domain", () => {
   it("preserves every valid water and charge combination or rejects overflow", () => {
-    for (let water = 0; water <= 3; water += 1) {
-      for (let charges = 0; charges <= 3; charges += 1) {
+    for (let water = 0; water <= ASPERSORIUM_CAPACITY; water += 1) {
+      for (let charges = 0; charges <= ASPERGILLUM_CAPACITY; charges += 1) {
         const result = resolveDocking(water, charges);
-        if (water + charges > 3) {
+        if (water + charges > ASPERSORIUM_CAPACITY) {
           expect(result).toEqual({ allowed: false, nextWater: water, returnedCharges: 0, reason: "overflow" });
         } else {
           expect(result).toEqual({ allowed: true, nextWater: water + charges, returnedCharges: charges });

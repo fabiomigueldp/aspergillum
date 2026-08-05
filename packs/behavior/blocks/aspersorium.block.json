@@ -12,7 +12,20 @@
           0,
           1,
           2,
-          3
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
         ],
         "aspergillum:has_aspergillum": [
           false,
@@ -52,9 +65,10 @@
             "identifier": "geometry.aspergillum.aspersorium.rotation_1",
             "uv_lock": false,
             "bone_visibility": {
-              "water_low": "q.block_state('aspergillum:water_level') == 1",
-              "water_mid": "q.block_state('aspergillum:water_level') == 2",
-              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "water_low": "q.block_state('aspergillum:water_level') >= 1 && q.block_state('aspergillum:water_level') <= 4",
+              "water_mid": "q.block_state('aspergillum:water_level') >= 5 && q.block_state('aspergillum:water_level') <= 8",
+              "water_high": "q.block_state('aspergillum:water_level') >= 9 && q.block_state('aspergillum:water_level') <= 12",
+              "water_full": "q.block_state('aspergillum:water_level') >= 13",
               "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
             }
           }
@@ -67,9 +81,10 @@
             "identifier": "geometry.aspergillum.aspersorium.rotation_2",
             "uv_lock": false,
             "bone_visibility": {
-              "water_low": "q.block_state('aspergillum:water_level') == 1",
-              "water_mid": "q.block_state('aspergillum:water_level') == 2",
-              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "water_low": "q.block_state('aspergillum:water_level') >= 1 && q.block_state('aspergillum:water_level') <= 4",
+              "water_mid": "q.block_state('aspergillum:water_level') >= 5 && q.block_state('aspergillum:water_level') <= 8",
+              "water_high": "q.block_state('aspergillum:water_level') >= 9 && q.block_state('aspergillum:water_level') <= 12",
+              "water_full": "q.block_state('aspergillum:water_level') >= 13",
               "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
             }
           }
@@ -82,9 +97,10 @@
             "identifier": "geometry.aspergillum.aspersorium.rotation_3",
             "uv_lock": false,
             "bone_visibility": {
-              "water_low": "q.block_state('aspergillum:water_level') == 1",
-              "water_mid": "q.block_state('aspergillum:water_level') == 2",
-              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "water_low": "q.block_state('aspergillum:water_level') >= 1 && q.block_state('aspergillum:water_level') <= 4",
+              "water_mid": "q.block_state('aspergillum:water_level') >= 5 && q.block_state('aspergillum:water_level') <= 8",
+              "water_high": "q.block_state('aspergillum:water_level') >= 9 && q.block_state('aspergillum:water_level') <= 12",
+              "water_full": "q.block_state('aspergillum:water_level') >= 13",
               "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
             }
           }
@@ -97,9 +113,10 @@
             "identifier": "geometry.aspergillum.aspersorium.rotation_4",
             "uv_lock": false,
             "bone_visibility": {
-              "water_low": "q.block_state('aspergillum:water_level') == 1",
-              "water_mid": "q.block_state('aspergillum:water_level') == 2",
-              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "water_low": "q.block_state('aspergillum:water_level') >= 1 && q.block_state('aspergillum:water_level') <= 4",
+              "water_mid": "q.block_state('aspergillum:water_level') >= 5 && q.block_state('aspergillum:water_level') <= 8",
+              "water_high": "q.block_state('aspergillum:water_level') >= 9 && q.block_state('aspergillum:water_level') <= 12",
+              "water_full": "q.block_state('aspergillum:water_level') >= 13",
               "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
             }
           }
@@ -112,9 +129,10 @@
             "identifier": "geometry.aspergillum.aspersorium.rotation_5",
             "uv_lock": false,
             "bone_visibility": {
-              "water_low": "q.block_state('aspergillum:water_level') == 1",
-              "water_mid": "q.block_state('aspergillum:water_level') == 2",
-              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "water_low": "q.block_state('aspergillum:water_level') >= 1 && q.block_state('aspergillum:water_level') <= 4",
+              "water_mid": "q.block_state('aspergillum:water_level') >= 5 && q.block_state('aspergillum:water_level') <= 8",
+              "water_high": "q.block_state('aspergillum:water_level') >= 9 && q.block_state('aspergillum:water_level') <= 12",
+              "water_full": "q.block_state('aspergillum:water_level') >= 13",
               "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
             }
           }
@@ -127,9 +145,10 @@
             "identifier": "geometry.aspergillum.aspersorium.rotation_6",
             "uv_lock": false,
             "bone_visibility": {
-              "water_low": "q.block_state('aspergillum:water_level') == 1",
-              "water_mid": "q.block_state('aspergillum:water_level') == 2",
-              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "water_low": "q.block_state('aspergillum:water_level') >= 1 && q.block_state('aspergillum:water_level') <= 4",
+              "water_mid": "q.block_state('aspergillum:water_level') >= 5 && q.block_state('aspergillum:water_level') <= 8",
+              "water_high": "q.block_state('aspergillum:water_level') >= 9 && q.block_state('aspergillum:water_level') <= 12",
+              "water_full": "q.block_state('aspergillum:water_level') >= 13",
               "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
             }
           }
@@ -142,9 +161,10 @@
             "identifier": "geometry.aspergillum.aspersorium.rotation_7",
             "uv_lock": false,
             "bone_visibility": {
-              "water_low": "q.block_state('aspergillum:water_level') == 1",
-              "water_mid": "q.block_state('aspergillum:water_level') == 2",
-              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "water_low": "q.block_state('aspergillum:water_level') >= 1 && q.block_state('aspergillum:water_level') <= 4",
+              "water_mid": "q.block_state('aspergillum:water_level') >= 5 && q.block_state('aspergillum:water_level') <= 8",
+              "water_high": "q.block_state('aspergillum:water_level') >= 9 && q.block_state('aspergillum:water_level') <= 12",
+              "water_full": "q.block_state('aspergillum:water_level') >= 13",
               "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
             }
           }
@@ -157,9 +177,10 @@
             "identifier": "geometry.aspergillum.aspersorium.rotation_8",
             "uv_lock": false,
             "bone_visibility": {
-              "water_low": "q.block_state('aspergillum:water_level') == 1",
-              "water_mid": "q.block_state('aspergillum:water_level') == 2",
-              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "water_low": "q.block_state('aspergillum:water_level') >= 1 && q.block_state('aspergillum:water_level') <= 4",
+              "water_mid": "q.block_state('aspergillum:water_level') >= 5 && q.block_state('aspergillum:water_level') <= 8",
+              "water_high": "q.block_state('aspergillum:water_level') >= 9 && q.block_state('aspergillum:water_level') <= 12",
+              "water_full": "q.block_state('aspergillum:water_level') >= 13",
               "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
             }
           }
@@ -172,9 +193,10 @@
             "identifier": "geometry.aspergillum.aspersorium.rotation_9",
             "uv_lock": false,
             "bone_visibility": {
-              "water_low": "q.block_state('aspergillum:water_level') == 1",
-              "water_mid": "q.block_state('aspergillum:water_level') == 2",
-              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "water_low": "q.block_state('aspergillum:water_level') >= 1 && q.block_state('aspergillum:water_level') <= 4",
+              "water_mid": "q.block_state('aspergillum:water_level') >= 5 && q.block_state('aspergillum:water_level') <= 8",
+              "water_high": "q.block_state('aspergillum:water_level') >= 9 && q.block_state('aspergillum:water_level') <= 12",
+              "water_full": "q.block_state('aspergillum:water_level') >= 13",
               "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
             }
           }
@@ -187,9 +209,10 @@
             "identifier": "geometry.aspergillum.aspersorium.rotation_10",
             "uv_lock": false,
             "bone_visibility": {
-              "water_low": "q.block_state('aspergillum:water_level') == 1",
-              "water_mid": "q.block_state('aspergillum:water_level') == 2",
-              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "water_low": "q.block_state('aspergillum:water_level') >= 1 && q.block_state('aspergillum:water_level') <= 4",
+              "water_mid": "q.block_state('aspergillum:water_level') >= 5 && q.block_state('aspergillum:water_level') <= 8",
+              "water_high": "q.block_state('aspergillum:water_level') >= 9 && q.block_state('aspergillum:water_level') <= 12",
+              "water_full": "q.block_state('aspergillum:water_level') >= 13",
               "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
             }
           }
@@ -202,9 +225,10 @@
             "identifier": "geometry.aspergillum.aspersorium.rotation_11",
             "uv_lock": false,
             "bone_visibility": {
-              "water_low": "q.block_state('aspergillum:water_level') == 1",
-              "water_mid": "q.block_state('aspergillum:water_level') == 2",
-              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "water_low": "q.block_state('aspergillum:water_level') >= 1 && q.block_state('aspergillum:water_level') <= 4",
+              "water_mid": "q.block_state('aspergillum:water_level') >= 5 && q.block_state('aspergillum:water_level') <= 8",
+              "water_high": "q.block_state('aspergillum:water_level') >= 9 && q.block_state('aspergillum:water_level') <= 12",
+              "water_full": "q.block_state('aspergillum:water_level') >= 13",
               "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
             }
           }
@@ -217,9 +241,10 @@
             "identifier": "geometry.aspergillum.aspersorium.rotation_12",
             "uv_lock": false,
             "bone_visibility": {
-              "water_low": "q.block_state('aspergillum:water_level') == 1",
-              "water_mid": "q.block_state('aspergillum:water_level') == 2",
-              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "water_low": "q.block_state('aspergillum:water_level') >= 1 && q.block_state('aspergillum:water_level') <= 4",
+              "water_mid": "q.block_state('aspergillum:water_level') >= 5 && q.block_state('aspergillum:water_level') <= 8",
+              "water_high": "q.block_state('aspergillum:water_level') >= 9 && q.block_state('aspergillum:water_level') <= 12",
+              "water_full": "q.block_state('aspergillum:water_level') >= 13",
               "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
             }
           }
@@ -232,9 +257,10 @@
             "identifier": "geometry.aspergillum.aspersorium.rotation_13",
             "uv_lock": false,
             "bone_visibility": {
-              "water_low": "q.block_state('aspergillum:water_level') == 1",
-              "water_mid": "q.block_state('aspergillum:water_level') == 2",
-              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "water_low": "q.block_state('aspergillum:water_level') >= 1 && q.block_state('aspergillum:water_level') <= 4",
+              "water_mid": "q.block_state('aspergillum:water_level') >= 5 && q.block_state('aspergillum:water_level') <= 8",
+              "water_high": "q.block_state('aspergillum:water_level') >= 9 && q.block_state('aspergillum:water_level') <= 12",
+              "water_full": "q.block_state('aspergillum:water_level') >= 13",
               "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
             }
           }
@@ -247,9 +273,10 @@
             "identifier": "geometry.aspergillum.aspersorium.rotation_14",
             "uv_lock": false,
             "bone_visibility": {
-              "water_low": "q.block_state('aspergillum:water_level') == 1",
-              "water_mid": "q.block_state('aspergillum:water_level') == 2",
-              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "water_low": "q.block_state('aspergillum:water_level') >= 1 && q.block_state('aspergillum:water_level') <= 4",
+              "water_mid": "q.block_state('aspergillum:water_level') >= 5 && q.block_state('aspergillum:water_level') <= 8",
+              "water_high": "q.block_state('aspergillum:water_level') >= 9 && q.block_state('aspergillum:water_level') <= 12",
+              "water_full": "q.block_state('aspergillum:water_level') >= 13",
               "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
             }
           }
@@ -262,9 +289,10 @@
             "identifier": "geometry.aspergillum.aspersorium.rotation_15",
             "uv_lock": false,
             "bone_visibility": {
-              "water_low": "q.block_state('aspergillum:water_level') == 1",
-              "water_mid": "q.block_state('aspergillum:water_level') == 2",
-              "water_full": "q.block_state('aspergillum:water_level') == 3",
+              "water_low": "q.block_state('aspergillum:water_level') >= 1 && q.block_state('aspergillum:water_level') <= 4",
+              "water_mid": "q.block_state('aspergillum:water_level') >= 5 && q.block_state('aspergillum:water_level') <= 8",
+              "water_high": "q.block_state('aspergillum:water_level') >= 9 && q.block_state('aspergillum:water_level') <= 12",
+              "water_full": "q.block_state('aspergillum:water_level') >= 13",
               "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
             }
           }
@@ -277,9 +305,10 @@
         "identifier": "geometry.aspergillum.aspersorium.rotation_0",
         "uv_lock": false,
         "bone_visibility": {
-          "water_low": "q.block_state('aspergillum:water_level') == 1",
-          "water_mid": "q.block_state('aspergillum:water_level') == 2",
-          "water_full": "q.block_state('aspergillum:water_level') == 3",
+          "water_low": "q.block_state('aspergillum:water_level') >= 1 && q.block_state('aspergillum:water_level') <= 4",
+          "water_mid": "q.block_state('aspergillum:water_level') >= 5 && q.block_state('aspergillum:water_level') <= 8",
+          "water_high": "q.block_state('aspergillum:water_level') >= 9 && q.block_state('aspergillum:water_level') <= 12",
+          "water_full": "q.block_state('aspergillum:water_level') >= 13",
           "resting_aspergillum": "q.block_state('aspergillum:has_aspergillum') == true"
         }
       },

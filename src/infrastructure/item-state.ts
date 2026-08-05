@@ -8,6 +8,7 @@ import {
   system,
 } from "@minecraft/server";
 import {
+  ASPERGILLUM_CAPACITY,
   CURRENT_SCHEMA_VERSION,
   createDefaultAspergillumState,
   migrateAspergillumState,
@@ -62,7 +63,7 @@ function loreFor(charges: number): RawMessage[] {
   return [
     {
       translate: "item.aspergillum.lore.charges",
-      with: [String(normalizeCharges(charges)), "3"],
+      with: [String(normalizeCharges(charges)), String(ASPERGILLUM_CAPACITY)],
     },
     { translate: "item.aspergillum.lore.instructions" },
     { translate: "item.aspergillum.lore.docking" },

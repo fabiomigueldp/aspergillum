@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.18e — 2026-08-05
+
+- ampliada a capacidade persistente do aspersório de `3` para `4` cargas e a capacidade exata da caldeirinha de `3` para `16` unidades de água benta;
+- separados os conceitos de carga do item e água do reservatório em constantes e normalizadores independentes, eliminando o antigo acoplamento por `MAX_CHARGES`;
+- um balde agora completa `16/16`, e uma caldeirinha cheia fornece exatamente quatro carregamentos completos de `4/4`;
+- expandido `aspergillum:water_level` para `0..16`, sem migração de caldeirinhas já colocadas conforme decisão explícita de desenvolvimento;
+- adicionada a superfície `water_high` e reorganizados os quatro quartos visuais: `1..4`, `5..8`, `9..12` e `13..16`;
+- docking devolve até quatro cargas e recusa overflow somente acima de `16`, preservando a transação, o snapshot e os metadados existentes;
+- elevado o schema do item para `3`; itens schema 2 preservam as cargas finitas e recebem lore/action bar `/4` ao serem inicializados;
+- cobertura do domínio ampliada para as 85 combinações `0..4 × 0..16`, além de normalização independente do reservatório e contratos visuais/estruturais;
+- preservados integralmente binding, poses, animações, partículas, sons, sessões, locks, Criativo contextual e VFX da 1.0.18d;
+- o rótulo distribuído é `1.0.18e`; a revisão monotônica dos packs é `[1,0,30]`.
+
 ## 1.0.18d — 2026-08-05
 
 - corrigidos os caracteres `%` residuais exibidos nas cargas da action bar e da lore em português e inglês;

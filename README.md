@@ -2,12 +2,12 @@
 
 Add-On para Minecraft: Bedrock Edition 26.34/35 que adiciona um **aspersório litúrgico funcional** e uma **caldeirinha (aspersorium) colocável**. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão 1.0.18d RC:** preserva a baseline física validada e corrige a apresentação localizada: cargas sem `%` residual e lore explicitamente normal, sem itálico herdado. Não há alteração de gameplay, animação ou VFX.
+> **Versão 1.0.18e RC:** amplia o aspersório para quatro cargas e a caldeirinha para dezesseis unidades exatas, organizadas em quatro quartos visuais. Animação, VFX, binding e persistência do item permanecem preservados.
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/releases/Aspergillum-1.0.18d.mcaddon`](dist/releases/Aspergillum-1.0.18d.mcaddon) com o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.0.18e.mcaddon`](dist/releases/Aspergillum-1.0.18e.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
@@ -17,8 +17,8 @@ O alvo mínimo é Creator `1.26.30`, correspondente à linha pública Bedrock 26
 
 - Fabrique o **Aspersório** com gravetos e pepitas de ferro.
 - Fabrique a **Caldeirinha** com lingotes de ferro e uma corrente, e coloque-a sobre uma superfície.
-- Use um balde d'água na caldeirinha para enchê-la com três níveis.
-- Com o aspersório na mão, use-o na caldeirinha para carregar até três aspersões. Um gesto próprio conduz o braço para baixo e para a frente; a transferência continua sendo confirmada autoritativamente no tick 10.
+- Use um balde d'água na caldeirinha para enchê-la com dezesseis unidades, representadas em quatro quartos visuais.
+- Com o aspersório na mão, use-o na caldeirinha para carregar até quatro aspersões. Uma caldeirinha cheia fornece quatro carregamentos completos; o gesto conduz o braço para baixo e para a frente, com transferência autoritativa no tick 10.
 - Use a ação **Atacar/Minar** para aspergir. O gesto não causa dano nem quebra blocos.
 - No modo Criativo, uma carga real já presente não é consumida e a caldeirinha não perde água ao carregar; ao voltar ao Sobrevivência, permanece apenas o número finito de cargas gravado no item.
 - Agache e use o aspersório na caldeirinha para acomodá-lo como decoração. A operação é recusada se as cargas não couberem na água restante. Use a mão vazia para retirá-lo.

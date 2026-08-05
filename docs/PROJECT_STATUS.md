@@ -2,13 +2,13 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.0.18d` Release Candidate (revisão numérica dos packs `[1, 0, 29]`)
+- **Versão de referência:** `1.0.18e` Release Candidate (revisão numérica dos packs `[1, 0, 30]`)
 - **Engine mínima:** Creator `1.26.30`
 - **Script API:** `@minecraft/server` `2.8.0`, estável
 - **Experimentos:** nenhum
-- **Conteúdo:** aspersório funcional, caldeirinha colocável, carregamento, três cargas, docking decorativo e spray visual
+- **Conteúdo:** aspersório funcional de quatro cargas, caldeirinha colocável de dezesseis unidades, docking decorativo e spray visual
 
-A v1.0.18d preserva integralmente a baseline física da v1.0.18c e corrige a apresentação localizada observada no runtime. Placeholders sequenciais eliminam o `%` residual nas cargas, enquanto `§r` antes de cada cor neutraliza o itálico herdado da lore sem alterar conteúdo ou estado persistente.
+A v1.0.18e preserva integralmente a baseline física e amplia a economia de água para uma relação exata `4/16`: o aspersório carrega quatro unidades e a caldeirinha armazena dezesseis. O reservatório mantém quantidade exata em block state e projeta quatro quartos visuais; caldeirinhas já colocadas em revisões anteriores não são migradas por decisão explícita de desenvolvimento.
 
 ## O que está resolvido
 
@@ -30,7 +30,7 @@ A v1.0.18d preserva integralmente a baseline física da v1.0.18c e corrige a apr
 - Bridge, gotas e micro-splash usam arrays RGBA explícitos e azul dominante em cada keyframe, sem hex de oito dígitos ambíguo nem tint por iluminação local.
 - Preparação e release usam eventos sonoros próprios na timeline do attachable; o script não duplica o splash válido.
 - Trocar item ou dimensão cancela os pulsos restantes.
-- Itens brutos e schemas 0/1 migram para schema 2 em qualquer slot do inventário; schema futuro permanece intocado.
+- Itens brutos e schemas 0/1/2 migram para schema 3 em qualquer slot do inventário; schema futuro permanece intocado.
 - Lore usa `RawMessage` e chaves `pt_BR`/`en_US`, sem congelar o idioma no ItemStack.
 - Docking guarda `instance_id`, `nameTag`, cosmético, perfil e propriedades customizadas em shards persistentes por dimensão/chunk.
 - Overflow é recusado sem alterar água ou item; retirada exige mão vazia e quebra recupera o snapshot real.
@@ -48,7 +48,7 @@ A v1.0.18d preserva integralmente a baseline física da v1.0.18c e corrige a apr
 | Cor das gotas | RGBA explícito e azul dominante durante toda a vida | QA da 1.0.16c deve confirmar ausência de branco excessivo e de verde/amarelo em gotas e impactos |
 | Persistência | registry por chunk é novo | precisa de QA de reload, quebra, explosão e inventário cheio no runtime |
 | Recuperação | `onBreak` estável cobre destruição; água continua não sendo um item | confirmar fisicamente explosão e comandos `destroy` sem duplicação |
-| Schema/lore | migração, `RawMessage`, placeholders `%s` e reset tipográfico implementados | confirmar cargas sem `%` e lore não itálica em clientes pt_BR e en_US |
+| Schema/lore | schema 3, `RawMessage`, placeholders `%s` e reset tipográfico implementados | confirmar `0/4..4/4`, ausência de `%` e lore não itálica em pt_BR/en_US |
 | Input de docking | rota dupla `onUseOn` + `onPlayerInteract` validada pelo usuário na 1.0.17a | manter como regressão no RC |
 | UX localizada | catálogo tipado de 25 mensagens e lore de quatro linhas | confirmar `pt_BR` e `en_US` dentro do jogo |
 | Desempenho | nenhum LOD sem evidência | medir profiler com 1, 4, 8 e 16 jogadores antes de autorizar alteração |
@@ -56,7 +56,7 @@ A v1.0.18d preserva integralmente a baseline física da v1.0.18c e corrige a apr
 
 ## Próxima mudança autorizada
 
-A v1.0.18d está implementada como correção de apresentação do Release Candidate e deve passar pelo runbook [RELEASE_CANDIDATE.md](RELEASE_CANDIDATE.md), com prioridade para o gate de localização de [TESTING.md](TESTING.md). Novos pontos de polimento permanecem na família 1.0.18; `1.0.19` fica reservada para a V1 final.
+A v1.0.18e está implementada como revisão de capacidade do Release Candidate e deve passar pelo runbook [RELEASE_CANDIDATE.md](RELEASE_CANDIDATE.md), com prioridade para o gate `4/16` de [TESTING.md](TESTING.md). Novos pontos de polimento permanecem na família 1.0.18; `1.0.19` fica reservada para a V1 final.
 
 Não faz parte do próximo marco:
 

@@ -2,8 +2,8 @@
 
 ## Identidade
 
-- Release Candidate: `1.0.18d`.
-- Revisão dos packs: `[1, 0, 29]`.
+- Release Candidate: `1.0.18e`.
+- Revisão dos packs: `[1, 0, 30]`.
 - Baseline física herdada: `1.0.17a`, validada pelo usuário.
 - Experimentos: nenhum.
 - Autoridade: servidor para estado; cliente somente para apresentação.
@@ -25,7 +25,7 @@ O gate falha quando versões divergem, catálogos `pt_BR`/`en_US` deixam de ser 
 
 1. Registrar o SHA-256 do artefato.
 2. Fechar o Minecraft e remover os dois packs antigos em Armazenamento.
-3. Importar somente `Aspergillum-1.0.18d.mcaddon`.
+3. Importar somente `Aspergillum-1.0.18e.mcaddon`.
 4. Criar ou duplicar um mundo de teste sem experimentos.
 5. Limpar o Content Log antes de entrar.
 6. Executar `/function aspergillum/dev_kit`.

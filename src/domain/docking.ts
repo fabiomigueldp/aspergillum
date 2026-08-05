@@ -1,4 +1,5 @@
-import { MAX_CHARGES, normalizeCharges } from "./aspergillum";
+import { normalizeCharges } from "./aspergillum";
+import { ASPERSORIUM_CAPACITY, normalizeWaterUnits } from "./aspersorium-water";
 
 export interface DockingResolution {
   readonly allowed: boolean;
@@ -31,9 +32,9 @@ export interface DockedRegistryShard {
 }
 
 export function resolveDocking(waterInput: unknown, chargesInput: unknown): DockingResolution {
-  const water = normalizeCharges(waterInput);
+  const water = normalizeWaterUnits(waterInput);
   const charges = normalizeCharges(chargesInput);
-  if (water + charges > MAX_CHARGES) {
+  if (water + charges > ASPERSORIUM_CAPACITY) {
     return { allowed: false, nextWater: water, returnedCharges: 0, reason: "overflow" };
   }
   return { allowed: true, nextWater: water + charges, returnedCharges: charges };

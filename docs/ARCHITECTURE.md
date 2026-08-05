@@ -37,6 +37,7 @@ src/
 │   └── sprinkle.ts
 ├── domain/
 │   ├── aspergillum.ts
+│   ├── aspersorium-water.ts
 │   ├── cone.ts
 │   ├── docking.ts
 │   ├── rotation.ts
@@ -164,11 +165,11 @@ O bridge não é um segundo leque e não substitui o emissor matemático. Não r
 
 Antes da colocação, `beforeOnPlayerPlace` converte yaw em 16 setores e escolhe uma geometria pré-rotacionada. Isso evita traits experimentais. O bloco possui quatro níveis de água e variante visual ocupada.
 
-O docking converte carga em água somente quando a soma cabe integralmente. A ocupação booleana governa a aparência; um registry persistente por dimensão/chunk preserva o item real e futuras variantes. A retirada com mão vazia reconstrói o ItemStack, e `onBreak` recupera o snapshot depois da destruição. A loot table ocupada entrega somente o bloco, e `minecraft:movable = immovable` protege o endereço persistente contra pistões. Consulte [Estado e concorrência](STATE_AND_CONCURRENCY.md).
+O reservatório persiste `0..16` unidades exatas em `aspergillum:water_level` e as projeta em quatro quartos visuais. A capacidade do item (`4`) e a capacidade do bloco (`16`) têm constantes e normalizadores distintos. O docking converte carga em água somente quando a soma cabe integralmente. A ocupação booleana governa a aparência; um registry persistente por dimensão/chunk preserva o item real e futuras variantes. A retirada com mão vazia reconstrói o ItemStack, e `onBreak` recupera o snapshot depois da destruição. A loot table ocupada entrega somente o bloco, e `minecraft:movable = immovable` protege o endereço persistente contra pistões. Consulte [Estado e concorrência](STATE_AND_CONCURRENCY.md).
 
 ## Schema e inicialização
 
-O schema atual é 2. Itens brutos, schema ausente e schema 1 são normalizados em todos os slots do inventário, preservando cargas e identidade válida; cosmético/perfil recebem defaults estáveis. Lore é uma apresentação `RawMessage` traduzida pelo cliente. Schemas futuros não são regravados e operações que mudariam seu estado são recusadas.
+O schema atual é 3. Itens brutos e schemas 0/1/2 são normalizados em todos os slots do inventário, preservando cargas e identidade válida; cosmético/perfil recebem defaults estáveis. A passagem 2→3 amplia a capacidade para quatro sem fabricar a quarta carga. Lore é uma apresentação `RawMessage` traduzida pelo cliente. Schemas futuros não são regravados e operações que mudariam seu estado são recusadas.
 
 ## Perfis e extensibilidade
 

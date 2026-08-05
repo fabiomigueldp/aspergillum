@@ -5,8 +5,8 @@
 O estado persistido nunca representa infinito:
 
 ```text
-charges ∈ {0, 1, 2, 3}
-water_level ∈ {0, 1, 2, 3}
+charges ∈ {0, 1, 2, 3, 4}
+water_level ∈ {0, 1, ..., 16}
 ```
 
 As políticas dependem do modo atual do jogador:
@@ -26,8 +26,8 @@ Todo cálculo usa valores normalizados, inclusive a soma final:
 
 ```ts
 const charges = normalizeCharges(state.charges);
-const water = normalizeWaterLevel(waterLevel);
-const transferred = Math.min(water, MAX_CHARGES - charges);
+const water = normalizeWaterUnits(waterLevel);
+const transferred = Math.min(water, ASPERGILLUM_CAPACITY - charges);
 const nextCharges = charges + transferred;
 ```
 
@@ -100,7 +100,7 @@ O estado booleano `has_aspergillum` continua responsável somente pela renderiza
 
 ```ts
 interface DockedAspergillumSnapshot {
-  schemaVersion: 1; // schema independente do ItemStack V2
+  schemaVersion: 1; // schema independente do ItemStack V3
   instanceId: string;
   nameTag?: string;
   cosmeticId: string;
@@ -111,7 +111,7 @@ interface DockedAspergillumSnapshot {
 
 O `DockedItemRegistry` usa propriedades dinâmicas do mundo agrupadas por dimensão/chunk e limita cada blob a 30.000 caracteres. Ao retirar ou quebrar, reconstrói o item, restaura metadados, força `charges = 0` — as cargas já foram devolvidas à água — e remove o snapshot somente depois da recuperação. A caldeirinha declara `minecraft:movable` como `immovable`, evitando deslocar o endereço persistente por pistões.
 
-Docking só é permitido se `water_level + charges <= 3`. Caso contrário, deve ser recusado sem alterar item ou bloco.
+Docking só é permitido se `water_level + charges <= 16`. Caso contrário, deve ser recusado sem alterar item ou bloco.
 
 Prioridade de interação:
 
@@ -123,15 +123,30 @@ Prioridade de interação:
 
 O input do aspersório sobre o bloco possui duas portas estáveis que convergem nessa mesma prioridade: `ItemCustomComponent.onUseOn` é a rota primária do item e `BlockCustomComponent.onPlayerInteract` permanece como fallback e como rota de balde/mão vazia. A intenção de agachamento é capturada antes de `system.run`; uma claim efêmera de dois ticks por jogador, dimensão e coordenada impede que os dois eventos executem a mesma operação duas vezes.
 
-Ocupado com outro item na mão não retira nada; a interface solicita mão vazia. A loot table ocupada não fornece um aspersório genérico: `onBreak` restaura o snapshot, evitando duplicação e preservando metadados. Blocos ocupados legados sem snapshot recuperam um item V2 vazio como fallback compatível.
+Ocupado com outro item na mão não retira nada; a interface solicita mão vazia. A loot table ocupada não fornece um aspersório genérico: `onBreak` restaura o snapshot, evitando duplicação e preservando metadados. Blocos ocupados legados sem snapshot recuperam um item V3 vazio como fallback compatível.
 
-## Schema 2 implementado
+## Schema 3 implementado
 
 | Entrada | Migração |
 | --- | --- |
-| ausente/0 | normalizar carga, gerar ID, adicionar defaults e lore, gravar 2 |
-| 1 | preservar carga e ID válido, adicionar defaults/lore, gravar 2 |
-| 2 | validar e normalizar |
-| maior que 2 | não fazer downgrade; retornar compatibilidade futura |
+| ausente/0 | normalizar carga, gerar ID, adicionar defaults e lore, gravar 3 |
+| 1 | preservar carga e ID válido, adicionar defaults/lore, gravar 3 |
+| 2 | preservar `0..3`, ampliar capacidade e lore para `/4`, gravar 3 |
+| 3 | validar e normalizar em `0..4` |
+| maior que 3 | não fazer downgrade; retornar compatibilidade futura |
 
-Estado V2 inclui `instanceId`, `charges`, `cosmeticId: "classic"` e `sprayProfileId: "standard"`. Lore usa `RawMessage` localizado e é regenerada a partir do estado, nunca tratada como fonte de verdade. Um schema maior que 2 é lido apenas para diagnóstico e bloqueado para operações mutáveis; o item não é regravado.
+Estado V3 inclui `instanceId`, `charges`, `cosmeticId: "classic"` e `sprayProfileId: "standard"`. Lore usa `RawMessage` localizado e é regenerada a partir do estado, nunca tratada como fonte de verdade. Um schema maior que 3 é lido apenas para diagnóstico e bloqueado para operações mutáveis; o item não é regravado.
+
+## Capacidade visual do reservatório
+
+O block state conserva a quantidade exata, enquanto a geometria apresenta quartos estáveis:
+
+| Unidades | Superfície visível |
+| --- | --- |
+| `0` | vazia |
+| `1..4` | `water_low` |
+| `5..8` | `water_mid` |
+| `9..12` | `water_high` |
+| `13..16` | `water_full` |
+
+Um balde define o reservatório como `16/16`. Cada carregamento completo transfere quatro unidades, de modo que uma caldeirinha cheia fornece exatamente quatro carregamentos. Não há migração de caldeirinhas já colocadas em revisões anteriores.

@@ -87,6 +87,34 @@ const rotationState = block?.description?.states?.["aspergillum:rotation"];
 if (!Array.isArray(rotationState) || rotationState.length !== 16) {
   errors.push("Aspersorium requires sixteen values in its stable custom rotation state");
 }
+const waterState = block?.description?.states?.["aspergillum:water_level"];
+const expectedWaterState = Array.from({ length: 17 }, (_, index) => index);
+if (JSON.stringify(waterState) !== JSON.stringify(expectedWaterState)) {
+  errors.push("Aspersorium water_level must persist every exact unit from 0 through 16");
+}
+const expectedWaterVisibility = {
+  water_low: "q.block_state('aspergillum:water_level') >= 1 && q.block_state('aspergillum:water_level') <= 4",
+  water_mid: "q.block_state('aspergillum:water_level') >= 5 && q.block_state('aspergillum:water_level') <= 8",
+  water_high: "q.block_state('aspergillum:water_level') >= 9 && q.block_state('aspergillum:water_level') <= 12",
+  water_full: "q.block_state('aspergillum:water_level') >= 13",
+};
+const baseBoneVisibility = baseGeometry?.bone_visibility ?? {};
+for (const [bone, condition] of Object.entries(expectedWaterVisibility)) {
+  if (baseBoneVisibility[bone] !== condition) {
+    errors.push(`Aspersorium ${bone} must represent its approved quarter-capacity range`);
+  }
+}
+const aspersoriumGeometry = JSON.parse(
+  fs.readFileSync(path.join(packRoots[1], "models", "blocks", "aspersorium.geo.json"), "utf8"),
+)["minecraft:geometry"]?.[0];
+const waterBones = new Map(
+  (aspersoriumGeometry?.bones ?? [])
+    .filter((bone) => bone.name.startsWith("water_"))
+    .map((bone) => [bone.name, bone]),
+);
+for (const boneName of Object.keys(expectedWaterVisibility)) {
+  if (!waterBones.has(boneName)) errors.push(`Aspersorium geometry is missing ${boneName}`);
+}
 const materialInstances = block?.components?.["minecraft:material_instances"] ?? {};
 const renderMethods = new Set(
   Object.values(materialInstances)

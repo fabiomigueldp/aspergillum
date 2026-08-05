@@ -35,9 +35,9 @@ describe("release UX contracts", () => {
 
   it("uses runtime-safe sequential placeholders without leaking percent signs", () => {
     const dynamicKeys = new Map<string, string[]>([
-      ["item.aspergillum.lore.charges", ["2", "3"]],
+      ["item.aspergillum.lore.charges", ["2", "4"]],
       [ACTION_MESSAGES.chargesInspect, ["2"]],
-      [ACTION_MESSAGES.chargesLoaded, ["3"]],
+      [ACTION_MESSAGES.chargesLoaded, ["4"]],
       [ACTION_MESSAGES.chargesRemaining, ["1"]],
     ]);
     for (const locale of ["pt_BR", "en_US"] as const) {
@@ -59,6 +59,21 @@ describe("release UX contracts", () => {
       }
       for (const key of loreKeys) {
         expect(entries.get(key)).not.toContain("§o");
+      }
+    }
+  });
+
+  it("presents the four-charge capacity consistently in both locales", () => {
+    const chargeKeys = [
+      ACTION_MESSAGES.chargesInspect,
+      ACTION_MESSAGES.chargesLoaded,
+      ACTION_MESSAGES.chargesRemaining,
+    ];
+    for (const locale of ["pt_BR", "en_US"] as const) {
+      const entries = localeEntries(locale);
+      for (const key of chargeKeys) {
+        expect(entries.get(key)).toContain("/4");
+        expect(entries.get(key)).not.toContain("/3");
       }
     }
   });
