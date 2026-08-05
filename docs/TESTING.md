@@ -108,9 +108,20 @@ Antes de testes extensos:
 
 Se o smoke test falhar, interrompa a matriz e capture a menor reprodução possível.
 
+## Gate da correção v1.0.18d — placeholders e tipografia localizada
+
+- [ ] importar somente `Aspergillum-1.0.18d.mcaddon` após fechar o jogo e remover revisões antigas;
+- [ ] inspecionar itens com `0/3`, `1/3`, `2/3` e `3/3`: nenhum valor contém `%` antes do número;
+- [ ] carregar e aspergir nas mesmas quatro cargas: action bar mostra somente `n/3`, sem `%` residual;
+- [ ] as quatro linhas da lore usam peso normal, sem inclinação itálica herdada;
+- [ ] cinza, cinza-escuro, azul-claro e vermelho preservam a hierarquia aprovada;
+- [ ] repetir em `pt_BR` e `en_US`, incluindo item existente criado antes da atualização;
+- [ ] “Tem Propriedades Personalizadas/Has Custom Properties” pode conservar o estilo vanilla, mas as quatro linhas do add-on devem permanecer normais;
+- [ ] Content Log não contém `RawMessageError`, chave ausente ou erro de tradução.
+
 ## Gate da correção v1.0.18c — compatibilidade runtime e recuperação do carregamento
 
-- [ ] importar somente `Aspergillum-1.0.18c.mcaddon` após fechar o jogo e remover revisões antigas;
+- [ ] importar somente `Aspergillum-1.0.18d.mcaddon` após fechar o jogo e remover revisões antigas;
 - [ ] Content Log não contém `Precomputed cubic interpolation requires keyframes have constant data` nem outro erro em `animation.aspergillum.player.load`;
 - [ ] confirmar novamente que item e mão permanecem visíveis em 100% da carga em primeira pessoa;
 - [ ] em terceira pessoa frontal, traseira e lateral, gravar a 60 FPS o intervalo da saída da água até o repouso;
@@ -123,7 +134,7 @@ Se o smoke test falhar, interrompa a matriz e capture a menor reprodução poss�
 
 ## Gate da correção v1.0.18a — carregamento em primeira pessoa
 
-- [ ] importar somente `Aspergillum-1.0.18c.mcaddon`, fechar e reabrir o jogo antes do teste;
+- [ ] importar somente `Aspergillum-1.0.18d.mcaddon`, fechar e reabrir o jogo antes do teste;
 - [ ] em primeira pessoa, manter a câmera imóvel e carregar três vezes: item e mão permanecem visíveis do início ao settle;
 - [ ] repetir olhando levemente para cima, em frente e para baixo: o item não cruza a mira, borda superior nem desaparece;
 - [ ] confirmar que não existe reset, dupla partida ou pop no começo/fim;
@@ -135,7 +146,7 @@ Se o smoke test falhar, interrompa a matriz e capture a menor reprodução poss�
 
 ## Gate do Release Candidate v1.0.18
 
-- [ ] importar `Aspergillum-1.0.18c.mcaddon` após remover packs antigos;
+- [ ] importar `Aspergillum-1.0.18d.mcaddon` após remover packs antigos;
 - [ ] selecionar o item mostra quatro linhas de lore, incluindo agachar + usar e mão vazia;
 - [ ] `pt_BR` e `en_US` traduzem lore e todas as mensagens do action bar no cliente correspondente;
 - [ ] carregar com sucesso mantém animação/estado anteriores e acrescenta apenas duas microgotas discretas dentro da caldeirinha;

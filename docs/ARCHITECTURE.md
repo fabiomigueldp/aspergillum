@@ -103,7 +103,7 @@ Regras de dependência:
 - Presentation contém somente feedback; não muda carga ou água.
 - Bootstrap registra e conecta dependências; não vira um “god file”.
 
-Mensagens de gameplay usam um catálogo tipado de translation keys e `RawMessage`; o cliente resolve o idioma no momento da apresentação. Sons chamados pelo script passam por `sound-coordinator`, e qualquer falha de HUD, áudio ou micro-VFX é fail-soft. A carga e a água já foram decididas antes desses recursos de apresentação e nunca dependem deles.
+Mensagens de gameplay usam um catálogo tipado de translation keys e `RawMessage`; o cliente resolve o idioma no momento da apresentação. Parâmetros dinâmicos usam `%s` sequenciais na mesma ordem de `with`. Cada mensagem e linha de lore começa com `§r` antes da cor, impedindo que estilo herdado altere peso ou inclinação. Sons chamados pelo script passam por `sound-coordinator`, e qualquer falha de HUD, áudio ou micro-VFX é fail-soft. A carga e a água já foram decididas antes desses recursos de apresentação e nunca dependem deles.
 
 ## Fluxo de carregamento atual
 

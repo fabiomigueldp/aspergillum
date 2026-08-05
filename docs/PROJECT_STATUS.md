@@ -2,13 +2,13 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.0.18c` Release Candidate (revisão numérica dos packs `[1, 0, 28]`)
+- **Versão de referência:** `1.0.18d` Release Candidate (revisão numérica dos packs `[1, 0, 29]`)
 - **Engine mínima:** Creator `1.26.30`
 - **Script API:** `@minecraft/server` `2.8.0`, estável
 - **Experimentos:** nenhum
 - **Conteúdo:** aspersório funcional, caldeirinha colocável, carregamento, três cargas, docking decorativo e spray visual
 
-A v1.0.18c preserva o gesto camera-safe e a recuperação composta da 1.0.18b, corrigindo a incompatibilidade que o runtime detectou entre Catmull-Rom pré-computado e valores Molang dinâmicos. O dip agora é uma curva Hermite analítica dirigida por `query.anim_time`; a ponte final continua condicionada à perspectiva e ao mesmo `attack_time`.
+A v1.0.18d preserva integralmente a baseline física da v1.0.18c e corrige a apresentação localizada observada no runtime. Placeholders sequenciais eliminam o `%` residual nas cargas, enquanto `§r` antes de cada cor neutraliza o itálico herdado da lore sem alterar conteúdo ou estado persistente.
 
 ## O que está resolvido
 
@@ -35,6 +35,7 @@ A v1.0.18c preserva o gesto camera-safe e a recuperação composta da 1.0.18b, c
 - Docking guarda `instance_id`, `nameTag`, cosmético, perfil e propriedades customizadas em shards persistentes por dimensão/chunk.
 - Overflow é recusado sem alterar água ou item; retirada exige mão vazia e quebra recupera o snapshot real.
 - Mensagens do action bar e lore são traduzidas pelo Resource Pack do próprio cliente; não há ramificação manual por locale.
+- Mensagens dinâmicas usam `%s` sequenciais compatíveis com o runtime; lore e action bar reiniciam explicitamente a formatação antes de aplicar a cor.
 - Cues sonoros script-side passam por um único coordenador fail-soft; feedback de carga adiciona somente duas microgotas limitadas à caldeirinha.
 
 ## Limitações conhecidas
@@ -47,7 +48,7 @@ A v1.0.18c preserva o gesto camera-safe e a recuperação composta da 1.0.18b, c
 | Cor das gotas | RGBA explícito e azul dominante durante toda a vida | QA da 1.0.16c deve confirmar ausência de branco excessivo e de verde/amarelo em gotas e impactos |
 | Persistência | registry por chunk é novo | precisa de QA de reload, quebra, explosão e inventário cheio no runtime |
 | Recuperação | `onBreak` estável cobre destruição; água continua não sendo um item | confirmar fisicamente explosão e comandos `destroy` sem duplicação |
-| Schema/lore | migração e `RawMessage` estão implementados | confirmar renderização `%%1/%%2` em clientes pt_BR e en_US |
+| Schema/lore | migração, `RawMessage`, placeholders `%s` e reset tipográfico implementados | confirmar cargas sem `%` e lore não itálica em clientes pt_BR e en_US |
 | Input de docking | rota dupla `onUseOn` + `onPlayerInteract` validada pelo usuário na 1.0.17a | manter como regressão no RC |
 | UX localizada | catálogo tipado de 25 mensagens e lore de quatro linhas | confirmar `pt_BR` e `en_US` dentro do jogo |
 | Desempenho | nenhum LOD sem evidência | medir profiler com 1, 4, 8 e 16 jogadores antes de autorizar alteração |
@@ -55,7 +56,7 @@ A v1.0.18c preserva o gesto camera-safe e a recuperação composta da 1.0.18b, c
 
 ## Próxima mudança autorizada
 
-A v1.0.18c está implementada como correção do Release Candidate e deve passar pelo runbook [RELEASE_CANDIDATE.md](RELEASE_CANDIDATE.md), com prioridade para o gate de carregamento de [TESTING.md](TESTING.md). Se não houver novo blocker, o próximo passo é promover os mesmos bytes à V1.
+A v1.0.18d está implementada como correção de apresentação do Release Candidate e deve passar pelo runbook [RELEASE_CANDIDATE.md](RELEASE_CANDIDATE.md), com prioridade para o gate de localização de [TESTING.md](TESTING.md). Novos pontos de polimento permanecem na família 1.0.18; `1.0.19` fica reservada para a V1 final.
 
 Não faz parte do próximo marco:
 

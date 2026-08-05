@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.18d — 2026-08-05
+
+- corrigidos os caracteres `%` residuais exibidos nas cargas da action bar e da lore em português e inglês;
+- substituídos os placeholders `%%1`/`%%2`, incompatíveis com os caminhos runtime observados, por `%s` sequenciais preenchidos pelo mesmo `RawMessage.with`;
+- adicionada a sequência explícita `§r` + cor em todas as mensagens e linhas de lore, removendo o itálico herdado e preservando a hierarquia cinza/azul/vermelho;
+- mantidos textos, significados, cargas, schema e propriedades persistentes; itens existentes recebem a nova apresentação diretamente do Resource Pack, sem migração destrutiva;
+- ampliados testes e release gate para validar contagem de placeholders, ausência de `%` residual, reset tipográfico e paridade dos dois idiomas;
+- preservados integralmente binding, poses, animações, VFX, sons, estado, concorrência e docking da 1.0.18c;
+- o rótulo distribuído é `1.0.18d`; a revisão monotônica dos packs é `[1,0,29]`.
+
 ## 1.0.18c — 2026-08-05
 
 - corrigido o erro de runtime `Precomputed cubic interpolation requires keyframes have constant data` introduzido na carga da 1.0.18b;

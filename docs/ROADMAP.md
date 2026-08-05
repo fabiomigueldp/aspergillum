@@ -189,7 +189,19 @@ Gate de saída:
 - cada gesto produz no máximo uma operação, uma mensagem e um snapshot;
 - Content Log permanece limpo.
 
-## v1.0.18c — curva de carregamento compatível com o runtime — implementada; QA físico pendente
+## v1.0.18d — correção localizada e legibilidade da lore — implementada; QA físico pendente
+
+Escopo fechado:
+
+- eliminar `%` residual das quatro mensagens dinâmicas de carga em `pt_BR` e `en_US`;
+- usar `%s` sequencial na mesma ordem de `RawMessage.with`;
+- neutralizar o itálico herdado da lore por reset explícito antes da cor;
+- manter a hierarquia semântica cinza/azul/vermelho e todos os textos existentes;
+- bloquear regressão por testes de renderização substitutiva e release gate.
+
+Gate de saída: `0/3`, `1/3`, `2/3` e `3/3` sem `%`; lore não itálica e legível; action bar com fonte normal; idiomas e Content Log limpos.
+
+## v1.0.18c — curva de carregamento compatível com o runtime — implementada; sucedida pela correção de apresentação 1.0.18d
 
 Escopo fechado:
 

@@ -1,7 +1,29 @@
 import { describe, expect, it } from "vitest";
+import fs from "node:fs";
+import path from "node:path";
 import { ACTION_MESSAGES } from "../../src/presentation/messaging";
 import { LOAD_SPLASH_OFFSETS } from "../../src/presentation/wet-feedback";
 import { SOUND_CUES } from "../../src/presentation/sound-coordinator";
+
+const root = path.resolve(import.meta.dirname, "../..");
+const loreKeys = [
+  "item.aspergillum.lore.charges",
+  "item.aspergillum.lore.instructions",
+  "item.aspergillum.lore.docking",
+  "item.aspergillum.lore.creative",
+] as const;
+
+function localeEntries(locale: "pt_BR" | "en_US"): Map<string, string> {
+  const source = fs.readFileSync(path.join(root, "packs", "resource", "texts", `${locale}.lang`), "utf8");
+  return new Map(source.split(/\r?\n/).flatMap((line) => {
+    const separator = line.indexOf("=");
+    return separator <= 0 ? [] : [[line.slice(0, separator), line.slice(separator + 1)]];
+  }));
+}
+
+function substituteSequentially(template: string, parameters: string[]): string {
+  return parameters.reduce((result, parameter) => result.replace("%s", parameter), template);
+}
 
 describe("release UX contracts", () => {
   it("uses a unique client-localized key for every action-bar message", () => {
@@ -9,6 +31,36 @@ describe("release UX contracts", () => {
     expect(keys).toHaveLength(25);
     expect(new Set(keys).size).toBe(keys.length);
     expect(keys.every((key) => key.startsWith("message.aspergillum."))).toBe(true);
+  });
+
+  it("uses runtime-safe sequential placeholders without leaking percent signs", () => {
+    const dynamicKeys = new Map<string, string[]>([
+      ["item.aspergillum.lore.charges", ["2", "3"]],
+      [ACTION_MESSAGES.chargesInspect, ["2"]],
+      [ACTION_MESSAGES.chargesLoaded, ["3"]],
+      [ACTION_MESSAGES.chargesRemaining, ["1"]],
+    ]);
+    for (const locale of ["pt_BR", "en_US"] as const) {
+      const entries = localeEntries(locale);
+      for (const [key, parameters] of dynamicKeys) {
+        const template = entries.get(key) ?? "";
+        expect(template.match(/%s/g)).toHaveLength(parameters.length);
+        expect(template).not.toMatch(/%%\d|%\d(?:\$s)?/);
+        expect(substituteSequentially(template, parameters)).not.toContain("%");
+      }
+    }
+  });
+
+  it("explicitly resets inherited lore styling before applying project colors", () => {
+    for (const locale of ["pt_BR", "en_US"] as const) {
+      const entries = localeEntries(locale);
+      for (const key of [...loreKeys, ...Object.values(ACTION_MESSAGES)]) {
+        expect(entries.get(key)).toMatch(/^§r§[0-9a-f]/);
+      }
+      for (const key of loreKeys) {
+        expect(entries.get(key)).not.toContain("§o");
+      }
+    }
   });
 
   it("keeps every script-side sound cue within a restrained mix envelope", () => {

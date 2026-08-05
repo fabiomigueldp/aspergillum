@@ -2,12 +2,12 @@
 
 Add-On para Minecraft: Bedrock Edition 26.34/35 que adiciona um **aspersório litúrgico funcional** e uma **caldeirinha (aspersorium) colocável**. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão 1.0.18c RC:** mantém a recuperação contínua da carga e troca os keyframes cúbicos dinâmicos incompatíveis por uma curva Hermite analítica aceita pelo runtime. Não há nova pose, segundo gesto ou alteração autoritativa.
+> **Versão 1.0.18d RC:** preserva a baseline física validada e corrige a apresentação localizada: cargas sem `%` residual e lore explicitamente normal, sem itálico herdado. Não há alteração de gameplay, animação ou VFX.
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/releases/Aspergillum-1.0.18c.mcaddon`](dist/releases/Aspergillum-1.0.18c.mcaddon) com o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.0.18d.mcaddon`](dist/releases/Aspergillum-1.0.18d.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 

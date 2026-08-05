@@ -36,19 +36,44 @@ for (const [label, actual] of [
 const messagingSource = fs.readFileSync(path.join(root, "src", "presentation", "messaging.ts"), "utf8");
 const messageKeys = [...new Set(messagingSource.match(/message\.aspergillum\.[a-z_]+/g) ?? [])].sort();
 if (messageKeys.length !== 25) errors.push(`Expected 25 action-message keys, found ${messageKeys.length}`);
+const loreKeys = [
+  "item.aspergillum.lore.charges",
+  "item.aspergillum.lore.instructions",
+  "item.aspergillum.lore.docking",
+  "item.aspergillum.lore.creative",
+];
+const dynamicPlaceholderCounts = new Map([
+  ["item.aspergillum.lore.charges", 2],
+  ["message.aspergillum.charges_inspect", 1],
+  ["message.aspergillum.charges_loaded", 1],
+  ["message.aspergillum.charges_remaining", 1],
+]);
 for (const locale of ["pt_BR", "en_US"]) {
   const entries = localeEntries(locale);
   const localizedKeys = [...entries.keys()].filter((key) => key.startsWith("message.aspergillum.")).sort();
   if (JSON.stringify(localizedKeys) !== JSON.stringify(messageKeys)) {
     errors.push(`${locale}.lang action-message catalog differs from the typed catalog`);
   }
-  for (const loreKey of [
-    "item.aspergillum.lore.charges",
-    "item.aspergillum.lore.instructions",
-    "item.aspergillum.lore.docking",
-    "item.aspergillum.lore.creative",
-  ]) {
+  for (const loreKey of loreKeys) {
     if (!entries.has(loreKey)) errors.push(`${locale}.lang is missing ${loreKey}`);
+  }
+  for (const key of [...loreKeys, ...messageKeys]) {
+    const value = entries.get(key) ?? "";
+    if (!/^§r§[0-9a-f]/.test(value)) {
+      errors.push(`${locale}.lang ${key} must reset inherited styling before applying its color`);
+    }
+  }
+  for (const loreKey of loreKeys) {
+    if ((entries.get(loreKey) ?? "").includes("§o")) {
+      errors.push(`${locale}.lang ${loreKey} must remain non-italic after its explicit reset`);
+    }
+  }
+  for (const [key, expectedCount] of dynamicPlaceholderCounts) {
+    const value = entries.get(key) ?? "";
+    const actualCount = value.match(/%s/g)?.length ?? 0;
+    if (actualCount !== expectedCount || /%%\d|%\d(?:\$s)?/.test(value)) {
+      errors.push(`${locale}.lang ${key} must use exactly ${expectedCount} sequential %s placeholder(s)`);
+    }
   }
 }
 
