@@ -8,6 +8,7 @@ export function commitMainhandAndBlock(
   block: Block,
   originalPermutation: BlockPermutation,
   updatedPermutation: BlockPermutation,
+  operation = "item/block",
 ): boolean {
   try {
     setMainhand(player, updatedItem);
@@ -24,7 +25,7 @@ export function commitMainhandAndBlock(
     } catch (rollbackError) {
       console.error(`[Aspergillum] Block rollback failed: ${String(rollbackError)}`);
     }
-    console.error(`[Aspergillum] Loading transaction failed: ${String(error)}`);
+    console.error(`[Aspergillum] ${operation} transaction failed: ${String(error)}`);
     return false;
   }
 }

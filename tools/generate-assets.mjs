@@ -218,3 +218,29 @@ for (let rotationIndex = 1; rotationIndex < 16; rotationIndex += 1) {
   });
 }
 writeJson("packs/behavior/blocks/aspersorium.block.json", blockDefinition);
+
+const audioCatalog = JSON.parse(
+  fs.readFileSync(path.join(root, "assets-src/audio/audio-catalog.json"), "utf8"),
+);
+const soundDefinitions = {};
+for (const family of audioCatalog.families) {
+  family.paths.forEach((soundPath, index) => {
+    const variantId = `${family.id}.v${String(index + 1).padStart(2, "0")}`;
+    soundDefinitions[variantId] = {
+      category: family.category,
+      min_distance: family.minDistance,
+      max_distance: family.maxDistance,
+      sounds: [{ name: soundPath, volume: family.volume, pitch: 1 }],
+    };
+  });
+  soundDefinitions[family.id] = {
+    category: family.category,
+    min_distance: family.minDistance,
+    max_distance: family.maxDistance,
+    sounds: family.paths.map((name) => ({ name, volume: family.volume, pitch: 1, weight: 1 })),
+  };
+}
+writeJson("packs/resource/sounds/sound_definitions.json", {
+  format_version: audioCatalog.soundDefinitionsFormatVersion,
+  sound_definitions: soundDefinitions,
+});

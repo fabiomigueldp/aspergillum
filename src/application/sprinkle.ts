@@ -4,7 +4,7 @@ import {
   Player,
   system,
 } from "@minecraft/server";
-import { canSprinkle, resolveSprinkle } from "../domain/aspergillum";
+import { canSprinkle, equalAspergillumState, resolveSprinkle } from "../domain/aspergillum";
 import {
   aspergillumTipOrigin,
   createSprayBasis,
@@ -16,11 +16,11 @@ import {
 } from "../domain/cone";
 import { STANDARD_SPRAY_PROFILE } from "../domain/spray-profile";
 import { getActionLease } from "../infrastructure/action-lease";
-import { DROPLET_PARTICLE } from "../infrastructure/constants";
+import { DROPLET_PARTICLE, RELEASE_BRIDGE_PARTICLE } from "../infrastructure/constants";
 import { resolvePlayerPolicies } from "../infrastructure/game-mode-policy";
 import {
   getMainhand,
-  initializeAspergillum,
+  ensureInitializedAspergillumInMainhand,
   isAspergillum,
   isAspergillumSchemaSupported,
   readAspergillumInstanceId,
@@ -39,8 +39,8 @@ import {
   type SprinkleSession,
 } from "../infrastructure/sprinkle-session";
 import { playSprinkleRecoveryBridge } from "../presentation/animation-coordinator";
+import { audioPort } from "../presentation/audio/bedrock-audio-adapter";
 import { ACTION_MESSAGES, action } from "../presentation/messaging";
-import { playSoundCue } from "../presentation/sound-coordinator";
 
 const lastSprinkleTick = new Map<string, number>();
 
@@ -51,12 +51,12 @@ function hasAuthorizedItem(player: Player, session: SprinkleSession): boolean {
   return isAspergillum(item) && readAspergillumInstanceId(item) === session.itemInstanceId;
 }
 
-function emitWaterFrame(player: Player, session: SprinkleSession, pulseIndex: number): void {
-  if (!isCurrentSprinkleSession(session) || !hasAuthorizedItem(player, session)) {
-    cancelSprinkleSession(player.id);
-    return;
-  }
+interface SprayFrame {
+  readonly origin: { readonly x: number; readonly y: number; readonly z: number };
+  readonly directions: readonly { readonly x: number; readonly y: number; readonly z: number }[];
+}
 
+function computeSprayFrame(player: Player, session: SprinkleSession): SprayFrame {
   const profile = STANDARD_SPRAY_PROFILE;
   const targetDirection = player.getViewDirection();
   const steered = steerDirection(
@@ -67,22 +67,48 @@ function emitWaterFrame(player: Player, session: SprinkleSession, pulseIndex: nu
   );
   session.basis = transportSprayBasis(session.basis, steered);
   session.steeringDirection = session.basis.forward;
+  return {
+    origin: aspergillumTipOrigin(
+      player.getHeadLocation(),
+      session.steeringDirection,
+      session.basis.right,
+      profile,
+    ),
+    directions: deterministicDropletDirections(
+      session.steeringDirection,
+      profile.dropletCount,
+      session.basis.right,
+      profile,
+    ),
+  };
+}
 
-  const origin = aspergillumTipOrigin(
-    player.getHeadLocation(),
-    session.steeringDirection,
-    session.basis.right,
-    profile,
-  );
-  const directions = deterministicDropletDirections(
-    session.steeringDirection,
-    profile.dropletCount,
-    session.basis.right,
-    profile,
-  );
+function emitAuthorizedTipBridge(player: Player, frame: SprayFrame): void {
+  const variables = new MolangVariableMap();
+  variables.setSpeedAndDirection("variable.aspergillum_motion", 2.15, frame.directions[0] ?? { x: 0, y: 0, z: 1 });
+  try {
+    player.dimension.spawnParticle(RELEASE_BRIDGE_PARTICLE, frame.origin, variables);
+  } catch (error) {
+    console.warn(`[Aspergillum] Unable to emit authorized tip bridge for ${player.id}: ${String(error)}`);
+  }
+}
+
+function emitWaterFrame(
+  player: Player,
+  session: SprinkleSession,
+  pulseIndex: number,
+  suppliedFrame?: SprayFrame,
+): void {
+  if (!isCurrentSprinkleSession(session) || !hasAuthorizedItem(player, session)) {
+    cancelSprinkleSession(player.id);
+    return;
+  }
+
+  const profile = STANDARD_SPRAY_PROFILE;
+  const frame = suppliedFrame ?? computeSprayFrame(player, session);
 
   for (const dropletIndex of dropletIndicesForFrame(profile.dropletCount, profile.pulseCount, pulseIndex)) {
-    const dropletDirection = directions[dropletIndex];
+    const dropletDirection = frame.directions[dropletIndex];
     if (dropletDirection === undefined) continue;
     const variables = new MolangVariableMap();
     variables.setSpeedAndDirection(
@@ -94,7 +120,7 @@ function emitWaterFrame(player: Player, session: SprinkleSession, pulseIndex: nu
       "variable.aspergillum_scale",
       profile.minimumScale + (dropletIndex % profile.scaleVariants) * profile.scaleStep,
     );
-    player.dimension.spawnParticle(DROPLET_PARTICLE, origin, variables);
+    player.dimension.spawnParticle(DROPLET_PARTICLE, frame.origin, variables);
   }
 }
 
@@ -128,16 +154,25 @@ function commitSprinkleRelease(player: Player, session: SprinkleSession): void {
     return;
   }
 
-  try {
-    setMainhand(player, writeAspergillumState(currentItem, resolution.state));
-  } catch (error) {
-    console.error(`[Aspergillum] Sprinkle release commit failed for ${player.id}: ${String(error)}`);
-    cancelSprinkleSession(player.id);
-    return;
+  if (!equalAspergillumState(readAspergillumState(currentItem), resolution.state)) {
+    try {
+      setMainhand(player, writeAspergillumState(currentItem, resolution.state));
+    } catch (error) {
+      console.error(`[Aspergillum] Sprinkle release commit failed for ${player.id}: ${String(error)}`);
+      cancelSprinkleSession(player.id);
+      return;
+    }
   }
   if (!markSprinkleReleased(session)) return;
   presentChargeState(player, resolution.state.charges, policies.creative);
-  emitWaterFrame(player, session, 0);
+  const releaseFrame = computeSprayFrame(player, session);
+  audioPort.emit(player, {
+    kind: "sprinkle.release",
+    location: releaseFrame.origin,
+    actionId: session.leaseToken,
+  });
+  emitAuthorizedTipBridge(player, releaseFrame);
+  emitWaterFrame(player, session, 0, releaseFrame);
 
   for (let pulseIndex = 1; pulseIndex < STANDARD_SPRAY_PROFILE.pulseCount; pulseIndex += 1) {
     trackSprinkleRun(session, system.runTimeout(() => emitWaterFrame(player, session, pulseIndex), pulseIndex));
@@ -168,6 +203,7 @@ export function cancelWaterSpray(playerId: string): void {
 export function clearSprinklePlayerState(playerId: string): void {
   lastSprinkleTick.delete(playerId);
   cancelSprinkleSession(playerId);
+  audioPort.clearPlayer(playerId);
 }
 
 export function trySprinkle(player: Player): void {
@@ -179,8 +215,7 @@ export function trySprinkle(player: Player): void {
     action(player, ACTION_MESSAGES.futureSchema);
     return;
   }
-  const item = initializeAspergillum(rawItem);
-  setMainhand(player, item);
+  const item = ensureInitializedAspergillumInMainhand(player, rawItem);
   const itemInstanceId = readAspergillumInstanceId(item);
   if (itemInstanceId === undefined) return;
   if (getActionLease(player.id) !== undefined) return;
@@ -191,7 +226,7 @@ export function trySprinkle(player: Player): void {
   const preview = resolveSprinkle(readAspergillumState(item), policies.chargePolicy);
   if (!preview.allowed) {
     lastSprinkleTick.set(player.id, now);
-    playSoundCue(player, "dry");
+    audioPort.emit(player, { kind: "dry", actionId: `${player.id}:${now}:dry` });
     action(player, ACTION_MESSAGES.empty);
     return;
   }
@@ -207,13 +242,22 @@ export function trySprinkle(player: Player): void {
   });
   if (started.status === "busy") return;
 
-  lastSprinkleTick.set(player.id, now);
-  playSprinkleRecoveryBridge(player);
+  const cooldown = item.getComponent(ItemComponentTypes.Cooldown);
+  if (cooldown === undefined) {
+    cancelSprinkleSession(player.id);
+    console.warn(`[Aspergillum] Native sprinkle cooldown is unavailable for ${player.id}`);
+    return;
+  }
   try {
-    item.getComponent(ItemComponentTypes.Cooldown)?.startCooldown(player);
+    cooldown.startCooldown(player);
   } catch (error) {
     console.warn(`[Aspergillum] Unable to start native cooldown for ${player.id}: ${String(error)}`);
+    cancelSprinkleSession(player.id);
+    return;
   }
+  lastSprinkleTick.set(player.id, now);
+  playSprinkleRecoveryBridge(player);
+  audioPort.emit(player, { kind: "sprinkle.prepare", actionId: started.session.leaseToken });
   scheduleSprinkle(player, started.session);
 }
 

@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.0.19 — 2026-08-05
+
+- substituído o mix provisório baseado em sons vanilla por 15 famílias semânticas e 48 variantes próprias em OGG Vorbis mono/48 kHz;
+- introduzidos `AudioPort`, adaptador Bedrock fail-soft, catálogo tipado e shuffle bags por jogador/família sem repetição imediata;
+- separadas pistas privadas do ator (`dry`, preparações de carga e aspersão) de eventos espaciais do mundo (fill, commits 1–4, dock, retorno de água, undock e release);
+- migrados áudio e bridge do release para o commit autoritativo no tick 5; um único frame físico alimenta som, bridge e primeiro pulso, sem duplicação pela timeline do attachable;
+- o cooldown nativo agora é pré-condição real: ausência ou falha cancela a sessão antes de preparar ou agendar o release;
+- commits de fill/load/dock/undock só emitem áudio depois de suas transações válidas; fill não deixa mais bloco e balde divergirem em falha parcial;
+- itens já inicializados deixam de ser regravados em interações comuns e cargas Creative inalteradas não produzem clones desnecessários;
+- controller de ação rearma uma nova aspersão válida mesmo se o cooldown reiniciar durante recovery;
+- adicionada cadeia reprodutível de fontes MP3 versionadas, masters WAV, 48 OGGs, catálogo, recipes, hashes e validação automatizada;
+- registradas as limitações de licença: os candidatos desta RC foram gerados no plano gratuito ElevenLabs, exigem atribuição e não autorizam distribuição comercial; release comercial requer regeneração paga;
+- preservados integralmente binding, poses, animações, steering, 36 gotas/seis pulsos, economia 4/16, schemas e identificadores públicos;
+- o rótulo distribuído é `1.0.19`; a revisão monotônica dos packs é `[1,0,33]`.
+
 ## 1.0.18g — 2026-08-05
 
 - corrigida a rejeição runtime da caldeirinha causada pelo state `aspergillum:water_level` com dezessete valores, acima do limite de dezesseis observado no Bedrock 26.40;

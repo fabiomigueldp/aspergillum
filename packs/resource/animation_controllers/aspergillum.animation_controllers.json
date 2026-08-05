@@ -35,6 +35,9 @@
           "blend_via_shortest_path": true,
           "transitions": [
             {
+              "sprinkle": "q.is_cooldown_category('aspergillum_sprinkle', 'slot.weapon.mainhand') && q.cooldown_time_remaining('slot.weapon.mainhand') > 0.72"
+            },
+            {
               "idle": "q.cooldown_time_remaining('slot.weapon.mainhand') <= 0.0"
             }
           ]

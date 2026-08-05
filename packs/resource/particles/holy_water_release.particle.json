@@ -9,11 +9,6 @@
       }
     },
     "components": {
-      "minecraft:emitter_local_space": {
-        "position": true,
-        "rotation": true,
-        "velocity": false
-      },
       "minecraft:emitter_rate_instant": {
         "num_particles": 4
       },
@@ -27,12 +22,12 @@
           "math.random(-0.018, 0.018)"
         ],
         "direction": [
-          "math.random(-0.06, 0.06)",
-          1,
-          "math.random(-0.06, 0.06)"
+          "variable.aspergillum_motion.direction_x + math.random(-0.04, 0.04)",
+          "variable.aspergillum_motion.direction_y + math.random(-0.03, 0.03)",
+          "variable.aspergillum_motion.direction_z + math.random(-0.04, 0.04)"
         ]
       },
-      "minecraft:particle_initial_speed": "math.random(1.35, 1.75)",
+      "minecraft:particle_initial_speed": "variable.aspergillum_motion.speed * math.random(0.92, 1.08)",
       "minecraft:particle_lifetime_expression": {
         "max_lifetime": "math.random(0.26, 0.38)"
       },

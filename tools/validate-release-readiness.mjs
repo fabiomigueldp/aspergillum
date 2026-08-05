@@ -91,7 +91,7 @@ const sourceFiles = walk(path.join(root, "src")).filter((file) => file.endsWith(
 for (const file of sourceFiles) {
   const source = fs.readFileSync(file, "utf8");
   const relative = path.relative(root, file).replaceAll("\\", "/");
-  if (source.includes(".playSound(") && relative !== "src/presentation/sound-coordinator.ts") {
+  if (source.includes(".playSound(") && relative !== "src/presentation/audio/bedrock-audio-adapter.ts") {
     errors.push(`Direct playSound call bypasses the release mix: ${relative}`);
   }
   if (source.includes("setActionBar(") && relative !== "src/presentation/messaging.ts") {

@@ -78,32 +78,15 @@ if (sprayAim?.cubes !== undefined || sprayAim?.binding !== undefined) {
 }
 
 const attachable = readJson("attachables/aspergillum.attachable.json")["minecraft:attachable"]?.description;
-if (attachable?.particle_effects?.holy_water_release !== "aspergillum:holy_water_release") {
-  errors.push("Missing attachable particle alias holy_water_release");
-}
-for (const soundAlias of ["sprinkle_prepare", "sprinkle_release"]) {
-  if (typeof attachable?.sound_effects?.[soundAlias] !== "string") {
-    errors.push(`Missing attachable sound alias ${soundAlias}`);
-  }
+if (attachable?.particle_effects !== undefined || attachable?.sound_effects !== undefined) {
+  errors.push("Attachable must not own release audio or particles after the authoritative commit migration");
 }
 
 const animations = readJson("animations/aspergillum.action.animation.json").animations;
 for (const perspective of ["first_person", "third_person"]) {
   const animation = animations?.[`animation.aspergillum.action.sprinkle.${perspective}`];
-  const release = animation?.particle_effects?.["0.25"];
-  if (release?.effect !== "holy_water_release"
-    || release?.locator !== "aspergillum_tip"
-    || release?.bind_to_actor !== false) {
-    errors.push(`${perspective} release must fire once at 0.25s from the detached tip locator`);
-  }
-  const sounds = animation?.sound_effects;
-  if (sounds?.["0.08"]?.effect !== "sprinkle_prepare"
-    || sounds?.["0.25"]?.effect !== "sprinkle_release"
-    || sounds?.["0.25"]?.locator !== "aspergillum_tip") {
-    errors.push(`${perspective} sounds must share the prepare/release contract`);
-  }
-  if (Object.keys(animation?.particle_effects ?? {}).length !== 1) {
-    errors.push(`${perspective} must add one release bridge, not a duplicate ballistic fan`);
+  if (animation?.particle_effects !== undefined || animation?.sound_effects !== undefined) {
+    errors.push(`${perspective} must remain animation-only; script release commit owns VFX and audio`);
   }
 }
 
@@ -129,15 +112,12 @@ if (collision?.events?.length !== 1
 const release = readJson("particles/holy_water_release.particle.json").particle_effect;
 const releaseComponents = release?.components ?? {};
 validateWaterColor(releaseComponents, approvedWaterPalettes.release, "Release bridge");
-const localSpace = releaseComponents["minecraft:emitter_local_space"];
 if (release?.description?.identifier !== "aspergillum:holy_water_release"
   || releaseComponents["minecraft:emitter_rate_instant"]?.num_particles !== 4
-  || localSpace?.position !== true
-  || localSpace?.rotation !== true
-  || localSpace?.velocity !== false) {
-  errors.push("Release bridge must inherit locator position and rotation as a supported pair");
+  || releaseComponents["minecraft:emitter_local_space"] !== undefined) {
+  errors.push("Release bridge must be a server-authorized world-space effect");
 }
-if (releaseComponents["minecraft:particle_initial_speed"] !== "math.random(1.35, 1.75)"
+if (!String(releaseComponents["minecraft:particle_initial_speed"]).includes("variable.aspergillum_motion.speed")
   || releaseComponents["minecraft:particle_lifetime_expression"]?.max_lifetime !== "math.random(0.26, 0.38)"
   || JSON.stringify(releaseComponents["minecraft:particle_appearance_billboard"]?.size) !== JSON.stringify([0.028, 0.06])
   || releaseComponents["minecraft:particle_appearance_billboard"]?.facing_camera_mode !== "rotate_xyz") {
@@ -163,8 +143,10 @@ if (!compiled.includes("dropletCount: 36")
   || !compiled.includes("maximumTurnDegrees: 30")) {
   errors.push("Hybrid VFX must preserve the proven 36/6 steering emitter");
 }
-if (!compiled.includes("spawnParticle") || compiled.includes("random.splash")) {
-  errors.push("Script must keep the ballistic fallback without duplicating the locator-timed release sound");
+if (!compiled.includes("spawnParticle")
+  || !compiled.includes("aspergillum:holy_water_release")
+  || compiled.includes("random.splash")) {
+  errors.push("Script must own the authorized bridge and ballistic fan without vanilla splash duplication");
 }
 
 if (errors.length > 0) {
@@ -172,4 +154,4 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log("Validated locator hierarchy, supported local-space inheritance, cool-blue readable droplets, impacts, and custom sounds.");
+console.log("Validated the locator hierarchy, server-authorized world-space bridge, cool-blue droplets, and impacts.");

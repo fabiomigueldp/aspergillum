@@ -5,6 +5,7 @@ import {
   canSprinkle,
   consumeCharge,
   createDefaultAspergillumState,
+  equalAspergillumState,
   loadFromAspersorium,
   migrateAspergillumState,
   normalizeCharges,
@@ -87,6 +88,13 @@ describe("aspergillum domain", () => {
       consumed: 0,
     });
     expect(resolveSprinkle(createDefaultAspergillumState(0), "retain").allowed).toBe(false);
+  });
+
+  it("detects whether a release would materially change persistent item state", () => {
+    const state = createDefaultAspergillumState(2);
+    expect(equalAspergillumState(state, { ...state })).toBe(true);
+    expect(equalAspergillumState(state, { ...state, charges: 1 })).toBe(false);
+    expect(equalAspergillumState(state, { ...state, cosmeticId: "silver" })).toBe(false);
   });
 
   it("enforces the recovery window", () => {

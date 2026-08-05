@@ -104,7 +104,7 @@ Regras de dependência:
 - Presentation contém somente feedback; não muda carga ou água.
 - Bootstrap registra e conecta dependências; não vira um “god file”.
 
-Mensagens de gameplay usam um catálogo tipado de translation keys e `RawMessage`; o cliente resolve o idioma no momento da apresentação. Parâmetros dinâmicos usam `%s` sequenciais na mesma ordem de `with`. Cada mensagem e linha de lore começa com `§r` antes da cor, impedindo que estilo herdado altere peso ou inclinação. Sons chamados pelo script passam por `sound-coordinator`, e qualquer falha de HUD, áudio ou micro-VFX é fail-soft. A carga e a água já foram decididas antes desses recursos de apresentação e nunca dependem deles.
+Mensagens de gameplay usam um catálogo tipado de translation keys e `RawMessage`; o cliente resolve o idioma no momento da apresentação. Parâmetros dinâmicos usam `%s` sequenciais na mesma ordem de `with`. Cada mensagem e linha de lore começa com `§r` antes da cor, impedindo que estilo herdado altere peso ou inclinação. Sons passam por `AudioPort` e pelo adaptador Bedrock em `src/presentation/audio`; qualquer falha de HUD, áudio ou micro-VFX é fail-soft. A carga e a água já foram decididas antes desses recursos de apresentação e nunca dependem deles.
 
 ## Fluxo de carregamento atual
 
@@ -125,7 +125,7 @@ O commit no tick 10 coincide com a fase de imersão da animação one-shot. A fa
 2. O domínio verifica carga, cooldown e política do modo.
 3. Uma `SprinkleSession` e um `ActionLease` reservam a instância sem consumir carga; o cooldown de 18 ticks começa, o braço segue o arco nativo com uma ponte aditiva de continuidade no recovery e o controller inicia a ação local do instrumento.
 4. No tick 5, item, slot, dimensão, modo e carga são revalidados; somente então a carga é consumida/preservada.
-5. A timeline válida dispara no locator um bridge curto e o som próprio de release, ambos puramente visuais.
+5. O commit calcula um único frame físico e nele dispara release espacial, bridge curto e primeiro pulso.
 6. Seis pulsos script-side atualizam direção e base transportada em direção à câmera.
 7. Cada gota passa a simular em world-space; troca de item/dimensão cancela apenas pulsos futuros e não reembolsa um release já confirmado.
 8. Cancelamento anterior ao tick 5 não consome carga nem emite água.
@@ -145,19 +145,23 @@ Timeline autoritativa de carregamento (`0.80 s`): movimento vanilla como base, c
 
 Timeline de aspersão (`18 ticks/0.90 s`): o swing vanilla fornece o movimento amplo; uma animação finita de `1,10 s`, iniciada somente para aspersão autorizada, soma em terceira pessoa uma compensação Hermite a `rightarm.y` entre 50% e 100% de `variable.attack_time`. Ela cancela o ramo final de `-30°` da curva oficial sem resetar a pose, sem tocar em `rightitem` e sem alterar a primeira pessoa. Um controller do attachable seleciona a coreografia FP/TP de `aspergillum_action`; a ação local assenta em `0,82 s`, deixa `0,08 s` de buffer e libera água no tick 5. Falhas de apresentação continuam sem interferir no estado.
 
-O controller usa a categoria de cooldown válida como ponte visual. Tentativa vazia não inicia o cooldown nativo e, portanto, não entra no estado `sprinkle`. Na v1.0.16c, a mesma timeline dispara o bridge corrigido em `aspergillum_tip` e os sons próprios. A sintaxe e o contexto exatos permanecem sujeitos ao Content Log do pacote importado; autorização e leque balístico continuam independentes do controller.
+O controller usa a categoria de cooldown válida como ponte visual. Tentativa vazia não inicia o cooldown nativo e, portanto, não entra no estado `sprinkle`. Na v1.0.19, a timeline é somente animação: áudio e bridge dependem do commit server-side, impedindo efeitos molhados em tentativas inválidas. O estado `recovery` também rearma uma nova ação se outro cooldown válido já tiver começado.
+
+## Áudio semântico
+
+Application emite intenções (`AudioCue`) e não IDs Bedrock. `BedrockAudioAdapter` resolve 15 famílias, escolhe variantes por shuffle bag e roteia pistas privadas via `Player.playSound` ou eventos espaciais via `Dimension.playSound`. Fill, load, dock, undock e release só emitem depois do commit correspondente; `load.prepare` e `sprinkle.prepare` só após a sessão e o cooldown serem aceitos. O catálogo, pipeline, mix, licença e QA estão em [Contrato de áudio](AUDIO_DESIGN_CONTRACT.md).
 
 ## Partículas
 
-A v1.0.16c mantém a arquitetura híbrida `sprinkler_head -> spray_aim -> aspergillum_tip` e corrige sua integração física e cromática:
+A geometria mantém a arquitetura `sprinkler_head -> spray_aim -> aspergillum_tip` como referência visual, enquanto a v1.0.19 torna o commit server-side a única autoridade de emissão:
 
-- `aspergillum_tip` fornece a origem física do bridge de quatro microgotas;
-- `emitter_local_space` herda posição e rotação como par suportado; `bind_to_actor: false` mantém o emissor destacado depois da criação;
+- o commit calcula uma vez origem, direção e base do leque; bridge, release sonoro e primeiro pulso compartilham esse frame;
+- o bridge é criado em world-space e recebe velocidade/direção por `MolangVariableMap`, evitando a combinação runtime inválida de rotação local sem posição local;
 - o script mantém as 36 gotas balísticas, seis pulsos e steering deliberado;
 - gotas principais usam o billboard camera-readable aprovado, evitando que a área aparente colapse em vistas oblíquas;
 - colisões elegíveis produzem um micro-splash cosmético;
 - textura-base neutra e gradientes RGBA numéricos azul-frio tornam a cor inequívoca no Resource Pack; as partículas de água omitem lighting local para impedir dominantes verdes/amarelas;
-- o cooldown válido impede bridge e som molhado em tentativa vazia.
+- o cooldown válido e o commit impedem bridge e som molhado em tentativa vazia ou cancelada antes do tick 5.
 
 O bridge não é um segundo leque e não substitui o emissor matemático. Não remover as 36 gotas atuais até locator, condição de disparo, primeira/terceira pessoa e multiplayer provarem equivalência. O contrato detalhado está em [Contrato de VFX](VFX_DESIGN_CONTRACT.md).
 

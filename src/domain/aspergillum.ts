@@ -40,6 +40,13 @@ export interface SprinkleResolution {
   readonly consumed: 0 | 1;
 }
 
+export function equalAspergillumState(a: AspergillumState, b: AspergillumState): boolean {
+  return a.charges === b.charges
+    && a.schemaVersion === b.schemaVersion
+    && a.cosmeticId === b.cosmeticId
+    && a.sprayProfileId === b.sprayProfileId;
+}
+
 export function normalizeCharges(value: unknown): number {
   if (typeof value !== "number" || !Number.isFinite(value)) return 0;
   return Math.max(0, Math.min(ASPERGILLUM_CAPACITY, Math.trunc(value)));

@@ -2,12 +2,12 @@
 
 Add-On para Minecraft: Bedrock Edition 26.40 que adiciona um **aspersório litúrgico funcional** e uma **caldeirinha (aspersorium) colocável**. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão 1.0.18g RC:** mantém o alinhamento com Bedrock 26.40 e corrige a persistência exata `0..16` da caldeirinha com dois block states compactos e suportados. A capacidade 4/16, animação, VFX, binding e persistência do item permanecem preservados.
+> **Versão 1.0.19 RC:** substitui o áudio provisório por 15 famílias semânticas e 48 SFX próprios, preservando Bedrock 26.40, economia 4/16, animações, VFX, binding e persistência. O som transacional nasce somente após commits válidos e não duplica timelines do attachable.
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/releases/Aspergillum-1.0.18g.mcaddon`](dist/releases/Aspergillum-1.0.18g.mcaddon) com o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.0.19.mcaddon`](dist/releases/Aspergillum-1.0.19.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
@@ -39,13 +39,14 @@ As cargas permanecem gravadas no item. Ao acomodá-lo, cargas restantes retornam
 - `aspergillum_action` executa um flick compacto de primeira pessoa ou uma silhueta mais ampla de terceira pessoa, selecionados por controller e pelo contexto da perspectiva;
 - aspersão reservada no swing e confirmada no tick 5: cancelamento anterior não consome carga e cancelamento posterior não reembolsa;
 - emissão balística de 36 gotas em seis grupos espaciais contínuos, sincronizada ao release e visível no multiplayer;
-- bridge visual de quatro microgotas nasce exatamente no locator no tick 5, herda posição/rotação juntas, avança lentamente e confirma a ligação cabeça→leque sem formar uma segunda rajada;
+- bridge visual de quatro microgotas nasce no mesmo frame autoritativo calculado no tick 5 e confirma a ligação cabeça→leque sem formar uma segunda rajada;
 - origem aproximada da ponta em `0,55` bloco à frente, `0,48` à direita e `0,15` abaixo dos olhos; inclusive o primeiro pulso parte da direção capturada no início do gesto, com resposta de 80% e no máximo 30° de giro;
 - base lateral transportada paralelamente entre pulsos, evitando inversão do leque ao atravessar o olhar vertical;
 - leque anisotrópico: abertura horizontal máxima aproximada de `14,5°`, vertical máxima inferior a `5,2°`, sem halo circular;
 - gotas com billboard `rotate_xyz` e envelope `0.042 × 0.100`, restaurando a legibilidade aprovada em qualquer ângulo sem alterar velocidade, gravidade, arrasto ou alcance;
-- micro-splash cosmético discreto no contato e sons próprios de preparação/liberação disparados pela mesma timeline válida do attachable;
-- arquitetura híbrida deliberada: o locator governa a origem visual e o script conserva o leque controlável; não há uma segunda fan de 36 gotas nem emissão em tentativa vazia;
+- micro-splash cosmético discreto no contato e áudio semanticamente separado entre pistas privadas do ator e eventos espaciais do mundo;
+- 15 famílias e 48 variantes próprias em OGG Vorbis mono/48 kHz, selecionadas por shuffle bag sem repetição imediata; commits de fill/load/dock/undock/release só soam após a mutação correspondente ter sido validada;
+- arquitetura híbrida deliberada: o servidor compartilha um único frame de release entre áudio, bridge e primeiro pulso, enquanto o script conserva o leque controlável; não há duplicação pela timeline nem emissão em tentativa vazia;
 - material opaco `entity`, textura com alfa integral, cubos com espessura positiva e box UV completo nas seis faces;
 - quatro níveis visuais de água e versão decorativa com o aspersório acomodado;
 - rotação visual em 16 direções por estado próprio e geometrias estáveis, sem traits de rotação experimentais;
@@ -69,12 +70,16 @@ Comandos importantes:
 | `npm run typecheck` | Verifica TypeScript contra Script API 2.9.0 |
 | `npm test` | Executa os testes unitários do domínio |
 | `npm run build` | Gera assets, compila o script e valida o conteúdo |
+| `npm run build:audio` | Reconstrói deterministicamente masters e 48 OGGs a partir das fontes versionadas |
 | `npm run validate:animation` | Amostra a coreografia a 120 Hz e verifica envelopes/continuidade |
 | `npm run validate:vfx` | Verifica locator, bridge, orientação, impacto, sons e fallback de 36 gotas |
+| `npm run validate:audio` | Verifica catálogo, definitions, proveniência, mono/48 kHz/Vorbis e ausência de órfãos |
 | `npm run package` | Cria e valida oficialmente o `.mcaddon` |
 | `npm run clean` | Remove somente artefatos gerados conhecidos |
 
 Os PNGs finais são gerados deterministicamente por [`tools/generate-assets.mjs`](tools/generate-assets.mjs). A referência visual em [`assets-src/concept-art/aspergillum-concept.png`](assets-src/concept-art/aspergillum-concept.png) orienta proporções e materiais, mas não é distribuída no add-on.
+
+Os SFX desta RC foram gerados com ElevenLabs no plano gratuito e, portanto, são **somente para validação não comercial e com atribuição**. Generated with ElevenLabs. Uma publicação comercial exige regenerar as fontes numa assinatura paga e substituir a proveniência antes do gate de release; veja [Contrato de áudio](docs/AUDIO_DESIGN_CONTRACT.md).
 
 ## Estrutura
 

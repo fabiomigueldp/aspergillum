@@ -2,13 +2,13 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.0.18g` Release Candidate (revisão numérica dos packs `[1, 0, 32]`)
+- **Versão de referência:** `1.0.19` Release Candidate (revisão numérica dos packs `[1, 0, 33]`)
 - **Engine mínima:** Creator `1.26.40`
 - **Script API:** `@minecraft/server` `2.9.0`, estável
 - **Experimentos:** nenhum
 - **Conteúdo:** aspersório funcional de quatro cargas, caldeirinha colocável de dezesseis unidades, docking decorativo e spray visual
 
-A v1.0.18g preserva a baseline física e o alinhamento da v1.0.18f ao Bedrock 26.40 e à Script API estável 2.9.0. A economia mantém a relação exata `4/16`: o domínio trabalha com unidades `0..16`, enquanto a infraestrutura as codifica em `water_base` (`0|9`) e `water_offset` (`0..8`), ambos dentro do limite runtime. A geometria continua projetando quatro quartos visuais; caldeirinhas já colocadas em revisões anteriores não são migradas por decisão explícita de desenvolvimento.
+A v1.0.19 preserva a baseline física 4/16 e o alinhamento ao Bedrock 26.40/Script API 2.9.0, mas promove o áudio a subsistema semântico. Quinze famílias e 48 variantes próprias substituem caminhos vanilla; preparação é privada do ator e commits/release são espaciais. Timelines do attachable não concedem nem duplicam áudio/VFX transacional.
 
 ## O que está resolvido
 
@@ -28,7 +28,7 @@ A v1.0.18g preserva a baseline física e o alinhamento da v1.0.18f ao Bedrock 26
 - `spray_aim` e `aspergillum_tip` acompanham a cabeça animada; uma emissão curta e world-space conecta visualmente a ponta ao leque no release válido.
 - As gotas principais preservam o billboard camera-readable `0.042 × 0.100` fisicamente aprovado; micro-splash permanece puramente cosmético.
 - Bridge, gotas e micro-splash usam arrays RGBA explícitos e azul dominante em cada keyframe, sem hex de oito dígitos ambíguo nem tint por iluminação local.
-- Preparação e release usam eventos sonoros próprios na timeline do attachable; o script não duplica o splash válido.
+- Preparação e release passam pelo `AudioPort`; o release ocorre no commit autoritativo e compartilha um único frame físico com bridge e primeiro pulso.
 - Trocar item ou dimensão cancela os pulsos restantes.
 - Itens brutos e schemas 0/1/2 migram para schema 3 em qualquer slot do inventário; schema futuro permanece intocado.
 - Lore usa `RawMessage` e chaves `pt_BR`/`en_US`, sem congelar o idioma no ItemStack.
@@ -36,7 +36,9 @@ A v1.0.18g preserva a baseline física e o alinhamento da v1.0.18f ao Bedrock 26
 - Overflow é recusado sem alterar água ou item; retirada exige mão vazia e quebra recupera o snapshot real.
 - Mensagens do action bar e lore são traduzidas pelo Resource Pack do próprio cliente; não há ramificação manual por locale.
 - Mensagens dinâmicas usam `%s` sequenciais compatíveis com o runtime; lore e action bar reiniciam explicitamente a formatação antes de aplicar a cor.
-- Cues sonoros script-side passam por um único coordenador fail-soft; feedback de carga adiciona somente duas microgotas limitadas à caldeirinha.
+- Cues passam por adaptador Bedrock fail-soft, catálogo tipado e shuffle bag sem repetição imediata; feedback de carga mantém somente duas microgotas limitadas à caldeirinha.
+- O pipeline versiona fontes selecionadas, masters, recipes, OGGs e hashes; `validate:audio` garante 48 arquivos mono/48 kHz/Vorbis sem órfãos ou caminhos vanilla.
+- Os SFX atuais foram gerados no plano free ElevenLabs: servem à RC não comercial com atribuição e precisam ser regenerados sob assinatura paga antes de distribuição comercial.
 
 ## Limitações conhecidas
 
@@ -56,7 +58,7 @@ A v1.0.18g preserva a baseline física e o alinhamento da v1.0.18f ao Bedrock 26
 
 ## Próxima mudança autorizada
 
-A v1.0.18g corrige o blocker de registro do bloco detectado no Content Log da 1.0.18e, preserva o alinhamento da 1.0.18f e deve passar pelo runbook [RELEASE_CANDIDATE.md](RELEASE_CANDIDATE.md), com prioridade para o gate Bedrock 26.40 e o gate `4/16` de [TESTING.md](TESTING.md). Novos pontos de polimento permanecem na família 1.0.18; `1.0.19` fica reservada para a V1 final.
+A v1.0.19 está pronta para QA físico pelo runbook [RELEASE_CANDIDATE.md](RELEASE_CANDIDATE.md). Os gates prioritários são Content Log limpo, economia 4/16, ausência de duplicação/cues em cancelamentos, roteamento privado/espacial e escuta humana das 48 variantes. A mídia atual bloqueia apenas publicação comercial, não o teste técnico da RC.
 
 Não faz parte do próximo marco:
 

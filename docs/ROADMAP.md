@@ -8,6 +8,27 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
+## v1.0.19 — sistema de áudio próprio — implementada; QA auditivo pendente
+
+Escopo fechado:
+
+- substituir sons vanilla provisórios por 15 famílias semânticas e 48 variantes próprias mono/48 kHz/Vorbis;
+- separar pistas privadas do ator de commits espaciais do mundo;
+- mover release sonoro e bridge para o commit autoritativo e compartilhar um único frame com o primeiro pulso;
+- impedir preparo/agendamento quando o cooldown nativo falhar;
+- garantir variação sem repetição imediata por shuffle bag;
+- versionar fontes, recipes, masters, OGGs, hashes e validar o inventário automaticamente;
+- preservar binding, poses, animações, partículas, steering, economia 4/16 e persistência.
+
+Gate de saída:
+
+- 200 ações válidas produzem 200 releases, sem duplicação;
+- 100 cancelamentos pré-release produzem zero releases;
+- cues privados não vazam para observador e cues espaciais têm origem correta;
+- todas as 48 variantes passam por escuta humana no Minecraft sem clipping, ruído, tom inadequado ou desequilíbrio;
+- Content Log não registra arquivo ou evento desconhecido;
+- mídia comercial é regenerada sob plano ElevenLabs pago antes de uma publicação comercial.
+
 ## v1.0.18g — codec compacto do reservatório — implementada; QA físico pendente
 
 Escopo fechado:

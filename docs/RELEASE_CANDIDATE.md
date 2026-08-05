@@ -2,13 +2,13 @@
 
 ## Identidade
 
-- Release Candidate: `1.0.18g`.
-- Revisão dos packs: `[1, 0, 32]`.
+- Release Candidate: `1.0.19`.
+- Revisão dos packs: `[1, 0, 33]`.
 - Baseline física herdada: `1.0.17a`, validada pelo usuário.
 - Experimentos: nenhum.
 - Autoridade: servidor para estado; cliente somente para apresentação.
 
-Esta revisão não reabre binding, grip, poses, animações, steering, partículas, schema ou snapshots. Ela preserva o alinhamento Bedrock 26.40/Script API 2.9.0 da 1.0.18f e corrige exclusivamente a codificação física das dezessete quantidades do reservatório.
+Esta revisão não reabre binding, grip, poses, animações, steering, partículas, schema ou snapshots. Ela preserva Bedrock 26.40/Script API 2.9.0 e substitui exclusivamente a apresentação sonora provisória por áudio semântico, transacional e próprio.
 
 ## Preflight automatizado
 
@@ -25,7 +25,7 @@ O gate falha quando versões divergem, catálogos `pt_BR`/`en_US` deixam de ser 
 
 1. Registrar o SHA-256 do artefato.
 2. Fechar o Minecraft e remover os dois packs antigos em Armazenamento.
-3. Importar somente `Aspergillum-1.0.18g.mcaddon`.
+3. Importar somente `Aspergillum-1.0.19.mcaddon`.
 4. Criar ou duplicar um mundo de teste sem experimentos.
 5. Limpar o Content Log antes de entrar.
 6. Executar `/function aspergillum/dev_kit`.
@@ -37,7 +37,8 @@ O gate falha quando versões divergem, catálogos `pt_BR`/`en_US` deixam de ser 
 | Encher | água aparece, balde/política Creative corretos, mensagem localizada única |
 | Carregar | item sempre visível em FP, dip e retorno contínuos em TP, commit no tick 10, duas microgotas discretas dentro do vaso e nenhum recurso duplicado |
 | Aspergir | animação e 36 gotas preservadas, carga/cooldown corretos |
-| Vazio | clique seco e mensagem localizada; nenhuma água |
+| Vazio | clique seco privado e mensagem localizada; nenhuma água ou release |
+| Áudio | 15 famílias/48 variantes legíveis, sem duplicação, com prepare privado e commits espaciais |
 | Acomodar | agachar + usar funciona uma vez, preserva identidade e recusa overflow |
 | Retirar | mão vazia devolve exatamente o item preservado |
 | Quebrar/reload | snapshot não duplica nem desaparece |
@@ -59,6 +60,8 @@ Não criar LOD por intuição. Registrar `/script profiler start` e `/script pro
 - desempenho aceitável na plataforma-alvo disponível.
 
 **No-go** ocorre diante de perda/duplicação, erro de conteúdo, falha de input, regressão visual bloqueante, mensagem não localizada ou degradação mensurável. A correção deve virar uma revisão RC incremental; não se altera silenciosamente o artefato já assinado.
+
+Publicação comercial também é **no-go** enquanto os 48 SFX desta RC free-tier não forem regenerados/substituídos sob licença ElevenLabs paga. Para teste não comercial, manter a atribuição “Generated with ElevenLabs”.
 
 ## Registro da decisão
 

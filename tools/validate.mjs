@@ -284,12 +284,8 @@ if (JSON.stringify(attachableDefinition?.scripts?.animate) !== JSON.stringify(ex
 if (attachableDefinition?.materials?.default !== "entity") {
   errors.push("Pose-calibration attachable must use the opaque entity material");
 }
-if (attachableDefinition?.particle_effects?.holy_water_release !== "aspergillum:holy_water_release") {
-  errors.push("Attachable must map the locator-bound holy-water release effect");
-}
-if (attachableDefinition?.sound_effects?.sprinkle_prepare !== "aspergillum.sprinkle.prepare"
-  || attachableDefinition?.sound_effects?.sprinkle_release !== "aspergillum.sprinkle.release") {
-  errors.push("Attachable must map the two custom sprinkle sound events");
+if (attachableDefinition?.particle_effects !== undefined || attachableDefinition?.sound_effects !== undefined) {
+  errors.push("Attachable timelines must not duplicate server-authorized transactional VFX or audio");
 }
 
 const holdAnimations = JSON.parse(

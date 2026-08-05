@@ -19,6 +19,7 @@ import {
   createAspergillum,
   getMainhand,
   giveOrDrop,
+  ensureInitializedAspergillumInMainhand,
   initializeAspergillum,
   isAspergillum,
   isAspergillumSchemaSupported,
@@ -41,8 +42,10 @@ import {
 } from "../infrastructure/docked-item-registry";
 import { commitMainhandAndBlock } from "../infrastructure/minecraft-transaction";
 import { playLoadingAnimation } from "../presentation/animation-coordinator";
+import { aspersoriumAcousticCenter } from "../presentation/audio/audio-location";
+import { audioPort } from "../presentation/audio/bedrock-audio-adapter";
+import type { TransferAmount } from "../presentation/audio/audio-port";
 import { ACTION_MESSAGES, action } from "../presentation/messaging";
-import { playSoundCue } from "../presentation/sound-coordinator";
 import { presentLoadedAspergillum } from "../presentation/wet-feedback";
 
 type AspersoriumInteractionIntent = "load" | "dock";
@@ -87,9 +90,31 @@ function fillFromBucket(player: Player, block: Block): void {
     return;
   }
 
-  block.setPermutation(withAspersoriumWater(block.permutation, WATER_BUCKET_FILL));
-  if (!policies.creative) setMainhand(player, new ItemStack("minecraft:bucket", 1));
-  playSoundCue(player, "aspersoriumFill");
+  const originalItem = getMainhand(player);
+  if (originalItem?.typeId !== "minecraft:water_bucket") return;
+  const originalPermutation = block.permutation;
+  const updatedPermutation = withAspersoriumWater(originalPermutation, WATER_BUCKET_FILL);
+  if (policies.creative) {
+    try {
+      block.setPermutation(updatedPermutation);
+    } catch (error) {
+      console.error(`[Aspergillum] Aspersorium fill transaction failed: ${String(error)}`);
+      return;
+    }
+  } else if (!commitMainhandAndBlock(
+    player,
+    originalItem,
+    new ItemStack("minecraft:bucket", 1),
+    block,
+    originalPermutation,
+    updatedPermutation,
+    "aspersorium fill",
+  )) return;
+  audioPort.emit(player, {
+    kind: "aspersorium.fill",
+    location: aspersoriumAcousticCenter(block.location),
+    actionId: `${player.id}:${system.currentTick}:fill`,
+  });
   action(player, ACTION_MESSAGES.aspersoriumFilled);
 }
 
@@ -114,11 +139,24 @@ function commitLoading(player: Player, session: LoadingSession): boolean {
   const originalPermutation = block.permutation;
   const updatedPermutation = withAspersoriumWater(originalPermutation, result.nextWater);
   const updatedItem = writeAspergillumState(currentItem, result.state);
-  if (!commitMainhandAndBlock(player, currentItem, updatedItem, block, originalPermutation, updatedPermutation)) {
+  if (!commitMainhandAndBlock(
+    player,
+    currentItem,
+    updatedItem,
+    block,
+    originalPermutation,
+    updatedPermutation,
+    "aspergillum load",
+  )) {
     action(player, ACTION_MESSAGES.loadingCancelled);
     return false;
   }
-  playSoundCue(player, "loadCommit");
+  audioPort.emit(player, {
+    kind: "load.commit",
+    amount: result.transferred as TransferAmount,
+    location: aspersoriumAcousticCenter(block.location),
+    actionId: session.leaseToken,
+  });
   presentLoadedAspergillum(player, block.location);
   if (policies.creative) action(player, ACTION_MESSAGES.chargesCreative);
   else action(player, ACTION_MESSAGES.chargesLoaded, result.state.charges);
@@ -134,8 +172,7 @@ function loadItem(player: Player, block: Block): void {
     action(player, ACTION_MESSAGES.futureSchema);
     return;
   }
-  const initialItem = initializeAspergillum(rawItem);
-  setMainhand(player, initialItem);
+  const initialItem = ensureInitializedAspergillumInMainhand(player, rawItem);
   const instanceId = readAspergillumInstanceId(initialItem);
   if (instanceId === undefined) return;
   const initialLevel = readAspersoriumWater(block);
@@ -167,7 +204,11 @@ function loadItem(player: Player, block: Block): void {
     return;
   }
 
-  playSoundCue(player, "loadPrepare");
+  audioPort.emit(player, {
+    kind: "load.prepare",
+    location: aspersoriumAcousticCenter(block.location),
+    actionId: started.session.leaseToken,
+  });
   playLoadingAnimation(player);
   action(player, ACTION_MESSAGES.loading);
 }
@@ -220,7 +261,12 @@ function dockItem(player: Player, block: Block): void {
     action(player, ACTION_MESSAGES.dockingCancelled);
     return;
   }
-  playSoundCue(player, "dock");
+  audioPort.emit(player, {
+    kind: "dock.commit",
+    returned: resolution.returnedCharges as 0 | TransferAmount,
+    location: aspersoriumAcousticCenter(block.location),
+    actionId: `${player.id}:${system.currentTick}:dock`,
+  });
   action(player, ACTION_MESSAGES.docked);
 }
 
@@ -251,7 +297,11 @@ function undockItem(player: Player, block: Block): void {
     action(player, ACTION_MESSAGES.undockingCancelled);
     return;
   }
-  playSoundCue(player, "undock");
+  audioPort.emit(player, {
+    kind: "undock.commit",
+    location: aspersoriumAcousticCenter(block.location),
+    actionId: `${player.id}:${system.currentTick}:undock`,
+  });
   action(player, ACTION_MESSAGES.undocked);
 }
 

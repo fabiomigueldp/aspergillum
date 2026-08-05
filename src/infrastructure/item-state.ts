@@ -102,6 +102,13 @@ export function initializeAspergillum(item: ItemStack): ItemStack {
   return migration.status === "future" ? item.clone() : writeAspergillumState(item, migration.state);
 }
 
+export function ensureInitializedAspergillumInMainhand(player: Player, item: ItemStack): ItemStack {
+  if (!needsAspergillumInitialization(item)) return item;
+  const initialized = initializeAspergillum(item);
+  setMainhand(player, initialized);
+  return initialized;
+}
+
 export function reissueAspergillumInstanceId(item: ItemStack): ItemStack {
   const updated = initializeAspergillum(item);
   if (!isAspergillumSchemaSupported(updated)) return updated;

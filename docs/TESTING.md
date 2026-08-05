@@ -4,6 +4,23 @@
 
 Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
 
+## Gate de áudio — v1.0.19
+
+- [ ] importar somente `Aspergillum-1.0.19.mcaddon` após fechar o jogo e remover revisões anteriores;
+- [ ] Content Log não contém erro/warning de evento, OGG, codec, caminho, definição ou chamada de áudio;
+- [ ] ouvir todas as variantes por repetição suficiente de fill, load `1..4`, dock `0..4`, undock, dry, prepare e release;
+- [ ] 200 aspersões válidas produzem exatamente 200 releases, nunca dois por ação;
+- [ ] 100 cancelamentos antes do tick 5 produzem zero release molhado;
+- [ ] 100 tentativas vazias produzem clique seco e zero release/água;
+- [ ] `sprinkle.prepare`, `load.prepare` e `dry` são privados do executor em multiplayer;
+- [ ] fill, commits, dock, retorno de água, undock e release são audíveis espacialmente por observadores;
+- [ ] nenhuma família com mais de uma variante repete imediatamente na fronteira de ciclos;
+- [ ] sons `1→4` comunicam magnitude crescente sem salto de volume desconfortável;
+- [ ] troca de slot, dimensão, morte, logout e falha de cooldown não deixam cue tardio;
+- [ ] animação, 36 gotas/seis pulsos, bridge, curvatura controlada, economia 4/16 e persistência não regrediram;
+- [ ] registrar plataforma, saída de áudio, volume master, distância e resultado de cada família;
+- [ ] antes de distribuição comercial, substituir os SFX free-tier por mídia gerada sob licença paga e repetir todo este gate.
+
 ## Pipeline automatizado
 
 `npm run check` deve cobrir:
@@ -149,8 +166,8 @@ Se o smoke test falhar, interrompa a matriz e capture a menor reprodução poss�
 ## Gate da correção v1.0.18d — placeholders e tipografia localizada
 
 - [ ] importar somente `Aspergillum-1.0.18e.mcaddon` após fechar o jogo e remover revisões antigas;
-- [ ] inspecionar itens com `0/3`, `1/3`, `2/3` e `3/3`: nenhum valor contém `%` antes do número;
-- [ ] carregar e aspergir nas mesmas quatro cargas: action bar mostra somente `n/3`, sem `%` residual;
+- [ ] inspecionar itens com `0/4`, `1/4`, `2/4`, `3/4` e `4/4`: nenhum valor contém `%` antes do número;
+- [ ] carregar e aspergir nas mesmas quatro cargas: action bar mostra somente `n/4`, sem `%` residual;
 - [ ] as quatro linhas da lore usam peso normal, sem inclinação itálica herdada;
 - [ ] cinza, cinza-escuro, azul-claro e vermelho preservam a hierarquia aprovada;
 - [ ] repetir em `pt_BR` e `en_US`, incluindo item existente criado antes da atualização;

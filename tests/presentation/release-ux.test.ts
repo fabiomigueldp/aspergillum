@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { ACTION_MESSAGES } from "../../src/presentation/messaging";
 import { LOAD_SPLASH_OFFSETS } from "../../src/presentation/wet-feedback";
-import { SOUND_CUES } from "../../src/presentation/sound-coordinator";
+import { AUDIO_VARIANTS } from "../../src/presentation/audio/audio-catalog";
 
 const root = path.resolve(import.meta.dirname, "../..");
 const loreKeys = [
@@ -78,14 +78,12 @@ describe("release UX contracts", () => {
     }
   });
 
-  it("keeps every script-side sound cue within a restrained mix envelope", () => {
-    for (const cue of Object.values(SOUND_CUES)) {
-      expect(cue.id.length).toBeGreaterThan(0);
-      expect(cue.pitch).toBeGreaterThan(0);
-      expect(cue.pitch).toBeLessThanOrEqual(2);
-      expect(cue.volume).toBeGreaterThan(0);
-      expect(cue.volume).toBeLessThanOrEqual(1);
-    }
+  it("exposes exactly 48 authored variants through namespaced semantic events", () => {
+    const variants = Object.values(AUDIO_VARIANTS).flat();
+    expect(variants).toHaveLength(48);
+    expect(new Set(variants).size).toBe(variants.length);
+    expect(variants.every((event) => event.startsWith("aspergillum."))).toBe(true);
+    expect(variants.every((event) => /\.v\d{2}$/.test(event))).toBe(true);
   });
 
   it("limits loading feedback to two subtle particles inside the vessel footprint", () => {

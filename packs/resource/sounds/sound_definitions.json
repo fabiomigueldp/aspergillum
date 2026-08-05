@@ -1,28 +1,972 @@
 {
-  "format_version": "1.14.0",
+  "format_version": "1.20.20",
   "sound_definitions": {
-    "aspergillum.sprinkle.prepare": {
+    "aspergillum.sprinkle.prepare.v01": {
       "category": "player",
+      "min_distance": 1,
+      "max_distance": 8,
       "sounds": [
         {
-          "name": "sounds/armor/equip_chain1",
-          "volume": 0.24,
-          "pitch": 1.48
+          "name": "sounds/aspergillum/sprinkle/prepare_01",
+          "volume": 0.3,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.sprinkle.prepare.v02": {
+      "category": "player",
+      "min_distance": 1,
+      "max_distance": 8,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/sprinkle/prepare_02",
+          "volume": 0.3,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.sprinkle.prepare.v03": {
+      "category": "player",
+      "min_distance": 1,
+      "max_distance": 8,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/sprinkle/prepare_03",
+          "volume": 0.3,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.sprinkle.prepare.v04": {
+      "category": "player",
+      "min_distance": 1,
+      "max_distance": 8,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/sprinkle/prepare_04",
+          "volume": 0.3,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.sprinkle.prepare": {
+      "category": "player",
+      "min_distance": 1,
+      "max_distance": 8,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/sprinkle/prepare_01",
+          "volume": 0.3,
+          "pitch": 1,
+          "weight": 1
         },
         {
-          "name": "sounds/armor/equip_chain2",
-          "volume": 0.22,
-          "pitch": 1.56
+          "name": "sounds/aspergillum/sprinkle/prepare_02",
+          "volume": 0.3,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/sprinkle/prepare_03",
+          "volume": 0.3,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/sprinkle/prepare_04",
+          "volume": 0.3,
+          "pitch": 1,
+          "weight": 1
+        }
+      ]
+    },
+    "aspergillum.sprinkle.release.v01": {
+      "category": "player",
+      "min_distance": 1,
+      "max_distance": 16,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/sprinkle/release_01",
+          "volume": 0.62,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.sprinkle.release.v02": {
+      "category": "player",
+      "min_distance": 1,
+      "max_distance": 16,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/sprinkle/release_02",
+          "volume": 0.62,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.sprinkle.release.v03": {
+      "category": "player",
+      "min_distance": 1,
+      "max_distance": 16,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/sprinkle/release_03",
+          "volume": 0.62,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.sprinkle.release.v04": {
+      "category": "player",
+      "min_distance": 1,
+      "max_distance": 16,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/sprinkle/release_04",
+          "volume": 0.62,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.sprinkle.release.v05": {
+      "category": "player",
+      "min_distance": 1,
+      "max_distance": 16,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/sprinkle/release_05",
+          "volume": 0.62,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.sprinkle.release.v06": {
+      "category": "player",
+      "min_distance": 1,
+      "max_distance": 16,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/sprinkle/release_06",
+          "volume": 0.62,
+          "pitch": 1
         }
       ]
     },
     "aspergillum.sprinkle.release": {
       "category": "player",
+      "min_distance": 1,
+      "max_distance": 16,
       "sounds": [
         {
-          "name": "sounds/random/splash",
-          "volume": 0.54,
-          "pitch": 1.34
+          "name": "sounds/aspergillum/sprinkle/release_01",
+          "volume": 0.62,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/sprinkle/release_02",
+          "volume": 0.62,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/sprinkle/release_03",
+          "volume": 0.62,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/sprinkle/release_04",
+          "volume": 0.62,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/sprinkle/release_05",
+          "volume": 0.62,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/sprinkle/release_06",
+          "volume": 0.62,
+          "pitch": 1,
+          "weight": 1
+        }
+      ]
+    },
+    "aspergillum.aspersorium.fill.v01": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 12,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/aspersorium/fill_01",
+          "volume": 0.72,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.aspersorium.fill.v02": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 12,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/aspersorium/fill_02",
+          "volume": 0.72,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.aspersorium.fill.v03": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 12,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/aspersorium/fill_03",
+          "volume": 0.72,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.aspersorium.fill.v04": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 12,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/aspersorium/fill_04",
+          "volume": 0.72,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.aspersorium.fill": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 12,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/aspersorium/fill_01",
+          "volume": 0.72,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/aspersorium/fill_02",
+          "volume": 0.72,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/aspersorium/fill_03",
+          "volume": 0.72,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/aspersorium/fill_04",
+          "volume": 0.72,
+          "pitch": 1,
+          "weight": 1
+        }
+      ]
+    },
+    "aspergillum.load.prepare.v01": {
+      "category": "player",
+      "min_distance": 1,
+      "max_distance": 8,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/load/prepare_01",
+          "volume": 0.32,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.load.prepare.v02": {
+      "category": "player",
+      "min_distance": 1,
+      "max_distance": 8,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/load/prepare_02",
+          "volume": 0.32,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.load.prepare.v03": {
+      "category": "player",
+      "min_distance": 1,
+      "max_distance": 8,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/load/prepare_03",
+          "volume": 0.32,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.load.prepare": {
+      "category": "player",
+      "min_distance": 1,
+      "max_distance": 8,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/load/prepare_01",
+          "volume": 0.32,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/load/prepare_02",
+          "volume": 0.32,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/load/prepare_03",
+          "volume": 0.32,
+          "pitch": 1,
+          "weight": 1
+        }
+      ]
+    },
+    "aspergillum.load.commit.1.v01": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 10,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/load/commit_1_01",
+          "volume": 0.55,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.load.commit.1.v02": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 10,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/load/commit_1_02",
+          "volume": 0.55,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.load.commit.1.v03": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 10,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/load/commit_1_03",
+          "volume": 0.55,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.load.commit.1": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 10,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/load/commit_1_01",
+          "volume": 0.55,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/load/commit_1_02",
+          "volume": 0.55,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/load/commit_1_03",
+          "volume": 0.55,
+          "pitch": 1,
+          "weight": 1
+        }
+      ]
+    },
+    "aspergillum.load.commit.2.v01": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 10,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/load/commit_2_01",
+          "volume": 0.62,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.load.commit.2.v02": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 10,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/load/commit_2_02",
+          "volume": 0.62,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.load.commit.2.v03": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 10,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/load/commit_2_03",
+          "volume": 0.62,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.load.commit.2": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 10,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/load/commit_2_01",
+          "volume": 0.62,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/load/commit_2_02",
+          "volume": 0.62,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/load/commit_2_03",
+          "volume": 0.62,
+          "pitch": 1,
+          "weight": 1
+        }
+      ]
+    },
+    "aspergillum.load.commit.3.v01": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 11,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/load/commit_3_01",
+          "volume": 0.7,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.load.commit.3.v02": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 11,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/load/commit_3_02",
+          "volume": 0.7,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.load.commit.3.v03": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 11,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/load/commit_3_03",
+          "volume": 0.7,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.load.commit.3": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 11,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/load/commit_3_01",
+          "volume": 0.7,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/load/commit_3_02",
+          "volume": 0.7,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/load/commit_3_03",
+          "volume": 0.7,
+          "pitch": 1,
+          "weight": 1
+        }
+      ]
+    },
+    "aspergillum.load.commit.4.v01": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 12,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/load/commit_4_01",
+          "volume": 0.78,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.load.commit.4.v02": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 12,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/load/commit_4_02",
+          "volume": 0.78,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.load.commit.4.v03": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 12,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/load/commit_4_03",
+          "volume": 0.78,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.load.commit.4.v04": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 12,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/load/commit_4_04",
+          "volume": 0.78,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.load.commit.4": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 12,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/load/commit_4_01",
+          "volume": 0.78,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/load/commit_4_02",
+          "volume": 0.78,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/load/commit_4_03",
+          "volume": 0.78,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/load/commit_4_04",
+          "volume": 0.78,
+          "pitch": 1,
+          "weight": 1
+        }
+      ]
+    },
+    "aspergillum.dock.mechanical.v01": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 10,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/dock/mechanical_01",
+          "volume": 0.58,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.dock.mechanical.v02": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 10,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/dock/mechanical_02",
+          "volume": 0.58,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.dock.mechanical.v03": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 10,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/dock/mechanical_03",
+          "volume": 0.58,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.dock.mechanical": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 10,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/dock/mechanical_01",
+          "volume": 0.58,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/dock/mechanical_02",
+          "volume": 0.58,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/dock/mechanical_03",
+          "volume": 0.58,
+          "pitch": 1,
+          "weight": 1
+        }
+      ]
+    },
+    "aspergillum.dock.water.1.v01": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 8,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/dock/water_1_01",
+          "volume": 0.26,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.dock.water.1.v02": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 8,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/dock/water_1_02",
+          "volume": 0.26,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.dock.water.1": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 8,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/dock/water_1_01",
+          "volume": 0.26,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/dock/water_1_02",
+          "volume": 0.26,
+          "pitch": 1,
+          "weight": 1
+        }
+      ]
+    },
+    "aspergillum.dock.water.2.v01": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 10,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/dock/water_2_01",
+          "volume": 0.34,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.dock.water.2.v02": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 10,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/dock/water_2_02",
+          "volume": 0.34,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.dock.water.2": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 10,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/dock/water_2_01",
+          "volume": 0.34,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/dock/water_2_02",
+          "volume": 0.34,
+          "pitch": 1,
+          "weight": 1
+        }
+      ]
+    },
+    "aspergillum.dock.water.3.v01": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 11,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/dock/water_3_01",
+          "volume": 0.42,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.dock.water.3.v02": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 11,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/dock/water_3_02",
+          "volume": 0.42,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.dock.water.3": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 11,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/dock/water_3_01",
+          "volume": 0.42,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/dock/water_3_02",
+          "volume": 0.42,
+          "pitch": 1,
+          "weight": 1
+        }
+      ]
+    },
+    "aspergillum.dock.water.4.v01": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 12,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/dock/water_4_01",
+          "volume": 0.5,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.dock.water.4.v02": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 12,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/dock/water_4_02",
+          "volume": 0.5,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.dock.water.4.v03": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 12,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/dock/water_4_03",
+          "volume": 0.5,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.dock.water.4": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 12,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/dock/water_4_01",
+          "volume": 0.5,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/dock/water_4_02",
+          "volume": 0.5,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/dock/water_4_03",
+          "volume": 0.5,
+          "pitch": 1,
+          "weight": 1
+        }
+      ]
+    },
+    "aspergillum.undock.v01": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 10,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/undock/undock_01",
+          "volume": 0.55,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.undock.v02": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 10,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/undock/undock_02",
+          "volume": 0.55,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.undock.v03": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 10,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/undock/undock_03",
+          "volume": 0.55,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.undock": {
+      "category": "block",
+      "min_distance": 1,
+      "max_distance": 10,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/undock/undock_01",
+          "volume": 0.55,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/undock/undock_02",
+          "volume": 0.55,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/undock/undock_03",
+          "volume": 0.55,
+          "pitch": 1,
+          "weight": 1
+        }
+      ]
+    },
+    "aspergillum.dry.v01": {
+      "category": "player",
+      "min_distance": 1,
+      "max_distance": 8,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/dry/dry_01",
+          "volume": 0.45,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.dry.v02": {
+      "category": "player",
+      "min_distance": 1,
+      "max_distance": 8,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/dry/dry_02",
+          "volume": 0.45,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.dry.v03": {
+      "category": "player",
+      "min_distance": 1,
+      "max_distance": 8,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/dry/dry_03",
+          "volume": 0.45,
+          "pitch": 1
+        }
+      ]
+    },
+    "aspergillum.dry": {
+      "category": "player",
+      "min_distance": 1,
+      "max_distance": 8,
+      "sounds": [
+        {
+          "name": "sounds/aspergillum/dry/dry_01",
+          "volume": 0.45,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/dry/dry_02",
+          "volume": 0.45,
+          "pitch": 1,
+          "weight": 1
+        },
+        {
+          "name": "sounds/aspergillum/dry/dry_03",
+          "volume": 0.45,
+          "pitch": 1,
+          "weight": 1
         }
       ]
     }
