@@ -2,7 +2,21 @@
 
 ## Objetivo
 
-A aspersão deve ser uma frase visual única — antecipação, condução, flick, release, follow-through e settle — sem lutar contra o swing iniciado pelo motor. Este contrato protege a v1.0.15d, aprovada fisicamente pelo usuário, e orienta refinamentos futuros.
+A aspersão deve ser uma frase visual única — antecipação, condução, flick, release, follow-through e settle — sem lutar contra o swing iniciado pelo motor. Este contrato protege a v1.0.15d, aprovada fisicamente pelo usuário, e também a composição camera-safe de carregamento introduzida na v1.0.18a.
+
+## Carregamento camera-safe
+
+O carregamento é uma correção aditiva de `0,8 s` aplicada sobre o movimento de uso iniciado pelo motor. Ele obedece aos seguintes invariantes:
+
+- `override_previous_animation: false`;
+- único bone permitido: `rightarm`;
+- `rightitem` pertence exclusivamente à hierarquia de item segurado e nunca é animado pela carga;
+- `blend_weight` é `0.32` em primeira pessoa e `1.0` em terceira pessoa;
+- curvas Catmull-Rom começam neutras em `0,00/0,04 s`, desaceleram na imersão e assentam em `0,76/0,80 s`;
+- magnitude de rotação bruta `≤ 21,5°`, mudança `≤ 6°` por frame a 30 FPS e no máximo uma reversão principal;
+- o commit transacional continua no tick 10 e não depende da animação ser reproduzida.
+
+O peso reduzido em primeira pessoa é parte do envelope de câmera, não uma pose estática alternativa. O item deve permanecer visível em todos os frames; a terceira pessoa conserva o arco completo para comunicar o movimento de descida e imersão. Falha visual permanece fail-soft e não altera água, cargas, sessão ou lock.
 
 ## Composição obrigatória
 
@@ -101,7 +115,7 @@ Contratos:
 
 O follow-through composto pode continuar até aproximadamente 60% do swing. A partir daí, o braço deve retornar uma única vez: sem overshoot, rebote ou segunda intenção. O validador reproduz a costura oficial de aproximadamente `30°`, exige erro inferior a `0,01°` antes do reset, no máximo uma reversão e variação inferior a `5°` por frame a 30 FPS durante o recovery.
 
-O validador deve falhar se reaparecer `animation.aspergillum.player.sprinkle.body`, `playSprinkleAnimation()`, qualquer canal em `rightitem` ou qualquer expansão artística da ponte além de `rightarm.y`.
+O validador deve falhar se reaparecer `animation.aspergillum.player.sprinkle.body`, `playSprinkleAnimation()`, qualquer canal em `rightitem` na aspersão ou carga, qualquer reset de pose no carregamento ou qualquer expansão artística da ponte além de `rightarm.y`.
 
 ## Gate de revisão
 

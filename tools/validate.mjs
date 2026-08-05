@@ -273,9 +273,10 @@ const actionAnimations = fs.existsSync(actionAnimationPath)
   : undefined;
 const loadAnimation = actionAnimations?.["animation.aspergillum.player.load"];
 if (loadAnimation?.animation_length !== 0.8
-  || loadAnimation?.override_previous_animation !== true
-  || Object.keys(loadAnimation?.bones ?? {}).sort().join() !== "rightarm,rightitem") {
-  errors.push("The accepted 16-tick loading choreography must remain unchanged");
+  || loadAnimation?.override_previous_animation !== false
+  || loadAnimation?.blend_weight !== "variable.is_first_person ? 0.32 : 1.0"
+  || Object.keys(loadAnimation?.bones ?? {}).join() !== "rightarm") {
+  errors.push("Loading must remain a camera-safe additive rightarm-only choreography");
 }
 const bodySprinkle = actionAnimations?.["animation.aspergillum.player.sprinkle.body"];
 const firstPersonSprinkle = actionAnimations?.["animation.aspergillum.action.sprinkle.first_person"];

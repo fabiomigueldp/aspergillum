@@ -3,28 +3,23 @@
   "animations": {
     "animation.aspergillum.player.load": {
       "animation_length": 0.8,
-      "override_previous_animation": true,
+      "blend_weight": "variable.is_first_person ? 0.32 : 1.0",
+      "override_previous_animation": false,
       "bones": {
         "rightarm": {
           "rotation": {
-            "0.0": [0, 0, 0],
-            "0.1": [-8, -3, 2],
-            "0.35": [-34, -8, 4],
-            "0.48": [-48, -6, 3],
-            "0.55": [-50, -4, 2],
-            "0.65": [-30, -2, 1],
-            "0.8": [0, 0, 0]
-          }
-        },
-        "rightitem": {
-          "rotation": {
-            "0.0": [0, 0, 0],
-            "0.1": [-5, 0, -2],
-            "0.35": [-14, 0, 5],
-            "0.48": [-20, 0, 7],
-            "0.55": [-20, 0, 7],
-            "0.65": [-8, 0, 3],
-            "0.8": [0, 0, 0]
+            "0.0": { "post": [0, 0, 0], "lerp_mode": "catmullrom" },
+            "0.04": { "post": [0, 0, 0], "lerp_mode": "catmullrom" },
+            "0.1": { "post": [-2, -1, 1], "lerp_mode": "catmullrom" },
+            "0.24": { "post": [-8, -3, 2], "lerp_mode": "catmullrom" },
+            "0.36": { "post": [-14, -4, 3], "lerp_mode": "catmullrom" },
+            "0.46": { "post": [-19, -4, 3], "lerp_mode": "catmullrom" },
+            "0.5": { "post": [-20, -4, 3], "lerp_mode": "catmullrom" },
+            "0.54": { "post": [-20, -4, 3], "lerp_mode": "catmullrom" },
+            "0.58": { "post": [-19, -3, 2], "lerp_mode": "catmullrom" },
+            "0.68": { "post": [-9, -1, 1], "lerp_mode": "catmullrom" },
+            "0.76": { "post": [0, 0, 0], "lerp_mode": "catmullrom" },
+            "0.8": { "post": [0, 0, 0], "lerp_mode": "catmullrom" }
           }
         }
       }

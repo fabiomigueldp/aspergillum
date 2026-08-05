@@ -189,7 +189,19 @@ Gate de saída:
 - cada gesto produz no máximo uma operação, uma mensagem e um snapshot;
 - Content Log permanece limpo.
 
-## v1.0.18 — UX, desempenho e Release Candidate — implementada; QA final pendente
+## v1.0.18a — correção camera-safe do carregamento — implementada; QA físico pendente
+
+Escopo fechado:
+
+- eliminar o desaparecimento do item no carregamento em primeira pessoa sem tocar em binding, grip ou poses estáticas;
+- remover reset de pose e qualquer canal `rightitem` da carga;
+- recompor o gesto como correção aditiva de `rightarm`, reduzida em primeira pessoa e integral em terceira;
+- preservar duração de 16 ticks, commit no tick 10, sessões, locks, água, cargas, som e micro-splash;
+- validar automaticamente bones, peso por perspectiva, Catmull-Rom, envelopes e settle.
+
+Gate de saída: item visível em 100% dos frames FP, dip ainda legível em TP, nenhuma dupla partida ou pop, transferência única no tick 10 e Content Log limpo.
+
+## v1.0.18 — UX, desempenho e Release Candidate — implementada; sucedida pela correção 1.0.18a
 
 Escopo:
 

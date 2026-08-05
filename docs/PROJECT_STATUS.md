@@ -2,13 +2,13 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.0.18` Release Candidate (revisão numérica dos packs `[1, 0, 25]`)
+- **Versão de referência:** `1.0.18a` Release Candidate (revisão numérica dos packs `[1, 0, 26]`)
 - **Engine mínima:** Creator `1.26.30`
 - **Script API:** `@minecraft/server` `2.8.0`, estável
 - **Experimentos:** nenhum
 - **Conteúdo:** aspersório funcional, caldeirinha colocável, carregamento, três cargas, docking decorativo e spray visual
 
-A v1.0.18 é o primeiro Release Candidate da V1. A baseline física validada da 1.0.17a permanece congelada; a revisão finaliza a apresentação textual e sonora, explicita o docking na lore e adiciona dois micro-respingos no commit válido do carregamento. Vinte e cinco mensagens do HUD agora usam tradução client-side, e um gate automatizado fiscaliza localização, mix, feedback limitado e consistência de release. Não existe LOD especulativo: desempenho deve ser medido no Minecraft antes de qualquer degradação adaptativa.
+A v1.0.18a é a primeira correção do Release Candidate. A revisão elimina uma dívida herdada da 1.0.15 que podia retirar o item do viewport durante a carga em primeira pessoa: a animação deixou de resetar a pose e de controlar `rightitem`, passando a somar somente um arco moderado em `rightarm`, reduzido por perspectiva. Todo o estado da 1.0.18 e a baseline física aprovada da aspersão permanecem congelados.
 
 ## O que está resolvido
 
@@ -23,7 +23,8 @@ A v1.0.18 é o primeiro Release Candidate da V1. A baseline física validada da 
 - O primeiro pulso transita desde a direção capturada no início do gesto; os demais transportam a base lateral sem flip vertical.
 - A carga é reservada no swing e consumida/preservada somente no release do tick 5.
 - `ActionLease` impede que carregar e aspergir concorram para o mesmo jogador.
-- O carregamento preserva a trajetória anterior; a aspersão usa o swing vanilla como arco principal, uma ponte Hermite exclusiva de `rightarm.y` para continuidade final e flick local em `aspergillum_action`.
+- O carregamento usa uma correção aditiva de `rightarm`, sem reset ou canal `rightitem`; a contribuição cai para 32% em primeira pessoa e mantém o arco completo em terceira.
+- A aspersão usa o swing vanilla como arco principal, uma ponte Hermite exclusiva de `rightarm.y` para continuidade final e flick local em `aspergillum_action`.
 - `spray_aim` e `aspergillum_tip` acompanham a cabeça animada; uma emissão curta e world-space conecta visualmente a ponta ao leque no release válido.
 - As gotas principais preservam o billboard camera-readable `0.042 × 0.100` fisicamente aprovado; micro-splash permanece puramente cosmético.
 - Bridge, gotas e micro-splash usam arrays RGBA explícitos e azul dominante em cada keyframe, sem hex de oito dígitos ambíguo nem tint por iluminação local.
@@ -40,7 +41,7 @@ A v1.0.18 é o primeiro Release Candidate da V1. A baseline física validada da 
 
 | Área | Situação atual | Consequência |
 | --- | --- | --- |
-| Carregamento | gesto próprio recém-integrado | trajetória e clipping ainda precisam de validação física em wide/slim e primeira/terceira pessoa |
+| Carregamento | composição camera-safe da 1.0.18a implementada | confirmar no pacote final que o item permanece visível em 100% dos frames FP e que o dip TP continua legível |
 | Aspersão | composição 1.0.15d fisicamente aprovada e congelada | nenhuma limitação estrutural conhecida; manter testes de regressão FP/TP |
 | Origem das gotas | bridge corrigido nasce em `aspergillum_tip`; leque balístico mantém origem matemática | QA recorrente deve confirmar ligação visual e comportamento remoto |
 | Cor das gotas | RGBA explícito e azul dominante durante toda a vida | QA da 1.0.16c deve confirmar ausência de branco excessivo e de verde/amarelo em gotas e impactos |
@@ -54,7 +55,7 @@ A v1.0.18 é o primeiro Release Candidate da V1. A baseline física validada da 
 
 ## Próxima mudança autorizada
 
-A v1.0.18 está implementada como Release Candidate e deve passar pelo runbook [RELEASE_CANDIDATE.md](RELEASE_CANDIDATE.md) e pela matriz de [TESTING.md](TESTING.md). Se não houver blocker, o próximo passo é promover os mesmos bytes à V1; qualquer correção encontrada recebe uma revisão RC incremental sem reabrir contratos aprovados.
+A v1.0.18a está implementada como correção do Release Candidate e deve passar pelo runbook [RELEASE_CANDIDATE.md](RELEASE_CANDIDATE.md), com prioridade para o gate de carregamento de [TESTING.md](TESTING.md). Se não houver novo blocker, o próximo passo é promover os mesmos bytes à V1.
 
 Não faz parte do próximo marco:
 

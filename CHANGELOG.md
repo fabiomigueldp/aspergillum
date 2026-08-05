@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.18a — 2026-08-04
+
+- corrigido o desaparecimento do aspersório durante o carregamento em primeira pessoa, sem alterar binding, grip ou pose estática;
+- removidos da carga o reset `override_previous_animation: true` e o canal absoluto de `rightitem`, que deslocavam toda a cadeia do attachable para fora do campo de visão;
+- recomposta a carga sobre o movimento vanilla como correção aditiva exclusiva de `rightarm`, com peso `0.32` em primeira pessoa e amplitude integral em terceira;
+- redesenhado o gesto de 0,8 s como arco Catmull-Rom único, com entrada neutra, desaceleração na imersão, retenção curta e settle antes do encerramento;
+- mantidos o commit transacional no tick 10, água, cargas, sessões, locks, rollback, microgotas, sons e toda a aspersão aprovada;
+- ampliado o validador de coreografia com contrato próprio para carregamento, envelope de movimento, limites de continuidade e proibição de `rightitem`;
+- o rótulo distribuído é `1.0.18a`; a revisão monotônica dos packs é `[1,0,26]`.
+
 ## 1.0.18 — 2026-08-04
 
 - promovida a baseline validada da 1.0.17a ao primeiro Release Candidate da V1, sem alterar binding, poses, animação, spray, steering ou persistência;

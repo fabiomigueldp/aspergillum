@@ -10,6 +10,7 @@ const errors = [];
 
 const animations = JSON.parse(fs.readFileSync(animationPath, "utf8")).animations;
 const controllers = JSON.parse(fs.readFileSync(controllerPath, "utf8")).animation_controllers;
+const loading = animations["animation.aspergillum.player.load"];
 const body = animations["animation.aspergillum.player.sprinkle.body"];
 const recoveryBridge = animations["animation.aspergillum.player.sprinkle.recovery_bridge"];
 const firstPerson = animations["animation.aspergillum.action.sprinkle.first_person"];
@@ -205,6 +206,42 @@ function validateChannel({
   return metrics;
 }
 
+if (loading?.animation_length !== 0.8
+  || loading?.override_previous_animation !== false
+  || loading?.blend_weight !== "variable.is_first_person ? 0.32 : 1.0") {
+  errors.push("Loading must be an additive 0.8-second action with the camera-safe first-person weight");
+}
+if (Object.keys(loading?.bones ?? {}).join() !== "rightarm") {
+  errors.push("Loading may animate only rightarm; rightitem must remain owned by the held-item hierarchy");
+}
+const loadingFrames = parseChannel(loading?.bones?.rightarm?.rotation, "loading/rightarm rotation");
+if (loadingFrames.some((frame) => frame.mode !== "catmullrom")) {
+  errors.push("Loading must use Catmull-Rom interpolation throughout its single controlled arc");
+}
+for (const time of [0, 0.04, 0.76, 0.8]) {
+  const frame = loadingFrames.find((candidate) => Math.abs(candidate.time - time) <= 1e-6);
+  if (!frame || !isNeutral(frame.value, 0.01)) {
+    errors.push(`Loading requires a neutral camera-safe boundary pose at ${time.toFixed(2)} seconds`);
+  }
+}
+const loadingMetrics = validateChannel({
+  animation: loading,
+  bone: "rightarm",
+  channelName: "rotation",
+  label: "loading/rightarm rotation",
+  maximumMagnitude: 21.5,
+  endpointTolerance: 0.01,
+  maximumFrameDelta: 6,
+  maximumVelocity: 180,
+  maximumAcceleration: 7500,
+  minimumSpeed: 4,
+  maximumDirectionChange: 90,
+  heroTime: 0.55,
+});
+if (loadingMetrics && loadingMetrics.maximumVelocity * 0.32 > 60) {
+  errors.push("First-person loading exceeds its reduced camera-safe velocity envelope");
+}
+
 if (firstPerson?.animation_length !== 0.82 || thirdPerson?.animation_length !== 0.82) {
   errors.push("Sprinkle choreography must settle at 0.82 seconds and leave the cooldown buffer untouched");
 }
@@ -334,6 +371,9 @@ const summary = summaries
   .filter(([, metrics]) => metrics !== undefined)
   .map(([label, metrics]) => `${label}: v=${metrics.maximumVelocity.toFixed(1)}, a=${metrics.maximumAcceleration.toFixed(1)}, turn=${metrics.maximumDirectionChange.toFixed(1)}°, reversals=${metrics.activeReversals}`)
   .join("; ");
-console.log("Validated seam-compensated native arm recovery, perspective-specific item choreography, cooldown gating, and release continuity.");
+console.log("Validated camera-safe loading, seam-compensated native arm recovery, perspective-specific item choreography, cooldown gating, and release continuity.");
+if (loadingMetrics) {
+  console.log(`Loading metrics (120 Hz): v=${loadingMetrics.maximumVelocity.toFixed(1)}, a=${loadingMetrics.maximumAcceleration.toFixed(1)}, turn=${loadingMetrics.maximumDirectionChange.toFixed(1)}°, FP weighted v=${(loadingMetrics.maximumVelocity * 0.32).toFixed(1)}.`);
+}
 console.log(`Recovery bridge: native seam=${vanillaEndpointJump.toFixed(2)}°, composed frame delta=${recoveryMaximumFrameDelta.toFixed(2)}°, reversals=${recoveryReversals}.`);
 console.log(`Choreography metrics (120 Hz): ${summary}`);

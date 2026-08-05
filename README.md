@@ -2,12 +2,12 @@
 
 Add-On para Minecraft: Bedrock Edition 26.34/35 que adiciona um **aspersório litúrgico funcional** e uma **caldeirinha (aspersorium) colocável**. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão 1.0.18 RC:** consolida a baseline validada com mensagens totalmente localizadas pelo cliente, instruções de docking na lore, mix sonoro fail-soft e feedback molhado discreto no carregamento. Nenhum contrato visual ou de estado foi reaberto.
+> **Versão 1.0.18a RC:** corrige de forma isolada o desaparecimento do item durante o carregamento em primeira pessoa. O gesto agora é uma camada aditiva camera-safe em `rightarm`, sem reset de pose nem animação de `rightitem`; estado, binding, poses e aspersão permanecem congelados.
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/releases/Aspergillum-1.0.18.mcaddon`](dist/releases/Aspergillum-1.0.18.mcaddon) com o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.0.18a.mcaddon`](dist/releases/Aspergillum-1.0.18a.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
@@ -35,7 +35,7 @@ As cargas permanecem gravadas no item. Ao acomodá-lo, cargas restantes retornam
 - filho neutro `aspergillum_action`, com malha separada em `handle` e `sprinkler_head`; a cabeça hospeda `spray_aim` e o locator `aspergillum_tip` sem tocar no binding;
 - malha real de 15,6 unidades autorada ao redor do grip empírico `[-6, 24, 1]`, nove unidades acima da pose da 1.0.8;
 - geometria base `[25, 0, -12]`, correção de apresentação exclusiva da terceira pessoa `position [5, -1.5, -2.25]`/`rotation [10, 0, 0]` e primeira pessoa aprovada preservada sem translação;
-- carregamento de 16 ticks preservado; na aspersão, o swing vanilla fornece o arco principal e uma ponte aditiva exclusiva de terceira pessoa neutraliza progressivamente sua costura final em `rightarm.y`, sem reset nem segunda coreografia absoluta;
+- carregamento de 16 ticks recomposto como correção aditiva exclusiva de `rightarm`: peso reduzido a `0.32` em primeira pessoa, amplitude integral em terceira, nenhum canal `rightitem` e settle antes de `0,8 s`; na aspersão, o swing vanilla fornece o arco principal e uma ponte aditiva exclusiva de terceira pessoa neutraliza progressivamente sua costura final em `rightarm.y`;
 - `aspergillum_action` executa um flick compacto de primeira pessoa ou uma silhueta mais ampla de terceira pessoa, selecionados por controller e pelo contexto da perspectiva;
 - aspersão reservada no swing e confirmada no tick 5: cancelamento anterior não consome carga e cancelamento posterior não reembolsa;
 - emissão balística de 36 gotas em seis grupos espaciais contínuos, sincronizada ao release e visível no multiplayer;

@@ -140,7 +140,7 @@ O contrato atual e os valores numéricos estão em [Contrato visual](VISUAL_CONT
 - `aspergillum_action`: raiz neutra das peças `handle` e `sprinkler_head`, responsável pela ação local;
 - `spray_aim`: filho técnico da cabeça que hospeda `aspergillum_tip` sem malha.
 
-Timeline de carregamento (`0.80 s`): antecipação, avanço/descida, imersão, commit no tick 10, retenção e retorno.
+Timeline de carregamento (`0.80 s`): movimento vanilla como base, correção aditiva exclusiva de `rightarm`, antecipação curta, avanço/descida, imersão, commit no tick 10, retenção e settle. A contribuição usa peso `0.32` em primeira pessoa e `1.0` em terceira; `rightitem` nunca é animado por esse fluxo.
 
 Timeline de aspersão (`18 ticks/0.90 s`): o swing vanilla fornece o movimento amplo; uma animação finita de `1,10 s`, iniciada somente para aspersão autorizada, soma em terceira pessoa uma compensação Hermite a `rightarm.y` entre 50% e 100% de `variable.attack_time`. Ela cancela o ramo final de `-30°` da curva oficial sem resetar a pose, sem tocar em `rightitem` e sem alterar a primeira pessoa. Um controller do attachable seleciona a coreografia FP/TP de `aspergillum_action`; a ação local assenta em `0,82 s`, deixa `0,08 s` de buffer e libera água no tick 5. Falhas de apresentação continuam sem interferir no estado.
 

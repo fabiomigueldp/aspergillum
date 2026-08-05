@@ -108,9 +108,21 @@ Antes de testes extensos:
 
 Se o smoke test falhar, interrompa a matriz e capture a menor reprodução possível.
 
+## Gate da correção v1.0.18a — carregamento em primeira pessoa
+
+- [ ] importar somente `Aspergillum-1.0.18a.mcaddon`, fechar e reabrir o jogo antes do teste;
+- [ ] em primeira pessoa, manter a câmera imóvel e carregar três vezes: item e mão permanecem visíveis do início ao settle;
+- [ ] repetir olhando levemente para cima, em frente e para baixo: o item não cruza a mira, borda superior nem desaparece;
+- [ ] confirmar que não existe reset, dupla partida ou pop no começo/fim;
+- [ ] em terceira pessoa traseira, frontal e lateral, o arco de carga continua legível e não atravessa rosto/ombro;
+- [ ] água e cargas mudam uma única vez no tick 10; cancelamento anterior não altera recursos;
+- [ ] as duas microgotas e o som de commit continuam ocorrendo somente em carga válida;
+- [ ] aspersão, docking, retirada e quebra permanecem idênticos à 1.0.18;
+- [ ] Content Log não contém erro de Molang, animação, bone ou recurso do add-on.
+
 ## Gate do Release Candidate v1.0.18
 
-- [ ] importar `Aspergillum-1.0.18.mcaddon` após remover packs antigos;
+- [ ] importar `Aspergillum-1.0.18a.mcaddon` após remover packs antigos;
 - [ ] selecionar o item mostra quatro linhas de lore, incluindo agachar + usar e mão vazia;
 - [ ] `pt_BR` e `en_US` traduzem lore e todas as mensagens do action bar no cliente correspondente;
 - [ ] carregar com sucesso mantém animação/estado anteriores e acrescenta apenas duas microgotas discretas dentro da caldeirinha;
