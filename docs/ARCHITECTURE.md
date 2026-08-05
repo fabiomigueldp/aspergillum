@@ -179,9 +179,9 @@ O comportamento do spray está externalizado em `SprayProfile`. O perfil `standa
 
 | Área | Versão |
 | --- | --- |
-| Engine mínima | `1.26.30` |
+| Engine mínima | `1.26.40` |
 | Manifest | `2` |
 | Geometry attachable | `1.16.0` |
-| Script API | `@minecraft/server` `2.8.0` |
+| Script API | `@minecraft/server` `2.9.0` |
 | TypeScript | `5.9.x` |
 | Creator Tools | `0.17.7` |

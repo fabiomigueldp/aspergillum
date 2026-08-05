@@ -2,13 +2,13 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.0.18e` Release Candidate (revisão numérica dos packs `[1, 0, 30]`)
-- **Engine mínima:** Creator `1.26.30`
-- **Script API:** `@minecraft/server` `2.8.0`, estável
+- **Versão de referência:** `1.0.18f` Release Candidate (revisão numérica dos packs `[1, 0, 31]`)
+- **Engine mínima:** Creator `1.26.40`
+- **Script API:** `@minecraft/server` `2.9.0`, estável
 - **Experimentos:** nenhum
 - **Conteúdo:** aspersório funcional de quatro cargas, caldeirinha colocável de dezesseis unidades, docking decorativo e spray visual
 
-A v1.0.18e preserva integralmente a baseline física e amplia a economia de água para uma relação exata `4/16`: o aspersório carrega quatro unidades e a caldeirinha armazena dezesseis. O reservatório mantém quantidade exata em block state e projeta quatro quartos visuais; caldeirinhas já colocadas em revisões anteriores não são migradas por decisão explícita de desenvolvimento.
+A v1.0.18f preserva integralmente a baseline física da v1.0.18e e alinha o add-on ao Bedrock 26.40 e à Script API estável 2.9.0. A economia de água mantém a relação exata `4/16`: o aspersório carrega quatro unidades e a caldeirinha armazena dezesseis. O reservatório mantém quantidade exata em block state e projeta quatro quartos visuais; caldeirinhas já colocadas em revisões anteriores não são migradas por decisão explícita de desenvolvimento.
 
 ## O que está resolvido
 
@@ -56,7 +56,7 @@ A v1.0.18e preserva integralmente a baseline física e amplia a economia de águ
 
 ## Próxima mudança autorizada
 
-A v1.0.18e está implementada como revisão de capacidade do Release Candidate e deve passar pelo runbook [RELEASE_CANDIDATE.md](RELEASE_CANDIDATE.md), com prioridade para o gate `4/16` de [TESTING.md](TESTING.md). Novos pontos de polimento permanecem na família 1.0.18; `1.0.19` fica reservada para a V1 final.
+A v1.0.18f está implementada como revisão de alinhamento do Release Candidate e deve passar pelo runbook [RELEASE_CANDIDATE.md](RELEASE_CANDIDATE.md), com prioridade para o gate Bedrock 26.40 e o gate `4/16` de [TESTING.md](TESTING.md). Novos pontos de polimento permanecem na família 1.0.18; `1.0.19` fica reservada para a V1 final.
 
 Não faz parte do próximo marco:
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.18f — 2026-08-05
+
+- alinhado o alvo dos manifests com o lançamento estável Minecraft Bedrock 26.40 (`min_engine_version` `1.26.40`);
+- atualizado o módulo estável `@minecraft/server` de `2.8.0` para `2.9.0`, sem adotar a linha beta `2.10.0`;
+- preservados integralmente binding, geometria `1.16.0`, poses, animações, VFX, cargas finitas, sessões, locks, docking e identificadores públicos;
+- nenhuma API ou feature experimental foi introduzida; o add-on continua sem exigir experimentos;
+- o rótulo distribuído é `1.0.18f`; a revisão monotônica dos packs é `[1,0,31]`.
+
 ## 1.0.18e — 2026-08-05
 
 - ampliada a capacidade persistente do aspersório de `3` para `4` cargas e a capacidade exata da caldeirinha de `3` para `16` unidades de água benta;

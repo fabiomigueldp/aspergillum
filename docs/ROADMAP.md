@@ -8,6 +8,22 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
+## v1.0.18f — alinhamento com Bedrock 26.40 — implementada; QA físico pendente
+
+Escopo fechado:
+
+- elevar o alvo mínimo dos manifests para Creator `1.26.40`;
+- atualizar a dependência estável `@minecraft/server` para `2.9.0`, sem usar `2.10.0` beta;
+- preservar integralmente a baseline funcional 4/16 da 1.0.18e e todos os contratos públicos;
+- manter manifest v2, geometria `1.16.0`, rotação própria em 16 estados, nenhuma feature experimental e nenhuma alteração de gameplay.
+
+Gate de saída:
+
+- `npm run check`, `npm run package` e `validate:mcaddon` verdes;
+- Content Log limpo no Bedrock 26.40;
+- smoke test 4/16, aspersão, docking, persistência e matriz visual repetidos no pacote `1.0.18f`;
+- nenhum aviso novo atribuído ao add-on.
+
 ## v1.0.15 — Fundação de animação e semântica de release — implementada
 
 Escopo:

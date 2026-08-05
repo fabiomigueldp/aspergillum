@@ -1,17 +1,17 @@
 # Aspergillum
 
-Add-On para Minecraft: Bedrock Edition 26.34/35 que adiciona um **aspersório litúrgico funcional** e uma **caldeirinha (aspersorium) colocável**. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
+Add-On para Minecraft: Bedrock Edition 26.40 que adiciona um **aspersório litúrgico funcional** e uma **caldeirinha (aspersorium) colocável**. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão 1.0.18e RC:** amplia o aspersório para quatro cargas e a caldeirinha para dezesseis unidades exatas, organizadas em quatro quartos visuais. Animação, VFX, binding e persistência do item permanecem preservados.
+> **Versão 1.0.18f RC:** alinha os manifests ao Bedrock 26.40 e usa `@minecraft/server` 2.9.0 estável. A capacidade 4/16, animação, VFX, binding e persistência do item permanecem preservados.
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/releases/Aspergillum-1.0.18e.mcaddon`](dist/releases/Aspergillum-1.0.18e.mcaddon) com o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.0.18f.mcaddon`](dist/releases/Aspergillum-1.0.18f.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
-O alvo mínimo é Creator `1.26.30`, correspondente à linha pública Bedrock 26.34/35. O módulo estável é `@minecraft/server` `2.8.0`.
+O alvo mínimo é Creator `1.26.40`, correspondente ao Bedrock 26.40. O módulo estável é `@minecraft/server` `2.9.0`.
 
 ## Como usar
 
@@ -66,7 +66,7 @@ Comandos importantes:
 
 | Comando | Resultado |
 | --- | --- |
-| `npm run typecheck` | Verifica TypeScript contra Script API 2.8.0 |
+| `npm run typecheck` | Verifica TypeScript contra Script API 2.9.0 |
 | `npm test` | Executa os testes unitários do domínio |
 | `npm run build` | Gera assets, compila o script e valida o conteúdo |
 | `npm run validate:animation` | Amostra a coreografia a 120 Hz e verifica envelopes/continuidade |

@@ -108,6 +108,17 @@ Antes de testes extensos:
 
 Se o smoke test falhar, interrompa a matriz e capture a menor reprodução possível.
 
+## Gate de alinhamento Bedrock 26.40 — v1.0.18f
+
+- [ ] importar somente `Aspergillum-1.0.18f.mcaddon` após fechar o jogo e remover revisões antigas;
+- [ ] confirmar nos manifests importados `min_engine_version = [1, 26, 40]`, `@minecraft/server = 2.9.0` e `format_version = 2`;
+- [ ] criar mundo sem Beta APIs, Upcoming Creator Features ou qualquer experimento;
+- [ ] Content Log não contém erro de dependência, manifesto, custom component, Molang, animação, partícula ou som;
+- [ ] repetir o smoke test 4/16 e as interações de aspersão, docking, retirada, quebra e reload;
+- [ ] confirmar que binding, poses, grip, sessões, locks, snapshots, cooldown, 36 gotas/seis pulsos e bridge permanecem sem regressão;
+- [ ] repetir primeira/terceira pessoa local e observador multiplayer disponível;
+- [ ] registrar hash do `.mcaddon`, versão AppX/Bedrock e sinais observados antes de declarar GO.
+
 ## Gate da revisão v1.0.18e — capacidade 4/16
 
 - [ ] importar somente `Aspergillum-1.0.18e.mcaddon` após fechar o jogo e remover revisões antigas;
@@ -159,7 +170,7 @@ Se o smoke test falhar, interrompa a matriz e capture a menor reprodução poss�
 
 ## Gate do Release Candidate v1.0.18
 
-- [ ] importar `Aspergillum-1.0.18e.mcaddon` após remover packs antigos;
+- [ ] importar `Aspergillum-1.0.18f.mcaddon` após remover packs antigos;
 - [ ] selecionar o item mostra quatro linhas de lore, incluindo agachar + usar e mão vazia;
 - [ ] `pt_BR` e `en_US` traduzem lore e todas as mensagens do action bar no cliente correspondente;
 - [ ] carregar com sucesso mantém animação/estado anteriores e acrescenta apenas duas microgotas discretas dentro da caldeirinha;

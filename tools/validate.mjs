@@ -44,8 +44,13 @@ if (new Set(uuids).size !== uuids.length) errors.push("Manifest UUIDs are not un
 if (!behaviorManifest.dependencies.some((dependency) => dependency.uuid === resourceManifest.header.uuid)) {
   errors.push("Behavior Pack does not depend on the Resource Pack UUID");
 }
-if (!behaviorManifest.dependencies.some((dependency) => dependency.module_name === "@minecraft/server" && dependency.version === "2.8.0")) {
-  errors.push("Behavior Pack must pin @minecraft/server 2.8.0");
+if (!behaviorManifest.dependencies.some((dependency) => dependency.module_name === "@minecraft/server" && dependency.version === "2.9.0")) {
+  errors.push("Behavior Pack must pin @minecraft/server 2.9.0");
+}
+for (const [label, manifest] of [["Behavior", behaviorManifest], ["Resource", resourceManifest]]) {
+  if (JSON.stringify(manifest.header.min_engine_version) !== JSON.stringify([1, 26, 40])) {
+    errors.push(`${label} Pack must target min_engine_version 1.26.40`);
+  }
 }
 if (behaviorManifest.header.name === resourceManifest.header.name) {
   errors.push("Behavior and Resource Packs require distinct localization keys");

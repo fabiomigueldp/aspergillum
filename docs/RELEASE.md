@@ -4,7 +4,7 @@
 
 - Node.js `20.11` ou superior;
 - dependências instaladas por `npm install`/`npm ci`;
-- Minecraft Bedrock compatível com Creator `1.26.30` para teste manual.
+- Minecraft Bedrock compatível com Creator `1.26.40` para teste manual.
 
 ## Comandos
 
@@ -53,7 +53,7 @@ dist/
 
 O empacotador ordena todos os caminhos e usa timestamps ZIP fixos. Duas execuções sobre a mesma árvore devem produzir bytes e SHA-256 idênticos.
 
-Revisões com sufixo diagnóstico usam `package.json > aspergillum.releaseLabel` no nome do artefato e do relatório. Como o manifest Bedrock aceita apenas `[major, minor, patch]` numérico, `1.0.15b` corresponde a `[1,0,16]`, `1.0.15c` a `[1,0,17]`, `1.0.15d` a `[1,0,18]`, `1.0.16` a `[1,0,19]`, `1.0.16a` a `[1,0,20]`, `1.0.16b` a `[1,0,21]`, `1.0.16c` a `[1,0,22]`, `1.0.17` a `[1,0,23]`, `1.0.17a` a `[1,0,24]`, `1.0.18` a `[1,0,25]`, `1.0.18a` a `[1,0,26]`, `1.0.18b` a `[1,0,27]`, `1.0.18c` a `[1,0,28]`, `1.0.18d` a `[1,0,29]` e `1.0.18e` a `[1,0,30]`; o próximo pacote nunca deve reutilizar essas trincas. A futura `1.0.19` final deverá usar uma revisão numérica posterior.
+Revisões com sufixo diagnóstico usam `package.json > aspergillum.releaseLabel` no nome do artefato e do relatório. Como o manifest Bedrock aceita apenas `[major, minor, patch]` numérico, `1.0.15b` corresponde a `[1,0,16]`, `1.0.15c` a `[1,0,17]`, `1.0.15d` a `[1,0,18]`, `1.0.16` a `[1,0,19]`, `1.0.16a` a `[1,0,20]`, `1.0.16b` a `[1,0,21]`, `1.0.16c` a `[1,0,22]`, `1.0.17` a `[1,0,23]`, `1.0.17a` a `[1,0,24]`, `1.0.18` a `[1,0,25]`, `1.0.18a` a `[1,0,26]`, `1.0.18b` a `[1,0,27]`, `1.0.18c` a `[1,0,28]`, `1.0.18d` a `[1,0,29]`, `1.0.18e` a `[1,0,30]` e `1.0.18f` a `[1,0,31]`; o próximo pacote nunca deve reutilizar essas trincas. A futura `1.0.19` final deverá usar uma revisão numérica posterior.
 
 ### Avisos offline conhecidos
 
