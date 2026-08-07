@@ -2,7 +2,7 @@
 
 Este documento registra os valores estruturais comprovados até a v1.0.15d, a integração VFX corrigida até a v1.0.16c e o pipeline de superfície/coerência de composição atualizado na v1.0.19b. Eles são baseline, não sugestões de calibração.
 
-A v1.1 adiciona somente variantes de superfície e perfis de spray. Nenhum acabamento pode alterar bones, pivôs, origins, sizes, UV layout, grip, locator ou poses abaixo. `classic` deve permanecer visualmente equivalente à 1.0.20; as oito variantes trocam apenas color/normal/MER derivados do catálogo. A réplica apresentada na Mesa do Sacristão conserva escala global `0.72`, centro dos mesmos dez cubos no pivô `[0, 16.2, 0]` e os mesmos UVs. A única exceção local, aprovada por evidência física na v1.1.2, é o pomo: profundidade axial `0.56` e sobreposição interna de `0.04` com o couro para impedir cintilação subpixel. Isso não redefine o attachable empunhado.
+A v1.1 adiciona variantes de superfície, perfis de spray e o refinamento físico do pomo da v1.1.3. Nenhum acabamento pode alterar bones, pivôs, UV layout, grip, locator ou poses abaixo. `classic` mantém a linguagem material da 1.0.20; as oito variantes trocam apenas color/normal/MER derivados do catálogo. Item empunhado, caldeirinha e mesa derivam os mesmos onze cubos e UVs da fonte autoral, sem exceção geométrica local.
 
 ## Attachable
 
@@ -29,7 +29,7 @@ rightItem (holder)
 | Escala | `1` |
 | Comprimento | `15.6` unidades de modelo (`0.975` bloco) |
 | Largura máxima da cabeça | `4.94` unidades de modelo |
-| Cubos reais | `10`: quatro no cabo e seis na cabeça |
+| Cubos reais | `11`: cinco no cabo e seis na cabeça |
 | Fonte autoral | `assets-src/models/aspergillum.model.json` |
 | UV distribuído | seis faces explícitas por cubo, coordenadas e `uv_size` inteiros |
 | Atlas do item | `128 × 128`, densidade de `2` texels por unidade de modelo |
@@ -38,7 +38,7 @@ rightItem (holder)
 | Superfícies | grip `leather`; pomo/haste/cabeça `silver`; férula `gold`; corpo da cabeça `perforated_silver` |
 | Cabeça v1.0.19b | anel inferior, domo inferior, corpo perfurado, domo superior, anel superior e terminal, dentro do envelope anterior |
 | Fonte autoral do bloco | `assets-src/models/aspersorium.model.json` |
-| Composição acomodada | os dez cubos e UVs do item são transladados pelo gerador; não existe réplica simplificada |
+| Composição acomodada | os onze cubos e UVs do item são transladados pelo gerador; não existe réplica simplificada |
 | Primeira pessoa: posição aditiva | `[0, 0, 0]` |
 | Primeira pessoa: rotação aditiva | `[180, 0, 0]` |
 | Primeira pessoa: rotação efetiva | `[205, 0, -12]` |
@@ -57,6 +57,7 @@ rightItem (holder)
 - Dimensão física e resolução de UV são contratos distintos: cubos podem permanecer abaixo de uma unidade para preservar a silhueta, mas a densidade aprovada é de dois texels por unidade e nenhuma face pode receber menos de um texel.
 - Box UV é proibido no attachable empunhado enquanto houver dimensão menor que uma unidade; as seis faces devem permanecer explícitas e dentro do atlas.
 - Color, normal e MER devem nascer do mesmo layout gerado. Não se edita um PNG final ou a geometria distribuída isoladamente.
+- O pomo usa dois volumes prateados: base `2.25 × 0.8 × 2.25` em `[-7.125, 21.2, -0.125]` e colar `1.9 × 0.7 × 1.9` em `[-6.95, 21.8, 0.05]`. O comprimento mínimo continua em `y = 21.2`.
 - A aparência `resting_aspergillum` deve ser derivada do attachable: cada origin recebe somente a translação `[6,-17,-1]`, cada size permanece igual e cada ilha UV recebe somente o offset `[128,0]` no atlas `256 × 256` da caldeirinha.
 
 ## Spray v1.0.16c

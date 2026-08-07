@@ -8,7 +8,23 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
-## v1.1.2 — ritmo do formulário e estabilidade do pomo — implementada; reteste físico pendente
+## v1.1.3 — pomo autoral em dois estágios — implementada; reteste visual pendente
+
+Hipótese: eliminar a fragilidade subpixel refinando a peça metálica real, não acumulando compensações na composição da mesa.
+
+Escopo fechado:
+
+- substituir o pomo único por base larga e colar de transição, ambos prateados e com volume legível;
+- propagar a mesma malha de onze cubos para item empunhado, caldeirinha e mesa;
+- remover o ajuste exclusivo da mesa sem mudar comprimento, grip, pivôs, locator ou poses.
+
+Gate de saída:
+
+- câmera em movimento não produz faces concorrentes na extremidade do cabo;
+- base e colar formam uma silhueta deliberada em primeira/terceira pessoa e nas duas composições acomodadas;
+- nenhum gap ou mudança de alinhamento surge entre pomo, couro, mão e mobiliário.
+
+## v1.1.2 — ritmo do formulário e estabilidade do pomo — implementada; correção local substituída pela v1.1.3
 
 Hipótese: usar o componente nativo `spacer()` para construir respiro sem simular seções e eliminar a cintilação do pomo com uma correção restrita à réplica da mesa.
 

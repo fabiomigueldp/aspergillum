@@ -4,9 +4,9 @@
 
 Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
 
-## Gate da Mesa do Sacristão — v1.1.2
+## Gate visual do pomo e da Mesa do Sacristão — v1.1.3
 
-- [ ] fechar o jogo, remover revisões anteriores e importar somente `Aspergillum-1.1.2.mcaddon` com manifests `[1,1,2]`;
+- [ ] fechar o jogo, remover revisões anteriores e importar somente `Aspergillum-1.1.3.mcaddon` com manifests `[1,1,3]`;
 - [ ] confirmar Content Log sem erro/warning de `@minecraft/server-ui`, `@minecraft/common`, custom component, formulário, item, attachable, geometria, textura, tradução ou block state;
 - [ ] fabricar/obter a Mesa do Sacristão, colocá-la nos dezesseis setores e confirmar frente da gaveta, colisão, seleção, som de madeira e impossibilidade de movimento por pistão;
 - [ ] usar um aspersório nomeado, com `instance_id`, carga parcial e propriedade customizada; ele sai da mão, repousa inteiro e centralizado sobre o veludo, sem ultrapassar bordas, e abre a UI exatamente uma vez;
@@ -17,7 +17,8 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 - [ ] em `pt_BR`, confirmar **Fechar** em vez de `Close`; em `en_US`, confirmar `Close`; nenhum texto fica cortado e o menu não exige rolagem indevida na mesma resolução das capturas 1.1.1;
 - [ ] alternar `Clássico`, `Processional` e `Contido`; a seleção aplica imediatamente, persiste na lore e só afeta a próxima rajada;
 - [ ] combinar os três metais com as três empunhaduras; as nove aparências atualizam o item sobre a mesa, o ícone, a mão, a terceira pessoa e a composição na caldeirinha;
-- [ ] aproximar a câmera da extremidade prateada do cabo e movê-la lentamente em ângulos oblíquos: pomo e couro permanecem estáveis, sem pixels alternantes, faces duplicadas ou cintilação;
+- [ ] aproximar a câmera da extremidade prateada do cabo e movê-la lentamente em ângulos oblíquos: base, colar e couro permanecem estáveis, sem pixels alternantes, faces duplicadas ou cintilação;
+- [ ] repetir a órbita com o item empunhado em primeira/terceira pessoa, acomodado na caldeirinha e sobre a mesa; os mesmos dois estágios metálicos aparecem em todas as apresentações;
 - [ ] confirmar que prata clássica + couro castanho reproduz a aparência 1.0.20 e que **Restaurar padrão** volta a `standard/classic`;
 - [ ] usar **Fechar**: configuração já aplicada persiste e o item permanece na mesa; reabrir mostra os valores atuais;
 - [ ] **Concluir e retirar** devolve exatamente o mesmo item e libera a mesa; com inventário cheio, o item é dropado uma vez sem apagar o snapshot antes da recuperação;

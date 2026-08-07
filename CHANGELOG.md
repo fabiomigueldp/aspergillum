@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.3 — 2026-08-07
+
+- substituída a antiga lâmina única do pomo por uma construção metálica em dois estágios, com base `2.25 × 0.8 × 2.25` e colar `1.9 × 0.7 × 1.9`;
+- o novo volume nasce em `assets-src/models/aspergillum.model.json` e, portanto, melhora de forma coerente o item empunhado, a caldeirinha e a Mesa do Sacristão;
+- removida a compensação geométrica exclusiva da mesa introduzida na 1.1.2; todas as apresentações voltam a ser derivações diretas da mesma malha de onze cubos;
+- preservados comprimento total, centro, grip, pivôs, binding, poses, locator, UVs explícitos e gameplay;
+- o rótulo e a revisão numérica distribuídos são `1.1.3`/`[1,1,3]`.
+
 ## 1.1.2 — 2026-08-07
 
 - reconstruído o ritmo vertical do `CustomForm` com cinco `spacer()` nativos: respiro abaixo do título da mesa, ao redor dos dois cabeçalhos e antes de **Restaurar padrão**;

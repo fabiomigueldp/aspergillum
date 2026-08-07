@@ -285,7 +285,7 @@ if ((authoredTableRoot?.cubes ?? []).some((cube) => ["left_support", "right_supp
   errors.push("Sacristan table top must not restore the removed brass supports");
 }
 const restingAspergillum = (tableGeometry?.bones ?? []).find((bone) => bone.name === "resting_aspergillum");
-if (restingAspergillum?.cubes?.length !== 10) {
+if (restingAspergillum?.cubes?.length !== 11) {
   errors.push("Sacristan table must present the complete authored aspergillum silhouette");
 }
 if (JSON.stringify(restingAspergillum?.pivot) !== JSON.stringify([0, 16.2, 0])
@@ -305,13 +305,14 @@ if (restingCenter.some((value, axis) => Math.abs(value - [0, 16.2, 0][axis]) > 1
   || restingSpan[2] > 4) {
   errors.push("Sacristan table replica must remain centered and scaled to fit inside the 13x13 velvet interior");
 }
-const [tableLeatherGrip, tableSilverPommel] = restingAspergillum?.cubes ?? [];
-const tableHandleSeamOverlap = tableSilverPommel && tableLeatherGrip
-  ? tableSilverPommel.origin[1] + tableSilverPommel.size[1] - tableLeatherGrip.origin[1]
-  : Number.NaN;
-if (Math.abs((tableSilverPommel?.size?.[1] ?? 0) - 0.56) > 1e-6
-  || Math.abs(tableHandleSeamOverlap - 0.04) > 1e-6) {
-  errors.push("Sacristan table handle requires the reviewed anti-flicker pommel depth and controlled internal seam");
+const tablePommelBase = restingAspergillum?.cubes?.[1];
+const tablePommelCollar = restingAspergillum?.cubes?.[2];
+const matchesDimensions = (actual, expected) => expected.every(
+  (dimension, axis) => Math.abs((actual?.[axis] ?? Number.NaN) - dimension) <= 1e-6,
+);
+if (!matchesDimensions(tablePommelBase?.size, [1.62, 0.576, 1.62])
+  || !matchesDimensions(tablePommelCollar?.size, [1.368, 0.504, 1.368])) {
+  errors.push("Sacristan table must inherit both substantial pommel stages at the reviewed 0.72 scale");
 }
 
 const attachableSource = fs.readFileSync(
@@ -417,8 +418,16 @@ if (sprayAimBone?.parent !== "sprinkler_head"
 }
 const cubes = [...(handleBone?.cubes ?? []), ...(sprinklerHeadBone?.cubes ?? [])];
 const sourceCubes = heldSourceBones.flatMap((bone) => bone.cubes ?? []);
-if (cubes.length !== 10) {
-  errors.push("Handle and sprinkler head must preserve the ten authored aspergillum cubes");
+const authoredPommelBase = sourceCubes.find((cube) => cube.name === "silver_pommel_base");
+const authoredPommelCollar = sourceCubes.find((cube) => cube.name === "silver_pommel_collar");
+if (JSON.stringify(authoredPommelBase?.origin) !== JSON.stringify([-7.125, 21.2, -0.125])
+  || JSON.stringify(authoredPommelBase?.size) !== JSON.stringify([2.25, 0.8, 2.25])
+  || JSON.stringify(authoredPommelCollar?.origin) !== JSON.stringify([-6.95, 21.8, 0.05])
+  || JSON.stringify(authoredPommelCollar?.size) !== JSON.stringify([1.9, 0.7, 1.9])) {
+  errors.push("Authored handle must preserve the reviewed two-stage substantial silver pommel");
+}
+if (cubes.length !== 11) {
+  errors.push("Handle and sprinkler head must preserve the eleven authored aspergillum cubes");
 } else {
   const grip = [-6, 24, 1];
   const handleContainsGrip = grip.every(
@@ -436,7 +445,7 @@ if (cubes.length !== 10) {
   }
 
   if (sourceCubes.length !== cubes.length) {
-    errors.push("Authored and generated aspergillum models must contain the same ten cubes");
+    errors.push("Authored and generated aspergillum models must contain the same eleven cubes");
   }
   const allowedSurfaces = new Set(["leather", "silver", "gold", "perforated_silver"]);
   for (const [index, sourceCube] of sourceCubes.entries()) {
