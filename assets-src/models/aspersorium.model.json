@@ -1,0 +1,130 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.aspergillum.aspersorium",
+        "texture_width": 256,
+        "texture_height": 256,
+        "visible_bounds_width": 2.4,
+        "visible_bounds_height": 2.7,
+        "visible_bounds_offset": [0, 0.8, 0]
+      },
+      "bones": [
+        {
+          "name": "root",
+          "pivot": [0, 0, 0],
+          "cubes": [
+            { "origin": [-6, 0, -6], "size": [12, 1, 12], "uv": [0, 0] },
+            { "origin": [-5, 1, -5], "size": [10, 1, 10], "uv": [0, 14] },
+            { "origin": [-5, 2, -5], "size": [10, 8, 1], "uv": [0, 26] },
+            { "origin": [-5, 2, 4], "size": [10, 8, 1], "uv": [0, 26] },
+            { "origin": [-5, 2, -4], "size": [1, 8, 8], "uv": [22, 26] },
+            { "origin": [4, 2, -4], "size": [1, 8, 8], "uv": [22, 26] },
+            { "origin": [-6, 9.5, -6], "size": [12, 1.5, 1.5], "uv": [0, 46] },
+            { "origin": [-6, 9.5, 4.5], "size": [12, 1.5, 1.5], "uv": [0, 46] },
+            { "origin": [-6, 9.5, -4.5], "size": [1.5, 1.5, 9], "uv": [28, 46] },
+            { "origin": [4.5, 9.5, -4.5], "size": [1.5, 1.5, 9], "uv": [28, 46] },
+            { "origin": [-6.7, 9.2, -1], "size": [1.2, 2.2, 2], "uv": [40, 0] },
+            { "origin": [5.5, 9.2, -1], "size": [1.2, 2.2, 2], "uv": [40, 0] }
+          ]
+        },
+        {
+          "name": "handle",
+          "parent": "root",
+          "pivot": [0, 10.2, 0],
+          "cubes": [
+            { "origin": [-6.4, 10.2, -0.45], "size": [1, 5.5, 0.9], "uv": [46, 0] },
+            { "origin": [5.4, 10.2, -0.45], "size": [1, 5.5, 0.9], "uv": [46, 0] },
+            { "origin": [-5.9, 15.2, -0.45], "size": [2, 1, 0.9], "pivot": [-4.9, 15.7, 0], "rotation": [0, 0, -28], "uv": [48, 8] },
+            { "origin": [3.9, 15.2, -0.45], "size": [2, 1, 0.9], "pivot": [4.9, 15.7, 0], "rotation": [0, 0, 28], "uv": [48, 8] },
+            { "origin": [-4.3, 16.2, -0.45], "size": [8.6, 1, 0.9], "uv": [48, 12] }
+          ]
+        },
+        {
+          "name": "water_low",
+          "parent": "root",
+          "pivot": [0, 0, 0],
+          "cubes": [
+            {
+              "origin": [-4, 4.1, -4],
+              "size": [8, 0.35, 8],
+              "uv": {
+                "north": { "uv": [0, 0], "uv_size": [8, 1], "material_instance": "water" },
+                "south": { "uv": [0, 0], "uv_size": [8, 1], "material_instance": "water" },
+                "east": { "uv": [0, 0], "uv_size": [8, 1], "material_instance": "water" },
+                "west": { "uv": [0, 0], "uv_size": [8, 1], "material_instance": "water" },
+                "up": { "uv": [0, 0], "uv_size": [8, 8], "material_instance": "water" },
+                "down": { "uv": [0, 0], "uv_size": [8, 8], "material_instance": "water" }
+              }
+            }
+          ]
+        },
+        {
+          "name": "water_mid",
+          "parent": "root",
+          "pivot": [0, 0, 0],
+          "cubes": [
+            {
+              "origin": [-4, 5.55, -4],
+              "size": [8, 0.35, 8],
+              "uv": {
+                "north": { "uv": [0, 0], "uv_size": [8, 1], "material_instance": "water" },
+                "south": { "uv": [0, 0], "uv_size": [8, 1], "material_instance": "water" },
+                "east": { "uv": [0, 0], "uv_size": [8, 1], "material_instance": "water" },
+                "west": { "uv": [0, 0], "uv_size": [8, 1], "material_instance": "water" },
+                "up": { "uv": [0, 0], "uv_size": [8, 8], "material_instance": "water" },
+                "down": { "uv": [0, 0], "uv_size": [8, 8], "material_instance": "water" }
+              }
+            }
+          ]
+        },
+        {
+          "name": "water_high",
+          "parent": "root",
+          "pivot": [0, 0, 0],
+          "cubes": [
+            {
+              "origin": [-4, 7, -4],
+              "size": [8, 0.35, 8],
+              "uv": {
+                "north": { "uv": [0, 0], "uv_size": [8, 1], "material_instance": "water" },
+                "south": { "uv": [0, 0], "uv_size": [8, 1], "material_instance": "water" },
+                "east": { "uv": [0, 0], "uv_size": [8, 1], "material_instance": "water" },
+                "west": { "uv": [0, 0], "uv_size": [8, 1], "material_instance": "water" },
+                "up": { "uv": [0, 0], "uv_size": [8, 8], "material_instance": "water" },
+                "down": { "uv": [0, 0], "uv_size": [8, 8], "material_instance": "water" }
+              }
+            }
+          ]
+        },
+        {
+          "name": "water_full",
+          "parent": "root",
+          "pivot": [0, 0, 0],
+          "cubes": [
+            {
+              "origin": [-4, 8.45, -4],
+              "size": [8, 0.35, 8],
+              "uv": {
+                "north": { "uv": [0, 0], "uv_size": [8, 1], "material_instance": "water" },
+                "south": { "uv": [0, 0], "uv_size": [8, 1], "material_instance": "water" },
+                "east": { "uv": [0, 0], "uv_size": [8, 1], "material_instance": "water" },
+                "west": { "uv": [0, 0], "uv_size": [8, 1], "material_instance": "water" },
+                "up": { "uv": [0, 0], "uv_size": [8, 8], "material_instance": "water" },
+                "down": { "uv": [0, 0], "uv_size": [8, 8], "material_instance": "water" }
+              }
+            }
+          ]
+        },
+        {
+          "name": "resting_aspergillum",
+          "parent": "root",
+          "pivot": [0, 7, 0],
+          "rotation": [25, 0, -38],
+          "cubes": []
+        }
+      ]
+    }
+  ]
+}

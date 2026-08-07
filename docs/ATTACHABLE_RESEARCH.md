@@ -2,6 +2,12 @@
 
 > Documento histórico de investigação. Para o contrato vigente, consulte [Contrato visual](VISUAL_CONTRACT.md); para o estado real da versão atual, consulte [Estado do projeto](PROJECT_STATUS.md). Hipóteses intermediárias abaixo não substituem a baseline comprovada.
 
+## v1.0.19b — coerência entre item e composição acomodada
+
+As capturas headless em nove vistas confirmaram que `resting_aspergillum` não era uma pose do item real, mas uma réplica manual de quatro cubos. Ela combinava grip/haste num volume cinza, omitia couro e férula, substituía a cabeça perfurada por um bloco oco e não compartilhava normal/MER. A divergência era estrutural e não poderia ser corrigida somente repintando a textura do bloco.
+
+A 1.0.19b torna o item a única fonte da composição: os dez cubos distribuídos são transladados para o bone de encaixe e seus seis UVs recebem um offset fixo no atlas da caldeirinha. O gerador copia os mesmos pixels color/normal/MER, e o validador compara contagem, origin, size e UV face a face. A cabeça é refinada de quatro para seis volumes dentro do mesmo envelope e o atlas passa a 2×; binding, pose e locator não mudam. Evidência e falsificação: [diagnóstico 1.0.19b](diagnostics/1.0.19b-model-polish.md).
+
 ## v1.0.19a — fechamento da hipótese de faces laterais
 
 As capturas físicas mostraram uma correlação exata: permaneciam visíveis os corpos com dimensões iguais ou superiores a uma unidade, enquanto desapareciam paredes do pomo (`0,6`), haste (`0,91`), férula (`0,9`), anéis da cabeça (`0,7`/`0,75`) e terminal (`0,6`). A textura color, normal e MER tinha alfa 255 integral; todos os volumes eram positivos. Logo, transparência, plano nulo e texture set foram descartados.

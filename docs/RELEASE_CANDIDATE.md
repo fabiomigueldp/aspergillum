@@ -2,13 +2,13 @@
 
 ## Identidade
 
-- Release Candidate: `1.0.19a`.
-- Revisão dos packs: `[1, 0, 34]`.
+- Release Candidate: `1.0.19b`.
+- Revisão dos packs: `[1, 0, 35]`.
 - Baseline física herdada: `1.0.17a`, validada pelo usuário.
 - Experimentos: nenhum.
 - Autoridade: servidor para estado; cliente somente para apresentação.
 
-Esta revisão preserva binding, grip, silhueta, poses, animações, steering, partículas, schema, snapshots e o áudio semântico da 1.0.19. Ela substitui exclusivamente o Box UV subpixel do modelo empunhado por UV per-face inteiro e um atlas color/normal/MER coerente e reproduzível.
+Esta revisão preserva binding, grip, envelope físico, poses, animações, steering, partículas, schema, snapshots e o áudio semântico da 1.0.19. Ela refina a cabeça dentro do mesmo envelope, eleva o atlas para densidade 2× e gera o estado acomodado a partir da mesma malha e dos mesmos mapas PBR do item.
 
 ## Preflight automatizado
 
@@ -25,7 +25,7 @@ O gate falha quando versões divergem, catálogos `pt_BR`/`en_US` deixam de ser 
 
 1. Registrar o SHA-256 do artefato.
 2. Fechar o Minecraft e remover os dois packs antigos em Armazenamento.
-3. Importar somente `Aspergillum-1.0.19a.mcaddon`.
+3. Importar somente `Aspergillum-1.0.19b.mcaddon`.
 4. Criar ou duplicar um mundo de teste sem experimentos.
 5. Limpar o Content Log antes de entrar.
 6. Executar `/function aspergillum/dev_kit`.
@@ -37,7 +37,7 @@ O gate falha quando versões divergem, catálogos `pt_BR`/`en_US` deixam de ser 
 | Encher | água aparece, balde/política Creative corretos, mensagem localizada única |
 | Carregar | item sempre visível em FP, dip e retorno contínuos em TP, commit no tick 10, duas microgotas discretas dentro do vaso e nenhum recurso duplicado |
 | Aspergir | animação e 36 gotas preservadas, carga/cooldown corretos |
-| Órbita visual | pomo, haste, férula, anéis e terminal apresentam todas as paredes em vistas inferior, superior e laterais; ouro aparece somente na férula |
+| Órbita visual | item e composição acomodada correspondem; as quatro faces mostram duas fileiras de perfurações, domos/anéis/terminal contínuos e ouro somente na férula |
 | Vazio | clique seco privado e mensagem localizada; nenhuma água ou release |
 | Áudio | 15 famílias/48 variantes legíveis, sem duplicação, com prepare privado e commits espaciais |
 | Acomodar | agachar + usar funciona uma vez, preserva identidade e recusa overflow |

@@ -8,6 +8,26 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
+## v1.0.19b — polimento de malha, materiais e composição — implementada; QA físico pendente
+
+Escopo fechado:
+
+- preservar binding, grip, comprimento de `15,6`, largura máxima de `4,94`, locator, poses e animações;
+- substituir a cabeça de quatro volumes por seis camadas graduais dentro do mesmo envelope, aproximando a leitura esférica da referência sem aumentar a obstrução da câmera;
+- elevar o item para atlas `128 × 128`, densidade 2×, perfurações garantidas nas quatro faces e mapas PBR sincronizados;
+- tornar a geometria-base da caldeirinha uma fonte autoral e gerar dela as dezesseis rotações publicadas;
+- gerar `resting_aspergillum` diretamente dos dez cubos do item e copiar suas ilhas color/normal/MER para o atlas do bloco;
+- substituir o ruído quadriculado da caldeirinha por metal martelado mais calmo sem alterar forma, colisão, água, estados ou interação;
+- bloquear automaticamente qualquer divergência futura entre item e composição acomodada.
+
+Gate de saída:
+
+- órbita completa mostra duas fileiras de perfurações em cada lado, faixa equatorial, domos graduais e todas as paredes contínuas;
+- primeira pessoa mantém mira/plano próximo aprovados; terceira pessoa mantém grip e ausência de clipping com Steve/Alex/Persona;
+- item empunhado e acomodado exibem couro, prata, ouro, perfurações, normal e MER coerentes nos mesmos componentes;
+- caldeirinha conserva legibilidade em clássico/Vibrant Visuals e nos quatro níveis de água;
+- Content Log limpo e nenhuma regressão em animação, locator, docking, 36 gotas/seis pulsos, áudio, economia ou persistência.
+
 ## v1.0.19a — integridade de superfícies e UV — implementada; QA físico pendente
 
 Escopo fechado:

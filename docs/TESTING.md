@@ -4,6 +4,21 @@
 
 Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
 
+## Gate de polimento visual — v1.0.19b
+
+- [ ] importar somente `Aspergillum-1.0.19b.mcaddon` após fechar o jogo e remover revisões anteriores;
+- [ ] confirmar nos manifests `[1,0,35]` e Content Log sem erro/warning de geometria, UV, textura, material ou tamanho de atlas;
+- [ ] comparar item e composição acomodada em frente/trás/direita/esquerda/topo/base: couro, pomo, haste, férula, seis volumes da cabeça e terminal correspondem sem peça simplificada ou cor trocada;
+- [ ] nas quatro faces laterais do corpo central, confirmar duas fileiras de perfurações retangulares e uma faixa equatorial metálica; nenhuma face pode ficar lisa ou depender de transparência;
+- [ ] orbitar por cima e por baixo: anel inferior, domo inferior, corpo central, domo superior, anel superior e terminal mantêm paredes contínuas e mipmaps sem sangramento;
+- [ ] em primeira pessoa, olhar para cima/frente/baixo com FOV mínimo/padrão/máximo: item permanece à direita da mira, não cresce perceptivelmente e não cruza o plano próximo;
+- [ ] em terceira pessoa, repetir repouso/carregamento/aspersão com Steve/wide, Alex/slim e Persona: grip continua no punho e cabeça não cruza rosto, ombro ou tórax;
+- [ ] inspecionar caldeirinha vazia e nos quatro níveis: metal martelado não vira ruído quadriculado, água não herda o material e bordas/handle conservam contraste;
+- [ ] repetir em gráficos clássicos e Vibrant Visuals: prata, ouro e couro permanecem distinguíveis, sem dominante roxa, emissividade ou reflexo plástico excessivo;
+- [ ] executar `npm run capture:models -- --subject all --size 1024 --material pbr` e comparar com `out/model-captures/polish-baseline-pbr` usando opções idênticas;
+- [ ] repetir smoke 4/16, docking/undocking, reload/quebra, locator, 36 gotas/seis pulsos, animações e áudio da 1.0.19;
+- [ ] registrar hash do `.mcaddon`, plataforma, FOV, skin, gráficos, resultado observado e Content Log antes de declarar GO.
+
 ## Gate visual — v1.0.19a
 
 - [ ] importar somente `Aspergillum-1.0.19a.mcaddon` após fechar o jogo e remover revisões anteriores;

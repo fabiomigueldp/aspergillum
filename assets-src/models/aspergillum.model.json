@@ -4,8 +4,8 @@
     {
       "description": {
         "identifier": "geometry.aspergillum.held",
-        "texture_width": 64,
-        "texture_height": 64,
+        "texture_width": 128,
+        "texture_height": 128,
         "visible_bounds_width": 2,
         "visible_bounds_height": 2,
         "visible_bounds_offset": [0, 1, 0]
@@ -66,26 +66,38 @@
             {
               "name": "lower_head_ring",
               "surface": "silver",
-              "origin": [-7.82, 32.15, -0.82],
-              "size": [3.64, 0.7, 3.64]
+              "origin": [-7.7, 32.15, -0.7],
+              "size": [3.4, 0.4, 3.4]
+            },
+            {
+              "name": "lower_head_dome",
+              "surface": "perforated_silver",
+              "origin": [-8.15, 32.55, -1.15],
+              "size": [4.3, 0.65, 4.3]
             },
             {
               "name": "perforated_head",
               "surface": "perforated_silver",
-              "origin": [-8.47, 32.85, -1.47],
-              "size": [4.94, 2.6, 4.94]
+              "origin": [-8.47, 33.2, -1.47],
+              "size": [4.94, 2.15, 4.94]
+            },
+            {
+              "name": "upper_head_dome",
+              "surface": "perforated_silver",
+              "origin": [-8.15, 35.35, -1.15],
+              "size": [4.3, 0.65, 4.3]
             },
             {
               "name": "upper_head_ring",
               "surface": "silver",
-              "origin": [-7.885, 35.45, -0.885],
-              "size": [3.77, 0.75, 3.77]
+              "origin": [-7.7, 36, -0.7],
+              "size": [3.4, 0.4, 3.4]
             },
             {
               "name": "top_finial",
               "surface": "silver",
-              "origin": [-6.7475, 36.2, 0.2525],
-              "size": [1.495, 0.6, 1.495]
+              "origin": [-6.7475, 36.4, 0.2525],
+              "size": [1.495, 0.4, 1.495]
             }
           ]
         },

@@ -2,13 +2,13 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.0.19a` Release Candidate (revisão numérica dos packs `[1, 0, 34]`)
+- **Versão de referência:** `1.0.19b` Release Candidate (revisão numérica dos packs `[1, 0, 35]`)
 - **Engine mínima:** Creator `1.26.40`
 - **Script API:** `@minecraft/server` `2.9.0`, estável
 - **Experimentos:** nenhum
 - **Conteúdo:** aspersório funcional de quatro cargas, caldeirinha colocável de dezesseis unidades, docking decorativo e spray visual
 
-A v1.0.19a preserva a baseline física 4/16, o áudio semântico da 1.0.19 e o alinhamento ao Bedrock 26.40/Script API 2.9.0. A revisão corrige faces laterais que colapsavam por Box UV subpixel sem alterar a silhueta: a fonte autoral gera seis UVs inteiros por cubo e um atlas único para color/normal/MER.
+A v1.0.19b preserva a baseline física 4/16, o áudio semântico da 1.0.19 e o alinhamento ao Bedrock 26.40/Script API 2.9.0. A revisão refina a cabeça dentro do mesmo envelope físico, eleva a densidade do atlas para 2× e gera o aspersório acomodado a partir da mesma malha e dos mesmos mapas color/normal/MER do item.
 
 ## O que está resolvido
 
@@ -16,7 +16,8 @@ A v1.0.19a preserva a baseline física 4/16, o áudio semântico da 1.0.19 e o a
 - O modelo aparece em primeira e terceira pessoa, em escala física coerente.
 - A pose de primeira pessoa está aprovada e deve permanecer congelada.
 - A pose de terceira pessoa está suficientemente calibrada para iniciar a fase de animação.
-- A malha mantém exatamente a silhueta aprovada e usa UV per-face inteiro com mínimo de um texel, impedindo o colapso lateral observado no runtime.
+- A malha candidata mantém comprimento, largura máxima, grip e locator aprovados; dez cubos com UV per-face inteiro em densidade 2× produzem uma cabeça escalonada e perfurada mais legível.
+- O estado acomodado não possui mais uma cópia simplificada: origem, tamanho e UV de cada cubo são derivados automaticamente do modelo empunhado e validados face a face.
 - Sobrevivência e Aventura consomem cargas; Criativo preserva uma carga real já existente; Espectador é negado.
 - O carregamento usa `instance_id`, uma sessão por jogador, lock leve por bloco, revalidação e rollback defensivo.
 - A rajada usa 36 gotas em seis pulsos, leque anisotrópico, gravidade, colisão e direção suavizada conforme a câmera.
@@ -55,15 +56,16 @@ A v1.0.19a preserva a baseline física 4/16, o áudio semântico da 1.0.19 e o a
 | UX localizada | catálogo tipado de 25 mensagens e lore de quatro linhas | confirmar `pt_BR` e `en_US` dentro do jogo |
 | Desempenho | nenhum LOD sem evidência | medir profiler com 1, 4, 8 e 16 jogadores antes de autorizar alteração |
 | Entrada vanilla | `playerSwingStart` é after-event | alguns dispositivos podem mostrar feedback breve de mineração |
+| Polimento visual 1.0.19b | capturas PBR reproduzíveis aprovam coerência estrutural fora do jogo | confirmar silhueta, mipmaps, culling e materiais no `.mcaddon` importado, em clássico/Vibrant Visuals |
 
 ## Próxima mudança autorizada
 
-A v1.0.19a está pronta para QA físico pelo runbook [RELEASE_CANDIDATE.md](RELEASE_CANDIDATE.md). O gate visual prioritário é uma órbita completa que confirme paredes contínuas no pomo, haste, férula, anéis da cabeça e terminal, em primeira/terceira pessoa e gráficos clássico/Vibrant Visuals. Permanecem os gates de Content Log, economia 4/16 e áudio da 1.0.19. A mídia atual bloqueia apenas publicação comercial, não o teste técnico da RC.
+A v1.0.19b está pronta para QA físico pelo runbook [RELEASE_CANDIDATE.md](RELEASE_CANDIDATE.md). O gate visual prioritário compara item e composição acomodada nos quatro lados, topo e base, confirma duas fileiras de perfurações no corpo central, couro/ouro/prata coerentes e ausência de clipping em primeira/terceira pessoa. Permanecem os gates de Content Log, economia 4/16 e áudio da 1.0.19. A mídia atual bloqueia apenas publicação comercial, não o teste técnico da RC.
 
 Não faz parte do próximo marco:
 
 - recalibrar a animação aprovada da v1.0.15d;
-- refazer a malha;
+- recalibrar novamente a malha antes do gate físico da 1.0.19b;
 - trocar o binding;
 - substituir toda a arquitetura de uma vez;
 - remover o emissor matemático antes de o locator provar equivalência em FP, TP e multiplayer;

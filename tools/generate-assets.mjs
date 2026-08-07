@@ -62,17 +62,35 @@ function setPixel(image, x, y, color) {
   for (let channel = 0; channel < 4; channel += 1) image.data[offset + channel] = color[channel] ?? 255;
 }
 
+function pasteImage(destination, source, offsetX, offsetY) {
+  for (let y = 0; y < source.height; y += 1) {
+    for (let x = 0; x < source.width; x += 1) {
+      const sourceOffset = (source.width * y + x) << 2;
+      setPixel(destination, offsetX + x, offsetY + y, [
+        source.data[sourceOffset],
+        source.data[sourceOffset + 1],
+        source.data[sourceOffset + 2],
+        source.data[sourceOffset + 3],
+      ]);
+    }
+  }
+}
+
 const FACE_NAMES = ["north", "east", "south", "west", "up", "down"];
 const UV_PADDING = 2;
+const ENTITY_TEXELS_PER_UNIT = 2;
+const ASPERSORIUM_ATLAS_SIZE = 256;
+const DOCKED_ATLAS_OFFSET = [128, 0];
+const DOCKED_MODEL_TRANSLATION = [6, -17, -1];
 
-function faceTexelSize(size, faceName) {
+function faceTexelSize(size, faceName, texelsPerUnit = 1) {
   const [sizeX, sizeY, sizeZ] = size;
   const dimensions = faceName === "east" || faceName === "west"
     ? [sizeZ, sizeY]
     : faceName === "north" || faceName === "south"
       ? [sizeX, sizeY]
       : [sizeX, sizeZ];
-  return dimensions.map((dimension) => Math.max(1, Math.ceil(dimension)));
+  return dimensions.map((dimension) => Math.max(1, Math.ceil(dimension * texelsPerUnit)));
 }
 
 function buildEntityGeometry() {
@@ -97,7 +115,7 @@ function buildEntityGeometry() {
       cube.uv = {};
 
       for (const faceName of FACE_NAMES) {
-        const [width, height] = faceTexelSize(cube.size, faceName);
+        const [width, height] = faceTexelSize(cube.size, faceName, ENTITY_TEXELS_PER_UNIT);
         const packedWidth = width + UV_PADDING * 2;
         const packedHeight = height + UV_PADDING * 2;
         if (cursorX + packedWidth > textureWidth) {
@@ -146,40 +164,68 @@ function shadeColor(color, amount) {
 
 function isPerforation(region, x, y) {
   if (region.surface !== "perforated_silver" || region.width < 3 || region.height < 2) return false;
+  const horizontalFace = region.faceName === "up" || region.faceName === "down";
   const border = x === 0 || y === 0 || x === region.width - 1 || y === region.height - 1;
-  return !border && ((x * 3 + y * 5 + region.seed) % 7 <= 1);
+  if (border) return false;
+  if (horizontalFace) {
+    const xPhase = region.seed % 2;
+    const yPhase = Math.floor(region.seed / 2) % 2;
+    return (x + xPhase) % 3 === 1 && (y + yPhase) % 3 === 1;
+  }
+  if (region.height < 5) return false;
+  const apertureRow = y === 1 || y === region.height - 2;
+  return apertureRow && (x + region.seed) % 3 === 1;
 }
 
 function albedoPixel(region, x, y) {
-  const noise = Math.round((hash(x, y, region.seed) - 0.5) * 10);
+  const noise = Math.round((hash(x, y, region.seed) - 0.5) * 8);
   const topOrLeft = x === 0 || y === 0;
   const bottomOrRight = x === region.width - 1 || y === region.height - 1;
-  const bevel = topOrLeft ? 13 : bottomOrRight ? -12 : 0;
+  const bevel = topOrLeft ? 12 : bottomOrRight ? -11 : 0;
+  const faceTone = {
+    up: 12,
+    north: 4,
+    west: 1,
+    east: -3,
+    south: -6,
+    down: -14,
+  }[region.faceName] ?? 0;
 
   if (region.surface === "leather") {
-    const band = Math.floor(y / 2) % 2 === 0 ? [58, 45, 36, 255] : [43, 34, 29, 255];
-    return shadeColor(band, Math.round(noise * 0.45) + Math.round(bevel * 0.35));
+    const wrapBand = Math.floor((y + Math.floor(x / 2)) / 2) % 2;
+    const seam = (x + y + region.seed) % Math.max(4, region.width + 1) === 0;
+    const base = wrapBand === 0 ? [61, 43, 32, 255] : [43, 31, 25, 255];
+    return shadeColor(base, Math.round(noise * 0.4) + Math.round(bevel * 0.25) + (seam ? -12 : 0));
   }
   if (region.surface === "gold") {
-    return shadeColor([177, 128, 42, 255], noise + bevel);
+    const bandHighlight = y === Math.floor(region.height / 2) ? 9 : 0;
+    return shadeColor([180, 127, 36, 255], noise + bevel + faceTone + bandHighlight);
   }
   if (isPerforation(region, x, y)) {
-    return [30, 35, 35, 255];
+    return [24, 29, 30, 255];
   }
-  return shadeColor([162, 164, 158, 255], noise + bevel);
+  const equatorBand = region.surface === "perforated_silver"
+    && !["up", "down"].includes(region.faceName)
+    && region.height >= 5
+    && y === Math.floor(region.height / 2)
+    ? 8
+    : 0;
+  return shadeColor([158, 162, 159, 255], noise + bevel + faceTone + equatorBand);
 }
 
 function normalPixel(region, x, y) {
-  if (isPerforation(region, x, y)) return [128, 128, 236, 255];
+  if (isPerforation(region, x, y)) return [128, 128, 205, 255];
+  if (region.surface === "leather" && (y + Math.floor(x / 2)) % 4 === 0) return [128, 121, 244, 255];
   const variation = Math.round((hash(x, y, region.seed + 100) - 0.5) * 4);
-  return [128 + variation, 128 - variation, 252, 255];
+  return [128 + variation, 128 - variation, 250, 255];
 }
 
 function mersPixel(region, x, y) {
-  if (region.surface === "leather") return [18, 0, 215, 255];
-  if (region.surface === "gold") return [238, 0, 82, 255];
-  if (isPerforation(region, x, y)) return [42, 0, 190, 255];
-  return [224, 0, 118, 255];
+  if (region.surface === "leather") return [12, 0, 226, 255];
+  if (region.surface === "gold") return [236, 0, 88, 255];
+  if (isPerforation(region, x, y)) return [38, 0, 205, 255];
+  const roughness = 102 + Math.round(hash(x, y, region.seed + 200) * 18);
+  return [226, 0, roughness, 255];
 }
 
 function paintAtlasRegion(image, region, painter) {
@@ -208,18 +254,30 @@ write("packs/resource/textures/entity/aspergillum.png", entity);
 write("packs/resource/textures/entity/aspergillum_normal.png", entityNormal);
 write("packs/resource/textures/entity/aspergillum_mer.png", entityMer);
 
-const block = png(64, 64, (x, y) => silver(x, y, 11));
-for (let y = 0; y < 64; y += 8) fillRect(block, 0, y, 64, 1, [112, 115, 112, 255]);
-for (let x = 4; x < 64; x += 11) fillRect(block, x, 0, 1, 64, [187, 188, 180, 255]);
+const block = png(ASPERSORIUM_ATLAS_SIZE, ASPERSORIUM_ATLAS_SIZE, (x, y) => {
+  const hammered = Math.round((hash(Math.floor(x / 3), Math.floor(y / 3), 11) - 0.5) * 18);
+  const grain = Math.round((hash(x, y, 37) - 0.5) * 6);
+  const patina = hash(Math.floor(x / 8), Math.floor(y / 8), 71) > 0.87 ? -8 : 0;
+  return [143 + hammered + grain + patina, 147 + hammered + grain + Math.round(patina * 0.55), 145 + hammered + grain, 255];
+});
+pasteImage(block, entity, DOCKED_ATLAS_OFFSET[0], DOCKED_ATLAS_OFFSET[1]);
 write("packs/resource/textures/blocks/aspersorium.png", block);
 
-const blockNormal = png(64, 64, (x, y) => {
-  const d = Math.round((hash(x, y, 19) - 0.5) * 8);
-  return [128 + d, 128 - d, 250, 255];
+const blockNormal = png(ASPERSORIUM_ATLAS_SIZE, ASPERSORIUM_ATLAS_SIZE, (x, y) => {
+  const broad = Math.round((hash(Math.floor(x / 3), Math.floor(y / 3), 19) - 0.5) * 8);
+  const grain = Math.round((hash(x, y, 23) - 0.5) * 3);
+  return [128 + broad + grain, 128 - broad + grain, 247, 255];
 });
+pasteImage(blockNormal, entityNormal, DOCKED_ATLAS_OFFSET[0], DOCKED_ATLAS_OFFSET[1]);
 write("packs/resource/textures/blocks/aspersorium_normal.png", blockNormal);
 
-const blockMer = png(64, 64, (x, y) => [220, 0, 118 + Math.round(hash(x, y, 4) * 20), 255]);
+const blockMer = png(ASPERSORIUM_ATLAS_SIZE, ASPERSORIUM_ATLAS_SIZE, (x, y) => [
+  218,
+  0,
+  132 + Math.round(hash(Math.floor(x / 2), Math.floor(y / 2), 4) * 26),
+  255,
+]);
+pasteImage(blockMer, entityMer, DOCKED_ATLAS_OFFSET[0], DOCKED_ATLAS_OFFSET[1]);
 write("packs/resource/textures/blocks/aspersorium_mer.png", blockMer);
 
 const water = png(32, 32, (x, y) => {
@@ -295,10 +353,36 @@ const packIcon = makePackIcon();
 write("packs/resource/pack_icon.png", packIcon);
 write("packs/behavior/pack_icon.png", packIcon);
 
+function offsetFaceUvs(uv, offset) {
+  return Object.fromEntries(Object.entries(uv).map(([faceName, face]) => [
+    faceName,
+    {
+      ...face,
+      uv: [face.uv[0] + offset[0], face.uv[1] + offset[1]],
+    },
+  ]));
+}
+
+function buildDockedAspergillumCubes() {
+  const heldBones = entityModel.geometry["minecraft:geometry"][0].bones;
+  return heldBones
+    .filter((bone) => bone.name === "handle" || bone.name === "sprinkler_head")
+    .flatMap((bone) => bone.cubes ?? [])
+    .map((cube) => ({
+      origin: cube.origin.map((coordinate, axis) => coordinate + DOCKED_MODEL_TRANSLATION[axis]),
+      size: [...cube.size],
+      uv: offsetFaceUvs(cube.uv, DOCKED_ATLAS_OFFSET),
+    }));
+}
+
 const geometrySource = JSON.parse(
-  fs.readFileSync(path.join(root, "packs/resource/models/blocks/aspersorium.geo.json"), "utf8"),
+  fs.readFileSync(path.join(root, "assets-src/models/aspersorium.model.json"), "utf8"),
 );
 const baseGeometry = geometrySource["minecraft:geometry"][0];
+const restingAspergillum = baseGeometry.bones.find((bone) => bone.name === "resting_aspergillum");
+if (!restingAspergillum) throw new Error("Aspersorium geometry requires the resting_aspergillum bone");
+restingAspergillum.cubes = buildDockedAspergillumCubes();
+writeJson("packs/resource/models/blocks/aspersorium.geo.json", geometrySource);
 const rotatedGeometries = Array.from({ length: 16 }, (_, rotationIndex) => {
   const geometry = structuredClone(baseGeometry);
   geometry.description.identifier = `geometry.aspergillum.aspersorium.rotation_${rotationIndex}`;

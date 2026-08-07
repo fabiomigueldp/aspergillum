@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.19b — 2026-08-07
+
+- refinada a cabeça do aspersório de quatro para seis volumes graduais, preservando largura máxima, comprimento total de `15,6` unidades, grip, pivôs, binding, locator e poses aprovadas;
+- elevado o atlas autoral do item para `128 × 128` e a densidade das ilhas para dois texels por unidade, mantendo UVs per-face inteiros e padding dilatado de dois texels;
+- redesenhadas as superfícies de couro, prata, ouro e prata perfurada nos mapas color/normal/MER, com enrolamento do grip, relevo discreto, duas fileiras de aberturas por face e faixa equatorial limpa;
+- introduzida a fonte autoral `assets-src/models/aspersorium.model.json`; a geometria distribuída da caldeirinha e suas dezesseis rotações passam a ser geradas a partir dela;
+- removida a cópia simplificada de quatro cubos usada no estado acomodado: os dez cubos do item são agora transladados automaticamente para `resting_aspergillum`, com as mesmas dimensões e ilhas UV;
+- o atlas da caldeirinha reserva e reutiliza os mapas do item acomodado, preservando couro escuro, pomo e haste prateados, férula dourada, cabeça perfurada, normal e MER na composição;
+- substituído o padrão quadriculado agressivo da caldeirinha por metal martelado de menor contraste, sem alterar geometria externa, água, colisão, seleção, rotações ou block states;
+- ampliado o validador para bloquear divergência de cubo ou face entre o item empunhado e o acomodado, além de fixar densidade 2× e os novos atlas `128 × 128`/`256 × 256`;
+- registradas capturas PBR reproduzíveis em nove vistas para baseline e candidata; a aceitação final continua dependente do pacote importado e do Content Log;
+- preservados gameplay, Script API estável, UUIDs, namespace, schemas, sessões, locks, persistência, áudio, animações e 36 gotas em seis pulsos;
+- o rótulo distribuído é `1.0.19b`; a revisão monotônica dos packs é `[1,0,35]`.
+
 ## 1.0.19a — 2026-08-07
 
 - adicionada uma ferramenta headless de evidência visual que captura aspersório, caldeirinha e composição acomodada em nove vistas reproduzíveis, exporta PNGs individuais, pranchas rotuladas e um manifesto da execução sem alterar os assets do pack;

@@ -249,8 +249,8 @@ if (sprayAimBone?.parent !== "sprinkler_head"
 }
 const cubes = [...(handleBone?.cubes ?? []), ...(sprinklerHeadBone?.cubes ?? [])];
 const sourceCubes = heldSourceBones.flatMap((bone) => bone.cubes ?? []);
-if (cubes.length !== 8) {
-  errors.push("Handle and sprinkler head must preserve the eight real aspergillum cubes");
+if (cubes.length !== 10) {
+  errors.push("Handle and sprinkler head must preserve the ten authored aspergillum cubes");
 } else {
   const grip = [-6, 24, 1];
   const handleContainsGrip = grip.every(
@@ -268,7 +268,7 @@ if (cubes.length !== 8) {
   }
 
   if (sourceCubes.length !== cubes.length) {
-    errors.push("Authored and generated aspergillum models must contain the same eight cubes");
+    errors.push("Authored and generated aspergillum models must contain the same ten cubes");
   }
   const allowedSurfaces = new Set(["leather", "silver", "gold", "perforated_silver"]);
   for (const [index, sourceCube] of sourceCubes.entries()) {
@@ -292,7 +292,7 @@ if (cubes.length !== 8) {
       : faceName === "north" || faceName === "south"
         ? [sizeX, sizeY]
         : [sizeX, sizeZ];
-    return dimensions.map((dimension) => Math.max(1, Math.ceil(dimension)));
+    return dimensions.map((dimension) => Math.max(1, Math.ceil(dimension * 2)));
   };
   for (const [cubeIndex, cube] of cubes.entries()) {
     if (!cube.uv || Array.isArray(cube.uv)) {
@@ -316,7 +316,7 @@ if (cubes.length !== 8) {
         errors.push(`Aspergillum cube ${cubeIndex + 1}.${faceName} collapses below one texel`);
       }
       if (JSON.stringify(face.uv_size) !== JSON.stringify(expectedFaceSize(cube.size, faceName))) {
-        errors.push(`Aspergillum cube ${cubeIndex + 1}.${faceName} must ceil its physical dimensions to a non-zero texel footprint`);
+        errors.push(`Aspergillum cube ${cubeIndex + 1}.${faceName} must use the approved two-texel-per-unit footprint`);
       }
       if (u < 0 || v < 0 || u + width > atlasWidth || v + height > atlasHeight) {
         errors.push(`Aspergillum cube ${cubeIndex + 1}.${faceName} exceeds the declared texture atlas`);
@@ -325,6 +325,37 @@ if (cubes.length !== 8) {
         u < rect.u + rect.width && u + width > rect.u && v < rect.v + rect.height && v + height > rect.v);
       if (overlaps) errors.push(`Aspergillum cube ${cubeIndex + 1}.${faceName} overlaps another UV island`);
       occupiedRects.push({ u, v, width, height });
+    }
+  }
+
+  const aspersoriumDescription = aspersoriumGeometry?.description;
+  if (aspersoriumDescription?.texture_width !== 256 || aspersoriumDescription?.texture_height !== 256) {
+    errors.push("Aspersorium atlas must reserve a 256x256 region for the shared docked aspergillum material");
+  }
+  const dockedCubes = (aspersoriumGeometry?.bones ?? [])
+    .find((bone) => bone.name === "resting_aspergillum")?.cubes ?? [];
+  const dockedTranslation = [6, -17, -1];
+  const dockedUvOffset = [128, 0];
+  if (dockedCubes.length !== cubes.length) {
+    errors.push("Docked aspergillum must be generated from every held-model cube");
+  } else {
+    for (const [cubeIndex, cube] of cubes.entries()) {
+      const dockedCube = dockedCubes[cubeIndex];
+      const expectedOrigin = cube.origin.map((coordinate, axis) => coordinate + dockedTranslation[axis]);
+      if (JSON.stringify(dockedCube.origin) !== JSON.stringify(expectedOrigin)
+        || JSON.stringify(dockedCube.size) !== JSON.stringify(cube.size)) {
+        errors.push(`Docked aspergillum cube ${cubeIndex + 1} diverges from the held-model silhouette`);
+      }
+      for (const faceName of faceNames) {
+        const expectedUv = [
+          cube.uv[faceName].uv[0] + dockedUvOffset[0],
+          cube.uv[faceName].uv[1] + dockedUvOffset[1],
+        ];
+        if (JSON.stringify(dockedCube.uv?.[faceName]?.uv) !== JSON.stringify(expectedUv)
+          || JSON.stringify(dockedCube.uv?.[faceName]?.uv_size) !== JSON.stringify(cube.uv[faceName].uv_size)) {
+          errors.push(`Docked aspergillum cube ${cubeIndex + 1}.${faceName} must share the held-model UV island`);
+        }
+      }
     }
   }
 }

@@ -17,6 +17,7 @@ const targets = [
   "packs/resource/textures/blocks/aspersorium_normal.png",
   "packs/resource/textures/blocks/holy_water.png",
   "packs/resource/textures/particle/holy_water.png",
+  "packs/resource/models/blocks/aspersorium.geo.json",
   "packs/resource/models/blocks/aspersorium.rotations.geo.json"
 ];
 
