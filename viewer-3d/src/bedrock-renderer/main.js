@@ -6,6 +6,12 @@ import {
   getBedrockFaceRect,
   writeBedrockFaceUvs,
 } from '../shared/bedrock-uv.js';
+import {
+  CAPTURE_SUBJECTS,
+  CAPTURE_VIEWS,
+  getCaptureSubject,
+  getCaptureView,
+} from '../shared/capture-contract.js';
 import './styles.css';
 
 const SCALE = 1 / 16;
@@ -54,6 +60,7 @@ const state = {
   showAxes: false,
   showPivots: false,
   wireframe: false,
+  captureNeutralPose: false,
   loadToken: 0,
   toastTimer: null,
 };
@@ -118,6 +125,7 @@ camera.position.set(2.6, 1.9, 3.7);
 const controls = new OrbitControls(camera, ui.canvas);
 controls.enableDamping = true;
 controls.dampingFactor = 0.075;
+controls.enablePan = true;
 controls.enableZoom = true;
 controls.zoomToCursor = true;
 controls.mouseButtons = {
@@ -470,7 +478,7 @@ function applyPose() {
   resetPose();
 
   const path = state.currentRenderPath;
-  if (path?.attachable) {
+  if (path?.attachable && !state.captureNeutralPose) {
     const holdId = state.perspective === 'first'
       ? path.animationIds.holdFirstPerson
       : path.animationIds.holdThirdPerson;
@@ -1121,6 +1129,45 @@ function selectFromCanvas(event) {
   updateSelectedBone();
 }
 
+function bindStablePanInteraction() {
+  let activePanPointerId = null;
+
+  const beginPan = (event) => {
+    if (event.pointerType !== 'mouse' || event.button !== 2) return;
+    activePanPointerId = event.pointerId;
+    // Pan deve acompanhar o ponteiro imediatamente. A inércia continua
+    // disponível para a órbita no botão esquerdo.
+    controls.enableDamping = false;
+    ui.canvas.classList.add('is-panning');
+    event.preventDefault();
+  };
+
+  const endPan = (event) => {
+    if (activePanPointerId === null || event.pointerId !== activePanPointerId) return;
+    activePanPointerId = null;
+    controls.enableDamping = true;
+    ui.canvas.classList.remove('is-panning');
+  };
+
+  ui.canvas.addEventListener('pointerdown', beginPan);
+  ui.canvas.addEventListener('pointerup', endPan);
+  ui.canvas.addEventListener('pointercancel', endPan);
+  ui.canvas.addEventListener('lostpointercapture', endPan);
+  ui.canvas.addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+    endPan({ pointerId: activePanPointerId });
+  });
+  ui.canvas.addEventListener('auxclick', (event) => {
+    if (event.button === 2) event.preventDefault();
+  });
+  window.addEventListener('blur', () => {
+    if (activePanPointerId === null) return;
+    activePanPointerId = null;
+    controls.enableDamping = true;
+    ui.canvas.classList.remove('is-panning');
+  });
+}
+
 function wireInteractions() {
   ui.assetSelect.addEventListener('change', onAssetChange);
   ui.geometrySelect.addEventListener('change', () => loadCurrentModel());
@@ -1170,6 +1217,7 @@ function wireInteractions() {
   ui.cameraFitButton.addEventListener('click', () => fitCamera(true));
   ui.resetButton.addEventListener('click', resetCamera);
   ui.cameraResetButton.addEventListener('click', resetCamera);
+  bindStablePanInteraction();
   ui.canvas.addEventListener('click', selectFromCanvas);
 
   window.addEventListener('keydown', (event) => {
@@ -1198,9 +1246,151 @@ function resizeRenderer() {
 
 function animate() {
   requestAnimationFrame(animate);
-  controls.update();
+  if (controls.enabled) controls.update();
   renderer.render(scene, camera);
 }
+
+function renderCaptureFrame() {
+  if (controls.enabled) controls.update();
+  scene.updateMatrixWorld(true);
+  renderer.render(scene, camera);
+}
+
+function isEffectivelyVisible(object) {
+  let current = object;
+  while (current) {
+    if (!current.visible) return false;
+    current = current.parent;
+  }
+  return true;
+}
+
+function getCaptureBounds() {
+  const bounds = new THREE.Box3();
+  for (const { mesh } of state.meshRecords) {
+    if (isEffectivelyVisible(mesh)) bounds.expandByObject(mesh, true);
+  }
+  return bounds;
+}
+
+function getCaptureDistance(bounds, target, direction, up) {
+  const right = new THREE.Vector3().crossVectors(up, direction).normalize();
+  const viewUp = new THREE.Vector3().crossVectors(direction, right).normalize();
+  const tanVertical = Math.tan(THREE.MathUtils.degToRad(camera.fov * 0.5));
+  const tanHorizontal = tanVertical * camera.aspect;
+  const corners = [];
+  for (const x of [bounds.min.x, bounds.max.x]) {
+    for (const y of [bounds.min.y, bounds.max.y]) {
+      for (const z of [bounds.min.z, bounds.max.z]) corners.push(new THREE.Vector3(x, y, z));
+    }
+  }
+
+  return Math.max(...corners.map((corner) => {
+    const offset = corner.sub(target);
+    const projectedDepth = offset.dot(direction);
+    const horizontalDistance = Math.abs(offset.dot(right)) / tanHorizontal;
+    const verticalDistance = Math.abs(offset.dot(viewUp)) / tanVertical;
+    return projectedDepth + Math.max(horizontalDistance, verticalDistance) * 1.18;
+  }), 0.25);
+}
+
+function setCaptureView(viewId) {
+  const view = getCaptureView(viewId);
+  if (!view) throw new Error(`Vista de captura desconhecida: ${viewId}`);
+
+  const bounds = getCaptureBounds();
+  if (bounds.isEmpty()) throw new Error('Nenhum modelo disponível para captura.');
+  const target = bounds.getCenter(new THREE.Vector3());
+  const direction = new THREE.Vector3(...view.direction).normalize();
+  const up = new THREE.Vector3(...view.up).normalize();
+  const sphere = bounds.getBoundingSphere(new THREE.Sphere());
+  const radius = Math.max(sphere.radius, 0.12);
+  const distance = getCaptureDistance(bounds, target, direction, up);
+
+  camera.up.copy(up);
+  camera.position.copy(target).addScaledVector(direction, distance);
+  camera.near = Math.max(0.005, radius / 120);
+  camera.far = Math.max(50, radius * 80);
+  camera.updateProjectionMatrix();
+  controls.target.copy(target);
+  camera.lookAt(target);
+  renderCaptureFrame();
+
+  return {
+    id: view.id,
+    label: view.label,
+    camera: camera.position.toArray(),
+    target: target.toArray(),
+  };
+}
+
+function captureView(viewId) {
+  const view = setCaptureView(viewId);
+  return {
+    ...view,
+    dataUrl: ui.canvas.toDataURL('image/png'),
+  };
+}
+
+async function configureCapture(options = {}) {
+  const subject = getCaptureSubject(options.subject ?? 'aspergillum');
+  if (!subject) throw new Error(`Assunto de captura desconhecido: ${options.subject}`);
+  const modelIndex = state.manifest.models.findIndex((model) => model.id === subject.modelId);
+  if (modelIndex < 0) throw new Error(`Modelo não encontrado no catálogo: ${subject.modelId}`);
+
+  document.body.classList.add('capture-mode');
+  controls.enabled = false;
+  resizeRenderer();
+  scene.background.set(options.background ?? 0x162326);
+  state.showGrid = Boolean(options.grid);
+  state.showAxes = false;
+  state.showPivots = false;
+  state.wireframe = Boolean(options.wireframe);
+  state.waterVisible = options.water !== 'empty';
+  state.waterLevel = options.water ?? 'full';
+  state.docked = subject.docked;
+  state.captureNeutralPose = options.pose
+    ? options.pose === 'neutral'
+    : subject.neutralPose && options.action !== 'sprinkle';
+  state.perspective = options.pose === 'third' ? 'third' : 'first';
+  state.action = options.action === 'sprinkle' ? 'sprinkle' : 'idle';
+  state.timeline = Number(options.timeline) || 0;
+
+  if (options.material && options.material !== state.materialMode) {
+    state.materialMode = options.material;
+  }
+
+  ui.assetSelect.value = String(modelIndex);
+  state.currentGeometryIndex = 0;
+  populateGeometrySelect(state.manifest.models[modelIndex]);
+  await loadCurrentModel();
+  resizeRenderer();
+  applyVisibility();
+  renderCaptureFrame();
+
+  return {
+    subject: subject.id,
+    label: subject.label,
+    geometry: state.currentGeometry?.identifier ?? null,
+    material: state.materialMode,
+    water: state.waterLevel,
+    docked: state.docked,
+  };
+}
+
+const captureApi = {
+  version: 1,
+  ready: false,
+  error: null,
+  subjects: Object.values(CAPTURE_SUBJECTS).map(({ id, label }) => ({ id, label })),
+  views: CAPTURE_VIEWS.map(({ id, label }) => ({ id, label })),
+  configure: configureCapture,
+  setView: setCaptureView,
+  capture: captureView,
+  render: renderCaptureFrame,
+};
+
+window.__ASPERGILLUM_CAPTURE__ = captureApi;
 
 const resizeObserver = new ResizeObserver(resizeRenderer);
 resizeObserver.observe(ui.viewportStage);
@@ -1213,4 +1403,7 @@ loadRuntime().catch((error) => {
   setLoading(false);
   ui.runtimeStatus.textContent = 'Falha ao carregar catálogo';
   showToast(error instanceof Error ? error.message : 'Não foi possível carregar o catálogo local.');
+  captureApi.error = error instanceof Error ? error.message : String(error);
+}).then(() => {
+  captureApi.ready = !captureApi.error;
 });

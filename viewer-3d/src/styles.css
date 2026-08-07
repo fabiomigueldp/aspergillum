@@ -470,6 +470,7 @@ input:focus-visible,
 
 .viewport-stage {
   position: relative;
+  container: viewport-stage / inline-size;
   height: 100%;
   min-height: 0;
   overflow: hidden;
@@ -487,10 +488,16 @@ input:focus-visible,
   min-height: 0;
   cursor: grab;
   touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 #viewport-canvas:active {
   cursor: grabbing;
+}
+
+#viewport-canvas.is-panning {
+  cursor: move !important;
 }
 
 .overlay-panel {
@@ -616,6 +623,23 @@ input:focus-visible,
   color: oklch(0.67 0.021 204);
   font-size: 0.66rem;
   pointer-events: none;
+}
+
+@container viewport-stage (max-width: 700px) {
+  .viewport-toolbar {
+    gap: 3px;
+  }
+
+  .tool-button {
+    flex: 0 0 30px;
+    padding-inline: 0;
+  }
+
+  .tool-button > span:last-child,
+  .toolbar-divider,
+  .viewport-tip {
+    display: none;
+  }
 }
 
 .inspector {

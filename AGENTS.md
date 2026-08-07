@@ -60,6 +60,12 @@ Não faça a reorganização-alvo inteira como mudança puramente mecânica. Mig
 - `dist/releases/` contém pacotes e hashes; `dist/validation/<versão>/` contém relatórios oficiais. Ambos são ignorados pelo Git.
 - Não declare uma correção visual concluída apenas por inspeção de JSON. Valide o `.mcaddon` final importado, sem pack antigo ou cache concorrente.
 
+## Agent model capture tool
+
+- Use `npm run capture:models -- --subject all` to generate reproducible multi-angle PNGs, labeled contact sheets, and a capture manifest for the aspergillum, aspersorium, and docked composition.
+- Read `docs/MODEL_CAPTURE_TOOL.md` before using capture output as evidence. Keep identical options for before/after comparisons and inspect individual views when the contact sheet reveals a defect.
+- Capture output under `out/model-captures/` is disposable and ignored by Git. It is diagnostic evidence, not an authoritative asset and not proof of Minecraft Bedrock rendering parity.
+
 ## Critério de entrega
 
 Uma mudança está pronta quando tipos, testes, validação estrutural e documentação estão coerentes; o pacote oficial valida; não há novos erros do add-on no Content Log; e os critérios manuais relevantes de `docs/TESTING.md` foram comunicados ao usuário. Se uma hipótese visual não puder ser provada fora do jogo, entregue um diagnóstico controlado, não uma sequência de compensações especulativas.

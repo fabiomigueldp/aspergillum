@@ -44,6 +44,24 @@ Os materiais sólidos usam descarte de faces front-side como o caminho opaco do 
 
 Os dois viewers compartilham o mesmo adaptador Bedrock → Three.js para evitar divergência entre motores. Ele respeita a ordem real dos vértices de cada face do `BoxGeometry`, associa `+Z` a `south` e `-Z` a `north` e preserva o sinal de `uv_size` para espelhamento. Assim, cada texel ocupa um quadrilátero contínuo da face, sem a antiga cisão diagonal que fazia pixels escuros parecerem losangos. Execute `npm test` para validar esses contratos sem abrir o navegador.
 
+## Capturas para agentes
+
+O renderer expõe uma API interna de captura e o CLI `capture-models.mjs` a utiliza em Chromium headless. O comando padrão captura os três assuntos visuais do projeto — `aspergillum`, `aspersorium` e `docked` — em nove direções fixas:
+
+```powershell
+# na raiz do projeto
+npm run capture:models -- --subject all
+
+# exemplo rápido e direcionado
+npm run capture:models -- --subject docked --views front,right,back,top --size 768
+```
+
+Cada assunto produz PNGs individuais e uma `contact-sheet.png` rotulada. A raiz da execução também recebe `capture-manifest.json`, com versão do pack, opções, câmera e arquivos gerados. Sem `--output`, a evidência é escrita em `out/model-captures/<timestamp>/`, ignorada pelo Git. Use `npm run capture:models -- --help` para consultar materiais, água, pose, animação, wireframe e resolução.
+
+O CLI requer o Chromium gerenciado pelo Playwright. Depois de instalar as dependências do viewer, execute `npx playwright install chromium` dentro de `viewer-3d` caso o browser ainda não esteja disponível na máquina do agente.
+
+As capturas usam somente cubos visíveis para enquadrar a câmera, ocultam a interface e mantêm direções estáveis. Isso permite comparar revisões sem depender de órbita manual, mas não transforma o preview Three.js em evidência do shader ou da câmera proprietária do Minecraft.
+
 ## Limite deliberado
 
 O viewer original reproduz a geometria Bedrock e seus pivôs em uma cena standalone. O **Bedrock Fidelity Renderer** aproxima também a cadeia de resolução, animações e mapas do pack, mas não substitui o cliente Minecraft: o shader proprietário, a iluminação do mundo, o jogador/skin, a câmera completa, partículas e comportamento final continuam sendo validados no jogo conforme `docs/TESTING.md`. Portanto, ele é um preview de alta fidelidade e uma ferramenta de diagnóstico, não uma prova de equivalência visual de 100%.

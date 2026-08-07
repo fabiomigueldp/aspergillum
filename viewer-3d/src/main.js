@@ -80,6 +80,7 @@ camera.position.set(2.8, 2.05, 3.8);
 const controls = new OrbitControls(camera, ui.canvas);
 controls.enableDamping = true;
 controls.dampingFactor = 0.075;
+controls.enablePan = true;
 controls.enableZoom = true;
 controls.zoomToCursor = true;
 controls.mouseButtons = {
@@ -810,6 +811,43 @@ async function loadImportedBedrockModel(model, geometryIndex) {
   renderInspector();
 }
 
+function bindStablePanInteraction() {
+  let activePanPointerId = null;
+
+  const beginPan = (event) => {
+    if (event.pointerType !== 'mouse' || event.button !== 2) return;
+    activePanPointerId = event.pointerId;
+    controls.enableDamping = false;
+    ui.canvas.classList.add('is-panning');
+    event.preventDefault();
+  };
+
+  const endPan = (event) => {
+    if (activePanPointerId === null || event.pointerId !== activePanPointerId) return;
+    activePanPointerId = null;
+    controls.enableDamping = true;
+    ui.canvas.classList.remove('is-panning');
+  };
+
+  ui.canvas.addEventListener('pointerdown', beginPan);
+  ui.canvas.addEventListener('pointerup', endPan);
+  ui.canvas.addEventListener('pointercancel', endPan);
+  ui.canvas.addEventListener('lostpointercapture', endPan);
+  ui.canvas.addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+    endPan({ pointerId: activePanPointerId });
+  });
+  ui.canvas.addEventListener('auxclick', (event) => {
+    if (event.button === 2) event.preventDefault();
+  });
+  window.addEventListener('blur', () => {
+    if (activePanPointerId === null) return;
+    activePanPointerId = null;
+    controls.enableDamping = true;
+    ui.canvas.classList.remove('is-panning');
+  });
+}
+
 function bindEvents() {
   ui.importButton.addEventListener('click', () => ui.fileInput.click());
   ui.fileInput.addEventListener('change', async () => {
@@ -849,16 +887,25 @@ function bindEvents() {
     setToolbarState(ui.wireframeButton, state.wireframe);
   });
 
+  bindStablePanInteraction();
+
   let pointerDown = null;
   ui.canvas.addEventListener('pointerdown', (event) => {
-    pointerDown = { x: event.clientX, y: event.clientY };
+    pointerDown = {
+      x: event.clientX,
+      y: event.clientY,
+      button: event.button,
+      pointerId: event.pointerId,
+    };
   });
   ui.canvas.addEventListener('pointerup', (event) => {
-    if (!pointerDown) return;
+    if (!pointerDown || event.pointerId !== pointerDown.pointerId) return;
     const distance = Math.hypot(event.clientX - pointerDown.x, event.clientY - pointerDown.y);
+    const shouldSelect = pointerDown.button === 0 && distance < 5;
     pointerDown = null;
-    if (distance < 5) handleCanvasClick(event);
+    if (shouldSelect) handleCanvasClick(event);
   });
+  ui.canvas.addEventListener('pointercancel', () => { pointerDown = null; });
 
   for (const eventName of ['dragenter', 'dragover']) {
     ui.viewportStage.addEventListener(eventName, (event) => {

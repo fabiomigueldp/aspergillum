@@ -48,6 +48,10 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 
 `npm run package` também cria o `.mcaddon`, SHA-256 e relatórios oficiais em `dist/validation/<versão>/`.
 
+### Evidência visual automatizada
+
+`npm run capture:models -- --subject all` gera nove vistas fixas e uma prancha composta para o aspersório, a caldeirinha e a caldeirinha com o aspersório acomodado. O `capture-manifest.json` registra câmera, geometria, material, versão e opções. Essas imagens servem para revisão de silhueta, faces, UVs e comparação entre revisões; o gate dentro do Minecraft continua obrigatório para culling, shader, câmera, cache e integração reais.
+
 ## Cobertura automatizada a expandir
 
 ### Cargas e políticas

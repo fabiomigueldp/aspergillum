@@ -2,7 +2,9 @@
 
 ## 1.0.19a — 2026-08-07
 
+- adicionada uma ferramenta headless de evidência visual que captura aspersório, caldeirinha e composição acomodada em nove vistas reproduzíveis, exporta PNGs individuais, pranchas rotuladas e um manifesto da execução sem alterar os assets do pack;
 - aprimorados os controles de viewport dos dois renderizadores: zoom no ponto sob o cursor, órbita no botão esquerdo, deslocamento no botão direito e barra Bedrock com grade, eixos, pivôs/locators e wireframe, incluindo atalhos de teclado;
+- estabilizado o pan do botão direito: interação direta sem atraso de damping, bloqueio de menu contextual, recuperação em cancelamento/perda de foco e proteção contra seleção acidental durante o deslocamento;
 - corrigido o desaparecimento lateral dos anéis, haste fina e terminal do aspersório no Minecraft: seis dos oito cubos usavam Box UV com ao menos uma dimensão física inferior a uma unidade, capaz de colapsar para zero texel no runtime;
 - preservados exatamente os oito cubos, origins, sizes, envelope de `15,6` unidades, grip `[-6,24,1]`, locator, binding, poses e animações; nenhuma compensação geométrica foi aplicada ao osso vinculado;
 - introduzida a fonte autoral `assets-src/models/aspergillum.model.json`, com nomes e superfícies semânticas por peça;
