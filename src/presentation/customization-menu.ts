@@ -66,7 +66,9 @@ export function showCustomizationMenu(
 
   const form = new CustomForm(player, translated("ui.aspergillum.table.title"));
   form
+    .spacer()
     .header(translated("ui.aspergillum.table.spray.header"))
+    .spacer()
     .dropdown(
       translated("ui.aspergillum.table.spray.label"),
       profileSelection,
@@ -76,8 +78,9 @@ export function showCustomizationMenu(
         value: index,
       })),
     )
-    .divider()
+    .spacer()
     .header(translated("ui.aspergillum.table.appearance.header"))
+    .spacer()
     .dropdown(
       translated("ui.aspergillum.table.metal.label"),
       metalSelection,
@@ -96,6 +99,7 @@ export function showCustomizationMenu(
         value: index,
       })),
     )
+    .spacer()
     .button(translated("ui.aspergillum.table.restore"), () => {
       if (!actions.restoreClassic()) return;
       suppressReactiveWrites = true;

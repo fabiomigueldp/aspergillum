@@ -1,4 +1,4 @@
-# Contrato da Mesa do Sacristão — v1.1.1
+# Contrato da Mesa do Sacristão — v1.1.2
 
 ## Intenção
 
@@ -52,6 +52,8 @@ O catálogo cartesiano em `assets-src/customization/catalog.json` define os nove
 
 A interface usa `CustomForm` estável e controles nativos. Ela deve pertencer visualmente ao Minecraft e continuar utilizável com teclado, controle e toque.
 
+O ritmo usa exatamente cinco `spacer()` nativos: abaixo do título do formulário, abaixo de cada cabeçalho, entre o dropdown de perfil e **Acabamento**, e antes de **Restaurar padrão**. O único `divider()` separa o grupo final **Concluir e retirar**/**Fechar**. Divisores não podem ser usados como espaço vazio.
+
 Ordem fixa:
 
 1. título **Mesa do Sacristão**;
@@ -96,6 +98,7 @@ Somente `cosmeticId`/tipo visual ou `sprayProfileId` muda durante a edição. Re
 ## Gates de aceitação
 
 - captura reproduzível de `table` e `table-docked` sem cubos ausentes, item desproporcional ou UV fora do atlas;
+- câmera em movimento junto ao pomo sem cintilação, faces concorrentes ou alternância subpixel;
 - inspeção no `.mcaddon` final em clássico e Vibrant Visuals, nas dezesseis rotações;
 - item clássico visualmente equivalente à baseline 1.0.20;
 - nove combinações distinguíveis sem saturação, emissividade ou aparência plástica;

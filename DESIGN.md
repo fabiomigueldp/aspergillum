@@ -29,7 +29,7 @@ Os PNGs gerados usam aproximações sRGB dessas referências e mantêm neutros l
 
 ## Interface
 
-A GUI usa componentes nativos de `@minecraft/server-ui`, localização por `RawMessage`, cabeçalhos curtos, divisores e dropdowns com descrição. A própria seleção e a prévia física do item confirmam mudanças imediatas; texto persistente não repete o que os controles já comunicam. Não existe custo, botão de compra ou campo numérico.
+A GUI usa componentes nativos de `@minecraft/server-ui`, localização por `RawMessage`, cabeçalhos curtos, espaçadores de ritmo e dropdowns com descrição. A própria seleção e a prévia física do item confirmam mudanças imediatas; texto persistente não repete o que os controles já comunicam. Divisores representam somente grupos reais, nunca são usados como espaço vazio. Não existe custo, botão de compra ou campo numérico.
 
 Hierarquia:
 

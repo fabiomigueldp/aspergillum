@@ -8,7 +8,25 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
-## v1.1.1 — refinamento físico e destilação da Mesa — implementada; reteste físico pendente
+## v1.1.2 — ritmo do formulário e estabilidade do pomo — implementada; reteste físico pendente
+
+Hipótese: usar o componente nativo `spacer()` para construir respiro sem simular seções e eliminar a cintilação do pomo com uma correção restrita à réplica da mesa.
+
+Escopo fechado:
+
+- remover o divisor entre perfil e acabamento e manter apenas o divisor do grupo final de ações;
+- inserir cinco espaçadores nativos nos pontos observados no teste 1.1.1;
+- ampliar a profundidade axial do pomo da réplica para `0.56` e limitar sua emenda interna com o couro a `0.04`;
+- preservar posição, escala global, attachable empunhado, UVs, estado, catálogos e gameplay.
+
+Gate de saída:
+
+- cabeçalhos, controles e restauração possuem ritmo consistente sem uma faixa vazia entre as seções;
+- o formulário continua cabendo na resolução testada, com o grupo final claramente separado;
+- mover a câmera perto do pomo não produz oscilação, pixels alternantes ou faces concorrentes;
+- regressões da 1.1.1 e da baseline 1.0.20 permanecem verdes.
+
+## v1.1.1 — refinamento físico e destilação da Mesa — implementada; refinada pela v1.1.2
 
 Hipótese: corrigir a composição observada no primeiro teste em jogo sem tocar nas bordas aprovadas, e reduzir a interface aos controles que realmente auxiliam a personalização.
 

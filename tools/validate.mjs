@@ -305,6 +305,14 @@ if (restingCenter.some((value, axis) => Math.abs(value - [0, 16.2, 0][axis]) > 1
   || restingSpan[2] > 4) {
   errors.push("Sacristan table replica must remain centered and scaled to fit inside the 13x13 velvet interior");
 }
+const [tableLeatherGrip, tableSilverPommel] = restingAspergillum?.cubes ?? [];
+const tableHandleSeamOverlap = tableSilverPommel && tableLeatherGrip
+  ? tableSilverPommel.origin[1] + tableSilverPommel.size[1] - tableLeatherGrip.origin[1]
+  : Number.NaN;
+if (Math.abs((tableSilverPommel?.size?.[1] ?? 0) - 0.56) > 1e-6
+  || Math.abs(tableHandleSeamOverlap - 0.04) > 1e-6) {
+  errors.push("Sacristan table handle requires the reviewed anti-flicker pommel depth and controlled internal seam");
+}
 
 const attachableSource = fs.readFileSync(
   path.join(packRoots[1], "attachables", "aspergillum.attachable.json"),
@@ -763,6 +771,15 @@ for (const tableContract of [
   if (!compiledScript.includes(tableContract)) {
     errors.push(`Compiled customization contract is missing: ${tableContract}`);
   }
+}
+const customizationMenuSource = fs.readFileSync(
+  path.join(root, "src", "presentation", "customization-menu.ts"),
+  "utf8",
+);
+const menuSpacerCount = customizationMenuSource.match(/\.spacer\(\)/g)?.length ?? 0;
+const menuDividerCount = customizationMenuSource.match(/\.divider\(\)/g)?.length ?? 0;
+if (menuSpacerCount !== 5 || menuDividerCount !== 1) {
+  errors.push("Customization menu must preserve five neutral rhythm spacers and only the final action divider");
 }
 if (compiledScript.includes("runInterval")) {
   errors.push("Customization flows must not introduce persistent polling intervals");

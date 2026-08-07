@@ -2,13 +2,13 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.1.1` Release Candidate (revisão numérica dos packs `[1, 1, 1]`)
+- **Versão de referência:** `1.1.2` Release Candidate (revisão numérica dos packs `[1, 1, 2]`)
 - **Engine mínima:** Creator `1.26.40`
 - **Script API:** manifest com `@minecraft/server` `2.9.0` e `@minecraft/server-ui` `2.1.0`, estáveis; `@minecraft/common` `1.3.0` somente no toolchain npm
 - **Experimentos:** nenhum
 - **Conteúdo:** aspersório funcional de quatro cargas, caldeirinha de dezesseis unidades, docking decorativo, três perfis de spray, nove acabamentos e Mesa do Sacristão configurável
 
-A v1.0.20 foi validada em jogo e é a baseline protegida de economia, docking parcial, persistência, animação, VFX e áudio. O primeiro teste físico da v1.1.0 validou a presença do bloco e da UI, mas revelou réplica mal integrada ao tampo e excesso de informação no formulário. A v1.1.1 corrige essa composição e destila o menu sem alterar os contratos funcionais da estação.
+A v1.0.20 foi validada em jogo e é a baseline protegida de economia, docking parcial, persistência, animação, VFX e áudio. O teste físico da v1.1.1 aprovou o novo posicionamento do aspersório, o veludo integral e a limpeza de conteúdo, mas revelou ritmo vertical inconsistente no formulário e cintilação subpixel no pomo. A v1.1.2 trata exatamente esses dois pontos sem alterar os contratos funcionais da estação.
 
 ## O que está resolvido
 
@@ -36,7 +36,7 @@ A v1.0.20 foi validada em jogo e é a baseline protegida de economia, docking pa
 - Docking guarda cargas restantes, `instance_id`, `nameTag`, cosmético, perfil e propriedades customizadas em shards persistentes por dimensão/chunk.
 - Todas as combinações 4/16 podem ser acomodadas: a água satura em 16, o restante fica no snapshot e retirada/quebra recuperam o item exato.
 - A Mesa do Sacristão possui modelo próprio de madeira escura, nicho integral de veludo verde, ferragem restrita ao puxador, dezesseis rotações e apresentação centralizada do aspersório derivada da mesma malha autoral.
-- A interface nativa `CustomForm` organiza somente perfil, metal e empunhadura em seções reativas, aplica mudanças imediatamente, oferece restauração, retirada e fechamento localizados sem custos.
+- A interface nativa `CustomForm` organiza somente perfil, metal e empunhadura em seções reativas, usa espaçadores nativos para ritmo vertical, reserva o único divisor ao grupo final e oferece restauração, retirada e fechamento localizados sem custos.
 - Os perfis `standard`, `processional` e `contained` mantêm 36 gotas, seis pulsos, uma carga, release e cooldown; somente geometria, velocidade e steering do leque variam.
 - Nove combinações cosméticas têm item/attachable/textura próprios; a variante original continua em `aspergillum:aspergillum` e mundos/itens existentes permanecem clássicos por default.
 - Sessões da mesa são exclusivas por jogador e bloco, com revalidação tardia, snapshot persistente, rollback e cleanup de ciclo de vida.
@@ -61,14 +61,14 @@ A v1.0.20 foi validada em jogo e é a baseline protegida de economia, docking pa
 | UX localizada | catálogo tipado de 32 mensagens, UI com 27 chaves e lore de seis linhas | confirmar `pt_BR` e `en_US` dentro do jogo, incluindo **Fechar**, nomes de perfil/acabamento e docking |
 | Desempenho | nenhum LOD sem evidência | medir profiler com 1, 4, 8 e 16 jogadores antes de autorizar alteração |
 | Entrada vanilla | `playerSwingStart` é after-event | alguns dispositivos podem mostrar feedback breve de mineração |
-| Docking 1.0.20 | validado em jogo pelo usuário; domínio e migração V1→V2 continuam cobertos automaticamente | manter `12+4`, `14+4`, `16+4`, reload, quebra e HUD como regressão da 1.1.1 |
+| Docking 1.0.20 | validado em jogo pelo usuário; domínio e migração V1→V2 continuam cobertos automaticamente | manter `12+4`, `14+4`, `16+4`, reload, quebra e HUD como regressão da 1.1.2 |
 | Polimento visual 1.0.19b | capturas PBR reproduzíveis aprovam coerência estrutural fora do jogo | confirmar silhueta, mipmaps, culling e materiais no `.mcaddon` importado, em clássico/Vibrant Visuals |
-| Mesa 1.1.1 | correção derivada do teste físico 1.1.0; captura confirma pivô central, escala contida, veludo integral e remoção dos apoios | confirmar no Bedrock que o item repousa inteiramente no nicho e que o menu cabe sem poluição/rolagem indevida |
-| Compatibilidade 1.1.1 | oito IDs e states cosméticos publicados na 1.1.0 são preservados; somente a revisão numérica avança | validar mundo existente da 1.0.20/1.1.0 antes e depois do upgrade, sem cache concorrente |
+| Mesa 1.1.2 | posição/veludo aprovados no teste 1.1.1; espaçamento e emenda do pomo corrigidos com evidência física | confirmar no Bedrock ausência da faixa vazia, ritmo consistente e fim da oscilação na extremidade do cabo |
+| Compatibilidade 1.1.2 | oito IDs e states cosméticos publicados na 1.1.0 são preservados; somente a revisão numérica avança | validar mundo existente da 1.0.20/1.1.1 antes e depois do upgrade, sem cache concorrente |
 
 ## Próxima mudança autorizada
 
-A v1.1.1 está pronta para QA físico pelo gate inicial de [TESTING.md](TESTING.md). A prioridade é importar o pacote final isolado, provar a nova integração do item com o tampo, a interface destilada/localizada, a persistência e a aplicação gratuita e reativa das nove aparências e dos três perfis. Exclusão multiplayer, recuperação após reload/quebra e a baseline 1.0.20 continuam como regressão. A mídia atual bloqueia apenas publicação comercial, não o teste técnico da RC.
+A v1.1.2 está pronta para QA físico pelo gate inicial de [TESTING.md](TESTING.md). A prioridade é importar o pacote final isolado e verificar o ritmo vertical da interface e a estabilidade do pomo em movimento de câmera. A posição do item, persistência, aplicação gratuita, exclusão multiplayer, recuperação após reload/quebra e a baseline 1.0.20 continuam como regressão. A mídia atual bloqueia apenas publicação comercial, não o teste técnico da RC.
 
 Não faz parte do próximo marco:
 

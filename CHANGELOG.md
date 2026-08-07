@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.1.2 — 2026-08-07
+
+- reconstruído o ritmo vertical do `CustomForm` com cinco `spacer()` nativos: respiro abaixo do título da mesa, ao redor dos dois cabeçalhos e antes de **Restaurar padrão**;
+- removido o divisor entre perfil e acabamento que era renderizado como uma seção vazia; somente o divisor legítimo do grupo final de ações permanece;
+- preservado o respiro já aprovado de **Concluir e retirar**/**Fechar**, sem reintroduzir microcopy ou rolagem desnecessária;
+- estabilizada a extremidade do cabo somente na réplica sobre a mesa: o pomo recebe profundidade axial de `0.56` e a emenda interna com o couro fica limitada a `0.04`, eliminando a competição subpixel observada no Bedrock;
+- o attachable empunhado, a posição aprovada sobre o veludo, os dez cubos, UVs, acabamentos, perfis, estado e gameplay permanecem inalterados;
+- adicionadas validações de regressão para a contagem de espaçadores/divisores e para a geometria anti-flicker da emenda;
+- o rótulo e a revisão numérica distribuídos são `1.1.2`/`[1,1,2]`, evitando colisão de cache com a 1.1.1 já importada.
+
 ## 1.1.1 — 2026-08-07
 
 - refinada a composição ocupada da Mesa do Sacristão após validação em jogo da 1.1.0: a réplica do aspersório agora usa escala uniforme `0.72`, centro geométrico coincidente com o pivô e posição contida no nicho do tampo;

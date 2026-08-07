@@ -139,7 +139,7 @@ O commit no tick 10 coincide com a fase de imersão da animação one-shot. A fa
 
 Partículas visuais permanecem independentes de qualquer cone lógico de gameplay futuro.
 
-## Fluxo de personalização 1.1.1
+## Fluxo de personalização 1.1.2
 
 1. Usar o aspersório numa Mesa do Sacristão livre captura e remove o ItemStack exato, grava um snapshot no mesmo registry persistente e publica o estado visual ocupado.
 2. Uma sessão exclusiva reserva jogador e coordenada; outro jogador recebe feedback de mesa ocupada, sem mutação.

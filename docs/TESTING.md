@@ -4,17 +4,20 @@
 
 Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
 
-## Gate da Mesa do Sacristão — v1.1.1
+## Gate da Mesa do Sacristão — v1.1.2
 
-- [ ] fechar o jogo, remover revisões anteriores e importar somente `Aspergillum-1.1.1.mcaddon` com manifests `[1,1,1]`;
+- [ ] fechar o jogo, remover revisões anteriores e importar somente `Aspergillum-1.1.2.mcaddon` com manifests `[1,1,2]`;
 - [ ] confirmar Content Log sem erro/warning de `@minecraft/server-ui`, `@minecraft/common`, custom component, formulário, item, attachable, geometria, textura, tradução ou block state;
 - [ ] fabricar/obter a Mesa do Sacristão, colocá-la nos dezesseis setores e confirmar frente da gaveta, colisão, seleção, som de madeira e impossibilidade de movimento por pistão;
 - [ ] usar um aspersório nomeado, com `instance_id`, carga parcial e propriedade customizada; ele sai da mão, repousa inteiro e centralizado sobre o veludo, sem ultrapassar bordas, e abre a UI exatamente uma vez;
 - [ ] orbitar frente, lados, trás e topo: o veludo preenche todo o nicho sem z-fighting, as bordas elevadas permanecem intactas e não existem os dois antigos apoios dourados no tampo;
+- [ ] confirmar respiro visível abaixo de **Mesa do Sacristão**, abaixo de **Perfil de aspersão**, abaixo de **Acabamento** e acima de **Restaurar padrão**;
+- [ ] confirmar que perfil e acabamento pertencem ao mesmo fluxo contínuo, sem faixa/divisor que pareça uma seção vazia entre eles; somente o grupo final **Concluir e retirar**/**Fechar** mantém divisor próprio;
 - [ ] confirmar hierarquia compacta da UI: perfil, acabamento, restauração, conclusão e **Fechar**; não aparecem item/cargas, texto genérico de gratuidade, demonstração ou status persistente;
-- [ ] em `pt_BR`, confirmar **Fechar** em vez de `Close`; em `en_US`, confirmar `Close`; nenhum texto fica cortado e o menu não exige rolagem indevida na mesma resolução das capturas 1.1.0;
+- [ ] em `pt_BR`, confirmar **Fechar** em vez de `Close`; em `en_US`, confirmar `Close`; nenhum texto fica cortado e o menu não exige rolagem indevida na mesma resolução das capturas 1.1.1;
 - [ ] alternar `Clássico`, `Processional` e `Contido`; a seleção aplica imediatamente, persiste na lore e só afeta a próxima rajada;
 - [ ] combinar os três metais com as três empunhaduras; as nove aparências atualizam o item sobre a mesa, o ícone, a mão, a terceira pessoa e a composição na caldeirinha;
+- [ ] aproximar a câmera da extremidade prateada do cabo e movê-la lentamente em ângulos oblíquos: pomo e couro permanecem estáveis, sem pixels alternantes, faces duplicadas ou cintilação;
 - [ ] confirmar que prata clássica + couro castanho reproduz a aparência 1.0.20 e que **Restaurar padrão** volta a `standard/classic`;
 - [ ] usar **Fechar**: configuração já aplicada persiste e o item permanece na mesa; reabrir mostra os valores atuais;
 - [ ] **Concluir e retirar** devolve exatamente o mesmo item e libera a mesa; com inventário cheio, o item é dropado uma vez sem apagar o snapshot antes da recuperação;
