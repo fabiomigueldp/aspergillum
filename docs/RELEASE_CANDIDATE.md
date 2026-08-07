@@ -2,13 +2,13 @@
 
 ## Identidade
 
-- Release Candidate: `1.0.19b`.
-- Revisão dos packs: `[1, 0, 35]`.
+- Release Candidate: `1.0.20`.
+- Revisão dos packs: `[1, 0, 36]`.
 - Baseline física herdada: `1.0.17a`, validada pelo usuário.
 - Experimentos: nenhum.
 - Autoridade: servidor para estado; cliente somente para apresentação.
 
-Esta revisão preserva binding, grip, envelope físico, poses, animações, steering, partículas, schema, snapshots e o áudio semântico da 1.0.19. Ela refina a cabeça dentro do mesmo envelope, eleva o atlas para densidade 2× e gera o estado acomodado a partir da mesma malha e dos mesmos mapas PBR do item.
+Esta revisão preserva binding, grip, envelope físico, poses, animações, steering, partículas e o áudio semântico da 1.0.19. Ela mantém o polimento visual da 1.0.19b e torna o docking sempre possível: transfere somente as cargas que couberem e preserva o restante no snapshot V2.
 
 ## Preflight automatizado
 
@@ -25,7 +25,7 @@ O gate falha quando versões divergem, catálogos `pt_BR`/`en_US` deixam de ser 
 
 1. Registrar o SHA-256 do artefato.
 2. Fechar o Minecraft e remover os dois packs antigos em Armazenamento.
-3. Importar somente `Aspergillum-1.0.19b.mcaddon`.
+3. Importar somente `Aspergillum-1.0.20.mcaddon`.
 4. Criar ou duplicar um mundo de teste sem experimentos.
 5. Limpar o Content Log antes de entrar.
 6. Executar `/function aspergillum/dev_kit`.
@@ -40,8 +40,8 @@ O gate falha quando versões divergem, catálogos `pt_BR`/`en_US` deixam de ser 
 | Órbita visual | item e composição acomodada correspondem; as quatro faces mostram duas fileiras de perfurações, domos/anéis/terminal contínuos e ouro somente na férula |
 | Vazio | clique seco privado e mensagem localizada; nenhuma água ou release |
 | Áudio | 15 famílias/48 variantes legíveis, sem duplicação, com prepare privado e commits espaciais |
-| Acomodar | agachar + usar funciona uma vez, preserva identidade e recusa overflow |
-| Retirar | mão vazia devolve exatamente o item preservado |
+| Acomodar | agachar + usar funciona uma vez; `12+4→16+0`, `14+4→16+2` e `16+4→16+4` conservam o total |
+| Retirar | mão vazia devolve exatamente o item, inclusive cargas restantes do snapshot V2 |
 | Quebrar/reload | snapshot não duplica nem desaparece |
 | Idioma | mudar `pt_BR`/`en_US` muda lore e HUD sem recriar o item |
 

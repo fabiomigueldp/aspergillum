@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.20 — 2026-08-07
+
+- redefinido o docking como transferência parcial conservativa: a caldeirinha recebe `min(cargas, 16 - água)` e o restante permanece no aspersório acomodado;
+- removida a recusa por overflow; todas as 85 combinações `0..16 × 0..4` agora podem ser acomodadas com conservação exata de `água + cargas` em Sobrevivência, Aventura e Criativo;
+- elevado o snapshot interno do item acomodado para schema 2 com `charges` normalizadas; snapshots schema 1 migram para zero porque suas cargas já haviam sido devolvidas pela regra anterior;
+- retirada, quebra e reload passam a restaurar exatamente as cargas remanescentes, preservando `instance_id`, nome, cosmético, perfil e propriedades customizadas;
+- feedback localizado distingue transferência integral, parcial e caldeirinha cheia; áudio de água usa somente a quantidade efetivamente transferida;
+- docking e retirada negam Espectador explicitamente, sem depender do bloqueio de input vanilla;
+- preservados binding, geometria `1.16.0`, poses, animações, VFX, cargas finitas, codec 4/16, UUIDs, block states, sessões, locks e APIs estáveis;
+- o rótulo distribuído é `1.0.20`; a revisão monotônica dos packs é `[1,0,36]`.
+
 ## 1.0.19b — 2026-08-07
 
 - refinada a cabeça do aspersório de quatro para seis volumes graduais, preservando largura máxima, comprimento total de `15,6` unidades, grip, pivôs, binding, locator e poses aprovadas;

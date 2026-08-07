@@ -2,13 +2,13 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.0.19b` Release Candidate (revisão numérica dos packs `[1, 0, 35]`)
+- **Versão de referência:** `1.0.20` Release Candidate (revisão numérica dos packs `[1, 0, 36]`)
 - **Engine mínima:** Creator `1.26.40`
 - **Script API:** `@minecraft/server` `2.9.0`, estável
 - **Experimentos:** nenhum
 - **Conteúdo:** aspersório funcional de quatro cargas, caldeirinha colocável de dezesseis unidades, docking decorativo e spray visual
 
-A v1.0.19b preserva a baseline física 4/16, o áudio semântico da 1.0.19 e o alinhamento ao Bedrock 26.40/Script API 2.9.0. A revisão refina a cabeça dentro do mesmo envelope físico, eleva a densidade do atlas para 2× e gera o aspersório acomodado a partir da mesma malha e dos mesmos mapas color/normal/MER do item.
+A v1.0.20 preserva a baseline física e visual da 1.0.19b, o áudio semântico da 1.0.19 e o alinhamento ao Bedrock 26.40/Script API 2.9.0. A revisão substitui a recusa de overflow por transferência parcial conservativa: o reservatório recebe o que couber e o snapshot V2 preserva as cargas restantes no item acomodado.
 
 ## O que está resolvido
 
@@ -33,8 +33,8 @@ A v1.0.19b preserva a baseline física 4/16, o áudio semântico da 1.0.19 e o a
 - Trocar item ou dimensão cancela os pulsos restantes.
 - Itens brutos e schemas 0/1/2 migram para schema 3 em qualquer slot do inventário; schema futuro permanece intocado.
 - Lore usa `RawMessage` e chaves `pt_BR`/`en_US`, sem congelar o idioma no ItemStack.
-- Docking guarda `instance_id`, `nameTag`, cosmético, perfil e propriedades customizadas em shards persistentes por dimensão/chunk.
-- Overflow é recusado sem alterar água ou item; retirada exige mão vazia e quebra recupera o snapshot real.
+- Docking guarda cargas restantes, `instance_id`, `nameTag`, cosmético, perfil e propriedades customizadas em shards persistentes por dimensão/chunk.
+- Todas as combinações 4/16 podem ser acomodadas: a água satura em 16, o restante fica no snapshot e retirada/quebra recuperam o item exato.
 - Mensagens do action bar e lore são traduzidas pelo Resource Pack do próprio cliente; não há ramificação manual por locale.
 - Mensagens dinâmicas usam `%s` sequenciais compatíveis com o runtime; lore e action bar reiniciam explicitamente a formatação antes de aplicar a cor.
 - Cues passam por adaptador Bedrock fail-soft, catálogo tipado e shuffle bag sem repetição imediata; feedback de carga mantém somente duas microgotas limitadas à caldeirinha.
@@ -53,14 +53,15 @@ A v1.0.19b preserva a baseline física 4/16, o áudio semântico da 1.0.19 e o a
 | Recuperação | `onBreak` estável cobre destruição; água continua não sendo um item | confirmar fisicamente explosão e comandos `destroy` sem duplicação |
 | Schema/lore | schema 3, `RawMessage`, placeholders `%s` e reset tipográfico implementados | confirmar `0/4..4/4`, ausência de `%` e lore não itálica em pt_BR/en_US |
 | Input de docking | rota dupla `onUseOn` + `onPlayerInteract` validada pelo usuário na 1.0.17a | manter como regressão no RC |
-| UX localizada | catálogo tipado de 25 mensagens e lore de quatro linhas | confirmar `pt_BR` e `en_US` dentro do jogo |
+| UX localizada | catálogo tipado de 27 mensagens e lore de quatro linhas | confirmar `pt_BR` e `en_US` dentro do jogo, incluindo docking integral/parcial/sem transferência |
 | Desempenho | nenhum LOD sem evidência | medir profiler com 1, 4, 8 e 16 jogadores antes de autorizar alteração |
 | Entrada vanilla | `playerSwingStart` é after-event | alguns dispositivos podem mostrar feedback breve de mineração |
+| Docking 1.0.20 | domínio e migração V1→V2 cobertos automaticamente; protocolo em [diagnóstico 1.0.20](diagnostics/1.0.20-partial-docking.md) | confirmar `12+4`, `14+4`, `16+4`, reload, quebra e HUD no pacote importado |
 | Polimento visual 1.0.19b | capturas PBR reproduzíveis aprovam coerência estrutural fora do jogo | confirmar silhueta, mipmaps, culling e materiais no `.mcaddon` importado, em clássico/Vibrant Visuals |
 
 ## Próxima mudança autorizada
 
-A v1.0.19b está pronta para QA físico pelo runbook [RELEASE_CANDIDATE.md](RELEASE_CANDIDATE.md). O gate visual prioritário compara item e composição acomodada nos quatro lados, topo e base, confirma duas fileiras de perfurações no corpo central, couro/ouro/prata coerentes e ausência de clipping em primeira/terceira pessoa. Permanecem os gates de Content Log, economia 4/16 e áudio da 1.0.19. A mídia atual bloqueia apenas publicação comercial, não o teste técnico da RC.
+A v1.0.20 está pronta para QA físico pelo runbook [RELEASE_CANDIDATE.md](RELEASE_CANDIDATE.md). O gate prioritário prova transferência integral, parcial e zero, restauração do restante após reload/quebra e paridade de input em teclado, controle e toque. Permanecem os gates visuais da 1.0.19b, de Content Log e de áudio da 1.0.19. A mídia atual bloqueia apenas publicação comercial, não o teste técnico da RC.
 
 Não faz parte do próximo marco:
 

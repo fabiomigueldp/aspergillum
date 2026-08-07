@@ -100,8 +100,9 @@ O estado booleano `has_aspergillum` continua responsável somente pela renderiza
 
 ```ts
 interface DockedAspergillumSnapshot {
-  schemaVersion: 1; // schema independente do ItemStack V3
+  schemaVersion: 2; // schema independente do ItemStack V3
   instanceId: string;
+  charges: number;
   nameTag?: string;
   cosmeticId: string;
   sprayProfileId: string;
@@ -109,9 +110,9 @@ interface DockedAspergillumSnapshot {
 }
 ```
 
-O `DockedItemRegistry` usa propriedades dinâmicas do mundo agrupadas por dimensão/chunk e limita cada blob a 30.000 caracteres. Ao retirar ou quebrar, reconstrói o item, restaura metadados, força `charges = 0` — as cargas já foram devolvidas à água — e remove o snapshot somente depois da recuperação. A caldeirinha declara `minecraft:movable` como `immovable`, evitando deslocar o endereço persistente por pistões.
+O `DockedItemRegistry` usa propriedades dinâmicas do mundo agrupadas por dimensão/chunk e limita cada blob a 30.000 caracteres. Ao retirar ou quebrar, reconstrói o item com as cargas e metadados do snapshot e remove o registro somente depois da recuperação. Snapshots V1 são normalizados como `charges = 0`, pois a regra anterior só permitia acomodar depois de devolver integralmente as cargas. A caldeirinha declara `minecraft:movable` como `immovable`, evitando deslocar o endereço persistente por pistões.
 
-Docking só é permitido se `water_units + charges <= 16`. Caso contrário, deve ser recusado sem alterar item ou bloco.
+Docking é sempre quantitativamente permitido. Ele transfere `min(charges, 16 - water_units)`, satura o reservatório sem ultrapassar 16 e grava o restante `charges - transferred` no snapshot. A identidade `nextWater + remainingCharges = water_units + charges` deve permanecer verdadeira para todas as 85 combinações. A regra é igual em Survival, Adventure e Creative; Spectator é explicitamente negado.
 
 Prioridade de interação:
 

@@ -35,7 +35,7 @@ for (const [label, actual] of [
 
 const messagingSource = fs.readFileSync(path.join(root, "src", "presentation", "messaging.ts"), "utf8");
 const messageKeys = [...new Set(messagingSource.match(/message\.aspergillum\.[a-z_]+/g) ?? [])].sort();
-if (messageKeys.length !== 25) errors.push(`Expected 25 action-message keys, found ${messageKeys.length}`);
+if (messageKeys.length !== 27) errors.push(`Expected 27 action-message keys, found ${messageKeys.length}`);
 const loreKeys = [
   "item.aspergillum.lore.charges",
   "item.aspergillum.lore.instructions",
@@ -47,6 +47,9 @@ const dynamicPlaceholderCounts = new Map([
   ["message.aspergillum.charges_inspect", 1],
   ["message.aspergillum.charges_loaded", 1],
   ["message.aspergillum.charges_remaining", 1],
+  ["message.aspergillum.docked_partial", 2],
+  ["message.aspergillum.docked_retained", 1],
+  ["message.aspergillum.docked_transferred", 1],
 ]);
 for (const locale of ["pt_BR", "en_US"]) {
   const entries = localeEntries(locale);

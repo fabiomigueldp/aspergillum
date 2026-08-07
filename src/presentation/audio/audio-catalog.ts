@@ -25,9 +25,9 @@ export function familiesForCue(cue: AudioCue): readonly AudioFamily[] {
     case "aspersorium.fill": return ["aspersorium.fill"];
     case "load.prepare": return ["load.prepare"];
     case "load.commit": return [`load.commit.${cue.amount}`];
-    case "dock.commit": return cue.returned === 0
+    case "dock.commit": return cue.transferred === 0
       ? ["dock.mechanical"]
-      : ["dock.mechanical", `dock.water.${cue.returned}`];
+      : ["dock.mechanical", `dock.water.${cue.transferred}`];
     case "undock.commit": return ["undock"];
     case "sprinkle.prepare": return ["sprinkle.prepare"];
     case "sprinkle.release": return ["sprinkle.release"];

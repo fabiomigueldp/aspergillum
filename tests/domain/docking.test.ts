@@ -9,17 +9,50 @@ import { ASPERGILLUM_CAPACITY } from "../../src/domain/aspergillum";
 import { ASPERSORIUM_CAPACITY } from "../../src/domain/aspersorium-water";
 
 describe("docking domain", () => {
-  it("preserves every valid water and charge combination or rejects overflow", () => {
+  it("transfers what fits and preserves every remaining charge", () => {
     for (let water = 0; water <= ASPERSORIUM_CAPACITY; water += 1) {
       for (let charges = 0; charges <= ASPERGILLUM_CAPACITY; charges += 1) {
         const result = resolveDocking(water, charges);
-        if (water + charges > ASPERSORIUM_CAPACITY) {
-          expect(result).toEqual({ allowed: false, nextWater: water, returnedCharges: 0, reason: "overflow" });
-        } else {
-          expect(result).toEqual({ allowed: true, nextWater: water + charges, returnedCharges: charges });
-        }
+        const transferredCharges = Math.min(charges, ASPERSORIUM_CAPACITY - water);
+        expect(result).toEqual({
+          nextWater: water + transferredCharges,
+          transferredCharges,
+          remainingCharges: charges - transferredCharges,
+        });
+        expect(result.nextWater + result.remainingCharges).toBe(water + charges);
       }
     }
+  });
+
+  it("handles full, partial, and zero transfer without rejecting docking", () => {
+    expect(resolveDocking(12, 4)).toEqual({
+      nextWater: 16,
+      transferredCharges: 4,
+      remainingCharges: 0,
+    });
+    expect(resolveDocking(14, 4)).toEqual({
+      nextWater: 16,
+      transferredCharges: 2,
+      remainingCharges: 2,
+    });
+    expect(resolveDocking(16, 4)).toEqual({
+      nextWater: 16,
+      transferredCharges: 0,
+      remainingCharges: 4,
+    });
+  });
+
+  it("normalizes malformed water and charge inputs before conserving them", () => {
+    expect(resolveDocking(-5, Number.NaN)).toEqual({
+      nextWater: 0,
+      transferredCharges: 0,
+      remainingCharges: 0,
+    });
+    expect(resolveDocking(99, 99)).toEqual({
+      nextWater: 16,
+      transferredCharges: 0,
+      remainingCharges: 4,
+    });
   });
 
   it("uses deterministic chunk shards and block keys", () => {
@@ -37,7 +70,7 @@ describe("docking domain", () => {
       .toEqual({ schemaVersion: 1, entries: {} });
   });
 
-  it("sanitizes snapshots and custom properties", () => {
+  it("migrates legacy snapshots to zero charges", () => {
     const shard = parseDockedRegistryShard(JSON.stringify({
       schemaVersion: 1,
       entries: {
@@ -57,6 +90,39 @@ describe("docking domain", () => {
       },
     }));
     expect(Object.keys(shard.entries)).toEqual(["1,2,3"]);
+    expect(shard.entries["1,2,3"]).toEqual({
+      schemaVersion: 2,
+      instanceId: "ag-test",
+      nameTag: "Ceremonial",
+      charges: 0,
+      cosmeticId: "classic",
+      sprayProfileId: "standard",
+      customProperties: {
+        "third.party:flag": true,
+        "third.party:vector": { kind: "vector3", x: 1, y: 2, z: 3 },
+      },
+    });
+  });
+
+  it("sanitizes current snapshots, charges, and custom properties", () => {
+    const shard = parseDockedRegistryShard(JSON.stringify({
+      schemaVersion: 1,
+      entries: {
+        "1,2,3": {
+          schemaVersion: 2,
+          instanceId: "ag-test",
+          charges: 99,
+          cosmeticId: "classic",
+          sprayProfileId: "standard",
+          customProperties: {
+            "third.party:flag": true,
+            "third.party:vector": { kind: "vector3", x: 1, y: 2, z: 3 },
+            "third.party:bad": { arbitrary: true },
+          },
+        },
+      },
+    }));
+    expect(shard.entries["1,2,3"]?.charges).toBe(ASPERGILLUM_CAPACITY);
     expect(shard.entries["1,2,3"]?.customProperties).toEqual({
       "third.party:flag": true,
       "third.party:vector": { kind: "vector3", x: 1, y: 2, z: 3 },

@@ -2,10 +2,9 @@ import { normalizeCharges } from "./aspergillum";
 import { ASPERSORIUM_CAPACITY, normalizeWaterUnits } from "./aspersorium-water";
 
 export interface DockingResolution {
-  readonly allowed: boolean;
   readonly nextWater: number;
-  readonly returnedCharges: number;
-  readonly reason?: "overflow";
+  readonly transferredCharges: number;
+  readonly remainingCharges: number;
 }
 
 export interface SerializedVector3 {
@@ -18,8 +17,9 @@ export interface SerializedVector3 {
 export type SerializedDynamicProperty = boolean | number | string | SerializedVector3;
 
 export interface DockedAspergillumSnapshot {
-  readonly schemaVersion: 1;
+  readonly schemaVersion: 2;
   readonly instanceId: string;
+  readonly charges: number;
   readonly nameTag?: string;
   readonly cosmeticId: string;
   readonly sprayProfileId: string;
@@ -34,10 +34,12 @@ export interface DockedRegistryShard {
 export function resolveDocking(waterInput: unknown, chargesInput: unknown): DockingResolution {
   const water = normalizeWaterUnits(waterInput);
   const charges = normalizeCharges(chargesInput);
-  if (water + charges > ASPERSORIUM_CAPACITY) {
-    return { allowed: false, nextWater: water, returnedCharges: 0, reason: "overflow" };
-  }
-  return { allowed: true, nextWater: water + charges, returnedCharges: charges };
+  const transferredCharges = Math.min(charges, ASPERSORIUM_CAPACITY - water);
+  return {
+    nextWater: water + transferredCharges,
+    transferredCharges,
+    remainingCharges: charges - transferredCharges,
+  };
 }
 
 function coordinateToken(value: number): string {
@@ -92,19 +94,28 @@ function sanitizeCustomProperties(value: unknown): Record<string, SerializedDyna
 
 function sanitizeSnapshot(value: unknown): DockedAspergillumSnapshot | undefined {
   if (typeof value !== "object" || value === null || Array.isArray(value)) return undefined;
-  const candidate = value as Partial<DockedAspergillumSnapshot>;
-  if (candidate.schemaVersion !== 1
+  const candidate = value as {
+    readonly schemaVersion?: unknown;
+    readonly instanceId?: unknown;
+    readonly charges?: unknown;
+    readonly nameTag?: unknown;
+    readonly cosmeticId?: unknown;
+    readonly sprayProfileId?: unknown;
+    readonly customProperties?: unknown;
+  };
+  if ((candidate.schemaVersion !== 1 && candidate.schemaVersion !== 2)
     || typeof candidate.instanceId !== "string"
     || candidate.instanceId.length === 0
     || candidate.instanceId.length > 128
     || typeof candidate.cosmeticId !== "string"
     || typeof candidate.sprayProfileId !== "string") return undefined;
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     instanceId: candidate.instanceId,
     ...(typeof candidate.nameTag === "string" && candidate.nameTag.length <= 255
       ? { nameTag: candidate.nameTag }
       : {}),
+    charges: candidate.schemaVersion === 1 ? 0 : normalizeCharges(candidate.charges),
     cosmeticId: candidate.cosmeticId,
     sprayProfileId: candidate.sprayProfileId,
     customProperties: sanitizeCustomProperties(candidate.customProperties),

@@ -576,7 +576,8 @@ for (const contract of [
   "aspergillum:spray_profile_id",
   "aspergillum:docked_",
   "Unsupported future aspergillum schema",
-  "message.aspergillum.docking_overflow",
+  "message.aspergillum.docked_partial",
+  "remainingCharges",
 ]) {
   if (!compiledScript.includes(contract)) errors.push(`Compiled persistence contract is missing: ${contract}`);
 }

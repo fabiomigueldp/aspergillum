@@ -152,7 +152,7 @@ function serializeDynamicProperty(value: boolean | number | string | Vector3): S
   return undefined;
 }
 
-export function captureDockedAspergillum(item: ItemStack): DockedAspergillumSnapshot {
+export function captureDockedAspergillum(item: ItemStack, remainingCharges: unknown): DockedAspergillumSnapshot {
   const initialized = initializeAspergillum(item);
   const migration = getAspergillumMigration(initialized);
   const instanceId = readAspergillumInstanceId(initialized);
@@ -167,9 +167,10 @@ export function captureDockedAspergillum(item: ItemStack): DockedAspergillumSnap
     if (serialized !== undefined) customProperties[propertyId] = serialized;
   }
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     instanceId,
     ...(initialized.nameTag !== undefined ? { nameTag: initialized.nameTag } : {}),
+    charges: normalizeCharges(remainingCharges),
     cosmeticId: migration.state.cosmeticId,
     sprayProfileId: migration.state.sprayProfileId,
     customProperties,
@@ -188,7 +189,7 @@ export function restoreDockedAspergillum(snapshot: DockedAspergillumSnapshot): I
   }
   if (snapshot.nameTag !== undefined) item.nameTag = snapshot.nameTag;
   return writeAspergillumState(item, {
-    ...createDefaultAspergillumState(0),
+    ...createDefaultAspergillumState(snapshot.charges),
     cosmeticId: snapshot.cosmeticId,
     sprayProfileId: snapshot.sprayProfileId,
   });

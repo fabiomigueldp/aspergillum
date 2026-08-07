@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { ACTION_MESSAGES } from "../../src/presentation/messaging";
 import { LOAD_SPLASH_OFFSETS } from "../../src/presentation/wet-feedback";
-import { AUDIO_VARIANTS } from "../../src/presentation/audio/audio-catalog";
+import { AUDIO_VARIANTS, familiesForCue } from "../../src/presentation/audio/audio-catalog";
 
 const root = path.resolve(import.meta.dirname, "../..");
 const loreKeys = [
@@ -28,7 +28,7 @@ function substituteSequentially(template: string, parameters: string[]): string 
 describe("release UX contracts", () => {
   it("uses a unique client-localized key for every action-bar message", () => {
     const keys = Object.values(ACTION_MESSAGES);
-    expect(keys).toHaveLength(25);
+    expect(keys).toHaveLength(27);
     expect(new Set(keys).size).toBe(keys.length);
     expect(keys.every((key) => key.startsWith("message.aspergillum."))).toBe(true);
   });
@@ -39,6 +39,9 @@ describe("release UX contracts", () => {
       [ACTION_MESSAGES.chargesInspect, ["2"]],
       [ACTION_MESSAGES.chargesLoaded, ["4"]],
       [ACTION_MESSAGES.chargesRemaining, ["1"]],
+      [ACTION_MESSAGES.dockedPartial, ["2", "2"]],
+      [ACTION_MESSAGES.dockedRetained, ["4"]],
+      [ACTION_MESSAGES.dockedTransferred, ["4"]],
     ]);
     for (const locale of ["pt_BR", "en_US"] as const) {
       const entries = localeEntries(locale);
@@ -84,6 +87,14 @@ describe("release UX contracts", () => {
     expect(new Set(variants).size).toBe(variants.length);
     expect(variants.every((event) => event.startsWith("aspergillum."))).toBe(true);
     expect(variants.every((event) => /\.v\d{2}$/.test(event))).toBe(true);
+  });
+
+  it("layers docking water audio only for charges actually transferred", () => {
+    const base = { location: { x: 0, y: 0, z: 0 }, actionId: "dock-test" } as const;
+    expect(familiesForCue({ kind: "dock.commit", transferred: 0, ...base }))
+      .toEqual(["dock.mechanical"]);
+    expect(familiesForCue({ kind: "dock.commit", transferred: 2, ...base }))
+      .toEqual(["dock.mechanical", "dock.water.2"]);
   });
 
   it("limits loading feedback to two subtle particles inside the vessel footprint", () => {

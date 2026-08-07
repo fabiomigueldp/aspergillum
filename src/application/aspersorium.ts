@@ -214,6 +214,7 @@ function loadItem(player: Player, block: Block): void {
 }
 
 function dockItem(player: Player, block: Block): void {
+  if (resolvePlayerPolicies(player).denied) return;
   const originalItem = getMainhand(player);
   if (!isAspergillum(originalItem) || getBooleanState(block, DOCKED_STATE)) return;
   if (!isAspergillumSchemaSupported(originalItem)) {
@@ -224,10 +225,6 @@ function dockItem(player: Player, block: Block): void {
   const itemState = readAspergillumState(item);
   const level = readAspersoriumWater(block);
   const resolution = resolveDocking(level, itemState.charges);
-  if (!resolution.allowed) {
-    action(player, ACTION_MESSAGES.dockingOverflow);
-    return;
-  }
   const dimensionId = block.dimension.id;
   let previousSnapshot;
   try {
@@ -242,7 +239,7 @@ function dockItem(player: Player, block: Block): void {
     action(player, ACTION_MESSAGES.registryRecoveryRequired);
     return;
   }
-  const snapshot = captureDockedAspergillum(item);
+  const snapshot = captureDockedAspergillum(item, resolution.remainingCharges);
   const originalPermutation = block.permutation;
   const updatedPermutation = withCustomBlockState(
     withAspersoriumWater(originalPermutation, resolution.nextWater),
@@ -263,14 +260,28 @@ function dockItem(player: Player, block: Block): void {
   }
   audioPort.emit(player, {
     kind: "dock.commit",
-    returned: resolution.returnedCharges as 0 | TransferAmount,
+    transferred: resolution.transferredCharges as 0 | TransferAmount,
     location: aspersoriumAcousticCenter(block.location),
     actionId: `${player.id}:${system.currentTick}:dock`,
   });
-  action(player, ACTION_MESSAGES.docked);
+  if (resolution.transferredCharges === 0 && resolution.remainingCharges === 0) {
+    action(player, ACTION_MESSAGES.docked);
+  } else if (resolution.remainingCharges === 0) {
+    action(player, ACTION_MESSAGES.dockedTransferred, resolution.transferredCharges);
+  } else if (resolution.transferredCharges === 0) {
+    action(player, ACTION_MESSAGES.dockedRetained, resolution.remainingCharges);
+  } else {
+    action(
+      player,
+      ACTION_MESSAGES.dockedPartial,
+      resolution.transferredCharges,
+      resolution.remainingCharges,
+    );
+  }
 }
 
 function undockItem(player: Player, block: Block): void {
+  if (resolvePlayerPolicies(player).denied) return;
   if (!getBooleanState(block, DOCKED_STATE)) return;
   const dimensionId = block.dimension.id;
   let snapshot;

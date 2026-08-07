@@ -4,6 +4,19 @@
 
 Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
 
+## Gate de docking parcial — v1.0.20
+
+- [ ] importar somente `Aspergillum-1.0.20.mcaddon` após fechar o jogo e remover revisões anteriores;
+- [ ] confirmar manifests `[1,0,36]` e Content Log sem erro/warning de script, dynamic property, tradução, áudio ou block state;
+- [ ] em Survival, Adventure e Creative, provar `12/16 + 4/4 → 16/16 + 0/4`, `14/16 + 4/4 → 16/16 + 2/4` e `16/16 + 4/4 → 16/16 + 4/4` após acomodar e retirar;
+- [ ] confirmar HUD distinto para transferência integral, parcial, caldeirinha cheia e item vazio, sem `%` residual em `pt_BR`/`en_US`;
+- [ ] confirmar que áudio molhado corresponde somente a `1..4` cargas efetivamente transferidas e zero transferência toca apenas o encaixe mecânico;
+- [ ] reload, quebra, explosão e inventário cheio restauram exatamente as cargas restantes, nome, `instance_id`, cosmético, perfil e propriedades customizadas;
+- [ ] snapshot V1 existente recupera item `0/4` sem duplicar a água previamente devolvida;
+- [ ] falha/rollback não publica água, ocupação ou snapshot parcial; Espectador não acomoda nem retira;
+- [ ] repetir agachar + usar e mão vazia em teclado/mouse, controle e toque; cada gesto produz um único commit;
+- [ ] repetir smoke visual, animações, 36 gotas/seis pulsos, bridge e áudio da 1.0.19b.
+
 ## Gate de polimento visual — v1.0.19b
 
 - [ ] importar somente `Aspergillum-1.0.19b.mcaddon` após fechar o jogo e remover revisões anteriores;
@@ -112,7 +125,8 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 
 ### Docking
 
-- overflow recusado;
+- transferência parcial conservativa nas 85 combinações `0..16 × 0..4`;
+- snapshot V1 migra para zero e V2 preserva cargas restantes;
 - nome, ID, cosmético, perfil e propriedades preservados;
 - retirada com inventário cheio;
 - quebra, explosão, reload e limpeza de snapshot;
@@ -330,7 +344,7 @@ Esses três itens foram confirmados pelo usuário no pacote 1.0.15d. Os demais c
 - [ ] colocar em bloco, laje, mesa e pedestal; validar 16 rotações;
 - [ ] níveis exatos `0..16` e quartos visuais `0`, `1..4`, `5..8`, `9..12`, `13..16`;
 - [ ] acomodar/retirar repetidamente com nome e propriedades;
-- [ ] overflow recusado sem perda;
+- [ ] transferência parcial satura em 16 e preserva o restante sem perda;
 - [ ] inventário cheio;
 - [ ] quebrar vazio, cheio e ocupado;
 - [ ] explosão, reload e tentativa de pistão.

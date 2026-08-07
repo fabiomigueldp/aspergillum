@@ -8,6 +8,25 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
+## v1.0.20 — docking parcial conservativo — implementada; QA físico pendente
+
+Escopo fechado:
+
+- substituir a recusa de overflow por transferência `min(cargas, 16 - água)` em todos os modos autorizados;
+- persistir no snapshot V2 as cargas que não couberem e restaurá-las em retirada, quebra e reload;
+- migrar snapshots V1 para zero sem duplicar água histórica;
+- manter transação e rollback defensivos, identidade, shards, input duplo deduplicado e bloqueio de Espectador;
+- comunicar no HUD transferência integral, parcial e zero; áudio de água representa somente a quantidade efetivamente devolvida;
+- preservar integralmente UUIDs, block states, schema do ItemStack, binding, poses, animações, VFX e economia 4/16.
+
+Gate de saída:
+
+- as 85 combinações `0..16 × 0..4` acomodam e conservam exatamente `água + cargas`;
+- `12+4→16+0`, `14+4→16+2` e `16+4→16+4` passam em Survival, Adventure e Creative;
+- snapshots V1/V2, retirada, quebra, reload, rollback, inventário cheio e troca de modo não perdem nem duplicam cargas;
+- teclado, controle e toque produzem um único commit e feedback localizado correto;
+- pacote `1.0.20`, Content Log e regressões visuais/sonoras permanecem limpos.
+
 ## v1.0.19b — polimento de malha, materiais e composição — implementada; QA físico pendente
 
 Escopo fechado:
@@ -383,7 +402,7 @@ Gate de saída: runbook de [Release Candidate](RELEASE_CANDIDATE.md) e todos os 
 - identidade preservada e cargas sempre em `0..4`;
 - carregamento e aspersão transacionais em seus respectivos release points;
 - sessões, locks, cancelamentos e cleanup cobertos;
-- docking preserva metadados, recusa overflow e sobrevive a reload/quebra.
+- docking preserva metadados e cargas restantes, transfere somente o que cabe e sobrevive a reload/quebra.
 
 ### Compatibilidade e release
 
