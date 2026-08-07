@@ -1,0 +1,19 @@
+{
+  "name": "aspergillum-model-viewer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Viewer web isolado para inspeção dos modelos Bedrock do Aspergillum.",
+  "scripts": {
+    "sync-assets": "node scripts/sync-assets.mjs",
+    "dev": "npm run sync-assets && vite",
+    "build": "npm run sync-assets && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "0.185.1"
+  },
+  "devDependencies": {
+    "vite": "8.2.0"
+  }
+}

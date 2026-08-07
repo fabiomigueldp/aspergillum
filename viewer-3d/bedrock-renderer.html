@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#101719" />
+    <meta
+      name="description"
+      content="Preview de alta fidelidade para os modelos Bedrock do add-on Aspergillum."
+    />
+    <title>Aspergillum / Bedrock Fidelity</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#fidelity-main">Saltar para o renderer Bedrock</a>
+
+    <div class="fidelity-shell">
+      <header class="topbar">
+        <div class="brand-lockup" aria-label="Aspergillum Bedrock Fidelity">
+          <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div>
+            <p class="eyebrow">ASPERGILLUM / BEDROCK</p>
+            <p class="brand-name">Fidelity Renderer</p>
+          </div>
+        </div>
+
+        <div class="runtime-badge" aria-live="polite">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span id="runtime-status">Carregando runtime local</span>
+        </div>
+
+        <div class="topbar-actions">
+          <a class="button button-subtle" href="./index.html">Model Lab original</a>
+        </div>
+      </header>
+
+      <main class="fidelity-workspace" id="fidelity-main">
+        <aside class="control-panel panel-border" aria-label="Contexto do runtime Bedrock">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">Runtime</p>
+              <h1>Contexto Bedrock</h1>
+            </div>
+            <span class="live-badge">LOCAL</span>
+          </div>
+
+          <p class="panel-intro">
+            A cena resolve o attachable, o render controller, a geometria, as animações e os mapas do Resource Pack local.
+          </p>
+
+          <div class="control-group">
+            <label class="field-label" for="asset-select">Asset de origem</label>
+            <select class="field-select" id="asset-select"></select>
+          </div>
+
+          <div class="control-group">
+            <label class="field-label" for="geometry-select">Geometria</label>
+            <select class="field-select" id="geometry-select"></select>
+          </div>
+
+          <div class="control-group">
+            <span class="field-label">Perspectiva</span>
+            <div class="segmented-control" role="group" aria-label="Perspectiva">
+              <button class="segment-button is-active" type="button" data-perspective="first" aria-pressed="true">1ª pessoa</button>
+              <button class="segment-button" type="button" data-perspective="third" aria-pressed="false">3ª pessoa</button>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <span class="field-label">Material pipeline</span>
+            <div class="segmented-control" role="group" aria-label="Material pipeline">
+              <button class="segment-button is-active" type="button" data-material="pbr" aria-pressed="true">PBR / VV</button>
+              <button class="segment-button" type="button" data-material="classic" aria-pressed="false">Clássico</button>
+            </div>
+            <p class="field-help" id="material-note">Normal + MERS ativos quando o texture set existe.</p>
+          </div>
+
+          <div class="control-group">
+            <span class="field-label">Estado do attachable</span>
+            <div class="segmented-control" role="group" aria-label="Estado do attachable">
+              <button class="segment-button is-active" type="button" data-action="idle" aria-pressed="true">Segurando</button>
+              <button class="segment-button" type="button" data-action="sprinkle" aria-pressed="false">Aspersão</button>
+            </div>
+          </div>
+
+          <div class="control-group timeline-group">
+            <div class="field-row">
+              <label class="field-label" for="timeline">Tempo da animação</label>
+              <output id="timeline-readout" for="timeline">0,00 s</output>
+            </div>
+            <input id="timeline" type="range" min="0" max="0.82" step="0.01" value="0" />
+            <div class="timeline-scale" aria-hidden="true"><span>0,00</span><span>0,41</span><span>0,82</span></div>
+            <p class="field-help" id="timeline-note">Arraste para iniciar a prévia da aspersão.</p>
+          </div>
+
+          <div class="control-group">
+            <span class="field-label">Estado contextual</span>
+            <label class="toggle-row">
+              <input id="docked-toggle" type="checkbox" />
+              <span class="toggle-track" aria-hidden="true"><span></span></span>
+              <span>Aspersório acomodado</span>
+            </label>
+            <label class="toggle-row">
+              <input id="water-toggle" type="checkbox" checked />
+              <span class="toggle-track" aria-hidden="true"><span></span></span>
+              <span>Exibir água</span>
+            </label>
+            <label class="toggle-row">
+              <input id="grid-toggle" type="checkbox" checked />
+              <span class="toggle-track" aria-hidden="true"><span></span></span>
+              <span>Grade de diagnóstico</span>
+            </label>
+          </div>
+
+          <div class="control-group water-group" id="water-group">
+            <div class="field-row">
+              <span class="field-label">Nível de água</span>
+              <span class="field-value" id="water-readout">Cheio</span>
+            </div>
+            <div class="water-segments" role="group" aria-label="Nível de água">
+              <button class="water-button" type="button" data-water="empty" aria-pressed="false">0</button>
+              <button class="water-button" type="button" data-water="low" aria-pressed="false">¼</button>
+              <button class="water-button" type="button" data-water="mid" aria-pressed="false">½</button>
+              <button class="water-button" type="button" data-water="high" aria-pressed="false">¾</button>
+              <button class="water-button is-active" type="button" data-water="full" aria-pressed="true">1</button>
+            </div>
+          </div>
+
+          <div class="control-group diagnostics-group">
+            <span class="field-label">Diagnóstico visual</span>
+            <label class="toggle-row">
+              <input id="pivots-toggle" type="checkbox" />
+              <span class="toggle-track" aria-hidden="true"><span></span></span>
+              <span>Pivôs e locators</span>
+            </label>
+            <label class="toggle-row">
+              <input id="wireframe-toggle" type="checkbox" />
+              <span class="toggle-track" aria-hidden="true"><span></span></span>
+              <span>Wireframe</span>
+            </label>
+          </div>
+
+          <div class="control-actions">
+            <button class="button" id="fit-button" type="button">Enquadrar modelo</button>
+            <button class="button button-quiet" id="reset-button" type="button">Resetar câmera</button>
+          </div>
+        </aside>
+
+        <section class="viewport-panel" aria-label="Preview 3D com runtime Bedrock">
+          <div class="viewport-stage" id="viewport-stage">
+            <canvas id="viewport-canvas" aria-label="Cena 3D do renderer Bedrock"></canvas>
+
+            <div class="viewport-header overlay-panel">
+              <div>
+                <p class="section-kicker">Render target</p>
+                <h2 id="viewport-title">Carregando pack</h2>
+                <p class="viewport-subtitle" id="viewport-subtitle">Resolvendo recursos locais…</p>
+              </div>
+              <div class="viewport-meta">
+                <span class="meta-chip meta-chip-accent" id="pipeline-chip">PBR / VV</span>
+                <span class="meta-chip" id="perspective-chip">1ª pessoa</span>
+              </div>
+            </div>
+
+            <div class="runtime-trace overlay-panel" aria-live="polite">
+              <div class="trace-heading"><span class="trace-pulse"></span><span>Render path</span></div>
+              <div class="trace-line"><span>attachable</span><strong id="trace-attachable">—</strong></div>
+              <div class="trace-line"><span>controller</span><strong id="trace-controller">—</strong></div>
+              <div class="trace-line"><span>geometry</span><strong id="trace-geometry">—</strong></div>
+            </div>
+
+            <div class="viewport-toolbar overlay-panel" role="toolbar" aria-label="Controles da câmera">
+              <button class="tool-button" id="camera-fit-button" type="button"><span aria-hidden="true">⌗</span><span>Enquadrar</span></button>
+              <button class="tool-button" id="camera-reset-button" type="button"><span aria-hidden="true">↺</span><span>Resetar</span></button>
+              <span class="toolbar-divider" aria-hidden="true"></span>
+              <span class="toolbar-note">Arraste para orbitar · roda para zoom</span>
+            </div>
+
+            <div class="loading-state" id="loading-state">
+              <span class="loading-orb" aria-hidden="true"></span>
+              <strong>Montando o render path</strong>
+              <span>Sincronizando geometria, mapas e animações</span>
+            </div>
+          </div>
+        </section>
+
+        <aside class="inspector-panel panel-border" aria-label="Diagnóstico de fidelidade">
+          <div class="panel-heading inspector-heading">
+            <div>
+              <p class="section-kicker">Inspeção</p>
+              <h2>Paridade visual</h2>
+            </div>
+            <span class="parity-score" id="parity-score">—</span>
+          </div>
+
+          <div class="inspector-scroll" id="inspector-content">
+            <div class="inspector-empty">
+              <span class="empty-glyph" aria-hidden="true">◌</span>
+              <strong>Aguardando runtime</strong>
+              <p>A cadeia resolvida e os mapas ativos aparecerão aqui.</p>
+            </div>
+          </div>
+
+          <div class="fidelity-note">
+            <span class="note-mark" aria-hidden="true">i</span>
+            <p>Este é um renderer de compatibilidade no navegador: reproduz os contratos do pack, mas o shader proprietário e a iluminação exata do cliente Minecraft continuam sendo validados no jogo.</p>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="/src/bedrock-renderer/main.js"></script>
+  </body>
+</html>
