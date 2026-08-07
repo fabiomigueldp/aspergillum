@@ -147,6 +147,12 @@ Timeline de aspersão (`18 ticks/0.90 s`): o swing vanilla fornece o movimento a
 
 O controller usa a categoria de cooldown válida como ponte visual. Tentativa vazia não inicia o cooldown nativo e, portanto, não entra no estado `sprinkle`. Na v1.0.19, a timeline é somente animação: áudio e bridge dependem do commit server-side, impedindo efeitos molhados em tentativas inválidas. O estado `recovery` também rearma uma nova ação se outro cooldown válido já tiver começado.
 
+### Pipeline autoral da malha 1.0.19a
+
+`assets-src/models/aspergillum.model.json` é a fonte humana do attachable. Ela preserva bones, pivôs, origins, sizes, binding e locators, mas acrescenta somente em produção um nome e uma superfície semântica para cada cubo. `tools/generate-assets.mjs` remove esses dois campos, calcula seis faces explícitas, arredonda cada dimensão UV por `ceil` com mínimo de um texel, empacota ilhas sem sobreposição com padding e emite em conjunto a geometria distribuída e os mapas color/normal/MER.
+
+Esse limite evita duas classes de drift: geometria fracionária com Box UV que colapsa no runtime e mapas PBR que deixam de corresponder ao color map. A silhueta continua autorada em unidades de modelo; a resolução da face é uma decisão independente do atlas. O validador compara origem/tamanho da fonte e do pack, fiscaliza as seis faces, bounds, inteiros, footprints e sobreposição.
+
 ## Áudio semântico
 
 Application emite intenções (`AudioCue`) e não IDs Bedrock. `BedrockAudioAdapter` resolve 15 famílias, escolhe variantes por shuffle bag e roteia pistas privadas via `Player.playSound` ou eventos espaciais via `Dimension.playSound`. Fill, load, dock, undock e release só emitem depois do commit correspondente; `load.prepare` e `sprinkle.prepare` só após a sessão e o cooldown serem aceitos. O catálogo, pipeline, mix, licença e QA estão em [Contrato de áudio](AUDIO_DESIGN_CONTRACT.md).

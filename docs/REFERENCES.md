@@ -3,6 +3,9 @@
 ## Fontes primárias
 
 - [Attachables — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/documents/attachables?view=minecraft-bedrock-stable): binding por item slot, geometrias e poses distintas por perspectiva.
+- [Geometry schema 1.19.30 — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/schemasreference/schemas/minecraftschema_geometry_1.19.30?view=minecraft-bedrock-stable): `size`, Box UV, UV alternativo por face e `uv_size`; a 1.0.19a usa as seis faces explícitas para desacoplar resolução e dimensão física.
+- [Materials and Material Files — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/documents/material-files?view=minecraft-bedrock-stable): `entity` mantém culling normal e `entity_nocull` adiciona `DisableCulling`; a correção não depende de nocull.
+- [Minecraft Style Guide — Blockbench](https://www.blockbench.net/wiki/guides/minecraft-style-guide/): relação de uma unidade de modelo por texel e risco estilístico de elementos menores que um pixel.
 - [Particle effects in animations — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/particlesreference/particleentityintegration?view=minecraft-bedrock-stable): locators, controllers e timelines de partículas.
 - [Particle appearance billboard — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/particlesreference/examples/particlecomponents/particle_appearance_billboard?view=minecraft-bedrock-stable): `direction_y` e orientação derivada da velocidade.
 - [Particle appearance lighting — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/particlesreference/particlecomponents/minecraftparticle_appearance_lighting?view=minecraft-bedrock-stable): a presença do componente tinge a partícula pelas condições locais de iluminação; omitido na 1.0.16b para preservar o azul da água.

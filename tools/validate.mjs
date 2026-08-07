@@ -182,10 +182,17 @@ if (!attachableSource.includes("controller.render.aspergillum.held")) {
 const heldGeometry = JSON.parse(
   fs.readFileSync(path.join(packRoots[1], "models", "entity", "aspergillum.geo.json"), "utf8"),
 );
+const heldGeometrySource = JSON.parse(
+  fs.readFileSync(path.join(root, "assets-src", "models", "aspergillum.model.json"), "utf8"),
+);
 if (heldGeometry?.format_version !== "1.16.0") {
   errors.push("Attachable binding requires geometry format_version 1.16.0");
 }
+if (heldGeometrySource?.format_version !== heldGeometry?.format_version) {
+  errors.push("Authored aspergillum model and generated Bedrock geometry must use the same format_version");
+}
 const heldBones = heldGeometry?.["minecraft:geometry"]?.[0]?.bones ?? [];
+const heldSourceBones = heldGeometrySource?.["minecraft:geometry"]?.[0]?.bones ?? [];
 if (heldBones.length !== 6) {
   errors.push("Held geometry must contain bound, presentation, action, handle, sprinkler-head, and spray-aim bones");
 }
@@ -241,6 +248,7 @@ if (sprayAimBone?.parent !== "sprinkler_head"
   errors.push("Spray-aim must be a non-rendering sprinkler-head child with the calibrated aspergillum_tip locator");
 }
 const cubes = [...(handleBone?.cubes ?? []), ...(sprinklerHeadBone?.cubes ?? [])];
+const sourceCubes = heldSourceBones.flatMap((bone) => bone.cubes ?? []);
 if (cubes.length !== 8) {
   errors.push("Handle and sprinkler head must preserve the eight real aspergillum cubes");
 } else {
@@ -258,8 +266,66 @@ if (cubes.length !== 8) {
   if (cubes.some((cube) => cube.size.some((dimension) => dimension <= 0))) {
     errors.push("Real mesh must not contain zero-thickness or negative-size cubes");
   }
-  if (cubes.some((cube) => !Array.isArray(cube.uv) || cube.uv.length !== 2)) {
-    errors.push("Real mesh must use complete box UV mapping for every cube");
+
+  if (sourceCubes.length !== cubes.length) {
+    errors.push("Authored and generated aspergillum models must contain the same eight cubes");
+  }
+  const allowedSurfaces = new Set(["leather", "silver", "gold", "perforated_silver"]);
+  for (const [index, sourceCube] of sourceCubes.entries()) {
+    if (!sourceCube.name || !allowedSurfaces.has(sourceCube.surface)) {
+      errors.push(`Authored aspergillum cube ${index + 1} requires a semantic name and approved surface`);
+    }
+    if (JSON.stringify(sourceCube.origin) !== JSON.stringify(cubes[index]?.origin)
+      || JSON.stringify(sourceCube.size) !== JSON.stringify(cubes[index]?.size)) {
+      errors.push(`Generated aspergillum cube ${index + 1} diverges from its authored origin or size`);
+    }
+  }
+
+  const faceNames = ["north", "east", "south", "west", "up", "down"];
+  const atlasWidth = heldGeometry["minecraft:geometry"][0].description.texture_width;
+  const atlasHeight = heldGeometry["minecraft:geometry"][0].description.texture_height;
+  const occupiedRects = [];
+  const expectedFaceSize = (size, faceName) => {
+    const [sizeX, sizeY, sizeZ] = size;
+    const dimensions = faceName === "east" || faceName === "west"
+      ? [sizeZ, sizeY]
+      : faceName === "north" || faceName === "south"
+        ? [sizeX, sizeY]
+        : [sizeX, sizeZ];
+    return dimensions.map((dimension) => Math.max(1, Math.ceil(dimension)));
+  };
+  for (const [cubeIndex, cube] of cubes.entries()) {
+    if (!cube.uv || Array.isArray(cube.uv)) {
+      errors.push(`Aspergillum cube ${cubeIndex + 1} must use explicit per-face UVs; fractional Box UVs are unsafe in Bedrock`);
+      continue;
+    }
+    if (Object.keys(cube.uv).sort().join() !== [...faceNames].sort().join()) {
+      errors.push(`Aspergillum cube ${cubeIndex + 1} must explicitly map all six faces`);
+      continue;
+    }
+    for (const faceName of faceNames) {
+      const face = cube.uv[faceName];
+      const values = [...(face?.uv ?? []), ...(face?.uv_size ?? [])];
+      if (values.length !== 4 || values.some((value) => !Number.isInteger(value))) {
+        errors.push(`Aspergillum cube ${cubeIndex + 1}.${faceName} must use integer UV coordinates and sizes`);
+        continue;
+      }
+      const [u, v] = face.uv;
+      const [width, height] = face.uv_size;
+      if (width < 1 || height < 1) {
+        errors.push(`Aspergillum cube ${cubeIndex + 1}.${faceName} collapses below one texel`);
+      }
+      if (JSON.stringify(face.uv_size) !== JSON.stringify(expectedFaceSize(cube.size, faceName))) {
+        errors.push(`Aspergillum cube ${cubeIndex + 1}.${faceName} must ceil its physical dimensions to a non-zero texel footprint`);
+      }
+      if (u < 0 || v < 0 || u + width > atlasWidth || v + height > atlasHeight) {
+        errors.push(`Aspergillum cube ${cubeIndex + 1}.${faceName} exceeds the declared texture atlas`);
+      }
+      const overlaps = occupiedRects.some((rect) =>
+        u < rect.u + rect.width && u + width > rect.u && v < rect.v + rect.height && v + height > rect.v);
+      if (overlaps) errors.push(`Aspergillum cube ${cubeIndex + 1}.${faceName} overlaps another UV island`);
+      occupiedRects.push({ u, v, width, height });
+    }
   }
 }
 const attachableDefinition = JSON.parse(attachableSource)?.["minecraft:attachable"]?.description;
@@ -512,6 +578,8 @@ const required = [
   "packs/behavior/pack_icon.png",
   "packs/resource/textures/items/aspergillum.png",
   "packs/resource/textures/entity/aspergillum.png",
+  "packs/resource/textures/entity/aspergillum_normal.png",
+  "packs/resource/textures/entity/aspergillum_mer.png",
   "packs/resource/textures/blocks/aspersorium.png",
   "packs/resource/textures/particle/holy_water.png",
   "packs/resource/models/blocks/aspersorium.rotations.geo.json",

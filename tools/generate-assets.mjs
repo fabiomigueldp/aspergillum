@@ -25,6 +25,12 @@ function write(relative, image) {
   fs.writeFileSync(destination, PNG.sync.write(image, { colorType: 6 }));
 }
 
+function writeJson(relative, value) {
+  const destination = path.join(root, relative);
+  fs.mkdirSync(path.dirname(destination), { recursive: true });
+  fs.writeFileSync(destination, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+}
+
 function hash(x, y, seed = 0) {
   let value = Math.imul(x + seed * 31, 374761393) + Math.imul(y + seed * 17, 668265263);
   value = (value ^ (value >>> 13)) * 1274126177;
@@ -56,37 +62,164 @@ function setPixel(image, x, y, color) {
   for (let channel = 0; channel < 4; channel += 1) image.data[offset + channel] = color[channel] ?? 255;
 }
 
-const entity = png(64, 64, (x, y) => silver(x, y, 2));
-fillRect(entity, 0, 0, 16, 18, (x, y) => {
-  const stripe = Math.floor(y / 3) % 2;
-  return stripe ? [43, 35, 30, 255] : [58, 47, 39, 255];
-});
-fillRect(entity, 20, 0, 12, 10, (x, y) => [166 + ((x + y) % 3) * 10, 125, 42, 255]);
-fillRect(entity, 0, 32, 40, 24, (x, y) => {
-  if (((x * 3 + y * 5) % 17) < 3) return [34, 39, 39, 255];
-  return silver(x, y, 7);
-});
+const FACE_NAMES = ["north", "east", "south", "west", "up", "down"];
+const UV_PADDING = 2;
+
+function faceTexelSize(size, faceName) {
+  const [sizeX, sizeY, sizeZ] = size;
+  const dimensions = faceName === "east" || faceName === "west"
+    ? [sizeZ, sizeY]
+    : faceName === "north" || faceName === "south"
+      ? [sizeX, sizeY]
+      : [sizeX, sizeZ];
+  return dimensions.map((dimension) => Math.max(1, Math.ceil(dimension)));
+}
+
+function buildEntityGeometry() {
+  const sourcePath = path.join(root, "assets-src/models/aspergillum.model.json");
+  const geometry = JSON.parse(fs.readFileSync(sourcePath, "utf8"));
+  const output = structuredClone(geometry);
+  const description = output["minecraft:geometry"]?.[0]?.description;
+  const textureWidth = description?.texture_width ?? 64;
+  const textureHeight = description?.texture_height ?? 64;
+  const regions = [];
+  let cursorX = UV_PADDING;
+  let cursorY = UV_PADDING;
+  let rowHeight = 0;
+
+  for (const bone of output["minecraft:geometry"]?.[0]?.bones ?? []) {
+    for (const [cubeIndex, cube] of (bone.cubes ?? []).entries()) {
+      const cubeName = cube.name ?? `${bone.name}_${cubeIndex + 1}`;
+      const surface = cube.surface;
+      if (!surface) throw new Error(`Missing surface for ${cubeName}`);
+      delete cube.name;
+      delete cube.surface;
+      cube.uv = {};
+
+      for (const faceName of FACE_NAMES) {
+        const [width, height] = faceTexelSize(cube.size, faceName);
+        const packedWidth = width + UV_PADDING * 2;
+        const packedHeight = height + UV_PADDING * 2;
+        if (cursorX + packedWidth > textureWidth) {
+          cursorX = UV_PADDING;
+          cursorY += rowHeight;
+          rowHeight = 0;
+        }
+        if (cursorY + packedHeight > textureHeight) {
+          throw new Error(`Aspergillum UV atlas overflow at ${cubeName}.${faceName}`);
+        }
+
+        const uv = [cursorX + UV_PADDING, cursorY + UV_PADDING];
+        cube.uv[faceName] = { uv, uv_size: [width, height] };
+        regions.push({
+          boneName: bone.name,
+          cubeName,
+          cubeIndex,
+          faceName,
+          surface,
+          uv,
+          width,
+          height,
+          seed: regions.length + 1,
+        });
+        cursorX += packedWidth;
+        rowHeight = Math.max(rowHeight, packedHeight);
+      }
+    }
+  }
+
+  return { geometry: output, regions, textureWidth, textureHeight };
+}
+
+function clampByte(value) {
+  return Math.max(0, Math.min(255, Math.round(value)));
+}
+
+function shadeColor(color, amount) {
+  return [
+    clampByte(color[0] + amount),
+    clampByte(color[1] + amount),
+    clampByte(color[2] + amount),
+    color[3] ?? 255,
+  ];
+}
+
+function isPerforation(region, x, y) {
+  if (region.surface !== "perforated_silver" || region.width < 3 || region.height < 2) return false;
+  const border = x === 0 || y === 0 || x === region.width - 1 || y === region.height - 1;
+  return !border && ((x * 3 + y * 5 + region.seed) % 7 <= 1);
+}
+
+function albedoPixel(region, x, y) {
+  const noise = Math.round((hash(x, y, region.seed) - 0.5) * 10);
+  const topOrLeft = x === 0 || y === 0;
+  const bottomOrRight = x === region.width - 1 || y === region.height - 1;
+  const bevel = topOrLeft ? 13 : bottomOrRight ? -12 : 0;
+
+  if (region.surface === "leather") {
+    const band = Math.floor(y / 2) % 2 === 0 ? [58, 45, 36, 255] : [43, 34, 29, 255];
+    return shadeColor(band, Math.round(noise * 0.45) + Math.round(bevel * 0.35));
+  }
+  if (region.surface === "gold") {
+    return shadeColor([177, 128, 42, 255], noise + bevel);
+  }
+  if (isPerforation(region, x, y)) {
+    return [30, 35, 35, 255];
+  }
+  return shadeColor([162, 164, 158, 255], noise + bevel);
+}
+
+function normalPixel(region, x, y) {
+  if (isPerforation(region, x, y)) return [128, 128, 236, 255];
+  const variation = Math.round((hash(x, y, region.seed + 100) - 0.5) * 4);
+  return [128 + variation, 128 - variation, 252, 255];
+}
+
+function mersPixel(region, x, y) {
+  if (region.surface === "leather") return [18, 0, 215, 255];
+  if (region.surface === "gold") return [238, 0, 82, 255];
+  if (isPerforation(region, x, y)) return [42, 0, 190, 255];
+  return [224, 0, 118, 255];
+}
+
+function paintAtlasRegion(image, region, painter) {
+  const [uvX, uvY] = region.uv;
+  for (let y = -UV_PADDING; y < region.height + UV_PADDING; y += 1) {
+    for (let x = -UV_PADDING; x < region.width + UV_PADDING; x += 1) {
+      const sourceX = Math.max(0, Math.min(region.width - 1, x));
+      const sourceY = Math.max(0, Math.min(region.height - 1, y));
+      setPixel(image, uvX + x, uvY + y, painter(region, sourceX, sourceY));
+    }
+  }
+}
+
+const entityModel = buildEntityGeometry();
+writeJson("packs/resource/models/entity/aspergillum.geo.json", entityModel.geometry);
+
+const entity = png(entityModel.textureWidth, entityModel.textureHeight, () => [135, 137, 132, 255]);
+const entityNormal = png(entityModel.textureWidth, entityModel.textureHeight, () => [128, 128, 255, 255]);
+const entityMer = png(entityModel.textureWidth, entityModel.textureHeight, () => [0, 0, 255, 255]);
+for (const region of entityModel.regions) {
+  paintAtlasRegion(entity, region, albedoPixel);
+  paintAtlasRegion(entityNormal, region, normalPixel);
+  paintAtlasRegion(entityMer, region, mersPixel);
+}
 write("packs/resource/textures/entity/aspergillum.png", entity);
+write("packs/resource/textures/entity/aspergillum_normal.png", entityNormal);
+write("packs/resource/textures/entity/aspergillum_mer.png", entityMer);
 
 const block = png(64, 64, (x, y) => silver(x, y, 11));
 for (let y = 0; y < 64; y += 8) fillRect(block, 0, y, 64, 1, [112, 115, 112, 255]);
 for (let x = 4; x < 64; x += 11) fillRect(block, x, 0, 1, 64, [187, 188, 180, 255]);
 write("packs/resource/textures/blocks/aspersorium.png", block);
 
-const normal = png(64, 64, (x, y) => {
+const blockNormal = png(64, 64, (x, y) => {
   const d = Math.round((hash(x, y, 19) - 0.5) * 8);
   return [128 + d, 128 - d, 250, 255];
 });
-write("packs/resource/textures/entity/aspergillum_normal.png", normal);
-write("packs/resource/textures/blocks/aspersorium_normal.png", normal);
+write("packs/resource/textures/blocks/aspersorium_normal.png", blockNormal);
 
-const entityMer = png(64, 64, (x, y) => {
-  const leather = x < 16 && y < 18;
-  const gold = x >= 20 && x < 32 && y < 10;
-  return leather ? [18, 0, 205, 255] : gold ? [238, 0, 78, 255] : [224, 0, 112, 255];
-});
 const blockMer = png(64, 64, (x, y) => [220, 0, 118 + Math.round(hash(x, y, 4) * 20), 255]);
-write("packs/resource/textures/entity/aspergillum_mer.png", entityMer);
 write("packs/resource/textures/blocks/aspersorium_mer.png", blockMer);
 
 const water = png(32, 32, (x, y) => {
@@ -161,12 +294,6 @@ function makePackIcon() {
 const packIcon = makePackIcon();
 write("packs/resource/pack_icon.png", packIcon);
 write("packs/behavior/pack_icon.png", packIcon);
-
-function writeJson(relative, value) {
-  const destination = path.join(root, relative);
-  fs.mkdirSync(path.dirname(destination), { recursive: true });
-  fs.writeFileSync(destination, `${JSON.stringify(value, null, 2)}\n`, "utf8");
-}
 
 const geometrySource = JSON.parse(
   fs.readFileSync(path.join(root, "packs/resource/models/blocks/aspersorium.geo.json"), "utf8"),

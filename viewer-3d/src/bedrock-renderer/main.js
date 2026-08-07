@@ -357,7 +357,7 @@ function createBedrockMaterial({ color, normal, mersChannels, water = false }) {
     roughness: mersChannels ? 1 : 0.72,
     metalness: mersChannels ? 1 : 0.08,
     alphaTest: 0.01,
-    side: THREE.DoubleSide,
+    side: THREE.FrontSide,
   });
 
   return material;
@@ -948,6 +948,7 @@ function renderInspector() {
     row('Cubos', String(geometry.cubeCount)),
     row('Locators', String(geometry.locatorCount)),
     row('Textura', `${geometry.textureWidth} × ${geometry.textureHeight}`),
+    row('UV Bedrock-safe', geometry.uvSafety?.unsafeSubtexelBoxUvCubes || geometry.uvSafety?.missingOrCollapsedFaces ? 'não' : 'per-face inteiro'),
   ];
 
   const runtimeRows = [
@@ -970,7 +971,7 @@ function renderInspector() {
 
   const parityRows = [
     status('Geometria Bedrock', true),
-    status('UV por face', true),
+    status('UV inteiro / sem colapso', !(geometry.uvSafety?.unsafeSubtexelBoxUvCubes || geometry.uvSafety?.missingOrCollapsedFaces)),
     status('Pivôs / hierarquia', true),
     status('MERS R/G/B', state.materialMode === 'pbr' && Boolean(textureSet?.mers)),
     status('Attachable + controller', path.attachable),

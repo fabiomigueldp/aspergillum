@@ -1,6 +1,6 @@
 # Contrato visual congelado
 
-Este documento registra os valores estruturais comprovados até a v1.0.15d e a integração VFX corrigida até a v1.0.16c. Eles são baseline, não sugestões de calibração.
+Este documento registra os valores estruturais comprovados até a v1.0.15d, a integração VFX corrigida até a v1.0.16c e a integridade de superfície corrigida na v1.0.19a. Eles são baseline, não sugestões de calibração.
 
 ## Attachable
 
@@ -26,6 +26,11 @@ rightItem (holder)
 | Rotação estrutural | `[25, 0, -12]` |
 | Escala | `1` |
 | Comprimento | `15.6` unidades de modelo (`0.975` bloco) |
+| Fonte autoral | `assets-src/models/aspergillum.model.json` |
+| UV distribuído | seis faces explícitas por cubo, coordenadas e `uv_size` inteiros |
+| Footprint mínimo | `1 × 1` texel por face; dimensões físicas fracionárias usam `ceil`, nunca Box UV implícito |
+| Padding do atlas | `2` texels dilatados ao redor de cada ilha para proteger mipmaps |
+| Superfícies | grip `leather`; pomo/haste/cabeça `silver`; férula `gold`; corpo da cabeça `perforated_silver` |
 | Primeira pessoa: posição aditiva | `[0, 0, 0]` |
 | Primeira pessoa: rotação aditiva | `[180, 0, 0]` |
 | Primeira pessoa: rotação efetiva | `[205, 0, -12]` |
@@ -41,6 +46,9 @@ rightItem (holder)
 - Pivot altera o centro de rotação; não substitui a posição dos vértices.
 - A pose de primeira pessoa não deve ser afetada por correções de terceira pessoa.
 - Não se transplanta pose de tridente, lança ou outra malha vanilla como se fosse universal.
+- Dimensão física e resolução de UV são contratos distintos: cubos podem permanecer abaixo de uma unidade para preservar a silhueta, mas nenhuma face pode receber menos de um texel.
+- Box UV é proibido no attachable empunhado enquanto houver dimensão menor que uma unidade; as seis faces devem permanecer explícitas e dentro do atlas.
+- Color, normal e MER devem nascer do mesmo layout gerado. Não se edita um PNG final ou a geometria distribuída isoladamente.
 
 ## Spray v1.0.16c
 
@@ -109,6 +117,8 @@ Toda a hierarquia existe na v1.0.16c. `spray_aim` é um bone técnico sem cubos,
 - A cabeça não cruza ombro, peito, pescoço ou rosto em repouso e nas ações.
 - Primeira pessoa permanece legível, sem bloquear a mira ou o plano próximo.
 - Steve/wide, Alex/slim e Persona apresentam pose aceitável.
+- Pomo, haste, férula, dois anéis da cabeça e terminal superior mantêm paredes contínuas em órbita completa; nenhuma vista lateral depende de backface ou `entity_nocull`.
+- A única peça dourada estrutural é a férula entre haste e cabeça; o pomo e o terminal permanecem prata em todas as faces.
 - O spray nasce a até `0.10` bloco da ponta renderizada, forma leque horizontal, não gera halo e não produz gotas gigantes próximas à câmera.
 - Mover a câmera durante os pulsos curva o leque de modo suave, limitado e previsível.
 - Gotas distantes, fade e respingos no chão permanecem azuis sob sol, sombra, tochas e Vibrant Visuals, sem leitura verde/amarela.

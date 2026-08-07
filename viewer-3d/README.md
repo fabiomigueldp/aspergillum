@@ -37,6 +37,8 @@ Ele aplica as poses reais de primeira/terceira pessoa do attachable, permite amo
 
 No modo `PBR / VV`, o `color` é tratado como sRGB, enquanto `normal` e `MERS` são tratados como dados lineares. O MER técnico é decomposto antes de chegar ao material em três mapas escalares: canal R para metalness, G para emissive e B para roughness. Isso evita que a aparência magenta/azul do arquivo de diagnóstico seja confundida com a cor do modelo. A cena usa um ambiente IBL neutro e luzes sem tintas cromáticas para que metais não recebam uma dominante artificial do próprio preview.
 
+Os materiais sólidos usam descarte de faces front-side como o caminho opaco do Bedrock, em vez de `DoubleSide`. O catálogo também audita UVs: Box UV combinado com qualquer dimensão menor que uma unidade é marcado como inseguro, e faces per-face ausentes ou com `uv_size` colapsado aparecem como incompatibilidade. A geometria oficial do aspersório usa seis faces explícitas por cubo, footprints inteiros de pelo menos um texel e padding dilatado de dois texels no atlas.
+
 ## Limite deliberado
 
 O viewer original reproduz a geometria Bedrock e seus pivôs em uma cena standalone. O **Bedrock Fidelity Renderer** aproxima também a cadeia de resolução, animações e mapas do pack, mas não substitui o cliente Minecraft: o shader proprietário, a iluminação do mundo, o jogador/skin, a câmera completa, partículas e comportamento final continuam sendo validados no jogo conforme `docs/TESTING.md`. Portanto, ele é um preview de alta fidelidade e uma ferramenta de diagnóstico, não uma prova de equivalência visual de 100%.

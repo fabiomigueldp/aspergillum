@@ -4,6 +4,19 @@
 
 Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
 
+## Gate visual — v1.0.19a
+
+- [ ] importar somente `Aspergillum-1.0.19a.mcaddon` após fechar o jogo e remover revisões anteriores;
+- [ ] confirmar nos manifests importados `[1,0,34]` e Content Log sem erro/warning de geometria, UV, textura ou material;
+- [ ] em terceira pessoa, orbitar por baixo, por cima e pelos quatro lados: pomo, haste, férula, anel inferior da cabeça, anel superior e terminal mantêm paredes contínuas;
+- [ ] repetir a órbita em repouso e durante carregamento/aspersão, sem face piscando, sumindo ou invertendo;
+- [ ] repetir em primeira pessoa olhando para cima, frente e baixo; silhueta, mira e plano próximo permanecem idênticos à baseline aprovada;
+- [ ] repetir com Steve/wide, Alex/slim e Persona; o cabo continua atravessando o punho e a cabeça não cruza corpo/rosto;
+- [ ] confirmar couro somente no grip, prata no pomo/haste/cabeça e ouro somente na férula sob a cabeça;
+- [ ] repetir em gráficos clássicos e Vibrant Visuals: PBR não altera a cor-base nem cria dominante roxa;
+- [ ] confirmar que o Fidelity Renderer mostra `UV Bedrock-safe: per-face inteiro` e nenhuma incompatibilidade;
+- [ ] repetir smoke 4/16, docking, locator, 36 gotas/seis pulsos e áudio da 1.0.19 para provar ausência de regressão.
+
 ## Gate de áudio — v1.0.19
 
 - [ ] importar somente `Aspergillum-1.0.19.mcaddon` após fechar o jogo e remover revisões anteriores;

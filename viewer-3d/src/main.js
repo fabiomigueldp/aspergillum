@@ -236,7 +236,7 @@ function createCubeMesh(cube, bone, geometrySummary, textures) {
       color: textures.default ? 0xffffff : 0xbfcfca,
       roughness: 0.7,
       metalness: 0.08,
-      side: THREE.DoubleSide,
+      side: THREE.FrontSide,
     }),
     new THREE.MeshStandardMaterial({
       map: textures.water,
@@ -523,6 +523,7 @@ function renderInspector() {
         <div class="stat-row"><span>Cubos</span><strong>${geometry.cubeCount}</strong></div>
         <div class="stat-row"><span>Locators</span><strong>${geometry.locatorCount}</strong></div>
         <div class="stat-row"><span>Textura</span><strong>${model.texture ? '64 × 64 / PNG' : 'Cor de diagnóstico'}</strong></div>
+        <div class="stat-row"><span>UV Bedrock-safe</span><strong>${geometry.uvSafety?.unsafeSubtexelBoxUvCubes || geometry.uvSafety?.missingOrCollapsedFaces ? 'não' : 'sim'}</strong></div>
       </div>
     </section>
 

@@ -74,6 +74,38 @@ function countLocators(bones = []) {
   return bones.reduce((total, bone) => total + Object.keys(bone.locators ?? {}).length, 0);
 }
 
+function analyzeUvSafety(bones = []) {
+  const summary = {
+    boxUvCubes: 0,
+    perFaceUvCubes: 0,
+    unsafeSubtexelBoxUvCubes: 0,
+    missingOrCollapsedFaces: 0,
+  };
+  const faceNames = ['north', 'east', 'south', 'west', 'up', 'down'];
+
+  for (const bone of bones) {
+    for (const cube of bone.cubes ?? []) {
+      if (Array.isArray(cube.uv)) {
+        summary.boxUvCubes += 1;
+        if ((cube.size ?? []).some((dimension) => dimension < 1)) {
+          summary.unsafeSubtexelBoxUvCubes += 1;
+        }
+        continue;
+      }
+
+      summary.perFaceUvCubes += 1;
+      for (const faceName of faceNames) {
+        const face = cube.uv?.[faceName];
+        if (!face || !Array.isArray(face.uv_size) || face.uv_size.some((dimension) => dimension < 1)) {
+          summary.missingOrCollapsedFaces += 1;
+        }
+      }
+    }
+  }
+
+  return summary;
+}
+
 function displayName(identifier, source) {
   if (identifier.includes('aspersorium')) return 'Caldeirinha';
   if (identifier.includes('aspergillum')) return 'Aspersório';
@@ -120,6 +152,7 @@ function summarizeGeometry(geometry, index, formatVersion) {
     cubeCount: countCubes(bones),
     locatorCount: countLocators(bones),
     boneNames: bones.map((bone) => bone.name),
+    uvSafety: analyzeUvSafety(bones),
   };
 }
 

@@ -8,6 +8,24 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
+## v1.0.19a — integridade de superfícies e UV — implementada; QA físico pendente
+
+Escopo fechado:
+
+- corrigir paredes laterais ausentes sem alterar silhueta, grip, locator, poses ou animações;
+- substituir Box UV fracionário por seis UVs per-face inteiros em cada um dos oito cubos;
+- gerar geometria e mapas color/normal/MER a partir de uma fonte semântica única;
+- preservar o idioma visual da referência: couro escuro, corpo prateado, férula dourada e cabeça perfurada;
+- bloquear faces subpixel, ausentes, sobrepostas ou fora do atlas no pipeline;
+- tornar os viewers front-face e capazes de denunciar UV incompatível, sem apresentá-los como prova final do runtime.
+
+Gate de saída:
+
+- órbita completa no Minecraft mostra paredes contínuas no pomo, haste, férula, base/topo da cabeça e terminal;
+- primeira/terceira pessoa, Steve/Alex/Persona e clássico/Vibrant Visuals preservam escala e materiais;
+- ouro aparece somente na férula, sem lado acidentalmente dourado no pomo ou terminal;
+- Content Log limpo e nenhuma regressão em binding, poses, animações, locator, 36 gotas/seis pulsos ou áudio da 1.0.19.
+
 ## v1.0.19 — sistema de áudio próprio — implementada; QA auditivo pendente
 
 Escopo fechado:

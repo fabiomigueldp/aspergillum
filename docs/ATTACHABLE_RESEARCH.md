@@ -2,6 +2,14 @@
 
 > Documento histórico de investigação. Para o contrato vigente, consulte [Contrato visual](VISUAL_CONTRACT.md); para o estado real da versão atual, consulte [Estado do projeto](PROJECT_STATUS.md). Hipóteses intermediárias abaixo não substituem a baseline comprovada.
 
+## v1.0.19a — fechamento da hipótese de faces laterais
+
+As capturas físicas mostraram uma correlação exata: permaneciam visíveis os corpos com dimensões iguais ou superiores a uma unidade, enquanto desapareciam paredes do pomo (`0,6`), haste (`0,91`), férula (`0,9`), anéis da cabeça (`0,7`/`0,75`) e terminal (`0,6`). A textura color, normal e MER tinha alfa 255 integral; todos os volumes eram positivos. Logo, transparência, plano nulo e texture set foram descartados.
+
+A auditoria histórica encontrou a regressão: antes da redução física, as mesmas peças mediam ao menos `1,2–1,8`; depois da calibração de escala, seis dos oito cubos conservaram Box UV `[u,v]`, mas passaram a ter ao menos uma dimensão inferior a um texel. O viewer web preservava o retângulo UV fracionário e ainda usava `DoubleSide`, por isso não reproduzia o colapso observado no Minecraft.
+
+A 1.0.19a mantém todos os origins/sizes calibrados e separa silhueta de resolução. A fonte autoral recebe superfícies semânticas; o gerador fornece `uv_size = max(1, ceil(dimension))` para norte/leste/sul/oeste/cima/baixo, padding e mapas PBR sincronizados. O material continua `entity`: `entity_nocull` foi rejeitado porque mascararia orientação e aumentaria custo sem corrigir uma face com footprint UV nulo. Evidência e matriz de reprodução: [diagnóstico 1.0.19a](diagnostics/1.0.19a-uv-integrity.md).
+
 ## v1.0.16 — locator híbrido sem perda de steering
 
 A integração final não substitui prematuramente o emissor matemático. `spray_aim` é filho de `sprinkler_head` e hospeda `aspergillum_tip` uma unidade além da face superior. No release válido de `0.25 s`, cada animação por perspectiva dispara quatro microgotas com `bind_to_actor: false`; elas materializam a origem real e passam imediatamente a simular em world-space.

@@ -2,13 +2,13 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.0.19` Release Candidate (revisão numérica dos packs `[1, 0, 33]`)
+- **Versão de referência:** `1.0.19a` Release Candidate (revisão numérica dos packs `[1, 0, 34]`)
 - **Engine mínima:** Creator `1.26.40`
 - **Script API:** `@minecraft/server` `2.9.0`, estável
 - **Experimentos:** nenhum
 - **Conteúdo:** aspersório funcional de quatro cargas, caldeirinha colocável de dezesseis unidades, docking decorativo e spray visual
 
-A v1.0.19 preserva a baseline física 4/16 e o alinhamento ao Bedrock 26.40/Script API 2.9.0, mas promove o áudio a subsistema semântico. Quinze famílias e 48 variantes próprias substituem caminhos vanilla; preparação é privada do ator e commits/release são espaciais. Timelines do attachable não concedem nem duplicam áudio/VFX transacional.
+A v1.0.19a preserva a baseline física 4/16, o áudio semântico da 1.0.19 e o alinhamento ao Bedrock 26.40/Script API 2.9.0. A revisão corrige faces laterais que colapsavam por Box UV subpixel sem alterar a silhueta: a fonte autoral gera seis UVs inteiros por cubo e um atlas único para color/normal/MER.
 
 ## O que está resolvido
 
@@ -16,7 +16,7 @@ A v1.0.19 preserva a baseline física 4/16 e o alinhamento ao Bedrock 26.40/Scri
 - O modelo aparece em primeira e terceira pessoa, em escala física coerente.
 - A pose de primeira pessoa está aprovada e deve permanecer congelada.
 - A pose de terceira pessoa está suficientemente calibrada para iniciar a fase de animação.
-- A malha não apresenta o desaparecimento recorrente de faces observado em versões antigas.
+- A malha mantém exatamente a silhueta aprovada e usa UV per-face inteiro com mínimo de um texel, impedindo o colapso lateral observado no runtime.
 - Sobrevivência e Aventura consomem cargas; Criativo preserva uma carga real já existente; Espectador é negado.
 - O carregamento usa `instance_id`, uma sessão por jogador, lock leve por bloco, revalidação e rollback defensivo.
 - A rajada usa 36 gotas em seis pulsos, leque anisotrópico, gravidade, colisão e direção suavizada conforme a câmera.
@@ -58,7 +58,7 @@ A v1.0.19 preserva a baseline física 4/16 e o alinhamento ao Bedrock 26.40/Scri
 
 ## Próxima mudança autorizada
 
-A v1.0.19 está pronta para QA físico pelo runbook [RELEASE_CANDIDATE.md](RELEASE_CANDIDATE.md). Os gates prioritários são Content Log limpo, economia 4/16, ausência de duplicação/cues em cancelamentos, roteamento privado/espacial e escuta humana das 48 variantes. A mídia atual bloqueia apenas publicação comercial, não o teste técnico da RC.
+A v1.0.19a está pronta para QA físico pelo runbook [RELEASE_CANDIDATE.md](RELEASE_CANDIDATE.md). O gate visual prioritário é uma órbita completa que confirme paredes contínuas no pomo, haste, férula, anéis da cabeça e terminal, em primeira/terceira pessoa e gráficos clássico/Vibrant Visuals. Permanecem os gates de Content Log, economia 4/16 e áudio da 1.0.19. A mídia atual bloqueia apenas publicação comercial, não o teste técnico da RC.
 
 Não faz parte do próximo marco:
 
