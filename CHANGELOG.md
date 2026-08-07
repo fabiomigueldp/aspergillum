@@ -2,6 +2,7 @@
 
 ## 1.0.19a — 2026-08-07
 
+- aprimorados os controles de viewport dos dois renderizadores: zoom no ponto sob o cursor, órbita no botão esquerdo, deslocamento no botão direito e barra Bedrock com grade, eixos, pivôs/locators e wireframe, incluindo atalhos de teclado;
 - corrigido o desaparecimento lateral dos anéis, haste fina e terminal do aspersório no Minecraft: seis dos oito cubos usavam Box UV com ao menos uma dimensão física inferior a uma unidade, capaz de colapsar para zero texel no runtime;
 - preservados exatamente os oito cubos, origins, sizes, envelope de `15,6` unidades, grip `[-6,24,1]`, locator, binding, poses e animações; nenhuma compensação geométrica foi aplicada ao osso vinculado;
 - introduzida a fonte autoral `assets-src/models/aspergillum.model.json`, com nomes e superfícies semânticas por peça;
@@ -10,6 +11,8 @@
 - o pomo e a haste permanecem prata, o grip permanece couro, a férula sob a cabeça permanece ouro e a cabeça conserva prata perfurada coerente com a referência visual;
 - o validador bloqueia Box UV subpixel, face ausente, footprint nulo, UV fracionário, divergência entre fonte e geometria gerada, sobreposição e extrapolação do atlas;
 - os dois viewers passam a usar front-face culling nos sólidos; o catálogo sinaliza Box UV subpixel e faces per-face ausentes/colapsadas, evitando previews permissivos que escondam defeitos do pack;
+- corrigida nos dois viewers a atribuição de UVs à topologia do `THREE.BoxGeometry`: os quatro vértices agora seguem a ordem por linhas, `south`/`north` acompanham `+Z`/`-Z` e `uv_size` negativo preserva espelhamento, eliminando texels cisalhados em triângulos/losangos;
+- centralizado o adaptador Bedrock → Three.js e adicionados testes automatizados contra regressões de ordem dos vértices, faces, Box UV e UV per-face;
 - adicionados diagnóstico reproduzível e gate manual de órbita completa em primeira/terceira pessoa, Steve/Alex/Persona e gráficos clássico/Vibrant Visuals;
 - preservados áudio da 1.0.19, gameplay, Script API estável, UUIDs, namespace, block states, schemas e contratos persistentes;
 - o rótulo distribuído é `1.0.19a`; a revisão monotônica dos packs é `[1,0,34]`.

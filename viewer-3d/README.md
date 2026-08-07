@@ -25,7 +25,8 @@ O comando `sync-assets` lê os arquivos atuais em `../packs/resource/models` e `
 - órbita, zoom, enquadramento, grade, eixos, wireframe e seleção de bones;
 - inspeção de pivôs, rotações, cubos, locators, dimensões e fonte;
 - importação temporária de Bedrock Geometry, `.gltf` e `.glb` por botão ou arraste;
-- suporte a teclado: `F` enquadra, `R` reseta, `G` grade, `A` eixos, `W` wireframe, `Esc` limpa seleção.
+- suporte a teclado: `F` enquadra, `R` reseta, `G` grade, `A` eixos, `W` wireframe, `Esc` limpa seleção;
+- controles de viewport: botão esquerdo orbita, botão direito desloca e roda do mouse amplia no ponto sob o cursor;
 
 ## Renderer Bedrock Fidelity
 
@@ -35,9 +36,13 @@ Abra `bedrock-renderer.html` ou clique em **Renderer Bedrock** no topo do Model 
 
 Ele aplica as poses reais de primeira/terceira pessoa do attachable, permite amostrar a animação de aspersão, alterna o material clássico com o caminho PBR baseado em `normal` e `metalness_emissive_roughness` e expõe a resolução no painel de diagnóstico. Os modelos que não são attachables continuam disponíveis como geometrias diretas.
 
+A barra inferior do viewport também controla rapidamente a grade, eixos, pivôs/locators e wireframe. Os mesmos atalhos `G`, `A`, `P` e `W` funcionam no Bedrock Fidelity Renderer, sem expandir o painel lateral.
+
 No modo `PBR / VV`, o `color` é tratado como sRGB, enquanto `normal` e `MERS` são tratados como dados lineares. O MER técnico é decomposto antes de chegar ao material em três mapas escalares: canal R para metalness, G para emissive e B para roughness. Isso evita que a aparência magenta/azul do arquivo de diagnóstico seja confundida com a cor do modelo. A cena usa um ambiente IBL neutro e luzes sem tintas cromáticas para que metais não recebam uma dominante artificial do próprio preview.
 
 Os materiais sólidos usam descarte de faces front-side como o caminho opaco do Bedrock, em vez de `DoubleSide`. O catálogo também audita UVs: Box UV combinado com qualquer dimensão menor que uma unidade é marcado como inseguro, e faces per-face ausentes ou com `uv_size` colapsado aparecem como incompatibilidade. A geometria oficial do aspersório usa seis faces explícitas por cubo, footprints inteiros de pelo menos um texel e padding dilatado de dois texels no atlas.
+
+Os dois viewers compartilham o mesmo adaptador Bedrock → Three.js para evitar divergência entre motores. Ele respeita a ordem real dos vértices de cada face do `BoxGeometry`, associa `+Z` a `south` e `-Z` a `north` e preserva o sinal de `uv_size` para espelhamento. Assim, cada texel ocupa um quadrilátero contínuo da face, sem a antiga cisão diagonal que fazia pixels escuros parecerem losangos. Execute `npm test` para validar esses contratos sem abrir o navegador.
 
 ## Limite deliberado
 

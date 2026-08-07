@@ -1,5 +1,10 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import {
+  THREE_BOX_FACE_ORDER,
+  getBedrockFaceRect,
+  writeBedrockFaceUvs,
+} from './shared/bedrock-uv.js';
 import './styles.css';
 
 const SCALE = 1 / 16;
@@ -41,9 +46,6 @@ const ui = {
   library: document.querySelector('#library-list'),
   modelCount: document.querySelector('#model-count'),
   syncStatus: document.querySelector('#sync-status'),
-  viewportTitle: document.querySelector('#viewport-title'),
-  geometryChip: document.querySelector('#geometry-chip'),
-  textureChip: document.querySelector('#texture-chip'),
   selectionReadout: document.querySelector('#selection-readout'),
   inspectorTitle: document.querySelector('#inspector-title'),
   inspectorContent: document.querySelector('#inspector-content'),
@@ -78,6 +80,13 @@ camera.position.set(2.8, 2.05, 3.8);
 const controls = new OrbitControls(camera, ui.canvas);
 controls.enableDamping = true;
 controls.dampingFactor = 0.075;
+controls.enableZoom = true;
+controls.zoomToCursor = true;
+controls.mouseButtons = {
+  LEFT: THREE.MOUSE.ROTATE,
+  MIDDLE: THREE.MOUSE.DOLLY,
+  RIGHT: THREE.MOUSE.PAN,
+};
 controls.screenSpacePanning = true;
 controls.minPolarAngle = 0.08;
 controls.maxPolarAngle = Math.PI - 0.08;
@@ -162,48 +171,6 @@ async function loadTexture(relativePath) {
   return promise;
 }
 
-function getFaceRect(uvDefinition, faceName, size) {
-  const [sx, sy, sz] = size;
-  const defaultUv = Array.isArray(uvDefinition) ? uvDefinition : [0, 0];
-  const defaultRects = {
-    east: [defaultUv[0], defaultUv[1] + sz, sz, sy],
-    west: [defaultUv[0] + sz + sx, defaultUv[1] + sz, sz, sy],
-    up: [defaultUv[0] + sz, defaultUv[1], sx, sz],
-    down: [defaultUv[0] + sz + sx, defaultUv[1], sx, sz],
-    north: [defaultUv[0] + sz, defaultUv[1] + sz, sx, sy],
-    south: [defaultUv[0] + sz + sx + sz, defaultUv[1] + sz, sx, sy],
-  };
-
-  if (!uvDefinition || Array.isArray(uvDefinition)) return {
-    rect: defaultRects[faceName],
-    materialInstance: 'default',
-  };
-
-  const faceDefinition = uvDefinition[faceName] ?? {};
-  const faceUv = faceDefinition.uv ?? defaultUv;
-  const faceSize = faceDefinition.uv_size ?? defaultRects[faceName].slice(2);
-  return {
-    rect: [faceUv[0], faceUv[1], faceSize[0], faceSize[1]],
-    materialInstance: faceDefinition.material_instance ?? 'default',
-  };
-}
-
-function writeFaceUvs(attribute, offset, rect, textureWidth, textureHeight) {
-  const [u, v, width, height] = rect;
-  let u0 = u / textureWidth;
-  let u1 = (u + width) / textureWidth;
-  let v0 = 1 - (v + height) / textureHeight;
-  let v1 = 1 - v / textureHeight;
-
-  if (u1 < u0) [u0, u1] = [u1, u0];
-  if (v1 < v0) [v0, v1] = [v1, v0];
-
-  attribute.setXY(offset, u0, v0);
-  attribute.setXY(offset + 1, u1, v0);
-  attribute.setXY(offset + 2, u1, v1);
-  attribute.setXY(offset + 3, u0, v1);
-}
-
 function createCubeMesh(cube, bone, geometrySummary, textures) {
   const size = cube.size ?? [1, 1, 1];
   const origin = cube.origin ?? [0, 0, 0];
@@ -227,7 +194,6 @@ function createCubeMesh(cube, bone, geometrySummary, textures) {
   }
 
   const boxGeometry = new THREE.BoxGeometry(sx * SCALE, sy * SCALE, sz * SCALE);
-  const faceNames = ['east', 'west', 'up', 'down', 'north', 'south'];
   const uvAttribute = boxGeometry.getAttribute('uv');
   boxGeometry.clearGroups();
   const materials = [
@@ -250,10 +216,10 @@ function createCubeMesh(cube, bone, geometrySummary, textures) {
     }),
   ];
 
-  for (let index = 0; index < faceNames.length; index += 1) {
-    const faceName = faceNames[index];
-    const face = getFaceRect(cube.uv, faceName, size);
-    writeFaceUvs(uvAttribute, index * 4, face.rect, geometrySummary.textureWidth, geometrySummary.textureHeight);
+  for (let index = 0; index < THREE_BOX_FACE_ORDER.length; index += 1) {
+    const faceName = THREE_BOX_FACE_ORDER[index];
+    const face = getBedrockFaceRect(cube.uv, faceName, size);
+    writeBedrockFaceUvs(uvAttribute, index * 4, face.rect, geometrySummary.textureWidth, geometrySummary.textureHeight);
     boxGeometry.addGroup(index * 6, 6, face.materialInstance === 'water' ? 1 : 0);
   }
   uvAttribute.needsUpdate = true;
@@ -719,9 +685,6 @@ async function loadModel(model, geometryIndex = 0) {
     applyWireframe();
     applySelectionVisuals();
     fitCamera();
-    ui.viewportTitle.textContent = model.label;
-    ui.geometryChip.textContent = loaded.summary.identifier;
-    ui.textureChip.textContent = model.texture ? 'textura PNG' : 'material diagnóstico';
     ui.selectionReadout.textContent = 'Nenhum bone selecionado';
     ui.syncStatus.textContent = `${state.library.length} arquivos locais`;
     renderLibrary();
@@ -842,9 +805,6 @@ async function loadImportedBedrockModel(model, geometryIndex) {
   applyWireframe();
   applySelectionVisuals();
   fitCamera();
-  ui.viewportTitle.textContent = model.label;
-  ui.geometryChip.textContent = summary.identifier;
-  ui.textureChip.textContent = 'material diagnóstico';
   ui.syncStatus.textContent = `${state.library.length} arquivos locais`;
   renderLibrary();
   renderInspector();

@@ -1,6 +1,11 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import {
+  THREE_BOX_FACE_ORDER,
+  getBedrockFaceRect,
+  writeBedrockFaceUvs,
+} from '../shared/bedrock-uv.js';
 import './styles.css';
 
 const SCALE = 1 / 16;
@@ -46,6 +51,7 @@ const state = {
   waterVisible: true,
   docked: false,
   showGrid: true,
+  showAxes: false,
   showPivots: false,
   wireframe: false,
   loadToken: 0,
@@ -68,18 +74,15 @@ const ui = {
   materialNote: document.querySelector('#material-note'),
   dockedToggle: document.querySelector('#docked-toggle'),
   waterToggle: document.querySelector('#water-toggle'),
-  gridToggle: document.querySelector('#grid-toggle'),
-  pivotsToggle: document.querySelector('#pivots-toggle'),
-  wireframeToggle: document.querySelector('#wireframe-toggle'),
   fitButton: document.querySelector('#fit-button'),
   resetButton: document.querySelector('#reset-button'),
   cameraFitButton: document.querySelector('#camera-fit-button'),
   cameraResetButton: document.querySelector('#camera-reset-button'),
+  gridButton: document.querySelector('#grid-button'),
+  axesButton: document.querySelector('#axes-button'),
+  pivotsButton: document.querySelector('#pivots-button'),
+  wireframeButton: document.querySelector('#wireframe-button'),
   runtimeStatus: document.querySelector('#runtime-status'),
-  viewportTitle: document.querySelector('#viewport-title'),
-  viewportSubtitle: document.querySelector('#viewport-subtitle'),
-  pipelineChip: document.querySelector('#pipeline-chip'),
-  perspectiveChip: document.querySelector('#perspective-chip'),
   traceAttachable: document.querySelector('#trace-attachable'),
   traceController: document.querySelector('#trace-controller'),
   traceGeometry: document.querySelector('#trace-geometry'),
@@ -115,10 +118,21 @@ camera.position.set(2.6, 1.9, 3.7);
 const controls = new OrbitControls(camera, ui.canvas);
 controls.enableDamping = true;
 controls.dampingFactor = 0.075;
+controls.enableZoom = true;
+controls.zoomToCursor = true;
+controls.mouseButtons = {
+  LEFT: THREE.MOUSE.ROTATE,
+  MIDDLE: THREE.MOUSE.DOLLY,
+  RIGHT: THREE.MOUSE.PAN,
+};
 controls.screenSpacePanning = true;
 controls.minPolarAngle = 0.08;
 controls.maxPolarAngle = Math.PI - 0.08;
 controls.target.set(0, 0.48, 0);
+
+// A terceira pessoa precisa de um ponto de observação ligeiramente mais alto
+// para manter o modelo inteiro legível sem alterar a pose aprovada do pack.
+const THIRD_PERSON_CAMERA_LIFT = 0.12;
 
 const ambientLight = new THREE.HemisphereLight(0xf0f4ef, 0x202525, 1.55);
 const keyLight = new THREE.DirectionalLight(0xffffff, 2.65);
@@ -238,47 +252,6 @@ async function loadTexture(relativePath, colorTexture = false) {
 
   state.textureCache.set(key, promise);
   return promise;
-}
-
-function getFaceRect(uvDefinition, faceName, size) {
-  const [sx, sy, sz] = size;
-  const defaultUv = Array.isArray(uvDefinition) ? uvDefinition : [0, 0];
-  const defaultRects = {
-    east: [defaultUv[0], defaultUv[1] + sz, sz, sy],
-    west: [defaultUv[0] + sz + sx, defaultUv[1] + sz, sz, sy],
-    up: [defaultUv[0] + sz, defaultUv[1], sx, sz],
-    down: [defaultUv[0] + sz + sx, defaultUv[1], sx, sz],
-    north: [defaultUv[0] + sz, defaultUv[1] + sz, sx, sy],
-    south: [defaultUv[0] + sz + sx + sz, defaultUv[1] + sz, sx, sy],
-  };
-
-  if (!uvDefinition || Array.isArray(uvDefinition)) {
-    return { rect: defaultRects[faceName], materialInstance: 'default' };
-  }
-
-  const faceDefinition = uvDefinition[faceName] ?? {};
-  const faceUv = faceDefinition.uv ?? defaultUv;
-  const faceSize = faceDefinition.uv_size ?? defaultRects[faceName].slice(2);
-  return {
-    rect: [faceUv[0], faceUv[1], faceSize[0], faceSize[1]],
-    materialInstance: faceDefinition.material_instance ?? 'default',
-  };
-}
-
-function writeFaceUvs(attribute, offset, rect, textureWidth, textureHeight) {
-  const [u, v, width, height] = rect;
-  let u0 = u / textureWidth;
-  let u1 = (u + width) / textureWidth;
-  let v0 = 1 - (v + height) / textureHeight;
-  let v1 = 1 - v / textureHeight;
-
-  if (u1 < u0) [u0, u1] = [u1, u0];
-  if (v1 < v0) [v0, v1] = [v1, v0];
-
-  attribute.setXY(offset, u0, v0);
-  attribute.setXY(offset + 1, u1, v0);
-  attribute.setXY(offset + 2, u1, v1);
-  attribute.setXY(offset + 3, u0, v1);
 }
 
 function createMersChannelTexture(sourceTexture, channelName, channelIndex) {
@@ -547,7 +520,6 @@ function createCubeMesh(cube, bone, geometrySummary, palette) {
   );
   if (cube.mirror) boxGeometry.scale(-1, 1, 1);
 
-  const faceNames = ['east', 'west', 'up', 'down', 'north', 'south'];
   const uvAttribute = boxGeometry.getAttribute('uv');
   boxGeometry.clearGroups();
   const materials = [...new Set([
@@ -557,10 +529,10 @@ function createCubeMesh(cube, bone, geometrySummary, palette) {
   ])];
   const materialIndex = new Map(materials.map((material, index) => [material, index]));
 
-  for (let index = 0; index < faceNames.length; index += 1) {
-    const faceName = faceNames[index];
-    const face = getFaceRect(cube.uv, faceName, size);
-    writeFaceUvs(uvAttribute, index * 4, face.rect, geometrySummary.textureWidth, geometrySummary.textureHeight);
+  for (let index = 0; index < THREE_BOX_FACE_ORDER.length; index += 1) {
+    const faceName = THREE_BOX_FACE_ORDER[index];
+    const face = getBedrockFaceRect(cube.uv, faceName, size);
+    writeBedrockFaceUvs(uvAttribute, index * 4, face.rect, geometrySummary.textureWidth, geometrySummary.textureHeight);
     const material = face.materialInstance === 'water'
       ? palette.water
       : palette.named?.[face.materialInstance] ?? palette.default;
@@ -690,6 +662,8 @@ function disposeObject(object) {
 }
 
 function applyVisibility() {
+  grid.visible = state.showGrid;
+  axes.visible = state.showAxes;
   for (const waterBone of WATER_BONES) {
     const group = state.boneGroups.get(waterBone);
     if (group) group.visible = state.waterVisible && state.waterLevel === waterBone.replace('water_', '');
@@ -724,12 +698,17 @@ function fitCamera(showMessage = false) {
   const radius = Math.max(sphere.radius, 0.12);
   const distance = radius / Math.tan(THREE.MathUtils.degToRad(camera.fov * 0.5)) * 1.35;
   const direction = new THREE.Vector3(0.78, 0.57, 1).normalize();
+  const viewTarget = center.clone();
 
-  camera.position.copy(center).addScaledVector(direction, distance);
+  if (state.perspective === 'third') {
+    viewTarget.y += THIRD_PERSON_CAMERA_LIFT;
+  }
+
+  camera.position.copy(viewTarget).addScaledVector(direction, distance);
   camera.near = Math.max(0.005, radius / 120);
   camera.far = Math.max(50, radius * 80);
   camera.updateProjectionMatrix();
-  controls.target.copy(center);
+  controls.target.copy(viewTarget);
   controls.minDistance = radius * 0.18;
   controls.maxDistance = radius * 28;
   controls.update();
@@ -772,9 +751,10 @@ function updateControls() {
       ? 'Aspersão ativa: o tempo controla a animação do pack.'
       : 'Arraste para iniciar a prévia da aspersão.'
     : 'Esta geometria não possui animação de attachable.';
-  ui.gridToggle.checked = state.showGrid;
-  ui.pivotsToggle.checked = state.showPivots;
-  ui.wireframeToggle.checked = state.wireframe;
+  setPressed(ui.gridButton, state.showGrid);
+  setPressed(ui.axesButton, state.showAxes);
+  setPressed(ui.pivotsButton, state.showPivots);
+  setPressed(ui.wireframeButton, state.wireframe);
   ui.dockedToggle.checked = state.docked;
   ui.waterToggle.checked = state.waterVisible;
   updateTimelineReadout();
@@ -902,17 +882,8 @@ function updateRuntimeTrace() {
   ui.traceGeometry.textContent = path?.geometryId ?? state.currentGeometry?.identifier ?? '—';
 }
 
-function updateTopline() {
-  const geometry = state.currentGeometry;
+function updateRuntimeUi() {
   const path = state.currentRenderPath;
-  const materialName = state.materialMode === 'pbr' ? 'PBR / VV' : 'Clássico';
-  const perspectiveName = state.perspective === 'first' ? '1ª pessoa' : '3ª pessoa';
-  ui.viewportTitle.textContent = geometry?.identifier ?? 'Sem geometria';
-  ui.viewportSubtitle.textContent = path?.attachable
-    ? `${path.attachableId} · ${state.action === 'sprinkle' ? 'sprinkle' : 'hold'} · ${perspectiveName}`
-    : `${state.currentModel?.label ?? 'Modelo'} · geometria direta`;
-  ui.pipelineChip.textContent = materialName;
-  ui.perspectiveChip.textContent = perspectiveName;
   ui.materialNote.textContent = state.materialMode === 'pbr'
     ? 'IBL neutro + MERS direto: R metal, G emissivo, B roughness.'
     : 'Somente color map; equivalente ao caminho clássico do material.';
@@ -1010,7 +981,7 @@ function updateSelectedBone() {
 function applyCurrentState() {
   applyPose();
   updateControls();
-  updateTopline();
+  updateRuntimeUi();
   renderInspector();
 }
 
@@ -1062,7 +1033,7 @@ async function loadCurrentModel() {
     applyPose();
     applyVisibility();
     fitCamera();
-    updateTopline();
+    updateRuntimeUi();
     updateControls();
     renderInspector();
     setLoading(false);
@@ -1124,6 +1095,7 @@ function onPerspectiveChange(button) {
     state.timelineLength = getAnimationLength(state.runtime.animations.get(animationId));
   }
   applyCurrentState();
+  fitCamera();
 }
 
 function onMaterialChange(button) {
@@ -1174,17 +1146,25 @@ function wireInteractions() {
     state.waterVisible = ui.waterToggle.checked;
     applyCurrentState();
   });
-  ui.gridToggle.addEventListener('change', () => {
-    state.showGrid = ui.gridToggle.checked;
+  ui.gridButton.addEventListener('click', () => {
+    state.showGrid = !state.showGrid;
     grid.visible = state.showGrid;
+    setPressed(ui.gridButton, state.showGrid);
   });
-  ui.pivotsToggle.addEventListener('change', () => {
-    state.showPivots = ui.pivotsToggle.checked;
-    applyCurrentState();
+  ui.axesButton.addEventListener('click', () => {
+    state.showAxes = !state.showAxes;
+    axes.visible = state.showAxes;
+    setPressed(ui.axesButton, state.showAxes);
   });
-  ui.wireframeToggle.addEventListener('change', () => {
-    state.wireframe = ui.wireframeToggle.checked;
-    applyCurrentState();
+  ui.pivotsButton.addEventListener('click', () => {
+    state.showPivots = !state.showPivots;
+    setPressed(ui.pivotsButton, state.showPivots);
+    applyVisibility();
+  });
+  ui.wireframeButton.addEventListener('click', () => {
+    state.wireframe = !state.wireframe;
+    setPressed(ui.wireframeButton, state.wireframe);
+    applyVisibility();
   });
   ui.fitButton.addEventListener('click', () => fitCamera(true));
   ui.cameraFitButton.addEventListener('click', () => fitCamera(true));
@@ -1194,8 +1174,13 @@ function wireInteractions() {
 
   window.addEventListener('keydown', (event) => {
     if (event.target instanceof HTMLInputElement || event.target instanceof HTMLSelectElement) return;
-    if (event.key.toLowerCase() === 'f') fitCamera(true);
-    if (event.key.toLowerCase() === 'r') resetCamera();
+    const key = event.key.toLowerCase();
+    if (key === 'f') fitCamera(true);
+    if (key === 'r') resetCamera();
+    if (key === 'g') ui.gridButton.click();
+    if (key === 'a') ui.axesButton.click();
+    if (key === 'p') ui.pivotsButton.click();
+    if (key === 'w') ui.wireframeButton.click();
     if (event.key === 'Escape') {
       state.selectedBone = null;
       updateSelectedBone();

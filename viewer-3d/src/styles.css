@@ -26,23 +26,48 @@
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
+  --scrollbar-thumb: oklch(0.58 0.025 185 / 0.36);
+  --scrollbar-thumb-hover: oklch(0.72 0.08 177 / 0.58);
+  --scrollbar-size: 5px;
 }
 
 * {
   box-sizing: border-box;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+  scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--scrollbar-thumb);
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  background-clip: padding-box;
 }
 
 html,
 body {
+  height: 100%;
   min-width: 320px;
   min-height: 100%;
   margin: 0;
+  overflow: hidden;
+  overflow: clip;
   background: var(--bg);
   color: var(--text);
-}
-
-body {
-  overflow: hidden;
 }
 
 button,
@@ -83,8 +108,11 @@ input:focus-visible,
 }
 
 .app-shell {
+  position: fixed;
+  inset: 0;
   display: grid;
-  min-height: 100dvh;
+  height: auto;
+  min-height: 0;
   grid-template-rows: 64px minmax(0, 1fr);
   background: var(--bg);
 }
@@ -233,6 +261,7 @@ input:focus-visible,
 
 .workspace {
   display: grid;
+  height: 100%;
   min-height: 0;
   grid-template-columns: 278px minmax(0, 1fr) 288px;
 }
@@ -256,7 +285,6 @@ input:focus-visible,
 }
 
 .sidebar-heading h1,
-.viewport-header h2,
 .inspector-heading h2 {
   margin: 5px 0 0;
   color: var(--text);
@@ -266,7 +294,6 @@ input:focus-visible,
 }
 
 .count-badge,
-.meta-chip,
 .model-tag,
 .variant-count,
 .bone-tag {
@@ -305,20 +332,8 @@ input:focus-visible,
   min-height: 0;
   gap: 6px;
   overflow: auto;
+  overscroll-behavior: contain;
   padding: 0 var(--space-md) var(--space-lg);
-}
-
-.library-list::-webkit-scrollbar,
-.inspector-scroll::-webkit-scrollbar {
-  width: 8px;
-}
-
-.library-list::-webkit-scrollbar-thumb,
-.inspector-scroll::-webkit-scrollbar-thumb {
-  border: 2px solid transparent;
-  border-radius: 99px;
-  background: var(--line);
-  background-clip: padding-box;
 }
 
 .library-item {
@@ -447,6 +462,7 @@ input:focus-visible,
 }
 
 .viewport-panel {
+  height: 100%;
   min-width: 0;
   min-height: 0;
   background: var(--canvas);
@@ -454,7 +470,8 @@ input:focus-visible,
 
 .viewport-stage {
   position: relative;
-  min-height: 100%;
+  height: 100%;
+  min-height: 0;
   overflow: hidden;
   background:
     radial-gradient(circle at 52% 42%, oklch(0.235 0.025 195 / 0.78), transparent 46%),
@@ -467,7 +484,7 @@ input:focus-visible,
   display: block;
   width: 100%;
   height: 100%;
-  min-height: 440px;
+  min-height: 0;
   cursor: grab;
   touch-action: none;
 }
@@ -482,35 +499,6 @@ input:focus-visible,
   background: oklch(0.14 0.019 203 / 0.84);
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(12px);
-}
-
-.viewport-header {
-  position: absolute;
-  top: var(--space-xl);
-  left: var(--space-xl);
-  right: var(--space-xl);
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-lg);
-  padding: 13px 15px;
-  pointer-events: none;
-}
-
-.viewport-header h2 {
-  font-size: 1.02rem;
-}
-
-.viewport-meta {
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 6px;
-}
-
-.meta-chip {
-  border-color: oklch(0.45 0.04 204 / 0.58);
-  background: oklch(0.24 0.025 202 / 0.74);
-  color: var(--text-soft);
 }
 
 .drop-hint {
@@ -674,6 +662,7 @@ input:focus-visible,
 .inspector-scroll {
   min-height: 0;
   overflow: auto;
+  overscroll-behavior: contain;
   padding: 18px var(--space-xl) 28px;
 }
 
@@ -823,8 +812,6 @@ input:focus-visible,
 .bone-list {
   display: grid;
   gap: 4px;
-  max-height: 244px;
-  overflow: auto;
 }
 
 .bone-row {
@@ -937,11 +924,19 @@ input:focus-visible,
 }
 
 @media (max-width: 860px) {
+  html {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
   body {
-    overflow: auto;
+    overflow: visible;
   }
 
   .app-shell {
+    position: static;
+    inset: auto;
+    height: auto;
     min-height: 100dvh;
     grid-template-rows: 60px auto;
   }
@@ -960,8 +955,9 @@ input:focus-visible,
   }
 
   .workspace {
+    height: auto;
     grid-template-columns: 1fr;
-    grid-template-rows: auto minmax(520px, 66dvh) auto;
+    grid-template-rows: auto minmax(360px, 66dvh) auto;
   }
 
   .sidebar {
@@ -999,7 +995,8 @@ input:focus-visible,
 
   .viewport-stage,
   #viewport-canvas {
-    min-height: 520px;
+    height: 100%;
+    min-height: 360px;
   }
 
   .inspector {
@@ -1007,9 +1004,6 @@ input:focus-visible,
     border-left: 0;
   }
 
-  .inspector-scroll {
-    max-height: 520px;
-  }
 }
 
 @media (max-width: 540px) {
@@ -1028,21 +1022,6 @@ input:focus-visible,
 
   .button-glyph {
     font-size: 0.92rem;
-  }
-
-  .viewport-header {
-    top: 12px;
-    left: 12px;
-    right: 12px;
-  }
-
-  .viewport-header h2 {
-    font-size: 0.88rem;
-  }
-
-  .viewport-meta {
-    display: grid;
-    justify-items: end;
   }
 
   .scene-readout {

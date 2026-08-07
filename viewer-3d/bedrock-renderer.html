@@ -104,11 +104,7 @@
               <span class="toggle-track" aria-hidden="true"><span></span></span>
               <span>Exibir água</span>
             </label>
-            <label class="toggle-row">
-              <input id="grid-toggle" type="checkbox" checked />
-              <span class="toggle-track" aria-hidden="true"><span></span></span>
-              <span>Grade de diagnóstico</span>
-            </label>
+
           </div>
 
           <div class="control-group water-group" id="water-group">
@@ -125,20 +121,6 @@
             </div>
           </div>
 
-          <div class="control-group diagnostics-group">
-            <span class="field-label">Diagnóstico visual</span>
-            <label class="toggle-row">
-              <input id="pivots-toggle" type="checkbox" />
-              <span class="toggle-track" aria-hidden="true"><span></span></span>
-              <span>Pivôs e locators</span>
-            </label>
-            <label class="toggle-row">
-              <input id="wireframe-toggle" type="checkbox" />
-              <span class="toggle-track" aria-hidden="true"><span></span></span>
-              <span>Wireframe</span>
-            </label>
-          </div>
-
           <div class="control-actions">
             <button class="button" id="fit-button" type="button">Enquadrar modelo</button>
             <button class="button button-quiet" id="reset-button" type="button">Resetar câmera</button>
@@ -149,18 +131,6 @@
           <div class="viewport-stage" id="viewport-stage">
             <canvas id="viewport-canvas" aria-label="Cena 3D do renderer Bedrock"></canvas>
 
-            <div class="viewport-header overlay-panel">
-              <div>
-                <p class="section-kicker">Render target</p>
-                <h2 id="viewport-title">Carregando pack</h2>
-                <p class="viewport-subtitle" id="viewport-subtitle">Resolvendo recursos locais…</p>
-              </div>
-              <div class="viewport-meta">
-                <span class="meta-chip meta-chip-accent" id="pipeline-chip">PBR / VV</span>
-                <span class="meta-chip" id="perspective-chip">1ª pessoa</span>
-              </div>
-            </div>
-
             <div class="runtime-trace overlay-panel" aria-live="polite">
               <div class="trace-heading"><span class="trace-pulse"></span><span>Render path</span></div>
               <div class="trace-line"><span>attachable</span><strong id="trace-attachable">—</strong></div>
@@ -168,11 +138,16 @@
               <div class="trace-line"><span>geometry</span><strong id="trace-geometry">—</strong></div>
             </div>
 
-            <div class="viewport-toolbar overlay-panel" role="toolbar" aria-label="Controles da câmera">
-              <button class="tool-button" id="camera-fit-button" type="button"><span aria-hidden="true">⌗</span><span>Enquadrar</span></button>
-              <button class="tool-button" id="camera-reset-button" type="button"><span aria-hidden="true">↺</span><span>Resetar</span></button>
+            <div class="viewport-toolbar overlay-panel" role="toolbar" aria-label="Controles da cena e da câmera">
+              <button class="tool-button" id="camera-fit-button" type="button" title="Enquadrar modelo (F)"><span aria-hidden="true">⌗</span><span>Enquadrar</span></button>
+              <button class="tool-button" id="camera-reset-button" type="button" title="Resetar câmera (R)"><span aria-hidden="true">↺</span><span>Resetar</span></button>
               <span class="toolbar-divider" aria-hidden="true"></span>
-              <span class="toolbar-note">Arraste para orbitar · roda para zoom</span>
+              <button class="tool-button is-active" id="grid-button" type="button" aria-pressed="true" title="Alternar grade (G)"><span aria-hidden="true">⊞</span><span>Grade</span></button>
+              <button class="tool-button" id="axes-button" type="button" aria-pressed="false" title="Alternar eixos (A)"><span aria-hidden="true">⊕</span><span>Eixos</span></button>
+              <button class="tool-button" id="pivots-button" type="button" aria-pressed="false" title="Alternar pivôs e locators (P)"><span aria-hidden="true">⌖</span><span>Pivôs</span></button>
+              <button class="tool-button" id="wireframe-button" type="button" aria-pressed="false" title="Alternar wireframe (W)"><span aria-hidden="true">◇</span><span>Wireframe</span></button>
+              <span class="toolbar-divider" aria-hidden="true"></span>
+              <span class="toolbar-note">Esquerdo orbita · direito desloca · roda amplia</span>
             </div>
 
             <div class="loading-state" id="loading-state">
@@ -200,10 +175,6 @@
             </div>
           </div>
 
-          <div class="fidelity-note">
-            <span class="note-mark" aria-hidden="true">i</span>
-            <p>Este é um renderer de compatibilidade no navegador: reproduz os contratos do pack, mas o shader proprietário e a iluminação exata do cliente Minecraft continuam sendo validados no jogo.</p>
-          </div>
         </aside>
       </main>
     </div>

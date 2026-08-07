@@ -15,6 +15,7 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 - [ ] confirmar couro somente no grip, prata no pomo/haste/cabeça e ouro somente na férula sob a cabeça;
 - [ ] repetir em gráficos clássicos e Vibrant Visuals: PBR não altera a cor-base nem cria dominante roxa;
 - [ ] confirmar que o Fidelity Renderer mostra `UV Bedrock-safe: per-face inteiro` e nenhuma incompatibilidade;
+- [ ] nos dois viewers web, inspecionar especialmente os texels pretos da cabeça: cada região permanece retangular sobre a face, sem losango, triângulo, costura diagonal ou troca entre norte/sul;
 - [ ] repetir smoke 4/16, docking, locator, 36 gotas/seis pulsos e áudio da 1.0.19 para provar ausência de regressão.
 
 ## Gate de áudio — v1.0.19

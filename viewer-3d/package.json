@@ -6,8 +6,9 @@
   "description": "Viewer web isolado para inspeção dos modelos Bedrock do Aspergillum.",
   "scripts": {
     "sync-assets": "node scripts/sync-assets.mjs",
+    "test": "node --test tests/*.node.mjs",
     "dev": "npm run sync-assets && vite",
-    "build": "npm run sync-assets && vite build",
+    "build": "npm test && npm run sync-assets && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
