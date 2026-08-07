@@ -2,7 +2,7 @@
 
 Este documento registra os valores estruturais comprovados até a v1.0.15d, a integração VFX corrigida até a v1.0.16c e o pipeline de superfície/coerência de composição atualizado na v1.0.19b. Eles são baseline, não sugestões de calibração.
 
-A v1.1.0 adiciona somente variantes de superfície e perfis de spray. Nenhum acabamento pode alterar bones, pivôs, origins, sizes, UV layout, grip, locator ou poses abaixo. `classic` deve permanecer visualmente equivalente à 1.0.20; as oito variantes trocam apenas color/normal/MER derivados do catálogo. O aspersório apresentado na Mesa do Sacristão pode usar escala uniforme própria da composição, mas continua derivado dos mesmos dez cubos e não redefine o attachable.
+A v1.1 adiciona somente variantes de superfície e perfis de spray. Nenhum acabamento pode alterar bones, pivôs, origins, sizes, UV layout, grip, locator ou poses abaixo. `classic` deve permanecer visualmente equivalente à 1.0.20; as oito variantes trocam apenas color/normal/MER derivados do catálogo. A v1.1.1 fixa a réplica apresentada na Mesa do Sacristão em escala uniforme `0.72`, com o centro dos mesmos dez cubos coincidente com o pivô `[0, 16.2, 0]`; isso não redefine o attachable.
 
 ## Attachable
 

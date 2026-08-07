@@ -29,28 +29,27 @@ Os PNGs gerados usam aproximações sRGB dessas referências e mantêm neutros l
 
 ## Interface
 
-A GUI usa componentes nativos de `@minecraft/server-ui`, localização por `RawMessage`, cabeçalhos curtos, divisores e dropdowns com descrição. Seleções são aplicadas imediatamente e confirmadas por uma linha de estado. Não existe custo, botão de compra ou campo numérico.
+A GUI usa componentes nativos de `@minecraft/server-ui`, localização por `RawMessage`, cabeçalhos curtos, divisores e dropdowns com descrição. A própria seleção e a prévia física do item confirmam mudanças imediatas; texto persistente não repete o que os controles já comunicam. Não existe custo, botão de compra ou campo numérico.
 
 Hierarquia:
 
-1. Identidade do item e cargas.
-2. Perfil de aspersão.
-3. Acabamento metálico.
-4. Empunhadura.
-5. Demonstração, restauração e retirada.
+1. Perfil de aspersão.
+2. Acabamento metálico.
+3. Empunhadura.
+4. Restauração, retirada e fechamento.
 
 ## Interaction States
 
 - Livre: apoio vazio e mensagem para acomodar o aspersório.
 - Ocupada: item visível e menu disponível.
 - Em uso: lock por bloco; outro jogador recebe feedback localizado.
-- Alterada: prévia física muda imediatamente e o status confirma a escolha.
+- Alterada: a prévia física muda imediatamente; falha recebe action bar localizada.
 - Falha: snapshot e permutação anteriores são restaurados.
 - Quebra: mesa e item exato são recuperados separadamente.
 
 ## Motion and Feedback
 
-Mudanças usam somente som curto e atualização imediata da prévia. A demonstração do spray é bounded, puramente cosmética e possui cooldown próprio. Não há bounce, brilho contínuo, partículas ociosas ou sequência de abertura.
+Mudanças usam somente atualização imediata da prévia. Não há demonstração encoberta pelo menu, bounce, brilho contínuo, partículas ociosas ou sequência de abertura.
 
 ## Constraints
 

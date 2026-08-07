@@ -35,7 +35,7 @@ for (const [label, actual] of [
 
 const messagingSource = fs.readFileSync(path.join(root, "src", "presentation", "messaging.ts"), "utf8");
 const messageKeys = [...new Set(messagingSource.match(/message\.aspergillum\.[a-z_]+/g) ?? [])].sort();
-if (messageKeys.length !== 31) errors.push(`Expected 31 action-message keys, found ${messageKeys.length}`);
+if (messageKeys.length !== 32) errors.push(`Expected 32 action-message keys, found ${messageKeys.length}`);
 const loreKeys = [
   "item.aspergillum.lore.charges",
   "item.aspergillum.lore.profile",
@@ -98,8 +98,8 @@ const portugueseUiKeys = [...localeEntries("pt_BR").keys()]
 const englishUiKeys = [...localeEntries("en_US").keys()]
   .filter((key) => key.startsWith("ui.aspergillum."))
   .sort();
-if (JSON.stringify(portugueseUiKeys) !== JSON.stringify(englishUiKeys) || portugueseUiKeys.length !== 35) {
-  errors.push("Customization UI catalogs must expose the same 35 keys in pt_BR and en_US");
+if (JSON.stringify(portugueseUiKeys) !== JSON.stringify(englishUiKeys) || portugueseUiKeys.length !== 27) {
+  errors.push("Customization UI catalogs must expose the same 27 keys in pt_BR and en_US");
 }
 
 const sourceFiles = walk(path.join(root, "src")).filter((file) => file.endsWith(".ts"));

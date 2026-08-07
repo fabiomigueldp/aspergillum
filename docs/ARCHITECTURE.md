@@ -139,15 +139,14 @@ O commit no tick 10 coincide com a fase de imersão da animação one-shot. A fa
 
 Partículas visuais permanecem independentes de qualquer cone lógico de gameplay futuro.
 
-## Fluxo de personalização 1.1.0
+## Fluxo de personalização 1.1.1
 
 1. Usar o aspersório numa Mesa do Sacristão livre captura e remove o ItemStack exato, grava um snapshot no mesmo registry persistente e publica o estado visual ocupado.
 2. Uma sessão exclusiva reserva jogador e coordenada; outro jogador recebe feedback de mesa ocupada, sem mutação.
 3. `CustomForm` recebe observáveis para perfil, metal e empunhadura. Cada mudança revalida jogador, distância, dimensão, bloco, sessão e snapshot antes de regravar a configuração.
 4. A troca cosmética seleciona um dos nove IDs de item/attachable, mas preserva `instance_id`, cargas, schema, `nameTag` e propriedades dinâmicas.
-5. A demonstração emite seis gotas cosméticas próximas à mesa, limitada por cooldown local. Ela não toca em carga, água, cooldown autoritativo ou inventário.
-6. **Concluir e retirar** reconstrói o item configurado e só remove o snapshot depois da entrega/drop bem-sucedido. Fechar o formulário mantém o item exposto na mesa.
-7. Quebra, morte, saída, mudança de dimensão e bloco substituído liberam a sessão; a quebra recupera o snapshot com rollback defensivo.
+5. **Concluir e retirar** reconstrói o item configurado e só remove o snapshot depois da entrega/drop bem-sucedido. **Fechar** encerra a sessão e mantém o item exposto na mesa.
+6. Quebra, morte, saída, mudança de dimensão e bloco substituído liberam a sessão; a quebra recupera o snapshot com rollback defensivo.
 
 A UI é apresentação e não é autoridade de estado. `@minecraft/server-ui` `2.1.0` é módulo estável do manifest; `@minecraft/common` `1.3.0` é somente a dependência npm/tipos correspondente e não pode aparecer no manifest. Não há JSON UI customizado, imagem preview nem polling por `runInterval`. O contrato visual e de interação está em [Mesa do Sacristão](SACRISTAN_TABLE_DESIGN_CONTRACT.md).
 

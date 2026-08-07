@@ -29,6 +29,7 @@ export const ACTION_MESSAGES = {
   tableBusy: "message.aspergillum.table_busy",
   tableDocked: "message.aspergillum.table_docked",
   tableHint: "message.aspergillum.table_hint",
+  tableUpdateFailed: "message.aspergillum.table_update_failed",
   tableUndocked: "message.aspergillum.table_undocked",
   undocked: "message.aspergillum.undocked",
   undockingCancelled: "message.aspergillum.undocking_cancelled",

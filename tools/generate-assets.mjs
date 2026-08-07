@@ -84,8 +84,8 @@ const DOCKED_ATLAS_OFFSET = [128, 0];
 const DOCKED_MODEL_TRANSLATION = [6, -17, -1];
 const SACRISTAN_TABLE_ATLAS_SIZE = 256;
 const TABLE_ITEM_ATLAS_OFFSET = [128, 0];
-const TABLE_ITEM_MODEL_TRANSLATION = [6, -9.2, -5.8];
-const TABLE_ITEM_MODEL_SCALE = 0.86;
+const TABLE_ITEM_MODEL_TRANSLATION = [6, -12.8, -1];
+const TABLE_ITEM_MODEL_SCALE = 0.72;
 const customizationCatalog = JSON.parse(
   fs.readFileSync(path.join(root, "assets-src/customization/catalog.json"), "utf8"),
 );

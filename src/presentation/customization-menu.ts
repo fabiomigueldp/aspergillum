@@ -2,7 +2,6 @@ import type { Player } from "@minecraft/server";
 import {
   CustomForm,
   ObservableNumber,
-  ObservableUIRawMessage,
   type UIRawMessage,
 } from "@minecraft/server-ui";
 import {
@@ -14,7 +13,6 @@ import {
 import { SPRAY_PROFILES, resolveSprayProfile } from "../domain/spray-profile";
 
 export interface CustomizationMenuModel {
-  readonly charges: number;
   readonly cosmeticId: string;
   readonly sprayProfileId: string;
 }
@@ -22,7 +20,6 @@ export interface CustomizationMenuModel {
 export interface CustomizationMenuActions {
   readonly applyCosmetic: (cosmeticId: string) => boolean;
   readonly applySprayProfile: (profileId: string) => boolean;
-  readonly preview: () => void;
   readonly restoreClassic: () => boolean;
   readonly finishAndRetrieve: () => boolean;
   readonly close: () => void;
@@ -49,7 +46,6 @@ export function showCustomizationMenu(
   const gripSelection = new ObservableNumber(GRIP_FINISH_IDS.indexOf(initialCosmetic.grip), {
     clientWritable: true,
   });
-  const status = new ObservableUIRawMessage(translated("ui.aspergillum.table.status.ready"));
   let suppressReactiveWrites = false;
 
   const updateCosmetic = (): void => {
@@ -58,25 +54,18 @@ export function showCustomizationMenu(
       METAL_FINISH_IDS[metalSelection.getData()],
       GRIP_FINISH_IDS[gripSelection.getData()],
     );
-    status.setData(actions.applyCosmetic(cosmetic.id)
-      ? translated("ui.aspergillum.table.status.applied")
-      : translated("ui.aspergillum.table.status.failed"));
+    actions.applyCosmetic(cosmetic.id);
   };
   profileSelection.subscribe((index) => {
     if (suppressReactiveWrites) return;
     const profile = SPRAY_PROFILES[index] ?? SPRAY_PROFILES[0];
-    status.setData(actions.applySprayProfile(profile.id)
-      ? translated("ui.aspergillum.table.status.applied")
-      : translated("ui.aspergillum.table.status.failed"));
+    actions.applySprayProfile(profile.id);
   });
   metalSelection.subscribe(updateCosmetic);
   gripSelection.subscribe(updateCosmetic);
 
   const form = new CustomForm(player, translated("ui.aspergillum.table.title"));
   form
-    .header(translated("ui.aspergillum.table.instrument"))
-    .label(translated("ui.aspergillum.table.charges", String(model.charges), "4"))
-    .divider()
     .header(translated("ui.aspergillum.table.spray.header"))
     .dropdown(
       translated("ui.aspergillum.table.spray.label"),
@@ -86,11 +75,7 @@ export function showCustomizationMenu(
         description: translated(`ui.aspergillum.profile.${profile.id}.description`),
         value: index,
       })),
-      { description: translated("ui.aspergillum.table.spray.description") },
     )
-    .button(translated("ui.aspergillum.table.preview"), actions.preview, {
-      tooltip: translated("ui.aspergillum.table.preview.tooltip"),
-    })
     .divider()
     .header(translated("ui.aspergillum.table.appearance.header"))
     .dropdown(
@@ -112,10 +97,7 @@ export function showCustomizationMenu(
       })),
     )
     .button(translated("ui.aspergillum.table.restore"), () => {
-      if (!actions.restoreClassic()) {
-        status.setData(translated("ui.aspergillum.table.status.failed"));
-        return;
-      }
+      if (!actions.restoreClassic()) return;
       suppressReactiveWrites = true;
       try {
         profileSelection.setData(0);
@@ -124,15 +106,12 @@ export function showCustomizationMenu(
       } finally {
         suppressReactiveWrites = false;
       }
-      status.setData(translated("ui.aspergillum.table.status.restored"));
     })
     .divider()
-    .label(status)
     .button(translated("ui.aspergillum.table.finish"), () => {
       if (actions.finishAndRetrieve()) form.close();
-      else status.setData(translated("ui.aspergillum.table.status.failed"));
     })
-    .closeButton();
+    .button(translated("ui.aspergillum.table.close"), () => form.close());
 
   form.show()
     .catch((error: unknown) => {

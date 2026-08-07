@@ -31,7 +31,7 @@ function substituteSequentially(template: string, parameters: string[]): string 
 describe("release UX contracts", () => {
   it("uses a unique client-localized key for every action-bar message", () => {
     const keys = Object.values(ACTION_MESSAGES);
-    expect(keys).toHaveLength(31);
+    expect(keys).toHaveLength(32);
     expect(new Set(keys).size).toBe(keys.length);
     expect(keys.every((key) => key.startsWith("message.aspergillum."))).toBe(true);
   });

@@ -143,7 +143,7 @@ Cada callback reativo revalida sessão corrente, validade/distância do jogador,
 
 Fechar o formulário não retira o item nem descarta a configuração já aplicada: encerra apenas a sessão e deixa o aspersório exposto. **Concluir e retirar** primeiro recupera/entrega o item e então remove o snapshot. Agachar com mão vazia oferece uma rota de recuperação sem depender da UI. Loot de mesa ocupada nunca contém um aspersório genérico.
 
-A demonstração possui cooldown efêmero de vinte ticks por coordenada e emite somente seis partículas. Ela não chama a transação de aspersão, não cria `SprinkleSession`, não inicia `ActionLease`, não escreve ItemStack e não altera água/cooldown; é apresentação fail-soft.
+Não existe transação de demonstração na v1.1.1. A única prévia é o próprio item acomodado, atualizado pela mesma escrita revalidada de perfil/cosmético; nenhuma ação paralela cria `SprinkleSession`, inicia `ActionLease` ou altera água/cooldown.
 
 ## Schema 3 implementado
 

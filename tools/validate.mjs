@@ -269,11 +269,41 @@ if (JSON.stringify(occupiedTableLoot).includes("aspergillum:aspergillum")) {
 const tableGeometry = JSON.parse(
   fs.readFileSync(path.join(packRoots[1], "models", "blocks", "sacristan_table.geo.json"), "utf8"),
 )["minecraft:geometry"]?.[0];
+const tableGeometrySource = JSON.parse(
+  fs.readFileSync(path.join(root, "assets-src", "models", "sacristan_table.model.json"), "utf8"),
+)["minecraft:geometry"]?.[0];
 if (tableGeometry?.description?.texture_width !== 256 || tableGeometry?.description?.texture_height !== 256) {
   errors.push("Sacristan table atlas must reserve a 256x256 cosmetic presentation surface");
 }
-if (!(tableGeometry?.bones ?? []).some((bone) => bone.name === "resting_aspergillum" && bone.cubes?.length === 10)) {
+const authoredTableRoot = tableGeometrySource?.bones?.find((bone) => bone.name === "root");
+const authoredVelvet = authoredTableRoot?.cubes?.find((cube) => cube.name === "velvet");
+if (JSON.stringify(authoredVelvet?.origin) !== JSON.stringify([-6.5, 14, -6.5])
+  || JSON.stringify(authoredVelvet?.size) !== JSON.stringify([13, 0.35, 13])) {
+  errors.push("Sacristan table velvet must fill the complete 13x13 interior without crossing the raised rim");
+}
+if ((authoredTableRoot?.cubes ?? []).some((cube) => ["left_support", "right_support"].includes(cube.name))) {
+  errors.push("Sacristan table top must not restore the removed brass supports");
+}
+const restingAspergillum = (tableGeometry?.bones ?? []).find((bone) => bone.name === "resting_aspergillum");
+if (restingAspergillum?.cubes?.length !== 10) {
   errors.push("Sacristan table must present the complete authored aspergillum silhouette");
+}
+if (JSON.stringify(restingAspergillum?.pivot) !== JSON.stringify([0, 16.2, 0])
+  || JSON.stringify(restingAspergillum?.rotation) !== JSON.stringify([90, 0, 0])) {
+  errors.push("Sacristan table replica must retain the reviewed centered resting transform");
+}
+const restingBounds = [0, 1, 2].map((axis) => {
+  const minima = (restingAspergillum?.cubes ?? []).map((cube) => cube.origin[axis]);
+  const maxima = (restingAspergillum?.cubes ?? []).map((cube) => cube.origin[axis] + cube.size[axis]);
+  return [Math.min(...minima), Math.max(...maxima)];
+});
+const restingCenter = restingBounds.map(([minimum, maximum]) => (minimum + maximum) / 2);
+const restingSpan = restingBounds.map(([minimum, maximum]) => maximum - minimum);
+if (restingCenter.some((value, axis) => Math.abs(value - [0, 16.2, 0][axis]) > 1e-6)
+  || restingSpan[1] > 11.25
+  || restingSpan[0] > 4
+  || restingSpan[2] > 4) {
+  errors.push("Sacristan table replica must remain centered and scaled to fit inside the 13x13 velvet interior");
 }
 
 const attachableSource = fs.readFileSync(
@@ -735,7 +765,7 @@ for (const tableContract of [
   }
 }
 if (compiledScript.includes("runInterval")) {
-  errors.push("Customization and preview flows must not introduce persistent polling intervals");
+  errors.push("Customization flows must not introduce persistent polling intervals");
 }
 
 for (const locale of ["pt_BR", "en_US"]) {
@@ -753,6 +783,7 @@ for (const locale of ["pt_BR", "en_US"]) {
     "ui.aspergillum.table.metal.label",
     "ui.aspergillum.table.grip.label",
     "ui.aspergillum.table.finish",
+    "ui.aspergillum.table.close",
   ]) {
     if (!lang.includes(`${key}=`)) errors.push(`${locale}.lang is missing localized lore key ${key}`);
   }

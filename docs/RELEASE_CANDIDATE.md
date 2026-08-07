@@ -2,13 +2,13 @@
 
 ## Identidade
 
-- Release Candidate: `1.1.0`.
-- Revisão dos packs: `[1, 1, 0]`.
+- Release Candidate: `1.1.1`.
+- Revisão dos packs: `[1, 1, 1]`.
 - Baseline funcional herdada: `1.0.20`, validada pelo usuário.
 - Experimentos: nenhum.
 - Autoridade: servidor para estado; cliente somente para apresentação.
 
-Esta revisão preserva binding, grip, envelope físico, poses, animações, steering, partículas, áudio e docking parcial da baseline. Ela acrescenta a Mesa do Sacristão, três perfis e nove acabamentos, com configuração/demonstração gratuitas e recuperação persistente do item.
+Esta revisão preserva binding, grip, envelope físico, poses, animações, steering, partículas, áudio e docking parcial da baseline. Ela refina a Mesa do Sacristão após o teste físico 1.1.0: réplica centralizada, veludo integral, tampo sem apoios dourados e menu compacto, com configuração gratuita e recuperação persistente do item.
 
 ## Preflight automatizado
 
@@ -25,7 +25,7 @@ O gate falha quando versões divergem, catálogos `pt_BR`/`en_US` deixam de ser 
 
 1. Registrar o SHA-256 do artefato.
 2. Fechar o Minecraft e remover os dois packs antigos em Armazenamento.
-3. Importar somente `Aspergillum-1.1.0.mcaddon`.
+3. Importar somente `Aspergillum-1.1.1.mcaddon`.
 4. Criar ou duplicar um mundo de teste sem experimentos.
 5. Limpar o Content Log antes de entrar.
 6. Executar `/function aspergillum/dev_kit`.
@@ -45,8 +45,8 @@ O gate falha quando versões divergem, catálogos `pt_BR`/`en_US` deixam de ser 
 | Quebrar/reload | snapshot não duplica nem desaparece |
 | Idioma | mudar `pt_BR`/`en_US` muda lore e HUD sem recriar o item |
 | Mesa | dezesseis rotações, vazio/ocupado, item correto sobre veludo e materiais legíveis em clássico/Vibrant Visuals |
-| UI | três perfis, 3×3 acabamentos, status reativo, restauração e conclusão legíveis em teclado/controle/toque |
-| Custo zero | edição e demonstração não alteram carga, água, item, XP ou cooldown real |
+| UI | três perfis, 3×3 acabamentos, restauração, conclusão e **Fechar** localizados, sem conteúdo redundante, legíveis em teclado/controle/toque |
+| Custo zero | edição não altera carga, água, item, XP ou cooldown real |
 | Concorrência | somente um editor por mesa; fechar, concluir, quebrar, morrer, sair ou trocar dimensão liberam a sessão |
 | Compatibilidade | mundo/item 1.0.20 assumem aparência clássica e continuam carregando, aspergindo e acomodando sem perda |
 

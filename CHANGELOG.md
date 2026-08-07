@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.1.1 — 2026-08-07
+
+- refinada a composição ocupada da Mesa do Sacristão após validação em jogo da 1.1.0: a réplica do aspersório agora usa escala uniforme `0.72`, centro geométrico coincidente com o pivô e posição contida no nicho do tampo;
+- ampliado o veludo verde para preencher todo o interior de `13 × 13` entre as bordas elevadas, sem alterar a moldura já aprovada;
+- removidos os dois apoios de latão do tampo; o latão permanece somente como acento funcional no puxador da gaveta e no próprio instrumento;
+- destilada a interface nativa para perfil, metal, empunhadura, restauração, retirada e fechamento: removidos cabeçalho de item/cargas, texto de gratuidade, status persistente e demonstração encoberta pelo formulário;
+- substituído o `closeButton()` nativo, que exibia `Close` em português, por uma ação explícita localizada como **Fechar**/**Close**;
+- falhas de atualização continuam fail-soft e agora recebem action bar localizada; escolhas bem-sucedidas permanecem silenciosas e são confirmadas pela seleção e pela prévia física;
+- preservados custo zero, aplicação reativa, nove cosméticos, três perfis, snapshots, identidade, cargas, sessões exclusivas, rollback, binding, animações e VFX autoritativos;
+- o rótulo e a revisão numérica distribuídos são `1.1.1`/`[1,1,1]`, evitando colisão de cache com o pacote 1.1.0 já importado.
+
 ## 1.1.0 — 2026-08-07
 
 - adicionada a **Mesa do Sacristão**, um bloco imutável de madeira escura, veludo verde e ferragens sóbrias, com dezesseis rotações, estado visual ocupado e recuperação transacional do item em retirada ou quebra;

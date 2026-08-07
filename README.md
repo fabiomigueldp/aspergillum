@@ -2,12 +2,12 @@
 
 Add-On para Minecraft: Bedrock Edition 26.40 que adiciona um **aspersório litúrgico funcional**, uma **caldeirinha (aspersorium)** e uma **Mesa do Sacristão** para configuração gratuita. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão 1.1.0 RC:** introduz a Mesa do Sacristão, três perfis de aspersão e nove combinações cosméticas de metal/empunhadura. As alterações são instantâneas e gratuitas, preservam cargas, identidade e propriedades do item, e usam uma interface nativa estável integrada ao visual do Minecraft. A 1.0.20 foi validada em jogo e permanece a baseline funcional protegida.
+> **Versão 1.1.1 RC:** refina a Mesa do Sacristão após o primeiro teste em jogo: o aspersório passa a repousar centralizado dentro do tampo, o veludo ocupa todo o nicho e a interface foi reduzida ao que é necessário. A personalização continua instantânea e gratuita, preservando cargas, identidade e propriedades do item. A 1.0.20 permanece a baseline funcional protegida.
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/releases/Aspergillum-1.1.0.mcaddon`](dist/releases/Aspergillum-1.1.0.mcaddon) com o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.1.1.mcaddon`](dist/releases/Aspergillum-1.1.1.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
@@ -24,7 +24,7 @@ O alvo mínimo é Creator `1.26.40`, correspondente ao Bedrock 26.40. Os módulo
 - No modo Criativo, uma carga real já presente não é consumida e a caldeirinha não perde água ao carregar; ao voltar ao Sobrevivência, permanece apenas o número finito de cargas gravado no item.
 - Agache e use o aspersório na caldeirinha para acomodá-lo como decoração. As cargas que couberem retornam à caldeirinha e qualquer restante permanece no item acomodado. Use a mão vazia para retirá-lo.
 - A caldeirinha não possui menu ou inventário: carregar, acomodar e retirar são interações diretas no mundo.
-- Use o aspersório na Mesa do Sacristão para acomodá-lo e abrir o menu. Escolha `Clássico`, `Processional` ou `Contido`, combine prata clássica/envelhecida/dourada com couro castanho/vinho/preto e use a demonstração sem gastar água. **Concluir e retirar** devolve o mesmo item; fechar a tela deixa-o exposto sobre o veludo.
+- Use o aspersório na Mesa do Sacristão para acomodá-lo e abrir o menu. Escolha `Clássico`, `Processional` ou `Contido` e combine prata clássica/envelhecida/dourada com couro castanho/vinho/preto. **Concluir e retirar** devolve o mesmo item; **Fechar** deixa-o exposto sobre o veludo. Nenhuma configuração consome água, carga ou ingrediente.
 - Para testes rápidos com cheats: `/function aspergillum/dev_kit`.
 
 As cargas permanecem finitas e persistentes. Ao acomodar, a transferência satura a caldeirinha em `16/16` sem bloquear a ação; cargas excedentes, nome, identidade e propriedades ficam preservados num snapshot por chunk. Ao retirar ou quebrar uma caldeirinha ocupada, o script recupera exatamente o aspersório registrado; a água do bloco quebrado é descartada intencionalmente.

@@ -1,4 +1,4 @@
-# Contrato da Mesa do Sacristão — v1.1.0
+# Contrato da Mesa do Sacristão — v1.1.1
 
 ## Intenção
 
@@ -13,8 +13,8 @@ A estação existe para tornar perfil e acabamento legíveis, reversíveis e gra
 - superfície central de veludo verde profundo, lida como apoio cerimonial e não como tela tecnológica;
 - gaveta frontal com inlay escuro e puxador de latão discreto;
 - travessa inferior e quatro pernas robustas dentro do footprint de um bloco;
-- dois pequenos apoios de latão que tornam o tampo legível mesmo vazio;
-- aspersório ocupado deitado sobre o veludo, derivado da mesma malha e do mesmo conjunto color/normal/MER do item selecionado.
+- veludo verde preenchendo todo o nicho interno, sem tocar ou competir com as bordas elevadas;
+- aspersório ocupado centralizado e inteiramente contido sobre o veludo, derivado da mesma malha e do mesmo conjunto color/normal/MER do item selecionado.
 
 Não usar glow, emissividade, hologramas, ícones flutuantes, neon, vidro de interface ou ornamento eclesial ostensivo. A beleza deve vir de proporção, material, contraste e composição.
 
@@ -55,17 +55,15 @@ A interface usa `CustomForm` estável e controles nativos. Ela deve pertencer vi
 Ordem fixa:
 
 1. título **Mesa do Sacristão**;
-2. cabeçalho do instrumento e cargas atuais;
-3. seção **Perfil de aspersão**, dropdown e descrição;
-4. botão **Demonstrar perfil** com tooltip;
-5. seção **Acabamento**, dropdown de metal e dropdown de empunhadura;
-6. botão **Restaurar configuração clássica**;
-7. status reativo de custo/resultado;
-8. botão primário **Concluir e retirar**.
+2. seção **Perfil de aspersão** e dropdown com descrição da opção;
+3. seção **Acabamento**, dropdown de metal e dropdown de empunhadura;
+4. botão **Restaurar padrão**;
+5. botão primário **Concluir e retirar**;
+6. botão **Fechar**, localizado em todos os idiomas suportados.
 
 Mudanças de dropdown são aplicadas imediatamente. Não há botão genérico “Salvar”, moeda, slot de ingrediente, barra de progresso ou confirmação modal. Fechar o formulário encerra a sessão e deixa o item sobre a mesa; não reverte escolhas já aplicadas. A ação final retira o item.
 
-Todos os textos usam `RawMessage`/translation keys em `pt_BR` e `en_US`. A UI não depende de imagens exclusivas de APIs pre-release. Textos de status devem explicar gratuidade e falha segura sem linguagem técnica.
+Todos os textos usam `RawMessage`/translation keys em `pt_BR` e `en_US`. A UI não depende de imagens exclusivas de APIs pre-release. O menu não repete cargas, custo zero ou confirmação de sucesso; falhas são comunicadas por action bar localizada.
 
 ## Autoridade e custo zero
 
@@ -80,7 +78,7 @@ Configuração gratuita significa:
 - nenhuma alteração no cooldown de aspersão;
 - restauração clássica igualmente gratuita.
 
-A demonstração emite seis partículas fail-soft e possui cooldown local de vinte ticks. Ela não cria uma rajada real nem pode conceder efeito futuro sobre entidades/blocos.
+Não há demonstração: com o formulário aberto sua resposta física ficava encoberta e não auxiliava a decisão. A prévia autoritativa é o modelo acomodado, atualizado sem custo pela seleção.
 
 ## Persistência e recuperação
 
@@ -102,7 +100,7 @@ Somente `cosmeticId`/tipo visual ou `sprayProfileId` muda durante a edição. Re
 - item clássico visualmente equivalente à baseline 1.0.20;
 - nove combinações distinguíveis sem saturação, emissividade ou aparência plástica;
 - formulário legível e navegável em `pt_BR`/`en_US`, teclado, controle e toque;
-- nenhum consumo durante edição/demonstração;
+- nenhum consumo durante edição;
 - exclusão multiplayer e cleanup de ciclo de vida;
 - reload, quebra e inventário cheio sem perda ou duplicação;
 - Content Log sem erro/warning atribuível ao add-on.

@@ -8,14 +8,34 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
-## v1.1.0 — Mesa do Sacristão e personalização — implementada; QA físico pendente
+## v1.1.1 — refinamento físico e destilação da Mesa — implementada; reteste físico pendente
+
+Hipótese: corrigir a composição observada no primeiro teste em jogo sem tocar nas bordas aprovadas, e reduzir a interface aos controles que realmente auxiliam a personalização.
+
+Escopo fechado:
+
+- centralizar a réplica do aspersório pelo centro geométrico, reduzir a escala uniforme para `0.72` e mantê-la inteiramente dentro do nicho;
+- expandir o veludo para `13 × 13`, respeitando a moldura elevada, e remover os dois apoios de latão do tampo;
+- remover cabeçalho/cargas, microcopy de gratuidade, demonstração e status persistente da UI;
+- fornecer **Fechar** localizado com botão regular, evitando o `Close` fixo do `closeButton()` nativo;
+- manter dropdowns reativos, restauração, conclusão/retirada, custo zero, persistência, locks e os contratos da baseline.
+
+Gate de saída:
+
+- item inteiro, centralizado e apoiado sobre o veludo nas dezesseis rotações, sem atravessar bordas ou flutuar para fora da mesa;
+- veludo preenche todo o interior sem z-fighting e nenhum apoio dourado permanece no tampo;
+- menu compacto e sem informações redundantes, com **Fechar** em `pt_BR`, sem corte ou rolagem indevida na resolução já testada;
+- nove acabamentos e três perfis continuam aplicando e persistindo gratuitamente; reload, quebra, inventário cheio e concorrência não perdem nem duplicam o item;
+- regressão completa da 1.0.20 permanece verde.
+
+## v1.1.0 — Mesa do Sacristão e personalização — implementada; refinada pela v1.1.1
 
 Escopo fechado:
 
 - adicionar um bloco de trabalho coerente com sacristias e igrejas: madeira escura, veludo verde, ferragens discretas, gaveta frontal e dezesseis rotações estáveis;
 - acomodar o ItemStack exato sobre a mesa, preservando cargas, identidade, nome, schema e propriedades customizadas por snapshot persistente;
 - oferecer interface nativa reativa com três perfis de aspersão, três metais, três empunhaduras, restauração clássica e conclusão/retirada;
-- tornar toda configuração e demonstração gratuita; a mesa é fabricável, mas nenhuma escolha consome ingrediente, água ou carga;
+- tornar toda configuração e a demonstração original gratuitas; a mesa é fabricável, mas nenhuma escolha consome ingrediente, água ou carga;
 - manter `standard` idêntico à 1.0.20 e adicionar `processional`/`contained` sem alterar economia, seis pulsos ou janela de release;
 - gerar nove itens/attachables/aparências de composição a partir de um catálogo semântico único;
 - preservar o ID clássico, UUIDs, binding, geometry `1.16.0`, poses, snapshots, locks, rollback, áudio e VFX aprovados;
@@ -25,7 +45,7 @@ Gate de saída:
 
 - os nove acabamentos e três perfis aplicam imediatamente e persistem após retirar, reload, quebra e reentrada;
 - fechar a UI deixa o item exposto; concluir o retira; inventário cheio usa drop seguro; nenhuma rota duplica ou perde o item;
-- demonstração produz seis gotas, respeita cooldown local e não muda água, carga, inventário ou cooldown real;
+- a demonstração original produzia seis gotas sem custo; a v1.1.1 a remove porque o formulário impedia observar sua resposta;
 - dois jogadores não editam a mesma mesa, e cleanup ocorre em morte, saída, dimensão e quebra;
 - mesa vazia/ocupada, dezesseis rotações, clássico/Vibrant Visuals e UI em `pt_BR`/`en_US` passam no pacote final;
 - regressão completa da 1.0.20 validada: carga 4/16, docking parcial, animação, 36 gotas/seis pulsos, áudio, identidade e Content Log.

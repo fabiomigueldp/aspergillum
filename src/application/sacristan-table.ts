@@ -2,7 +2,6 @@ import {
   Block,
   BlockComponentBlockBreakEvent,
   BlockComponentPlayerInteractEvent,
-  MolangVariableMap,
   Player,
   system,
 } from "@minecraft/server";
@@ -10,16 +9,13 @@ import {
   resolveCosmetic,
   resolveCosmeticSelection,
 } from "../domain/customization";
-import { deterministicDropletDirections } from "../domain/cone";
 import { resolveSprayProfile } from "../domain/spray-profile";
 import { getActionLease } from "../infrastructure/action-lease";
 import { readBooleanBlockState, withCustomBlockState } from "../infrastructure/block-state";
 import {
-  DROPLET_PARTICLE,
   SACRISTAN_TABLE_BLOCK,
   TABLE_COSMETIC_STATE,
   TABLE_OCCUPIED_STATE,
-  TABLE_ROTATION_STATE,
 } from "../infrastructure/constants";
 import {
   acquireCustomizationSession,
@@ -50,9 +46,7 @@ import { showCustomizationMenu } from "../presentation/customization-menu";
 import { ACTION_MESSAGES, action } from "../presentation/messaging";
 
 const INTERACTION_DEDUPE_TICKS = 2;
-const PREVIEW_COOLDOWN_TICKS = 20;
 const interactionClaims = new Map<string, number>();
-const lastPreviewTicks = new Map<string, number>();
 
 function tableKey(block: Block): string {
   const { x, y, z } = block.location;
@@ -209,37 +203,6 @@ function updateStoredCustomization(
   }
 }
 
-function previewProfile(player: Player, block: Block, profileId: string): void {
-  const key = tableKey(block);
-  const now = system.currentTick;
-  const previous = lastPreviewTicks.get(key);
-  if (previous !== undefined && now - previous < PREVIEW_COOLDOWN_TICKS) return;
-  lastPreviewTicks.set(key, now);
-  const rotationValue = block.permutation.getAllStates()[TABLE_ROTATION_STATE];
-  const rotation = typeof rotationValue === "number" ? rotationValue : 0;
-  const radians = rotation * 22.5 * Math.PI / 180;
-  const direction = { x: Math.sin(radians), y: 0.08, z: Math.cos(radians) };
-  const profile = resolveSprayProfile(profileId);
-  const directions = deterministicDropletDirections(direction, 6, undefined, profile);
-  const previewSpeed = 2.1 * (profile.minimumSpeed / 12.7);
-  const origin = {
-    x: block.location.x + 0.5,
-    y: block.location.y + 1.08,
-    z: block.location.z + 0.5,
-  };
-  for (const [index, dropletDirection] of directions.entries()) {
-    const variables = new MolangVariableMap();
-    variables.setSpeedAndDirection("variable.aspergillum_motion", previewSpeed + index * 0.08, dropletDirection);
-    variables.setFloat("variable.aspergillum_scale", 0.54 + (index % 3) * 0.04);
-    try {
-      block.dimension.spawnParticle(DROPLET_PARTICLE, origin, variables);
-    } catch (error) {
-      console.warn(`[Aspergillum] Unable to preview spray profile: ${String(error)}`);
-      return;
-    }
-  }
-}
-
 function openTableMenu(player: Player, block: Block): void {
   const dimensionId = block.dimension.id;
   let snapshot;
@@ -260,34 +223,25 @@ function openTableMenu(player: Player, block: Block): void {
     return;
   }
   const session = acquired.session;
-  let currentCosmeticId = snapshot.cosmeticId;
-  let currentProfileId = snapshot.sprayProfileId;
   try {
     showCustomizationMenu(player, {
-      charges: snapshot.charges,
-      cosmeticId: currentCosmeticId,
-      sprayProfileId: currentProfileId,
+      cosmeticId: snapshot.cosmeticId,
+      sprayProfileId: snapshot.sprayProfileId,
     }, {
       applyCosmetic(cosmeticId) {
         const applied = updateStoredCustomization(player, block, session, cosmeticId, undefined);
-        if (applied) currentCosmeticId = resolveCosmetic(cosmeticId).id;
+        if (!applied) action(player, ACTION_MESSAGES.tableUpdateFailed);
         return applied;
       },
       applySprayProfile(profileId) {
         const applied = updateStoredCustomization(player, block, session, undefined, profileId);
-        if (applied) currentProfileId = resolveSprayProfile(profileId).id;
+        if (!applied) action(player, ACTION_MESSAGES.tableUpdateFailed);
         return applied;
-      },
-      preview() {
-        if (isCurrentCustomizationSession(session)) previewProfile(player, block, currentProfileId);
       },
       restoreClassic() {
         const classic = resolveCosmeticSelection("silver", "chestnut");
         const applied = updateStoredCustomization(player, block, session, classic.id, "standard");
-        if (applied) {
-          currentCosmeticId = classic.id;
-          currentProfileId = "standard";
-        }
+        if (!applied) action(player, ACTION_MESSAGES.tableUpdateFailed);
         return applied;
       },
       finishAndRetrieve() {
@@ -350,7 +304,6 @@ export function handleSacristanTableBreak(event: BlockComponentBlockBreakEvent):
   const dimension = event.dimension;
   const dimensionId = dimension.id;
   releaseCustomizationAtBlock(dimensionId, location);
-  lastPreviewTicks.delete(`${dimensionId}|${location.x},${location.y},${location.z}`);
   if (event.brokenBlockPermutation.getAllStates()[TABLE_OCCUPIED_STATE] !== true) return;
   system.run(() => {
     try {

@@ -34,4 +34,4 @@ Sóbrio, artesanal e reverente. A beleza vem de proporções, materiais e detalh
 
 ## Accessibility & Inclusion
 
-Toda função deve ser utilizável com teclado, controle e toque. Informação essencial não depende apenas de cor, som, tooltip ou movimento. Textos usam localização client-side, opções possuem descrições explícitas e demonstrações visuais são curtas, limitadas e não piscantes.
+Toda função deve ser utilizável com teclado, controle e toque. Informação essencial não depende apenas de cor, som, tooltip ou movimento. Textos usam localização client-side, opções possuem descrições explícitas e a interface evita conteúdo redundante, rolagem desnecessária e ações cuja resposta fique escondida pelo próprio menu.
