@@ -15,6 +15,12 @@ import {
   handleAspersoriumBreak,
   handleAspersoriumInteraction,
 } from "../application/aspersorium";
+import {
+  clearCustomizationPlayerState,
+  handleSacristanTableBreak,
+  handleSacristanTableInteraction,
+  handleSacristanTableUseOn,
+} from "../application/sacristan-table";
 import { yawToSixteenWayRotation } from "../domain/rotation";
 import {
   cancelWaterSpray,
@@ -24,10 +30,12 @@ import {
 } from "../application/sprinkle";
 import {
   ASPERGILLUM_COMPONENT,
-  ASPERGILLUM_ITEM,
   ASPERSORIUM_BLOCK,
   ASPERSORIUM_COMPONENT,
+  SACRISTAN_TABLE_BLOCK,
+  SACRISTAN_TABLE_COMPONENT,
   ROTATION_STATE,
+  TABLE_ROTATION_STATE,
 } from "../infrastructure/constants";
 import { resolvePlayerPolicies } from "../infrastructure/game-mode-policy";
 import {
@@ -62,25 +70,31 @@ const aspergillumUse: ItemCustomComponent = {
     else action(event.source, ACTION_MESSAGES.chargesInspect, state.charges);
   },
   onUseOn(event) {
-    if (event.block.typeId !== ASPERSORIUM_BLOCK || !(event.source instanceof Player)) return;
+    if (!(event.source instanceof Player)) return;
     let isSneaking: boolean;
     try {
       isSneaking = event.source.isSneaking;
     } catch {
       return;
     }
-    handleAspergillumUseOn(event.source, event.block, isSneaking);
+    if (event.block.typeId === ASPERSORIUM_BLOCK) {
+      handleAspergillumUseOn(event.source, event.block, isSneaking);
+    } else if (event.block.typeId === SACRISTAN_TABLE_BLOCK) {
+      handleSacristanTableUseOn(event.source, event.block, isSneaking);
+    }
   },
 };
 
 function cancelTransientPlayerActions(playerId: string): void {
   cancelLoadingSession(playerId);
   cancelWaterSpray(playerId);
+  clearCustomizationPlayerState(playerId);
 }
 
 function clearTransientPlayerState(playerId: string): void {
   cancelLoadingSession(playerId);
   clearSprinklePlayerState(playerId);
+  clearCustomizationPlayerState(playerId);
 }
 
 function initializeInventorySlot(player: Player, slot: number): void {
@@ -131,13 +145,21 @@ function initializePlayerInventory(player: Player): void {
   });
 }
 
-function orientAspersorium(event: BlockComponentPlayerPlaceBeforeEvent): void {
+function orientBlock(event: BlockComponentPlayerPlaceBeforeEvent, state: string): void {
   const rotation = yawToSixteenWayRotation(event.player?.getRotation().y ?? 0);
   const withCustomState = event.permutationToPlace.withState as unknown as (
     name: string,
     stateValue: number | boolean | string,
   ) => BlockPermutation;
-  event.permutationToPlace = withCustomState.call(event.permutationToPlace, ROTATION_STATE, rotation);
+  event.permutationToPlace = withCustomState.call(event.permutationToPlace, state, rotation);
+}
+
+function orientAspersorium(event: BlockComponentPlayerPlaceBeforeEvent): void {
+  orientBlock(event, ROTATION_STATE);
+}
+
+function orientSacristanTable(event: BlockComponentPlayerPlaceBeforeEvent): void {
+  orientBlock(event, TABLE_ROTATION_STATE);
 }
 
 system.beforeEvents.startup.subscribe((event) => {
@@ -147,11 +169,16 @@ system.beforeEvents.startup.subscribe((event) => {
     onBreak: handleAspersoriumBreak,
     onPlayerInteract: handleAspersoriumInteraction,
   });
+  event.blockComponentRegistry.registerCustomComponent(SACRISTAN_TABLE_COMPONENT, {
+    beforeOnPlayerPlace: orientSacristanTable,
+    onBreak: handleSacristanTableBreak,
+    onPlayerInteract: handleSacristanTableInteraction,
+  });
 });
 
 world.afterEvents.playerSwingStart.subscribe((event) => {
   if (event.swingSource !== EntitySwingSource.Attack && event.swingSource !== EntitySwingSource.Mine) return;
-  if (event.heldItemStack?.typeId !== ASPERGILLUM_ITEM) return;
+  if (!isAspergillum(event.heldItemStack)) return;
   trySprinkle(event.player);
 });
 
@@ -207,6 +234,11 @@ world.afterEvents.playerInventoryItemChange.subscribe((event) => {
 world.afterEvents.playerBreakBlock.subscribe((event) => {
   if (event.brokenBlockPermutation.type.id !== ASPERSORIUM_BLOCK) return;
   cancelLoadingAtBlock(event.block.dimension.id, event.block.location);
+});
+
+world.afterEvents.playerBreakBlock.subscribe((event) => {
+  if (event.brokenBlockPermutation.type.id !== SACRISTAN_TABLE_BLOCK) return;
+  clearCustomizationPlayerState(event.player.id);
 });
 
 world.afterEvents.entityDie.subscribe((event) => {

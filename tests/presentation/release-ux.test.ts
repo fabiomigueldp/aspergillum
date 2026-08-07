@@ -8,6 +8,9 @@ import { AUDIO_VARIANTS, familiesForCue } from "../../src/presentation/audio/aud
 const root = path.resolve(import.meta.dirname, "../..");
 const loreKeys = [
   "item.aspergillum.lore.charges",
+  "item.aspergillum.lore.profile",
+  "item.aspergillum.lore.appearance",
+  "item.aspergillum.lore.grip",
   "item.aspergillum.lore.instructions",
   "item.aspergillum.lore.docking",
   "item.aspergillum.lore.creative",
@@ -28,7 +31,7 @@ function substituteSequentially(template: string, parameters: string[]): string 
 describe("release UX contracts", () => {
   it("uses a unique client-localized key for every action-bar message", () => {
     const keys = Object.values(ACTION_MESSAGES);
-    expect(keys).toHaveLength(27);
+    expect(keys).toHaveLength(31);
     expect(new Set(keys).size).toBe(keys.length);
     expect(keys.every((key) => key.startsWith("message.aspergillum."))).toBe(true);
   });

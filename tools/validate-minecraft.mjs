@@ -30,10 +30,13 @@ const failures = reportLines.filter((line) => /,"?(?:Error|Failure)"?,/i.test(li
 const warnings = reportLines.filter((line) => /,"?Warning"?,/i.test(line));
 const knownOfflineLinks = [
   "`aspergillum:aspersorium`",
+  "`aspergillum:sacristan_table`",
   "`minecraft:iron_nugget`",
   "`minecraft:stick`",
   "`minecraft:chain`",
   "`minecraft:iron_ingot`",
+  "`minecraft:dark_oak_planks`",
+  "`minecraft:green_carpet`",
 ];
 const unexpectedWarnings = warnings.filter((line) =>
   !line.includes("Link to item type is not found in this pack")

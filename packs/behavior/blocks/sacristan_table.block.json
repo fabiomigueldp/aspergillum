@@ -1,0 +1,385 @@
+{
+  "format_version": "1.26.30",
+  "minecraft:block": {
+    "description": {
+      "identifier": "aspergillum:sacristan_table",
+      "menu_category": {
+        "category": "construction",
+        "group": "minecraft:itemGroup.name.decorations"
+      },
+      "states": {
+        "aspergillum:table_has_aspergillum": [
+          false,
+          true
+        ],
+        "aspergillum:table_cosmetic": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "aspergillum:table_rotation": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ]
+      }
+    },
+    "permutations": [
+      {
+        "condition": "q.block_state('aspergillum:table_has_aspergillum') == true",
+        "components": {
+          "minecraft:loot": "loot_tables/blocks/sacristan_table_occupied.loot.json"
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_cosmetic') == 1",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "sacristan_table_silver_oxblood",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_cosmetic') == 2",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "sacristan_table_silver_black",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_cosmetic') == 3",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "sacristan_table_antique_chestnut",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_cosmetic') == 4",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "sacristan_table_antique_oxblood",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_cosmetic') == 5",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "sacristan_table_antique_black",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_cosmetic') == 6",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "sacristan_table_gilded_chestnut",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_cosmetic') == 7",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "sacristan_table_gilded_oxblood",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_cosmetic') == 8",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "sacristan_table_gilded_black",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_rotation') == 1",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.sacristan_table.rotation_1",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_rotation') == 2",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.sacristan_table.rotation_2",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_rotation') == 3",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.sacristan_table.rotation_3",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_rotation') == 4",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.sacristan_table.rotation_4",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_rotation') == 5",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.sacristan_table.rotation_5",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_rotation') == 6",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.sacristan_table.rotation_6",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_rotation') == 7",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.sacristan_table.rotation_7",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_rotation') == 8",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.sacristan_table.rotation_8",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_rotation') == 9",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.sacristan_table.rotation_9",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_rotation') == 10",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.sacristan_table.rotation_10",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_rotation') == 11",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.sacristan_table.rotation_11",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_rotation') == 12",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.sacristan_table.rotation_12",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_rotation') == 13",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.sacristan_table.rotation_13",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_rotation') == 14",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.sacristan_table.rotation_14",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_rotation') == 15",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.sacristan_table.rotation_15",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+            }
+          }
+        }
+      }
+    ],
+    "components": {
+      "minecraft:display_name": "tile.aspergillum:sacristan_table.name",
+      "minecraft:geometry": {
+        "identifier": "geometry.aspergillum.sacristan_table.rotation_0",
+        "uv_lock": false,
+        "bone_visibility": {
+          "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+        }
+      },
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "sacristan_table",
+          "render_method": "opaque"
+        }
+      },
+      "minecraft:collision_box": {
+        "origin": [
+          -8,
+          0,
+          -8
+        ],
+        "size": [
+          16,
+          15,
+          16
+        ]
+      },
+      "minecraft:selection_box": {
+        "origin": [
+          -8,
+          0,
+          -8
+        ],
+        "size": [
+          16,
+          15,
+          16
+        ]
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 1.8
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 5
+      },
+      "minecraft:map_color": "#50392c",
+      "minecraft:light_dampening": 0,
+      "minecraft:movable": {
+        "movement_type": "immovable"
+      },
+      "minecraft:placement_filter": {
+        "conditions": [
+          {
+            "allowed_faces": [
+              "up"
+            ]
+          }
+        ]
+      },
+      "minecraft:loot": "loot_tables/blocks/sacristan_table.loot.json",
+      "aspergillum:sacristan_table_interaction": {}
+    }
+  }
+}

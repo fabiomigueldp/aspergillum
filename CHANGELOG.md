@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.1.0 — 2026-08-07
+
+- adicionada a **Mesa do Sacristão**, um bloco imutável de madeira escura, veludo verde e ferragens sóbrias, com dezesseis rotações, estado visual ocupado e recuperação transacional do item em retirada ou quebra;
+- introduzida interface nativa estável com `CustomForm`: seções claras, dropdowns reativos, status ao vivo, restauração clássica, demonstração cosmética e ação explícita de concluir/retirar;
+- toda configuração é gratuita: nenhuma escolha ou demonstração consome item, água ou carga; a receita cobra apenas a construção da estação;
+- adicionados os perfis `standard`, `processional` e `contained`; todos preservam uma carga por aspersão, 36 gotas, seis pulsos, janela de release e cooldown, variando somente forma, velocidade e resposta do leque;
+- adicionadas nove combinações estáveis de acabamento entre prata clássica, prata envelhecida e dourado festivo com couro castanho, vinho ou preto;
+- preservado `aspergillum:aspergillum` como variante clássica e adicionados oito IDs públicos de item/attachable; a troca cosmética conserva `instance_id`, cargas, nome, schema e propriedades customizadas;
+- a caldeirinha passa a refletir o acabamento do item acomodado por `aspergillum:cosmetic`; mundos existentes assumem índice `0` (clássico) e não exigem migração destrutiva;
+- sessões de personalização são exclusivas por jogador e mesa, revalidam distância, dimensão, bloco e snapshot a cada mudança e liberam locks em fechamento, retirada, quebra, morte, saída ou troca de dimensão;
+- a demonstração usa somente seis gotas limitadas e cooldown local de 20 ticks, sem alterar água, carga, inventário ou cooldown de gameplay;
+- gerador e validadores agora cobrem o catálogo cosmético, nove conjuntos color/normal/MER, variantes de item/attachable/cal­deirinha/mesa, 288 estados da mesa e 5.184 estados da caldeirinha;
+- a ferramenta de captura ganhou os assuntos `table` e `table-docked`; a composição foi revisada em cinco vistas PBR antes do gate físico;
+- adotado o módulo estável `@minecraft/server-ui` `2.1.0`; `@minecraft/common` `1.3.0` fica somente no toolchain npm, pois não é módulo válido de manifest; não há Beta APIs, JSON UI customizado ou Creator Features experimentais;
+- a 1.0.20, validada em jogo, permanece a baseline de economia, docking parcial, animação, VFX, áudio, binding e persistência;
+- o rótulo e a revisão numérica distribuídos são `1.1.0`/`[1,1,0]`.
+
 ## 1.0.20 — 2026-08-07
 
 - redefinido o docking como transferência parcial conservativa: a caldeirinha recebe `min(cargas, 16 - água)` e o restante permanece no aspersório acomodado;

@@ -1,28 +1,30 @@
 # Aspergillum
 
-Add-On para Minecraft: Bedrock Edition 26.40 que adiciona um **aspersório litúrgico funcional** e uma **caldeirinha (aspersorium) colocável**. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
+Add-On para Minecraft: Bedrock Edition 26.40 que adiciona um **aspersório litúrgico funcional**, uma **caldeirinha (aspersorium)** e uma **Mesa do Sacristão** para configuração gratuita. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão 1.0.20 RC:** torna a acomodação sempre possível: a caldeirinha recebe somente as cargas que couberem e o snapshot persistente preserva o restante no aspersório. A regra é idêntica em Sobrevivência, Aventura e Criativo, sem perda, duplicação ou overflow; a baseline visual e física da 1.0.19b permanece intacta.
+> **Versão 1.1.0 RC:** introduz a Mesa do Sacristão, três perfis de aspersão e nove combinações cosméticas de metal/empunhadura. As alterações são instantâneas e gratuitas, preservam cargas, identidade e propriedades do item, e usam uma interface nativa estável integrada ao visual do Minecraft. A 1.0.20 foi validada em jogo e permanece a baseline funcional protegida.
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/releases/Aspergillum-1.0.20.mcaddon`](dist/releases/Aspergillum-1.0.20.mcaddon) com o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.1.0.mcaddon`](dist/releases/Aspergillum-1.1.0.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
-O alvo mínimo é Creator `1.26.40`, correspondente ao Bedrock 26.40. O módulo estável é `@minecraft/server` `2.9.0`.
+O alvo mínimo é Creator `1.26.40`, correspondente ao Bedrock 26.40. Os módulos estáveis do manifest são `@minecraft/server` `2.9.0` e `@minecraft/server-ui` `2.1.0`; `@minecraft/common` `1.3.0` permanece somente como dependência npm/tipos da UI.
 
 ## Como usar
 
 - Fabrique o **Aspersório** com gravetos e pepitas de ferro.
 - Fabrique a **Caldeirinha** com lingotes de ferro e uma corrente, e coloque-a sobre uma superfície.
+- Fabrique a **Mesa do Sacristão** com carvalho escuro, carpete verde e uma pepita de ferro. A receita cria somente a estação; personalizar nunca consome materiais.
 - Use um balde d'água na caldeirinha para enchê-la com dezesseis unidades, representadas em quatro quartos visuais.
 - Com o aspersório na mão, use-o na caldeirinha para carregar até quatro aspersões. Uma caldeirinha cheia fornece quatro carregamentos completos; o gesto conduz o braço para baixo e para a frente, com transferência autoritativa no tick 10.
 - Use a ação **Atacar/Minar** para aspergir. O gesto não causa dano nem quebra blocos.
 - No modo Criativo, uma carga real já presente não é consumida e a caldeirinha não perde água ao carregar; ao voltar ao Sobrevivência, permanece apenas o número finito de cargas gravado no item.
 - Agache e use o aspersório na caldeirinha para acomodá-lo como decoração. As cargas que couberem retornam à caldeirinha e qualquer restante permanece no item acomodado. Use a mão vazia para retirá-lo.
 - A caldeirinha não possui menu ou inventário: carregar, acomodar e retirar são interações diretas no mundo.
+- Use o aspersório na Mesa do Sacristão para acomodá-lo e abrir o menu. Escolha `Clássico`, `Processional` ou `Contido`, combine prata clássica/envelhecida/dourada com couro castanho/vinho/preto e use a demonstração sem gastar água. **Concluir e retirar** devolve o mesmo item; fechar a tela deixa-o exposto sobre o veludo.
 - Para testes rápidos com cheats: `/function aspergillum/dev_kit`.
 
 As cargas permanecem finitas e persistentes. Ao acomodar, a transferência satura a caldeirinha em `16/16` sem bloquear a ação; cargas excedentes, nome, identidade e propriedades ficam preservados num snapshot por chunk. Ao retirar ou quebrar uma caldeirinha ocupada, o script recupera exatamente o aspersório registrado; a água do bloco quebrado é descartada intencionalmente.
@@ -50,6 +52,7 @@ As cargas permanecem finitas e persistentes. Ao acomodar, a transferência satur
 - material opaco `entity`, textura com alfa integral, cubos com espessura positiva e seis UVs per-face explícitos por cubo, sempre com footprint inteiro mínimo de um texel;
 - atlas 64×64 gerado da fonte semântica `assets-src/models/aspergillum.model.json`, com superfícies coerentes de couro, prata, ouro e prata perfurada, padding dilatado de dois texels e mapas color/normal/MER derivados do mesmo layout;
 - quatro níveis visuais de água e versão decorativa com o aspersório acomodado;
+- mesa de madeira escura com tampo de veludo verde, ferragens discretas e réplica derivada da mesma malha/texturas do item; nove materiais acompanham o acabamento selecionado;
 - rotação visual em 16 direções por estado próprio e geometrias estáveis, sem traits de rotação experimentais;
 - texturas convencionais como fallback e texture sets PBR para Vibrant Visuals;
 - localização `pt_BR` e `en_US`.

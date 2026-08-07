@@ -10,7 +10,8 @@ import { loadFromAspersorium } from "../domain/aspergillum";
 import { ASPERSORIUM_CAPACITY, WATER_BUCKET_FILL } from "../domain/aspersorium-water";
 import { resolveDocking } from "../domain/docking";
 import { getActionLease } from "../infrastructure/action-lease";
-import { ASPERSORIUM_BLOCK, DOCKED_STATE } from "../infrastructure/constants";
+import { ASPERSORIUM_BLOCK, COSMETIC_STATE, DOCKED_STATE } from "../infrastructure/constants";
+import { resolveCosmetic } from "../domain/customization";
 import { readBooleanBlockState, withCustomBlockState } from "../infrastructure/block-state";
 import { readAspersoriumWater, withAspersoriumWater } from "../infrastructure/aspersorium-water-state";
 import { resolvePlayerPolicies } from "../infrastructure/game-mode-policy";
@@ -242,9 +243,13 @@ function dockItem(player: Player, block: Block): void {
   const snapshot = captureDockedAspergillum(item, resolution.remainingCharges);
   const originalPermutation = block.permutation;
   const updatedPermutation = withCustomBlockState(
-    withAspersoriumWater(originalPermutation, resolution.nextWater),
-    DOCKED_STATE,
-    true,
+    withCustomBlockState(
+      withAspersoriumWater(originalPermutation, resolution.nextWater),
+      DOCKED_STATE,
+      true,
+    ),
+    COSMETIC_STATE,
+    resolveCosmetic(itemState.cosmeticId).index,
   );
   try {
     setDockedSnapshot(dimensionId, block.location, snapshot);
@@ -294,7 +299,11 @@ function undockItem(player: Player, block: Block): void {
   }
   const restoredItem = snapshot === undefined ? createAspergillum(0) : restoreDockedAspergillum(snapshot);
   const originalPermutation = block.permutation;
-  const updatedPermutation = withCustomBlockState(originalPermutation, DOCKED_STATE, false);
+  const updatedPermutation = withCustomBlockState(
+    withCustomBlockState(originalPermutation, DOCKED_STATE, false),
+    COSMETIC_STATE,
+    0,
+  );
   try {
     block.setPermutation(updatedPermutation);
     if (snapshot !== undefined) deleteDockedSnapshot(dimensionId, block.location);

@@ -107,6 +107,7 @@ function analyzeUvSafety(bones = []) {
 }
 
 function displayName(identifier, source) {
+  if (identifier.includes('sacristan_table')) return 'Mesa do sacristão';
   if (identifier.includes('aspersorium')) return 'Caldeirinha';
   if (identifier.includes('aspergillum')) return 'Aspersório';
   return path.basename(source, '.geo.json').replaceAll('.', ' ');

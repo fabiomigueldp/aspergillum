@@ -8,7 +8,29 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
-## v1.0.20 — docking parcial conservativo — implementada; QA físico pendente
+## v1.1.0 — Mesa do Sacristão e personalização — implementada; QA físico pendente
+
+Escopo fechado:
+
+- adicionar um bloco de trabalho coerente com sacristias e igrejas: madeira escura, veludo verde, ferragens discretas, gaveta frontal e dezesseis rotações estáveis;
+- acomodar o ItemStack exato sobre a mesa, preservando cargas, identidade, nome, schema e propriedades customizadas por snapshot persistente;
+- oferecer interface nativa reativa com três perfis de aspersão, três metais, três empunhaduras, restauração clássica e conclusão/retirada;
+- tornar toda configuração e demonstração gratuita; a mesa é fabricável, mas nenhuma escolha consome ingrediente, água ou carga;
+- manter `standard` idêntico à 1.0.20 e adicionar `processional`/`contained` sem alterar economia, seis pulsos ou janela de release;
+- gerar nove itens/attachables/aparências de composição a partir de um catálogo semântico único;
+- preservar o ID clássico, UUIDs, binding, geometry `1.16.0`, poses, snapshots, locks, rollback, áudio e VFX aprovados;
+- usar `@minecraft/server-ui` `2.1.0` estável no manifest e `@minecraft/common` `1.3.0` somente no toolchain npm, sem JSON UI customizado ou APIs preview.
+
+Gate de saída:
+
+- os nove acabamentos e três perfis aplicam imediatamente e persistem após retirar, reload, quebra e reentrada;
+- fechar a UI deixa o item exposto; concluir o retira; inventário cheio usa drop seguro; nenhuma rota duplica ou perde o item;
+- demonstração produz seis gotas, respeita cooldown local e não muda água, carga, inventário ou cooldown real;
+- dois jogadores não editam a mesma mesa, e cleanup ocorre em morte, saída, dimensão e quebra;
+- mesa vazia/ocupada, dezesseis rotações, clássico/Vibrant Visuals e UI em `pt_BR`/`en_US` passam no pacote final;
+- regressão completa da 1.0.20 validada: carga 4/16, docking parcial, animação, 36 gotas/seis pulsos, áudio, identidade e Content Log.
+
+## v1.0.20 — docking parcial conservativo — implementada e validada em jogo
 
 Escopo fechado:
 

@@ -41,7 +41,9 @@ Do not install or use an unrelated browser automation path for this workflow; th
 | `aspergillum` | Standalone aspergillum geometry | Neutral model pose |
 | `aspersorium` | Aspersorium without the resting aspergillum | Full water |
 | `docked` | Aspersorium with the resting aspergillum | Full water |
-| `all` | All three subjects | Subject defaults |
+| `table` | Sacristan table without the resting aspergillum | Empty work surface |
+| `table-docked` | Sacristan table with the resting aspergillum | Classic finish |
+| `all` | All five subjects | Subject defaults |
 
 The nine default views are `front`, `front-right`, `right`, `back-right`, `back`, `left`, `front-left`, `top`, and `bottom`. Their directions are fixed in `viewer-3d/src/shared/capture-contract.js`.
 
@@ -108,7 +110,11 @@ out/model-captures/<run>/
 │   └── contact-sheet.png
 ├── aspersorium/
 │   └── ...
-└── docked/
+├── docked/
+│   └── ...
+├── table/
+│   └── ...
+└── table-docked/
     └── ...
 ```
 

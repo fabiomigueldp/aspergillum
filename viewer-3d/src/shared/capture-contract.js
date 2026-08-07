@@ -20,6 +20,20 @@ export const CAPTURE_SUBJECTS = Object.freeze({
     docked: true,
     neutralPose: false,
   }),
+  table: Object.freeze({
+    id: 'table',
+    label: 'Mesa do sacristão',
+    modelId: 'blocks__sacristan_table',
+    docked: false,
+    neutralPose: false,
+  }),
+  'table-docked': Object.freeze({
+    id: 'table-docked',
+    label: 'Mesa do sacristão com aspersório',
+    modelId: 'blocks__sacristan_table',
+    docked: true,
+    neutralPose: false,
+  }),
 });
 
 export const CAPTURE_VIEWS = Object.freeze([

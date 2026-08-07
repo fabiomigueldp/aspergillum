@@ -21,7 +21,7 @@ Uso:
   npm run capture -- [opções]
 
 Opções:
-  --subject <id,...>  aspergillum, aspersorium, docked ou all (padrão: all)
+  --subject <id,...>  aspergillum, aspersorium, docked, table, table-docked ou all
   --views <id,...>    subconjunto/ordem de vistas (padrão: as 9 vistas)
   --output <pasta>    destino (padrão: ../out/model-captures/<timestamp>)
   --size <px>         resolução quadrada de cada PNG, 256..2048 (padrão: 640)

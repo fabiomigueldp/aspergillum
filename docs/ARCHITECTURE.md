@@ -19,9 +19,10 @@ O servidor é autoritativo para carga, água, cooldown e permissões. Resource P
 ## Identificadores e compatibilidade
 
 - Namespace: `aspergillum`.
-- Item: `aspergillum:aspergillum`.
-- Bloco: `aspergillum:aspersorium`.
-- Block states: `aspergillum:water_base`, `aspergillum:water_offset`, `aspergillum:has_aspergillum`, `aspergillum:rotation`.
+- Item clássico: `aspergillum:aspergillum`; oito variantes usam `aspergillum:aspergillum_<metal>_<grip>`.
+- Blocos: `aspergillum:aspersorium` e `aspergillum:sacristan_table`.
+- States da caldeirinha: `aspergillum:water_base`, `aspergillum:water_offset`, `aspergillum:has_aspergillum`, `aspergillum:cosmetic`, `aspergillum:rotation`.
+- States da mesa: `aspergillum:table_has_aspergillum`, `aspergillum:table_cosmetic`, `aspergillum:table_rotation`.
 - Item properties: `aspergillum:charges`, `aspergillum:schema_version`, `aspergillum:instance_id`, `aspergillum:cosmetic_id`, `aspergillum:spray_profile_id`.
 - World properties: shards `aspergillum:docked_<dimensão>_<chunkX>_<chunkZ>` do registry persistente.
 - UUIDs, identifiers públicos e states publicados permanecem estáveis.
@@ -34,12 +35,14 @@ src/
 ├── bootstrap/main.ts
 ├── application/
 │   ├── aspersorium.ts
+│   ├── sacristan-table.ts
 │   └── sprinkle.ts
 ├── domain/
 │   ├── aspergillum.ts
 │   ├── aspersorium-water.ts
 │   ├── cone.ts
 │   ├── docking.ts
+│   ├── customization.ts
 │   ├── rotation.ts
 │   └── spray-profile.ts
 ├── infrastructure/
@@ -48,11 +51,14 @@ src/
 │   ├── docked-item-registry.ts
 │   ├── game-mode-policy.ts
 │   ├── item-state.ts
+│   ├── item-variants.ts
+│   ├── customization-session.ts
 │   ├── loading-session.ts
 │   ├── minecraft-transaction.ts
 │   └── sprinkle-session.ts
 └── presentation/
     ├── animation-coordinator.ts
+    ├── customization-menu.ts
     ├── messaging.ts
     ├── sound-coordinator.ts
     └── wet-feedback.ts
@@ -133,6 +139,18 @@ O commit no tick 10 coincide com a fase de imersão da animação one-shot. A fa
 
 Partículas visuais permanecem independentes de qualquer cone lógico de gameplay futuro.
 
+## Fluxo de personalização 1.1.0
+
+1. Usar o aspersório numa Mesa do Sacristão livre captura e remove o ItemStack exato, grava um snapshot no mesmo registry persistente e publica o estado visual ocupado.
+2. Uma sessão exclusiva reserva jogador e coordenada; outro jogador recebe feedback de mesa ocupada, sem mutação.
+3. `CustomForm` recebe observáveis para perfil, metal e empunhadura. Cada mudança revalida jogador, distância, dimensão, bloco, sessão e snapshot antes de regravar a configuração.
+4. A troca cosmética seleciona um dos nove IDs de item/attachable, mas preserva `instance_id`, cargas, schema, `nameTag` e propriedades dinâmicas.
+5. A demonstração emite seis gotas cosméticas próximas à mesa, limitada por cooldown local. Ela não toca em carga, água, cooldown autoritativo ou inventário.
+6. **Concluir e retirar** reconstrói o item configurado e só remove o snapshot depois da entrega/drop bem-sucedido. Fechar o formulário mantém o item exposto na mesa.
+7. Quebra, morte, saída, mudança de dimensão e bloco substituído liberam a sessão; a quebra recupera o snapshot com rollback defensivo.
+
+A UI é apresentação e não é autoridade de estado. `@minecraft/server-ui` `2.1.0` é módulo estável do manifest; `@minecraft/common` `1.3.0` é somente a dependência npm/tipos correspondente e não pode aparecer no manifest. Não há JSON UI customizado, imagem preview nem polling por `runInterval`. O contrato visual e de interação está em [Mesa do Sacristão](SACRISTAN_TABLE_DESIGN_CONTRACT.md).
+
 ## Attachable e animação
 
 O contrato atual e os valores numéricos estão em [Contrato visual](VISUAL_CONTRACT.md). A v1.0.15 adiciona duas camadas sem alterar `aspergillum_bound`:
@@ -151,7 +169,7 @@ O controller usa a categoria de cooldown válida como ponte visual. Tentativa va
 
 `assets-src/models/aspergillum.model.json` é a fonte humana do attachable. Ela preserva bones, pivôs, origins, sizes, binding e locators, mas acrescenta somente em produção um nome e uma superfície semântica para cada cubo. `tools/generate-assets.mjs` remove esses dois campos, calcula seis faces explícitas em densidade de dois texels por unidade, arredonda cada dimensão UV por `ceil` com mínimo de um texel, empacota ilhas sem sobreposição com padding e emite em conjunto a geometria distribuída e os mapas color/normal/MER `128 × 128`.
 
-`assets-src/models/aspersorium.model.json` é a fonte humana do bloco estático. Durante a geração, os dez cubos de `handle`/`sprinkler_head` e suas ilhas já empacotadas são transladados para o bone `resting_aspergillum`; color, normal e MER do item são copiados para uma região reservada do atlas `256 × 256` da caldeirinha. Assim, o estado acomodado não possui uma segunda malha artística independente.
+`assets-src/models/aspersorium.model.json` e `assets-src/models/sacristan_table.model.json` são fontes humanas dos blocos estáticos. Durante a geração, os dez cubos de `handle`/`sprinkler_head` e suas ilhas já empacotadas são transladados para o bone `resting_aspergillum`; color, normal e MER da variante são copiados para uma região reservada dos atlas `256 × 256`. Assim, nenhum estado acomodado possui uma segunda malha artística independente.
 
 Esse limite evita três classes de drift: geometria fracionária com Box UV que colapsa no runtime, mapas PBR que deixam de corresponder ao color map e uma réplica acomodada que deixa de corresponder ao item. A silhueta continua autorada em unidades de modelo; a resolução da face é uma decisão independente do atlas. O validador compara origem/tamanho da fonte e do pack, fiscaliza as seis faces, bounds, inteiros, footprints, sobreposição e paridade completa entre item e composição.
 
@@ -177,7 +195,9 @@ O bridge não é um segundo leque e não substitui o emissor matemático. Não r
 
 Antes da colocação, `beforeOnPlayerPlace` converte yaw em 16 setores e escolhe uma geometria pré-rotacionada. Isso evita traits experimentais. O bloco possui quatro níveis de água e variante visual ocupada.
 
-O reservatório mantém `0..16` unidades lógicas exatas. A infraestrutura usa um codec radix-9: `water_base` vale `0` ou `9`, `water_offset` vale `0..8`, e a quantidade é a soma normalizada. Isso representa dezessete quantidades com apenas dezoito pares e 576 combinações totais do bloco, sem registry externo ou state acima do limite runtime. Application lê e grava somente por `readAspersoriumWater`/`withAspersoriumWater`; as duas parcelas entram na mesma permutação antes de uma única escrita. A capacidade do item (`4`) e a capacidade do bloco (`16`) têm constantes e normalizadores distintos. O docking transfere somente o que cabe, preserva o restante no snapshot V2 e conserva exatamente `água + cargas`; snapshots V1 migram para carga zero. A ocupação booleana governa apenas a aparência, enquanto o registry persistente por dimensão/chunk preserva o item real e futuras variantes. Consulte [Estado e concorrência](STATE_AND_CONCURRENCY.md).
+O reservatório mantém `0..16` unidades lógicas exatas. A infraestrutura usa um codec radix-9: `water_base` vale `0` ou `9`, `water_offset` vale `0..8`, e a quantidade é a soma normalizada. Isso representa dezessete quantidades com apenas dezoito pares; ocupação, nove cosméticos e dezesseis rotações elevam o espaço publicado da caldeirinha de 576 para 5.184 combinações, mantendo cada state abaixo do limite runtime de dezesseis valores. Application lê e grava somente por `readAspersoriumWater`/`withAspersoriumWater`; as duas parcelas entram na mesma permutação antes de uma única escrita. A capacidade do item (`4`) e a capacidade do bloco (`16`) têm constantes e normalizadores distintos. O docking transfere somente o que cabe, preserva o restante no snapshot V2 e conserva exatamente `água + cargas`; snapshots V1 migram para carga zero. A ocupação booleana governa apenas a aparência, enquanto o registry persistente por dimensão/chunk preserva o item real e futuras variantes. Consulte [Estado e concorrência](STATE_AND_CONCURRENCY.md).
+
+A Mesa do Sacristão possui `2 × 9 × 16 = 288` combinações. O índice cosmético é apenas projeção visual do snapshot; não substitui o `cosmeticId` persistido no item. Bloco colocado em revisão anterior não existe, e states ausentes/cosméticos legados da caldeirinha resolvem para índice `0`, a aparência clássica.
 
 ## Schema e inicialização
 
@@ -185,7 +205,7 @@ O schema atual é 3. Itens brutos e schemas 0/1/2 são normalizados em todos os 
 
 ## Perfis e extensibilidade
 
-O comportamento do spray está externalizado em `SprayProfile`. O perfil `standard` registra quantidade, pulsos, janela, velocidades, dispersão, origem, steering e escala. Cosmético (`cosmeticId`) e regulagem (`sprayProfileId`) continuam IDs separados na evolução do schema.
+O comportamento do spray está externalizado em `SprayProfile`. `standard`, `processional` e `contained` registram quantidade, pulsos, janela, velocidades, dispersão, origem, steering e escala. Todos congelam o perfil normalizado dentro da `SprinkleSession`, impedindo que uma edição concorrente altere uma rajada já iniciada. Cosmético (`cosmeticId`) e regulagem (`sprayProfileId`) continuam IDs separados na evolução do schema.
 
 ## Dependências fixadas
 
@@ -195,5 +215,7 @@ O comportamento do spray está externalizado em `SprayProfile`. O perfil `standa
 | Manifest | `2` |
 | Geometry attachable | `1.16.0` |
 | Script API | `@minecraft/server` `2.9.0` |
+| UI estável | `@minecraft/server-ui` `2.1.0` |
+| Tipos/peer npm da UI | `@minecraft/common` `1.3.0` (fora do manifest) |
 | TypeScript | `5.9.x` |
 | Creator Tools | `0.17.7` |

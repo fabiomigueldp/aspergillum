@@ -14,7 +14,7 @@ import {
   steerDirection,
   transportSprayBasis,
 } from "../domain/cone";
-import { STANDARD_SPRAY_PROFILE } from "../domain/spray-profile";
+import { resolveSprayProfile } from "../domain/spray-profile";
 import { getActionLease } from "../infrastructure/action-lease";
 import { DROPLET_PARTICLE, RELEASE_BRIDGE_PARTICLE } from "../infrastructure/constants";
 import { resolvePlayerPolicies } from "../infrastructure/game-mode-policy";
@@ -57,7 +57,7 @@ interface SprayFrame {
 }
 
 function computeSprayFrame(player: Player, session: SprinkleSession): SprayFrame {
-  const profile = STANDARD_SPRAY_PROFILE;
+  const profile = resolveSprayProfile(session.sprayProfileId);
   const targetDirection = player.getViewDirection();
   const steered = steerDirection(
     session.steeringDirection,
@@ -104,7 +104,7 @@ function emitWaterFrame(
     return;
   }
 
-  const profile = STANDARD_SPRAY_PROFILE;
+  const profile = resolveSprayProfile(session.sprayProfileId);
   const frame = suppliedFrame ?? computeSprayFrame(player, session);
 
   for (const dropletIndex of dropletIndicesForFrame(profile.dropletCount, profile.pulseCount, pulseIndex)) {
@@ -174,24 +174,26 @@ function commitSprinkleRelease(player: Player, session: SprinkleSession): void {
   emitAuthorizedTipBridge(player, releaseFrame);
   emitWaterFrame(player, session, 0, releaseFrame);
 
-  for (let pulseIndex = 1; pulseIndex < STANDARD_SPRAY_PROFILE.pulseCount; pulseIndex += 1) {
+  const profile = resolveSprayProfile(session.sprayProfileId);
+  for (let pulseIndex = 1; pulseIndex < profile.pulseCount; pulseIndex += 1) {
     trackSprinkleRun(session, system.runTimeout(() => emitWaterFrame(player, session, pulseIndex), pulseIndex));
   }
 }
 
 function scheduleSprinkle(player: Player, session: SprinkleSession): void {
+  const profile = resolveSprayProfile(session.sprayProfileId);
   trackSprinkleRun(
     session,
     system.runTimeout(
       () => commitSprinkleRelease(player, session),
-      STANDARD_SPRAY_PROFILE.releaseDelayTicks,
+      profile.releaseDelayTicks,
     ),
   );
   trackSprinkleRun(
     session,
     system.runTimeout(
       () => completeSprinkleSession(session),
-      STANDARD_SPRAY_PROFILE.actionDurationTicks,
+      profile.actionDurationTicks,
     ),
   );
 }
@@ -223,7 +225,8 @@ export function trySprinkle(player: Player): void {
   const now = system.currentTick;
   if (!canSprinkle(lastSprinkleTick.get(player.id), now)) return;
 
-  const preview = resolveSprinkle(readAspergillumState(item), policies.chargePolicy);
+  const itemState = readAspergillumState(item);
+  const preview = resolveSprinkle(itemState, policies.chargePolicy);
   if (!preview.allowed) {
     lastSprinkleTick.set(player.id, now);
     audioPort.emit(player, { kind: "dry", actionId: `${player.id}:${now}:dry` });
@@ -237,6 +240,7 @@ export function trySprinkle(player: Player): void {
     itemInstanceId,
     slot: player.selectedSlotIndex,
     dimensionId: player.dimension.id,
+    sprayProfileId: resolveSprayProfile(itemState.sprayProfileId).id,
     steeringDirection: initialDirection,
     basis: createSprayBasis(initialDirection),
   });

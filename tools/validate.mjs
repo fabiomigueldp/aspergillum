@@ -34,6 +34,10 @@ for (const packRoot of packRoots) {
 const behaviorManifest = JSON.parse(fs.readFileSync(path.join(packRoots[0], "manifest.json"), "utf8"));
 const resourceManifest = JSON.parse(fs.readFileSync(path.join(packRoots[1], "manifest.json"), "utf8"));
 const packageMetadata = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+const customizationCatalog = JSON.parse(
+  fs.readFileSync(path.join(root, "assets-src", "customization", "catalog.json"), "utf8"),
+);
+const cosmetics = customizationCatalog.cosmetics ?? [];
 const uuids = [
   behaviorManifest.header.uuid,
   ...behaviorManifest.modules.map((module) => module.uuid),
@@ -46,6 +50,12 @@ if (!behaviorManifest.dependencies.some((dependency) => dependency.uuid === reso
 }
 if (!behaviorManifest.dependencies.some((dependency) => dependency.module_name === "@minecraft/server" && dependency.version === "2.9.0")) {
   errors.push("Behavior Pack must pin @minecraft/server 2.9.0");
+}
+if (!behaviorManifest.dependencies.some((dependency) => dependency.module_name === "@minecraft/server-ui" && dependency.version === "2.1.0")) {
+  errors.push("Behavior Pack must pin stable @minecraft/server-ui 2.1.0");
+}
+if (behaviorManifest.dependencies.some((dependency) => dependency.module_name === "@minecraft/common")) {
+  errors.push("@minecraft/common is an npm type dependency and must not be declared as a Bedrock manifest module");
 }
 for (const [label, manifest] of [["Behavior", behaviorManifest], ["Resource", resourceManifest]]) {
   if (JSON.stringify(manifest.header.min_engine_version) !== JSON.stringify([1, 26, 40])) {
@@ -95,6 +105,7 @@ if (!Array.isArray(rotationState) || rotationState.length !== 16) {
 const blockStates = block?.description?.states ?? {};
 const waterBaseState = blockStates["aspergillum:water_base"];
 const waterOffsetState = blockStates["aspergillum:water_offset"];
+const cosmeticState = blockStates["aspergillum:cosmetic"];
 if (JSON.stringify(waterBaseState) !== JSON.stringify([0, 9])) {
   errors.push("Aspersorium water_base must use the compact numeric bases 0 and 9");
 }
@@ -103,6 +114,9 @@ if (JSON.stringify(waterOffsetState) !== JSON.stringify(Array.from({ length: 9 }
 }
 if ("aspergillum:water_level" in blockStates) {
   errors.push("Aspersorium must not restore the invalid seventeen-value water_level state");
+}
+if (JSON.stringify(cosmeticState) !== JSON.stringify(cosmetics.map(({ index }) => index))) {
+  errors.push("Aspersorium cosmetic state must match the authored customization catalog");
 }
 for (const [stateName, values] of Object.entries(blockStates)) {
   if (Array.isArray(values) && values.length > 16) {
@@ -113,8 +127,8 @@ const blockStateSpace = Object.values(blockStates).reduce(
   (product, values) => product * (Array.isArray(values) ? values.length : 1),
   1,
 );
-if (blockStateSpace !== 576) {
-  errors.push(`Aspersorium must expose the reviewed 576-state permutation space, found ${blockStateSpace}`);
+if (blockStateSpace !== 5184) {
+  errors.push(`Aspersorium must expose the reviewed 5184-state permutation space, found ${blockStateSpace}`);
 }
 const expectedWaterVisibility = {
   water_low: "q.block_state('aspergillum:water_base') == 0 && q.block_state('aspergillum:water_offset') >= 1 && q.block_state('aspergillum:water_offset') <= 4",
@@ -151,6 +165,19 @@ if (renderMethods.size > 1) {
 if (block?.components?.["minecraft:movable"]?.movement_type !== "immovable") {
   errors.push("Persistent docked metadata requires the Aspersorium to remain immovable");
 }
+const cosmeticMaterialPermutations = new Map(
+  block?.permutations
+    ?.filter((permutation) => permutation.condition.includes("aspergillum:cosmetic"))
+    .map((permutation) => [
+      Number(permutation.condition.match(/==\s*(\d+)/)?.[1]),
+      permutation.components?.["minecraft:material_instances"]?.["*"]?.texture,
+    ]),
+);
+for (const cosmetic of cosmetics.slice(1)) {
+  if (cosmeticMaterialPermutations.get(cosmetic.index) !== `aspersorium_${cosmetic.id}`) {
+    errors.push(`Aspersorium is missing material permutation for cosmetic ${cosmetic.id}`);
+  }
+}
 const dockedLoot = JSON.parse(
   fs.readFileSync(path.join(packRoots[0], "loot_tables", "blocks", "aspersorium_docked.loot.json"), "utf8"),
 );
@@ -158,7 +185,7 @@ if (JSON.stringify(dockedLoot).includes("aspergillum:aspergillum")) {
   errors.push("Docked loot must not duplicate the script-recovered metadata-bearing aspergillum");
 }
 
-for (const recipeName of ["aspergillum.recipe.json", "aspersorium.recipe.json"]) {
+for (const recipeName of ["aspergillum.recipe.json", "aspersorium.recipe.json", "sacristan_table.recipe.json"]) {
   const recipe = JSON.parse(fs.readFileSync(path.join(packRoots[0], "recipes", recipeName), "utf8"));
   const unlock = recipe["minecraft:recipe_shaped"]?.unlock;
   if (!Array.isArray(unlock) || unlock.length === 0) errors.push(`${recipeName} requires unlock data`);
@@ -170,6 +197,85 @@ if (aspersoriumRecipe?.key?.C?.item !== "minecraft:chain") {
   errors.push("Aspersorium recipe must remain distinct from the vanilla cauldron recipe");
 }
 
+if (cosmetics.length !== 9
+  || cosmetics[0]?.id !== "classic"
+  || JSON.stringify(cosmetics.map(({ index }) => index)) !== JSON.stringify(Array.from({ length: 9 }, (_, index) => index))) {
+  errors.push("Customization catalog must preserve classic plus eight stable cosmetic combinations");
+}
+
+const tableDefinition = JSON.parse(
+  fs.readFileSync(path.join(packRoots[0], "blocks", "sacristan_table.block.json"), "utf8"),
+);
+const tableBlock = tableDefinition["minecraft:block"];
+const tableStates = tableBlock?.description?.states ?? {};
+if (JSON.stringify(tableStates["aspergillum:table_has_aspergillum"]) !== JSON.stringify([false, true])) {
+  errors.push("Sacristan table must expose its stable occupied state");
+}
+if (JSON.stringify(tableStates["aspergillum:table_cosmetic"]) !== JSON.stringify(cosmetics.map(({ index }) => index))) {
+  errors.push("Sacristan table cosmetic state must match the authored catalog");
+}
+if (JSON.stringify(tableStates["aspergillum:table_rotation"])
+  !== JSON.stringify(Array.from({ length: 16 }, (_, index) => index))) {
+  errors.push("Sacristan table must expose all sixteen stable rotations");
+}
+const tableStateSpace = Object.values(tableStates).reduce(
+  (product, values) => product * (Array.isArray(values) ? values.length : 1),
+  1,
+);
+if (tableStateSpace !== 288) {
+  errors.push(`Sacristan table must expose the reviewed 288-state space, found ${tableStateSpace}`);
+}
+if (tableBlock?.components?.["minecraft:movable"]?.movement_type !== "immovable") {
+  errors.push("Persistent customization metadata requires the Sacristan table to remain immovable");
+}
+if (tableBlock?.components?.["aspergillum:sacristan_table_interaction"] === undefined) {
+  errors.push("Sacristan table requires its stable custom interaction component");
+}
+const tableBaseGeometry = tableBlock?.components?.["minecraft:geometry"];
+if (tableBaseGeometry?.identifier !== "geometry.aspergillum.sacristan_table.rotation_0"
+  || tableBaseGeometry?.bone_visibility?.resting_aspergillum
+    !== "q.block_state('aspergillum:table_has_aspergillum') == true") {
+  errors.push("Sacristan table must hide and reveal its resting aspergillum through the occupied state");
+}
+const tableRotations = new Set(
+  tableBlock?.permutations
+    ?.filter((permutation) => permutation.condition.includes("aspergillum:table_rotation"))
+    .map((permutation) => permutation.components?.["minecraft:geometry"]?.identifier),
+);
+for (let rotationIndex = 1; rotationIndex < 16; rotationIndex += 1) {
+  if (!tableRotations.has(`geometry.aspergillum.sacristan_table.rotation_${rotationIndex}`)) {
+    errors.push(`Missing stable Sacristan table rotation ${rotationIndex}`);
+  }
+}
+const tableCosmeticMaterials = new Map(
+  tableBlock?.permutations
+    ?.filter((permutation) => permutation.condition.includes("aspergillum:table_cosmetic"))
+    .map((permutation) => [
+      Number(permutation.condition.match(/==\s*(\d+)/)?.[1]),
+      permutation.components?.["minecraft:material_instances"]?.["*"]?.texture,
+    ]),
+);
+for (const cosmetic of cosmetics.slice(1)) {
+  if (tableCosmeticMaterials.get(cosmetic.index) !== `sacristan_table_${cosmetic.id}`) {
+    errors.push(`Sacristan table is missing material permutation for cosmetic ${cosmetic.id}`);
+  }
+}
+const occupiedTableLoot = JSON.parse(
+  fs.readFileSync(path.join(packRoots[0], "loot_tables", "blocks", "sacristan_table_occupied.loot.json"), "utf8"),
+);
+if (JSON.stringify(occupiedTableLoot).includes("aspergillum:aspergillum")) {
+  errors.push("Occupied Sacristan table loot must not duplicate the script-recovered aspergillum");
+}
+const tableGeometry = JSON.parse(
+  fs.readFileSync(path.join(packRoots[1], "models", "blocks", "sacristan_table.geo.json"), "utf8"),
+)["minecraft:geometry"]?.[0];
+if (tableGeometry?.description?.texture_width !== 256 || tableGeometry?.description?.texture_height !== 256) {
+  errors.push("Sacristan table atlas must reserve a 256x256 cosmetic presentation surface");
+}
+if (!(tableGeometry?.bones ?? []).some((bone) => bone.name === "resting_aspergillum" && bone.cubes?.length === 10)) {
+  errors.push("Sacristan table must present the complete authored aspergillum silhouette");
+}
+
 const attachableSource = fs.readFileSync(
   path.join(packRoots[1], "attachables", "aspergillum.attachable.json"),
   "utf8",
@@ -177,6 +283,30 @@ const attachableSource = fs.readFileSync(
 if (/q\.is_swinging/.test(attachableSource)) errors.push("Attachable uses unsupported q.is_swinging");
 if (!attachableSource.includes("controller.render.aspergillum.held")) {
   errors.push("Attachable must use its dedicated render controller");
+}
+for (const cosmetic of cosmetics) {
+  const suffix = cosmetic.id === "classic" ? "" : `_${cosmetic.id}`;
+  const expectedIdentifier = cosmetic.id === "classic"
+    ? "aspergillum:aspergillum"
+    : `aspergillum:aspergillum_${cosmetic.id}`;
+  const variantItem = JSON.parse(
+    fs.readFileSync(path.join(packRoots[0], "items", `aspergillum${suffix}.item.json`), "utf8"),
+  )?.["minecraft:item"];
+  if (variantItem?.description?.identifier !== expectedIdentifier
+    || variantItem?.components?.["minecraft:icon"]?.textures?.default !== `aspergillum${suffix}`) {
+    errors.push(`Generated item definition diverges for cosmetic ${cosmetic.id}`);
+  }
+  if (cosmetic.id !== "classic" && variantItem?.description?.menu_category !== undefined) {
+    errors.push(`Cosmetic item ${cosmetic.id} must remain hidden from the creative catalog`);
+  }
+  const variantAttachable = JSON.parse(
+    fs.readFileSync(path.join(packRoots[1], "attachables", `aspergillum${suffix}.attachable.json`), "utf8"),
+  )?.["minecraft:attachable"]?.description;
+  if (variantAttachable?.identifier !== expectedIdentifier
+    || variantAttachable?.textures?.default !== `textures/entity/aspergillum${suffix}`
+    || variantAttachable?.geometry?.default !== "geometry.aspergillum.held") {
+    errors.push(`Generated attachable diverges for cosmetic ${cosmetic.id}`);
+  }
 }
 
 const heldGeometry = JSON.parse(
@@ -591,14 +721,38 @@ if (!compiledScript.includes("onUseOn")
   || !compiledScript.includes("claimAspersoriumInteraction")) {
   errors.push("Compiled docking input must route stable item use-on and deduplicate it against block interaction");
 }
+for (const tableContract of [
+  "aspergillum:sacristan_table",
+  "aspergillum:sacristan_table_interaction",
+  "CustomForm",
+  "ObservableNumber",
+  "showCustomizationMenu",
+  "acquireCustomizationSession",
+  "handleSacristanTableUse",
+]) {
+  if (!compiledScript.includes(tableContract)) {
+    errors.push(`Compiled customization contract is missing: ${tableContract}`);
+  }
+}
+if (compiledScript.includes("runInterval")) {
+  errors.push("Customization and preview flows must not introduce persistent polling intervals");
+}
 
 for (const locale of ["pt_BR", "en_US"]) {
   const lang = fs.readFileSync(path.join(packRoots[1], "texts", `${locale}.lang`), "utf8");
   for (const key of [
     "item.aspergillum.lore.charges",
+    "item.aspergillum.lore.profile",
+    "item.aspergillum.lore.appearance",
+    "item.aspergillum.lore.grip",
     "item.aspergillum.lore.instructions",
     "item.aspergillum.lore.docking",
     "item.aspergillum.lore.creative",
+    "ui.aspergillum.table.title",
+    "ui.aspergillum.table.spray.label",
+    "ui.aspergillum.table.metal.label",
+    "ui.aspergillum.table.grip.label",
+    "ui.aspergillum.table.finish",
   ]) {
     if (!lang.includes(`${key}=`)) errors.push(`${locale}.lang is missing localized lore key ${key}`);
   }
@@ -613,8 +767,11 @@ const required = [
   "packs/resource/textures/entity/aspergillum_normal.png",
   "packs/resource/textures/entity/aspergillum_mer.png",
   "packs/resource/textures/blocks/aspersorium.png",
+  "packs/resource/textures/blocks/sacristan_table.png",
   "packs/resource/textures/particle/holy_water.png",
   "packs/resource/models/blocks/aspersorium.rotations.geo.json",
+  "packs/resource/models/blocks/sacristan_table.geo.json",
+  "packs/resource/models/blocks/sacristan_table.rotations.geo.json",
   "packs/resource/animations/aspergillum.action.animation.json",
   "packs/resource/animations/aspergillum.hold.animation.json",
   "packs/resource/animation_controllers/aspergillum.animation_controllers.json",
@@ -624,6 +781,17 @@ const required = [
   "packs/resource/render_controllers/aspergillum.render_controllers.json",
   "packs/resource/sounds/sound_definitions.json",
 ];
+for (const cosmetic of cosmetics) {
+  const suffix = cosmetic.id === "classic" ? "" : `_${cosmetic.id}`;
+  required.push(
+    `packs/resource/textures/items/aspergillum${suffix}.png`,
+    `packs/resource/textures/entity/aspergillum${suffix}.png`,
+    `packs/resource/textures/entity/aspergillum${suffix}_normal.png`,
+    `packs/resource/textures/entity/aspergillum${suffix}_mer.png`,
+    `packs/resource/textures/blocks/aspersorium${suffix}.png`,
+    `packs/resource/textures/blocks/sacristan_table${suffix}.png`,
+  );
+}
 for (const relative of required) if (!fs.existsSync(path.join(root, relative))) errors.push(`Missing generated asset: ${relative}`);
 
 const entityTexturePath = path.join(packRoots[1], "textures", "entity", "aspergillum.png");

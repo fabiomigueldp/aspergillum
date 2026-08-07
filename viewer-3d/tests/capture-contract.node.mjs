@@ -8,10 +8,18 @@ import {
   resolveCaptureViews,
 } from '../src/shared/capture-contract.js';
 
-test('exposes the three visual subjects used by the add-on', () => {
-  assert.deepEqual(Object.keys(CAPTURE_SUBJECTS), ['aspergillum', 'aspersorium', 'docked']);
+test('exposes all visual subjects used by the add-on', () => {
+  assert.deepEqual(Object.keys(CAPTURE_SUBJECTS), [
+    'aspergillum',
+    'aspersorium',
+    'docked',
+    'table',
+    'table-docked',
+  ]);
   assert.equal(CAPTURE_SUBJECTS.docked.modelId, CAPTURE_SUBJECTS.aspersorium.modelId);
   assert.equal(CAPTURE_SUBJECTS.docked.docked, true);
+  assert.equal(CAPTURE_SUBJECTS['table-docked'].modelId, CAPTURE_SUBJECTS.table.modelId);
+  assert.equal(CAPTURE_SUBJECTS['table-docked'].docked, true);
 });
 
 test('defines normalized cardinal, oblique, top and bottom capture directions', () => {

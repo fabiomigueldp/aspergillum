@@ -44,6 +44,17 @@
           13,
           14,
           15
+        ],
+        "aspergillum:cosmetic": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
         ]
       }
     },
@@ -52,6 +63,126 @@
         "condition": "q.block_state('aspergillum:has_aspergillum') == true",
         "components": {
           "minecraft:loot": "loot_tables/blocks/aspersorium_docked.loot.json"
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:cosmetic') == 1",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_silver_oxblood",
+              "render_method": "blend"
+            },
+            "water": {
+              "texture": "aspergillum_holy_water",
+              "render_method": "blend"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:cosmetic') == 2",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_silver_black",
+              "render_method": "blend"
+            },
+            "water": {
+              "texture": "aspergillum_holy_water",
+              "render_method": "blend"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:cosmetic') == 3",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_antique_chestnut",
+              "render_method": "blend"
+            },
+            "water": {
+              "texture": "aspergillum_holy_water",
+              "render_method": "blend"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:cosmetic') == 4",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_antique_oxblood",
+              "render_method": "blend"
+            },
+            "water": {
+              "texture": "aspergillum_holy_water",
+              "render_method": "blend"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:cosmetic') == 5",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_antique_black",
+              "render_method": "blend"
+            },
+            "water": {
+              "texture": "aspergillum_holy_water",
+              "render_method": "blend"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:cosmetic') == 6",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_gilded_chestnut",
+              "render_method": "blend"
+            },
+            "water": {
+              "texture": "aspergillum_holy_water",
+              "render_method": "blend"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:cosmetic') == 7",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_gilded_oxblood",
+              "render_method": "blend"
+            },
+            "water": {
+              "texture": "aspergillum_holy_water",
+              "render_method": "blend"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:cosmetic') == 8",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_gilded_black",
+              "render_method": "blend"
+            },
+            "water": {
+              "texture": "aspergillum_holy_water",
+              "render_method": "blend"
+            }
+          }
         }
       },
       {

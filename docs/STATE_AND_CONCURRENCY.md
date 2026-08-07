@@ -82,6 +82,8 @@ Semântica:
 
 `ActionLease` unifica a exclusão entre carregar e aspergir. Docking e undocking usam escrita defensiva própria porque são operações imediatas: snapshot, ItemStack e permutação são restaurados quando uma etapa lança erro.
 
+O `sprayProfileId` efetivo é resolvido e congelado na `SprinkleSession` no tick 0. Alterar o perfil posteriormente na Mesa do Sacristão só afeta a próxima ação; nenhuma rajada em andamento muda de quantidade, forma ou steering no meio do ciclo.
+
 ## Curvatura controlada
 
 A direção deve continuar respondendo à câmera entre pulsos. Isso é um recurso de controle, não um defeito. As garantias são:
@@ -126,6 +128,23 @@ O input do aspersório sobre o bloco possui duas portas estáveis que convergem 
 
 Ocupado com outro item na mão não retira nada; a interface solicita mão vazia. A loot table ocupada não fornece um aspersório genérico: `onBreak` restaura o snapshot, evitando duplicação e preservando metadados. Blocos ocupados legados sem snapshot recuperam um item V3 vazio como fallback compatível.
 
+## Mesa do Sacristão e sessões de personalização
+
+A mesa reutiliza o `DockedItemRegistry`, mas possui semântica própria de interação. O snapshot continua sendo a fonte autoritativa do item; `table_has_aspergillum` e `table_cosmetic` são projeções visuais.
+
+Uma `CustomizationSession` contém jogador, dimensão, coordenada e tick inicial. Os índices são mantidos em dois mapas, por jogador e por bloco, garantindo:
+
+- no máximo uma mesa aberta por jogador;
+- no máximo um editor por mesa;
+- rejeição imediata de segundo jogador;
+- liberação por fechamento, conclusão, retirada, quebra, morte, respawn, saída ou mudança de dimensão.
+
+Cada callback reativo revalida sessão corrente, validade/distância do jogador, dimensão, tipo/ocupação do bloco e existência do snapshot. A gravação preserva cargas, `instance_id`, `nameTag`, schema e todas as propriedades customizadas; só `cosmeticId` ou `sprayProfileId` muda. Se snapshot ou permutação falhar, o valor anterior é restaurado defensivamente.
+
+Fechar o formulário não retira o item nem descarta a configuração já aplicada: encerra apenas a sessão e deixa o aspersório exposto. **Concluir e retirar** primeiro recupera/entrega o item e então remove o snapshot. Agachar com mão vazia oferece uma rota de recuperação sem depender da UI. Loot de mesa ocupada nunca contém um aspersório genérico.
+
+A demonstração possui cooldown efêmero de vinte ticks por coordenada e emite somente seis partículas. Ela não chama a transação de aspersão, não cria `SprinkleSession`, não inicia `ActionLease`, não escreve ItemStack e não altera água/cooldown; é apresentação fail-soft.
+
 ## Schema 3 implementado
 
 | Entrada | Migração |
@@ -137,6 +156,8 @@ Ocupado com outro item na mão não retira nada; a interface solicita mão vazia
 | maior que 3 | não fazer downgrade; retornar compatibilidade futura |
 
 Estado V3 inclui `instanceId`, `charges`, `cosmeticId: "classic"` e `sprayProfileId: "standard"`. Lore usa `RawMessage` localizado e é regenerada a partir do estado, nunca tratada como fonte de verdade. Um schema maior que 3 é lido apenas para diagnóstico e bloqueado para operações mutáveis; o item não é regravado.
+
+Na 1.1.0, `classic` permanece associado ao ID histórico `aspergillum:aspergillum`. As oito combinações adicionais possuem IDs públicos próprios porque attachables não selecionam textura por dynamic property. Ao mudar acabamento, a infraestrutura reconstrói o ItemStack no ID correspondente e copia todos os metadados antes de gravar o estado V3. Valores cosméticos/perfis desconhecidos continuam normalizados para a apresentação clássica/standard em vez de quebrar mundos.
 
 ## Capacidade visual do reservatório
 
@@ -159,3 +180,5 @@ Quantidades `0..8` usam base `0`; quantidades `9..16` usam base `9` e offset `0.
 | `13..16` | `water_full` |
 
 Um balde define o reservatório como `16/16`. Cada carregamento completo transfere quatro unidades, de modo que uma caldeirinha cheia fornece exatamente quatro carregamentos. Não há migração de caldeirinhas já colocadas em revisões anteriores.
+
+A 1.1.0 adiciona `aspergillum:cosmetic ∈ {0..8}` à caldeirinha. O valor default `0` representa o visual clássico e mantém caldeirinhas já colocadas legíveis. O índice é escrito somente ao acomodar um item e volta a `0` na retirada. Essa adição eleva o espaço cartesiano total para `5.184`, mas nenhum state individual excede dezesseis valores.

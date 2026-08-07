@@ -16,6 +16,8 @@ import {
   type AspergillumMigration,
   type AspergillumState,
 } from "../domain/aspergillum";
+import { resolveCosmetic } from "../domain/customization";
+import { resolveSprayProfile } from "../domain/spray-profile";
 import {
   type DockedAspergillumSnapshot,
   type SerializedDynamicProperty,
@@ -28,6 +30,11 @@ import {
   SCHEMA_PROPERTY,
   SPRAY_PROFILE_ID_PROPERTY,
 } from "./constants";
+import {
+  aspergillumItemTypeForCosmetic,
+  cosmeticIdForAspergillumItemType,
+  isAspergillumItemType,
+} from "./item-variants";
 
 let instanceSequence = 0;
 
@@ -46,7 +53,8 @@ export function getAspergillumMigration(item: ItemStack): AspergillumMigration {
   return migrateAspergillumState({
     charges: item.getDynamicProperty(CHARGES_PROPERTY),
     schemaVersion: item.getDynamicProperty(SCHEMA_PROPERTY),
-    cosmeticId: item.getDynamicProperty(COSMETIC_ID_PROPERTY),
+    cosmeticId: item.getDynamicProperty(COSMETIC_ID_PROPERTY)
+      ?? cosmeticIdForAspergillumItemType(item.typeId),
     sprayProfileId: item.getDynamicProperty(SPRAY_PROFILE_ID_PROPERTY),
   });
 }
@@ -59,11 +67,27 @@ export function isAspergillumSchemaSupported(item: ItemStack): boolean {
   return getAspergillumMigration(item).status !== "future";
 }
 
-function loreFor(charges: number): RawMessage[] {
+function loreFor(state: AspergillumState): RawMessage[] {
+  const cosmetic = resolveCosmetic(state.cosmeticId);
+  const profile = resolveSprayProfile(state.sprayProfileId);
   return [
     {
       translate: "item.aspergillum.lore.charges",
-      with: [String(normalizeCharges(charges)), String(ASPERGILLUM_CAPACITY)],
+      with: [String(normalizeCharges(state.charges)), String(ASPERGILLUM_CAPACITY)],
+    },
+    {
+      rawtext: [
+        { translate: "item.aspergillum.lore.profile" },
+        { translate: `ui.aspergillum.profile.${profile.id}.name` },
+      ],
+    },
+    {
+      rawtext: [
+        { translate: "item.aspergillum.lore.appearance" },
+        { translate: `ui.aspergillum.metal.${cosmetic.metal}.name` },
+        { translate: "item.aspergillum.lore.grip" },
+        { translate: `ui.aspergillum.grip.${cosmetic.grip}.name` },
+      ],
     },
     { translate: "item.aspergillum.lore.instructions" },
     { translate: "item.aspergillum.lore.docking" },
@@ -75,13 +99,22 @@ export function writeAspergillumState(item: ItemStack, state: AspergillumState):
   if (state.schemaVersion > CURRENT_SCHEMA_VERSION) {
     throw new Error(`Unsupported future aspergillum schema ${state.schemaVersion}`);
   }
-  const updated = item.clone();
+  const targetTypeId = aspergillumItemTypeForCosmetic(state.cosmeticId);
+  const retargeted = item.typeId !== targetTypeId;
+  const updated = retargeted ? new ItemStack(targetTypeId, 1) : item.clone();
+  if (retargeted) {
+    for (const propertyId of item.getDynamicPropertyIds()) {
+      const value = item.getDynamicProperty(propertyId);
+      if (value !== undefined) updated.setDynamicProperty(propertyId, value);
+    }
+    if (item.nameTag !== undefined) updated.nameTag = item.nameTag;
+  }
   updated.setDynamicProperty(CHARGES_PROPERTY, normalizeCharges(state.charges));
   updated.setDynamicProperty(SCHEMA_PROPERTY, CURRENT_SCHEMA_VERSION);
   updated.setDynamicProperty(INSTANCE_ID_PROPERTY, readAspergillumInstanceId(item) ?? createInstanceId());
   updated.setDynamicProperty(COSMETIC_ID_PROPERTY, state.cosmeticId);
   updated.setDynamicProperty(SPRAY_PROFILE_ID_PROPERTY, state.sprayProfileId);
-  updated.setLore(loreFor(state.charges));
+  updated.setLore(loreFor(state));
   return updated;
 }
 
@@ -94,7 +127,7 @@ export function needsAspergillumInitialization(item: ItemStack): boolean {
     || storedCharges !== migration.state.charges
     || item.getDynamicProperty(COSMETIC_ID_PROPERTY) !== migration.state.cosmeticId
     || item.getDynamicProperty(SPRAY_PROFILE_ID_PROPERTY) !== migration.state.sprayProfileId
-    || item.getRawLore().length !== 4;
+    || item.getRawLore().length !== 6;
 }
 
 export function initializeAspergillum(item: ItemStack): ItemStack {
@@ -125,7 +158,7 @@ export function setMainhand(player: Player, item?: ItemStack): void {
 }
 
 export function isAspergillum(item: ItemStack | undefined): item is ItemStack {
-  return item?.typeId === ASPERGILLUM_ITEM;
+  return item !== undefined && isAspergillumItemType(item.typeId);
 }
 
 export function createAspergillum(charges = 0): ItemStack {
@@ -178,7 +211,7 @@ export function captureDockedAspergillum(item: ItemStack, remainingCharges: unkn
 }
 
 export function restoreDockedAspergillum(snapshot: DockedAspergillumSnapshot): ItemStack {
-  const item = new ItemStack(ASPERGILLUM_ITEM, 1);
+  const item = new ItemStack(aspergillumItemTypeForCosmetic(snapshot.cosmeticId), 1);
   item.setDynamicProperty(INSTANCE_ID_PROPERTY, snapshot.instanceId);
   for (const [propertyId, value] of Object.entries(snapshot.customProperties)) {
     if (typeof value === "object") {

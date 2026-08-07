@@ -9,6 +9,7 @@ export interface SprinkleSession {
   readonly itemInstanceId: string;
   readonly slot: number;
   readonly dimensionId: string;
+  readonly sprayProfileId: string;
   readonly startedAtTick: number;
   readonly leaseToken: string;
   readonly runIds: number[];

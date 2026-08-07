@@ -26,6 +26,10 @@ export const ACTION_MESSAGES = {
   loadingCancelled: "message.aspergillum.loading_cancelled",
   registryRecoveryRequired: "message.aspergillum.registry_recovery_required",
   registryRepairRequired: "message.aspergillum.registry_repair_required",
+  tableBusy: "message.aspergillum.table_busy",
+  tableDocked: "message.aspergillum.table_docked",
+  tableHint: "message.aspergillum.table_hint",
+  tableUndocked: "message.aspergillum.table_undocked",
   undocked: "message.aspergillum.undocked",
   undockingCancelled: "message.aspergillum.undocking_cancelled",
 } as const;

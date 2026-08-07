@@ -4,6 +4,27 @@
 
 Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
 
+## Gate da Mesa do Sacristão — v1.1.0
+
+- [ ] fechar o jogo, remover revisões anteriores e importar somente `Aspergillum-1.1.0.mcaddon` com manifests `[1,1,0]`;
+- [ ] confirmar Content Log sem erro/warning de `@minecraft/server-ui`, `@minecraft/common`, custom component, formulário, item, attachable, geometria, textura, tradução ou block state;
+- [ ] fabricar/obter a Mesa do Sacristão, colocá-la nos dezesseis setores e confirmar frente da gaveta, colisão, seleção, som de madeira e impossibilidade de movimento por pistão;
+- [ ] usar um aspersório nomeado, com `instance_id`, carga parcial e propriedade customizada; ele sai da mão, aparece sobre o veludo e abre a UI exatamente uma vez;
+- [ ] confirmar hierarquia da UI: instrumento/cargas, perfil, demonstração, acabamento, restauração, status e ação final; nenhum texto fica cortado em `pt_BR`/`en_US`;
+- [ ] alternar `Clássico`, `Processional` e `Contido`; a seleção aplica imediatamente, persiste na lore e só afeta a próxima rajada;
+- [ ] combinar os três metais com as três empunhaduras; as nove aparências atualizam o item sobre a mesa, o ícone, a mão, a terceira pessoa e a composição na caldeirinha;
+- [ ] confirmar que prata clássica + couro castanho reproduz a aparência 1.0.20 e que **Restaurar configuração clássica** volta a `standard/classic`;
+- [ ] acionar demonstração repetidamente: no máximo uma a cada vinte ticks, seis gotas cosméticas próximas da mesa, nenhuma carga/água/cooldown/item consumido;
+- [ ] fechar a UI: configuração já aplicada persiste e o item permanece na mesa; reabrir mostra os valores atuais;
+- [ ] **Concluir e retirar** devolve exatamente o mesmo item e libera a mesa; com inventário cheio, o item é dropado uma vez sem apagar o snapshot antes da recuperação;
+- [ ] agachar com mão vazia recupera o item sem depender da UI; outro item na mão não retira;
+- [ ] quebrar mesa ocupada, recarregar mundo e sair/reentrar recuperam/preservam exatamente um item, sem duplicação da loot table;
+- [ ] dois jogadores tentam editar a mesma mesa: somente um abre/edita; morte, respawn, logout, troca de dimensão e quebra liberam o lock;
+- [ ] acomodar cada aparência na caldeirinha preserva cargas restantes e projeta o acabamento correto; retirar volta o state cosmético a clássico;
+- [ ] perfil `standard` reproduz a rajada aprovada; `processional` é mais aberto/lento e `contained` mais estreito/preciso, todos com uma carga, 36 gotas e seis pulsos;
+- [ ] repetir smoke da 1.0.20: `12+4`, `14+4`, `16+4`, Creative finito, reload/quebra, FP/TP, áudio, bridge e cancelamento pré/pós-release;
+- [ ] registrar hash do `.mcaddon`, plataforma, controles, gráficos, locale, resultado e Content Log antes de declarar GO.
+
 ## Gate de docking parcial — v1.0.20
 
 - [ ] importar somente `Aspergillum-1.0.20.mcaddon` após fechar o jogo e remover revisões anteriores;
@@ -78,7 +99,7 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 
 ### Evidência visual automatizada
 
-`npm run capture:models -- --subject all` gera nove vistas fixas e uma prancha composta para o aspersório, a caldeirinha e a caldeirinha com o aspersório acomodado. O `capture-manifest.json` registra câmera, geometria, material, versão e opções. Essas imagens servem para revisão de silhueta, faces, UVs e comparação entre revisões; o gate dentro do Minecraft continua obrigatório para culling, shader, câmera, cache e integração reais.
+`npm run capture:models -- --subject all` gera nove vistas fixas e uma prancha composta para o aspersório, a caldeirinha e a Mesa do Sacristão, vazias ou com o aspersório acomodado. O `capture-manifest.json` registra câmera, geometria, material, versão e opções. Essas imagens servem para revisão de silhueta, faces, UVs e comparação entre revisões; o gate dentro do Minecraft continua obrigatório para culling, shader, câmera, cache e integração reais.
 
 ## Cobertura automatizada a expandir
 
@@ -131,6 +152,16 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 - retirada com inventário cheio;
 - quebra, explosão, reload e limpeza de snapshot;
 - pistão recusado ou registro movido de forma íntegra.
+
+### Personalização
+
+- catálogo cartesiano `3 × 3`, resolução/fallback de IDs e paridade de índices;
+- aquisição/liberação exclusiva por jogador e mesa;
+- troca de tipo do ItemStack preservando ID, carga, nome e propriedades;
+- atualização/rollback de snapshot e state visual;
+- close versus concluir/retirar, quebra, inventário cheio e lifecycle cleanup;
+- demonstração limitada e invariantes de custo zero;
+- freeze do perfil dentro de uma aspersão já iniciada.
 
 ## Gate de input v1.0.17a
 

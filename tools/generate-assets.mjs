@@ -82,6 +82,23 @@ const ENTITY_TEXELS_PER_UNIT = 2;
 const ASPERSORIUM_ATLAS_SIZE = 256;
 const DOCKED_ATLAS_OFFSET = [128, 0];
 const DOCKED_MODEL_TRANSLATION = [6, -17, -1];
+const SACRISTAN_TABLE_ATLAS_SIZE = 256;
+const TABLE_ITEM_ATLAS_OFFSET = [128, 0];
+const TABLE_ITEM_MODEL_TRANSLATION = [6, -9.2, -5.8];
+const TABLE_ITEM_MODEL_SCALE = 0.86;
+const customizationCatalog = JSON.parse(
+  fs.readFileSync(path.join(root, "assets-src/customization/catalog.json"), "utf8"),
+);
+
+function cosmeticTextureSuffix(cosmetic) {
+  return cosmetic.id === "classic" ? "" : `_${cosmetic.id}`;
+}
+
+function cosmeticItemIdentifier(cosmetic) {
+  return cosmetic.id === "classic"
+    ? "aspergillum:aspergillum"
+    : `aspergillum:aspergillum_${cosmetic.id}`;
+}
 
 function faceTexelSize(size, faceName, texelsPerUnit = 1) {
   const [sizeX, sizeY, sizeZ] = size;
@@ -177,7 +194,7 @@ function isPerforation(region, x, y) {
   return apertureRow && (x + region.seed) % 3 === 1;
 }
 
-function albedoPixel(region, x, y) {
+function albedoPixel(region, x, y, cosmetic = customizationCatalog.cosmetics[0]) {
   const noise = Math.round((hash(x, y, region.seed) - 0.5) * 8);
   const topOrLeft = x === 0 || y === 0;
   const bottomOrRight = x === region.width - 1 || y === region.height - 1;
@@ -194,12 +211,18 @@ function albedoPixel(region, x, y) {
   if (region.surface === "leather") {
     const wrapBand = Math.floor((y + Math.floor(x / 2)) / 2) % 2;
     const seam = (x + y + region.seed) % Math.max(4, region.width + 1) === 0;
-    const base = wrapBand === 0 ? [61, 43, 32, 255] : [43, 31, 25, 255];
+    const gripPalette = {
+      chestnut: [[61, 43, 32, 255], [43, 31, 25, 255]],
+      oxblood: [[78, 34, 35, 255], [51, 24, 28, 255]],
+      black: [[39, 37, 34, 255], [25, 25, 24, 255]],
+    }[cosmetic.grip] ?? [[61, 43, 32, 255], [43, 31, 25, 255]];
+    const base = gripPalette[wrapBand];
     return shadeColor(base, Math.round(noise * 0.4) + Math.round(bevel * 0.25) + (seam ? -12 : 0));
   }
   if (region.surface === "gold") {
     const bandHighlight = y === Math.floor(region.height / 2) ? 9 : 0;
-    return shadeColor([180, 127, 36, 255], noise + bevel + faceTone + bandHighlight);
+    const goldBase = cosmetic.metal === "antique" ? [139, 103, 48, 255] : [180, 127, 36, 255];
+    return shadeColor(goldBase, noise + bevel + faceTone + bandHighlight);
   }
   if (isPerforation(region, x, y)) {
     return [24, 29, 30, 255];
@@ -210,7 +233,12 @@ function albedoPixel(region, x, y) {
     && y === Math.floor(region.height / 2)
     ? 8
     : 0;
-  return shadeColor([158, 162, 159, 255], noise + bevel + faceTone + equatorBand);
+  const silverBase = {
+    silver: [158, 162, 159, 255],
+    antique: [113, 121, 119, 255],
+    gilded: region.surface === "perforated_silver" ? [177, 151, 91, 255] : [168, 164, 145, 255],
+  }[cosmetic.metal] ?? [158, 162, 159, 255];
+  return shadeColor(silverBase, noise + bevel + faceTone + equatorBand);
 }
 
 function normalPixel(region, x, y) {
@@ -220,11 +248,12 @@ function normalPixel(region, x, y) {
   return [128 + variation, 128 - variation, 250, 255];
 }
 
-function mersPixel(region, x, y) {
+function mersPixel(region, x, y, cosmetic = customizationCatalog.cosmetics[0]) {
   if (region.surface === "leather") return [12, 0, 226, 255];
-  if (region.surface === "gold") return [236, 0, 88, 255];
-  if (isPerforation(region, x, y)) return [38, 0, 205, 255];
-  const roughness = 102 + Math.round(hash(x, y, region.seed + 200) * 18);
+  if (region.surface === "gold") return [236, 0, cosmetic.metal === "antique" ? 142 : 88, 255];
+  if (isPerforation(region, x, y)) return [38, 0, cosmetic.metal === "antique" ? 224 : 205, 255];
+  const roughnessBase = cosmetic.metal === "antique" ? 156 : cosmetic.metal === "gilded" ? 88 : 102;
+  const roughness = roughnessBase + Math.round(hash(x, y, region.seed + 200) * 18);
   return [226, 0, roughness, 255];
 }
 
@@ -242,43 +271,80 @@ function paintAtlasRegion(image, region, painter) {
 const entityModel = buildEntityGeometry();
 writeJson("packs/resource/models/entity/aspergillum.geo.json", entityModel.geometry);
 
-const entity = png(entityModel.textureWidth, entityModel.textureHeight, () => [135, 137, 132, 255]);
-const entityNormal = png(entityModel.textureWidth, entityModel.textureHeight, () => [128, 128, 255, 255]);
-const entityMer = png(entityModel.textureWidth, entityModel.textureHeight, () => [0, 0, 255, 255]);
-for (const region of entityModel.regions) {
-  paintAtlasRegion(entity, region, albedoPixel);
-  paintAtlasRegion(entityNormal, region, normalPixel);
-  paintAtlasRegion(entityMer, region, mersPixel);
+const entityTextures = new Map();
+for (const cosmetic of customizationCatalog.cosmetics) {
+  const suffix = cosmeticTextureSuffix(cosmetic);
+  const entity = png(entityModel.textureWidth, entityModel.textureHeight, () => [135, 137, 132, 255]);
+  const entityNormal = png(entityModel.textureWidth, entityModel.textureHeight, () => [128, 128, 255, 255]);
+  const entityMer = png(entityModel.textureWidth, entityModel.textureHeight, () => [0, 0, 255, 255]);
+  for (const region of entityModel.regions) {
+    paintAtlasRegion(entity, region, (current, x, y) => albedoPixel(current, x, y, cosmetic));
+    paintAtlasRegion(entityNormal, region, normalPixel);
+    paintAtlasRegion(entityMer, region, (current, x, y) => mersPixel(current, x, y, cosmetic));
+  }
+  write(`packs/resource/textures/entity/aspergillum${suffix}.png`, entity);
+  write(`packs/resource/textures/entity/aspergillum${suffix}_normal.png`, entityNormal);
+  write(`packs/resource/textures/entity/aspergillum${suffix}_mer.png`, entityMer);
+  entityTextures.set(cosmetic.id, { entity, entityNormal, entityMer, suffix });
+  writeJson(`packs/resource/textures/entity/aspergillum${suffix}.texture_set.json`, {
+    format_version: "1.16.100",
+    "minecraft:texture_set": {
+      color: `aspergillum${suffix}`,
+      metalness_emissive_roughness: `aspergillum${suffix}_mer`,
+      normal: `aspergillum${suffix}_normal`,
+    },
+  });
 }
-write("packs/resource/textures/entity/aspergillum.png", entity);
-write("packs/resource/textures/entity/aspergillum_normal.png", entityNormal);
-write("packs/resource/textures/entity/aspergillum_mer.png", entityMer);
 
-const block = png(ASPERSORIUM_ATLAS_SIZE, ASPERSORIUM_ATLAS_SIZE, (x, y) => {
-  const hammered = Math.round((hash(Math.floor(x / 3), Math.floor(y / 3), 11) - 0.5) * 18);
-  const grain = Math.round((hash(x, y, 37) - 0.5) * 6);
-  const patina = hash(Math.floor(x / 8), Math.floor(y / 8), 71) > 0.87 ? -8 : 0;
-  return [143 + hammered + grain + patina, 147 + hammered + grain + Math.round(patina * 0.55), 145 + hammered + grain, 255];
-});
-pasteImage(block, entity, DOCKED_ATLAS_OFFSET[0], DOCKED_ATLAS_OFFSET[1]);
-write("packs/resource/textures/blocks/aspersorium.png", block);
+const { entity, entityNormal, entityMer } = entityTextures.get("classic");
 
-const blockNormal = png(ASPERSORIUM_ATLAS_SIZE, ASPERSORIUM_ATLAS_SIZE, (x, y) => {
-  const broad = Math.round((hash(Math.floor(x / 3), Math.floor(y / 3), 19) - 0.5) * 8);
-  const grain = Math.round((hash(x, y, 23) - 0.5) * 3);
-  return [128 + broad + grain, 128 - broad + grain, 247, 255];
-});
-pasteImage(blockNormal, entityNormal, DOCKED_ATLAS_OFFSET[0], DOCKED_ATLAS_OFFSET[1]);
-write("packs/resource/textures/blocks/aspersorium_normal.png", blockNormal);
+function makeAspersoriumAlbedo() {
+  return png(ASPERSORIUM_ATLAS_SIZE, ASPERSORIUM_ATLAS_SIZE, (x, y) => {
+    const hammered = Math.round((hash(Math.floor(x / 3), Math.floor(y / 3), 11) - 0.5) * 18);
+    const grain = Math.round((hash(x, y, 37) - 0.5) * 6);
+    const patina = hash(Math.floor(x / 8), Math.floor(y / 8), 71) > 0.87 ? -8 : 0;
+    return [143 + hammered + grain + patina, 147 + hammered + grain + Math.round(patina * 0.55), 145 + hammered + grain, 255];
+  });
+}
 
-const blockMer = png(ASPERSORIUM_ATLAS_SIZE, ASPERSORIUM_ATLAS_SIZE, (x, y) => [
-  218,
-  0,
-  132 + Math.round(hash(Math.floor(x / 2), Math.floor(y / 2), 4) * 26),
-  255,
-]);
-pasteImage(blockMer, entityMer, DOCKED_ATLAS_OFFSET[0], DOCKED_ATLAS_OFFSET[1]);
-write("packs/resource/textures/blocks/aspersorium_mer.png", blockMer);
+function makeAspersoriumNormal() {
+  return png(ASPERSORIUM_ATLAS_SIZE, ASPERSORIUM_ATLAS_SIZE, (x, y) => {
+    const broad = Math.round((hash(Math.floor(x / 3), Math.floor(y / 3), 19) - 0.5) * 8);
+    const grain = Math.round((hash(x, y, 23) - 0.5) * 3);
+    return [128 + broad + grain, 128 - broad + grain, 247, 255];
+  });
+}
+
+function makeAspersoriumMer() {
+  return png(ASPERSORIUM_ATLAS_SIZE, ASPERSORIUM_ATLAS_SIZE, (x, y) => [
+    218,
+    0,
+    132 + Math.round(hash(Math.floor(x / 2), Math.floor(y / 2), 4) * 26),
+    255,
+  ]);
+}
+
+for (const cosmetic of customizationCatalog.cosmetics) {
+  const suffix = cosmeticTextureSuffix(cosmetic);
+  const variant = entityTextures.get(cosmetic.id);
+  const block = makeAspersoriumAlbedo();
+  const blockNormal = makeAspersoriumNormal();
+  const blockMer = makeAspersoriumMer();
+  pasteImage(block, variant.entity, DOCKED_ATLAS_OFFSET[0], DOCKED_ATLAS_OFFSET[1]);
+  pasteImage(blockNormal, variant.entityNormal, DOCKED_ATLAS_OFFSET[0], DOCKED_ATLAS_OFFSET[1]);
+  pasteImage(blockMer, variant.entityMer, DOCKED_ATLAS_OFFSET[0], DOCKED_ATLAS_OFFSET[1]);
+  write(`packs/resource/textures/blocks/aspersorium${suffix}.png`, block);
+  write(`packs/resource/textures/blocks/aspersorium${suffix}_normal.png`, blockNormal);
+  write(`packs/resource/textures/blocks/aspersorium${suffix}_mer.png`, blockMer);
+  writeJson(`packs/resource/textures/blocks/aspersorium${suffix}.texture_set.json`, {
+    format_version: "1.16.100",
+    "minecraft:texture_set": {
+      color: `aspersorium${suffix}`,
+      metalness_emissive_roughness: `aspersorium${suffix}_mer`,
+      normal: `aspersorium${suffix}_normal`,
+    },
+  });
+}
 
 const water = png(32, 32, (x, y) => {
   const wave = Math.sin((x + y) * 0.7) * 9 + (hash(x, y, 31) - 0.5) * 10;
@@ -299,32 +365,47 @@ const particle = png(16, 16, (x, y) => {
 });
 write("packs/resource/textures/particle/holy_water.png", particle);
 
-const item = png(32, 32, () => [0, 0, 0, 0]);
 const outline = [34, 39, 39, 255];
-const metalDark = [104, 109, 106, 255];
-const metal = [178, 180, 172, 255];
-const shine = [229, 228, 211, 255];
-const leather = [54, 40, 32, 255];
-for (let y = 13; y <= 28; y += 1) {
-  const x = 9 + Math.floor((28 - y) * 0.32);
-  setPixel(item, x - 1, y, outline);
-  setPixel(item, x, y, y > 22 ? leather : metal);
-  setPixel(item, x + 1, y, y > 22 ? [77, 55, 40, 255] : shine);
-  setPixel(item, x + 2, y, outline);
-}
-for (let y = 3; y <= 15; y += 1) {
-  for (let x = 10; x <= 23; x += 1) {
-    const dx = (x - 16.5) / 7;
-    const dy = (y - 9) / 6.5;
-    if (dx * dx + dy * dy <= 1) {
-      const edge = dx * dx + dy * dy > 0.72;
-      const hole = ((x * 2 + y * 3) % 7) === 0;
-      setPixel(item, x, y, edge ? outline : hole ? metalDark : (x + y) % 5 === 0 ? shine : metal);
+function makeItemIcon(cosmetic) {
+  const item = png(32, 32, () => [0, 0, 0, 0]);
+  const metals = {
+    silver: { dark: [104, 109, 106, 255], base: [178, 180, 172, 255], shine: [229, 228, 211, 255] },
+    antique: { dark: [68, 76, 75, 255], base: [126, 134, 130, 255], shine: [181, 184, 171, 255] },
+    gilded: { dark: [104, 83, 43, 255], base: [190, 164, 103, 255], shine: [235, 216, 164, 255] },
+  };
+  const grips = {
+    chestnut: { dark: [54, 40, 32, 255], light: [77, 55, 40, 255] },
+    oxblood: { dark: [65, 28, 31, 255], light: [91, 40, 43, 255] },
+    black: { dark: [31, 30, 28, 255], light: [51, 48, 43, 255] },
+  };
+  const metal = metals[cosmetic.metal] ?? metals.silver;
+  const leather = grips[cosmetic.grip] ?? grips.chestnut;
+  for (let y = 13; y <= 28; y += 1) {
+    const x = 9 + Math.floor((28 - y) * 0.32);
+    setPixel(item, x - 1, y, outline);
+    setPixel(item, x, y, y > 22 ? leather.dark : metal.base);
+    setPixel(item, x + 1, y, y > 22 ? leather.light : metal.shine);
+    setPixel(item, x + 2, y, outline);
+  }
+  for (let y = 3; y <= 15; y += 1) {
+    for (let x = 10; x <= 23; x += 1) {
+      const dx = (x - 16.5) / 7;
+      const dy = (y - 9) / 6.5;
+      if (dx * dx + dy * dy <= 1) {
+        const edge = dx * dx + dy * dy > 0.72;
+        const hole = ((x * 2 + y * 3) % 7) === 0;
+        setPixel(item, x, y, edge ? outline : hole ? metal.dark : (x + y) % 5 === 0 ? metal.shine : metal.base);
+      }
     }
   }
+  fillRect(item, 10, 14, 5, 2, cosmetic.metal === "antique" ? [139, 103, 48, 255] : [170, 123, 41, 255]);
+  return item;
 }
-fillRect(item, 10, 14, 5, 2, [170, 123, 41, 255]);
-write("packs/resource/textures/items/aspergillum.png", item);
+
+for (const cosmetic of customizationCatalog.cosmetics) {
+  const suffix = cosmeticTextureSuffix(cosmetic);
+  write(`packs/resource/textures/items/aspergillum${suffix}.png`, makeItemIcon(cosmetic));
+}
 
 function makePackIcon() {
   const icon = png(256, 256, (x, y) => {
@@ -375,6 +456,99 @@ function buildDockedAspergillumCubes() {
     }));
 }
 
+function buildPresentedAspergillumCubes(translation, atlasOffset, scale = 1) {
+  const heldBones = entityModel.geometry["minecraft:geometry"][0].bones;
+  const scaleAnchor = [-6, 29, 1];
+  return heldBones
+    .filter((bone) => bone.name === "handle" || bone.name === "sprinkler_head")
+    .flatMap((bone) => bone.cubes ?? [])
+    .map((cube) => ({
+      origin: cube.origin.map(
+        (coordinate, axis) => scaleAnchor[axis] + (coordinate - scaleAnchor[axis]) * scale + translation[axis],
+      ),
+      size: cube.size.map((dimension) => dimension * scale),
+      uv: offsetFaceUvs(cube.uv, atlasOffset),
+    }));
+}
+
+function buildSemanticBlockGeometry(sourceRelative, packingWidth, texelsPerUnit = 2) {
+  const sourcePath = path.join(root, sourceRelative);
+  const source = JSON.parse(fs.readFileSync(sourcePath, "utf8"));
+  const output = structuredClone(source);
+  const description = output["minecraft:geometry"]?.[0]?.description;
+  const textureWidth = description?.texture_width ?? 256;
+  const textureHeight = description?.texture_height ?? 256;
+  const regions = [];
+  let cursorX = UV_PADDING;
+  let cursorY = UV_PADDING;
+  let rowHeight = 0;
+
+  for (const bone of output["minecraft:geometry"]?.[0]?.bones ?? []) {
+    for (const [cubeIndex, cube] of (bone.cubes ?? []).entries()) {
+      const cubeName = cube.name ?? `${bone.name}_${cubeIndex + 1}`;
+      const surface = cube.surface;
+      if (!surface) throw new Error(`Missing surface for ${cubeName}`);
+      delete cube.name;
+      delete cube.surface;
+      cube.uv = {};
+      for (const faceName of FACE_NAMES) {
+        const [width, height] = faceTexelSize(cube.size, faceName, texelsPerUnit);
+        const packedWidth = width + UV_PADDING * 2;
+        const packedHeight = height + UV_PADDING * 2;
+        if (cursorX + packedWidth > packingWidth) {
+          cursorX = UV_PADDING;
+          cursorY += rowHeight;
+          rowHeight = 0;
+        }
+        if (cursorY + packedHeight > textureHeight) {
+          throw new Error(`Semantic block atlas overflow at ${cubeName}.${faceName}`);
+        }
+        const uv = [cursorX + UV_PADDING, cursorY + UV_PADDING];
+        cube.uv[faceName] = { uv, uv_size: [width, height] };
+        regions.push({ cubeName, faceName, surface, uv, width, height, seed: regions.length + 301 });
+        cursorX += packedWidth;
+        rowHeight = Math.max(rowHeight, packedHeight);
+      }
+    }
+  }
+  return { geometry: output, regions, textureWidth, textureHeight };
+}
+
+function tableAlbedoPixel(region, x, y) {
+  const border = x === 0 || y === 0 || x === region.width - 1 || y === region.height - 1;
+  const faceTone = { up: 10, north: 3, west: 0, east: -3, south: -6, down: -12 }[region.faceName] ?? 0;
+  const noise = Math.round((hash(x, y, region.seed) - 0.5) * 8);
+  if (region.surface === "velvet") {
+    const thread = (x + y * 2 + region.seed) % 7 === 0 ? 5 : 0;
+    return shadeColor([45, 78, 60, 255], noise + thread + faceTone * 0.35 - (border ? 3 : 0));
+  }
+  if (region.surface === "brass") {
+    return shadeColor([151, 111, 49, 255], noise + faceTone + (border ? -8 : 4));
+  }
+  const light = region.surface === "wood_light";
+  const grain = ((x + Math.floor(hash(x, y, region.seed + 19) * 3)) % 9 === 0) ? -10 : 0;
+  const base = light ? [105, 70, 45, 255] : [69, 44, 32, 255];
+  return shadeColor(base, noise + faceTone + grain + (border ? -7 : 0));
+}
+
+function tableNormalPixel(region, x, y) {
+  if (region.surface === "velvet") {
+    const variation = Math.round((hash(x, y, region.seed + 40) - 0.5) * 7);
+    return [128 + variation, 128 - variation, 244, 255];
+  }
+  if (region.surface.startsWith("wood")) {
+    const groove = x % 9 === 0 ? -9 : 0;
+    return [128 + groove, 128, 247, 255];
+  }
+  return [128, 128, 250, 255];
+}
+
+function tableMerPixel(region, x, y) {
+  if (region.surface === "brass") return [225, 0, 126 + Math.round(hash(x, y, region.seed) * 16), 255];
+  if (region.surface === "velvet") return [0, 0, 238, 255];
+  return [0, 0, region.surface === "wood_light" ? 190 : 210, 255];
+}
+
 const geometrySource = JSON.parse(
   fs.readFileSync(path.join(root, "assets-src/models/aspersorium.model.json"), "utf8"),
 );
@@ -397,12 +571,70 @@ writeJson("packs/resource/models/blocks/aspersorium.rotations.geo.json", {
   "minecraft:geometry": rotatedGeometries,
 });
 
+const tableModel = buildSemanticBlockGeometry(
+  "assets-src/models/sacristan_table.model.json",
+  TABLE_ITEM_ATLAS_OFFSET[0],
+  1,
+);
+const tableGeometry = tableModel.geometry;
+const tableRestingAspergillum = tableGeometry["minecraft:geometry"][0].bones.find(
+  (bone) => bone.name === "resting_aspergillum",
+);
+if (!tableRestingAspergillum) throw new Error("Sacristan table geometry requires the resting_aspergillum bone");
+tableRestingAspergillum.cubes = buildPresentedAspergillumCubes(
+  TABLE_ITEM_MODEL_TRANSLATION,
+  TABLE_ITEM_ATLAS_OFFSET,
+  TABLE_ITEM_MODEL_SCALE,
+);
+writeJson("packs/resource/models/blocks/sacristan_table.geo.json", tableGeometry);
+const tableRotatedGeometries = Array.from({ length: 16 }, (_, rotationIndex) => {
+  const geometry = structuredClone(tableGeometry["minecraft:geometry"][0]);
+  geometry.description.identifier = `geometry.aspergillum.sacristan_table.rotation_${rotationIndex}`;
+  const rootBone = geometry.bones.find((bone) => bone.name === "root");
+  if (!rootBone) throw new Error("Sacristan table geometry requires a root bone");
+  const angle = rotationIndex * 22.5;
+  rootBone.rotation = [0, angle > 180 ? angle - 360 : angle, 0];
+  return geometry;
+});
+writeJson("packs/resource/models/blocks/sacristan_table.rotations.geo.json", {
+  format_version: tableGeometry.format_version,
+  "minecraft:geometry": tableRotatedGeometries,
+});
+
+for (const cosmetic of customizationCatalog.cosmetics) {
+  const suffix = cosmeticTextureSuffix(cosmetic);
+  const variant = entityTextures.get(cosmetic.id);
+  const table = png(SACRISTAN_TABLE_ATLAS_SIZE, SACRISTAN_TABLE_ATLAS_SIZE, () => [67, 44, 32, 255]);
+  const tableNormal = png(SACRISTAN_TABLE_ATLAS_SIZE, SACRISTAN_TABLE_ATLAS_SIZE, () => [128, 128, 255, 255]);
+  const tableMer = png(SACRISTAN_TABLE_ATLAS_SIZE, SACRISTAN_TABLE_ATLAS_SIZE, () => [0, 0, 220, 255]);
+  for (const region of tableModel.regions) {
+    paintAtlasRegion(table, region, tableAlbedoPixel);
+    paintAtlasRegion(tableNormal, region, tableNormalPixel);
+    paintAtlasRegion(tableMer, region, tableMerPixel);
+  }
+  pasteImage(table, variant.entity, TABLE_ITEM_ATLAS_OFFSET[0], TABLE_ITEM_ATLAS_OFFSET[1]);
+  pasteImage(tableNormal, variant.entityNormal, TABLE_ITEM_ATLAS_OFFSET[0], TABLE_ITEM_ATLAS_OFFSET[1]);
+  pasteImage(tableMer, variant.entityMer, TABLE_ITEM_ATLAS_OFFSET[0], TABLE_ITEM_ATLAS_OFFSET[1]);
+  write(`packs/resource/textures/blocks/sacristan_table${suffix}.png`, table);
+  write(`packs/resource/textures/blocks/sacristan_table${suffix}_normal.png`, tableNormal);
+  write(`packs/resource/textures/blocks/sacristan_table${suffix}_mer.png`, tableMer);
+  writeJson(`packs/resource/textures/blocks/sacristan_table${suffix}.texture_set.json`, {
+    format_version: "1.16.100",
+    "minecraft:texture_set": {
+      color: `sacristan_table${suffix}`,
+      metalness_emissive_roughness: `sacristan_table${suffix}_mer`,
+      normal: `sacristan_table${suffix}_normal`,
+    },
+  });
+}
+
 const blockPath = path.join(root, "packs/behavior/blocks/aspersorium.block.json");
 const blockDefinition = JSON.parse(fs.readFileSync(blockPath, "utf8"));
 const blockContent = blockDefinition["minecraft:block"];
 delete blockContent.description.states["aspergillum:water_level"];
 blockContent.description.states["aspergillum:water_base"] = [0, 9];
 blockContent.description.states["aspergillum:water_offset"] = Array.from({ length: 9 }, (_, index) => index);
+blockContent.description.states["aspergillum:cosmetic"] = customizationCatalog.cosmetics.map((cosmetic) => cosmetic.index);
 blockContent.description.states["aspergillum:rotation"] = Array.from({ length: 16 }, (_, index) => index);
 if (blockContent.description.traits) {
   delete blockContent.description.traits["minecraft:placement_direction"];
@@ -414,8 +646,21 @@ delete blockContent.components["minecraft:geometry"].n_way_visual_rotation;
 blockContent.permutations = blockContent.permutations.filter(
   (permutation) =>
     !permutation.condition.includes("minecraft:sixteen_way_rotation") &&
-    !permutation.condition.includes("aspergillum:rotation"),
+    !permutation.condition.includes("aspergillum:rotation") &&
+    !permutation.condition.includes("aspergillum:cosmetic"),
 );
+for (const cosmetic of customizationCatalog.cosmetics.slice(1)) {
+  const suffix = cosmeticTextureSuffix(cosmetic);
+  blockContent.permutations.push({
+    condition: `q.block_state('aspergillum:cosmetic') == ${cosmetic.index}`,
+    components: {
+      "minecraft:material_instances": {
+        "*": { texture: `aspersorium${suffix}`, render_method: "blend" },
+        water: { texture: "aspergillum_holy_water", render_method: "blend" },
+      },
+    },
+  });
+}
 for (let rotationIndex = 1; rotationIndex < 16; rotationIndex += 1) {
   blockContent.permutations.push({
     condition: `q.block_state('aspergillum:rotation') == ${rotationIndex}`,
@@ -429,6 +674,89 @@ for (let rotationIndex = 1; rotationIndex < 16; rotationIndex += 1) {
   });
 }
 writeJson("packs/behavior/blocks/aspersorium.block.json", blockDefinition);
+
+const tableBlockPath = path.join(root, "packs/behavior/blocks/sacristan_table.block.json");
+const tableBlockDefinition = JSON.parse(fs.readFileSync(tableBlockPath, "utf8"));
+const tableBlockContent = tableBlockDefinition["minecraft:block"];
+tableBlockContent.description.states["aspergillum:table_cosmetic"] = customizationCatalog.cosmetics.map(
+  (cosmetic) => cosmetic.index,
+);
+tableBlockContent.description.states["aspergillum:table_rotation"] = Array.from(
+  { length: 16 },
+  (_, index) => index,
+);
+tableBlockContent.permutations = tableBlockContent.permutations.filter(
+  (permutation) => !permutation.condition.includes("aspergillum:table_rotation"),
+);
+const tableBoneVisibility = tableBlockContent.components["minecraft:geometry"].bone_visibility;
+tableBlockContent.components["minecraft:geometry"].identifier = "geometry.aspergillum.sacristan_table.rotation_0";
+for (let rotationIndex = 1; rotationIndex < 16; rotationIndex += 1) {
+  tableBlockContent.permutations.push({
+    condition: `q.block_state('aspergillum:table_rotation') == ${rotationIndex}`,
+    components: {
+      "minecraft:geometry": {
+        identifier: `geometry.aspergillum.sacristan_table.rotation_${rotationIndex}`,
+        uv_lock: false,
+        bone_visibility: tableBoneVisibility,
+      },
+    },
+  });
+}
+writeJson("packs/behavior/blocks/sacristan_table.block.json", tableBlockDefinition);
+
+const baseItemDefinition = JSON.parse(
+  fs.readFileSync(path.join(root, "packs/behavior/items/aspergillum.item.json"), "utf8"),
+);
+const baseAttachableDefinition = JSON.parse(
+  fs.readFileSync(path.join(root, "packs/resource/attachables/aspergillum.attachable.json"), "utf8"),
+);
+for (const cosmetic of customizationCatalog.cosmetics.slice(1)) {
+  const suffix = cosmeticTextureSuffix(cosmetic);
+  const identifier = cosmeticItemIdentifier(cosmetic);
+  const itemDefinition = structuredClone(baseItemDefinition);
+  itemDefinition["minecraft:item"].description.identifier = identifier;
+  delete itemDefinition["minecraft:item"].description.menu_category;
+  itemDefinition["minecraft:item"].components["minecraft:icon"].textures.default = `aspergillum${suffix}`;
+  writeJson(`packs/behavior/items/aspergillum${suffix}.item.json`, itemDefinition);
+
+  const attachableDefinition = structuredClone(baseAttachableDefinition);
+  const description = attachableDefinition["minecraft:attachable"].description;
+  description.identifier = identifier;
+  description.item = { [identifier]: "q.is_owner_identifier_any('minecraft:player')" };
+  description.textures.default = `textures/entity/aspergillum${suffix}`;
+  writeJson(`packs/resource/attachables/aspergillum${suffix}.attachable.json`, attachableDefinition);
+}
+
+const itemTexturePath = path.join(root, "packs/resource/textures/item_texture.json");
+const itemTextureDefinition = JSON.parse(fs.readFileSync(itemTexturePath, "utf8"));
+for (const cosmetic of customizationCatalog.cosmetics) {
+  const suffix = cosmeticTextureSuffix(cosmetic);
+  itemTextureDefinition.texture_data[`aspergillum${suffix}`] = {
+    textures: [`textures/items/aspergillum${suffix}`],
+  };
+}
+itemTextureDefinition.texture_data.sacristan_table = {
+  textures: ["textures/blocks/sacristan_table"],
+};
+writeJson("packs/resource/textures/item_texture.json", itemTextureDefinition);
+
+const terrainTexturePath = path.join(root, "packs/resource/textures/terrain_texture.json");
+const terrainTextureDefinition = JSON.parse(fs.readFileSync(terrainTexturePath, "utf8"));
+for (const cosmetic of customizationCatalog.cosmetics) {
+  const suffix = cosmeticTextureSuffix(cosmetic);
+  terrainTextureDefinition.texture_data[`aspersorium${suffix}`] = {
+    textures: [`textures/blocks/aspersorium${suffix}`],
+  };
+  terrainTextureDefinition.texture_data[`sacristan_table${suffix}`] = {
+    textures: [`textures/blocks/sacristan_table${suffix}`],
+  };
+}
+writeJson("packs/resource/textures/terrain_texture.json", terrainTextureDefinition);
+
+const blocksPath = path.join(root, "packs/resource/blocks.json");
+const blocksDefinition = JSON.parse(fs.readFileSync(blocksPath, "utf8"));
+blocksDefinition["aspergillum:sacristan_table"] = { sound: "wood" };
+writeJson("packs/resource/blocks.json", blocksDefinition);
 
 const audioCatalog = JSON.parse(
   fs.readFileSync(path.join(root, "assets-src/audio/audio-catalog.json"), "utf8"),

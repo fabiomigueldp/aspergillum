@@ -35,9 +35,12 @@ for (const [label, actual] of [
 
 const messagingSource = fs.readFileSync(path.join(root, "src", "presentation", "messaging.ts"), "utf8");
 const messageKeys = [...new Set(messagingSource.match(/message\.aspergillum\.[a-z_]+/g) ?? [])].sort();
-if (messageKeys.length !== 27) errors.push(`Expected 27 action-message keys, found ${messageKeys.length}`);
+if (messageKeys.length !== 31) errors.push(`Expected 31 action-message keys, found ${messageKeys.length}`);
 const loreKeys = [
   "item.aspergillum.lore.charges",
+  "item.aspergillum.lore.profile",
+  "item.aspergillum.lore.appearance",
+  "item.aspergillum.lore.grip",
   "item.aspergillum.lore.instructions",
   "item.aspergillum.lore.docking",
   "item.aspergillum.lore.creative",
@@ -89,6 +92,15 @@ for (const locale of ["pt_BR", "en_US"]) {
     }
   }
 }
+const portugueseUiKeys = [...localeEntries("pt_BR").keys()]
+  .filter((key) => key.startsWith("ui.aspergillum."))
+  .sort();
+const englishUiKeys = [...localeEntries("en_US").keys()]
+  .filter((key) => key.startsWith("ui.aspergillum."))
+  .sort();
+if (JSON.stringify(portugueseUiKeys) !== JSON.stringify(englishUiKeys) || portugueseUiKeys.length !== 35) {
+  errors.push("Customization UI catalogs must expose the same 35 keys in pt_BR and en_US");
+}
 
 const sourceFiles = walk(path.join(root, "src")).filter((file) => file.endsWith(".ts"));
 for (const file of sourceFiles) {
@@ -108,8 +120,10 @@ for (const file of sourceFiles) {
 
 const itemStateSource = fs.readFileSync(path.join(root, "src", "infrastructure", "item-state.ts"), "utf8");
 if (!itemStateSource.includes("item.aspergillum.lore.docking")
-  || !itemStateSource.includes("getRawLore().length !== 4")) {
-  errors.push("Item lore must expose docking instructions and lazily refresh legacy three-line lore");
+  || !itemStateSource.includes("item.aspergillum.lore.profile")
+  || !itemStateSource.includes("item.aspergillum.lore.appearance")
+  || !itemStateSource.includes("getRawLore().length !== 6")) {
+  errors.push("Item lore must expose customization and docking instructions and lazily refresh legacy lore");
 }
 const wetFeedbackSource = fs.readFileSync(path.join(root, "src", "presentation", "wet-feedback.ts"), "utf8");
 if (!wetFeedbackSource.includes("MICRO_SPLASH_PARTICLE") || !wetFeedbackSource.includes("LOAD_SPLASH_OFFSETS")) {
