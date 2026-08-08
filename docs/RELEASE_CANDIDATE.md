@@ -2,13 +2,13 @@
 
 ## Identidade
 
-- Release Candidate: `1.1.3`.
-- Revisão dos packs: `[1, 1, 3]`.
+- Release Candidate: `1.1.4`.
+- Revisão dos packs: `[1, 1, 4]`.
 - Baseline funcional herdada: `1.0.20`, validada pelo usuário.
 - Experimentos: nenhum.
 - Autoridade: servidor para estado; cliente somente para apresentação.
 
-Esta revisão preserva binding, grip, envelope físico, poses, animações, steering, partículas, áudio e docking parcial da baseline. Ela substitui a correção local da mesa por um pomo autoral em dois estágios, propagado igualmente ao item, caldeirinha e mesa.
+Esta revisão preserva binding, grip, envelope físico, poses, animações, steering, partículas, áudio e docking parcial da baseline. Ela substitui a interpenetração da v1.1.3 por placa sólida, aro vazado e máscaras de faces propagadas igualmente ao item, caldeirinha e mesa.
 
 ## Preflight automatizado
 
@@ -25,7 +25,7 @@ O gate falha quando versões divergem, catálogos `pt_BR`/`en_US` deixam de ser 
 
 1. Registrar o SHA-256 do artefato.
 2. Fechar o Minecraft e remover os dois packs antigos em Armazenamento.
-3. Importar somente `Aspergillum-1.1.3.mcaddon`.
+3. Importar somente `Aspergillum-1.1.4.mcaddon`.
 4. Criar ou duplicar um mundo de teste sem experimentos.
 5. Limpar o Content Log antes de entrar.
 6. Executar `/function aspergillum/dev_kit`.
@@ -44,7 +44,7 @@ O gate falha quando versões divergem, catálogos `pt_BR`/`en_US` deixam de ser 
 | Retirar | mão vazia devolve exatamente o item, inclusive cargas restantes do snapshot V2 |
 | Quebrar/reload | snapshot não duplica nem desaparece |
 | Idioma | mudar `pt_BR`/`en_US` muda lore e HUD sem recriar o item |
-| Mesa | dezesseis rotações, vazio/ocupado, item correto sobre veludo, pomo estável em movimento e materiais legíveis em clássico/Vibrant Visuals |
+| Mesa | dezesseis rotações, vazio/ocupado, item correto sobre veludo, aro sem faixa preto/prateada em movimento e materiais legíveis em clássico/Vibrant Visuals |
 | UI | cinco espaçadores, somente um divisor final, três perfis, 3×3 acabamentos, restauração, conclusão e **Fechar** localizados e legíveis |
 | Custo zero | edição não altera carga, água, item, XP ou cooldown real |
 | Concorrência | somente um editor por mesa; fechar, concluir, quebrar, morrer, sair ou trocar dimensão liberam a sessão |

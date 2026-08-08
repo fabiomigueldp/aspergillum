@@ -1,4 +1,4 @@
-# Contrato da Mesa do Sacristão — v1.1.3
+# Contrato da Mesa do Sacristão — v1.1.4
 
 ## Intenção
 
@@ -14,7 +14,8 @@ A estação existe para tornar perfil e acabamento legíveis, reversíveis e gra
 - gaveta frontal com inlay escuro e puxador de latão discreto;
 - travessa inferior e quatro pernas robustas dentro do footprint de um bloco;
 - veludo verde preenchendo todo o nicho interno, sem tocar ou competir com as bordas elevadas;
-- aspersório ocupado centralizado e inteiramente contido sobre o veludo, derivado da mesma malha e do mesmo conjunto color/normal/MER do item selecionado.
+- aspersório ocupado centralizado e inteiramente contido sobre o veludo, derivado da mesma malha, máscaras de faces e conjunto color/normal/MER do item selecionado;
+- transição do pomo composta por placa sólida e aro vazado sem interseção positiva com o couro, robusta à escala `0.72` e à renderização opaque da mesa.
 
 Não usar glow, emissividade, hologramas, ícones flutuantes, neon, vidro de interface ou ornamento eclesial ostensivo. A beleza deve vir de proporção, material, contraste e composição.
 

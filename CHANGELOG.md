@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.1.4 — 2026-08-07
+
+- eliminada na fonte a causa estrutural da cintilação observada exclusivamente na Mesa do Sacristão: couro, placa terminal e colar deixaram de ocupar volumes positivos simultâneos;
+- reconstruído o colar como aro prateado realmente vazado, formado por quatro barras ao redor da empunhadura, com abertura interna de `1.75 × 1.75`, folga radial de `0.0625` e envelope externo de `2.15 × 2.15`;
+- reduzida a placa terminal sólida para `2.25 × 0.6 × 2.25` e assentada a empunhadura em `y = 21.8`, preservando o comprimento total de `15.6`, o grip empírico, a silhueta em dois estágios e todos os pivôs/locators;
+- introduzidas máscaras autorais de faces: tampas internas de couro, haste e aro não são mais geradas, enquanto todas as superfícies externas necessárias mantêm UV per-face inteiro, padding e color/normal/MER coerentes;
+- item, caldeirinha e mesa passam a derivar a mesma malha de quatorze cubos; validadores bloqueiam interseção positiva na transição do pomo, divergência de máscaras e drift da réplica `0.72` da mesa;
+- corrigidos os dois visualizadores para respeitar a semântica Bedrock de face UV omitida, com teste automatizado dedicado;
+- preservados IDs, UUIDs, block states, binding, poses, animações, gameplay, persistência, perfis, acabamentos e custo zero;
+- o rótulo e a revisão numérica distribuídos são `1.1.4`/`[1,1,4]`.
+
 ## 1.1.3 — 2026-08-07
 
 - substituída a antiga lâmina única do pomo por uma construção metálica em dois estágios, com base `2.25 × 0.8 × 2.25` e colar `1.9 × 0.7 × 1.9`;

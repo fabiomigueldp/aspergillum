@@ -2,13 +2,13 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.1.3` Release Candidate (revisão numérica dos packs `[1, 1, 3]`)
+- **Versão de referência:** `1.1.4` Release Candidate (revisão numérica dos packs `[1, 1, 4]`)
 - **Engine mínima:** Creator `1.26.40`
 - **Script API:** manifest com `@minecraft/server` `2.9.0` e `@minecraft/server-ui` `2.1.0`, estáveis; `@minecraft/common` `1.3.0` somente no toolchain npm
 - **Experimentos:** nenhum
 - **Conteúdo:** aspersório funcional de quatro cargas, caldeirinha de dezesseis unidades, docking decorativo, três perfis de spray, nove acabamentos e Mesa do Sacristão configurável
 
-A v1.0.20 foi validada em jogo e é a baseline protegida de economia, docking parcial, persistência, animação, VFX e áudio. Como a correção local da v1.1.2 não eliminou a cintilação do pomo no Bedrock, a v1.1.3 refina a própria malha autoral: base e colar metálicos agora possuem volume deliberado em todas as apresentações.
+A v1.0.20 foi validada em jogo e é a baseline protegida de economia, docking parcial, persistência, animação, VFX e áudio. O teste da v1.1.3 isolou a cintilação no render opaque e reduzido da mesa; a v1.1.4 corrige a causa na malha autoral, substituindo cuboides interpenetrados por placa sólida, aro vazado e faces internas seletivas em todas as apresentações.
 
 ## O que está resolvido
 
@@ -16,7 +16,7 @@ A v1.0.20 foi validada em jogo e é a baseline protegida de economia, docking pa
 - O modelo aparece em primeira e terceira pessoa, em escala física coerente.
 - A pose de primeira pessoa está aprovada e deve permanecer congelada.
 - A pose de terceira pessoa está suficientemente calibrada para iniciar a fase de animação.
-- A malha candidata mantém comprimento, largura máxima, grip e locator aprovados; onze cubos com UV per-face inteiro em densidade 2× produzem pomo metálico em dois estágios e cabeça escalonada/perfurada.
+- A malha candidata mantém comprimento, largura máxima, grip e locator aprovados; quatorze cubos com UV per-face inteiro em densidade 2× produzem pomo sem interseção positiva, colar vazado e cabeça escalonada/perfurada.
 - O estado acomodado não possui mais uma cópia simplificada: origem, tamanho e UV de cada cubo são derivados automaticamente do modelo empunhado e validados face a face.
 - Sobrevivência e Aventura consomem cargas; Criativo preserva uma carga real já existente; Espectador é negado.
 - O carregamento usa `instance_id`, uma sessão por jogador, lock leve por bloco, revalidação e rollback defensivo.
@@ -63,12 +63,12 @@ A v1.0.20 foi validada em jogo e é a baseline protegida de economia, docking pa
 | Entrada vanilla | `playerSwingStart` é after-event | alguns dispositivos podem mostrar feedback breve de mineração |
 | Docking 1.0.20 | validado em jogo pelo usuário; domínio e migração V1→V2 continuam cobertos automaticamente | manter `12+4`, `14+4`, `16+4`, reload, quebra e HUD como regressão da 1.1.2 |
 | Polimento visual 1.0.19b | capturas PBR reproduzíveis aprovam coerência estrutural fora do jogo | confirmar silhueta, mipmaps, culling e materiais no `.mcaddon` importado, em clássico/Vibrant Visuals |
-| Modelo 1.1.3 | pomo redesenhado na fonte autoral e propagado às três apresentações | confirmar no Bedrock que os dois estágios permanecem estáveis em movimento e melhoram a silhueta empunhada |
-| Compatibilidade 1.1.3 | IDs, states, UV layout, pivôs e locators publicados são preservados; somente a malha ganha um cubo prateado | validar mundo existente da 1.0.20/1.1.2 antes e depois do upgrade, sem cache concorrente |
+| Modelo 1.1.4 | placa sólida, aro vazado e máscaras de faces propagados às três apresentações | confirmar no Bedrock que a emenda permanece estável em movimento, especialmente na mesa opaque a `0.72` |
+| Compatibilidade 1.1.4 | IDs, states, pivôs, locators e contratos de gameplay são preservados; geometria e UVs são regenerados deliberadamente | validar mundo existente da 1.0.20/1.1.3 antes e depois do upgrade, sem cache concorrente |
 
 ## Próxima mudança autorizada
 
-A v1.1.3 está pronta para um reteste visual curto pelo gate inicial de [TESTING.md](TESTING.md). A prioridade é verificar o pomo na mão, na caldeirinha e sobre a mesa enquanto a câmera se move; o restante permanece como regressão já coberta.
+A v1.1.4 está pronta para um reteste visual curto pelo gate inicial de [TESTING.md](TESTING.md). A prioridade é verificar o aro vazado e a ausência da antiga faixa preto/prateada na mesa enquanto a câmera se move; mão, suporte de armadura e caldeirinha são comparações de controle.
 
 Não faz parte do próximo marco:
 

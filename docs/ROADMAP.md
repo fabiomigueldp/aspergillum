@@ -8,7 +8,24 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
-## v1.1.3 — pomo autoral em dois estágios — implementada; reteste visual pendente
+## v1.1.4 — transição topológica do pomo — implementada; reteste visual pendente
+
+Hipótese: a faixa preto/prateada observada somente na mesa nasce das tampas internas e dos três volumes interpenetrados da v1.1.3, amplificados pela escala `0.72`, rotação horizontal e render opaque do bloco.
+
+Escopo fechado:
+
+- substituir o colar sólido por aro de quatro barras ao redor do couro, sem interseção positiva;
+- assentar placa, aro e empunhadura em intervalos coerentes, mantendo o comprimento total e o grip aprovado;
+- omitir somente tampas internas comprovadas e preservar as máscaras em item, caldeirinha, mesa e visualizadores;
+- validar automaticamente topologia, máscara, UV e derivação da réplica reduzida.
+
+Gate de saída:
+
+- câmera lenta e oblíqua junto ao pomo da mesa não produz faixa alternante, moiré preto/prateado ou oscilação;
+- placa e aro permanecem legíveis, sem buraco, face ausente ou linha escura, nos quatro contextos de apresentação;
+- binding, poses, animações, gameplay, persistência e interface não sofrem regressão.
+
+## v1.1.3 — pomo autoral em dois estágios — implementada; topologia substituída pela v1.1.4
 
 Hipótese: eliminar a fragilidade subpixel refinando a peça metálica real, não acumulando compensações na composição da mesa.
 

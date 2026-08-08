@@ -2,12 +2,12 @@
 
 Add-On para Minecraft: Bedrock Edition 26.40 que adiciona um **aspersório litúrgico funcional**, uma **caldeirinha (aspersorium)** e uma **Mesa do Sacristão** para configuração gratuita. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão 1.1.3 RC:** refina o próprio modelo do aspersório com um pomo metálico em dois estágios, mais sólido e legível na mão, na caldeirinha e sobre a Mesa do Sacristão. A compensação exclusiva da mesa foi removida; todas as apresentações derivam novamente da mesma malha autoral. A personalização continua instantânea e gratuita.
+> **Versão 1.1.4 RC:** reconstrói a extremidade do cabo com placa terminal sólida, colar prateado realmente vazado e faces internas removidas. A transição deixa de conter volumes concorrentes e é propagada igualmente à mão, à caldeirinha e à Mesa do Sacristão. A personalização continua instantânea e gratuita.
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/releases/Aspergillum-1.1.3.mcaddon`](dist/releases/Aspergillum-1.1.3.mcaddon) com o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.1.4.mcaddon`](dist/releases/Aspergillum-1.1.4.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
@@ -49,8 +49,8 @@ As cargas permanecem finitas e persistentes. Ao acomodar, a transferência satur
 - micro-splash cosmético discreto no contato e áudio semanticamente separado entre pistas privadas do ator e eventos espaciais do mundo;
 - 15 famílias e 48 variantes próprias em OGG Vorbis mono/48 kHz, selecionadas por shuffle bag sem repetição imediata; commits de fill/load/dock/undock/release só soam após a mutação correspondente ter sido validada;
 - arquitetura híbrida deliberada: o servidor compartilha um único frame de release entre áudio, bridge e primeiro pulso, enquanto o script conserva o leque controlável; não há duplicação pela timeline nem emissão em tentativa vazia;
-- material opaco `entity`, textura com alfa integral, cubos com espessura positiva e seis UVs per-face explícitos por cubo, sempre com footprint inteiro mínimo de um texel;
-- atlas 64×64 gerado da fonte semântica `assets-src/models/aspergillum.model.json`, com superfícies coerentes de couro, prata, ouro e prata perfurada, padding dilatado de dois texels e mapas color/normal/MER derivados do mesmo layout;
+- material opaco `entity`, textura com alfa integral, cubos com espessura positiva e UVs per-face explícitos somente nas superfícies renderizadas, sempre com footprint inteiro mínimo de um texel;
+- atlas `128 × 128` gerado da fonte semântica `assets-src/models/aspergillum.model.json`, com superfícies coerentes de couro, prata, ouro e prata perfurada, padding dilatado de dois texels e mapas color/normal/MER derivados do mesmo layout;
 - quatro níveis visuais de água e versão decorativa com o aspersório acomodado;
 - mesa de madeira escura com tampo de veludo verde, ferragens discretas e réplica derivada da mesma malha/texturas do item; nove materiais acompanham o acabamento selecionado;
 - rotação visual em 16 direções por estado próprio e geometrias estáveis, sem traits de rotação experimentais;
@@ -81,7 +81,7 @@ Comandos importantes:
 | `npm run package` | Cria e valida oficialmente o `.mcaddon` |
 | `npm run clean` | Remove somente artefatos gerados conhecidos |
 
-O modelo autoral fica em [`assets-src/models/aspergillum.model.json`](assets-src/models/aspergillum.model.json). [`tools/generate-assets.mjs`](tools/generate-assets.mjs) remove metadados de produção, empacota as seis faces, gera a geometria Bedrock distribuída e pinta deterministicamente color/normal/MER. A referência visual em [`assets-src/concept-art/aspergillum-concept.png`](assets-src/concept-art/aspergillum-concept.png) orienta proporções e materiais, mas não é distribuída no add-on.
+O modelo autoral fica em [`assets-src/models/aspergillum.model.json`](assets-src/models/aspergillum.model.json). [`tools/generate-assets.mjs`](tools/generate-assets.mjs) remove metadados de produção, respeita as máscaras autorais, empacota apenas as faces visíveis, gera a geometria Bedrock distribuída e pinta deterministicamente color/normal/MER. A referência visual em [`assets-src/concept-art/aspergillum-concept.png`](assets-src/concept-art/aspergillum-concept.png) orienta proporções e materiais, mas não é distribuída no add-on.
 
 Os SFX desta RC foram gerados com ElevenLabs no plano gratuito e, portanto, são **somente para validação não comercial e com atribuição**. Generated with ElevenLabs. Uma publicação comercial exige regenerar as fontes numa assinatura paga e substituir a proveniência antes do gate de release; veja [Contrato de áudio](docs/AUDIO_DESIGN_CONTRACT.md).
 

@@ -31,7 +31,9 @@ export function getBedrockFaceRect(uvDefinition, faceName, size) {
     };
   }
 
-  const faceDefinition = uvDefinition[faceName] ?? {};
+  if (!Object.hasOwn(uvDefinition, faceName)) return null;
+
+  const faceDefinition = uvDefinition[faceName];
   const faceUv = faceDefinition.uv ?? defaultUv;
   const faceSize = faceDefinition.uv_size ?? defaultRects[faceName].slice(2);
   return {

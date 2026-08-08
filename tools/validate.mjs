@@ -285,7 +285,7 @@ if ((authoredTableRoot?.cubes ?? []).some((cube) => ["left_support", "right_supp
   errors.push("Sacristan table top must not restore the removed brass supports");
 }
 const restingAspergillum = (tableGeometry?.bones ?? []).find((bone) => bone.name === "resting_aspergillum");
-if (restingAspergillum?.cubes?.length !== 11) {
+if (restingAspergillum?.cubes?.length !== 14) {
   errors.push("Sacristan table must present the complete authored aspergillum silhouette");
 }
 if (JSON.stringify(restingAspergillum?.pivot) !== JSON.stringify([0, 16.2, 0])
@@ -306,13 +306,19 @@ if (restingCenter.some((value, axis) => Math.abs(value - [0, 16.2, 0][axis]) > 1
   errors.push("Sacristan table replica must remain centered and scaled to fit inside the 13x13 velvet interior");
 }
 const tablePommelBase = restingAspergillum?.cubes?.[1];
-const tablePommelCollar = restingAspergillum?.cubes?.[2];
+const tablePommelCollar = restingAspergillum?.cubes?.slice(2, 6) ?? [];
 const matchesDimensions = (actual, expected) => expected.every(
   (dimension, axis) => Math.abs((actual?.[axis] ?? Number.NaN) - dimension) <= 1e-6,
 );
-if (!matchesDimensions(tablePommelBase?.size, [1.62, 0.576, 1.62])
-  || !matchesDimensions(tablePommelCollar?.size, [1.368, 0.504, 1.368])) {
-  errors.push("Sacristan table must inherit both substantial pommel stages at the reviewed 0.72 scale");
+const expectedTableCollarSizes = [
+  [1.548, 0.54, 0.144],
+  [1.548, 0.54, 0.144],
+  [0.144, 0.54, 1.26],
+  [0.144, 0.54, 1.26],
+];
+if (!matchesDimensions(tablePommelBase?.size, [1.62, 0.432, 1.62])
+  || tablePommelCollar.some((cube, index) => !matchesDimensions(cube?.size, expectedTableCollarSizes[index]))) {
+  errors.push("Sacristan table must inherit the solid pommel plate and hollow four-piece collar at the reviewed 0.72 scale");
 }
 
 const attachableSource = fs.readFileSync(
@@ -419,15 +425,55 @@ if (sprayAimBone?.parent !== "sprinkler_head"
 const cubes = [...(handleBone?.cubes ?? []), ...(sprinklerHeadBone?.cubes ?? [])];
 const sourceCubes = heldSourceBones.flatMap((bone) => bone.cubes ?? []);
 const authoredPommelBase = sourceCubes.find((cube) => cube.name === "silver_pommel_base");
-const authoredPommelCollar = sourceCubes.find((cube) => cube.name === "silver_pommel_collar");
+const authoredGrip = sourceCubes.find((cube) => cube.name === "leather_grip");
+const authoredPommelCollar = sourceCubes.filter((cube) => cube.name?.startsWith("silver_pommel_collar_"));
+const expectedPommelCollar = [
+  {
+    name: "silver_pommel_collar_north",
+    origin: [-7.075, 21.8, -0.075],
+    size: [2.15, 0.75, 0.2],
+    faces: ["north", "east", "south", "west", "up"],
+  },
+  {
+    name: "silver_pommel_collar_south",
+    origin: [-7.075, 21.8, 1.875],
+    size: [2.15, 0.75, 0.2],
+    faces: ["north", "east", "south", "west", "up"],
+  },
+  {
+    name: "silver_pommel_collar_west",
+    origin: [-7.075, 21.8, 0.125],
+    size: [0.2, 0.75, 1.75],
+    faces: ["east", "west", "up"],
+  },
+  {
+    name: "silver_pommel_collar_east",
+    origin: [-5.125, 21.8, 0.125],
+    size: [0.2, 0.75, 1.75],
+    faces: ["east", "west", "up"],
+  },
+];
 if (JSON.stringify(authoredPommelBase?.origin) !== JSON.stringify([-7.125, 21.2, -0.125])
-  || JSON.stringify(authoredPommelBase?.size) !== JSON.stringify([2.25, 0.8, 2.25])
-  || JSON.stringify(authoredPommelCollar?.origin) !== JSON.stringify([-6.95, 21.8, 0.05])
-  || JSON.stringify(authoredPommelCollar?.size) !== JSON.stringify([1.9, 0.7, 1.9])) {
-  errors.push("Authored handle must preserve the reviewed two-stage substantial silver pommel");
+  || JSON.stringify(authoredPommelBase?.size) !== JSON.stringify([2.25, 0.6, 2.25])
+  || JSON.stringify(authoredGrip?.origin) !== JSON.stringify([-6.8125, 21.8, 0.1875])
+  || JSON.stringify(authoredGrip?.size) !== JSON.stringify([1.625, 4.7, 1.625])
+  || JSON.stringify(authoredPommelCollar.map(({ name, origin, size, faces }) => ({ name, origin, size, faces })))
+    !== JSON.stringify(expectedPommelCollar)) {
+  errors.push("Authored handle must preserve the non-intersecting solid plate, hollow collar, and seated leather grip");
 }
-if (cubes.length !== 11) {
-  errors.push("Handle and sprinkler head must preserve the eleven authored aspergillum cubes");
+const pommelTransition = [authoredGrip, authoredPommelBase, ...authoredPommelCollar].filter(Boolean);
+const hasPositiveVolumeOverlap = (first, second) => [0, 1, 2].every((axis) =>
+  Math.min(first.origin[axis] + first.size[axis], second.origin[axis] + second.size[axis])
+    - Math.max(first.origin[axis], second.origin[axis]) > 1e-6);
+for (let firstIndex = 0; firstIndex < pommelTransition.length; firstIndex += 1) {
+  for (let secondIndex = firstIndex + 1; secondIndex < pommelTransition.length; secondIndex += 1) {
+    if (hasPositiveVolumeOverlap(pommelTransition[firstIndex], pommelTransition[secondIndex])) {
+      errors.push(`Pommel transition volumes must not intersect: ${pommelTransition[firstIndex].name} / ${pommelTransition[secondIndex].name}`);
+    }
+  }
+}
+if (cubes.length !== 14) {
+  errors.push("Handle and sprinkler head must preserve the fourteen authored aspergillum cubes");
 } else {
   const grip = [-6, 24, 1];
   const handleContainsGrip = grip.every(
@@ -445,7 +491,7 @@ if (cubes.length !== 11) {
   }
 
   if (sourceCubes.length !== cubes.length) {
-    errors.push("Authored and generated aspergillum models must contain the same eleven cubes");
+    errors.push("Authored and generated aspergillum models must contain the same fourteen cubes");
   }
   const allowedSurfaces = new Set(["leather", "silver", "gold", "perforated_silver"]);
   for (const [index, sourceCube] of sourceCubes.entries()) {
@@ -476,11 +522,12 @@ if (cubes.length !== 11) {
       errors.push(`Aspergillum cube ${cubeIndex + 1} must use explicit per-face UVs; fractional Box UVs are unsafe in Bedrock`);
       continue;
     }
-    if (Object.keys(cube.uv).sort().join() !== [...faceNames].sort().join()) {
-      errors.push(`Aspergillum cube ${cubeIndex + 1} must explicitly map all six faces`);
+    const selectedFaces = sourceCubes[cubeIndex]?.faces ?? faceNames;
+    if (Object.keys(cube.uv).sort().join() !== [...selectedFaces].sort().join()) {
+      errors.push(`Aspergillum cube ${cubeIndex + 1} must map exactly its authored visible faces`);
       continue;
     }
-    for (const faceName of faceNames) {
+    for (const faceName of selectedFaces) {
       const face = cube.uv[faceName];
       const values = [...(face?.uv ?? []), ...(face?.uv_size ?? [])];
       if (values.length !== 4 || values.some((value) => !Number.isInteger(value))) {
@@ -523,7 +570,11 @@ if (cubes.length !== 11) {
         || JSON.stringify(dockedCube.size) !== JSON.stringify(cube.size)) {
         errors.push(`Docked aspergillum cube ${cubeIndex + 1} diverges from the held-model silhouette`);
       }
-      for (const faceName of faceNames) {
+      const selectedFaces = Object.keys(cube.uv);
+      if (Object.keys(dockedCube.uv ?? {}).sort().join() !== [...selectedFaces].sort().join()) {
+        errors.push(`Docked aspergillum cube ${cubeIndex + 1} diverges from the held-model face mask`);
+      }
+      for (const faceName of selectedFaces) {
         const expectedUv = [
           cube.uv[faceName].uv[0] + dockedUvOffset[0],
           cube.uv[faceName].uv[1] + dockedUvOffset[1],
@@ -531,6 +582,35 @@ if (cubes.length !== 11) {
         if (JSON.stringify(dockedCube.uv?.[faceName]?.uv) !== JSON.stringify(expectedUv)
           || JSON.stringify(dockedCube.uv?.[faceName]?.uv_size) !== JSON.stringify(cube.uv[faceName].uv_size)) {
           errors.push(`Docked aspergillum cube ${cubeIndex + 1}.${faceName} must share the held-model UV island`);
+        }
+      }
+    }
+  }
+
+  const tableTranslation = [6, -12.8, -1];
+  const tableScaleAnchor = [-6, 29, 1];
+  const tableScale = 0.72;
+  const tableUvOffset = [128, 0];
+  if ((restingAspergillum?.cubes ?? []).length !== cubes.length) {
+    errors.push("Sacristan table must be generated from every held-model cube");
+  } else {
+    for (const [cubeIndex, cube] of cubes.entries()) {
+      const tableCube = restingAspergillum.cubes[cubeIndex];
+      const expectedOrigin = cube.origin.map((coordinate, axis) =>
+        tableScaleAnchor[axis] + (coordinate - tableScaleAnchor[axis]) * tableScale + tableTranslation[axis]);
+      const expectedSize = cube.size.map((dimension) => dimension * tableScale);
+      if (!matchesDimensions(tableCube.origin, expectedOrigin) || !matchesDimensions(tableCube.size, expectedSize)) {
+        errors.push(`Sacristan table aspergillum cube ${cubeIndex + 1} diverges from the scaled held-model silhouette`);
+      }
+      const selectedFaces = Object.keys(cube.uv);
+      if (Object.keys(tableCube.uv ?? {}).sort().join() !== [...selectedFaces].sort().join()) {
+        errors.push(`Sacristan table aspergillum cube ${cubeIndex + 1} diverges from the held-model face mask`);
+      }
+      for (const faceName of selectedFaces) {
+        const expectedUv = [cube.uv[faceName].uv[0] + tableUvOffset[0], cube.uv[faceName].uv[1]];
+        if (JSON.stringify(tableCube.uv?.[faceName]?.uv) !== JSON.stringify(expectedUv)
+          || JSON.stringify(tableCube.uv?.[faceName]?.uv_size) !== JSON.stringify(cube.uv[faceName].uv_size)) {
+          errors.push(`Sacristan table aspergillum cube ${cubeIndex + 1}.${faceName} must share the held-model UV island`);
         }
       }
     }

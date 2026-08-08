@@ -63,3 +63,9 @@ test('uses explicit per-face uv_size and material instance without quantizing', 
     materialInstance: 'water',
   });
 });
+
+test('treats an omitted per-face UV as an intentionally unrendered Bedrock face', () => {
+  assert.equal(getBedrockFaceRect({
+    up: { uv: [4, 4], uv_size: [2, 2] },
+  }, 'down', [2, 2, 2]), null);
+});

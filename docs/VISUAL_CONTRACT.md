@@ -2,7 +2,7 @@
 
 Este documento registra os valores estruturais comprovados até a v1.0.15d, a integração VFX corrigida até a v1.0.16c e o pipeline de superfície/coerência de composição atualizado na v1.0.19b. Eles são baseline, não sugestões de calibração.
 
-A v1.1 adiciona variantes de superfície, perfis de spray e o refinamento físico do pomo da v1.1.3. Nenhum acabamento pode alterar bones, pivôs, UV layout, grip, locator ou poses abaixo. `classic` mantém a linguagem material da 1.0.20; as oito variantes trocam apenas color/normal/MER derivados do catálogo. Item empunhado, caldeirinha e mesa derivam os mesmos onze cubos e UVs da fonte autoral, sem exceção geométrica local.
+A v1.1 adiciona variantes de superfície, perfis de spray e a transição topologicamente limpa do pomo da v1.1.4. Nenhum acabamento pode alterar bones, pivôs, grip, locator ou poses abaixo. `classic` mantém a linguagem material da 1.0.20; as oito variantes trocam apenas color/normal/MER derivados do catálogo. Item empunhado, caldeirinha e mesa derivam os mesmos quatorze cubos, máscaras e UVs da fonte autoral, sem exceção geométrica local.
 
 ## Attachable
 
@@ -29,16 +29,16 @@ rightItem (holder)
 | Escala | `1` |
 | Comprimento | `15.6` unidades de modelo (`0.975` bloco) |
 | Largura máxima da cabeça | `4.94` unidades de modelo |
-| Cubos reais | `11`: cinco no cabo e seis na cabeça |
+| Cubos reais | `14`: oito no cabo e seis na cabeça |
 | Fonte autoral | `assets-src/models/aspergillum.model.json` |
-| UV distribuído | seis faces explícitas por cubo, coordenadas e `uv_size` inteiros |
+| UV distribuído | faces visíveis explícitas por cubo; faces internas omitidas; coordenadas e `uv_size` inteiros |
 | Atlas do item | `128 × 128`, densidade de `2` texels por unidade de modelo |
 | Footprint mínimo | `1 × 1` texel por face; dimensões usam `ceil(dimensão × 2)`, nunca Box UV implícito |
 | Padding do atlas | `2` texels dilatados ao redor de cada ilha para proteger mipmaps |
 | Superfícies | grip `leather`; pomo/haste/cabeça `silver`; férula `gold`; corpo da cabeça `perforated_silver` |
 | Cabeça v1.0.19b | anel inferior, domo inferior, corpo perfurado, domo superior, anel superior e terminal, dentro do envelope anterior |
 | Fonte autoral do bloco | `assets-src/models/aspersorium.model.json` |
-| Composição acomodada | os onze cubos e UVs do item são transladados pelo gerador; não existe réplica simplificada |
+| Composição acomodada | os quatorze cubos, máscaras e UVs do item são transformados pelo gerador; não existe réplica simplificada |
 | Primeira pessoa: posição aditiva | `[0, 0, 0]` |
 | Primeira pessoa: rotação aditiva | `[180, 0, 0]` |
 | Primeira pessoa: rotação efetiva | `[205, 0, -12]` |
@@ -55,9 +55,10 @@ rightItem (holder)
 - A pose de primeira pessoa não deve ser afetada por correções de terceira pessoa.
 - Não se transplanta pose de tridente, lança ou outra malha vanilla como se fosse universal.
 - Dimensão física e resolução de UV são contratos distintos: cubos podem permanecer abaixo de uma unidade para preservar a silhueta, mas a densidade aprovada é de dois texels por unidade e nenhuma face pode receber menos de um texel.
-- Box UV é proibido no attachable empunhado enquanto houver dimensão menor que uma unidade; as seis faces devem permanecer explícitas e dentro do atlas.
+- Box UV é proibido no attachable empunhado enquanto houver dimensão menor que uma unidade; cada face renderizada deve permanecer explícita e dentro do atlas, e uma face ausente deve representar omissão deliberada na fonte.
 - Color, normal e MER devem nascer do mesmo layout gerado. Não se edita um PNG final ou a geometria distribuída isoladamente.
-- O pomo usa dois volumes prateados: base `2.25 × 0.8 × 2.25` em `[-7.125, 21.2, -0.125]` e colar `1.9 × 0.7 × 1.9` em `[-6.95, 21.8, 0.05]`. O comprimento mínimo continua em `y = 21.2`.
+- O pomo usa placa sólida `2.25 × 0.6 × 2.25` em `[-7.125, 21.2, -0.125]` e aro externo `2.15 × 0.75 × 2.15`, composto por quatro barras ao redor de uma abertura `1.75 × 1.75`. O couro começa em `y = 21.8`, deixa folga radial de `0.0625` para o aro e não possui sobreposição positiva com nenhuma peça do pomo. O comprimento mínimo continua em `y = 21.2`.
+- Tampas internas são omitidas por máscara autoral: `leather_grip.down`, `silver_shaft.down`, os quatro `collar.down` e as tampas norte/sul das duas barras laterais. O gerador, os visualizadores e as composições acomodadas devem preservar exatamente essas máscaras.
 - A aparência `resting_aspergillum` deve ser derivada do attachable: cada origin recebe somente a translação `[6,-17,-1]`, cada size permanece igual e cada ilha UV recebe somente o offset `[128,0]` no atlas `256 × 256` da caldeirinha.
 
 ## Spray v1.0.16c

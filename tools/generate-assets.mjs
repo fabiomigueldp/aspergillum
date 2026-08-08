@@ -110,6 +110,18 @@ function faceTexelSize(size, faceName, texelsPerUnit = 1) {
   return dimensions.map((dimension) => Math.max(1, Math.ceil(dimension * texelsPerUnit)));
 }
 
+function selectedFaceNames(cube, cubeName) {
+  if (cube.faces === undefined) return FACE_NAMES;
+  if (!Array.isArray(cube.faces) || cube.faces.length === 0) {
+    throw new Error(`Authored cube ${cubeName} requires at least one rendered face`);
+  }
+  const uniqueFaces = new Set(cube.faces);
+  if (uniqueFaces.size !== cube.faces.length || cube.faces.some((faceName) => !FACE_NAMES.includes(faceName))) {
+    throw new Error(`Authored cube ${cubeName} contains an invalid or duplicate face mask`);
+  }
+  return FACE_NAMES.filter((faceName) => uniqueFaces.has(faceName));
+}
+
 function buildEntityGeometry() {
   const sourcePath = path.join(root, "assets-src/models/aspergillum.model.json");
   const geometry = JSON.parse(fs.readFileSync(sourcePath, "utf8"));
@@ -127,11 +139,13 @@ function buildEntityGeometry() {
       const cubeName = cube.name ?? `${bone.name}_${cubeIndex + 1}`;
       const surface = cube.surface;
       if (!surface) throw new Error(`Missing surface for ${cubeName}`);
+      const faceNames = selectedFaceNames(cube, cubeName);
       delete cube.name;
       delete cube.surface;
+      delete cube.faces;
       cube.uv = {};
 
-      for (const faceName of FACE_NAMES) {
+      for (const faceName of faceNames) {
         const [width, height] = faceTexelSize(cube.size, faceName, ENTITY_TEXELS_PER_UNIT);
         const packedWidth = width + UV_PADDING * 2;
         const packedHeight = height + UV_PADDING * 2;
@@ -488,10 +502,12 @@ function buildSemanticBlockGeometry(sourceRelative, packingWidth, texelsPerUnit 
       const cubeName = cube.name ?? `${bone.name}_${cubeIndex + 1}`;
       const surface = cube.surface;
       if (!surface) throw new Error(`Missing surface for ${cubeName}`);
+      const faceNames = selectedFaceNames(cube, cubeName);
       delete cube.name;
       delete cube.surface;
+      delete cube.faces;
       cube.uv = {};
-      for (const faceName of FACE_NAMES) {
+      for (const faceName of faceNames) {
         const [width, height] = faceTexelSize(cube.size, faceName, texelsPerUnit);
         const packedWidth = width + UV_PADDING * 2;
         const packedHeight = height + UV_PADDING * 2;

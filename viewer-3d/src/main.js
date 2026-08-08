@@ -220,6 +220,7 @@ function createCubeMesh(cube, bone, geometrySummary, textures) {
   for (let index = 0; index < THREE_BOX_FACE_ORDER.length; index += 1) {
     const faceName = THREE_BOX_FACE_ORDER[index];
     const face = getBedrockFaceRect(cube.uv, faceName, size);
+    if (!face) continue;
     writeBedrockFaceUvs(uvAttribute, index * 4, face.rect, geometrySummary.textureWidth, geometrySummary.textureHeight);
     boxGeometry.addGroup(index * 6, 6, face.materialInstance === 'water' ? 1 : 0);
   }
