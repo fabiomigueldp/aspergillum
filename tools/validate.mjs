@@ -154,14 +154,15 @@ for (const boneName of Object.keys(expectedWaterVisibility)) {
   if (!waterBones.has(boneName)) errors.push(`Aspersorium geometry is missing ${boneName}`);
 }
 const materialInstances = block?.components?.["minecraft:material_instances"] ?? {};
-const renderMethods = new Set(
-  Object.values(materialInstances)
-    .map((instance) => instance?.render_method)
-    .filter(Boolean),
-);
-if (renderMethods.size > 1) {
-  errors.push("All Aspersorium material instances must use the same render method");
+function validateAspersoriumMaterialProfile(instances, label) {
+  if (instances?.["*"]?.render_method !== "opaque") {
+    errors.push(`${label} structure must use the physically validated opaque render method`);
+  }
+  if (instances?.water?.render_method !== "blend") {
+    errors.push(`${label} water must preserve the physically validated blend render method`);
+  }
 }
+validateAspersoriumMaterialProfile(materialInstances, "Base Aspersorium material profile");
 if (block?.components?.["minecraft:movable"]?.movement_type !== "immovable") {
   errors.push("Persistent docked metadata requires the Aspersorium to remain immovable");
 }
@@ -177,6 +178,14 @@ for (const cosmetic of cosmetics.slice(1)) {
   if (cosmeticMaterialPermutations.get(cosmetic.index) !== `aspersorium_${cosmetic.id}`) {
     errors.push(`Aspersorium is missing material permutation for cosmetic ${cosmetic.id}`);
   }
+  const permutation = block?.permutations?.find(
+    (candidate) => candidate.condition.includes("aspergillum:cosmetic")
+      && Number(candidate.condition.match(/==\s*(\d+)/)?.[1]) === cosmetic.index,
+  );
+  validateAspersoriumMaterialProfile(
+    permutation?.components?.["minecraft:material_instances"],
+    `Aspersorium cosmetic ${cosmetic.id}`,
+  );
 }
 const dockedLoot = JSON.parse(
   fs.readFileSync(path.join(packRoots[0], "loot_tables", "blocks", "aspersorium_docked.loot.json"), "utf8"),

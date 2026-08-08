@@ -8,6 +8,43 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
+## v1.1.7 — separação material da caldeirinha — implementada; reteste oficial pendente
+
+Decisão: promover a composição visualmente aprovada na 1.1.7b, mantendo `opaque` na estrutura e no aspersório acomodado e `blend` somente na água. A geometria permanece a cabeça simples de seis volumes da 1.1.6.
+
+Escopo fechado:
+
+- aplicar o perfil misto à base e às oito permutações cosméticas da caldeirinha;
+- exigir o perfil exato no gerador e no validador, sem alterar texturas, UVs, pivôs, locators, estados ou gameplay;
+- distribuir o rótulo `1.1.7` com revisão monotônica `[1,1,10]`, sem reutilizar as revisões diagnósticas;
+- registrar como exceção conhecida as duas mensagens de `MaterialInstances` emitidas pelo runtime 26.42;
+- reabrir a decisão se surgir regressão correlata em câmera próxima, transparência, faces, dispositivo, Vibrant Visuals ou nova versão do Bedrock.
+
+Gate de saída:
+
+- pacote oficial reproduz estabilidade de topo/base/laterais e água translúcida observadas na B;
+- smoke funcional completo permanece verde;
+- Content Log contém no máximo as duas mensagens conhecidas de `MaterialInstances`, sem qualquer outra regressão atribuível ao add-on.
+
+## v1.1.7a/b/c — matriz do passe de renderização — implementada e validada; B promovida
+
+Hipótese revisada: a v1.1.6 removeu pares coplanares, mas conservou aproximadamente `62.34` unidades quadradas de centros horizontais enterrados. O desaparecimento que retornou depende da combinação entre essas faces e o passe `blend` uniforme da caldeirinha, não apenas de z-fighting entre duas tampas coincidentes.
+
+Escopo diagnóstico fechado:
+
+- `1.1.7a` / `[1,1,7]`: geometria 1.1.6 totalmente `opaque`, inclusive água;
+- `1.1.7b` / `[1,1,8]`: geometria 1.1.6 com estrutura/aspersório `opaque` e somente água `blend`;
+- `1.1.7c` / `[1,1,9]`: `blend` uniforme com cabeça exterior de seis paredes integrais e vinte faixas horizontais isoladas;
+- preservar scripts, estado, gameplay, IDs, binding, poses, pivôs e locators; usar UUIDs diagnósticos próprios e um mundo separado por variante;
+- aceitar na C o aviso de mais de cinquenta cubos somente para falsificar a hipótese sem repetir a otimização defeituosa da 1.1.5.
+
+Resultado:
+
+- A corrigiu a renderização, mas perdeu a translucidez da água;
+- B corrigiu o defeito e outras falhas visuais sem regressão funcional, apesar das duas mensagens runtime conhecidas;
+- C corrigiu o alvo original, mas criou falhas de proximidade e permaneceu acima do orçamento de cubos;
+- o perfil da B foi escolhido para a release 1.1.7; os três pacotes diagnósticos continuam fora de produção.
+
 ## v1.1.6 — volumes laterais estáveis e junções de tampa única — implementada; reteste visual pendente
 
 Hipótese: o Bedrock aceita as máscaras horizontais, mas o renderizador de custom blocks não conserva de forma confiável duas paredes quando elas são repartidas entre cuboides anulares finos como na v1.1.5.

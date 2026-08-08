@@ -1,4 +1,4 @@
-# Contrato da Mesa do Sacristão — v1.1.6
+# Contrato da Mesa do Sacristão — v1.1.7
 
 ## Intenção
 

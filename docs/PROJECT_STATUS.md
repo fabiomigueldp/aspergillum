@@ -2,13 +2,15 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.1.6` Release Candidate (revisão numérica dos packs `[1, 1, 6]`)
+- **Versão de referência:** `1.1.7` Release Candidate (revisão numérica dos packs `[1, 1, 10]`)
 - **Engine mínima:** Creator `1.26.40`
 - **Script API:** manifest com `@minecraft/server` `2.9.0` e `@minecraft/server-ui` `2.1.0`, estáveis; `@minecraft/common` `1.3.0` somente no toolchain npm
 - **Experimentos:** nenhum
 - **Conteúdo:** aspersório funcional de quatro cargas, caldeirinha de dezesseis unidades, docking decorativo, três perfis de spray, nove acabamentos e Mesa do Sacristão configurável
 
 A v1.0.20 foi validada em jogo e é a baseline protegida de economia, docking parcial, persistência, animação, VFX e áudio. A v1.1.4 corrigiu a interseção do pomo; a v1.1.5 removeu as tampas coincidentes da cabeça, mas a decomposição em aros finos perdeu duas paredes no renderizador de blocos. A v1.1.6 conserva seis volumes com paredes integrais e apenas uma tampa por junção.
+
+O reteste físico da v1.1.6 demonstrou que remover somente a segunda tampa coplanar não eliminava o desaparecimento angular no passe `blend` da caldeirinha. A matriz `1.1.7a/b/c` confirmou a composição B como a melhor resposta visual: estrutura/aspersório `opaque` e água `blend`. A v1.1.7 promove esse perfil sem alterar a geometria simples aprovada.
 
 ## O que está resolvido
 
@@ -18,6 +20,7 @@ A v1.0.20 foi validada em jogo e é a baseline protegida de economia, docking pa
 - A pose de terceira pessoa está suficientemente calibrada para iniciar a fase de animação.
 - A malha candidata mantém comprimento, largura máxima, grip e locator aprovados; quatorze peças com UV per-face inteiro em densidade 2× produzem o cabo de oito peças e a cabeça de seis volumes com quatro paredes integrais, sem pares de faces renderizadas coincidentes.
 - O estado acomodado não possui mais uma cópia simplificada: origem, tamanho e UV de cada cubo são derivados automaticamente do modelo empunhado e validados face a face.
+- Na caldeirinha, a estrutura e o aspersório acomodado usam o passe `opaque`; somente a água usa `blend`, preservando translucidez e estabilidade visual em todos os ângulos testados.
 - Sobrevivência e Aventura consomem cargas; Criativo preserva uma carga real já existente; Espectador é negado.
 - O carregamento usa `instance_id`, uma sessão por jogador, lock leve por bloco, revalidação e rollback defensivo.
 - A rajada usa 36 gotas em seis pulsos, leque anisotrópico, gravidade, colisão e direção suavizada conforme a câmera.
@@ -63,12 +66,12 @@ A v1.0.20 foi validada em jogo e é a baseline protegida de economia, docking pa
 | Entrada vanilla | `playerSwingStart` é after-event | alguns dispositivos podem mostrar feedback breve de mineração |
 | Docking 1.0.20 | validado em jogo pelo usuário; domínio e migração V1→V2 continuam cobertos automaticamente | manter `12+4`, `14+4`, `16+4`, reload, quebra e HUD como regressão da 1.1.2 |
 | Polimento visual 1.0.19b | capturas PBR reproduzíveis aprovam coerência estrutural fora do jogo | confirmar silhueta, mipmaps, culling e materiais no `.mcaddon` importado, em clássico/Vibrant Visuals |
-| Modelo 1.1.6 | seis níveis com paredes laterais integrais e uma única tampa por junção; pomo 1.1.4 preservado | confirmar no Bedrock quatro lados completos e ausência de oscilação no topo/base da caldeirinha `blend` |
-| Compatibilidade 1.1.6 | IDs, states, pivôs, locators e contratos de gameplay são preservados; máscaras e UVs são regenerados deliberadamente | validar mundo existente da 1.0.20/1.1.5 antes e depois do upgrade, sem cache concorrente |
+| Material da caldeirinha 1.1.7 | perfil misto `opaque`/`blend` aprovado em jogo, com todas as funcionalidades e apresentações estáveis | o runtime 26.42 registra warning/error conhecidos de `MaterialInstances`; reavaliar se surgir regressão visual correlata ou mudança de plataforma |
+| Compatibilidade 1.1.7 | IDs, states, pivôs, locators e contratos de gameplay são preservados; somente o perfil de renderização muda | validar mundo existente da 1.0.20/1.1.6 antes e depois do upgrade, sem cache concorrente |
 
 ## Próxima mudança autorizada
 
-A v1.1.6 está pronta para um reteste visual curto pelo gate inicial de [TESTING.md](TESTING.md). A prioridade é confirmar os quatro lados da cabeça clássica/dourada na mesa e na caldeirinha e, na mesma órbita, verificar que topo e base continuam estáveis. Mão e suporte de armadura são comparações de controle.
+Retestar o pacote oficial 1.1.7 pelo gate curto de [TESTING.md](TESTING.md): clássico/dourado, caldeirinha vazia/cheia, aproximação da câmera e smoke funcional. As duas mensagens conhecidas de `MaterialInstances` são aceitas somente enquanto a apresentação permanecer estável e nenhuma outra mensagem atribuível ao add-on surgir.
 
 Não faz parte do próximo marco:
 

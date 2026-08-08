@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.1.7 — 2026-08-08
+
+- promovida a composição fisicamente aprovada na diagnóstica 1.1.7b: estrutura da caldeirinha e aspersório acomodado usam `opaque`, enquanto somente a água preserva `blend` e translucidez;
+- o teste integral em jogo confirmou topo/base e quatro lados estáveis, eliminou também outras falhas de renderização da composição e preservou todas as funcionalidades do add-on;
+- mantida integralmente a cabeça simples da 1.1.6, com seis volumes, quatro paredes por nível e uma tampa por junção; a topologia exterior complexa da diagnóstica C foi rejeitada;
+- o runtime atual registra as mensagens conhecidas de métodos mistos em `MaterialInstances`; a revisão foi aceita conscientemente após validação física completa, com reavaliação obrigatória diante de regressão visual ou mudança de plataforma;
+- validadores passam a exigir exatamente `opaque` para a estrutura e `blend` para a água em todas as variantes cosméticas;
+- o rótulo distribuído é `1.1.7` e a revisão numérica monotônica dos packs é `[1,1,10]`.
+
+## 1.1.7a / 1.1.7b / 1.1.7c — 2026-08-08 — diagnósticos de renderização
+
+- produzida uma matriz controlada de três `.mcaddon` temporários para isolar o desaparecimento angular das faces horizontais da cabeça somente na caldeirinha;
+- a `1.1.7a` (`[1,1,7]`) mantém a geometria 1.1.6 e move estrutura, aspersório e água para `opaque`;
+- a `1.1.7b` (`[1,1,8]`) mantém a geometria 1.1.6, usa `opaque` na estrutura/aspersório e preserva `blend` somente na água;
+- a `1.1.7c` (`[1,1,9]`) mantém `blend` uniforme e substitui apenas a cabeça por seis paredes integrais mais vinte faixas de terraço de face única, sem centros horizontais enterrados nem a otimização lateral da 1.1.5;
+- cada diagnóstico recebe nomes, ícones, revisões e UUIDs próprios, mas conserva os mesmos IDs públicos; somente um par BP/RP pode ser ativado por mundo de teste;
+- scripts de gameplay e textura da água são byte-idênticos nos três pacotes; A/B diferem da baseline somente por manifests, ícones e material da caldeirinha;
+- Creator Tools aprovou A/B com os onze avisos offline conhecidos e nenhum aviso novo de `MaterialInstances`; C acrescenta 34 avisos esperados de mais de cinquenta cubos, aceitos somente no diagnóstico;
+- os três pacotes permanecem artefatos diagnósticos; somente o perfil material comprovado da B foi promovido à release oficial 1.1.7.
+
 ## 1.1.6 — 2026-08-07
 
 - corrigida a regressão da v1.1.5 em que as paredes `east`/`west` da cabeça, distribuídas entre aros finos, eram descartadas pelo renderizador de blocos do Bedrock e deixavam dois lados vazados na mesa e na caldeirinha;

@@ -198,6 +198,10 @@ O reservatório mantém `0..16` unidades lógicas exatas. A infraestrutura usa u
 
 A Mesa do Sacristão possui `2 × 9 × 16 = 288` combinações. O índice cosmético é apenas projeção visual do snapshot; não substitui o `cosmeticId` persistido no item. Bloco colocado em revisão anterior não existe, e states ausentes/cosméticos legados da caldeirinha resolvem para índice `0`, a aparência clássica.
 
+### Perfil material da caldeirinha 1.1.7
+
+A estrutura metálica e o aspersório acomodado usam `opaque`; somente a superfície de água usa `blend`. A matriz física 1.1.7a/b/c demonstrou que essa separação estabiliza a composição e preserva a translucidez. O runtime 26.42 ainda registra duas mensagens conhecidas de `MaterialInstances` para métodos mistos. Esse débito é deliberado, restrito à apresentação e deve ser reavaliado se uma atualização, dispositivo, Vibrant Visuals ou aproximação de câmera voltar a produzir falha correlata. Estado, água lógica e gameplay não dependem do resultado do renderizador.
+
 ## Schema e inicialização
 
 O schema atual é 3. Itens brutos e schemas 0/1/2 são normalizados em todos os slots do inventário, preservando cargas e identidade válida; cosmético/perfil recebem defaults estáveis. A passagem 2→3 amplia a capacidade para quatro sem fabricar a quarta carga. Lore é uma apresentação `RawMessage` traduzida pelo cliente. Schemas futuros não são regravados e operações que mudariam seu estado são recusadas.

@@ -3,6 +3,21 @@ import path from "node:path";
 import { PNG } from "pngjs";
 
 const root = path.resolve(import.meta.dirname, "..");
+const generatedRoot = process.env.ASPERGILLUM_GENERATED_ROOT
+  ? path.resolve(root, process.env.ASPERGILLUM_GENERATED_ROOT)
+  : root;
+const aspergillumModelSource = process.env.ASPERGILLUM_MODEL_SOURCE
+  ? path.resolve(root, process.env.ASPERGILLUM_MODEL_SOURCE)
+  : path.join(root, "assets-src/models/aspergillum.model.json");
+
+for (const [label, candidate] of [
+  ["generated output", generatedRoot],
+  ["aspergillum model source", aspergillumModelSource],
+]) {
+  if (candidate !== root && !candidate.startsWith(`${root}${path.sep}`)) {
+    throw new Error(`Refusing to use ${label} outside the workspace: ${candidate}`);
+  }
+}
 
 function png(width, height, painter) {
   const image = new PNG({ width, height, colorType: 6 });
@@ -20,13 +35,13 @@ function png(width, height, painter) {
 }
 
 function write(relative, image) {
-  const destination = path.join(root, relative);
+  const destination = path.join(generatedRoot, relative);
   fs.mkdirSync(path.dirname(destination), { recursive: true });
   fs.writeFileSync(destination, PNG.sync.write(image, { colorType: 6 }));
 }
 
 function writeJson(relative, value) {
-  const destination = path.join(root, relative);
+  const destination = path.join(generatedRoot, relative);
   fs.mkdirSync(path.dirname(destination), { recursive: true });
   fs.writeFileSync(destination, `${JSON.stringify(value, null, 2)}\n`, "utf8");
 }
@@ -100,6 +115,13 @@ function cosmeticItemIdentifier(cosmetic) {
     : `aspergillum:aspergillum_${cosmetic.id}`;
 }
 
+function aspersoriumMaterialInstances(texture) {
+  return {
+    "*": { texture, render_method: "opaque" },
+    water: { texture: "aspergillum_holy_water", render_method: "blend" },
+  };
+}
+
 function faceTexelSize(size, faceName, texelsPerUnit = 1) {
   const [sizeX, sizeY, sizeZ] = size;
   const dimensions = faceName === "east" || faceName === "west"
@@ -123,8 +145,7 @@ function selectedFaceNames(cube, cubeName) {
 }
 
 function buildEntityGeometry() {
-  const sourcePath = path.join(root, "assets-src/models/aspergillum.model.json");
-  const geometry = JSON.parse(fs.readFileSync(sourcePath, "utf8"));
+  const geometry = JSON.parse(fs.readFileSync(aspergillumModelSource, "utf8"));
   const output = structuredClone(geometry);
   const description = output["minecraft:geometry"]?.[0]?.description;
   const textureWidth = description?.texture_width ?? 64;
@@ -644,7 +665,7 @@ for (const cosmetic of customizationCatalog.cosmetics) {
   });
 }
 
-const blockPath = path.join(root, "packs/behavior/blocks/aspersorium.block.json");
+const blockPath = path.join(generatedRoot, "packs/behavior/blocks/aspersorium.block.json");
 const blockDefinition = JSON.parse(fs.readFileSync(blockPath, "utf8"));
 const blockContent = blockDefinition["minecraft:block"];
 delete blockContent.description.states["aspergillum:water_level"];
@@ -652,6 +673,7 @@ blockContent.description.states["aspergillum:water_base"] = [0, 9];
 blockContent.description.states["aspergillum:water_offset"] = Array.from({ length: 9 }, (_, index) => index);
 blockContent.description.states["aspergillum:cosmetic"] = customizationCatalog.cosmetics.map((cosmetic) => cosmetic.index);
 blockContent.description.states["aspergillum:rotation"] = Array.from({ length: 16 }, (_, index) => index);
+blockContent.components["minecraft:material_instances"] = aspersoriumMaterialInstances("aspersorium");
 if (blockContent.description.traits) {
   delete blockContent.description.traits["minecraft:placement_direction"];
   if (Object.keys(blockContent.description.traits).length === 0) delete blockContent.description.traits;
@@ -670,10 +692,7 @@ for (const cosmetic of customizationCatalog.cosmetics.slice(1)) {
   blockContent.permutations.push({
     condition: `q.block_state('aspergillum:cosmetic') == ${cosmetic.index}`,
     components: {
-      "minecraft:material_instances": {
-        "*": { texture: `aspersorium${suffix}`, render_method: "blend" },
-        water: { texture: "aspergillum_holy_water", render_method: "blend" },
-      },
+      "minecraft:material_instances": aspersoriumMaterialInstances(`aspersorium${suffix}`),
     },
   });
 }
@@ -691,7 +710,7 @@ for (let rotationIndex = 1; rotationIndex < 16; rotationIndex += 1) {
 }
 writeJson("packs/behavior/blocks/aspersorium.block.json", blockDefinition);
 
-const tableBlockPath = path.join(root, "packs/behavior/blocks/sacristan_table.block.json");
+const tableBlockPath = path.join(generatedRoot, "packs/behavior/blocks/sacristan_table.block.json");
 const tableBlockDefinition = JSON.parse(fs.readFileSync(tableBlockPath, "utf8"));
 const tableBlockContent = tableBlockDefinition["minecraft:block"];
 tableBlockContent.description.states["aspergillum:table_cosmetic"] = customizationCatalog.cosmetics.map(
@@ -721,10 +740,10 @@ for (let rotationIndex = 1; rotationIndex < 16; rotationIndex += 1) {
 writeJson("packs/behavior/blocks/sacristan_table.block.json", tableBlockDefinition);
 
 const baseItemDefinition = JSON.parse(
-  fs.readFileSync(path.join(root, "packs/behavior/items/aspergillum.item.json"), "utf8"),
+  fs.readFileSync(path.join(generatedRoot, "packs/behavior/items/aspergillum.item.json"), "utf8"),
 );
 const baseAttachableDefinition = JSON.parse(
-  fs.readFileSync(path.join(root, "packs/resource/attachables/aspergillum.attachable.json"), "utf8"),
+  fs.readFileSync(path.join(generatedRoot, "packs/resource/attachables/aspergillum.attachable.json"), "utf8"),
 );
 for (const cosmetic of customizationCatalog.cosmetics.slice(1)) {
   const suffix = cosmeticTextureSuffix(cosmetic);
@@ -743,7 +762,7 @@ for (const cosmetic of customizationCatalog.cosmetics.slice(1)) {
   writeJson(`packs/resource/attachables/aspergillum${suffix}.attachable.json`, attachableDefinition);
 }
 
-const itemTexturePath = path.join(root, "packs/resource/textures/item_texture.json");
+const itemTexturePath = path.join(generatedRoot, "packs/resource/textures/item_texture.json");
 const itemTextureDefinition = JSON.parse(fs.readFileSync(itemTexturePath, "utf8"));
 for (const cosmetic of customizationCatalog.cosmetics) {
   const suffix = cosmeticTextureSuffix(cosmetic);
@@ -756,7 +775,7 @@ itemTextureDefinition.texture_data.sacristan_table = {
 };
 writeJson("packs/resource/textures/item_texture.json", itemTextureDefinition);
 
-const terrainTexturePath = path.join(root, "packs/resource/textures/terrain_texture.json");
+const terrainTexturePath = path.join(generatedRoot, "packs/resource/textures/terrain_texture.json");
 const terrainTextureDefinition = JSON.parse(fs.readFileSync(terrainTexturePath, "utf8"));
 for (const cosmetic of customizationCatalog.cosmetics) {
   const suffix = cosmeticTextureSuffix(cosmetic);
@@ -769,7 +788,7 @@ for (const cosmetic of customizationCatalog.cosmetics) {
 }
 writeJson("packs/resource/textures/terrain_texture.json", terrainTextureDefinition);
 
-const blocksPath = path.join(root, "packs/resource/blocks.json");
+const blocksPath = path.join(generatedRoot, "packs/resource/blocks.json");
 const blocksDefinition = JSON.parse(fs.readFileSync(blocksPath, "utf8"));
 blocksDefinition["aspergillum:sacristan_table"] = { sound: "wood" };
 writeJson("packs/resource/blocks.json", blocksDefinition);

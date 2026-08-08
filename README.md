@@ -2,12 +2,12 @@
 
 Add-On para Minecraft: Bedrock Edition 26.40 que adiciona um **aspersório litúrgico funcional**, uma **caldeirinha (aspersorium)** e uma **Mesa do Sacristão** para configuração gratuita. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão 1.1.6 RC:** preserva os seis volumes sólidos e os quatro lados completos da cabeça, mas mantém somente uma tampa horizontal em cada junção. Isso elimina simultaneamente a competição observada no `blend` da caldeirinha e a perda de duas paredes introduzida pela decomposição em aros finos da 1.1.5.
+> **Versão 1.1.7 RC:** preserva a cabeça simples de seis volumes e separa a estrutura opaca da água translúcida na caldeirinha. O perfil foi aprovado em jogo após a matriz diagnóstica 1.1.7a/b/c e estabiliza topo, base e laterais da composição acomodada.
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/releases/Aspergillum-1.1.6.mcaddon`](dist/releases/Aspergillum-1.1.6.mcaddon) com o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.1.7.mcaddon`](dist/releases/Aspergillum-1.1.7.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 

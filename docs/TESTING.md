@@ -4,6 +4,31 @@
 
 Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
 
+## Gate oficial da separação material — v1.1.7
+
+- [ ] fechar o jogo, remover packs ativos anteriores e importar somente `Aspergillum-1.1.7.mcaddon` com manifests `[1,1,10]`;
+- [ ] confirmar que estrutura da caldeirinha e aspersório acomodado permanecem opacos, enquanto os quatro níveis de água preservam translucidez equivalente à diagnóstica B;
+- [ ] acomodar clássico e dourado em caldeirinha vazia/cheia; orbitar topo, base e quatro lados em ângulos rasantes sem revelar ouro ou superfícies inferiores indevidas;
+- [ ] aproximar a câmera até o plano próximo e afastá-la progressivamente; não pode surgir falha, recorte, cintilação, transparência estrutural ou comportamento semelhante à diagnóstica C;
+- [ ] repetir em gráficos convencionais e Vibrant Visuals quando disponível, registrando plataforma, GPU e versão do Bedrock;
+- [ ] aceitar exclusivamente as mensagens conhecidas `All MaterialInstances must use the same render_method for a given block` e `MaterialInstances can't mix and match opaque and transparent materials`; qualquer outra mensagem atribuível ao add-on reprova o gate;
+- [ ] repetir o smoke funcional: encher, carregar, aspergir quatro vezes, acomodar, retirar, quebrar, mesa, nove acabamentos, três perfis, reload e persistência;
+- [ ] registrar SHA-256, capturas equivalentes e Content Log antes de declarar a 1.1.7 aprovada.
+
+## Gate da matriz de renderização — v1.1.7a/b/c
+
+- [ ] importar `Aspergillum-1.1.7a.mcaddon`, `Aspergillum-1.1.7b.mcaddon` e `Aspergillum-1.1.7c.mcaddon`, confirmando nomes/ícones distintos e manifests `[1,1,7]`, `[1,1,8]` e `[1,1,9]`;
+- [ ] criar três mundos novos equivalentes e ativar somente um par BP/RP diagnóstico em cada mundo; não ativar duas variantes simultaneamente nem usar mundo persistente;
+- [ ] confirmar os hashes publicados em [diagnóstico 1.1.7](diagnostics/1.1.7-render-pipeline-matrix.md) antes de iniciar;
+- [ ] limpar o Content Log, executar `/function aspergillum/dev_kit` e colocar duas caldeirinhas com a mesma rotação, uma vazia e outra cheia;
+- [ ] acomodar o aspersório clássico e o dourado, repetindo os mesmos pontos de câmera, FOV, distância e iluminação nas três variantes;
+- [ ] orbitar lentamente por topo, base, quatro lados e ângulos rasantes; registrar quadro a quadro se terraços metalizados desaparecem ou revelam ouro/superfície inferior;
+- [ ] na A, ignorar a aparência opaca intencional da água e avaliar somente estabilidade da cabeça;
+- [ ] na B, confirmar água translúcida, estrutura opaca e ausência/presença de erro ou warning runtime de `MaterialInstances`;
+- [ ] na C, confirmar simultaneamente quatro paredes completas e estabilidade/instabilidade das vinte faixas externas; os 34 avisos offline de mais de cinquenta cubos são esperados somente neste diagnóstico;
+- [ ] salvar capturas equivalentes e exportar o Content Log de A, B e C antes de interpretar o resultado;
+- [ ] interromper novas correções se A também falhar ou se o resultado contradizer a matriz; atualizar o diagnóstico antes de alterar a versão oficial.
+
 ## Gate visual da cabeça, do pomo e da Mesa do Sacristão — v1.1.6
 
 - [ ] fechar o jogo, remover revisões anteriores e importar somente `Aspergillum-1.1.6.mcaddon` com manifests `[1,1,6]`;

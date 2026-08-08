@@ -53,13 +53,21 @@ dist/
 
 O empacotador ordena todos os caminhos e usa timestamps ZIP fixos. Duas execuções sobre a mesma árvore devem produzir bytes e SHA-256 idênticos.
 
-Revisões com sufixo diagnóstico usam `package.json > aspergillum.releaseLabel` no nome do artefato e do relatório. Como o manifest Bedrock aceita apenas `[major, minor, patch]` numérico, `1.0.15b` corresponde a `[1,0,16]`, `1.0.15c` a `[1,0,17]`, `1.0.15d` a `[1,0,18]`, `1.0.16` a `[1,0,19]`, `1.0.16a` a `[1,0,20]`, `1.0.16b` a `[1,0,21]`, `1.0.16c` a `[1,0,22]`, `1.0.17` a `[1,0,23]`, `1.0.17a` a `[1,0,24]`, `1.0.18` a `[1,0,25]`, `1.0.18a` a `[1,0,26]`, `1.0.18b` a `[1,0,27]`, `1.0.18c` a `[1,0,28]`, `1.0.18d` a `[1,0,29]`, `1.0.18e` a `[1,0,30]`, `1.0.18f` a `[1,0,31]`, `1.0.18g` a `[1,0,32]`, `1.0.19` a `[1,0,33]`, `1.0.19a` a `[1,0,34]`, `1.0.19b` a `[1,0,35]`, `1.0.20` a `[1,0,36]`, `1.1.0` a `[1,1,0]`, `1.1.1` a `[1,1,1]`, `1.1.2` a `[1,1,2]`, `1.1.3` a `[1,1,3]`, `1.1.4` a `[1,1,4]`, `1.1.5` a `[1,1,5]` e `1.1.6` a `[1,1,6]`; o próximo pacote nunca deve reutilizar essas trincas.
+Revisões com sufixo diagnóstico usam `package.json > aspergillum.releaseLabel` no nome do artefato e do relatório. Como o manifest Bedrock aceita apenas `[major, minor, patch]` numérico, `1.0.15b` corresponde a `[1,0,16]`, `1.0.15c` a `[1,0,17]`, `1.0.15d` a `[1,0,18]`, `1.0.16` a `[1,0,19]`, `1.0.16a` a `[1,0,20]`, `1.0.16b` a `[1,0,21]`, `1.0.16c` a `[1,0,22]`, `1.0.17` a `[1,0,23]`, `1.0.17a` a `[1,0,24]`, `1.0.18` a `[1,0,25]`, `1.0.18a` a `[1,0,26]`, `1.0.18b` a `[1,0,27]`, `1.0.18c` a `[1,0,28]`, `1.0.18d` a `[1,0,29]`, `1.0.18e` a `[1,0,30]`, `1.0.18f` a `[1,0,31]`, `1.0.18g` a `[1,0,32]`, `1.0.19` a `[1,0,33]`, `1.0.19a` a `[1,0,34]`, `1.0.19b` a `[1,0,35]`, `1.0.20` a `[1,0,36]`, `1.1.0` a `[1,1,0]`, `1.1.1` a `[1,1,1]`, `1.1.2` a `[1,1,2]`, `1.1.3` a `[1,1,3]`, `1.1.4` a `[1,1,4]`, `1.1.5` a `[1,1,5]` e `1.1.6` a `[1,1,6]`. A matriz isolada `1.1.7a`/`1.1.7b`/`1.1.7c` usa respectivamente `[1,1,7]`, `[1,1,8]` e `[1,1,9]`; a release oficial `1.1.7` usa `[1,1,10]`. O próximo pacote nunca deve reutilizar essas trincas.
+
+Para instalar uma variante diagnóstica sem trocar o checkout oficial: `npm run sync:diagnostic -- --variant 1.1.7a --apply`. O comando substitui os packs compartilhados e do `devtest`, remove referências ativas das variantes Aspergillum anteriores, grava os UUIDs próprios do diagnóstico e atualiza `docs/LOCAL_INSTALLATION_MAP.md`.
+
+Os três diagnósticos 1.1.7 são exceções deliberadas ao fluxo de uma única revisão em `package.json`: `npm run package:render-diagnostics` clona a baseline gerada, aplica uma variável por artefato e atribui nomes/UUIDs próprios sem modificar a versão oficial. Como preservam os mesmos IDs públicos de conteúdo, somente um par diagnóstico pode ser ativado por mundo.
 
 ### Avisos offline conhecidos
 
-O Creator Tools em modo `--offline` não possui o catálogo completo do jogo nem resolve o item implícito de um custom block. Por isso, o relatório 1.1.6 contém exatamente onze avisos `UNLINK 323`: sete links de ingredientes vanilla (`stick`, `iron_nugget` em duas receitas, `chain`, `iron_ingot`, `dark_oak_planks`, `green_carpet`) e quatro referências aos itens implícitos dos blocos `aspergillum:aspersorium`/`aspergillum:sacristan_table` nas loot tables.
+O Creator Tools em modo `--offline` não possui o catálogo completo do jogo nem resolve o item implícito de um custom block. Por isso, o relatório oficial contém exatamente onze avisos `UNLINK 323`: sete links de ingredientes vanilla (`stick`, `iron_nugget` em duas receitas, `chain`, `iron_ingot`, `dark_oak_planks`, `green_carpet`) e quatro referências aos itens implícitos dos blocos `aspergillum:aspersorium`/`aspergillum:sacristan_table` nas loot tables.
 
-`validate-minecraft.mjs` aceita somente esses onze casos conhecidos e falha diante de qualquer warning novo, Error ou Failure. Eles não substituem o Content Log real, que deve permanecer limpo no teste do usuário.
+`validate-minecraft.mjs` aceita somente esses onze casos conhecidos e falha diante de qualquer warning novo, Error ou Failure. Eles não substituem o Content Log real, sujeito apenas à exceção runtime da 1.1.7 registrada abaixo.
+
+### Exceção runtime conhecida da 1.1.7
+
+O Content Log do Bedrock 26.42 registra duas mensagens de `MaterialInstances` porque a caldeirinha usa estrutura `opaque` e água `blend`. Essa composição foi escolhida após a matriz física A/B/C por eliminar as falhas visuais e preservar a translucidez. A exceção se limita a essas duas mensagens literais; qualquer alteração visual correlata ou nova mensagem exige reabrir [o diagnóstico](diagnostics/1.1.7-render-pipeline-matrix.md).
 
 ## Release de desenvolvimento
 
