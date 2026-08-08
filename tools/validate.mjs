@@ -285,7 +285,7 @@ if ((authoredTableRoot?.cubes ?? []).some((cube) => ["left_support", "right_supp
   errors.push("Sacristan table top must not restore the removed brass supports");
 }
 const restingAspergillum = (tableGeometry?.bones ?? []).find((bone) => bone.name === "resting_aspergillum");
-if (restingAspergillum?.cubes?.length !== 14) {
+if (restingAspergillum?.cubes?.length !== 26) {
   errors.push("Sacristan table must present the complete authored aspergillum silhouette");
 }
 if (JSON.stringify(restingAspergillum?.pivot) !== JSON.stringify([0, 16.2, 0])
@@ -424,6 +424,7 @@ if (sprayAimBone?.parent !== "sprinkler_head"
 }
 const cubes = [...(handleBone?.cubes ?? []), ...(sprinklerHeadBone?.cubes ?? [])];
 const sourceCubes = heldSourceBones.flatMap((bone) => bone.cubes ?? []);
+const authoredHeadCubes = heldSourceBones.find((bone) => bone.name === "sprinkler_head")?.cubes ?? [];
 const authoredPommelBase = sourceCubes.find((cube) => cube.name === "silver_pommel_base");
 const authoredGrip = sourceCubes.find((cube) => cube.name === "leather_grip");
 const authoredPommelCollar = sourceCubes.filter((cube) => cube.name?.startsWith("silver_pommel_collar_"));
@@ -472,8 +473,8 @@ for (let firstIndex = 0; firstIndex < pommelTransition.length; firstIndex += 1) 
     }
   }
 }
-if (cubes.length !== 14) {
-  errors.push("Handle and sprinkler head must preserve the fourteen authored aspergillum cubes");
+if (cubes.length !== 26 || authoredHeadCubes.length !== 18) {
+  errors.push("Handle and sprinkler head must preserve the eight-piece handle and eighteen-piece exterior-only head");
 } else {
   const grip = [-6, 24, 1];
   const handleContainsGrip = grip.every(
@@ -490,8 +491,59 @@ if (cubes.length !== 14) {
     errors.push("Real mesh must not contain zero-thickness or negative-size cubes");
   }
 
+  const faceNames = ["north", "east", "south", "west", "up", "down"];
+  const facePlane = (cube, faceName) => {
+    const [x, y, z] = cube.origin;
+    const [sizeX, sizeY, sizeZ] = cube.size;
+    if (faceName === "west" || faceName === "east") {
+      return { axis: 0, plane: faceName === "west" ? x : x + sizeX, minA: y, maxA: y + sizeY, minB: z, maxB: z + sizeZ };
+    }
+    if (faceName === "down" || faceName === "up") {
+      return { axis: 1, plane: faceName === "down" ? y : y + sizeY, minA: x, maxA: x + sizeX, minB: z, maxB: z + sizeZ };
+    }
+    return { axis: 2, plane: faceName === "north" ? z : z + sizeZ, minA: x, maxA: x + sizeX, minB: y, maxB: y + sizeY };
+  };
+  const renderedHeadFaces = authoredHeadCubes.flatMap((cube) =>
+    (cube.faces ?? faceNames).map((faceName) => ({ cube, faceName, ...facePlane(cube, faceName) })));
+  for (let firstIndex = 0; firstIndex < renderedHeadFaces.length; firstIndex += 1) {
+    const first = renderedHeadFaces[firstIndex];
+    for (let secondIndex = firstIndex + 1; secondIndex < renderedHeadFaces.length; secondIndex += 1) {
+      const second = renderedHeadFaces[secondIndex];
+      if (first.axis !== second.axis || Math.abs(first.plane - second.plane) > 1e-6) continue;
+      const overlapA = Math.min(first.maxA, second.maxA) - Math.max(first.minA, second.minA);
+      const overlapB = Math.min(first.maxB, second.maxB) - Math.max(first.minB, second.minB);
+      if (overlapA > 1e-6 && overlapB > 1e-6) {
+        errors.push(`Sprinkler-head rendered faces must not overlap on one plane: ${first.cube.name}.${first.faceName} / ${second.cube.name}.${second.faceName}`);
+      }
+    }
+  }
+
+  const horizontalCoverage = new Map();
+  for (const cube of authoredHeadCubes) {
+    for (const faceName of cube.faces ?? faceNames) {
+      if (faceName !== "up" && faceName !== "down") continue;
+      const plane = faceName === "down" ? cube.origin[1] : cube.origin[1] + cube.size[1];
+      const key = `${faceName}:${plane.toFixed(6)}`;
+      horizontalCoverage.set(key, (horizontalCoverage.get(key) ?? 0) + cube.size[0] * cube.size[2]);
+    }
+  }
+  const expectedHorizontalCoverage = new Map([
+    ["down:32.150000", 11.56],
+    ["down:32.550000", 6.93],
+    ["down:33.200000", 5.9136],
+    ["up:35.350000", 5.9136],
+    ["up:36.000000", 6.93],
+    ["up:36.400000", 9.324975],
+    ["up:36.800000", 2.235025],
+  ]);
+  if (horizontalCoverage.size !== expectedHorizontalCoverage.size
+    || [...expectedHorizontalCoverage].some(([key, expectedArea]) =>
+      Math.abs((horizontalCoverage.get(key) ?? Number.NaN) - expectedArea) > 1e-6)) {
+    errors.push("Sprinkler-head horizontal faces must remain exterior annuli with no hidden central caps");
+  }
+
   if (sourceCubes.length !== cubes.length) {
-    errors.push("Authored and generated aspergillum models must contain the same fourteen cubes");
+    errors.push("Authored and generated aspergillum models must contain the same twenty-six cubes");
   }
   const allowedSurfaces = new Set(["leather", "silver", "gold", "perforated_silver"]);
   for (const [index, sourceCube] of sourceCubes.entries()) {
@@ -504,7 +556,6 @@ if (cubes.length !== 14) {
     }
   }
 
-  const faceNames = ["north", "east", "south", "west", "up", "down"];
   const atlasWidth = heldGeometry["minecraft:geometry"][0].description.texture_width;
   const atlasHeight = heldGeometry["minecraft:geometry"][0].description.texture_height;
   const occupiedRects = [];

@@ -8,6 +8,24 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
+## v1.1.5 — topologia exterior da cabeça — implementada; reteste visual pendente
+
+Hipótese: as tampas coincidentes e os centros ocultos dos seis cuboides fechados da cabeça ficam instáveis apenas quando a réplica acomodada participa do passe `blend` uniforme da caldeirinha.
+
+Escopo fechado:
+
+- preservar os seis níveis e converter as cinco transições horizontais em coroas anulares de quatro faces, sem tampas centrais ocultas;
+- limitar os volumes principais às quatro paredes laterais, mantendo apenas a base inferior e o topo do terminal como tampas integrais externas;
+- propagar a topologia, máscaras e UVs da mesma fonte para attachable, caldeirinha, mesa e rotações;
+- manter `blend` na caldeirinha, a translucidez da água, todos os materiais, poses, pivôs e locators;
+- bloquear automaticamente faces coplanares sobrepostas e cobertura horizontal divergente.
+
+Gate de saída:
+
+- órbita lenta por cima e por baixo da cabeça acomodada não revela ouro/corpo através dos degraus nem produz faces intermitentes;
+- clássico e dourado preservam silhueta, perfurações e leitura material nos quatro contextos;
+- Content Log permanece sem regressão de geometria, UV ou `MaterialInstances`.
+
 ## v1.1.4 — transição topológica do pomo — implementada; reteste visual pendente
 
 Hipótese: a faixa preto/prateada observada somente na mesa nasce das tampas internas e dos três volumes interpenetrados da v1.1.3, amplificados pela escala `0.72`, rotação horizontal e render opaque do bloco.

@@ -9,7 +9,7 @@ Este diretório é a fonte canônica de conhecimento técnico do projeto. Os doc
 | [Estado do projeto](PROJECT_STATUS.md) | O que existe hoje, o que está aprovado e o que ainda falta |
 | [Contrato visual](VISUAL_CONTRACT.md) | Valores comprovados e invariantes do attachable, pose e spray |
 | [Contrato de VFX](VFX_DESIGN_CONTRACT.md) | Locator, bridge, gotas, impacto, áudio e divisão híbrida de responsabilidades |
-| [Mesa do Sacristão](SACRISTAN_TABLE_DESIGN_CONTRACT.md) | Linguagem visual, catálogo, UI, custo zero, persistência e gates da v1.1.4 |
+| [Mesa do Sacristão](SACRISTAN_TABLE_DESIGN_CONTRACT.md) | Linguagem visual, catálogo, UI, custo zero, persistência e gates da v1.1.5 |
 | [Arquitetura](ARCHITECTURE.md) | Arquitetura atual, arquitetura-alvo e limites entre camadas |
 | [Estado e concorrência](STATE_AND_CONCURRENCY.md) | Cargas, modos de jogo, identidade, sessões, docking e migração |
 | [Roadmap](ROADMAP.md) | Sequência de versões, riscos, gates e Definition of Done |

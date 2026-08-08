@@ -3,7 +3,7 @@
 ## Fontes primárias
 
 - [Attachables — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/documents/attachables?view=minecraft-bedrock-stable): binding por item slot, geometrias e poses distintas por perspectiva.
-- [Geometry schema 1.19.30 — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/schemasreference/schemas/minecraftschema_geometry_1.19.30?view=minecraft-bedrock-stable): `size`, Box UV, UV alternativo por face e `uv_size`; a v1.1.4 mantém UV explícito em densidade 2× nas faces visíveis e omite deliberadamente faces internas da transição do pomo.
+- [Geometry schema 1.19.30 — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/schemasreference/schemas/minecraftschema_geometry_1.19.30?view=minecraft-bedrock-stable): `size`, Box UV, UV alternativo por face e `uv_size`; a v1.1.5 mantém UV explícito em densidade 2×, omite faces internas do pomo e representa os degraus da cabeça somente por superfícies exteriores.
 - [Materials and Material Files — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/documents/material-files?view=minecraft-bedrock-stable): `entity` mantém culling normal e `entity_nocull` adiciona `DisableCulling`; a correção não depende de nocull.
 - [Minecraft Style Guide — Blockbench](https://www.blockbench.net/wiki/guides/minecraft-style-guide/): relação de uma unidade de modelo por texel e risco estilístico de elementos menores que um pixel.
 - [Particle effects in animations — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/particlesreference/particleentityintegration?view=minecraft-bedrock-stable): locators, controllers e timelines de partículas.

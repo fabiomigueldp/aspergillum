@@ -2,13 +2,13 @@
 
 ## Identidade
 
-- Release Candidate: `1.1.4`.
-- Revisão dos packs: `[1, 1, 4]`.
+- Release Candidate: `1.1.5`.
+- Revisão dos packs: `[1, 1, 5]`.
 - Baseline funcional herdada: `1.0.20`, validada pelo usuário.
 - Experimentos: nenhum.
 - Autoridade: servidor para estado; cliente somente para apresentação.
 
-Esta revisão preserva binding, grip, envelope físico, poses, animações, steering, partículas, áudio e docking parcial da baseline. Ela substitui a interpenetração da v1.1.3 por placa sólida, aro vazado e máscaras de faces propagadas igualmente ao item, caldeirinha e mesa.
+Esta revisão preserva binding, grip, envelope físico, poses, animações, steering, partículas, áudio, docking parcial e o pomo corrigido da v1.1.4. Ela substitui as tampas coplanares/ocultas da cabeça por coroas anulares exteriores propagadas igualmente ao item, caldeirinha e mesa, sem alterar o `blend` necessário à água.
 
 ## Preflight automatizado
 
@@ -25,7 +25,7 @@ O gate falha quando versões divergem, catálogos `pt_BR`/`en_US` deixam de ser 
 
 1. Registrar o SHA-256 do artefato.
 2. Fechar o Minecraft e remover os dois packs antigos em Armazenamento.
-3. Importar somente `Aspergillum-1.1.4.mcaddon`.
+3. Importar somente `Aspergillum-1.1.5.mcaddon`.
 4. Criar ou duplicar um mundo de teste sem experimentos.
 5. Limpar o Content Log antes de entrar.
 6. Executar `/function aspergillum/dev_kit`.
@@ -37,7 +37,7 @@ O gate falha quando versões divergem, catálogos `pt_BR`/`en_US` deixam de ser 
 | Encher | água aparece, balde/política Creative corretos, mensagem localizada única |
 | Carregar | item sempre visível em FP, dip e retorno contínuos em TP, commit no tick 10, duas microgotas discretas dentro do vaso e nenhum recurso duplicado |
 | Aspergir | animação e 36 gotas preservadas, carga/cooldown corretos |
-| Órbita visual | item e composição acomodada correspondem; as quatro faces mostram duas fileiras de perfurações, domos/anéis/terminal contínuos e ouro somente na férula |
+| Órbita visual | item e composição acomodada correspondem; as quatro faces mostram duas fileiras de perfurações e os degraus superiores/inferiores permanecem contínuos, sem revelar o corpo através das coroas |
 | Vazio | clique seco privado e mensagem localizada; nenhuma água ou release |
 | Áudio | 15 famílias/48 variantes legíveis, sem duplicação, com prepare privado e commits espaciais |
 | Acomodar | agachar + usar funciona uma vez; `12+4→16+0`, `14+4→16+2` e `16+4→16+4` conservam o total |

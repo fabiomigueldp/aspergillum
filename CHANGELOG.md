@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.1.5 — 2026-08-07
+
+- eliminada na fonte a topologia que fazia as tampas superiores e inferiores da cabeça desaparecerem conforme o ângulo somente na composição `blend` da caldeirinha;
+- substituídas cinco junções de cuboides fechados, que acumulavam aproximadamente `62.34` unidades quadradas de faces coplanares/ocultas, por coroas anulares de quatro peças e núcleos limitados às paredes exteriores;
+- preservados os seis níveis, envelope `4.94`, altura, terminal, perfurações, pivô, locator, densidade UV e todas as variantes de acabamento da cabeça;
+- a malha compartilhada passa a ter vinte e seis peças: oito no cabo e dezoito na cabeça exterior-only; os próprios aros carregam paredes e terraços, mantendo caldeirinha e mesa abaixo do aviso de cinquenta cubos do Creator Tools;
+- o validador agora bloqueia sobreposição de área entre faces renderizadas da cabeça, restauração de tampas centrais ocultas, divergência de máscaras/UVs e drift das composições acomodadas;
+- mantido o `blend` uniforme da caldeirinha para preservar a água translúcida e evitar a regressão do aviso de `MaterialInstances`; nenhuma mudança foi feita em gameplay, estado, poses ou materiais;
+- o rótulo e a revisão numérica distribuídos são `1.1.5`/`[1,1,5]`.
+
 ## 1.1.4 — 2026-08-07
 
 - eliminada na fonte a causa estrutural da cintilação observada exclusivamente na Mesa do Sacristão: couro, placa terminal e colar deixaram de ocupar volumes positivos simultâneos;
