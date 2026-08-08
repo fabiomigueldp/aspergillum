@@ -1,13 +1,13 @@
 # Mapa da instalação local
 
-Mapa gerado por `tools/sync-installed-addon.mjs` em **2026-08-07T20:46:59.739Z**.
+Mapa gerado por `tools/sync-installed-addon.mjs` em **2026-08-08T00:25:51.373Z**.
 A sincronização usa diretamente `packs/`, substitui os diretórios locais e atualiza os vínculos do mundo selecionado.
 
 ## Instalação do Minecraft
 
 ```text
-Pacote AppX: C:\Program Files\WindowsApps\Microsoft.MinecraftUWP_1.26.4005.0_x64__8wekyb3d8bbwe
-Versão AppX: 1.26.4005.0
+Pacote AppX: C:\Program Files\WindowsApps\Microsoft.MinecraftUWP_1.26.4201.0_x64__8wekyb3d8bbwe
+Versão AppX: 1.26.4201.0
 Raiz de dados: C:\Users\fabio\AppData\Roaming\Minecraft Bedrock
 ```
 
@@ -32,21 +32,21 @@ Mundo sincronizado nesta execução: `devtest` (1 alvo(s)).
 
 ## Aspergillum instalado
 
-- Rótulo: `1.1.2`;
-- Versão numérica dos manifests: `[1, 1, 2]`;
-- Artefato: `C:\Users\fabio\Projects\aspergillum\dist\releases\Aspergillum-1.1.2.mcaddon`;
-- SHA-256: `3d596af7bbbd6373d7c7dc24d5d8dc10bbb9b322eeab509311e9a5ff4497bcd5`.
+- Rótulo: `1.1.3`;
+- Versão numérica dos manifests: `[1, 1, 3]`;
+- Artefato: `C:\Users\fabio\Projects\aspergillum\dist\releases\Aspergillum-1.1.3.mcaddon`;
+- SHA-256: `0a1c3cf11379d69c727855179340860bc65797ff3808514a61b54133188efa07`.
 
 | Pack | UUID | Arquivos | Bytes | Caminho compartilhado |
 | --- | --- | ---: | ---: | --- |
 | Behavior | bac9f8bc-71f5-4db7-a0ff-3c5a365749b4 | 25 | 151321 | `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang\behavior_packs\pack.asper` |
-| Resource | fdb8a79c-8f77-4831-9a5c-8e2b8ecca29e | 197 | 3714852 | `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang\resource_packs\pack.asper` |
+| Resource | fdb8a79c-8f77-4831-9a5c-8e2b8ecca29e | 197 | 3789565 | `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang\resource_packs\pack.asper` |
 
 ## Mundo sincronizado
 
 Nome: **devtest**
 Pasta: `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\8414181078248597151\games\com.mojang\minecraftWorlds\RYdEhTaa5t8=`
-Snapshot: 238 arquivos, 36 diretórios; o tamanho varia com o LevelDB.
+Snapshot: 236 arquivos, 36 diretórios; o tamanho varia com o LevelDB.
 
 ```text
 RYdEhTaa5t8=
@@ -62,7 +62,7 @@ RYdEhTaa5t8=
 └── world_resource_pack_history.json
 ```
 
-Os vínculos ativos e históricos de `devtest` apontam para `[1, 1, 2]`.
+Os vínculos ativos e históricos de `devtest` apontam para `[1, 1, 3]`.
 
 ## Mundos do perfil
 
@@ -83,7 +83,7 @@ Os vínculos ativos e históricos de `devtest` apontam para `[1, 1, 2]`.
 | L+1naPlwfQI= | My World | 1.0.30 | 1.0.30 | 1.0.30 | 1.0.30 | não |
 | LAKg42VxeJ8= | My World | 1.0.14 | 1.0.14 | 1.0.14 | 1.0.14 | não |
 | Rk1N0Z9IRbU= | My World | — | — | — | — | não |
-| RYdEhTaa5t8= | devtest | 1.1.2 (1.1.2) | 1.1.2 (1.1.2) | 1.1.2 (1.1.2) | 1.1.2 (1.1.2) | sim |
+| RYdEhTaa5t8= | devtest | 1.1.3 (1.1.3) | 1.1.3 (1.1.3) | 1.1.3 (1.1.3) | 1.1.3 (1.1.3) | sim |
 | vz5XjjBKc8k= | Small Medieval Church 1.0.4 (imported) | 1.0.2 | — | — | — | não |
 | XF60MIBp-Qg= | My World | 1.0.5 | 1.0.5 | 1.0.5 | 1.0.5 | não |
 | y01GRv4EOxU= | My World | 1.0.13 | 1.0.13 | 1.0.13 | 1.0.13 | não |
@@ -330,8 +330,8 @@ resource_packs\pack.asper\textures\terrain_texture.json
 C:\Users\fabio\Projects\aspergillum
 ├── packs\behavior
 ├── packs\resource
-├── dist\releases\Aspergillum-1.1.2.mcaddon
-├── dist\validation\1.1.2
+├── dist\releases\Aspergillum-1.1.3.mcaddon
+├── dist\validation\1.1.3
 └── docs\LOCAL_INSTALLATION_MAP.md
 ```
 
