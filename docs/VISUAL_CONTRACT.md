@@ -2,7 +2,7 @@
 
 Este documento registra os valores estruturais comprovados até a v1.0.15d, a integração VFX corrigida até a v1.0.16c e o pipeline de superfície/coerência de composição atualizado na v1.0.19b. Eles são baseline, não sugestões de calibração.
 
-A v1.1 adiciona variantes de superfície, perfis de spray, a transição limpa do pomo da v1.1.4 e a topologia exterior-only da cabeça da v1.1.5. Nenhum acabamento pode alterar bones, pivôs, grip, locator ou poses abaixo. `classic` mantém a linguagem material da 1.0.20; as oito variantes trocam apenas color/normal/MER derivados do catálogo. Item empunhado, caldeirinha e mesa derivam as mesmas vinte e seis peças, máscaras e UVs da fonte autoral, sem exceção geométrica local.
+A v1.1 adiciona variantes de superfície, perfis de spray, a transição limpa do pomo da v1.1.4 e as junções de tampa única da cabeça da v1.1.6. Nenhum acabamento pode alterar bones, pivôs, grip, locator ou poses abaixo. `classic` mantém a linguagem material da 1.0.20; as oito variantes trocam apenas color/normal/MER derivados do catálogo. Item empunhado, caldeirinha e mesa derivam as mesmas quatorze peças, máscaras e UVs da fonte autoral, sem exceção geométrica local.
 
 ## Attachable
 
@@ -29,16 +29,16 @@ rightItem (holder)
 | Escala | `1` |
 | Comprimento | `15.6` unidades de modelo (`0.975` bloco) |
 | Largura máxima da cabeça | `4.94` unidades de modelo |
-| Peças reais | `26`: oito no cabo e dezoito na cabeça exterior-only |
+| Peças reais | `14`: oito no cabo e seis na cabeça |
 | Fonte autoral | `assets-src/models/aspergillum.model.json` |
 | UV distribuído | faces visíveis explícitas por cubo; faces internas omitidas; coordenadas e `uv_size` inteiros |
 | Atlas do item | `128 × 128`, densidade de `2` texels por unidade de modelo |
 | Footprint mínimo | `1 × 1` texel por face; dimensões usam `ceil(dimensão × 2)`, nunca Box UV implícito |
 | Padding do atlas | `2` texels dilatados ao redor de cada ilha para proteger mipmaps |
 | Superfícies | grip `leather`; pomo/haste/cabeça `silver`; férula `gold`; corpo da cabeça `perforated_silver` |
-| Cabeça v1.1.5 | seis níveis preservados; cinco transições são coroas anulares de quatro faces sem tampas centrais ocultas |
+| Cabeça v1.1.6 | seis níveis preservados; quatro paredes integrais por volume e exatamente uma tampa horizontal renderizada por junção |
 | Fonte autoral do bloco | `assets-src/models/aspersorium.model.json` |
-| Composição acomodada | as vinte e seis peças, máscaras e UVs do item são transformadas pelo gerador; não existe réplica simplificada |
+| Composição acomodada | as quatorze peças, máscaras e UVs do item são transformadas pelo gerador; não existe réplica simplificada |
 | Primeira pessoa: posição aditiva | `[0, 0, 0]` |
 | Primeira pessoa: rotação aditiva | `[180, 0, 0]` |
 | Primeira pessoa: rotação efetiva | `[205, 0, -12]` |
@@ -59,7 +59,7 @@ rightItem (holder)
 - Color, normal e MER devem nascer do mesmo layout gerado. Não se edita um PNG final ou a geometria distribuída isoladamente.
 - O pomo usa placa sólida `2.25 × 0.6 × 2.25` em `[-7.125, 21.2, -0.125]` e aro externo `2.15 × 0.75 × 2.15`, composto por quatro barras ao redor de uma abertura `1.75 × 1.75`. O couro começa em `y = 21.8`, deixa folga radial de `0.0625` para o aro e não possui sobreposição positiva com nenhuma peça do pomo. O comprimento mínimo continua em `y = 21.2`.
 - Tampas internas são omitidas por máscara autoral: `leather_grip.down`, `silver_shaft.down`, os quatro `collar.down` e as tampas norte/sul das duas barras laterais. O gerador, os visualizadores e as composições acomodadas devem preservar exatamente essas máscaras.
-- Na cabeça, os seis núcleos preservam somente paredes laterais, salvo `lower_head_ring.down` e `top_finial.up`, que fecham as duas extremidades externas. Cada superfície horizontal intermediária é uma coroa de quatro retângulos; nenhum par de faces renderizadas pode compartilhar área positiva no mesmo plano e nenhuma tampa pode continuar sob o nível adjacente.
+- Na cabeça, todos os seis volumes preservam `north/east/south/west`. Em cada junção, somente o volume de maior seção fornece a tampa visível: `lower_head_dome.down`, `perforated_head.down/up`, `upper_head_dome.up` e `upper_head_ring.up`; as faces opostas correspondentes são omitidas. Nenhum par de faces renderizadas pode compartilhar área positiva no mesmo plano.
 - A aparência `resting_aspergillum` deve ser derivada do attachable: cada origin recebe somente a translação `[6,-17,-1]`, cada size permanece igual e cada ilha UV recebe somente o offset `[128,0]` no atlas `256 × 256` da caldeirinha.
 
 ## Spray v1.0.16c

@@ -8,7 +8,24 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
-## v1.1.5 — topologia exterior da cabeça — implementada; reteste visual pendente
+## v1.1.6 — volumes laterais estáveis e junções de tampa única — implementada; reteste visual pendente
+
+Hipótese: o Bedrock aceita as máscaras horizontais, mas o renderizador de custom blocks não conserva de forma confiável duas paredes quando elas são repartidas entre cuboides anulares finos como na v1.1.5.
+
+Escopo fechado:
+
+- restaurar um volume por nível da cabeça e as quatro paredes `north/east/south/west` em cada um;
+- manter somente uma tampa horizontal em cada junção, removendo o par coplanar sem fragmentar as paredes;
+- preservar dimensões, pivô, locator, acabamentos, perfurações e derivações acomodadas;
+- validar seis volumes, quatro paredes por nível, ausência de sobreposição coplanar e cobertura horizontal única.
+
+Gate de saída:
+
+- mesa e caldeirinha exibem quatro lados completos em uma órbita de 360°, sem armação vazada;
+- topo e base não alternam entre as tampas metalizadas e o corpo situado abaixo;
+- mão, suporte de armadura, mesa e caldeirinha mantêm a mesma silhueta e o Content Log permanece limpo.
+
+## v1.1.5 — topologia exterior da cabeça — implementada; substituída pela v1.1.6
 
 Hipótese: as tampas coincidentes e os centros ocultos dos seis cuboides fechados da cabeça ficam instáveis apenas quando a réplica acomodada participa do passe `blend` uniforme da caldeirinha.
 

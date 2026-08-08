@@ -2,13 +2,13 @@
 
 ## Identidade
 
-- Release Candidate: `1.1.5`.
-- Revisão dos packs: `[1, 1, 5]`.
+- Release Candidate: `1.1.6`.
+- Revisão dos packs: `[1, 1, 6]`.
 - Baseline funcional herdada: `1.0.20`, validada pelo usuário.
 - Experimentos: nenhum.
 - Autoridade: servidor para estado; cliente somente para apresentação.
 
-Esta revisão preserva binding, grip, envelope físico, poses, animações, steering, partículas, áudio, docking parcial e o pomo corrigido da v1.1.4. Ela substitui as tampas coplanares/ocultas da cabeça por coroas anulares exteriores propagadas igualmente ao item, caldeirinha e mesa, sem alterar o `blend` necessário à água.
+Esta revisão preserva binding, grip, envelope físico, poses, animações, steering, partículas, áudio, docking parcial e o pomo corrigido da v1.1.4. Ela restaura quatro paredes integrais em cada nível da cabeça e conserva somente uma tampa horizontal por junção, sem alterar o `blend` necessário à água.
 
 ## Preflight automatizado
 
@@ -25,7 +25,7 @@ O gate falha quando versões divergem, catálogos `pt_BR`/`en_US` deixam de ser 
 
 1. Registrar o SHA-256 do artefato.
 2. Fechar o Minecraft e remover os dois packs antigos em Armazenamento.
-3. Importar somente `Aspergillum-1.1.5.mcaddon`.
+3. Importar somente `Aspergillum-1.1.6.mcaddon`.
 4. Criar ou duplicar um mundo de teste sem experimentos.
 5. Limpar o Content Log antes de entrar.
 6. Executar `/function aspergillum/dev_kit`.

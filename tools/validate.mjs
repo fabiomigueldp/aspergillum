@@ -285,7 +285,7 @@ if ((authoredTableRoot?.cubes ?? []).some((cube) => ["left_support", "right_supp
   errors.push("Sacristan table top must not restore the removed brass supports");
 }
 const restingAspergillum = (tableGeometry?.bones ?? []).find((bone) => bone.name === "resting_aspergillum");
-if (restingAspergillum?.cubes?.length !== 26) {
+if (restingAspergillum?.cubes?.length !== 14) {
   errors.push("Sacristan table must present the complete authored aspergillum silhouette");
 }
 if (JSON.stringify(restingAspergillum?.pivot) !== JSON.stringify([0, 16.2, 0])
@@ -473,8 +473,8 @@ for (let firstIndex = 0; firstIndex < pommelTransition.length; firstIndex += 1) 
     }
   }
 }
-if (cubes.length !== 26 || authoredHeadCubes.length !== 18) {
-  errors.push("Handle and sprinkler head must preserve the eight-piece handle and eighteen-piece exterior-only head");
+if (cubes.length !== 14 || authoredHeadCubes.length !== 6) {
+  errors.push("Handle and sprinkler head must preserve the eight-piece handle and six stable head volumes");
 } else {
   const grip = [-6, 24, 1];
   const handleContainsGrip = grip.every(
@@ -492,6 +492,18 @@ if (cubes.length !== 26 || authoredHeadCubes.length !== 18) {
   }
 
   const faceNames = ["north", "east", "south", "west", "up", "down"];
+  const expectedHeadVolumes = [
+    { name: "lower_head_ring", origin: [-7.7, 32.15, -0.7], size: [3.4, 0.4, 3.4], faces: ["north", "east", "south", "west", "down"] },
+    { name: "lower_head_dome", origin: [-8.15, 32.55, -1.15], size: [4.3, 0.65, 4.3], faces: ["north", "east", "south", "west", "down"] },
+    { name: "perforated_head", origin: [-8.47, 33.2, -1.47], size: [4.94, 2.15, 4.94], faces: ["north", "east", "south", "west", "up", "down"] },
+    { name: "upper_head_dome", origin: [-8.15, 35.35, -1.15], size: [4.3, 0.65, 4.3], faces: ["north", "east", "south", "west", "up"] },
+    { name: "upper_head_ring", origin: [-7.7, 36, -0.7], size: [3.4, 0.4, 3.4], faces: ["north", "east", "south", "west", "up"] },
+    { name: "top_finial", origin: [-6.7475, 36.4, 0.2525], size: [1.495, 0.4, 1.495], faces: ["north", "east", "south", "west", "up"] },
+  ];
+  if (JSON.stringify(authoredHeadCubes.map(({ name, origin, size, faces }) => ({ name, origin, size, faces })))
+    !== JSON.stringify(expectedHeadVolumes)) {
+    errors.push("Sprinkler head must preserve six stable four-walled volumes and the approved single-cap seam masks");
+  }
   const facePlane = (cube, faceName) => {
     const [x, y, z] = cube.origin;
     const [sizeX, sizeY, sizeZ] = cube.size;
@@ -529,21 +541,21 @@ if (cubes.length !== 26 || authoredHeadCubes.length !== 18) {
   }
   const expectedHorizontalCoverage = new Map([
     ["down:32.150000", 11.56],
-    ["down:32.550000", 6.93],
-    ["down:33.200000", 5.9136],
-    ["up:35.350000", 5.9136],
-    ["up:36.000000", 6.93],
-    ["up:36.400000", 9.324975],
+    ["down:32.550000", 18.49],
+    ["down:33.200000", 24.4036],
+    ["up:35.350000", 24.4036],
+    ["up:36.000000", 18.49],
+    ["up:36.400000", 11.56],
     ["up:36.800000", 2.235025],
   ]);
   if (horizontalCoverage.size !== expectedHorizontalCoverage.size
     || [...expectedHorizontalCoverage].some(([key, expectedArea]) =>
       Math.abs((horizontalCoverage.get(key) ?? Number.NaN) - expectedArea) > 1e-6)) {
-    errors.push("Sprinkler-head horizontal faces must remain exterior annuli with no hidden central caps");
+    errors.push("Sprinkler-head seams must retain exactly one authored horizontal cap per junction");
   }
 
   if (sourceCubes.length !== cubes.length) {
-    errors.push("Authored and generated aspergillum models must contain the same twenty-six cubes");
+    errors.push("Authored and generated aspergillum models must contain the same fourteen cubes");
   }
   const allowedSurfaces = new Set(["leather", "silver", "gold", "perforated_silver"]);
   for (const [index, sourceCube] of sourceCubes.entries()) {

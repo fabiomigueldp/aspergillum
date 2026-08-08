@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.6 — 2026-08-07
+
+- corrigida a regressão da v1.1.5 em que as paredes `east`/`west` da cabeça, distribuídas entre aros finos, eram descartadas pelo renderizador de blocos do Bedrock e deixavam dois lados vazados na mesa e na caldeirinha;
+- restaurados seis volumes estáveis para anel inferior, domo inferior, corpo perfurado, domo superior, anel superior e terminal, cada qual com quatro paredes laterais integrais e UV per-face inteiro;
+- preservada a correção da competição original: em cada uma das cinco junções apenas um dos dois volumes fornece a tampa horizontal, portanto nenhuma dupla de faces renderizadas ocupa o mesmo plano;
+- a malha compartilhada retorna a quatorze peças — oito no cabo e seis na cabeça — sem mudar envelope, acabamento, perfurações, pivô, locator, pose ou composição;
+- o validador bloqueia tanto faces coplanares sobrepostas quanto a fragmentação futura das seis paredes estáveis, e exige a cobertura horizontal única de cada junção;
+- o rótulo e a revisão numérica distribuídos são `1.1.6`/`[1,1,6]`.
+
 ## 1.1.5 — 2026-08-07
 
 - eliminada na fonte a topologia que fazia as tampas superiores e inferiores da cabeça desaparecerem conforme o ângulo somente na composição `blend` da caldeirinha;

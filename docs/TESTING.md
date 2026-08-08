@@ -4,9 +4,9 @@
 
 Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
 
-## Gate visual da cabeça, do pomo e da Mesa do Sacristão — v1.1.5
+## Gate visual da cabeça, do pomo e da Mesa do Sacristão — v1.1.6
 
-- [ ] fechar o jogo, remover revisões anteriores e importar somente `Aspergillum-1.1.5.mcaddon` com manifests `[1,1,5]`;
+- [ ] fechar o jogo, remover revisões anteriores e importar somente `Aspergillum-1.1.6.mcaddon` com manifests `[1,1,6]`;
 - [ ] confirmar Content Log sem erro/warning de `@minecraft/server-ui`, `@minecraft/common`, custom component, formulário, item, attachable, geometria, textura, tradução ou block state;
 - [ ] fabricar/obter a Mesa do Sacristão, colocá-la nos dezesseis setores e confirmar frente da gaveta, colisão, seleção, som de madeira e impossibilidade de movimento por pistão;
 - [ ] usar um aspersório nomeado, com `instance_id`, carga parcial e propriedade customizada; ele sai da mão, repousa inteiro e centralizado sobre o veludo, sem ultrapassar bordas, e abre a UI exatamente uma vez;
@@ -23,6 +23,7 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 - [ ] acomodar na caldeirinha um aspersório clássico e um dourado; orbitar lentamente por cima, por baixo e em ângulos rasantes, confirmando que anel inferior, domo inferior, corpo, domo superior, anel superior e terminal permanecem contínuos em todos os quadros;
 - [ ] durante a órbita da caldeirinha, nenhuma tampa prateada/metalizada desaparece para revelar o corpo dourado ou a superfície situada abaixo; não há cintilação, moiré, triângulo, fenda central ou troca conforme a distância;
 - [ ] usar mão, suporte de armadura e mesa como controles: a nova cabeça preserva exatamente a silhueta, as duas fileiras de perfurações e a distribuição de acabamentos anterior;
+- [ ] na mesa e na caldeirinha, observar separadamente norte, sul, leste e oeste da cabeça: nenhum lado pode aparecer como aro vazio, perder o painel perfurado ou deixar o cenário visível através do volume;
 - [ ] confirmar que prata clássica + couro castanho reproduz a aparência 1.0.20 e que **Restaurar padrão** volta a `standard/classic`;
 - [ ] usar **Fechar**: configuração já aplicada persiste e o item permanece na mesa; reabrir mostra os valores atuais;
 - [ ] **Concluir e retirar** devolve exatamente o mesmo item e libera a mesa; com inventário cheio, o item é dropado uma vez sem apagar o snapshot antes da recuperação;

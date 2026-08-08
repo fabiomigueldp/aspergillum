@@ -1,6 +1,6 @@
 # Mapa da instalação local
 
-Mapa gerado por `tools/sync-installed-addon.mjs` em **2026-08-08T01:59:41.252Z**.
+Mapa gerado por `tools/sync-installed-addon.mjs` em **2026-08-08T02:19:51.739Z**.
 A sincronização usa diretamente `packs/`, substitui os diretórios locais e atualiza os vínculos do mundo selecionado.
 
 ## Instalação do Minecraft
@@ -32,21 +32,21 @@ Mundo sincronizado nesta execução: `devtest` (1 alvo(s)).
 
 ## Aspergillum instalado
 
-- Rótulo: `1.1.5`;
-- Versão numérica dos manifests: `[1, 1, 5]`;
-- Artefato: `C:\Users\fabio\Projects\aspergillum\dist\releases\Aspergillum-1.1.5.mcaddon`;
-- SHA-256: `a42fdffff1b475600ca0b08eab4b682d5cffe008d1427ec3791644863c512a67`.
+- Rótulo: `1.1.6`;
+- Versão numérica dos manifests: `[1, 1, 6]`;
+- Artefato: `C:\Users\fabio\Projects\aspergillum\dist\releases\Aspergillum-1.1.6.mcaddon`;
+- SHA-256: `728014e1c382ad55ebaabc34886a7b2de4551a512b1239766b9300973d20ef93`.
 
 | Pack | UUID | Arquivos | Bytes | Caminho compartilhado |
 | --- | --- | ---: | ---: | --- |
 | Behavior | bac9f8bc-71f5-4db7-a0ff-3c5a365749b4 | 25 | 151321 | `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang\behavior_packs\pack.asper` |
-| Resource | fdb8a79c-8f77-4831-9a5c-8e2b8ecca29e | 197 | 4181585 | `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang\resource_packs\pack.asper` |
+| Resource | fdb8a79c-8f77-4831-9a5c-8e2b8ecca29e | 197 | 3811565 | `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang\resource_packs\pack.asper` |
 
 ## Mundo sincronizado
 
 Nome: **devtest**
 Pasta: `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\8414181078248597151\games\com.mojang\minecraftWorlds\RYdEhTaa5t8=`
-Snapshot: 238 arquivos, 36 diretórios; o tamanho varia com o LevelDB.
+Snapshot: 237 arquivos, 36 diretórios; o tamanho varia com o LevelDB.
 
 ```text
 RYdEhTaa5t8=
@@ -62,7 +62,7 @@ RYdEhTaa5t8=
 └── world_resource_pack_history.json
 ```
 
-Os vínculos ativos e históricos de `devtest` apontam para `[1, 1, 5]`.
+Os vínculos ativos e históricos de `devtest` apontam para `[1, 1, 6]`.
 
 ## Mundos do perfil
 
@@ -83,7 +83,7 @@ Os vínculos ativos e históricos de `devtest` apontam para `[1, 1, 5]`.
 | L+1naPlwfQI= | My World | 1.0.30 | 1.0.30 | 1.0.30 | 1.0.30 | não |
 | LAKg42VxeJ8= | My World | 1.0.14 | 1.0.14 | 1.0.14 | 1.0.14 | não |
 | Rk1N0Z9IRbU= | My World | — | — | — | — | não |
-| RYdEhTaa5t8= | devtest | 1.1.5 (1.1.5) | 1.1.5 (1.1.5) | 1.1.5 (1.1.5) | 1.1.5 (1.1.5) | sim |
+| RYdEhTaa5t8= | devtest | 1.1.6 (1.1.6) | 1.1.6 (1.1.6) | 1.1.6 (1.1.6) | 1.1.6 (1.1.6) | sim |
 | vz5XjjBKc8k= | Small Medieval Church 1.0.4 (imported) | 1.0.2 | — | — | — | não |
 | XF60MIBp-Qg= | My World | 1.0.5 | 1.0.5 | 1.0.5 | 1.0.5 | não |
 | y01GRv4EOxU= | My World | 1.0.13 | 1.0.13 | 1.0.13 | 1.0.13 | não |
@@ -330,8 +330,8 @@ resource_packs\pack.asper\textures\terrain_texture.json
 C:\Users\fabio\Projects\aspergillum
 ├── packs\behavior
 ├── packs\resource
-├── dist\releases\Aspergillum-1.1.5.mcaddon
-├── dist\validation\1.1.5
+├── dist\releases\Aspergillum-1.1.6.mcaddon
+├── dist\validation\1.1.6
 └── docs\LOCAL_INSTALLATION_MAP.md
 ```
 
