@@ -19,7 +19,7 @@ O servidor é autoritativo para carga, água, cooldown e permissões. Resource P
 ## Identificadores e compatibilidade
 
 - Namespace: `aspergillum`.
-- Item clássico: `aspergillum:aspergillum`; oito variantes usam `aspergillum:aspergillum_<metal>_<grip>`.
+- Item clássico: `aspergillum:aspergillum`; quinze variantes usam `aspergillum:aspergillum_<metal>_<grip>`.
 - Blocos: `aspergillum:aspersorium` e `aspergillum:sacristan_table`.
 - States da caldeirinha: `aspergillum:water_base`, `aspergillum:water_offset`, `aspergillum:has_aspergillum`, `aspergillum:cosmetic`, `aspergillum:rotation`.
 - States da mesa: `aspergillum:table_has_aspergillum`, `aspergillum:table_cosmetic`, `aspergillum:table_rotation`.
@@ -144,7 +144,7 @@ Partículas visuais permanecem independentes de qualquer cone lógico de gamepla
 1. Usar o aspersório numa Mesa do Sacristão livre captura e remove o ItemStack exato, grava um snapshot no mesmo registry persistente e publica o estado visual ocupado.
 2. Uma sessão exclusiva reserva jogador e coordenada; outro jogador recebe feedback de mesa ocupada, sem mutação.
 3. `CustomForm` recebe observáveis para perfil, metal e empunhadura. Cada mudança revalida jogador, distância, dimensão, bloco, sessão e snapshot antes de regravar a configuração.
-4. A troca cosmética seleciona um dos nove IDs de item/attachable, mas preserva `instance_id`, cargas, schema, `nameTag` e propriedades dinâmicas.
+4. A troca cosmética seleciona um dos dezesseis IDs de item/attachable, mas preserva `instance_id`, cargas, schema, `nameTag` e propriedades dinâmicas.
 5. **Concluir e retirar** reconstrói o item configurado e só remove o snapshot depois da entrega/drop bem-sucedido. **Fechar** encerra a sessão e mantém o item exposto na mesa.
 6. Quebra, morte, saída, mudança de dimensão e bloco substituído liberam a sessão; a quebra recupera o snapshot com rollback defensivo.
 
@@ -194,9 +194,9 @@ O bridge não é um segundo leque e não substitui o emissor matemático. Não r
 
 Antes da colocação, `beforeOnPlayerPlace` converte yaw em 16 setores e escolhe uma geometria pré-rotacionada. Isso evita traits experimentais. O bloco possui quatro níveis de água e variante visual ocupada.
 
-O reservatório mantém `0..16` unidades lógicas exatas. A infraestrutura usa um codec radix-9: `water_base` vale `0` ou `9`, `water_offset` vale `0..8`, e a quantidade é a soma normalizada. Isso representa dezessete quantidades com apenas dezoito pares; ocupação, nove cosméticos e dezesseis rotações elevam o espaço publicado da caldeirinha de 576 para 5.184 combinações, mantendo cada state abaixo do limite runtime de dezesseis valores. Application lê e grava somente por `readAspersoriumWater`/`withAspersoriumWater`; as duas parcelas entram na mesma permutação antes de uma única escrita. A capacidade do item (`4`) e a capacidade do bloco (`16`) têm constantes e normalizadores distintos. O docking transfere somente o que cabe, preserva o restante no snapshot V2 e conserva exatamente `água + cargas`; snapshots V1 migram para carga zero. A ocupação booleana governa apenas a aparência, enquanto o registry persistente por dimensão/chunk preserva o item real e futuras variantes. Consulte [Estado e concorrência](STATE_AND_CONCURRENCY.md).
+O reservatório mantém `0..16` unidades lógicas exatas. A infraestrutura usa um codec radix-9: `water_base` vale `0` ou `9`, `water_offset` vale `0..8`, e a quantidade é a soma normalizada. Isso representa dezessete quantidades com apenas dezoito pares; ocupação, dezesseis cosméticos e dezesseis rotações elevam o espaço publicado da caldeirinha a `2 × 9 × 2 × 16 × 16 = 9.216` combinações, mantendo cada state no limite máximo de dezesseis valores. Application lê e grava somente por `readAspersoriumWater`/`withAspersoriumWater`; as duas parcelas entram na mesma permutação antes de uma única escrita. A capacidade do item (`4`) e a capacidade do bloco (`16`) têm constantes e normalizadores distintos. O docking transfere somente o que cabe, preserva o restante no snapshot V2 e conserva exatamente `água + cargas`; snapshots V1 migram para carga zero. A ocupação booleana governa apenas a aparência, enquanto o registry persistente por dimensão/chunk preserva o item real e futuras variantes. Consulte [Estado e concorrência](STATE_AND_CONCURRENCY.md).
 
-A Mesa do Sacristão possui `2 × 9 × 16 = 288` combinações. O índice cosmético é apenas projeção visual do snapshot; não substitui o `cosmeticId` persistido no item. Bloco colocado em revisão anterior não existe, e states ausentes/cosméticos legados da caldeirinha resolvem para índice `0`, a aparência clássica.
+A Mesa do Sacristão possui `2 × 16 × 16 = 512` combinações. O índice cosmético é apenas projeção visual do snapshot; não substitui o `cosmeticId` persistido no item. Os índices `0..8` mantêm exatamente seus pares da 1.1.10; os novos pares ocupam somente `9..15`. States ausentes ou valores desconhecidos continuam resolvendo para índice `0`, a aparência clássica.
 
 ### Perfil material da caldeirinha 1.1.7
 
@@ -204,7 +204,7 @@ A estrutura metálica e o aspersório acomodado usam `opaque`; somente a superf�
 
 ### Perfil oficial da caldeirinha 1.1.9
 
-A 1.1.9 promove a arquitetura validada na 1.1.9c. Nas dezessete geometrias rotacionadas do bloco, os quatro bones de água são removidos e todos os nove grupos cosméticos usam exclusivamente `opaque`. Uma entidade persistente `aspergillum:aspersorium_water_visual` fornece somente a lâmina d'água com o material vanilla `entity_alphablend`.
+A 1.1.9 promove a arquitetura validada na 1.1.9c. Nas dezessete geometrias rotacionadas do bloco, os quatro bones de água são removidos; na 1.2.0, todos os dezesseis grupos cosméticos continuam usando exclusivamente `opaque`. Uma entidade persistente `aspergillum:aspersorium_water_visual` fornece somente a lâmina d'água com o material vanilla `entity_alphablend`.
 
 O codec `water_base + water_offset` permanece a autoridade. A projeção recebe apenas `water_visual_level ∈ 1..4`, sincronizado ao cliente, e associa-se às coordenadas inteiras do bloco. Colocação, mudança de state, quebra e entity load reconciliam imediatamente a relação; um tick distribuído por bloco entre 80 e 120 ticks repara mundo existente, ausência, deslocamento e duplicata. O reconciliador não varre o mundo, não executa IA e só transmite posição/propriedade quando há divergência. Se a entidade falhar, nenhuma água, carga ou snapshot é alterado.
 

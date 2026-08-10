@@ -5,6 +5,7 @@ import {
   cosmeticTextureSuffix,
   resolveCosmetic,
   resolveCosmetics,
+  sortCosmeticsForMatrix,
 } from '../src/shared/cosmetic-contract.js';
 
 const cosmetics = [
@@ -28,4 +29,20 @@ test('provides readable finish labels and stable texture suffixes', () => {
 
 test('rejects an unknown finish instead of silently capturing the classic one', () => {
   assert.throws(() => resolveCosmetic(cosmetics, 'missing'), /Acabamento desconhecido/);
+});
+
+test('decouples the visual matrix order from persisted cosmetic indices', () => {
+  const persistedOrder = [
+    { id: 'classic', metal: 'silver', grip: 'chestnut', index: 0 },
+    { id: 'antique_chestnut', metal: 'antique', grip: 'chestnut', index: 3 },
+    { id: 'silver_ivory', metal: 'silver', grip: 'ivory', index: 9 },
+  ];
+  assert.deepEqual(
+    sortCosmeticsForMatrix(
+      persistedOrder,
+      ['silver', 'antique'],
+      ['chestnut', 'ivory'],
+    ).map(({ id }) => id),
+    ['classic', 'silver_ivory', 'antique_chestnut'],
+  );
 });

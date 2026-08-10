@@ -6,6 +6,8 @@ const root = path.resolve(import.meta.dirname, "..");
 const packRoots = [path.join(root, "packs", "behavior"), path.join(root, "packs", "resource")];
 const errors = [];
 let jsonCount = 0;
+let textureCount = 0;
+let decodedTextureBytes = 0;
 
 function walk(directory) {
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -127,8 +129,8 @@ const blockStateSpace = Object.values(blockStates).reduce(
   (product, values) => product * (Array.isArray(values) ? values.length : 1),
   1,
 );
-if (blockStateSpace !== 5184) {
-  errors.push(`Aspersorium must expose the reviewed 5184-state permutation space, found ${blockStateSpace}`);
+if (blockStateSpace !== 9216) {
+  errors.push(`Aspersorium must expose the reviewed 9216-state permutation space, found ${blockStateSpace}`);
 }
 const expectedWaterBones = ["water_low", "water_mid", "water_high", "water_full"];
 const baseBoneVisibility = baseGeometry?.bone_visibility ?? {};
@@ -260,10 +262,34 @@ if (aspersoriumRecipe?.key?.C?.item !== "minecraft:chain") {
   errors.push("Aspersorium recipe must remain distinct from the vanilla cauldron recipe");
 }
 
-if (cosmetics.length !== 9
+const publishedCosmetics = [
+  ["classic", "silver", "chestnut", 0],
+  ["silver_oxblood", "silver", "oxblood", 1],
+  ["silver_black", "silver", "black", 2],
+  ["antique_chestnut", "antique", "chestnut", 3],
+  ["antique_oxblood", "antique", "oxblood", 4],
+  ["antique_black", "antique", "black", 5],
+  ["gilded_chestnut", "gilded", "chestnut", 6],
+  ["gilded_oxblood", "gilded", "oxblood", 7],
+  ["gilded_black", "gilded", "black", 8],
+  ["silver_ivory", "silver", "ivory", 9],
+  ["antique_ivory", "antique", "ivory", 10],
+  ["gilded_ivory", "gilded", "ivory", 11],
+  ["bronze_chestnut", "bronze", "chestnut", 12],
+  ["bronze_oxblood", "bronze", "oxblood", 13],
+  ["bronze_black", "bronze", "black", 14],
+  ["bronze_ivory", "bronze", "ivory", 15],
+];
+if (cosmetics.length !== 16
   || cosmetics[0]?.id !== "classic"
-  || JSON.stringify(cosmetics.map(({ index }) => index)) !== JSON.stringify(Array.from({ length: 9 }, (_, index) => index))) {
-  errors.push("Customization catalog must preserve classic plus eight stable cosmetic combinations");
+  || JSON.stringify(customizationCatalog.metalFinishes) !== JSON.stringify(["silver", "antique", "gilded", "bronze"])
+  || JSON.stringify(customizationCatalog.gripFinishes) !== JSON.stringify(["chestnut", "oxblood", "black", "ivory"])
+  || JSON.stringify(cosmetics.map(({ index }) => index)) !== JSON.stringify(Array.from({ length: 16 }, (_, index) => index))) {
+  errors.push("Customization catalog must expose the reviewed 4x4 matrix with indices 0 through 15");
+}
+if (JSON.stringify(cosmetics.map(({ id, metal, grip, index }) => [id, metal, grip, index]))
+  !== JSON.stringify(publishedCosmetics)) {
+  errors.push("Customization catalog must preserve every published 4x4 cosmetic mapping at indices 0 through 15");
 }
 
 const tableDefinition = JSON.parse(
@@ -285,8 +311,8 @@ const tableStateSpace = Object.values(tableStates).reduce(
   (product, values) => product * (Array.isArray(values) ? values.length : 1),
   1,
 );
-if (tableStateSpace !== 288) {
-  errors.push(`Sacristan table must expose the reviewed 288-state space, found ${tableStateSpace}`);
+if (tableStateSpace !== 512) {
+  errors.push(`Sacristan table must expose the reviewed 512-state space, found ${tableStateSpace}`);
 }
 if (tableBlock?.components?.["minecraft:movable"]?.movement_type !== "immovable") {
   errors.push("Persistent customization metadata requires the Sacristan table to remain immovable");
@@ -1007,7 +1033,7 @@ if (compiledScript.includes("runInterval")) {
 
 for (const locale of ["pt_BR", "en_US"]) {
   const lang = fs.readFileSync(path.join(packRoots[1], "texts", `${locale}.lang`), "utf8");
-  for (const key of [
+  const requiredLocaleKeys = [
     "item.aspergillum.lore.charges",
     "item.aspergillum.lore.profile",
     "item.aspergillum.lore.appearance",
@@ -1021,7 +1047,16 @@ for (const locale of ["pt_BR", "en_US"]) {
     "ui.aspergillum.table.grip.label",
     "ui.aspergillum.table.finish",
     "ui.aspergillum.table.close",
-  ]) {
+    ...customizationCatalog.metalFinishes.flatMap((finish) => [
+      `ui.aspergillum.metal.${finish}.name`,
+      `ui.aspergillum.metal.${finish}.description`,
+    ]),
+    ...customizationCatalog.gripFinishes.flatMap((finish) => [
+      `ui.aspergillum.grip.${finish}.name`,
+      `ui.aspergillum.grip.${finish}.description`,
+    ]),
+  ];
+  for (const key of requiredLocaleKeys) {
     if (!lang.includes(`${key}=`)) errors.push(`${locale}.lang is missing localized lore key ${key}`);
   }
 }
@@ -1072,6 +1107,8 @@ const particleTexturePath = path.join(packRoots[1], "textures", "particle", "hol
 for (const file of walk(path.join(root, "packs", "resource", "textures")).filter((entry) => entry.endsWith(".png"))) {
   try {
     const image = PNG.sync.read(fs.readFileSync(file));
+    textureCount += 1;
+    decodedTextureBytes += image.width * image.height * 4;
     const powerOfTwo = (value) => value > 0 && (value & (value - 1)) === 0;
     if (!powerOfTwo(image.width) || !powerOfTwo(image.height)) errors.push(`Non-power-of-two texture: ${path.relative(root, file)}`);
     if (file === entityTexturePath) {
@@ -1103,4 +1140,6 @@ if (errors.length > 0) {
   console.error(errors.join("\n"));
   process.exit(1);
 }
-console.log(`Validated ${jsonCount} JSON files, ${uuids.length} UUIDs, and all generated textures.`);
+console.log(
+  `Validated ${jsonCount} JSON files, ${uuids.length} UUIDs, and ${textureCount} textures (${(decodedTextureBytes / 1024 / 1024).toFixed(2)} MiB decoded).`,
+);

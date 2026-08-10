@@ -1,0 +1,41 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:attachable": {
+    "description": {
+      "identifier": "aspergillum:aspergillum_gilded_ivory",
+      "item": {
+        "aspergillum:aspergillum_gilded_ivory": "q.is_owner_identifier_any('minecraft:player')"
+      },
+      "materials": {
+        "default": "entity"
+      },
+      "textures": {
+        "default": "textures/entity/aspergillum_gilded_ivory"
+      },
+      "geometry": {
+        "default": "geometry.aspergillum.held"
+      },
+      "animations": {
+        "hold_first_person": "animation.aspergillum.hold_first_person",
+        "hold_third_person": "animation.aspergillum.hold_third_person",
+        "sprinkle_first_person": "animation.aspergillum.action.sprinkle.first_person",
+        "sprinkle_third_person": "animation.aspergillum.action.sprinkle.third_person",
+        "action_controller": "controller.animation.aspergillum.action"
+      },
+      "scripts": {
+        "animate": [
+          {
+            "hold_first_person": "context.is_first_person == 1.0"
+          },
+          {
+            "hold_third_person": "context.is_first_person == 0.0"
+          },
+          "action_controller"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.aspergillum.held"
+      ]
+    }
+  }
+}

@@ -1,5 +1,5 @@
-export const METAL_FINISH_IDS = ["silver", "antique", "gilded"] as const;
-export const GRIP_FINISH_IDS = ["chestnut", "oxblood", "black"] as const;
+export const METAL_FINISH_IDS = ["silver", "antique", "gilded", "bronze"] as const;
+export const GRIP_FINISH_IDS = ["chestnut", "oxblood", "black", "ivory"] as const;
 
 export type MetalFinishId = typeof METAL_FINISH_IDS[number];
 export type GripFinishId = typeof GRIP_FINISH_IDS[number];
@@ -15,15 +15,24 @@ function cosmeticId(metal: MetalFinishId, grip: GripFinishId): string {
   return metal === "silver" && grip === "chestnut" ? "classic" : `${metal}_${grip}`;
 }
 
+function stableCosmeticIndex(metal: MetalFinishId, grip: GripFinishId): number {
+  const metalIndex = METAL_FINISH_IDS.indexOf(metal);
+  const gripIndex = GRIP_FINISH_IDS.indexOf(grip);
+  // The original 3x3 matrix is a persisted world contract and must remain 0..8.
+  if (metalIndex < 3 && gripIndex < 3) return metalIndex * 3 + gripIndex;
+  if (metalIndex < 3 && grip === "ivory") return 9 + metalIndex;
+  return 12 + gripIndex;
+}
+
 export const ASPERGILLUM_COSMETICS = Object.freeze(
-  METAL_FINISH_IDS.flatMap((metal, metalIndex) =>
-    GRIP_FINISH_IDS.map((grip, gripIndex) => Object.freeze({
+  METAL_FINISH_IDS.flatMap((metal) =>
+    GRIP_FINISH_IDS.map((grip) => Object.freeze({
       id: cosmeticId(metal, grip),
       metal,
       grip,
-      index: metalIndex * GRIP_FINISH_IDS.length + gripIndex,
+      index: stableCosmeticIndex(metal, grip),
     })),
-  ),
+  ).sort((left, right) => left.index - right.index),
 );
 
 export const DEFAULT_COSMETIC = ASPERGILLUM_COSMETICS[0] as AspergillumCosmetic;
@@ -40,5 +49,5 @@ export function resolveCosmeticSelection(metal: unknown, grip: unknown): Aspergi
 
 export function resolveCosmeticIndex(index: unknown): AspergillumCosmetic {
   if (typeof index !== "number" || !Number.isInteger(index)) return DEFAULT_COSMETIC;
-  return ASPERGILLUM_COSMETICS[index] ?? DEFAULT_COSMETIC;
+  return ASPERGILLUM_COSMETICS.find((cosmetic) => cosmetic.index === index) ?? DEFAULT_COSMETIC;
 }

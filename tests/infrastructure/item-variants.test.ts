@@ -9,7 +9,7 @@ import {
 
 describe("aspergillum item variants", () => {
   it("maps every cosmetic to one stable public item identifier", () => {
-    expect(ASPERGILLUM_ITEM_TYPES.size).toBe(9);
+    expect(ASPERGILLUM_ITEM_TYPES.size).toBe(16);
     for (const cosmetic of ASPERGILLUM_COSMETICS) {
       const typeId = aspergillumItemTypeForCosmetic(cosmetic.id);
       expect(isAspergillumItemType(typeId)).toBe(true);

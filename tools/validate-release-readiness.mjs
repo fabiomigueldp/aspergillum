@@ -20,6 +20,10 @@ function localeEntries(locale) {
 }
 
 const metadata = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+const customizationCatalog = JSON.parse(fs.readFileSync(
+  path.join(root, "assets-src", "customization", "catalog.json"),
+  "utf8",
+));
 const releaseLabel = metadata.aspergillum?.releaseLabel ?? metadata.version;
 const expectedVersion = metadata.version.split(".").map(Number);
 const behaviorManifest = JSON.parse(fs.readFileSync(path.join(root, "packs", "behavior", "manifest.json"), "utf8"));
@@ -98,8 +102,14 @@ const portugueseUiKeys = [...localeEntries("pt_BR").keys()]
 const englishUiKeys = [...localeEntries("en_US").keys()]
   .filter((key) => key.startsWith("ui.aspergillum."))
   .sort();
-if (JSON.stringify(portugueseUiKeys) !== JSON.stringify(englishUiKeys) || portugueseUiKeys.length !== 27) {
-  errors.push("Customization UI catalogs must expose the same 27 keys in pt_BR and en_US");
+const fixedUiKeyCount = 15;
+const expectedUiKeyCount = fixedUiKeyCount
+  + (customizationCatalog.metalFinishes.length + customizationCatalog.gripFinishes.length) * 2;
+if (JSON.stringify(portugueseUiKeys) !== JSON.stringify(englishUiKeys)
+  || portugueseUiKeys.length !== expectedUiKeyCount) {
+  errors.push(
+    `Customization UI catalogs must expose the same ${expectedUiKeyCount} keys in pt_BR and en_US`,
+  );
 }
 
 const sourceFiles = walk(path.join(root, "src")).filter((file) => file.endsWith(".ts"));

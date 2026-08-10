@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.0 — 2026-08-10 — matriz de acabamentos 4×4
+
+- adicionados bronze cerimonial e marfim vegetal como quarto metal e quarta empunhadura, formando dezesseis combinações gratuitas e localizadas;
+- preservados sem reordenação `classic` e os pares publicados em `0..8`; prata/envelhecida/dourada + marfim ocupam `9..11`, e bronze ocupa `12..15`;
+- gerados sete novos IDs de item/attachable e conjuntos color/normal/MER para mão, caldeirinha e mesa, sem qualquer variante geométrica;
+- UI continua usando dois dropdowns independentes; viewer e capturador apresentam uma matriz cartesiana 4×4, embora a ordem persistente permaneça deliberadamente legacy-first;
+- states da caldeirinha e da mesa passam respectivamente a `9.216` e `512` combinações, cada dimensão com no máximo dezesseis valores; o orçamento de 163 texturas é `27,07 MiB` decodificados;
+- validadores bloqueiam qualquer mudança dos dezesseis pares/IDs/índices publicados — com proteção explícita da herança `0..8` —, exigem assets/localizações completos e medem contraste dos quatro metais e quatro grips;
+- preservados UUIDs, nomes de states, binding, geometria `1.16.0`, poses, animações, VFX, áudio, cargas, água, sessões, snapshots e fallback clássico; packs publicados como `[1,2,0]`.
+
 ## 1.1.10 — 2026-08-10 — observabilidade visual e legibilidade dos acabamentos
 
 - o Bedrock Fidelity Renderer passa a compor a geometria real `geometry.aspergillum.aspersorium_water_visual` sobre a caldeirinha, com os estados vazio/¼/½/¾/cheio e material translúcido separados do bloco;

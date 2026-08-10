@@ -124,7 +124,7 @@ function cosmeticItemIdentifier(cosmetic) {
     : `aspergillum:aspergillum_${cosmetic.id}`;
 }
 
-function aspersoriumMaterialInstances(texture) {
+function opaqueMaterialInstances(texture) {
   return {
     "*": { texture, render_method: "opaque" },
   };
@@ -266,13 +266,19 @@ function albedoPixel(region, x, y, cosmetic = customizationCatalog.cosmetics[0])
       chestnut: [[105, 66, 39, 255], [66, 39, 25, 255]],
       oxblood: [[116, 32, 45, 255], [67, 18, 28, 255]],
       black: [[51, 54, 53, 255], [18, 20, 20, 255]],
+      ivory: [[221, 207, 169, 255], [168, 151, 113, 255]],
     }[cosmetic.grip] ?? [[105, 66, 39, 255], [66, 39, 25, 255]];
     const base = gripPalette[wrapBand];
     return shadeColor(base, Math.round(noise * 0.4) + Math.round(bevel * 0.25) + (seam ? -12 : 0));
   }
   if (region.surface === "gold") {
     const bandHighlight = y === Math.floor(region.height / 2) ? 9 : 0;
-    const goldBase = cosmetic.metal === "antique" ? [139, 103, 48, 255] : [180, 127, 36, 255];
+    const goldBase = {
+      silver: [180, 127, 36, 255],
+      antique: [139, 103, 48, 255],
+      gilded: [208, 157, 53, 255],
+      bronze: [151, 94, 42, 255],
+    }[cosmetic.metal] ?? [180, 127, 36, 255];
     return shadeColor(goldBase, noise + bevel + faceTone + bandHighlight);
   }
   if (isPerforation(region, x, y)) {
@@ -288,6 +294,7 @@ function albedoPixel(region, x, y, cosmetic = customizationCatalog.cosmetics[0])
     silver: [169, 176, 173, 255],
     antique: [96, 111, 107, 255],
     gilded: [190, 154, 75, 255],
+    bronze: [151, 91, 49, 255],
   }[cosmetic.metal] ?? [158, 162, 159, 255];
   return shadeColor(silverBase, noise + bevel + faceTone + equatorBand);
 }
@@ -300,10 +307,21 @@ function normalPixel(region, x, y) {
 }
 
 function mersPixel(region, x, y, cosmetic = customizationCatalog.cosmetics[0]) {
-  if (region.surface === "leather") return [12, 0, 226, 255];
-  if (region.surface === "gold") return [236, 0, cosmetic.metal === "antique" ? 142 : 88, 255];
-  if (isPerforation(region, x, y)) return [38, 0, cosmetic.metal === "antique" ? 224 : 205, 255];
-  const roughnessBase = cosmetic.metal === "antique" ? 156 : cosmetic.metal === "gilded" ? 88 : 102;
+  if (region.surface === "leather") return [12, 0, cosmetic.grip === "ivory" ? 178 : 226, 255];
+  if (region.surface === "gold") {
+    const roughness = { silver: 88, antique: 142, gilded: 74, bronze: 126 }[cosmetic.metal] ?? 88;
+    return [236, 0, roughness, 255];
+  }
+  if (isPerforation(region, x, y)) {
+    const roughness = cosmetic.metal === "antique" ? 224 : cosmetic.metal === "bronze" ? 214 : 205;
+    return [38, 0, roughness, 255];
+  }
+  const roughnessBase = {
+    silver: 102,
+    antique: 156,
+    gilded: 88,
+    bronze: 132,
+  }[cosmetic.metal] ?? 102;
   const roughness = roughnessBase + Math.round(hash(x, y, region.seed + 200) * 18);
   return [226, 0, roughness, 255];
 }
@@ -424,11 +442,13 @@ function makeItemIcon(cosmetic) {
     silver: { dark: [96, 107, 105, 255], base: [181, 190, 186, 255], shine: [235, 241, 230, 255] },
     antique: { dark: [48, 65, 63, 255], base: [105, 124, 119, 255], shine: [165, 180, 166, 255] },
     gilded: { dark: [103, 72, 29, 255], base: [195, 151, 63, 255], shine: [244, 220, 143, 255] },
+    bronze: { dark: [79, 43, 25, 255], base: [156, 91, 48, 255], shine: [222, 154, 89, 255] },
   };
   const grips = {
     chestnut: { dark: [62, 34, 20, 255], base: [103, 61, 34, 255], light: [148, 94, 50, 255] },
     oxblood: { dark: [62, 13, 24, 255], base: [111, 27, 42, 255], light: [163, 55, 65, 255] },
     black: { dark: [16, 18, 18, 255], base: [43, 47, 46, 255], light: [82, 88, 83, 255] },
+    ivory: { dark: [115, 101, 73, 255], base: [194, 178, 137, 255], light: [241, 228, 188, 255] },
   };
   const metal = metals[cosmetic.metal] ?? metals.silver;
   const leather = grips[cosmetic.grip] ?? grips.chestnut;
@@ -452,7 +472,13 @@ function makeItemIcon(cosmetic) {
       }
     }
   }
-  fillRect(item, 9, 15, 7, 2, cosmetic.metal === "antique" ? [128, 91, 42, 255] : [190, 132, 38, 255]);
+  const ferrule = {
+    silver: [190, 132, 38, 255],
+    antique: [128, 91, 42, 255],
+    gilded: [220, 169, 62, 255],
+    bronze: [151, 89, 39, 255],
+  }[cosmetic.metal] ?? [190, 132, 38, 255];
+  fillRect(item, 9, 15, 7, 2, ferrule);
   fillRect(item, 8, 19, 6, 1, metal.shine);
   return item;
 }
@@ -745,7 +771,7 @@ blockContent.description.states["aspergillum:water_base"] = [0, 9];
 blockContent.description.states["aspergillum:water_offset"] = Array.from({ length: 9 }, (_, index) => index);
 blockContent.description.states["aspergillum:cosmetic"] = customizationCatalog.cosmetics.map((cosmetic) => cosmetic.index);
 blockContent.description.states["aspergillum:rotation"] = Array.from({ length: 16 }, (_, index) => index);
-blockContent.components["minecraft:material_instances"] = aspersoriumMaterialInstances("aspersorium");
+blockContent.components["minecraft:material_instances"] = opaqueMaterialInstances("aspersorium");
 if (blockContent.description.traits) {
   delete blockContent.description.traits["minecraft:placement_direction"];
   if (Object.keys(blockContent.description.traits).length === 0) delete blockContent.description.traits;
@@ -769,7 +795,7 @@ for (const cosmetic of customizationCatalog.cosmetics.slice(1)) {
   blockContent.permutations.push({
     condition: `q.block_state('aspergillum:cosmetic') == ${cosmetic.index}`,
     components: {
-      "minecraft:material_instances": aspersoriumMaterialInstances(`aspersorium${suffix}`),
+      "minecraft:material_instances": opaqueMaterialInstances(`aspersorium${suffix}`),
     },
   });
 }
@@ -798,10 +824,20 @@ tableBlockContent.description.states["aspergillum:table_rotation"] = Array.from(
   (_, index) => index,
 );
 tableBlockContent.permutations = tableBlockContent.permutations.filter(
-  (permutation) => !permutation.condition.includes("aspergillum:table_rotation"),
+  (permutation) => !permutation.condition.includes("aspergillum:table_rotation")
+    && !permutation.condition.includes("aspergillum:table_cosmetic"),
 );
 const tableBoneVisibility = tableBlockContent.components["minecraft:geometry"].bone_visibility;
 tableBlockContent.components["minecraft:geometry"].identifier = "geometry.aspergillum.sacristan_table.rotation_0";
+for (const cosmetic of customizationCatalog.cosmetics.slice(1)) {
+  const suffix = cosmeticTextureSuffix(cosmetic);
+  tableBlockContent.permutations.push({
+    condition: `q.block_state('aspergillum:table_cosmetic') == ${cosmetic.index}`,
+    components: {
+      "minecraft:material_instances": opaqueMaterialInstances(`sacristan_table${suffix}`),
+    },
+  });
+}
 for (let rotationIndex = 1; rotationIndex < 16; rotationIndex += 1) {
   tableBlockContent.permutations.push({
     condition: `q.block_state('aspergillum:table_rotation') == ${rotationIndex}`,

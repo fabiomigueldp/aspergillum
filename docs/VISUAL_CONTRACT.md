@@ -2,7 +2,7 @@
 
 Este documento registra os valores estruturais comprovados até a v1.0.15d, a integração VFX corrigida até a v1.0.16c e o pipeline de superfície/coerência de composição atualizado na v1.0.19b. Eles são baseline, não sugestões de calibração.
 
-A v1.1 adiciona variantes de superfície, perfis de spray, a transição limpa do pomo da v1.1.4, as junções de tampa única da cabeça da v1.1.6 e a água por entidade da caldeirinha na v1.1.9. Nenhum acabamento pode alterar bones, pivôs, grip, locator ou poses abaixo. `classic` mantém a linguagem material da 1.0.20; as oito variantes trocam apenas color/normal/MER derivados do catálogo. Item empunhado, caldeirinha e mesa derivam as mesmas quatorze peças, máscaras e UVs da fonte autoral, sem exceção geométrica local.
+A v1.1 adiciona variantes de superfície, perfis de spray, a transição limpa do pomo da v1.1.4, as junções de tampa única da cabeça da v1.1.6 e a água por entidade da caldeirinha na v1.1.9. A v1.2 completa a matriz 4×4 com bronze cerimonial e marfim vegetal. Nenhum acabamento pode alterar bones, pivôs, grip, locator ou poses abaixo. `classic` mantém a linguagem material da 1.0.20; as quinze variantes trocam apenas color/normal/MER derivados do catálogo. Item empunhado, caldeirinha e mesa derivam as mesmas quatorze peças, máscaras e UVs da fonte autoral, sem exceção geométrica local.
 
 ## Attachable
 

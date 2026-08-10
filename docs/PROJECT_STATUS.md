@@ -2,11 +2,11 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.1.10` estável não comercial (revisão numérica dos packs `[1, 1, 19]`)
+- **Versão de referência:** `1.2.0` estável não comercial (revisão numérica dos packs `[1, 2, 0]`)
 - **Engine mínima:** Creator `1.26.40`
 - **Script API:** manifest com `@minecraft/server` `2.9.0` e `@minecraft/server-ui` `2.1.0`, estáveis; `@minecraft/common` `1.3.0` somente no toolchain npm
 - **Experimentos:** nenhum
-- **Conteúdo:** aspersório funcional de quatro cargas, caldeirinha de dezesseis unidades, docking decorativo, três perfis de spray, nove acabamentos e Mesa do Sacristão configurável
+- **Conteúdo:** aspersório funcional de quatro cargas, caldeirinha de dezesseis unidades, docking decorativo, três perfis de spray, dezesseis acabamentos e Mesa do Sacristão configurável
 
 A v1.0.20 foi validada em jogo e é a baseline protegida de economia, docking parcial, persistência, animação, VFX e áudio. A v1.1.4 corrigiu a interseção do pomo; a v1.1.5 removeu as tampas coincidentes da cabeça, mas a decomposição em aros finos perdeu duas paredes no renderizador de blocos. A v1.1.6 conserva seis volumes com paredes integrais e apenas uma tampa por junção.
 
@@ -15,6 +15,8 @@ O reteste físico da v1.1.6 demonstrou que remover somente a segunda tampa copla
 A matriz 1.1.8 rejeitou alpha-test por degradação visual. A 1.1.9c separou a água em uma entidade `entity_alphablend`, eliminou a mistura de render methods no bloco e foi aprovada em jogo pelo usuário com resultado visual satisfatório, funcionalidades sem bugs observados e Content Log limpo. A 1.1.9 promove essa arquitetura como baseline estável sem alterar a autoridade lógica da água; a decisão e a proveniência estão em [Release 1.1.9](releases/1.1.9.md).
 
 A 1.1.10 mantém essa baseline byte/semanticamente protegida no gameplay e fecha a lacuna de observabilidade: o viewer compõe a mesma entidade de água, os nove acabamentos podem ser capturados explicitamente, o lifecycle visual recebe testes diretos e os ícones têm contraste validado. A promoção está registrada em [Release 1.1.10](releases/1.1.10.md).
+
+A 1.2.0 expande somente a superfície de personalização: bronze cerimonial e marfim vegetal completam a matriz 4×4. Os índices `0..8` preservam seus pares históricos; os sete pares novos usam `9..15`. O registro da promoção e do orçamento está em [Release 1.2.0](releases/1.2.0.md).
 
 ## O que está resolvido
 
@@ -75,12 +77,7 @@ A 1.1.10 mantém essa baseline byte/semanticamente protegida no gameplay e fecha
 
 ## Próxima mudança autorizada
 
-Produzir a `1.2.0` como expansão 4×4, preservando os índices `0..8` da matriz atual e acrescentando somente `9..15`:
-
-- quarto metal: bronze cerimonial;
-- quarta empunhadura: marfim vegetal;
-- dezesseis combinações gratuitas, localizadas, persistentes e capturáveis;
-- nenhuma mudança de geometria, binding, pose, gameplay, UUID ou significado dos states já publicados.
+Após a 1.2.0, limitar `1.2.x` a correções comprovadas pelo pacote importado e pelo Content Log. Nenhum novo acabamento, modelo ou state deve entrar antes do smoke físico da matriz completa e da compatibilidade `1.1.10 → 1.2.0`.
 
 Não faz parte do próximo marco:
 

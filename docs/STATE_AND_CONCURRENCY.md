@@ -157,7 +157,7 @@ Não existe transação de demonstração na v1.1.1. A única prévia é o próp
 
 Estado V3 inclui `instanceId`, `charges`, `cosmeticId: "classic"` e `sprayProfileId: "standard"`. Lore usa `RawMessage` localizado e é regenerada a partir do estado, nunca tratada como fonte de verdade. Um schema maior que 3 é lido apenas para diagnóstico e bloqueado para operações mutáveis; o item não é regravado.
 
-Na 1.1.0, `classic` permanece associado ao ID histórico `aspergillum:aspergillum`. As oito combinações adicionais possuem IDs públicos próprios porque attachables não selecionam textura por dynamic property. Ao mudar acabamento, a infraestrutura reconstrói o ItemStack no ID correspondente e copia todos os metadados antes de gravar o estado V3. Valores cosméticos/perfis desconhecidos continuam normalizados para a apresentação clássica/standard em vez de quebrar mundos.
+Na 1.1.0, `classic` permanece associado ao ID histórico `aspergillum:aspergillum`. As oito combinações então adicionadas possuem IDs públicos próprios porque attachables não selecionam textura por dynamic property. A 1.2.0 acrescenta sete IDs sem tocar nos nove anteriores: os pares históricos conservam `0..8`, marfim com os três metais existentes usa `9..11` e bronze usa `12..15`. Ao mudar acabamento, a infraestrutura reconstrói o ItemStack no ID correspondente e copia todos os metadados antes de gravar o estado V3. Valores cosméticos/perfis desconhecidos continuam normalizados para a apresentação clássica/standard em vez de quebrar mundos.
 
 ## Capacidade visual do reservatório
 
@@ -181,4 +181,4 @@ Quantidades `0..8` usam base `0`; quantidades `9..16` usam base `9` e offset `0.
 
 Um balde define o reservatório como `16/16`. Cada carregamento completo transfere quatro unidades, de modo que uma caldeirinha cheia fornece exatamente quatro carregamentos. Não há migração de caldeirinhas já colocadas em revisões anteriores.
 
-A 1.1.0 adiciona `aspergillum:cosmetic ∈ {0..8}` à caldeirinha. O valor default `0` representa o visual clássico e mantém caldeirinhas já colocadas legíveis. O índice é escrito somente ao acomodar um item e volta a `0` na retirada. Essa adição eleva o espaço cartesiano total para `5.184`, mas nenhum state individual excede dezesseis valores.
+A 1.1.0 adicionou `aspergillum:cosmetic ∈ {0..8}` à caldeirinha. A 1.2.0 amplia o mesmo state para `{0..15}` sem reinterpretar os nove valores publicados: `0..8` mantêm os pares históricos e `9..15` representam somente os sete acabamentos novos. O valor default `0` representa o visual clássico e mantém caldeirinhas já colocadas legíveis. O índice é escrito somente ao acomodar um item e volta a `0` na retirada. Com ocupação e dezesseis rotações, o espaço cartesiano total passa a `2 × 9 × 2 × 16 × 16 = 9.216`; nenhum state individual excede dezesseis valores.

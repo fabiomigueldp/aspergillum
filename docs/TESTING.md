@@ -4,6 +4,21 @@
 
 Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
 
+## Gate da matriz de acabamentos — v1.2.0
+
+- [x] catálogo, domínio e validadores expõem exatamente quatro metais × quatro empunhaduras e bloqueiam qualquer alteração dos pares/índices históricos `0..8`;
+- [x] os dezesseis IDs de item/attachable, materiais da caldeirinha/mesa, texture sets, ícones e chaves `pt_BR`/`en_US` são gerados e validados;
+- [x] caldeirinha e mesa publicam respectivamente `9.216` e `512` combinações, sem state individual acima de dezesseis valores;
+- [x] `npm run check` passa com tipos, testes, viewer, documentação, build e validadores verdes;
+- [x] capturas `--subject all --cosmetic all` em PBR e clássico mostram uma matriz visual 4×4, em ordem metal × empunhadura, sem alterar silhueta ou composição;
+- [x] `npm run package` reproduz duas vezes o mesmo SHA-256, e o Creator Tools aceita somente os onze warnings offline conhecidos;
+- [ ] importar somente `Aspergillum-1.2.0.mcaddon`, conferir manifests `[1,2,0]`, UUIDs oficiais e o SHA publicado em [Release 1.2.0](releases/1.2.0.md);
+- [ ] numa cópia de mundo 1.1.10, conferir que itens e blocos nos índices `0..8` mantêm exatamente seus acabamentos após o upgrade;
+- [ ] aplicar os dezesseis pares pela Mesa do Sacristão e verificar ícone, mão, terceira pessoa, mesa e caldeirinha; retirada, reload, quebra e inventário cheio não perdem nem duplicam item;
+- [ ] comparar prata/envelhecida/dourada/bronze e castanho/vinho/preto/marfim na escala real do inventário, sem depender somente do texto;
+- [ ] repetir em gráficos clássicos e Vibrant Visuals; nenhuma variante altera geometria, binding, pose, UV ou gameplay;
+- [ ] limpar o Content Log e executar o smoke completo de água, cargas, quatro aspersões, docking, mesa, persistência e ciclo de vida sem novo erro/warning do add-on.
+
 ## Gate de polimento — v1.1.10
 
 - [x] viewer testa catálogo, ordem de acabamentos, assuntos e nove câmeras e conclui build Vite;

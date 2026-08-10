@@ -38,6 +38,18 @@ export function resolveCosmetics(cosmetics, cosmeticIds) {
   return cosmeticIds.map((cosmeticId) => resolveCosmetic(cosmetics, cosmeticId));
 }
 
+export function sortCosmeticsForMatrix(cosmetics, metalFinishes, gripFinishes) {
+  const metalOrder = new Map(metalFinishes.map((id, index) => [id, index]));
+  const gripOrder = new Map(gripFinishes.map((id, index) => [id, index]));
+  return [...cosmetics].sort((left, right) => {
+    const metalDifference = (metalOrder.get(left.metal) ?? Number.MAX_SAFE_INTEGER)
+      - (metalOrder.get(right.metal) ?? Number.MAX_SAFE_INTEGER);
+    if (metalDifference !== 0) return metalDifference;
+    return (gripOrder.get(left.grip) ?? Number.MAX_SAFE_INTEGER)
+      - (gripOrder.get(right.grip) ?? Number.MAX_SAFE_INTEGER);
+  });
+}
+
 export function cosmeticTextureSuffix(cosmetic) {
   return cosmetic.id === 'classic' ? '' : `_${cosmetic.id}`;
 }

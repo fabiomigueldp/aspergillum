@@ -11,6 +11,7 @@ import {
 import {
   cosmeticLabel,
   resolveCosmetics,
+  sortCosmeticsForMatrix,
 } from '../src/shared/cosmetic-contract.js';
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
@@ -21,6 +22,11 @@ const customizationCatalog = JSON.parse(await readFile(
   path.join(projectDirectory, 'assets-src', 'customization', 'catalog.json'),
   'utf8',
 ));
+const matrixCosmetics = sortCosmeticsForMatrix(
+  customizationCatalog.cosmetics,
+  customizationCatalog.metalFinishes,
+  customizationCatalog.gripFinishes,
+);
 
 const HELP = `
 Captura vistas reproduzíveis dos modelos Bedrock e gera pranchas compostas.
@@ -103,7 +109,7 @@ function parseArgs(args) {
     } else if (argument === '--cosmetic') {
       const value = readValue(args, index, argument);
       options.cosmeticIds = value === 'all'
-        ? customizationCatalog.cosmetics.map(({ id }) => id)
+        ? matrixCosmetics.map(({ id }) => id)
         : parseList(value);
       index += 1;
     } else if (argument === '--water') {

@@ -8,7 +8,7 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
-## v1.2.0 — expansão de acabamentos 4×4 — próximo marco
+## v1.2.0 — expansão de acabamentos 4×4 — implementada e promovida
 
 Objetivo: ampliar a personalização de 3×3 para 4×4 sem reinterpretar nenhum valor persistido por mundos existentes.
 
@@ -27,6 +27,8 @@ Gate de saída:
 - `9..15` persistem após mesa, caldeirinha, reload, retirada, quebra e inventário cheio;
 - orçamento de permutações e textura permanece documentado e abaixo dos limites estáveis;
 - `npm run check`, `npm run package`, Creator Tools e smoke manual comunicados sem regressão.
+
+Resultado: catálogo, domínio, UI, dezesseis IDs/attachables, três famílias de texturas por composição, viewer e validadores foram expandidos. A caldeirinha permanece em `9.216` combinações, a mesa em `512`, e as 163 texturas totalizam `27,07 MiB` decodificados. A promoção usa `[1,2,0]` e preserva os UUIDs oficiais.
 
 ## v1.1.10 — observabilidade visual e legibilidade dos acabamentos — promovida
 

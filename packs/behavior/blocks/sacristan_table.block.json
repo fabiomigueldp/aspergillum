@@ -21,7 +21,14 @@
           5,
           6,
           7,
-          8
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
         ],
         "aspergillum:table_rotation": [
           0,
@@ -133,6 +140,83 @@
           "minecraft:material_instances": {
             "*": {
               "texture": "sacristan_table_gilded_black",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_cosmetic') == 9",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "sacristan_table_silver_ivory",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_cosmetic') == 10",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "sacristan_table_antique_ivory",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_cosmetic') == 11",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "sacristan_table_gilded_ivory",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_cosmetic') == 12",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "sacristan_table_bronze_chestnut",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_cosmetic') == 13",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "sacristan_table_bronze_oxblood",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_cosmetic') == 14",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "sacristan_table_bronze_black",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:table_cosmetic') == 15",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "sacristan_table_bronze_ivory",
               "render_method": "opaque"
             }
           }

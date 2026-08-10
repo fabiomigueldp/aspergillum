@@ -1,4 +1,4 @@
-# Contrato da Mesa do Sacristão — v1.1.7
+# Contrato da Mesa do Sacristão — v1.2.0
 
 ## Intenção
 
@@ -24,9 +24,9 @@ Não usar glow, emissividade, hologramas, ícones flutuantes, neon, vidro de int
 - identificador: `aspergillum:sacristan_table`;
 - custom component: `aspergillum:sacristan_table_interaction`;
 - state de ocupação: `aspergillum:table_has_aspergillum = false|true`;
-- state cosmético: `aspergillum:table_cosmetic = 0..8`;
+- state cosmético: `aspergillum:table_cosmetic = 0..15`;
 - state de orientação: `aspergillum:table_rotation = 0..15`;
-- `2 × 9 × 16 = 288` combinações totais;
+- `2 × 16 × 16 = 512` combinações totais;
 - base `geometry.aspergillum.sacristan_table.rotation_0` e quinze geometrias rotacionadas geradas;
 - bloco `immovable`, sem trait experimental de rotação;
 - loot vazia/ocupada fornece somente a mesa; o aspersório é sempre recuperado pelo snapshot autoritativo.
@@ -43,11 +43,11 @@ Perfis:
 | `processional` | leque mais aberto, lento e solene | mesma economia/timing; resposta e velocidade próprias |
 | `contained` | leque estreito e preciso | mesma economia/timing; resposta e velocidade próprias |
 
-Acabamentos metálicos: `silver`, `antique`, `gilded`.
+Acabamentos metálicos: `silver`, `antique`, `gilded`, `bronze`.
 
-Empunhaduras: `chestnut`, `oxblood`, `black`.
+Empunhaduras: `chestnut`, `oxblood`, `black`, `ivory`.
 
-O catálogo cartesiano em `assets-src/customization/catalog.json` define os nove IDs/índices. `classic = silver + chestnut = 0` preserva o item histórico `aspergillum:aspergillum`; as outras oito combinações usam novos IDs públicos. Índices e IDs não podem ser reordenados depois da publicação sem migração explícita.
+O catálogo cartesiano em `assets-src/customization/catalog.json` define dezesseis IDs/índices. `classic = silver + chestnut = 0` preserva o item histórico `aspergillum:aspergillum`; as outras quinze combinações usam IDs públicos próprios. A ordem persistente é legacy-first: `0..8` permanecem idênticos à matriz 3×3, marfim com os três metais anteriores usa `9..11` e bronze usa `12..15`. UI e pranchas podem ordenar a apresentação como 4×4, mas índices e IDs nunca são reordenados sem migração explícita.
 
 ## Contrato da interface
 
@@ -102,7 +102,7 @@ Somente `cosmeticId`/tipo visual ou `sprayProfileId` muda durante a edição. Re
 - câmera em movimento junto ao pomo sem cintilação, faces concorrentes ou alternância subpixel;
 - inspeção no `.mcaddon` final em clássico e Vibrant Visuals, nas dezesseis rotações;
 - item clássico visualmente equivalente à baseline 1.0.20;
-- nove combinações distinguíveis sem saturação, emissividade ou aparência plástica;
+- dezesseis combinações distinguíveis sem saturação, emissividade ou aparência plástica;
 - formulário legível e navegável em `pt_BR`/`en_US`, teclado, controle e toque;
 - nenhum consumo durante edição;
 - exclusão multiplayer e cleanup de ciclo de vida;

@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import {
   cosmeticLabel,
   cosmeticTextureSuffix,
+  sortCosmeticsForMatrix,
 } from '../src/shared/cosmetic-contract.js';
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
@@ -179,6 +180,11 @@ function summarizeCosmetic(cosmetic) {
 
 async function main() {
   const customizationCatalog = JSON.parse(await readFile(customizationCatalogPath, 'utf8'));
+  const displayCosmetics = sortCosmeticsForMatrix(
+    customizationCatalog.cosmetics,
+    customizationCatalog.metalFinishes,
+    customizationCatalog.gripFinishes,
+  );
   const modelFiles = (await walk(modelDirectory))
     .filter((file) => file.endsWith('.geo.json'))
     .sort((left, right) => left.localeCompare(right));
@@ -241,7 +247,7 @@ async function main() {
     version: 2,
     source: 'packs/resource',
     models,
-    cosmetics: customizationCatalog.cosmetics.map(summarizeCosmetic),
+    cosmetics: displayCosmetics.map(summarizeCosmetic),
     compositions: {
       blocks__aspersorium: [
         {
