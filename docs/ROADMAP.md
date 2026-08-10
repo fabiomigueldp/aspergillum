@@ -8,7 +8,32 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
-## v1.1.8a/b/c/d — matriz de água alpha-test — D implementada; QA físico pendente
+## v1.1.9c — água translúcida por entidade visual — correção de schema implementada; QA físico pendente
+
+Hipótese: separar a água do tessellator de blocos permite conservar a excelência visual da 1.1.7b sem misturar render methods no mesmo bloco. A caldeirinha passa a ser integralmente `opaque`; somente a projeção d'água usa o material vanilla `entity_alphablend`.
+
+Implementação:
+
+- A/B (`[1,1,15]`/`[1,1,16]`) foram encerradas antes do gate visual: o actor JSON não carregava porque `minecraft:pushable` foi removido do schema a partir do formato 1.26.10; o tipo inválido no script era consequência;
+- revisão diagnóstica corretiva `[1,1,17]`, UUIDs e artefato próprios, sem promover ou renumerar a release 1.1.7;
+- quatro bones de água retirados das dezessete geometrias de bloco e reaproveitados numa geometria de entidade com mesma textura, área, espessura e alturas;
+- propriedade `client_sync` de quatro níveis derivada das dezessete quantidades autoritativas;
+- entidade mínima invocável pelo script, mas sem spawn egg, gravidade, colisão, componentes de push, IA, spawn natural ou interação;
+- reconciliação em colocação, state change, quebra e entity load, mais self-healing distribuído a cada 80–120 ticks;
+- criação, atualização, deduplicação, recentralização, remoção de órfão e migração de caldeirinhas existentes sem `runInterval` ou scan global;
+- empacotador, teste estrutural, instalação diagnóstica e relatório reproduzíveis.
+
+Gate de saída:
+
+- água igual ou superior à 1.1.7b em cor, translucidez, profundidade, câmera próxima e Vibrant Visuals;
+- nenhuma mensagem de métodos mistos, entidade, propriedade, render controller ou geometria;
+- `0..16`, carga, docking, retirada, quebra e snapshots sem regressão;
+- zero órfãos ou duplicatas após reload, chunks, explosão, `/setblock` e remoção forçada da entidade;
+- medição aceitável com 1, 16, 64 e 256 caldeirinhas carregadas.
+
+Detalhes e hash: [diagnóstico 1.1.9c](diagnostics/1.1.9c-entity-water.md). Os resultados negativos permanecem registrados em [1.1.9a](diagnostics/1.1.9a-entity-water.md) e [1.1.9b](diagnostics/1.1.9b-entity-water.md).
+
+## v1.1.8a/b/c/d — matriz de água alpha-test — validada e rejeitada
 
 Hipótese: uma família uniforme `alpha_test_single_sided_to_opaque` pode conservar a estabilidade estrutural comprovada na 1.1.7, eliminar a incompatibilidade de `MaterialInstances` e aproximar a translucidez por cobertura espacial binária.
 
@@ -31,6 +56,8 @@ Gate de saída:
 - se nenhuma variante alcançar a qualidade da 1.1.7, encerrar o ramo alpha-test sem promover compensações adicionais.
 
 Detalhes, hashes e matriz de registro: [diagnóstico 1.1.8](diagnostics/1.1.8-water-dither-matrix.md).
+
+Resultado físico: a D removeu o erro de amostragem, porém revelou corretamente a limitação essencial da técnica — superfície opaca com pixels totalmente ausentes. A leitura foi considerada grosseira e muito inferior à translucidez da 1.1.7b; o ramo alpha-test está encerrado.
 
 ## v1.1.7 — separação material da caldeirinha — implementada; reteste oficial pendente
 

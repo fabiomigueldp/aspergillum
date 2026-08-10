@@ -1,0 +1,31 @@
+{
+  "format_version": "1.26.40",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "aspergillum:aspersorium_water_visual",
+      "is_spawnable": false,
+      "is_summonable": true,
+      "is_experimental": false,
+      "properties": {
+        "aspergillum:water_visual_level": {
+          "type": "int",
+          "range": [1, 4],
+          "default": 4,
+          "client_sync": true
+        }
+      }
+    },
+    "components": {
+      "minecraft:persistent": {},
+      "minecraft:cannot_be_attacked": {},
+      "minecraft:physics": {
+        "has_gravity": false,
+        "has_collision": false
+      },
+      "minecraft:collision_box": {
+        "width": 0,
+        "height": 0
+      }
+    }
+  }
+}

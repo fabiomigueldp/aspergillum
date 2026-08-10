@@ -38,6 +38,7 @@ rightItem (holder)
 | Superfícies | grip `leather`; pomo/haste/cabeça `silver`; férula `gold`; corpo da cabeça `perforated_silver` |
 | Cabeça v1.1.6 | seis níveis preservados; quatro paredes integrais por volume e exatamente uma tampa horizontal renderizada por junção |
 | Caldeirinha v1.1.7 | estrutura e réplica acomodada `opaque`; somente os bones de água usam a material instance `water` em `blend` |
+| Diagnóstico v1.1.9c | preserva exatamente área, espessura, alturas e textura da água, mas transfere seus quatro bones para uma entidade mínima `entity_alphablend`; não é baseline até aprovação física; A/B não registraram a entidade por falha no actor JSON |
 | Fonte autoral do bloco | `assets-src/models/aspersorium.model.json` |
 | Composição acomodada | as quatorze peças, máscaras e UVs do item são transformadas pelo gerador; não existe réplica simplificada |
 | Primeira pessoa: posição aditiva | `[0, 0, 0]` |

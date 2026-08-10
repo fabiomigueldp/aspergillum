@@ -67,11 +67,12 @@ O reteste físico da v1.1.6 demonstrou que remover somente a segunda tampa copla
 | Docking 1.0.20 | validado em jogo pelo usuário; domínio e migração V1→V2 continuam cobertos automaticamente | manter `12+4`, `14+4`, `16+4`, reload, quebra e HUD como regressão da 1.1.2 |
 | Polimento visual 1.0.19b | capturas PBR reproduzíveis aprovam coerência estrutural fora do jogo | confirmar silhueta, mipmaps, culling e materiais no `.mcaddon` importado, em clássico/Vibrant Visuals |
 | Material da caldeirinha 1.1.7 | perfil misto `opaque`/`blend` aprovado em jogo, com todas as funcionalidades e apresentações estáveis | o runtime 26.42 registra warning/error conhecidos de `MaterialInstances`; reavaliar se surgir regressão visual correlata ou mudança de plataforma |
+| Água por entidade 1.1.9c | candidato usa bloco integralmente `opaque` e projeção mínima `entity_alphablend`, com lifecycle autorreparável e sem autoridade de gameplay; A/B falharam no registro por actor JSON incompatível | confirmar primeiro ausência de parse error e criação; depois equivalência visual, reload/chunks, remoção/recriação e custo com muitas caldeirinhas |
 | Compatibilidade 1.1.7 | IDs, states, pivôs, locators e contratos de gameplay são preservados; somente o perfil de renderização muda | validar mundo existente da 1.0.20/1.1.6 antes e depois do upgrade, sem cache concorrente |
 
 ## Próxima mudança autorizada
 
-Testar somente o diagnóstico corrigido `1.1.8d` pelo gate dedicado de [TESTING.md](TESTING.md), sem substituir a release 1.1.7. A/B provaram que o método uniforme elimina as mensagens de `MaterialInstances`, mas amostravam apenas `2 × 2` texels e ampliavam um deles como quadrante invisível; C foi dispensada. A D conserva 81,25% e usa atlas/textura `256 × 256` com amostragem efetiva `16 × 16`, devendo ser avaliada em câmera parada/em movimento, curta/média/longa distância e gráficos convencionais/Vibrant Visuals.
+Testar somente o diagnóstico `1.1.9c` pelo gate dedicado de [TESTING.md](TESTING.md), sem substituir a release 1.1.7. A matriz 1.1.8 encerrou a hipótese alpha-test. A C remove o `minecraft:pushable` que invalidou o actor JSON em A/B e mantém a separação arquitetural — bloco integralmente `opaque` e água `entity_alphablend` — preservando o estado `0..16` como autoridade.
 
 Não faz parte do próximo marco:
 

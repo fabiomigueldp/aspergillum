@@ -1,12 +1,38 @@
 # Changelog
 
+## 1.1.9c — 2026-08-10 — entidade visual mínima compatível com schema 1.26.40
+
+- o runtime da 1.1.9b revelou a causa primária: `minecraft:pushable` deixou de ser analisado a partir do formato 1.26.10, fazendo o JSON inteiro da entidade falhar e, por consequência, `Dimension.spawnEntity()` continuar reportando tipo inválido;
+- removido o componente legado sem substituí-lo por `pushable_by_block` ou `pushable_by_entity`, pois a projeção não deve aceitar nenhuma forma de empurrão;
+- reduzida a Behavior Entity aos quatro componentes necessários: persistência, bloqueio de ataques, física sem gravidade/colisão e caixa de colisão zero; respiração, imunidade a fogo, família e otimização de banda foram eliminadas por não participarem da apresentação ou do lifecycle;
+- o empacotador agora aplica uma allowlist exata de componentes e testa explicitamente a rejeição de `minecraft:pushable`;
+- distribuída com UUIDs novos e revisão `[1,1,17]`; `Aspergillum-1.1.9c.mcaddon` tem SHA-256 `4740e10161e9f699b9dd34c9be25d900b289c0954bcac03748f845a315eaba28`.
+
+## 1.1.9b — 2026-08-10 — correção do registro da entidade visual
+
+- o teste físico da 1.1.9a revelou que `Dimension.spawnEntity()` recusava `aspergillum:aspersorium_water_visual` como tipo inválido; a definição havia sido distribuída com `is_summonable: false`, embora todos os recursos de cliente estivessem presentes;
+- a 1.1.9b preserva integralmente geometria, material `entity_alphablend`, lifecycle e autoridade do bloco, alterando somente a entidade para `is_summonable: true`; `is_spawnable` continua `false`, portanto nenhum ovo de invocação é exposto;
+- o empacotador agora inspeciona o Behavior Entity efetivamente staged e rejeita identificador divergente, spawn egg habilitado ou entidade não invocável, cobrindo a lacuna que a validação offline da Creator Tools não detectou;
+- distribuída com UUIDs novos e revisão monotônica `[1,1,16]`; `Aspergillum-1.1.9b.mcaddon` tem SHA-256 `8865ae14cecfb475751edb7022e6dd1a62079a3dc92acd8d1329cfccad7a658d`.
+- o teste em jogo mostrou que essa hipótese era incompleta: habilitar `is_summonable` permitiu ao Content Log expor o erro anterior de parsing, mas a entidade continuou sem registro porque `minecraft:pushable` não pertence ao schema 1.26.40. Substituída pela 1.1.9c.
+
+## 1.1.9a — 2026-08-10 — água translúcida por entidade visual
+
+- implementada uma variante completa e isolada em que a caldeirinha e o aspersório acomodado usam somente `opaque`, enquanto a água preserva translucidez real pelo material vanilla `entity_alphablend` numa entidade visual própria;
+- o bloco conserva autoridade exclusiva sobre `water_base + water_offset`; a entidade sincroniza somente os quatro quartos gráficos e não participa de carga, docking, persistência do item ou economia;
+- adicionada reconciliação em colocação, mudança de state, quebra e carregamento da entidade, mais auditoria distribuída do próprio bloco a cada 80–120 ticks para migrar mundos existentes e reparar ausência, deslocamento ou duplicação sem varredura global;
+- a projeção não possui gravidade, colisão, push, IA, spawn natural ou interação, é persistente e reutiliza exatamente a textura, área e alturas da água da 1.1.7;
+- criado build diagnóstico por define, UUIDs próprios e revisão monotônica `[1,1,15]`; a release oficial permanece 1.1.7 e não recebe recursos de entidade;
+- o pacote `Aspergillum-1.1.9a.mcaddon` tem SHA-256 `0c68a98f09f4ed06bfe12e45e66f978e09283f5475ba03aff432fc15f803e6bf`; Creator Tools aprovou com zero Error/Failure, quinze warnings offline conhecidos e nenhum warning novo relacionado ao candidato.
+- o teste em jogo reprovou esta revisão antes do gate visual: nenhuma lâmina d'água foi criada e o script recebeu tipo inválido. A 1.1.9b mostrou depois que o diagnóstico inicial sobre `is_summonable` era insuficiente; a causa primária era a rejeição do componente legado `minecraft:pushable` e, portanto, do JSON inteiro.
+
 ## 1.1.8d — 2026-08-10 — correção diagnóstica da amostragem UV
 
 - as capturas físicas de A/B demonstraram um quadrante transparente e três quadrantes opacos; a causa foi isolada no desacordo entre o atlas `256 × 256` declarado pela geometria e a textura de água `32 × 32`, que reduzia `uv_size: 16 × 16` a somente `2 × 2` texels físicos;
 - a D preserva a cobertura nominal B de 81,25%, o método uniforme e a superfície top-only, mas usa textura `256 × 256` correspondente ao atlas e desloca a ilha para `[8,8]`, produzindo amostragem efetiva comprovada de `16 × 16`;
 - o gerador repete a máscara ao redor da ilha para proteger filtragem/mipmaps, mantém RGB ciano sob alpha zero e adiciona teste explícito da fórmula `uv × textura / atlas`;
 - distribuída como diagnóstico isolado `1.1.8d`/`[1,1,14]`, com UUIDs próprios; Creator Tools aprovou o pacote com quinze warnings offline conhecidos e zero Error/Failure;
-- a técnica continua oferecendo transparência binária, não translucidez real; somente o teste no Minecraft decidirá se a dispersão fina é visualmente aceitável.
+- o teste no Minecraft confirmou o resultado tecnicamente esperado, mas visualmente inadequado: superfície ciano sólida com pixels inteiramente ausentes; a técnica foi rejeitada e o ramo alpha-test encerrado.
 
 ## 1.1.8a / 1.1.8b / 1.1.8c — 2026-08-10 — diagnósticos de água alpha-test
 

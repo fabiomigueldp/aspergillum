@@ -1,5 +1,6 @@
 import {
   BlockComponentPlayerPlaceBeforeEvent,
+  BlockCustomComponent,
   BlockPermutation,
   EntityComponentTypes,
   EntitySwingSource,
@@ -55,6 +56,13 @@ import {
   getLoadingSession,
 } from "../infrastructure/loading-session";
 import { ACTION_MESSAGES, action } from "../presentation/messaging";
+import {
+  reconcileLoadedAspersoriumWaterVisual,
+  scheduleAspersoriumWaterVisualReconciliation,
+  scheduleAspersoriumWaterVisualRemoval,
+} from "../presentation/aspersorium-water-visual";
+
+declare const ASPERSORIUM_WATER_ENTITY_DIAGNOSTIC: boolean;
 
 const aspergillumUse: ItemCustomComponent = {
   onUse(event) {
@@ -164,17 +172,38 @@ function orientSacristanTable(event: BlockComponentPlayerPlaceBeforeEvent): void
 
 system.beforeEvents.startup.subscribe((event) => {
   event.itemComponentRegistry.registerCustomComponent(ASPERGILLUM_COMPONENT, aspergillumUse);
-  event.blockComponentRegistry.registerCustomComponent(ASPERSORIUM_COMPONENT, {
+  const aspersoriumComponent: BlockCustomComponent = {
     beforeOnPlayerPlace: orientAspersorium,
-    onBreak: handleAspersoriumBreak,
+    onBreak(blockEvent) {
+      handleAspersoriumBreak(blockEvent);
+      scheduleAspersoriumWaterVisualRemoval(blockEvent.dimension, blockEvent.block.location);
+    },
     onPlayerInteract: handleAspersoriumInteraction,
-  });
+  };
+  if (ASPERSORIUM_WATER_ENTITY_DIAGNOSTIC) {
+    aspersoriumComponent.onPlace = (blockEvent) => {
+      scheduleAspersoriumWaterVisualReconciliation(blockEvent.block);
+    };
+    aspersoriumComponent.onBlockStateChange = (blockEvent) => {
+      scheduleAspersoriumWaterVisualReconciliation(blockEvent.block);
+    };
+    aspersoriumComponent.onTick = (blockEvent) => {
+      scheduleAspersoriumWaterVisualReconciliation(blockEvent.block);
+    };
+  }
+  event.blockComponentRegistry.registerCustomComponent(ASPERSORIUM_COMPONENT, aspersoriumComponent);
   event.blockComponentRegistry.registerCustomComponent(SACRISTAN_TABLE_COMPONENT, {
     beforeOnPlayerPlace: orientSacristanTable,
     onBreak: handleSacristanTableBreak,
     onPlayerInteract: handleSacristanTableInteraction,
   });
 });
+
+if (ASPERSORIUM_WATER_ENTITY_DIAGNOSTIC) {
+  world.afterEvents.entityLoad.subscribe((event) => {
+    reconcileLoadedAspersoriumWaterVisual(event.entity);
+  });
+}
 
 world.afterEvents.playerSwingStart.subscribe((event) => {
   if (event.swingSource !== EntitySwingSource.Attack && event.swingSource !== EntitySwingSource.Mine) return;

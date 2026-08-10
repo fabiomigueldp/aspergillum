@@ -4,6 +4,25 @@
 
 Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
 
+## Gate da água por entidade visual — v1.1.9c
+
+- [ ] fechar o jogo, remover revisões concorrentes e importar somente `Aspergillum-1.1.9c.mcaddon` num mundo de teste;
+- [ ] confirmar manifests `[1,1,17]` e SHA-256 `4740e10161e9f699b9dd34c9be25d900b289c0954bcac03748f845a315eaba28`;
+- [ ] limpar o Content Log antes de abrir o mundo e confirmar ausência de `actor_definitions`, `failed to load from JSON`, `minecraft:pushable`, `not present in the Schema` e `not a valid entity type`;
+- [ ] abrir uma caldeirinha que já contenha água; a lâmina deve surgir de imediato ou, para blocos preexistentes, em no máximo seis segundos;
+- [ ] limpar o Content Log e confirmar ausência das duas mensagens de `MaterialInstances`, além de qualquer erro/warning envolvendo `aspersorium_water_visual`, `water_visual_level`, render controller, geometria ou propriedade;
+- [ ] comparar lado a lado com imagens equivalentes da 1.1.7b: cor, translucidez, textura, espessura, reflexo, profundidade e integração com metal/aspersório em sol, sombra e luz quente;
+- [ ] orbitar vazio/¼/½/¾/cheio em câmera parada e em movimento, curta/média/longa distância, gráficos convencionais e Vibrant Visuals;
+- [ ] confirmar a sequência `16→12→8→4→0` e mudanças imediatas entre as quatro alturas, sem superfície residual no zero;
+- [ ] acomodar os nove cosméticos com `0..4` cargas, retirar, renomear, recarregar o mundo e confirmar que água, item e snapshot permanecem exatos;
+- [ ] quebrar vazio, cheio e ocupado; testar explosão e `/setblock ~ ~ ~ air destroy`; nenhuma entidade de água pode permanecer no local;
+- [ ] executar `/kill @e[type=aspergillum:aspersorium_water_visual]` junto a uma caldeirinha cheia e confirmar recriação correta em no máximo seis segundos, sem alterar suas unidades;
+- [ ] sair e reentrar no mundo e descarregar/recarregar chunks: existe exatamente uma entidade por caldeirinha não vazia e nenhuma por caldeirinha vazia;
+- [ ] testar multiplayer com observador remoto: mesma altura/translucidez e nenhuma oscilação, duplicação ou entidade selecionável;
+- [ ] medir profiler e contagem de entidades com 1, 16, 64 e 256 caldeirinhas carregadas; registrar CPU/tick e memória antes de autorizar promoção;
+- [ ] executar o smoke test completo de item, carga, aspersão, docking, Mesa do Sacristão, quebra e persistência;
+- [ ] registrar plataforma, versão Bedrock, hash, capturas/vídeo, Content Log e resultado no [diagnóstico 1.1.9c](diagnostics/1.1.9c-entity-water.md).
+
 ## Gate da água alpha-test com UV corrigido — v1.1.8d
 
 - [ ] importar somente `Aspergillum-1.1.8d.mcaddon` num mundo novo, sem A/B/C ou packs anteriores ativos;

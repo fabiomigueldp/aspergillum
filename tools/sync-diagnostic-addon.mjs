@@ -16,6 +16,9 @@ const knownUuids = {
     "4caf015d-0a40-583a-8b47-ec19e21a3ab5",
     "acc320fc-2242-5632-b06d-a03a272e0c68",
     "81327908-8963-548f-8b88-ea61d417f437",
+    "e5ae7a23-b9e2-5eb2-b28a-84caf8f1ce98",
+    "cbe3111b-81bd-539a-b060-58663252ec93",
+    "052a831d-4f02-5800-9287-6350299c05ef",
   ]),
   resource: new Set([
     "fdb8a79c-8f77-4831-9a5c-8e2b8ecca29e",
@@ -26,6 +29,9 @@ const knownUuids = {
     "f3398817-a6ad-563e-9c52-d745f4845b67",
     "798650c4-e13d-5534-99fb-b4d0d3f6403d",
     "e910058d-b78d-56b0-a225-8eaa8ab66cb8",
+    "a84b3d44-5dd0-589c-90fb-9e060945cc07",
+    "8a39027c-e394-5df0-a21a-98dbc0af9f30",
+    "752e9598-e045-5c99-8653-f9a938bdbf85",
   ]),
 };
 
@@ -37,6 +43,9 @@ const diagnosticVersions = new Map([
   ["1.1.8b", [1, 1, 12]],
   ["1.1.8c", [1, 1, 13]],
   ["1.1.8d", [1, 1, 14]],
+  ["1.1.9a", [1, 1, 15]],
+  ["1.1.9b", [1, 1, 16]],
+  ["1.1.9c", [1, 1, 17]],
 ]);
 
 function readJson(filePath) {

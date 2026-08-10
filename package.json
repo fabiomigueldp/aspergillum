@@ -14,7 +14,7 @@
     "clean": "node tools/clean.mjs",
     "generate:assets": "node tools/generate-assets.mjs",
     "build:audio": "node tools/build-audio.mjs",
-    "build:script": "esbuild src/bootstrap/main.ts --bundle --format=esm --platform=neutral --external:@minecraft/server --external:@minecraft/server-ui --target=es2022 --outfile=packs/behavior/scripts/main.js",
+    "build:script": "esbuild src/bootstrap/main.ts --bundle --format=esm --platform=neutral --external:@minecraft/server --external:@minecraft/server-ui --target=es2022 --define:ASPERSORIUM_WATER_ENTITY_DIAGNOSTIC=false --outfile=packs/behavior/scripts/main.js",
     "build": "npm run generate:assets && npm run build:audio && npm run build:script && npm run validate",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
@@ -31,6 +31,7 @@
     "package": "npm run build && node tools/package.mjs && npm run validate:mcaddon",
     "package:render-diagnostics": "npm run build && node tools/package-render-diagnostics.mjs",
     "package:water-diagnostics": "npm run build && node tools/package-water-dither-diagnostics.mjs",
+    "package:entity-water-diagnostic": "npm run build && node tools/package-entity-water-diagnostic.mjs",
     "check": "npm run typecheck && npm test && npm --prefix viewer-3d test && npm run validate:docs && npm run build"
   },
   "devDependencies": {

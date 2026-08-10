@@ -338,13 +338,13 @@ C:\Users\fabio\Projects\aspergillum
 O diretório `db` é binário e volátil; a presença do add-on é determinada pelos manifests, referências de mundo e cópias dos packs.
 <!-- diagnostic-installation:start -->
 
-## Variante diagnóstica instalada: 1.1.8b
+## Variante diagnóstica instalada: 1.1.9c
 
-- Artefato: `C:\Users\fabio\Projects\aspergillum\dist\releases\Aspergillum-1.1.8b.mcaddon`
-- SHA-256: `abb567daaf7eb39a6f95083d87b10397d3280c3c8aa75180cf11b3aae42a42d1`
-- Versão dos manifests: `[1, 1, 12]`
-- Behavior UUID: `4caf015d-0a40-583a-8b47-ec19e21a3ab5`
-- Resource UUID: `f3398817-a6ad-563e-9c52-d745f4845b67`
+- Artefato: `C:\Users\fabio\Projects\aspergillum\dist\releases\Aspergillum-1.1.9c.mcaddon`
+- SHA-256: `4740e10161e9f699b9dd34c9be25d900b289c0954bcac03748f845a315eaba28`
+- Versão dos manifests: `[1, 1, 17]`
+- Behavior UUID: `052a831d-4f02-5800-9287-6350299c05ef`
+- Resource UUID: `752e9598-e045-5c99-8653-f9a938bdbf85`
 - Instalação compartilhada: `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang`
 - Mundo atualizado: **devtest** (`RYdEhTaa5t8=`)
 - Perfil: `8414181078248597151`
