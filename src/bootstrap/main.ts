@@ -21,6 +21,11 @@ import {
   handleSacristanTableInteraction,
   handleSacristanTableUseOn,
 } from "../application/sacristan-table";
+import {
+  clearThuriblePlayerState,
+  isThurible,
+  tryIncense,
+} from "../application/incense";
 import { yawToSixteenWayRotation } from "../domain/rotation";
 import {
   cancelWaterSpray,
@@ -36,6 +41,7 @@ import {
   SACRISTAN_TABLE_COMPONENT,
   ROTATION_STATE,
   TABLE_ROTATION_STATE,
+  THURIBLE_COMPONENT,
 } from "../infrastructure/constants";
 import { resolvePlayerPolicies } from "../infrastructure/game-mode-policy";
 import {
@@ -85,6 +91,15 @@ const aspergillumUse: ItemCustomComponent = {
   },
 };
 
+const thuribleUse: ItemCustomComponent = {
+  onUse(event) {
+    tryIncense(event.source);
+  },
+  onUseOn(event) {
+    if (event.source instanceof Player) tryIncense(event.source);
+  },
+};
+
 function cancelTransientPlayerActions(playerId: string): void {
   cancelLoadingSession(playerId);
   cancelWaterSpray(playerId);
@@ -95,6 +110,7 @@ function clearTransientPlayerState(playerId: string): void {
   cancelLoadingSession(playerId);
   clearSprinklePlayerState(playerId);
   clearCustomizationPlayerState(playerId);
+  clearThuriblePlayerState(playerId);
 }
 
 function initializeInventorySlot(player: Player, slot: number): void {
@@ -164,6 +180,7 @@ function orientSacristanTable(event: BlockComponentPlayerPlaceBeforeEvent): void
 
 system.beforeEvents.startup.subscribe((event) => {
   event.itemComponentRegistry.registerCustomComponent(ASPERGILLUM_COMPONENT, aspergillumUse);
+  event.itemComponentRegistry.registerCustomComponent(THURIBLE_COMPONENT, thuribleUse);
   event.blockComponentRegistry.registerCustomComponent(ASPERSORIUM_COMPONENT, {
     beforeOnPlayerPlace: orientAspersorium,
     onBreak: handleAspersoriumBreak,
@@ -188,11 +205,11 @@ world.beforeEvents.entityHurt.subscribe((event) => {
   const item = attacker
     .getComponent(EntityComponentTypes.Equippable)
     ?.getEquipment(EquipmentSlot.Mainhand);
-  if (isAspergillum(item)) event.cancel = true;
+  if (isAspergillum(item) || isThurible(item)) event.cancel = true;
 });
 
 world.beforeEvents.playerBreakBlock.subscribe((event) => {
-  if (isAspergillum(event.itemStack)) event.cancel = true;
+  if (isAspergillum(event.itemStack) || isThurible(event.itemStack)) event.cancel = true;
 });
 
 world.afterEvents.playerHotbarSelectedSlotChange.subscribe((event) => {

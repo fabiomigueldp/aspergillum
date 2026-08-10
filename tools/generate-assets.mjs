@@ -9,10 +9,12 @@ const generatedRoot = process.env.ASPERGILLUM_GENERATED_ROOT
 const aspergillumModelSource = process.env.ASPERGILLUM_MODEL_SOURCE
   ? path.resolve(root, process.env.ASPERGILLUM_MODEL_SOURCE)
   : path.join(root, "assets-src/models/aspergillum.model.json");
+const thuribleModelSource = path.join(root, "assets-src/models/thurible.model.json");
 
 for (const [label, candidate] of [
   ["generated output", generatedRoot],
   ["aspergillum model source", aspergillumModelSource],
+  ["thurible model source", thuribleModelSource],
 ]) {
   if (candidate !== root && !candidate.startsWith(`${root}${path.sep}`)) {
     throw new Error(`Refusing to use ${label} outside the workspace: ${candidate}`);
@@ -34,16 +36,31 @@ function png(width, height, painter) {
   return image;
 }
 
+const writeRetryBuffer = new Int32Array(new SharedArrayBuffer(4));
+const retryableWriteErrors = new Set(["EACCES", "EBUSY", "EPERM", "UNKNOWN"]);
+
+function writeFileStable(destination, data, encoding) {
+  for (let attempt = 0; attempt < 7; attempt += 1) {
+    try {
+      fs.writeFileSync(destination, data, encoding);
+      return;
+    } catch (error) {
+      if (!retryableWriteErrors.has(error?.code) || attempt === 6) throw error;
+      Atomics.wait(writeRetryBuffer, 0, 0, 40 * (2 ** attempt));
+    }
+  }
+}
+
 function write(relative, image) {
   const destination = path.join(generatedRoot, relative);
   fs.mkdirSync(path.dirname(destination), { recursive: true });
-  fs.writeFileSync(destination, PNG.sync.write(image, { colorType: 6 }));
+  writeFileStable(destination, PNG.sync.write(image, { colorType: 6 }));
 }
 
 function writeJson(relative, value) {
   const destination = path.join(generatedRoot, relative);
   fs.mkdirSync(path.dirname(destination), { recursive: true });
-  fs.writeFileSync(destination, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+  writeFileStable(destination, `${JSON.stringify(value, null, 2)}\n`, "utf8");
 }
 
 function hash(x, y, seed = 0) {
@@ -144,8 +161,12 @@ function selectedFaceNames(cube, cubeName) {
   return FACE_NAMES.filter((faceName) => uniqueFaces.has(faceName));
 }
 
-function buildEntityGeometry() {
-  const geometry = JSON.parse(fs.readFileSync(aspergillumModelSource, "utf8"));
+function buildEntityGeometry(
+  modelSource = aspergillumModelSource,
+  modelLabel = "Aspergillum",
+  texelsPerUnit = ENTITY_TEXELS_PER_UNIT,
+) {
+  const geometry = JSON.parse(fs.readFileSync(modelSource, "utf8"));
   const output = structuredClone(geometry);
   const description = output["minecraft:geometry"]?.[0]?.description;
   const textureWidth = description?.texture_width ?? 64;
@@ -167,7 +188,7 @@ function buildEntityGeometry() {
       cube.uv = {};
 
       for (const faceName of faceNames) {
-        const [width, height] = faceTexelSize(cube.size, faceName, ENTITY_TEXELS_PER_UNIT);
+        const [width, height] = faceTexelSize(cube.size, faceName, texelsPerUnit);
         const packedWidth = width + UV_PADDING * 2;
         const packedHeight = height + UV_PADDING * 2;
         if (cursorX + packedWidth > textureWidth) {
@@ -176,7 +197,7 @@ function buildEntityGeometry() {
           rowHeight = 0;
         }
         if (cursorY + packedHeight > textureHeight) {
-          throw new Error(`Aspergillum UV atlas overflow at ${cubeName}.${faceName}`);
+          throw new Error(`${modelLabel} UV atlas overflow at ${cubeName}.${faceName}`);
         }
 
         const uv = [cursorX + UV_PADDING, cursorY + UV_PADDING];
@@ -333,6 +354,88 @@ for (const cosmetic of customizationCatalog.cosmetics) {
 
 const { entity, entityNormal, entityMer } = entityTextures.get("classic");
 
+function isThuriblePerforation(region, x, y) {
+  if (region.surface !== "perforated_bronze") return false;
+  const border = x === 0 || y === 0 || x === region.width - 1 || y === region.height - 1;
+  if (border) return false;
+  if (region.faceName === "up" || region.faceName === "down") {
+    return (x + region.seed) % 4 === 1 && (y + Math.floor(region.seed / 2)) % 4 === 1;
+  }
+  return (x + region.seed) % 3 === 1 && y % 2 === 1;
+}
+
+function thuribleAlbedoPixel(region, x, y) {
+  const noise = Math.round((hash(x, y, region.seed + 701) - 0.5) * 11);
+  const faceTone = {
+    up: 13,
+    north: 5,
+    west: 1,
+    east: -3,
+    south: -7,
+    down: -15,
+  }[region.faceName] ?? 0;
+  const border = x === 0 || y === 0 || x === region.width - 1 || y === region.height - 1;
+  const bevel = border ? -7 : 4;
+
+  if (isThuriblePerforation(region, x, y)) {
+    const emberReflection = hash(x, y, region.seed + 733) > 0.68;
+    return emberReflection ? [91, 51, 25, 255] : [28, 25, 22, 255];
+  }
+  if (region.surface === "chain") {
+    const link = Math.floor(y / 2) % 2 === 0;
+    return shadeColor(link ? [82, 66, 49, 255] : [55, 48, 41, 255], noise + faceTone + (border ? -5 : 2));
+  }
+  if (region.surface === "ember") {
+    const glow = hash(x, y, region.seed + 751) > 0.55 ? 24 : 0;
+    return shadeColor([102, 48, 20, 255], noise + glow + faceTone * 0.3);
+  }
+  if (region.surface === "bronze_dark") {
+    return shadeColor([91, 67, 43, 255], noise + faceTone + bevel);
+  }
+  const hammered = hash(Math.floor(x / 2), Math.floor(y / 2), region.seed + 719) > 0.73 ? -7 : 0;
+  const base = region.surface === "perforated_bronze" ? [134, 92, 44, 255] : [151, 111, 56, 255];
+  return shadeColor(base, noise + faceTone + bevel + hammered);
+}
+
+function thuribleNormalPixel(region, x, y) {
+  if (isThuriblePerforation(region, x, y)) return [128, 128, 202, 255];
+  if (region.surface === "chain" && Math.floor(y / 2) % 2 === 0) return [128, 120, 239, 255];
+  const broad = Math.round((hash(Math.floor(x / 2), Math.floor(y / 2), region.seed + 809) - 0.5) * 7);
+  const grain = Math.round((hash(x, y, region.seed + 811) - 0.5) * 3);
+  return [128 + broad + grain, 128 - broad + grain, 246, 255];
+}
+
+function thuribleMerPixel(region, x, y) {
+  if (isThuriblePerforation(region, x, y)) return [28, 0, 224, 255];
+  if (region.surface === "ember") return [8, 0, 218, 255];
+  if (region.surface === "chain") return [204, 0, 174, 255];
+  if (region.surface === "bronze_dark") return [214, 0, 158, 255];
+  const roughness = 116 + Math.round(hash(x, y, region.seed + 829) * 28);
+  return [226, 0, roughness, 255];
+}
+
+const thuribleModel = buildEntityGeometry(thuribleModelSource, "Thurible", 4);
+writeJson("packs/resource/models/entity/thurible.geo.json", thuribleModel.geometry);
+const thurible = png(thuribleModel.textureWidth, thuribleModel.textureHeight, () => [77, 62, 45, 255]);
+const thuribleNormal = png(thuribleModel.textureWidth, thuribleModel.textureHeight, () => [128, 128, 255, 255]);
+const thuribleMer = png(thuribleModel.textureWidth, thuribleModel.textureHeight, () => [0, 0, 255, 255]);
+for (const region of thuribleModel.regions) {
+  paintAtlasRegion(thurible, region, thuribleAlbedoPixel);
+  paintAtlasRegion(thuribleNormal, region, thuribleNormalPixel);
+  paintAtlasRegion(thuribleMer, region, thuribleMerPixel);
+}
+write("packs/resource/textures/entity/thurible.png", thurible);
+write("packs/resource/textures/entity/thurible_normal.png", thuribleNormal);
+write("packs/resource/textures/entity/thurible_mer.png", thuribleMer);
+writeJson("packs/resource/textures/entity/thurible.texture_set.json", {
+  format_version: "1.16.100",
+  "minecraft:texture_set": {
+    color: "thurible",
+    metalness_emissive_roughness: "thurible_mer",
+    normal: "thurible_normal",
+  },
+});
+
 function makeAspersoriumAlbedo() {
   return png(ASPERSORIUM_ATLAS_SIZE, ASPERSORIUM_ATLAS_SIZE, (x, y) => {
     const hammered = Math.round((hash(Math.floor(x / 3), Math.floor(y / 3), 11) - 0.5) * 18);
@@ -400,6 +503,63 @@ const particle = png(16, 16, (x, y) => {
 });
 write("packs/resource/textures/particle/holy_water.png", particle);
 
+const incenseSmoke = png(128, 16, (x, y) => {
+  const frame = Math.floor(x / 16);
+  const localX = x % 16;
+  const progress = frame / 7;
+  const centerX = 7.5 + Math.sin(frame * 1.13) * (0.45 + progress * 1.15);
+  const centerY = 9.25 - progress * 1.5;
+  const gaussian = (cx, cy, sx, sy) => {
+    const dx = (localX - cx) / sx;
+    const dy = (y - cy) / sy;
+    return Math.exp(-(dx * dx + dy * dy) * 1.35);
+  };
+  const stem = gaussian(centerX, centerY + 1.0, 2.25 + progress * 0.75, 3.8 + progress * 0.8);
+  const crown = gaussian(
+    centerX - 1.2 + Math.sin(frame * 0.83) * 0.55,
+    centerY - 2.15,
+    2.8 + progress * 1.35,
+    2.6 + progress * 1.15,
+  );
+  const curl = gaussian(
+    centerX + 1.65 - progress * 0.7,
+    centerY - 3.75 + Math.cos(frame * 0.91) * 0.45,
+    2.15 + progress,
+    2.05 + progress * 0.8,
+  );
+  const density = Math.min(1, stem * 0.92 + crown * 0.76 + curl * 0.52);
+  const grain = 0.86 + hash(localX, y, 907 + frame) * 0.22;
+  const alpha = density < 0.055
+    ? 0
+    : clampByte(244 * ((density - 0.055) / 0.945) ** 1.08 * grain * (1 - progress * 0.1));
+  const warmth = Math.round((1 - progress) * 7);
+  return [248, 243 + Math.round(warmth * 0.25), 235 - Math.round(progress * 3), alpha];
+});
+write("packs/resource/textures/particle/incense_smoke.png", incenseSmoke);
+
+const incenseVeil = png(256, 32, (x, y) => {
+  const frame = Math.floor(x / 32);
+  const localX = x % 32;
+  const progress = frame / 7;
+  const gaussian = (cx, cy, sx, sy) => {
+    const dx = (localX - cx) / sx;
+    const dy = (y - cy) / sy;
+    return Math.exp(-(dx * dx + dy * dy) * 1.15);
+  };
+  const drift = Math.sin(frame * 1.07) * (1.1 + progress * 1.5);
+  const lower = gaussian(15.5 + drift, 20.5 - progress * 1.8, 7.2 + progress * 2.0, 6.2 + progress * 1.5);
+  const left = gaussian(10.2 + drift * 0.45, 14.4 - progress * 2.1, 6.4 + progress * 1.8, 5.8 + progress * 1.6);
+  const right = gaussian(21.3 + drift * 0.7, 12.2 - progress * 1.2, 7.0 + progress * 1.9, 6.6 + progress * 1.8);
+  const crown = gaussian(16.2 - drift * 0.3, 7.8 + Math.cos(frame * 0.88), 8.0 + progress * 2.2, 5.2 + progress * 1.6);
+  const density = Math.min(1, lower * 0.58 + left * 0.52 + right * 0.56 + crown * 0.42);
+  const grain = 0.82 + hash(localX, y, 1601 + frame) * 0.27;
+  const alpha = density < 0.07
+    ? 0
+    : clampByte(224 * ((density - 0.07) / 0.93) ** 1.12 * grain * (1 - progress * 0.08));
+  return [242, 239, 233, alpha];
+});
+write("packs/resource/textures/particle/incense_veil.png", incenseVeil);
+
 const outline = [34, 39, 39, 255];
 function makeItemIcon(cosmetic) {
   const item = png(32, 32, () => [0, 0, 0, 0]);
@@ -441,6 +601,53 @@ for (const cosmetic of customizationCatalog.cosmetics) {
   const suffix = cosmeticTextureSuffix(cosmetic);
   write(`packs/resource/textures/items/aspergillum${suffix}.png`, makeItemIcon(cosmetic));
 }
+
+function makeThuribleIcon() {
+  const item = png(32, 32, () => [0, 0, 0, 0]);
+  const bronzeDark = [78, 58, 39, 255];
+  const bronze = [151, 108, 54, 255];
+  const bronzeLight = [205, 158, 83, 255];
+  const chainDark = [61, 53, 45, 255];
+  const ember = [130, 62, 25, 255];
+
+  for (let y = 2; y <= 7; y += 1) {
+    for (let x = 12; x <= 18; x += 1) {
+      const edge = x === 12 || x === 18 || y === 2 || y === 7;
+      const corner = (x === 12 || x === 18) && (y === 2 || y === 7);
+      if (edge && !corner) setPixel(item, x, y, x <= 13 || y === 7 ? bronzeDark : bronzeLight);
+    }
+  }
+  fillRect(item, 13, 8, 5, 2, bronze);
+
+  for (let y = 10; y <= 20; y += 1) {
+    const t = (y - 10) / 10;
+    const left = Math.round(14 - t * 3);
+    const right = Math.round(16 + t * 4);
+    setPixel(item, left, y, y % 3 === 0 ? bronze : chainDark);
+    setPixel(item, right, y, y % 3 === 1 ? bronzeLight : chainDark);
+    if (y % 2 === 0) setPixel(item, 15, y, chainDark);
+  }
+
+  fillRect(item, 13, 18, 6, 1, bronzeLight);
+  fillRect(item, 11, 19, 10, 2, bronze);
+  fillRect(item, 9, 21, 14, 2, bronzeDark);
+  for (let x = 10; x <= 22; x += 2) setPixel(item, x, 21, x % 4 === 0 ? ember : [31, 28, 25, 255]);
+
+  for (let y = 23; y <= 28; y += 1) {
+    const inset = Math.floor((y - 23) / 2);
+    const x0 = 9 + inset;
+    const x1 = 23 - inset;
+    for (let x = x0; x <= x1; x += 1) {
+      const edge = x === x0 || x === x1;
+      setPixel(item, x, y, edge ? outline : (x + y) % 5 === 0 ? bronzeLight : bronze);
+    }
+  }
+  fillRect(item, 13, 29, 6, 1, bronzeDark);
+  fillRect(item, 15, 30, 2, 1, bronzeLight);
+  return item;
+}
+
+write("packs/resource/textures/items/thurible.png", makeThuribleIcon());
 
 function makePackIcon() {
   const icon = png(256, 256, (x, y) => {
@@ -772,6 +979,9 @@ for (const cosmetic of customizationCatalog.cosmetics) {
 }
 itemTextureDefinition.texture_data.sacristan_table = {
   textures: ["textures/blocks/sacristan_table"],
+};
+itemTextureDefinition.texture_data.thurible = {
+  textures: ["textures/items/thurible"],
 };
 writeJson("packs/resource/textures/item_texture.json", itemTextureDefinition);
 

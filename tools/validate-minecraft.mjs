@@ -35,6 +35,8 @@ const knownOfflineLinks = [
   "`minecraft:stick`",
   "`minecraft:chain`",
   "`minecraft:iron_ingot`",
+  "`minecraft:copper_ingot`",
+  "`minecraft:gold_nugget`",
   "`minecraft:dark_oak_planks`",
   "`minecraft:green_carpet`",
 ];

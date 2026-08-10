@@ -21,6 +21,18 @@ SprinkleSession
 - Nenhuma partícula concede carga, consome água ou aplica efeito de gameplay.
 - O emissor script-side só poderá ser removido depois de equivalência física em primeira pessoa, terceira pessoa local e observador remoto.
 
+## Fumaça cerimonial do turíbulo 1.2.2
+
+A fumaça do turíbulo é uma apresentação independente da água benta e não modifica nenhuma invariante abaixo. Ela nasce de `thurible_smoke`, acompanha o vaso somente enquanto novas partículas são emitidas e deixa cada partícula em world-space. Três efeitos têm responsabilidades distintas:
+
+- `thurible_idle_smoke`: dois fios estreitos por ciclo de `1,4 s`, vida máxima de `5,4 s`;
+- `thurible_action_smoke`: rastro móvel de `22/s` durante `0,86 s`, vida máxima de `6,8 s`;
+- `thurible_residual_smoke`: três véus de seis partículas, com vida máxima de `11 s` e atlas dedicado de `32 px` por quadro.
+
+Nenhum deles possui colisão, nuvem no chão, entidade, comando, efeito de estado ou autoridade de gameplay. Somente o fio de repouso usa iluminação local. Rastro e véu empregam cinza quente não iluminado, com luminância média e alfa moderado, para conservar leitura em naves escuras sem adquirir aparência branca/emissiva. Quantidades, paleta, flipbooks e gate estão congelados em [Contrato do turíbulo](THURIBLE_DESIGN_CONTRACT.md).
+
+Nos estados do animation controller, `effect` e `locator` são suficientes: o emissor é vinculado ao ator por padrão. `bind_to_actor` não pode ser declarado nesse contexto, embora pertença ao schema distinto de timelines de animação. O desacoplamento visual após o nascimento continua garantido por `minecraft:emitter_local_space` com posição, rotação e velocidade falsas nos três efeitos.
+
 ## Locator
 
 | Elemento | Contrato |
@@ -61,7 +73,7 @@ Na v1.0.18, o mesmo micro-splash é reutilizado exatamente duas vezes no commit 
 - o fade continua sendo produzido por `variable.particle_age / variable.particle_lifetime` e pelo canal alfa, sem alterar lifetime, tamanho ou movimento;
 - a água pode variar em luminosidade perceptual pelo fundo e transparência, mas não em identidade cromática.
 
-## Invariantes
+## Invariantes da água benta
 
 - exatamente 36 gotas balísticas em seis pulsos por aspersão válida;
 - exatamente um bridge de quatro microgotas no release;

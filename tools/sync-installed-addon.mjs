@@ -28,6 +28,19 @@ const PACKS = {
   },
 };
 
+const DIAGNOSTIC_UUIDS = {
+  behavior: new Set([
+    "fa0c5ebd-cd7d-5488-91f5-bed8c2edd1a7",
+    "7f815bee-7516-528a-aaa2-8d873c10ba88",
+    "ca21ec6a-1103-5f66-80f3-2cb674843dff",
+  ]),
+  resource: new Set([
+    "c7c39acd-98a0-535c-80cc-e0521ea73e97",
+    "be858629-a2ac-5aa8-93d8-e7382532aabd",
+    "085fa6e4-e6b2-57c0-94e2-25b88daa614b",
+  ]),
+};
+
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
@@ -259,6 +272,14 @@ function updateJsonVersions(filePath, uuid, version, history) {
   return changed;
 }
 
+function replaceActiveReference(filePath, kind, uuid, version) {
+  const current = fs.existsSync(filePath) ? readJson(filePath) : [];
+  if (!Array.isArray(current)) throw new Error(`Formato inesperado: ${filePath}`);
+  const entries = current.filter((entry) => entry.pack_id !== uuid && !DIAGNOSTIC_UUIDS[kind].has(entry.pack_id));
+  entries.push({ pack_id: uuid, version: [...version] });
+  fs.writeFileSync(filePath, `${JSON.stringify(entries, null, "\t")}\n`, "utf8");
+}
+
 function copyPack(source, target, bedrockRoot) {
   assertInside(bedrockRoot, target, "dados Bedrock");
   fs.rmSync(target, { recursive: true, force: true });
@@ -472,7 +493,7 @@ function main() {
     for (const world of selectedWorlds) {
       for (const [kind, pack] of Object.entries(PACKS)) {
         if (selectedKinds.get(world.folder).includes(kind)) {
-          updateJsonVersions(path.join(world.path, pack.reference), pack.uuid, numericVersion, false);
+          replaceActiveReference(path.join(world.path, pack.reference), kind, pack.uuid, numericVersion);
           updateJsonVersions(path.join(world.path, pack.history), pack.uuid, numericVersion, true);
         }
       }

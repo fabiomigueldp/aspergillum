@@ -4,6 +4,32 @@
 
 Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
 
+## Gate cinematográfico do turíbulo — v1.2.2
+
+- [ ] fechar o jogo, remover os packs 1.2.0/1.2.1 e importar somente `Aspergillum-1.2.2.mcaddon`; confirmar manifests `[1,2,2]` e obter o item pelo Criativo, receita e `/function aspergillum/dev_kit`;
+- [ ] limpar o Content Log antes de entrar e confirmar que não aparece `bind_to_actor | Value 'true' not allowed` em nenhum estado de `controller.animation.thurible.action`;
+- [ ] confirmar nome **Turíbulo**/**Thurible** e botão **Incensar**/**Incense**, sem lore de carga, combustível, carvão, durabilidade ou efeito;
+- [ ] em primeira pessoa, olhar para cima/frente/baixo e variar FOV: a escala `0,68` mantém argola, correntes, tampa e vaso integralmente legíveis no quadrante inferior direito, sem cruzar mira, câmera ou plano próximo;
+- [ ] em terceira pessoa, repetir com Steve/wide, Alex/slim e Persona: a argola permanece no punho e todo o conjunto pende abaixo da mão, sem subir até ombro/rosto nem atravessar antebraço, torso, pernas ou chão;
+- [ ] orbitar o item parado por seis lados: reconhecer argola, prato, três correntes externas, corrente central, tampa perfurada, fresta quente, bojo e terminal; nenhuma face pisca ou desaparece;
+- [ ] usar uma vez no ar: braço e instrumento descrevem uma única intenção, a corrente alcança o extremo sem estalo e o vaso retorna ponderado exatamente ao repouso;
+- [ ] repetir apontando para altar, chão, parede, escada e bloco interativo: cada gesto produz exatamente uma ação, sem depender de atingir/minerar;
+- [ ] atacar entidade e manter mineração: nenhum dano ou bloco quebrado; o gesto de incensação não é disparado pelo ataque;
+- [ ] em Sobrevivência, Aventura e Criativo, confirmar comportamento idêntico e ilimitado; em Espectador, nenhuma ação;
+- [ ] observar a fumaça parada por 15 s: dois fios por ciclo formam uma coluna estreita e inequivocamente visível sobre a tampa, sem aura contínua, fumaça de incêndio ou emissão no rosto/mão;
+- [ ] durante um uso, confirmar que a origem acompanha a tampa e cerca de 18–19 partículas desenham um rastro contínuo ao longo de todo o arco, sem lacunas nem linha rígida;
+- [ ] depois de um uso, observar por pelo menos 12 s: três grupos de seis véus expandem, sobem e dissipam individualmente, permanecendo legíveis sobre o altar sem disco no chão, colisão, efeito de estado, luz mágica ou corte abrupto;
+- [ ] executar duas e três ações sucessivas no menor intervalo permitido: a sobreposição constrói uma massa atmosférica claramente mais rica, mas altar, rosto e câmera continuam visíveis;
+- [ ] observar a 3, 6 e 10 blocos: uma ação ainda é reconhecível a média distância e três ações não viram parede opaca perto do celebrante;
+- [ ] repetir em nave ampla, capela estreita, luz diurna, sombra e tochas: cinza permanece quente/neutro e o âmbar do vaso não vira brilho sobrenatural;
+- [ ] trocar de item logo após o release: cessam novas emissões ligadas ao turíbulo; fumaça já solta termina o próprio fade sem saltar para a mão;
+- [ ] observador remoto repete repouso, um uso e três usos: vê exatamente um arco/cue por input e fumaça na mesma região espacial, sem duplicação por perspectiva;
+- [ ] comparar o cue em FP, TP e a 3/6/10 blocos: metal é discreto e curto, sem soar como sino, balde, explosão ou magia;
+- [ ] manter 1, 4, 8 e 16 jogadores com turíbulo em repouso e em sequência; registrar queda perceptível, saturação visual e contagem de partículas antes de propor qualquer redução;
+- [ ] repetir o gate curto da v1.1.7 com aspersório e caldeirinha para confirmar ausência de regressão de binding, pose, água, spray, áudio e materiais;
+- [ ] aceitar nesse gate curto somente `All MaterialInstances must use the same render_method for a given block` e `MaterialInstances can't mix and match opaque and transparent materials`, já aprovados para a caldeirinha 1.1.7; qualquer outro erro atribuível ao add-on reprova a 1.2.2;
+- [ ] registrar plataforma, controles, skin, FOV, gráficos, iluminação, resultado e Content Log; qualquer correção visual deve responder a uma observação reproduzível.
+
 ## Gate oficial da separação material — v1.1.7
 
 - [ ] fechar o jogo, remover packs ativos anteriores e importar somente `Aspergillum-1.1.7.mcaddon` com manifests `[1,1,10]`;

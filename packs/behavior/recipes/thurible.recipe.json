@@ -1,0 +1,27 @@
+{
+  "format_version": "1.26.30",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "aspergillum:thurible_recipe"
+    },
+    "tags": ["crafting_table"],
+    "unlock": [
+      { "item": "minecraft:chain" },
+      { "item": "minecraft:copper_ingot" }
+    ],
+    "pattern": [
+      " C ",
+      "CNC",
+      "GGG"
+    ],
+    "key": {
+      "C": { "item": "minecraft:chain" },
+      "N": { "item": "minecraft:gold_nugget" },
+      "G": { "item": "minecraft:copper_ingot" }
+    },
+    "result": {
+      "item": "aspergillum:thurible",
+      "count": 1
+    }
+  }
+}

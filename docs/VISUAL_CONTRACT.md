@@ -4,6 +4,8 @@ Este documento registra os valores estruturais comprovados até a v1.0.15d, a in
 
 A v1.1 adiciona variantes de superfície, perfis de spray, a transição limpa do pomo da v1.1.4, as junções de tampa única da cabeça da v1.1.6 e a separação material da caldeirinha na v1.1.7. Nenhum acabamento pode alterar bones, pivôs, grip, locator ou poses abaixo. `classic` mantém a linguagem material da 1.0.20; as oito variantes trocam apenas color/normal/MER derivados do catálogo. Item empunhado, caldeirinha e mesa derivam as mesmas quatorze peças, máscaras e UVs da fonte autoral, sem exceção geométrica local.
 
+A v1.2 adiciona o turíbulo como attachable inteiramente separado; a 1.2.1 corrige sua apresentação por perspectiva e o gatilho de fumaça, e a 1.2.2 reforça somente a apresentação atmosférica. Ele não reutiliza, renomeia ou recalibra nenhum bone, pivô, locator, atlas ou valor protegido do aspersório. Sua hierarquia e seus próprios invariantes estão em [Contrato do turíbulo](THURIBLE_DESIGN_CONTRACT.md); compartilhar o princípio de raiz vinculada neutra não torna as duas malhas intercambiáveis.
+
 ## Attachable
 
 ```text

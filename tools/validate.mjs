@@ -788,6 +788,189 @@ if (actionController?.initial_state !== "idle"
   errors.push("Attachable action controller must expose the controlled idle/sprinkle/recovery lifecycle");
 }
 
+const thuribleItemDefinition = JSON.parse(
+  fs.readFileSync(path.join(packRoots[0], "items", "thurible.item.json"), "utf8"),
+)?.["minecraft:item"];
+const thuribleItemComponents = thuribleItemDefinition?.components ?? {};
+if (thuribleItemDefinition?.description?.identifier !== "aspergillum:thurible"
+  || thuribleItemComponents?.["aspergillum:thurible_use"] === undefined) {
+  errors.push("Thurible item must preserve its public identifier and stable custom use component");
+}
+const thuribleCooldown = thuribleItemComponents?.["minecraft:cooldown"];
+if (thuribleCooldown?.category !== "thurible_incense"
+  || thuribleCooldown?.duration !== 1.05
+  || thuribleCooldown?.type !== "use") {
+  errors.push("Thurible must use the finite 1.05-second use cooldown that synchronizes its ceremony");
+}
+for (const forbiddenComponent of [
+  "minecraft:durability",
+  "minecraft:food",
+  "minecraft:use_modifiers",
+  "minecraft:damage",
+]) {
+  if (thuribleItemComponents?.[forbiddenComponent] !== undefined) {
+    errors.push(`Thurible must not acquire survival-oriented component ${forbiddenComponent}`);
+  }
+}
+
+const thuribleRecipe = JSON.parse(
+  fs.readFileSync(path.join(packRoots[0], "recipes", "thurible.recipe.json"), "utf8"),
+)?.["minecraft:recipe_shaped"];
+if (thuribleRecipe?.result?.item !== "aspergillum:thurible"
+  || JSON.stringify(thuribleRecipe?.pattern) !== JSON.stringify([" C ", "CNC", "GGG"])) {
+  errors.push("Thurible crafting recipe must preserve the authored chain, fitting, and vessel construction");
+}
+
+const thuribleAttachable = JSON.parse(
+  fs.readFileSync(path.join(packRoots[1], "attachables", "thurible.attachable.json"), "utf8"),
+)?.["minecraft:attachable"]?.description;
+if (thuribleAttachable?.geometry?.default !== "geometry.aspergillum.thurible.held"
+  || thuribleAttachable?.materials?.default !== "entity"
+  || thuribleAttachable?.particle_effects?.idle_smoke !== "aspergillum:thurible_idle_smoke"
+  || thuribleAttachable?.particle_effects?.action_smoke !== "aspergillum:thurible_action_smoke"
+  || thuribleAttachable?.sound_effects?.chain_swing !== "aspergillum.thurible.swing") {
+  errors.push("Thurible attachable must connect its opaque model, three-layer smoke entry points, and restrained chain cue");
+}
+
+const thuribleModelSourceDefinition = JSON.parse(
+  fs.readFileSync(path.join(root, "assets-src", "models", "thurible.model.json"), "utf8"),
+);
+const thuribleModelDefinition = JSON.parse(
+  fs.readFileSync(path.join(packRoots[1], "models", "entity", "thurible.geo.json"), "utf8"),
+);
+const thuribleSourceGeometry = thuribleModelSourceDefinition?.["minecraft:geometry"]?.[0];
+const thuribleGeometry = thuribleModelDefinition?.["minecraft:geometry"]?.[0];
+if (thuribleModelSourceDefinition?.format_version !== "1.16.0"
+  || thuribleModelDefinition?.format_version !== "1.16.0") {
+  errors.push("Thurible authored and distributed geometry must remain on the stable 1.16.0 binding format");
+}
+const thuribleBones = new Map((thuribleGeometry?.bones ?? []).map((bone) => [bone.name, bone]));
+for (const boneName of [
+  "thurible_bound",
+  "thurible_presentation",
+  "thurible_action",
+  "hand_ring",
+  "suspension",
+  "bowl_counterweight",
+  "lid",
+  "bowl",
+  "smoke_origin",
+]) {
+  if (!thuribleBones.has(boneName)) errors.push(`Thurible geometry is missing physical bone ${boneName}`);
+}
+const thuribleBound = thuribleBones.get("thurible_bound");
+if (thuribleBound?.binding !== "q.item_slot_to_bone_name(context.item_slot)"
+  || (thuribleBound?.cubes?.length ?? 0) !== 0
+  || JSON.stringify(thuribleBound?.pivot) !== JSON.stringify([0, 0, 0])) {
+  errors.push("Thurible binding root must stay neutral and use the exact stable item-slot query");
+}
+if (JSON.stringify(thuribleBones.get("smoke_origin")?.locators?.thurible_smoke) !== JSON.stringify([-6, 33.72, 1])) {
+  errors.push("Thurible smoke locator must remain centered over the perforated lid");
+}
+const authoredThuribleCubeCount = (thuribleSourceGeometry?.bones ?? [])
+  .reduce((sum, bone) => sum + (bone.cubes?.length ?? 0), 0);
+const generatedThuribleCubes = (thuribleGeometry?.bones ?? []).flatMap((bone) => bone.cubes ?? []);
+if (generatedThuribleCubes.length !== authoredThuribleCubeCount
+  || generatedThuribleCubes.some((cube) => cube.name !== undefined || cube.surface !== undefined || cube.faces !== undefined)) {
+  errors.push("Generated thurible must preserve every authored cube while stripping production-only metadata");
+}
+
+const thuribleController = JSON.parse(
+  fs.readFileSync(path.join(packRoots[1], "animation_controllers", "thurible.animation_controllers.json"), "utf8"),
+)?.animation_controllers?.["controller.animation.thurible.action"];
+if (thuribleController?.initial_state !== "idle_a"
+  || Object.keys(thuribleController?.states ?? {}).join() !== "idle_a,idle_b,incense,recovery") {
+  errors.push("Thurible controller must preserve alternating idle wisps and the incense/recovery lifecycle");
+}
+for (const [stateName, state] of Object.entries(thuribleController?.states ?? {})) {
+  for (const particleEffect of state?.particle_effects ?? []) {
+    if (particleEffect?.bind_to_actor !== undefined) {
+      errors.push(`Thurible controller state ${stateName} must rely on the controller's implicit actor binding; bind_to_actor is invalid in controller particle effects`);
+    }
+    if (particleEffect?.locator !== "thurible_smoke") {
+      errors.push(`Thurible controller state ${stateName} must emit smoke from thurible_smoke`);
+    }
+  }
+}
+
+const thuribleHoldAnimations = JSON.parse(
+  fs.readFileSync(path.join(packRoots[1], "animations", "thurible.hold.animation.json"), "utf8"),
+)?.animations;
+const thuribleFirstPersonPose = thuribleHoldAnimations?.["animation.thurible.hold_first_person"]
+  ?.bones?.thurible_presentation;
+const thuribleThirdPersonPose = thuribleHoldAnimations?.["animation.thurible.hold_third_person"]
+  ?.bones?.thurible_presentation;
+if (JSON.stringify(thuribleFirstPersonPose?.position) !== JSON.stringify([0, -2.75, 0.45])
+  || JSON.stringify(thuribleFirstPersonPose?.rotation) !== JSON.stringify([180, 0, 0])
+  || JSON.stringify(thuribleFirstPersonPose?.scale) !== JSON.stringify([0.68, 0.68, 0.68])) {
+  errors.push("Thurible first-person presentation must preserve the framed 1.2.1 pose and scale");
+}
+if (JSON.stringify(thuribleThirdPersonPose?.position) !== JSON.stringify([5, -1.35, -2.2])
+  || JSON.stringify(thuribleThirdPersonPose?.rotation) !== JSON.stringify([176, 0, 0])
+  || thuribleThirdPersonPose?.scale !== undefined) {
+  errors.push("Thurible third-person presentation must invert the hanging assembly at native scale while preserving the proven grip offset");
+}
+
+const thuribleAnimations = JSON.parse(
+  fs.readFileSync(path.join(packRoots[1], "animations", "thurible.action.animation.json"), "utf8"),
+)?.animations;
+for (const animationName of [
+  "animation.thurible.player.incense",
+  "animation.thurible.idle_clock",
+  "animation.thurible.carry_sway.a",
+  "animation.thurible.carry_sway.b",
+  "animation.thurible.action.incense.first_person",
+  "animation.thurible.action.incense.third_person",
+]) {
+  if (thuribleAnimations?.[animationName] === undefined) errors.push(`Thurible animation is missing: ${animationName}`);
+}
+if (thuribleAnimations?.["animation.thurible.action.incense.first_person"]?.animation_length !== 0.92
+  || thuribleAnimations?.["animation.thurible.action.incense.third_person"]?.animation_length !== 0.92) {
+  errors.push("Thurible perspective actions must share the controlled 0.92-second pendulum window");
+}
+
+const thuribleParticleFiles = [
+  ["thurible_idle_smoke.particle.json", "aspergillum:thurible_idle_smoke", "textures/particle/incense_smoke", true],
+  ["thurible_action_smoke.particle.json", "aspergillum:thurible_action_smoke", "textures/particle/incense_smoke", false],
+  ["thurible_residual_smoke.particle.json", "aspergillum:thurible_residual_smoke", "textures/particle/incense_veil", false],
+];
+for (const [fileName, identifier, texture, usesLighting] of thuribleParticleFiles) {
+  const effect = JSON.parse(fs.readFileSync(path.join(packRoots[1], "particles", fileName), "utf8"))?.particle_effect;
+  const components = effect?.components ?? {};
+  const localSpace = components["minecraft:emitter_local_space"];
+  if (effect?.description?.identifier !== identifier
+    || effect?.description?.basic_render_parameters?.texture !== texture) {
+    errors.push(`Thurible smoke effect is not wired to its authored identity/flipbook: ${fileName}`);
+  }
+  if (localSpace?.position !== false || localSpace?.rotation !== false || localSpace?.velocity !== false) {
+    errors.push(`Thurible smoke must detach into world-space after emission: ${fileName}`);
+  }
+  if (components["minecraft:particle_motion_collision"] !== undefined) {
+    errors.push(`Thurible smoke must not acquire collision or ground-cloud behavior: ${fileName}`);
+  }
+  if ((components["minecraft:particle_appearance_lighting"] !== undefined) !== usesLighting) {
+    errors.push(`Thurible smoke lighting policy is incorrect for ${fileName}`);
+  }
+}
+const thuribleActionSmoke = JSON.parse(
+  fs.readFileSync(path.join(packRoots[1], "particles", "thurible_action_smoke.particle.json"), "utf8"),
+)?.particle_effect;
+if (thuribleActionSmoke?.components?.["minecraft:emitter_rate_steady"]?.spawn_rate !== 22
+  || thuribleActionSmoke?.components?.["minecraft:emitter_rate_steady"]?.max_particles !== 24
+  || thuribleActionSmoke?.components?.["minecraft:emitter_lifetime_once"]?.active_time !== 0.86
+  || Object.keys(thuribleActionSmoke?.components?.["minecraft:emitter_lifetime_events"]?.timeline ?? {}).join() !== "0.16,0.41,0.68"
+  || thuribleActionSmoke?.events?.["aspergillum:residual_veil"]?.particle_effect?.effect !== "aspergillum:thurible_residual_smoke") {
+  errors.push("Thurible action smoke must preserve the cinematic moving trail and three-stage residual-veil handoff");
+}
+const thuribleResidualSmoke = JSON.parse(
+  fs.readFileSync(path.join(packRoots[1], "particles", "thurible_residual_smoke.particle.json"), "utf8"),
+)?.particle_effect;
+if (thuribleResidualSmoke?.components?.["minecraft:emitter_rate_instant"]?.num_particles !== 6
+  || thuribleResidualSmoke?.components?.["minecraft:particle_lifetime_expression"]?.max_lifetime !== "math.random(8.0, 11.0)"
+  || thuribleResidualSmoke?.components?.["minecraft:particle_appearance_billboard"]?.uv?.texture_width !== 256) {
+  errors.push("Thurible residual smoke must preserve six broad long-lived veils per handoff");
+}
+
 const dropletPath = path.join(packRoots[1], "particles", "holy_water_droplet.particle.json");
 if (!fs.existsSync(dropletPath)) {
   errors.push("Holy-water droplet particle definition is required");
@@ -881,6 +1064,15 @@ if (!compiledScript.includes("animation.aspergillum.player.sprinkle.recovery_bri
 if (!compiledScript.includes("spawnParticle") || !compiledScript.includes("aspergillum:holy_water_droplet")) {
   errors.push("Compiled script must emit the namespaced holy-water droplet particle");
 }
+for (const thuribleContract of [
+  "aspergillum:thurible",
+  "aspergillum:thurible_use",
+  "animation.thurible.player.incense",
+]) {
+  if (!compiledScript.includes(thuribleContract)) {
+    errors.push(`Compiled thurible contract is missing: ${thuribleContract}`);
+  }
+}
 if (!compiledScript.includes("dropletCount: 36") || !compiledScript.includes("pulseCount: 6")) {
   errors.push("Compiled spray must emit the complete 36-droplet burst");
 }
@@ -962,6 +1154,8 @@ for (const locale of ["pt_BR", "en_US"]) {
     "ui.aspergillum.table.grip.label",
     "ui.aspergillum.table.finish",
     "ui.aspergillum.table.close",
+    "item.aspergillum:thurible.name",
+    "action.interact.thurible.incense",
   ]) {
     if (!lang.includes(`${key}=`)) errors.push(`${locale}.lang is missing localized lore key ${key}`);
   }
@@ -978,16 +1172,31 @@ const required = [
   "packs/resource/textures/blocks/aspersorium.png",
   "packs/resource/textures/blocks/sacristan_table.png",
   "packs/resource/textures/particle/holy_water.png",
+  "packs/resource/textures/items/thurible.png",
+  "packs/resource/textures/entity/thurible.png",
+  "packs/resource/textures/entity/thurible_normal.png",
+  "packs/resource/textures/entity/thurible_mer.png",
+  "packs/resource/textures/entity/thurible.texture_set.json",
+  "packs/resource/textures/particle/incense_smoke.png",
+  "packs/resource/textures/particle/incense_veil.png",
+  "packs/resource/models/entity/thurible.geo.json",
   "packs/resource/models/blocks/aspersorium.rotations.geo.json",
   "packs/resource/models/blocks/sacristan_table.geo.json",
   "packs/resource/models/blocks/sacristan_table.rotations.geo.json",
   "packs/resource/animations/aspergillum.action.animation.json",
   "packs/resource/animations/aspergillum.hold.animation.json",
+  "packs/resource/animations/thurible.action.animation.json",
+  "packs/resource/animations/thurible.hold.animation.json",
   "packs/resource/animation_controllers/aspergillum.animation_controllers.json",
+  "packs/resource/animation_controllers/thurible.animation_controllers.json",
   "packs/resource/particles/holy_water_droplet.particle.json",
   "packs/resource/particles/holy_water_release.particle.json",
   "packs/resource/particles/holy_water_micro_splash.particle.json",
+  "packs/resource/particles/thurible_idle_smoke.particle.json",
+  "packs/resource/particles/thurible_action_smoke.particle.json",
+  "packs/resource/particles/thurible_residual_smoke.particle.json",
   "packs/resource/render_controllers/aspergillum.render_controllers.json",
+  "packs/resource/render_controllers/thurible.render_controllers.json",
   "packs/resource/sounds/sound_definitions.json",
 ];
 for (const cosmetic of cosmetics) {
@@ -1005,6 +1214,9 @@ for (const relative of required) if (!fs.existsSync(path.join(root, relative))) 
 
 const entityTexturePath = path.join(packRoots[1], "textures", "entity", "aspergillum.png");
 const particleTexturePath = path.join(packRoots[1], "textures", "particle", "holy_water.png");
+const thuribleEntityTexturePath = path.join(packRoots[1], "textures", "entity", "thurible.png");
+const incenseTexturePath = path.join(packRoots[1], "textures", "particle", "incense_smoke.png");
+const incenseVeilTexturePath = path.join(packRoots[1], "textures", "particle", "incense_veil.png");
 for (const file of walk(path.join(root, "packs", "resource", "textures")).filter((entry) => entry.endsWith(".png"))) {
   try {
     const image = PNG.sync.read(fs.readFileSync(file));
@@ -1014,6 +1226,14 @@ for (const file of walk(path.join(root, "packs", "resource", "textures")).filter
       for (let alpha = 3; alpha < image.data.length; alpha += 4) {
         if (image.data[alpha] !== 255) {
           errors.push("Held aspergillum texture must be fully opaque");
+          break;
+        }
+      }
+    }
+    if (file === thuribleEntityTexturePath) {
+      for (let alpha = 3; alpha < image.data.length; alpha += 4) {
+        if (image.data[alpha] !== 255) {
+          errors.push("Held thurible texture must remain fully opaque; perforations are authored recesses, not unstable holes");
           break;
         }
       }
@@ -1029,6 +1249,34 @@ for (const file of walk(path.join(root, "packs", "resource", "textures")).filter
         }
       }
       if (visiblePixels < 40) errors.push("Holy-water droplet texture has insufficient visible coverage");
+    }
+    if (file === incenseTexturePath) {
+      if (image.width !== 128 || image.height !== 16) {
+        errors.push("Incense smoke must preserve its eight-frame 128x16 flipbook atlas");
+      }
+      for (let frame = 0; frame < 8; frame += 1) {
+        let visiblePixels = 0;
+        for (let y = 0; y < 16; y += 1) {
+          for (let x = frame * 16; x < frame * 16 + 16; x += 1) {
+            if (image.data[(image.width * y + x) * 4 + 3] > 0) visiblePixels += 1;
+          }
+        }
+        if (visiblePixels < 24) errors.push(`Incense smoke frame ${frame + 1} has insufficient soft coverage`);
+      }
+    }
+    if (file === incenseVeilTexturePath) {
+      if (image.width !== 256 || image.height !== 32) {
+        errors.push("Incense veil must preserve its cinematic eight-frame 256x32 flipbook atlas");
+      }
+      for (let frame = 0; frame < 8; frame += 1) {
+        let visiblePixels = 0;
+        for (let y = 0; y < 32; y += 1) {
+          for (let x = frame * 32; x < frame * 32 + 32; x += 1) {
+            if (image.data[(image.width * y + x) * 4 + 3] > 0) visiblePixels += 1;
+          }
+        }
+        if (visiblePixels < 180) errors.push(`Incense veil frame ${frame + 1} has insufficient atmospheric coverage`);
+      }
     }
   } catch (error) {
     errors.push(`Unreadable PNG ${path.relative(root, file)}: ${error.message}`);

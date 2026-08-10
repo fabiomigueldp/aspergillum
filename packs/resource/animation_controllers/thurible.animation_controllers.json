@@ -1,0 +1,83 @@
+{
+  "format_version": "1.10.0",
+  "animation_controllers": {
+    "controller.animation.thurible.action": {
+      "initial_state": "idle_a",
+      "states": {
+        "idle_a": {
+          "animations": ["carry_sway_a", "idle_clock"],
+          "particle_effects": [
+            {
+              "effect": "idle_smoke",
+              "locator": "thurible_smoke"
+            }
+          ],
+          "blend_transition": 0.1,
+          "blend_via_shortest_path": true,
+          "transitions": [
+            {
+              "incense": "q.is_cooldown_category('thurible_incense', 'slot.weapon.mainhand') && q.cooldown_time_remaining('slot.weapon.mainhand') > 0.65"
+            },
+            {
+              "idle_b": "q.any_animation_finished"
+            }
+          ]
+        },
+        "idle_b": {
+          "animations": ["carry_sway_b", "idle_clock"],
+          "particle_effects": [
+            {
+              "effect": "idle_smoke",
+              "locator": "thurible_smoke"
+            }
+          ],
+          "blend_transition": 0.1,
+          "blend_via_shortest_path": true,
+          "transitions": [
+            {
+              "incense": "q.is_cooldown_category('thurible_incense', 'slot.weapon.mainhand') && q.cooldown_time_remaining('slot.weapon.mainhand') > 0.65"
+            },
+            {
+              "idle_a": "q.any_animation_finished"
+            }
+          ]
+        },
+        "incense": {
+          "animations": [
+            {
+              "incense_first_person": "context.is_first_person == 1.0"
+            },
+            {
+              "incense_third_person": "context.is_first_person == 0.0"
+            }
+          ],
+          "particle_effects": [
+            {
+              "effect": "action_smoke",
+              "locator": "thurible_smoke"
+            }
+          ],
+          "blend_transition": 0.08,
+          "blend_via_shortest_path": true,
+          "transitions": [
+            {
+              "recovery": "q.all_animations_finished"
+            }
+          ]
+        },
+        "recovery": {
+          "blend_transition": 0.08,
+          "blend_via_shortest_path": true,
+          "transitions": [
+            {
+              "incense": "q.is_cooldown_category('thurible_incense', 'slot.weapon.mainhand') && q.cooldown_time_remaining('slot.weapon.mainhand') > 0.65"
+            },
+            {
+              "idle_a": "q.cooldown_time_remaining('slot.weapon.mainhand') <= 0.0"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

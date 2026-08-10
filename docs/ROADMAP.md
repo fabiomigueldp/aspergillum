@@ -8,6 +8,41 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
+## v1.2.2 — presença cinematográfica do incenso — implementada; gate físico pendente
+
+O teste da 1.2.1 confirmou emissão, mas reprovou sua leitura: poucas partículas pequenas não construíam o volume de incenso esperado ao incensar altar ou durante a consagração. A 1.2.2 dobra o rastro, triplica as liberações residuais, duplica cada véu, amplia vida/escala e introduz atlas difuso próprio de 32 px. O resultado-alvo é uma ação visível e duas/três ações capazes de transformar temporariamente a atmosfera do espaço sem criar magia, disco no chão ou parede opaca.
+
+Gate de saída: coluna visível no repouso; rastro contínuo no arco; véu persistente por até 11 s; leitura a 3/6/10 blocos; celebrante, altar e assembleia continuam discerníveis; custo medido com 1/4/8/16 usuários antes de qualquer LOD.
+
+## v1.2.1 — correção do primeiro gate físico do turíbulo — implementada; VFX sucedido pela 1.2.2
+
+O primeiro teste da 1.2.0 comprovou item, binding e malha, mas revelou três falhas isoladas: o vaso apontava para cima em terceira pessoa; a composição ocupava/cortava demais a primeira pessoa; e `bind_to_actor` era inválido no `particle_effects` de estados do animation controller, impedindo a fumaça. A 1.2.1 inverte somente `thurible_presentation` em TP, aplica escala/enquadramento exclusivamente FP e remove a propriedade inválida, reforçando os validadores contra regressão. A exceção material já aprovada da caldeirinha permanece intocada.
+
+Gate de saída: zero erro de animation controller; conjunto pendente abaixo da mão em TP; modelo completo no quadrante inferior direito em FP; fumaça nascendo de `thurible_smoke` e abandonando o vaso em world-space.
+
+## v1.2.0 — turíbulo cerimonial — implementada; primeiro gate reprovado e corrigido na 1.2.1
+
+Decisão: adicionar um único instrumento excelente para incensação em RP, sem importar para ele economia, abastecimento ou efeitos de gameplay. A memória visual das poções prolongadas é preservada como fumaça que permanece no ar, não como nuvem circular de efeito.
+
+Escopo fechado:
+
+- publicar `aspergillum:thurible`, receita, ícone e localização **Incensar** / **Incense**;
+- modelar argola, prato superior, três correntes, corrente da tampa, tampa perfurada, vaso e terminal inferior numa hierarquia articulada própria;
+- simular peso por pêndulo determinístico FP/TP e animação aditiva do braço, sem entidade, junta física experimental ou loop descontrolado;
+- emitir fio de repouso, rastro durante o arco e dois véus residuais world-space, com flipbook autoral e nenhuma colisão/área de gameplay;
+- aceitar uso no ar e sobre blocos, deduplicar input, negar Espectador e cancelar dano/mineração;
+- reutilizar três foleys metálicos sob um alias cerimonial de baixo volume, sem introduzir nova mídia sem proveniência;
+- preservar sem alteração todos os IDs, states, bones, poses, economia, partículas e contratos do aspersório e da caldeirinha.
+
+Gate de saída:
+
+- item permanece fisicamente preso ao punho e o vaso cai na direção correta em FP/TP, Steve/Alex/Persona;
+- um uso produz um arco único com retorno ponderado, fumaça nascendo da tampa e exatamente um cue discreto;
+- partículas soltas ficam no espaço, nunca acompanham o retorno do vaso nem formam disco de poção no chão;
+- duas/três ações sucessivas adensam a cena sem bloquear rostos, altar ou câmera e sem custo perceptível excessivo;
+- uso sobre bloco e no ar são equivalentes; ataque/mineração permanecem inofensivos; observador remoto vê uma única ação;
+- gate curto da v1.1.7 continua aprovado e o Content Log não ganha erro atribuível ao novo item.
+
 ## v1.1.7 — separação material da caldeirinha — implementada; reteste oficial pendente
 
 Decisão: promover a composição visualmente aprovada na 1.1.7b, mantendo `opaque` na estrutura e no aspersório acomodado e `blend` somente na água. A geometria permanece a cabeça simples de seis volumes da 1.1.6.

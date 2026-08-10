@@ -63,6 +63,9 @@ for (const locale of ["pt_BR", "en_US"]) {
   for (const loreKey of loreKeys) {
     if (!entries.has(loreKey)) errors.push(`${locale}.lang is missing ${loreKey}`);
   }
+  for (const thuribleKey of ["item.aspergillum:thurible.name", "action.interact.thurible.incense"]) {
+    if (!entries.has(thuribleKey)) errors.push(`${locale}.lang is missing ${thuribleKey}`);
+  }
   for (const key of [...loreKeys, ...messageKeys]) {
     const value = entries.get(key) ?? "";
     if (!/^§r§[0-9a-f]/.test(value)) {
@@ -128,6 +131,12 @@ if (!itemStateSource.includes("item.aspergillum.lore.docking")
 const wetFeedbackSource = fs.readFileSync(path.join(root, "src", "presentation", "wet-feedback.ts"), "utf8");
 if (!wetFeedbackSource.includes("MICRO_SPLASH_PARTICLE") || !wetFeedbackSource.includes("LOAD_SPLASH_OFFSETS")) {
   errors.push("The RC requires bounded wet feedback after a successful load");
+}
+const incenseSource = fs.readFileSync(path.join(root, "src", "application", "incense.ts"), "utf8");
+if (!incenseSource.includes("THURIBLE_ITEM")
+  || !incenseSource.includes("startCooldown")
+  || !incenseSource.includes("playThuribleIncenseAnimation")) {
+  errors.push("The RC requires the stable, presentation-only thurible use flow");
 }
 const aspergillumDomainSource = fs.readFileSync(path.join(root, "src", "domain", "aspergillum.ts"), "utf8");
 const aspersoriumDomainSource = fs.readFileSync(path.join(root, "src", "domain", "aspersorium-water.ts"), "utf8");

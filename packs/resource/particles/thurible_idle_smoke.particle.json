@@ -1,0 +1,87 @@
+{
+  "format_version": "1.10.0",
+  "particle_effect": {
+    "description": {
+      "identifier": "aspergillum:thurible_idle_smoke",
+      "basic_render_parameters": {
+        "material": "particles_blend",
+        "texture": "textures/particle/incense_smoke"
+      }
+    },
+    "components": {
+      "minecraft:emitter_local_space": {
+        "position": false,
+        "rotation": false,
+        "velocity": false
+      },
+      "minecraft:emitter_rate_instant": {
+        "num_particles": 2
+      },
+      "minecraft:emitter_lifetime_once": {
+        "active_time": 0.03
+      },
+      "minecraft:emitter_shape_custom": {
+        "offset": [
+          "math.random(-0.025, 0.025)",
+          "math.random(-0.015, 0.025)",
+          "math.random(-0.025, 0.025)"
+        ],
+        "direction": [
+          "math.random(-0.18, 0.18)",
+          1,
+          "math.random(-0.18, 0.18)"
+        ]
+      },
+      "minecraft:particle_initial_speed": "math.random(0.025, 0.07)",
+      "minecraft:particle_initial_spin": {
+        "rotation": "math.random(0, 360)",
+        "rotation_rate": "math.random(-6, 6)"
+      },
+      "minecraft:particle_lifetime_expression": {
+        "max_lifetime": "math.random(3.8, 5.4)"
+      },
+      "minecraft:particle_motion_dynamic": {
+        "linear_acceleration": [
+          "(variable.particle_random_1 - 0.5) * 0.022",
+          0.032,
+          "(variable.particle_random_2 - 0.5) * 0.022"
+        ],
+        "linear_drag_coefficient": 0.14,
+        "rotation_drag_coefficient": 0.14
+      },
+      "minecraft:particle_appearance_billboard": {
+        "size": [
+          "0.085 + 0.31 * math.sqrt(variable.particle_age / variable.particle_lifetime)",
+          "0.1 + 0.36 * math.sqrt(variable.particle_age / variable.particle_lifetime)"
+        ],
+        "facing_camera_mode": "lookat_xyz",
+        "uv": {
+          "texture_width": 128,
+          "texture_height": 16,
+          "flipbook": {
+            "base_UV": [0, 0],
+            "size_UV": [16, 16],
+            "step_UV": [16, 0],
+            "frames_per_second": 8,
+            "max_frame": 8,
+            "stretch_to_lifetime": true,
+            "loop": false
+          }
+        }
+      },
+      "minecraft:particle_appearance_tinting": {
+        "color": {
+          "gradient": {
+            "0.0": [0.88, 0.84, 0.77, 0.0],
+            "0.1": [0.86, 0.83, 0.78, 0.38],
+            "0.55": [0.78, 0.77, 0.74, 0.29],
+            "0.84": [0.7, 0.71, 0.7, 0.13],
+            "1.0": [0.66, 0.67, 0.67, 0.0]
+          },
+          "interpolant": "variable.particle_age / variable.particle_lifetime"
+        }
+      },
+      "minecraft:particle_appearance_lighting": {}
+    }
+  }
+}

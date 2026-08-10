@@ -2,15 +2,17 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.1.7` Release Candidate (revisão numérica dos packs `[1, 1, 10]`)
+- **Versão de referência:** `1.2.2` Release Candidate (revisão numérica dos packs `[1, 2, 2]`)
 - **Engine mínima:** Creator `1.26.40`
 - **Script API:** manifest com `@minecraft/server` `2.9.0` e `@minecraft/server-ui` `2.1.0`, estáveis; `@minecraft/common` `1.3.0` somente no toolchain npm
 - **Experimentos:** nenhum
-- **Conteúdo:** aspersório funcional de quatro cargas, caldeirinha de dezesseis unidades, docking decorativo, três perfis de spray, nove acabamentos e Mesa do Sacristão configurável
+- **Conteúdo:** aspersório funcional de quatro cargas, caldeirinha de dezesseis unidades, docking decorativo, três perfis de spray, nove acabamentos, Mesa do Sacristão configurável e turíbulo cerimonial sem recursos consumíveis
 
 A v1.0.20 foi validada em jogo e é a baseline protegida de economia, docking parcial, persistência, animação, VFX e áudio. A v1.1.4 corrigiu a interseção do pomo; a v1.1.5 removeu as tampas coincidentes da cabeça, mas a decomposição em aros finos perdeu duas paredes no renderizador de blocos. A v1.1.6 conserva seis volumes com paredes integrais e apenas uma tampa por junção.
 
 O reteste físico da v1.1.6 demonstrou que remover somente a segunda tampa coplanar não eliminava o desaparecimento angular no passe `blend` da caldeirinha. A matriz `1.1.7a/b/c` confirmou a composição B como a melhor resposta visual: estrutura/aspersório `opaque` e água `blend`. A v1.1.7 promove esse perfil sem alterar a geometria simples aprovada.
+
+A v1.2.0 preservou essa baseline e introduziu `aspergillum:thurible` como um caso de uso isolado. A v1.2.1 corrigiu direção de queda, enquadramento e schema do controller. O gate seguinte reprovou a fumaça como pequena, rarefeita e pouco persistente para a leitura cerimonial desejada. A v1.2.2 redesenha somente o VFX como coluna, rastro e véu de até 11 segundos, sem alterar combustível, carga, durabilidade, naveta, efeito de gameplay, geometria, pose ou animação.
 
 ## O que está resolvido
 
@@ -47,6 +49,11 @@ O reteste físico da v1.1.6 demonstrou que remover somente a segunda tampa copla
 - Mensagens dinâmicas usam `%s` sequenciais compatíveis com o runtime; lore e action bar reiniciam explicitamente a formatação antes de aplicar a cor.
 - Cues passam por adaptador Bedrock fail-soft, catálogo tipado e shuffle bag sem repetição imediata; feedback de carga mantém somente duas microgotas limitadas à caldeirinha.
 - O pipeline versiona fontes selecionadas, masters, recipes, OGGs e hashes; `validate:audio` garante 48 arquivos mono/48 kHz/Vorbis sem órfãos ou caminhos vanilla.
+- O turíbulo possui argola, prato superior, três correntes de suspensão, corrente central da tampa, vaso contrapesado, tampa perfurada e locator próprio, todos gerados da fonte semântica `assets-src/models/thurible.model.json`.
+- A oscilação do turíbulo usa pêndulo determinístico por perspectiva: o prato é o pivô, o vaso responde com atraso de massa e todos os canais retornam a zero; nenhuma entidade ou API física experimental é necessária.
+- Use no ar e Use sobre bloco convergem no mesmo caso de uso, deduplicado por tick e sincronizado pelo cooldown `thurible_incense`; ataque e mineração permanecem inofensivos.
+- Fio de repouso, rastro de uso e véu residual usam um flipbook autoral de oito quadros. Partículas nascem no vaso, soltam-se em world-space e não criam nuvem de chão, colisão ou área de efeito.
+- O catálogo passa a ter 16 famílias sobre os mesmos 48 clips únicos; `thurible.swing` reutiliza três foleys metálicos em volume reduzido e pode receber gravações dedicadas sem alterar o contrato público.
 - Os SFX atuais foram gerados no plano free ElevenLabs: servem à RC não comercial com atribuição e precisam ser regenerados sob assinatura paga antes de distribuição comercial.
 
 ## Limitações conhecidas
@@ -68,10 +75,13 @@ O reteste físico da v1.1.6 demonstrou que remover somente a segunda tampa copla
 | Polimento visual 1.0.19b | capturas PBR reproduzíveis aprovam coerência estrutural fora do jogo | confirmar silhueta, mipmaps, culling e materiais no `.mcaddon` importado, em clássico/Vibrant Visuals |
 | Material da caldeirinha 1.1.7 | perfil misto `opaque`/`blend` aprovado em jogo, com todas as funcionalidades e apresentações estáveis | o runtime 26.42 registra warning/error conhecidos de `MaterialInstances`; reavaliar se surgir regressão visual correlata ou mudança de plataforma |
 | Compatibilidade 1.1.7 | IDs, states, pivôs, locators e contratos de gameplay são preservados; somente o perfil de renderização muda | validar mundo existente da 1.0.20/1.1.6 antes e depois do upgrade, sem cache concorrente |
+| Turíbulo 1.2.2 | poses e emissão funcionam, mas a fumaça 1.2.1 foi fisicamente reprovada por baixa presença; 1.2.2 amplia cobertura, densidade e persistência com atlas próprio para véus | confirmar no `.mcaddon` 1.2.2 coluna na tampa, rastro contínuo e volume residual legível sobre o altar sem bloquear celebrante ou assembleia |
+| Física de corrente | Bedrock estável não expõe juntas físicas adequadas a attachables | movimento é autoral e determinístico; somente calibrar keyframes após evidência física, sem migrar para entidades auxiliares |
+| Áudio do turíbulo | alias próprio reutiliza foleys metálicos existentes | avaliar o mix no jogo; gravação dedicada é polimento futuro, não requisito funcional nem justificativa para mídia sem proveniência |
 
 ## Próxima mudança autorizada
 
-Retestar o pacote oficial 1.1.7 pelo gate curto de [TESTING.md](TESTING.md): clássico/dourado, caldeirinha vazia/cheia, aproximação da câmera e smoke funcional. As duas mensagens conhecidas de `MaterialInstances` são aceitas somente enquanto a apresentação permanecer estável e nenhuma outra mensagem atribuível ao add-on surgir.
+Executar o gate cinematográfico do turíbulo 1.2.2 em [TESTING.md](TESTING.md): uma oscilação deve desenhar o arco; duas ou três devem construir um volume de incenso persistente sobre o altar; o celebrante continua visível e a fumaça não forma disco no chão. Confirmar também poses 1.2.1, observador remoto e ausência de erro novo no Content Log. As duas mensagens conhecidas de `MaterialInstances` permanecem aceitas para a caldeirinha.
 
 Não faz parte do próximo marco:
 
@@ -80,7 +90,8 @@ Não faz parte do próximo marco:
 - trocar o binding;
 - substituir toda a arquitetura de uma vez;
 - remover o emissor matemático antes de o locator provar equivalência em FP, TP e multiplayer;
-- adicionar efeitos de gameplay sobre mobs ou blocos.
+- adicionar efeitos de gameplay sobre mobs ou blocos;
+- adicionar naveta, combustível, carvão, inventário, durabilidade, efeitos de estado ou entidade física ao turíbulo;
 - substituir a interface nativa por JSON UI customizado ou APIs preview;
 - cobrar materiais por configuração ou adicionar uma prévia que fique encoberta pela própria interface.
 

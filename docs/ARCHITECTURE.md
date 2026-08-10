@@ -20,6 +20,7 @@ O servidor é autoritativo para carga, água, cooldown e permissões. Resource P
 
 - Namespace: `aspergillum`.
 - Item clássico: `aspergillum:aspergillum`; oito variantes usam `aspergillum:aspergillum_<metal>_<grip>`.
+- Instrumento cerimonial independente: `aspergillum:thurible`; não possui variantes, propriedades dinâmicas ou schema persistente.
 - Blocos: `aspergillum:aspersorium` e `aspergillum:sacristan_table`.
 - States da caldeirinha: `aspergillum:water_base`, `aspergillum:water_offset`, `aspergillum:has_aspergillum`, `aspergillum:cosmetic`, `aspergillum:rotation`.
 - States da mesa: `aspergillum:table_has_aspergillum`, `aspergillum:table_cosmetic`, `aspergillum:table_rotation`.
@@ -35,6 +36,7 @@ src/
 ├── bootstrap/main.ts
 ├── application/
 │   ├── aspersorium.ts
+│   ├── incense.ts
 │   ├── sacristan-table.ts
 │   └── sprinkle.ts
 ├── domain/
@@ -150,6 +152,18 @@ Partículas visuais permanecem independentes de qualquer cone lógico de gamepla
 
 A UI é apresentação e não é autoridade de estado. `@minecraft/server-ui` `2.1.0` é módulo estável do manifest; `@minecraft/common` `1.3.0` é somente a dependência npm/tipos correspondente e não pode aparecer no manifest. Não há JSON UI customizado, imagem preview nem polling por `runInterval`. O contrato visual e de interação está em [Mesa do Sacristão](SACRISTAN_TABLE_DESIGN_CONTRACT.md).
 
+## Fluxo de incensação 1.2.2
+
+1. `ItemCustomComponent.onUse` e `onUseOn` convergem em `tryIncense`, para que o gesto funcione no ar e apontado para blocos.
+2. Application revalida modo de jogo e o item realmente equipado na mão principal.
+3. Um gate transitório de 21 ticks, igual ao cooldown de `1,05 s`, deduplica as duas rotas e eventos repetidos do mesmo gesto; nada é gravado no ItemStack ou no mundo.
+4. O cooldown estável `thurible_incense` de `1,05 s` é iniciado. Ele é somente o relógio compartilhado entre input e controller do attachable.
+5. Presentation executa `animation.thurible.player.incense`; o controller seleciona a coreografia local FP/TP e dispara rastro, véus residuais e cue metálico. Seus efeitos de estado usam o vínculo implícito válido ao ator e o locator `thurible_smoke`.
+6. O emissor acompanha o locator durante a ação, mas partículas emitidas simulam em world-space e terminam o próprio fade.
+7. `entityHurt` e `playerBreakBlock` cancelam dano e quebra. Nenhuma etapa altera entidade, bloco, inventário, efeito ou recurso.
+
+Como não existe estado autoritativo além do cooldown, uma falha de animação, partícula ou som é fail-soft e não exige rollback. O contrato completo está em [Turíbulo](THURIBLE_DESIGN_CONTRACT.md).
+
 ## Attachable e animação
 
 O contrato atual e os valores numéricos estão em [Contrato visual](VISUAL_CONTRACT.md). A v1.0.15 adiciona duas camadas sem alterar `aspergillum_bound`:
@@ -164,17 +178,21 @@ Timeline de aspersão (`18 ticks/0.90 s`): o swing vanilla fornece o movimento a
 
 O controller usa a categoria de cooldown válida como ponte visual. Tentativa vazia não inicia o cooldown nativo e, portanto, não entra no estado `sprinkle`. Na v1.0.19, a timeline é somente animação: áudio e bridge dependem do commit server-side, impedindo efeitos molhados em tentativas inválidas. O estado `recovery` também rearma uma nova ação se outro cooldown válido já tiver começado.
 
+O turíbulo possui uma hierarquia separada e não toca nos bones congelados do aspersório. `thurible_bound` conserva o mesmo princípio de binding neutro; `thurible_presentation` calibra perspectivas; `thurible_action` transmite o impulso; `suspension` gira no prato superior; `bowl_counterweight` introduz o atraso de massa; e `lid/smoke_origin` mantêm a tampa e a origem da fumaça coesas. A simulação é determinística porque a API estável não oferece juntas físicas de corrente apropriadas a um attachable.
+
 ### Pipeline autoral das malhas 1.0.19b
 
 `assets-src/models/aspergillum.model.json` é a fonte humana do attachable. Ela preserva bones, pivôs, origins, sizes, binding e locators, mas acrescenta em produção nome, superfície semântica e, quando necessário, máscara de faces para cada cubo. `tools/generate-assets.mjs` remove esses metadados, calcula somente as faces selecionadas em densidade de dois texels por unidade, arredonda cada dimensão UV por `ceil` com mínimo de um texel, empacota ilhas sem sobreposição com padding e emite em conjunto a geometria distribuída e os mapas color/normal/MER `128 × 128`.
 
 `assets-src/models/aspersorium.model.json` e `assets-src/models/sacristan_table.model.json` são fontes humanas dos blocos estáticos. Durante a geração, as quatorze peças de `handle`/`sprinkler_head`, suas máscaras e ilhas já empacotadas são transformadas para o bone `resting_aspergillum`; color, normal e MER da variante são copiados para uma região reservada dos atlas `256 × 256`. Assim, nenhum estado acomodado possui uma segunda malha artística independente.
 
+`assets-src/models/thurible.model.json` é uma segunda fonte humana independente. O mesmo empacotador gera `geometry.aspergillum.thurible.held` e mapas color/normal/MER `256 × 256` em densidade 4×; o gerador também emite o ícone e o flipbook de fumaça de oito quadros. Nenhuma geometria, textura final ou PNG é editado diretamente.
+
 Esse limite evita quatro classes de drift: geometria fracionária com Box UV que colapsa no runtime, mapas PBR que deixam de corresponder ao color map, réplica acomodada diferente do item e reintrodução de faces internas concorrentes. A silhueta continua autorada em unidades de modelo; a resolução da face é uma decisão independente do atlas. O validador compara origem/tamanho/máscara da fonte e do pack, bloqueia interseção volumétrica na transição do pomo e fiscaliza bounds, inteiros, footprints, sobreposição de UV e paridade completa entre item e composição.
 
 ## Áudio semântico
 
-Application emite intenções (`AudioCue`) e não IDs Bedrock. `BedrockAudioAdapter` resolve 15 famílias, escolhe variantes por shuffle bag e roteia pistas privadas via `Player.playSound` ou eventos espaciais via `Dimension.playSound`. Fill, load, dock, undock e release só emitem depois do commit correspondente; `load.prepare` e `sprinkle.prepare` só após a sessão e o cooldown serem aceitos. O catálogo, pipeline, mix, licença e QA estão em [Contrato de áudio](AUDIO_DESIGN_CONTRACT.md).
+Application emite intenções (`AudioCue`) e não IDs Bedrock para os eventos transacionais do aspersório. `BedrockAudioAdapter` resolve 15 dessas famílias, escolhe variantes por shuffle bag e roteia pistas privadas via `Player.playSound` ou eventos espaciais via `Dimension.playSound`. Fill, load, dock, undock e release só emitem depois do commit correspondente; `load.prepare` e `sprinkle.prepare` só após a sessão e o cooldown serem aceitos. A 16ª família, `aspergillum.thurible.swing`, é puramente apresentacional e parte da timeline do próprio attachable, reutilizando três foleys já distribuídos em mix mais baixo. O catálogo, pipeline, licença e QA estão em [Contrato de áudio](AUDIO_DESIGN_CONTRACT.md).
 
 ## Partículas
 
@@ -189,6 +207,8 @@ A geometria mantém a arquitetura `sprinkler_head -> spray_aim -> aspergillum_ti
 - o cooldown válido e o commit impedem bridge e som molhado em tentativa vazia ou cancelada antes do tick 5.
 
 O bridge não é um segundo leque e não substitui o emissor matemático. Não remover as 36 gotas atuais até locator, condição de disparo, primeira/terceira pessoa e multiplayer provarem equivalência. O contrato detalhado está em [Contrato de VFX](VFX_DESIGN_CONTRACT.md).
+
+O turíbulo usa uma arquitetura de apresentação distinta: um fio de repouso confirma atividade, o uso emite um rastro por `0,74 s` e dois eventos criam seis partículas residuais de longa duração. Não existe emissor script-side, pois nenhuma fumaça autoriza gameplay. O locator se move com o vaso; posição, rotação e velocidade das partículas já criadas não permanecem locais, evitando que a fumaça volte junto com a corrente.
 
 ## Bloco
 

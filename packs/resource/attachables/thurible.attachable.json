@@ -1,0 +1,49 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:attachable": {
+    "description": {
+      "identifier": "aspergillum:thurible",
+      "item": {
+        "aspergillum:thurible": "q.is_owner_identifier_any('minecraft:player')"
+      },
+      "materials": {
+        "default": "entity"
+      },
+      "textures": {
+        "default": "textures/entity/thurible"
+      },
+      "geometry": {
+        "default": "geometry.aspergillum.thurible.held"
+      },
+      "particle_effects": {
+        "idle_smoke": "aspergillum:thurible_idle_smoke",
+        "action_smoke": "aspergillum:thurible_action_smoke"
+      },
+      "sound_effects": {
+        "chain_swing": "aspergillum.thurible.swing"
+      },
+      "animations": {
+        "hold_first_person": "animation.thurible.hold_first_person",
+        "hold_third_person": "animation.thurible.hold_third_person",
+        "idle_clock": "animation.thurible.idle_clock",
+        "carry_sway_a": "animation.thurible.carry_sway.a",
+        "carry_sway_b": "animation.thurible.carry_sway.b",
+        "incense_first_person": "animation.thurible.action.incense.first_person",
+        "incense_third_person": "animation.thurible.action.incense.third_person",
+        "action_controller": "controller.animation.thurible.action"
+      },
+      "scripts": {
+        "animate": [
+          {
+            "hold_first_person": "context.is_first_person == 1.0"
+          },
+          {
+            "hold_third_person": "context.is_first_person == 0.0"
+          },
+          "action_controller"
+        ]
+      },
+      "render_controllers": ["controller.render.thurible.held"]
+    }
+  }
+}

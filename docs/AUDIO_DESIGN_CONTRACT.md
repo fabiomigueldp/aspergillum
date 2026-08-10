@@ -12,6 +12,7 @@ A auditoria forense que fundamentou a migração está em [AUDIO_SFX_TECHNICAL_R
 | --- | --- | --- |
 | Privado do ator | `dry`, `load.prepare`, `sprinkle.prepare` | `Player.playSound`; somente o jogador executor |
 | Espacial do mundo | `aspersorium.fill`, `load.commit.1..4`, `dock.mechanical`, `dock.water.1..4`, `undock`, `sprinkle.release` | `Dimension.playSound` no centro acústico do vaso ou no frame físico do release |
+| Cerimonial apresentacional | `thurible.swing` | timeline do attachable na transferência de peso; audível ao redor do jogador |
 
 Regras obrigatórias:
 
@@ -19,13 +20,15 @@ Regras obrigatórias:
 - release sonoro ocorre somente depois do commit da carga no tick 5;
 - fill/load/dock/undock soam somente após sua escrita transacional válida;
 - tentativa cancelada antes do release produz zero release;
-- timeline do attachable não contém `sound_effects` nem `particle_effects` transacionais;
+- timeline do attachable não contém `sound_effects` nem `particle_effects` transacionais; o cue não transacional do turíbulo é a exceção explícita;
 - o release compartilha uma única origem/direção com bridge e primeiro pulso;
 - toda chamada é fail-soft, com warning estruturado e sem rollback do gameplay já confirmado.
 
 ## Catálogo e variação
 
-O catálogo em `assets-src/audio/audio-catalog.json` declara 15 famílias e 48 variantes. O runtime toca eventos explícitos `.vNN`; uma shuffle bag por jogador e família consome todas as variantes antes de repetir e impede repetição imediata na fronteira entre ciclos.
+O catálogo em `assets-src/audio/audio-catalog.json` declara 16 famílias sobre 48 clips únicos. As 15 famílias transacionais tocam eventos explícitos `.vNN`; uma shuffle bag por jogador e família consome todas as variantes antes de repetir e impede repetição imediata na fronteira entre ciclos.
+
+`aspergillum.thurible.swing` reutiliza os três foleys metálicos de `dock.mechanical` em volume `0,28`, alcance `10` e categoria `player`. O alias separado permite substituir futuramente a mídia por gravações dedicadas de corrente sem alterar animação, item ou identificador público. A timeline escolhe uma das três entradas pelo alias canônico; não existe novo arquivo de áudio nem nova declaração de licença na v1.2.0.
 
 Os aliases canônicos também permanecem em `sound_definitions.json` para inspeção e ferramentas, mas o adaptador usa os eventos explícitos para garantir o contrato de não repetição.
 
@@ -37,6 +40,7 @@ Os aliases canônicos também permanecem em `sound_definitions.json` para inspe�
 - eventos de preparação são íntimos e baixos;
 - commits crescem semanticamente de 1 a 4 unidades;
 - release é direcional e legível, sem soar como balde, oceano ou magia;
+- o turíbulo produz apenas um contato metálico curto por oscilação, abaixo da presença visual da fumaça e sem sino, explosão ou cue mágico;
 - alcances máximos e volumes ficam no catálogo, não espalhados pela application layer.
 
 ## Pipeline reprodutível
@@ -69,6 +73,7 @@ A chave de API e o workspace operacional local nunca entram no Git nem no `.mcad
 - preparação privada inaudível para observador remoto;
 - sem repetição imediata enquanto a família possui mais de uma variante;
 - sem clipping, distorção, caudas cortadas ou desequilíbrio severo entre FP/TP;
+- 50 usos do turíbulo localmente e diante de observador remoto: exatamente um cue discreto por ação, sem duplicação entre perspectivas;
 - Content Log sem erro ou warning atribuível a arquivo/evento de áudio.
 
 O aceite auditivo exige escuta no jogo. Métricas e prompts reduzem risco, mas não substituem direção sonora humana.

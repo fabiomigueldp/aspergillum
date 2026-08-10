@@ -1,4 +1,5 @@
 export const ASPERGILLUM_ITEM = "aspergillum:aspergillum";
+export const THURIBLE_ITEM = "aspergillum:thurible";
 export const ASPERSORIUM_BLOCK = "aspergillum:aspersorium";
 export const SACRISTAN_TABLE_BLOCK = "aspergillum:sacristan_table";
 export const CHARGES_PROPERTY = "aspergillum:charges";
@@ -17,6 +18,7 @@ export const TABLE_ROTATION_STATE = "aspergillum:table_rotation";
 export const ASPERSORIUM_COMPONENT = "aspergillum:aspersorium_interaction";
 export const SACRISTAN_TABLE_COMPONENT = "aspergillum:sacristan_table_interaction";
 export const ASPERGILLUM_COMPONENT = "aspergillum:aspergillum_use";
+export const THURIBLE_COMPONENT = "aspergillum:thurible_use";
 export const DROPLET_PARTICLE = "aspergillum:holy_water_droplet";
 export const RELEASE_BRIDGE_PARTICLE = "aspergillum:holy_water_release";
 export const MICRO_SPLASH_PARTICLE = "aspergillum:holy_water_micro_splash";

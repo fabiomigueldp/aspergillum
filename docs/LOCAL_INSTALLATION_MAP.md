@@ -1,6 +1,6 @@
 # Mapa da instalação local
 
-Mapa gerado por `tools/sync-installed-addon.mjs` em **2026-08-08T02:19:51.739Z**.
+Mapa gerado por `tools/sync-installed-addon.mjs` em **2026-08-10T08:18:42.695Z**.
 A sincronização usa diretamente `packs/`, substitui os diretórios locais e atualiza os vínculos do mundo selecionado.
 
 ## Instalação do Minecraft
@@ -32,21 +32,21 @@ Mundo sincronizado nesta execução: `devtest` (1 alvo(s)).
 
 ## Aspergillum instalado
 
-- Rótulo: `1.1.6`;
-- Versão numérica dos manifests: `[1, 1, 6]`;
-- Artefato: `C:\Users\fabio\Projects\aspergillum\dist\releases\Aspergillum-1.1.6.mcaddon`;
-- SHA-256: `728014e1c382ad55ebaabc34886a7b2de4551a512b1239766b9300973d20ef93`.
+- Rótulo: `1.2.2`;
+- Versão numérica dos manifests: `[1, 2, 2]`;
+- Artefato: `C:\Users\fabio\Projects\aspergillum\dist\releases\Aspergillum-1.2.2.mcaddon`;
+- SHA-256: `aca1ab5c3b7625c0572df42d3047c5e241d958e2d8d47cdc28610874b0785604`.
 
 | Pack | UUID | Arquivos | Bytes | Caminho compartilhado |
 | --- | --- | ---: | ---: | --- |
-| Behavior | bac9f8bc-71f5-4db7-a0ff-3c5a365749b4 | 25 | 151321 | `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang\behavior_packs\pack.asper` |
-| Resource | fdb8a79c-8f77-4831-9a5c-8e2b8ecca29e | 197 | 3811565 | `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang\resource_packs\pack.asper` |
+| Behavior | bac9f8bc-71f5-4db7-a0ff-3c5a365749b4 | 27 | 154682 | `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang\behavior_packs\pack.asper` |
+| Resource | fdb8a79c-8f77-4831-9a5c-8e2b8ecca29e | 213 | 3924984 | `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang\resource_packs\pack.asper` |
 
 ## Mundo sincronizado
 
 Nome: **devtest**
 Pasta: `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\8414181078248597151\games\com.mojang\minecraftWorlds\RYdEhTaa5t8=`
-Snapshot: 237 arquivos, 36 diretórios; o tamanho varia com o LevelDB.
+Snapshot: 254 arquivos, 36 diretórios; o tamanho varia com o LevelDB.
 
 ```text
 RYdEhTaa5t8=
@@ -62,7 +62,7 @@ RYdEhTaa5t8=
 └── world_resource_pack_history.json
 ```
 
-Os vínculos ativos e históricos de `devtest` apontam para `[1, 1, 6]`.
+Os vínculos ativos e históricos de `devtest` apontam para `[1, 2, 2]`.
 
 ## Mundos do perfil
 
@@ -83,7 +83,7 @@ Os vínculos ativos e históricos de `devtest` apontam para `[1, 1, 6]`.
 | L+1naPlwfQI= | My World | 1.0.30 | 1.0.30 | 1.0.30 | 1.0.30 | não |
 | LAKg42VxeJ8= | My World | 1.0.14 | 1.0.14 | 1.0.14 | 1.0.14 | não |
 | Rk1N0Z9IRbU= | My World | — | — | — | — | não |
-| RYdEhTaa5t8= | devtest | 1.1.6 (1.1.6) | 1.1.6 (1.1.6) | 1.1.6 (1.1.6) | 1.1.6 (1.1.6) | sim |
+| RYdEhTaa5t8= | devtest | 1.2.2 (1.2.2) | 1.2.2 (1.2.2) | 1.2.2 (1.2.2) | 1.2.2 (1.2.2) | sim |
 | vz5XjjBKc8k= | Small Medieval Church 1.0.4 (imported) | 1.0.2 | — | — | — | não |
 | XF60MIBp-Qg= | My World | 1.0.5 | 1.0.5 | 1.0.5 | 1.0.5 | não |
 | y01GRv4EOxU= | My World | 1.0.13 | 1.0.13 | 1.0.13 | 1.0.13 | não |
@@ -107,6 +107,7 @@ behavior_packs\pack.asper\items\aspergillum_gilded_oxblood.item.json
 behavior_packs\pack.asper\items\aspergillum_silver_black.item.json
 behavior_packs\pack.asper\items\aspergillum_silver_oxblood.item.json
 behavior_packs\pack.asper\items\aspergillum.item.json
+behavior_packs\pack.asper\items\thurible.item.json
 behavior_packs\pack.asper\loot_tables\blocks\aspersorium_docked.loot.json
 behavior_packs\pack.asper\loot_tables\blocks\aspersorium.loot.json
 behavior_packs\pack.asper\loot_tables\blocks\sacristan_table_occupied.loot.json
@@ -116,6 +117,7 @@ behavior_packs\pack.asper\pack_icon.png
 behavior_packs\pack.asper\recipes\aspergillum.recipe.json
 behavior_packs\pack.asper\recipes\aspersorium.recipe.json
 behavior_packs\pack.asper\recipes\sacristan_table.recipe.json
+behavior_packs\pack.asper\recipes\thurible.recipe.json
 behavior_packs\pack.asper\scripts\main.js
 behavior_packs\pack.asper\texts\en_US.lang
 behavior_packs\pack.asper\texts\languages.json
@@ -126,8 +128,11 @@ behavior_packs\pack.asper\texts\pt_BR.lang
 
 ```text
 resource_packs\pack.asper\animation_controllers\aspergillum.animation_controllers.json
+resource_packs\pack.asper\animation_controllers\thurible.animation_controllers.json
 resource_packs\pack.asper\animations\aspergillum.action.animation.json
 resource_packs\pack.asper\animations\aspergillum.hold.animation.json
+resource_packs\pack.asper\animations\thurible.action.animation.json
+resource_packs\pack.asper\animations\thurible.hold.animation.json
 resource_packs\pack.asper\attachables\aspergillum_antique_black.attachable.json
 resource_packs\pack.asper\attachables\aspergillum_antique_chestnut.attachable.json
 resource_packs\pack.asper\attachables\aspergillum_antique_oxblood.attachable.json
@@ -137,6 +142,7 @@ resource_packs\pack.asper\attachables\aspergillum_gilded_oxblood.attachable.json
 resource_packs\pack.asper\attachables\aspergillum_silver_black.attachable.json
 resource_packs\pack.asper\attachables\aspergillum_silver_oxblood.attachable.json
 resource_packs\pack.asper\attachables\aspergillum.attachable.json
+resource_packs\pack.asper\attachables\thurible.attachable.json
 resource_packs\pack.asper\blocks.json
 resource_packs\pack.asper\manifest.json
 resource_packs\pack.asper\models\blocks\aspersorium.geo.json
@@ -144,11 +150,16 @@ resource_packs\pack.asper\models\blocks\aspersorium.rotations.geo.json
 resource_packs\pack.asper\models\blocks\sacristan_table.geo.json
 resource_packs\pack.asper\models\blocks\sacristan_table.rotations.geo.json
 resource_packs\pack.asper\models\entity\aspergillum.geo.json
+resource_packs\pack.asper\models\entity\thurible.geo.json
 resource_packs\pack.asper\pack_icon.png
 resource_packs\pack.asper\particles\holy_water_droplet.particle.json
 resource_packs\pack.asper\particles\holy_water_micro_splash.particle.json
 resource_packs\pack.asper\particles\holy_water_release.particle.json
+resource_packs\pack.asper\particles\thurible_action_smoke.particle.json
+resource_packs\pack.asper\particles\thurible_idle_smoke.particle.json
+resource_packs\pack.asper\particles\thurible_residual_smoke.particle.json
 resource_packs\pack.asper\render_controllers\aspergillum.render_controllers.json
+resource_packs\pack.asper\render_controllers\thurible.render_controllers.json
 resource_packs\pack.asper\sounds\aspergillum\aspersorium\fill_01.ogg
 resource_packs\pack.asper\sounds\aspergillum\aspersorium\fill_02.ogg
 resource_packs\pack.asper\sounds\aspergillum\aspersorium\fill_03.ogg
@@ -310,6 +321,10 @@ resource_packs\pack.asper\textures\entity\aspergillum_silver_oxblood.png
 resource_packs\pack.asper\textures\entity\aspergillum_silver_oxblood.texture_set.json
 resource_packs\pack.asper\textures\entity\aspergillum.png
 resource_packs\pack.asper\textures\entity\aspergillum.texture_set.json
+resource_packs\pack.asper\textures\entity\thurible_mer.png
+resource_packs\pack.asper\textures\entity\thurible_normal.png
+resource_packs\pack.asper\textures\entity\thurible.png
+resource_packs\pack.asper\textures\entity\thurible.texture_set.json
 resource_packs\pack.asper\textures\item_texture.json
 resource_packs\pack.asper\textures\items\aspergillum_antique_black.png
 resource_packs\pack.asper\textures\items\aspergillum_antique_chestnut.png
@@ -320,7 +335,10 @@ resource_packs\pack.asper\textures\items\aspergillum_gilded_oxblood.png
 resource_packs\pack.asper\textures\items\aspergillum_silver_black.png
 resource_packs\pack.asper\textures\items\aspergillum_silver_oxblood.png
 resource_packs\pack.asper\textures\items\aspergillum.png
+resource_packs\pack.asper\textures\items\thurible.png
 resource_packs\pack.asper\textures\particle\holy_water.png
+resource_packs\pack.asper\textures\particle\incense_smoke.png
+resource_packs\pack.asper\textures\particle\incense_veil.png
 resource_packs\pack.asper\textures\terrain_texture.json
 ```
 
@@ -330,24 +348,9 @@ resource_packs\pack.asper\textures\terrain_texture.json
 C:\Users\fabio\Projects\aspergillum
 ├── packs\behavior
 ├── packs\resource
-├── dist\releases\Aspergillum-1.1.6.mcaddon
-├── dist\validation\1.1.6
+├── dist\releases\Aspergillum-1.2.2.mcaddon
+├── dist\validation\1.2.2
 └── docs\LOCAL_INSTALLATION_MAP.md
 ```
 
 O diretório `db` é binário e volátil; a presença do add-on é determinada pelos manifests, referências de mundo e cópias dos packs.
-<!-- diagnostic-installation:start -->
-
-## Variante diagnóstica instalada: 1.1.7b
-
-- Artefato: `C:\Users\fabio\Projects\aspergillum\dist\releases\Aspergillum-1.1.7b.mcaddon`
-- SHA-256: `269fa81aec8cbf5035a3dac89aa8c3251b5f4eeabd8ce975ac157b41bdd17932`
-- Versão dos manifests: `[1, 1, 8]`
-- Behavior UUID: `7f815bee-7516-528a-aaa2-8d873c10ba88`
-- Resource UUID: `be858629-a2ac-5aa8-93d8-e7382532aabd`
-- Instalação compartilhada: `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang`
-- Mundo atualizado: **devtest** (`RYdEhTaa5t8=`)
-- Perfil: `8414181078248597151`
-- Variante anterior removida das referências ativas; somente este par diagnóstico permanece ativo.
-
-<!-- diagnostic-installation:end -->

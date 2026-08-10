@@ -1,0 +1,33 @@
+{
+  "format_version": "1.26.30",
+  "minecraft:item": {
+    "description": {
+      "identifier": "aspergillum:thurible",
+      "menu_category": {
+        "category": "equipment",
+        "group": "minecraft:itemGroup.name.tools"
+      }
+    },
+    "components": {
+      "minecraft:display_name": {
+        "value": "item.aspergillum:thurible.name"
+      },
+      "minecraft:icon": {
+        "textures": {
+          "default": "thurible"
+        }
+      },
+      "minecraft:max_stack_size": 1,
+      "minecraft:hand_equipped": true,
+      "minecraft:allow_off_hand": false,
+      "minecraft:can_destroy_in_creative": false,
+      "minecraft:interact_button": "action.interact.thurible.incense",
+      "minecraft:cooldown": {
+        "category": "thurible_incense",
+        "duration": 1.05,
+        "type": "use"
+      },
+      "aspergillum:thurible_use": {}
+    }
+  }
+}

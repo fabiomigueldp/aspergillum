@@ -145,6 +145,14 @@ Fechar o formulário não retira o item nem descarta a configuração já aplica
 
 Não existe transação de demonstração na v1.1.1. A única prévia é o próprio item acomodado, atualizado pela mesma escrita revalidada de perfil/cosmético; nenhuma ação paralela cria `SprinkleSession`, inicia `ActionLease` ou altera água/cooldown.
 
+## Turíbulo sem estado persistente
+
+`aspergillum:thurible` não participa do schema do aspersório, do `DockedItemRegistry`, de `ActionLease`, de cargas ou de água. O ItemStack não recebe dynamic properties, lore de estado, snapshot ou sentinel de infinitude.
+
+O único dado em memória é `lastIncenseTick[playerId]`, usado por `src/application/incense.ts` para deduplicar `onUse`/`onUseOn` durante os mesmos 21 ticks do cooldown nativo. O mapa guarda apenas um número por jogador, é limpo em saída, morte, respawn ou troca de dimensão e não é fonte de autorização persistente. Item equipado, modo e cooldown são revalidados a cada tentativa. Trocar de slot não apaga o gate e, portanto, não permite reiniciar a ação por switch rápido.
+
+Fumaça, som e animação não entram numa transação: não há estado de mundo a confirmar ou reverter. Falha de apresentação é fail-soft; ataque/mineração são cancelados separadamente nos before-events e não disparam incensação.
+
 ## Schema 3 implementado
 
 | Entrada | Migração |

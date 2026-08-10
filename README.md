@@ -1,13 +1,13 @@
 # Aspergillum
 
-Add-On para Minecraft: Bedrock Edition 26.40 que adiciona um **aspersório litúrgico funcional**, uma **caldeirinha (aspersorium)** e uma **Mesa do Sacristão** para configuração gratuita. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
+Add-On para Minecraft: Bedrock Edition 26.40 que adiciona um **aspersório litúrgico funcional**, uma **caldeirinha (aspersorium)**, uma **Mesa do Sacristão** para configuração gratuita e um **turíbulo cerimonial** com movimento pendular e fumaça residual. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão 1.1.7 RC:** preserva a cabeça simples de seis volumes e separa a estrutura opaca da água translúcida na caldeirinha. O perfil foi aprovado em jogo após a matriz diagnóstica 1.1.7a/b/c e estabiliza topo, base e laterais da composição acomodada.
+> **Versão 1.2.2 RC:** reforça substancialmente a presença cinematográfica do incenso, preservando as poses corrigidas da 1.2.1 e todo o gameplay. A v1.1.7 permanece a baseline aprovada do aspersório e da caldeirinha.
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/releases/Aspergillum-1.1.7.mcaddon`](dist/releases/Aspergillum-1.1.7.mcaddon) com o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.2.2.mcaddon`](dist/releases/Aspergillum-1.2.2.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
@@ -18,6 +18,8 @@ O alvo mínimo é Creator `1.26.40`, correspondente ao Bedrock 26.40. Os módulo
 - Fabrique o **Aspersório** com gravetos e pepitas de ferro.
 - Fabrique a **Caldeirinha** com lingotes de ferro e uma corrente, e coloque-a sobre uma superfície.
 - Fabrique a **Mesa do Sacristão** com carvalho escuro, carpete verde e uma pepita de ferro. A receita cria somente a estação; personalizar nunca consome materiais.
+- Fabrique o **Turíbulo** com três correntes, três lingotes de cobre e uma pepita de ouro. Ele já está pronto para o uso: não requer carvão, incenso, recarga ou manutenção.
+- Com o turíbulo na mão, use **Incensar** no ar ou apontando para um bloco. Cada uso produz uma oscilação controlada; o rastro se desprende do vaso e deixa um véu leve no espaço por alguns segundos. Ataque e mineração não causam dano ou quebra.
 - Use um balde d'água na caldeirinha para enchê-la com dezesseis unidades, representadas em quatro quartos visuais.
 - Com o aspersório na mão, use-o na caldeirinha para carregar até quatro aspersões. Uma caldeirinha cheia fornece quatro carregamentos completos; o gesto conduz o braço para baixo e para a frente, com transferência autoritativa no tick 10.
 - Use a ação **Atacar/Minar** para aspergir. O gesto não causa dano nem quebra blocos.
@@ -47,7 +49,7 @@ As cargas permanecem finitas e persistentes. Ao acomodar, a transferência satur
 - leque anisotrópico: abertura horizontal máxima aproximada de `14,5°`, vertical máxima inferior a `5,2°`, sem halo circular;
 - gotas com billboard `rotate_xyz` e envelope `0.042 × 0.100`, restaurando a legibilidade aprovada em qualquer ângulo sem alterar velocidade, gravidade, arrasto ou alcance;
 - micro-splash cosmético discreto no contato e áudio semanticamente separado entre pistas privadas do ator e eventos espaciais do mundo;
-- 15 famílias e 48 variantes próprias em OGG Vorbis mono/48 kHz, selecionadas por shuffle bag sem repetição imediata; commits de fill/load/dock/undock/release só soam após a mutação correspondente ter sido validada;
+- 16 famílias semânticas e 48 clips próprios em OGG Vorbis mono/48 kHz; o turíbulo reutiliza três foleys metálicos em um alias mais baixo, enquanto commits de fill/load/dock/undock/release só soam após a mutação correspondente ter sido validada;
 - arquitetura híbrida deliberada: o servidor compartilha um único frame de release entre áudio, bridge e primeiro pulso, enquanto o script conserva o leque controlável; não há duplicação pela timeline nem emissão em tentativa vazia;
 - material opaco `entity`, textura com alfa integral, cubos com espessura positiva e UVs per-face explícitos somente nas superfícies renderizadas, sempre com footprint inteiro mínimo de um texel;
 - atlas `128 × 128` gerado da fonte semântica `assets-src/models/aspergillum.model.json`, com superfícies coerentes de couro, prata, ouro e prata perfurada, padding dilatado de dois texels e mapas color/normal/MER derivados do mesmo layout;
@@ -55,7 +57,9 @@ As cargas permanecem finitas e persistentes. Ao acomodar, a transferência satur
 - mesa de madeira escura com tampo de veludo verde, ferragens discretas e réplica derivada da mesma malha/texturas do item; nove materiais acompanham o acabamento selecionado;
 - rotação visual em 16 direções por estado próprio e geometrias estáveis, sem traits de rotação experimentais;
 - texturas convencionais como fallback e texture sets PBR para Vibrant Visuals;
-- localização `pt_BR` e `en_US`.
+- localização `pt_BR` e `en_US`;
+- turíbulo com raiz vinculada neutra, prato superior como pivô, três correntes de suspensão, corrente central da tampa, vaso contrapesado e locator `thurible_smoke`;
+- animação determinística de pêndulo por perspectiva e fumaça em três camadas world-space — fio de repouso, rastro de uso e véu residual — sem nuvem de chão ou efeito de estado.
 
 ## Desenvolvimento
 
@@ -81,7 +85,7 @@ Comandos importantes:
 | `npm run package` | Cria e valida oficialmente o `.mcaddon` |
 | `npm run clean` | Remove somente artefatos gerados conhecidos |
 
-O modelo autoral fica em [`assets-src/models/aspergillum.model.json`](assets-src/models/aspergillum.model.json). [`tools/generate-assets.mjs`](tools/generate-assets.mjs) remove metadados de produção, respeita as máscaras autorais, empacota apenas as faces visíveis, gera a geometria Bedrock distribuída e pinta deterministicamente color/normal/MER. A referência visual em [`assets-src/concept-art/aspergillum-concept.png`](assets-src/concept-art/aspergillum-concept.png) orienta proporções e materiais, mas não é distribuída no add-on.
+Os modelos autorais ficam em [`assets-src/models/aspergillum.model.json`](assets-src/models/aspergillum.model.json) e [`assets-src/models/thurible.model.json`](assets-src/models/thurible.model.json). [`tools/generate-assets.mjs`](tools/generate-assets.mjs) remove metadados de produção, respeita as máscaras autorais, empacota apenas as faces visíveis, gera as geometrias Bedrock distribuídas e pinta deterministicamente color/normal/MER, ícones e o flipbook de fumaça. A referência visual em [`assets-src/concept-art/aspergillum-concept.png`](assets-src/concept-art/aspergillum-concept.png) orienta proporções do aspersório, mas não é distribuída no add-on.
 
 Os SFX desta RC foram gerados com ElevenLabs no plano gratuito e, portanto, são **somente para validação não comercial e com atribuição**. Generated with ElevenLabs. Uma publicação comercial exige regenerar as fontes numa assinatura paga e substituir a proveniência antes do gate de release; veja [Contrato de áudio](docs/AUDIO_DESIGN_CONTRACT.md).
 
@@ -91,7 +95,7 @@ Os SFX desta RC foram gerados com ElevenLabs no plano gratuito e, portanto, são
 packs/behavior/       Behavior Pack e JavaScript compilado
 packs/resource/       Resource Pack, modelos, animações e partículas
 src/domain/           regras puras e testáveis
-src/application/      casos de uso de carga e aspersão
+src/application/      casos de uso de carga, aspersão, personalização e incensação
 src/infrastructure/   adaptação para inventário, estados e feedback Bedrock
 src/bootstrap/        registro único de componentes e eventos
 tests/                testes unitários sem dependência do jogo

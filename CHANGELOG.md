@@ -1,5 +1,36 @@
 # Changelog
 
+## 1.2.2 — 2026-08-10
+
+- redesenhada a fumaça do turíbulo após o gate físico reprovar sua presença cinematográfica: o rastro passa de `11/s` por `0,74 s` para `22/s` por `0,86 s`, com maior cobertura, contraste e vida de `4,8–6,8 s`;
+- ampliado o véu residual de dois grupos de três para três grupos de seis partículas, com deriva ascendente, expansão até aproximadamente um bloco e dissipação de `8–11 s`, preservando memória visual sobre altar e presbitério;
+- fortalecido o fio de repouso para duas partículas por ciclo, ainda subordinado ao gesto e sem formar aura contínua;
+- separado o sprite do rastro de um novo atlas autoral `incense_veil` de oito quadros em `256×32`, permitindo massas largas e difusas sem pixelar o núcleo junto ao vaso;
+- rastro e véu adotam paleta cinza quente camera-readable independente da iluminação local; o repouso conserva lighting ambiental, sem brilho, fogo, magia ou efeito de gameplay;
+- adicionados limites estruturais para densidade, persistência, flipbooks e política de iluminação; promovidas as revisões dos packs para `[1,2,2]`.
+
+## 1.2.1 — 2026-08-10
+
+- corrigido o schema do animation controller do turíbulo: `bind_to_actor` foi removido dos efeitos de estado, onde o runtime o rejeitava; o vínculo implícito mantém o emissor no locator enquanto cada partícula continua em world-space;
+- invertida a apresentação de terceira pessoa em torno do grip, fazendo correntes e vaso penderem abaixo da mão em vez de subirem até o rosto;
+- reduzida para `0,68` e rebaixada a apresentação de primeira pessoa, mantendo argola, correntes e vaso dentro do quadro e fora da mira/plano próximo;
+- adicionadas validações regressivas para proibir `bind_to_actor` em estados do controller e congelar as novas poses FP/TP;
+- mantida conscientemente a exceção conhecida de `MaterialInstances` da caldeirinha 1.1.7, sem alteração de materiais, geometria ou renderização do bloco;
+- promovidas as revisões dos dois packs para `[1,2,1]`, sem alterar IDs, UUIDs, gameplay, receita, densidade da fumaça ou contratos do aspersório.
+
+## 1.2.0 — 2026-08-10
+
+- adicionado `aspergillum:thurible`, um turíbulo cerimonial sempre pronto para uso, sem naveta, combustível, carvão, inventário, durabilidade, cargas, efeitos de estado ou interação de gameplay com o mundo;
+- implementados input estável por **Usar/Incensar** no ar e sobre blocos, deduplicação transitória, cooldown visual de `1,05 s`, negação em Espectador e cancelamento de dano/mineração;
+- criada geometria autoral `1.16.0` com raiz vinculada neutra, argola, prato superior, três correntes de suspensão, corrente central da tampa, tampa perfurada, vaso contrapesado e locator `thurible_smoke`;
+- adicionada coreografia determinística por perspectiva: impulso aditivo do braço, pêndulo da suspensão, atraso reduzido do vaso, folga mínima da tampa, repouso sutil e retorno exato a zero;
+- introduzida fumaça em três camadas — fio de repouso, rastro de `0,74 s` e dois véus residuais — usando flipbook autoral de oito quadros, baixa opacidade e partículas world-space sem colisão, nuvem de chão ou área de efeito;
+- gerados deterministicamente ícone, atlas color/normal/MER 4× e textura de fumaça a partir de `assets-src/models/thurible.model.json` e `tools/generate-assets.mjs`;
+- adicionada receita com correntes, cobre e pepita de ouro, localização `pt_BR`/`en_US`, entrada no kit de desenvolvimento e documentação de construção/uso;
+- criado o alias `aspergillum.thurible.swing`, que reutiliza três foleys metálicos existentes em volume reduzido; o catálogo passa a 16 famílias sobre os mesmos 48 clips únicos;
+- preservados integralmente IDs, UUIDs, block states, economia, persistência, binding, poses, animações, VFX, áudio e perfil material já aprovados do aspersório e da caldeirinha;
+- versão de pacote promovida para `[1,2,0]`; pose, peso, fumaça e mix do novo item aguardam o gate físico documentado no Minecraft.
+
 ## 1.1.7 — 2026-08-08
 
 - promovida a composição fisicamente aprovada na diagnóstica 1.1.7b: estrutura da caldeirinha e aspersório acomodado usam `opaque`, enquanto somente a água preserva `blend` e translucidez;

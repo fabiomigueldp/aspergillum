@@ -2,13 +2,13 @@
 
 ## Identidade
 
-- Release Candidate: `1.1.7`.
-- Revisão dos packs: `[1, 1, 10]`.
+- Release Candidate: `1.2.2`.
+- Revisão dos packs: `[1, 2, 2]`.
 - Baseline funcional herdada: `1.0.20`, validada pelo usuário.
 - Experimentos: nenhum.
 - Autoridade: servidor para estado; cliente somente para apresentação.
 
-Esta revisão preserva binding, grip, envelope físico, poses, animações, steering, partículas, áudio, docking parcial e a cabeça simples da v1.1.6. Na caldeirinha, estrutura e aspersório acomodado usam `opaque`; somente a água usa `blend`, conforme a composição B aprovada na matriz física 1.1.7a/b/c.
+Esta revisão preserva binding, grip, poses 1.2.1, envelope físico, steering, áudio, docking parcial e o perfil material aprovado da v1.1.7. Sobre a 1.2.1, redesenha somente densidade, cobertura, sprites e persistência da fumaça do turíbulo; não altera gameplay, geometria ou animação.
 
 ## Preflight automatizado
 
@@ -25,7 +25,7 @@ O gate falha quando versões divergem, catálogos `pt_BR`/`en_US` deixam de ser 
 
 1. Registrar o SHA-256 do artefato.
 2. Fechar o Minecraft e remover os dois packs antigos em Armazenamento.
-3. Importar somente `Aspergillum-1.1.7.mcaddon`.
+3. Importar somente `Aspergillum-1.2.2.mcaddon`.
 4. Criar ou duplicar um mundo de teste sem experimentos.
 5. Limpar o Content Log antes de entrar.
 6. Executar `/function aspergillum/dev_kit`.
@@ -39,7 +39,7 @@ O gate falha quando versões divergem, catálogos `pt_BR`/`en_US` deixam de ser 
 | Aspergir | animação e 36 gotas preservadas, carga/cooldown corretos |
 | Órbita visual | item e composição acomodada correspondem; água permanece translúcida, estrutura opaca e os degraus superiores/inferiores permanecem contínuos até junto ao plano próximo |
 | Vazio | clique seco privado e mensagem localizada; nenhuma água ou release |
-| Áudio | 15 famílias/48 variantes legíveis, sem duplicação, com prepare privado e commits espaciais |
+| Áudio | 16 famílias/48 clips únicos legíveis, sem duplicação, com prepare privado, commits espaciais e cue discreto do turíbulo |
 | Acomodar | agachar + usar funciona uma vez; `12+4→16+0`, `14+4→16+2` e `16+4→16+4` conservam o total |
 | Retirar | mão vazia devolve exatamente o item, inclusive cargas restantes do snapshot V2 |
 | Quebrar/reload | snapshot não duplica nem desaparece |
@@ -48,6 +48,8 @@ O gate falha quando versões divergem, catálogos `pt_BR`/`en_US` deixam de ser 
 | UI | cinco espaçadores, somente um divisor final, três perfis, 3×3 acabamentos, restauração, conclusão e **Fechar** localizados e legíveis |
 | Custo zero | edição não altera carga, água, item, XP ou cooldown real |
 | Concorrência | somente um editor por mesa; fechar, concluir, quebrar, morrer, sair ou trocar dimensão liberam a sessão |
+| Turíbulo | uso no ar/sobre bloco executa um arco; vaso pendente não clipa; rastro nasce na tampa e partículas ficam no espaço; ataque/mineração são inofensivos |
+| Fumaça residual | repouso discreto, duas/três ações adensam sem formar disco no chão ou ocultar rosto/altar; observador remoto vê uma emissão por gesto |
 | Compatibilidade | mundo/item 1.0.20 assumem aparência clássica e continuam carregando, aspergindo e acomodando sem perda |
 
 ## Desempenho

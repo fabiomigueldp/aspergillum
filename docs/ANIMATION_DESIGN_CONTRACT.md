@@ -4,6 +4,8 @@
 
 A aspersão deve ser uma frase visual única — antecipação, condução, flick, release, follow-through e settle — sem lutar contra o swing iniciado pelo motor. Este contrato protege a v1.0.15d, aprovada fisicamente pelo usuário, e a composição camera-safe de carregamento concluída na v1.0.18c.
 
+O pêndulo do turíbulo 1.2.1 é uma coreografia independente, acionada por Use e sem swing vanilla. Seus bones, amplitudes, poses corrigidas e gates estão em [Contrato do turíbulo](THURIBLE_DESIGN_CONTRACT.md) e não autorizam alteração dos envelopes do aspersório descritos aqui.
+
 ## Carregamento camera-safe
 
 O carregamento é uma correção aditiva de `0,8 s` aplicada sobre o movimento de uso iniciado pelo motor. Ele obedece aos seguintes invariantes:
