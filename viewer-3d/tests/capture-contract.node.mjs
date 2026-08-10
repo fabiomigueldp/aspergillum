@@ -18,6 +18,9 @@ test('exposes all visual subjects used by the add-on', () => {
   ]);
   assert.equal(CAPTURE_SUBJECTS.docked.modelId, CAPTURE_SUBJECTS.aspersorium.modelId);
   assert.equal(CAPTURE_SUBJECTS.docked.docked, true);
+  assert.equal(CAPTURE_SUBJECTS.aspersorium.waterOverlayModelId, 'entity__aspersorium_water_visual');
+  assert.equal(CAPTURE_SUBJECTS.docked.waterOverlayModelId, 'entity__aspersorium_water_visual');
+  assert.equal(CAPTURE_SUBJECTS.aspergillum.waterOverlayModelId, undefined);
   assert.equal(CAPTURE_SUBJECTS['table-docked'].modelId, CAPTURE_SUBJECTS.table.modelId);
   assert.equal(CAPTURE_SUBJECTS['table-docked'].docked, true);
 });

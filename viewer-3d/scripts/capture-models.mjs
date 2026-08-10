@@ -8,11 +8,19 @@ import {
   CAPTURE_SUBJECTS,
   resolveCaptureViews,
 } from '../src/shared/capture-contract.js';
+import {
+  cosmeticLabel,
+  resolveCosmetics,
+} from '../src/shared/cosmetic-contract.js';
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const viewerDirectory = path.resolve(scriptDirectory, '..');
 const projectDirectory = path.resolve(viewerDirectory, '..');
 const packageInfo = JSON.parse(await readFile(path.join(projectDirectory, 'package.json'), 'utf8'));
+const customizationCatalog = JSON.parse(await readFile(
+  path.join(projectDirectory, 'assets-src', 'customization', 'catalog.json'),
+  'utf8',
+));
 
 const HELP = `
 Captura vistas reproduzíveis dos modelos Bedrock e gera pranchas compostas.
@@ -27,6 +35,7 @@ Opções:
   --size <px>         resolução quadrada de cada PNG, 256..2048 (padrão: 640)
   --columns <n>       colunas da prancha, 1..6 (padrão: 3)
   --material <modo>   pbr ou classic (padrão: pbr)
+  --cosmetic <id,...> acabamento(s) do catálogo ou all (padrão: classic)
   --water <nível>     empty, low, mid, high ou full (padrão: full)
   --pose <pose>       neutral, first ou third (padrão: neutral no aspersório)
   --action <estado>   idle ou sprinkle (padrão: idle)
@@ -57,6 +66,7 @@ function parseArgs(args) {
     size: 640,
     columns: 3,
     material: 'pbr',
+    cosmeticIds: ['classic'],
     water: 'full',
     pose: null,
     action: 'idle',
@@ -90,6 +100,12 @@ function parseArgs(args) {
     } else if (argument === '--material') {
       options.material = readValue(args, index, argument);
       index += 1;
+    } else if (argument === '--cosmetic') {
+      const value = readValue(args, index, argument);
+      options.cosmeticIds = value === 'all'
+        ? customizationCatalog.cosmetics.map(({ id }) => id)
+        : parseList(value);
+      index += 1;
     } else if (argument === '--water') {
       options.water = readValue(args, index, argument);
       index += 1;
@@ -116,6 +132,7 @@ function parseArgs(args) {
     throw new Error('--columns deve ser um inteiro entre 1 e 6.');
   }
   if (!['pbr', 'classic'].includes(options.material)) throw new Error('--material deve ser pbr ou classic.');
+  options.cosmetics = resolveCosmetics(customizationCatalog.cosmetics, options.cosmeticIds);
   if (!['empty', 'low', 'mid', 'high', 'full'].includes(options.water)) {
     throw new Error('--water deve ser empty, low, mid, high ou full.');
   }
@@ -185,9 +202,11 @@ async function createContactSheet(context, captures, metadata) {
   await page.close();
 }
 
-async function captureSubject(page, context, subjectId, options) {
+async function captureSubject(page, context, subjectId, cosmetic, options) {
   const subject = CAPTURE_SUBJECTS[subjectId];
-  const subjectDirectory = path.join(options.output, subjectId);
+  const subjectDirectory = options.cosmetics.length > 1
+    ? path.join(options.output, subjectId, cosmetic.id)
+    : path.join(options.output, subjectId);
   await mkdir(subjectDirectory, { recursive: true });
 
   const configuration = await page.evaluate((captureOptions) => (
@@ -195,6 +214,7 @@ async function captureSubject(page, context, subjectId, options) {
   ), {
     subject: subjectId,
     material: options.material,
+    cosmetic: cosmetic.id,
     water: options.water,
     pose: options.pose,
     action: options.action,
@@ -224,7 +244,7 @@ async function captureSubject(page, context, subjectId, options) {
   const contactSheet = path.join(subjectDirectory, 'contact-sheet.png');
   await createContactSheet(context, captures, {
     title: subject.label,
-    subtitle: `${configuration.geometry} · ${options.material.toUpperCase()} · ${options.views.length} vistas · pack ${packageInfo.aspergillum.releaseLabel}`,
+    subtitle: `${cosmeticLabel(cosmetic)} · ${options.material.toUpperCase()} · ${options.views.length} vistas · pack ${packageInfo.aspergillum.releaseLabel}`,
     columns: options.columns,
     displaySize: Math.min(options.size, 520),
     output: contactSheet,
@@ -232,11 +252,19 @@ async function captureSubject(page, context, subjectId, options) {
 
   return {
     ...configuration,
+    cosmetic: {
+      id: cosmetic.id,
+      label: cosmeticLabel(cosmetic),
+      metal: cosmetic.metal,
+      grip: cosmetic.grip,
+      index: cosmetic.index,
+    },
     captures: captures.map((capture) => ({
       ...capture,
       path: path.relative(options.output, capture.path).split(path.sep).join('/'),
     })),
     contactSheet: path.relative(options.output, contactSheet).split(path.sep).join('/'),
+    matrixCapture: captures.find(({ id }) => id === 'front-right') ?? captures[0],
   };
 }
 
@@ -277,13 +305,44 @@ async function main() {
 
     const subjects = [];
     for (const subjectId of options.subjects) {
-      process.stdout.write(`Capturando ${CAPTURE_SUBJECTS[subjectId].label}...\n`);
-      subjects.push(await captureSubject(page, context, subjectId, options));
+      const variants = [];
+      for (const cosmetic of options.cosmetics) {
+        process.stdout.write(`Capturando ${CAPTURE_SUBJECTS[subjectId].label} · ${cosmeticLabel(cosmetic)}...\n`);
+        variants.push(await captureSubject(page, context, subjectId, cosmetic, options));
+      }
+
+      let finishMatrix = null;
+      if (variants.length > 1) {
+        const matrixOutput = path.join(options.output, subjectId, 'finish-matrix.png');
+        await createContactSheet(
+          context,
+          variants.map((variant) => ({
+            ...variant.matrixCapture,
+            label: variant.cosmetic.label,
+          })),
+          {
+            title: `${CAPTURE_SUBJECTS[subjectId].label} · acabamentos`,
+            subtitle: `${options.material.toUpperCase()} · vista ${variants[0].matrixCapture.label} · pack ${packageInfo.aspergillum.releaseLabel}`,
+            columns: Math.min(4, options.columns),
+            displaySize: Math.min(options.size, 420),
+            output: matrixOutput,
+          },
+        );
+        finishMatrix = path.relative(options.output, matrixOutput).split(path.sep).join('/');
+      }
+
+      for (const variant of variants) delete variant.matrixCapture;
+      subjects.push({
+        id: subjectId,
+        label: CAPTURE_SUBJECTS[subjectId].label,
+        finishMatrix,
+        variants,
+      });
     }
     if (pageErrors.length) throw new Error(`Erros no browser:\n${pageErrors.join('\n')}`);
 
     const manifest = {
-      schemaVersion: 1,
+      schemaVersion: 2,
       generatedAt: new Date().toISOString(),
       source: 'packs/resource',
       pack: {
@@ -294,6 +353,7 @@ async function main() {
         size: options.size,
         columns: options.columns,
         material: options.material,
+        cosmetics: options.cosmetics.map(({ id }) => id),
         water: options.water,
         pose: options.pose ?? 'subject-default',
         action: options.action,

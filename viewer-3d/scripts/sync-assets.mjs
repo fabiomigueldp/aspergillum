@@ -1,6 +1,10 @@
 import { cp, mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  cosmeticLabel,
+  cosmeticTextureSuffix,
+} from '../src/shared/cosmetic-contract.js';
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const viewerDirectory = path.resolve(scriptDirectory, '..');
@@ -10,6 +14,7 @@ const modelDirectory = path.join(resourceDirectory, 'models');
 const textureDirectory = path.join(resourceDirectory, 'textures');
 const outputDirectory = path.join(viewerDirectory, 'public', 'asset-library');
 const runtimeDirectory = path.join(outputDirectory, 'pack');
+const customizationCatalogPath = path.join(projectDirectory, 'assets-src', 'customization', 'catalog.json');
 
 const toPosix = (value) => value.split(path.sep).join('/');
 
@@ -157,7 +162,23 @@ function summarizeGeometry(geometry, index, formatVersion) {
   };
 }
 
+function summarizeCosmetic(cosmetic) {
+  const suffix = cosmeticTextureSuffix(cosmetic);
+  return {
+    ...cosmetic,
+    label: cosmeticLabel(cosmetic),
+    textures: {
+      entity__aspergillum: `textures/entity/aspergillum${suffix}`,
+      blocks__aspersorium: `textures/blocks/aspersorium${suffix}`,
+      'blocks__aspersorium.rotations': `textures/blocks/aspersorium${suffix}`,
+      blocks__sacristan_table: `textures/blocks/sacristan_table${suffix}`,
+      'blocks__sacristan_table.rotations': `textures/blocks/sacristan_table${suffix}`,
+    },
+  };
+}
+
 async function main() {
+  const customizationCatalog = JSON.parse(await readFile(customizationCatalogPath, 'utf8'));
   const modelFiles = (await walk(modelDirectory))
     .filter((file) => file.endsWith('.geo.json'))
     .sort((left, right) => left.localeCompare(right));
@@ -217,9 +238,24 @@ async function main() {
   const textureSets = runtimeFiles.textures.filter((file) => file.endsWith('.texture_set.json'));
 
   const manifest = {
-    version: 1,
+    version: 2,
     source: 'packs/resource',
     models,
+    cosmetics: customizationCatalog.cosmetics.map(summarizeCosmetic),
+    compositions: {
+      blocks__aspersorium: [
+        {
+          role: 'water',
+          modelId: 'entity__aspersorium_water_visual',
+        },
+      ],
+      'blocks__aspersorium.rotations': [
+        {
+          role: 'water',
+          modelId: 'entity__aspersorium_water_visual',
+        },
+      ],
+    },
     textureCount: textureFiles.length,
     runtime: {
       ...runtimeFiles,

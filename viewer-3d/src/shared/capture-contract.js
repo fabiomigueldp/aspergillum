@@ -12,6 +12,7 @@ export const CAPTURE_SUBJECTS = Object.freeze({
     modelId: 'blocks__aspersorium',
     docked: false,
     neutralPose: false,
+    waterOverlayModelId: 'entity__aspersorium_water_visual',
   }),
   docked: Object.freeze({
     id: 'docked',
@@ -19,6 +20,7 @@ export const CAPTURE_SUBJECTS = Object.freeze({
     modelId: 'blocks__aspersorium',
     docked: true,
     neutralPose: false,
+    waterOverlayModelId: 'entity__aspersorium_water_visual',
   }),
   table: Object.freeze({
     id: 'table',

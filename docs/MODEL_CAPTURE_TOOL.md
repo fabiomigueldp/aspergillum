@@ -80,6 +80,14 @@ npm run capture:models -- --subject all --material pbr --output out/model-captur
 npm run capture:models -- --subject all --material classic --output out/model-captures/classic
 ```
 
+Finish matrix:
+
+```powershell
+npm run capture:models -- --subject aspergillum,docked,table-docked --cosmetic all --views front-right --material pbr --output out/model-captures/finishes-pbr
+```
+
+When more than one finish is requested, each subject also receives `finish-matrix.png`; individual captures remain grouped by cosmetic ID.
+
 ## Main options
 
 | Option | Values | Notes |
@@ -89,6 +97,7 @@ npm run capture:models -- --subject all --material classic --output out/model-ca
 | `--size` | `256..2048` | Square resolution of each clean view; default `640` |
 | `--columns` | `1..6` | Contact-sheet columns; default `3` |
 | `--material` | `pbr`, `classic` | PBR uses color, normal, and MERS when available |
+| `--cosmetic` | cosmetic IDs, comma-separated, or `all` | Defaults to `classic`; order is preserved |
 | `--water` | `empty`, `low`, `mid`, `high`, `full` | Controls the visible water bone |
 | `--pose` | `neutral`, `first`, `third` | Use `first` or `third` for attachable animation evidence |
 | `--action` | `idle`, `sprinkle` | `sprinkle` should be paired with a non-neutral pose |
@@ -105,9 +114,11 @@ Without `--output`, each run creates `out/model-captures/<timestamp>/`. The dire
 out/model-captures/<run>/
 ├── capture-manifest.json
 ├── aspergillum/
-│   ├── front.png
+│   ├── classic/
+│   │   ├── front.png
+│   │   └── contact-sheet.png
 │   ├── ...
-│   └── contact-sheet.png
+│   └── finish-matrix.png
 ├── aspersorium/
 │   └── ...
 ├── docked/
@@ -118,7 +129,7 @@ out/model-captures/<run>/
     └── ...
 ```
 
-Individual PNGs are clean renderer output. Each `contact-sheet.png` labels and composes the requested views. `capture-manifest.json` records the pack version, geometry, material, options, camera positions, targets, and relative file paths.
+With one finish, the legacy `subject/front.png` layout is preserved. With multiple finishes, individual PNGs live under `subject/<cosmetic>/`. Each `contact-sheet.png` labels the requested views, `finish-matrix.png` compares one fixed view across finishes, and schema 2 of `capture-manifest.json` records the pack version, geometry, composed water geometry, cosmetic, material, options, camera positions, targets, and relative paths.
 
 ## Agent workflow
 

@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.1.10 — 2026-08-10 — observabilidade visual e legibilidade dos acabamentos
+
+- o Bedrock Fidelity Renderer passa a compor a geometria real `geometry.aspergillum.aspersorium_water_visual` sobre a caldeirinha, com os estados vazio/¼/½/¾/cheio e material translúcido separados do bloco;
+- adicionada seleção explícita de acabamento ao viewer e `--cosmetic <id,...>|all` ao capturador; execuções multiacabamento geram pranchas comparativas e manifest schema 2 sem perder as vistas individuais;
+- sete testes exercitam diretamente criação, atualização de nível, deduplicação determinística, recentralização, remoção diferida, órfãos e entity load; a recuperação de uma projeção carregada fora do bloco vinculado deixa de poder criar uma duplicata;
+- ampliada a assinatura visual do grip nos nove ícones 32×32, elevada a separação de castanho/vinho/preto e de prata/envelhecido/dourado, e incluído gate quantitativo de contraste no build;
+- color maps e materiais PBR recebem a mesma separação cromática sem alterar UVs, geometrias, poses ou superfícies; o pack icon foi atualizado para a composição cerimonial atual;
+- preservados UUIDs, IDs públicos, nove índices cosméticos, block states, binding, primeira/terceira pessoa, animações, VFX, áudio, gameplay e persistência; revisão monotônica dos packs `[1,1,19]`.
+- o artefato oficial `Aspergillum-1.1.10.mcaddon` tem `1.944.465` bytes e SHA-256 `f9c9fbdf313ed324d3ab02f2892d1bf9a0ae90220f92127a81fd0e4c3f09844f`; Creator Tools aceitou os onze warnings offline conhecidos e nenhum warning inesperado, Error ou Failure.
+
 ## 1.1.9 — 2026-08-10 — água translúcida em passe de entidade
 
 - promovida a arquitetura fisicamente aprovada na diagnóstica 1.1.9c: bloco da caldeirinha e aspersório acomodado usam exclusivamente `opaque`, enquanto a água preserva a qualidade translúcida em uma entidade visual `entity_alphablend`;

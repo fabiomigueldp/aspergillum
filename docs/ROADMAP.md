@@ -8,7 +8,27 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
-## v1.1.10 — observabilidade visual e legibilidade dos acabamentos — próximo marco
+## v1.2.0 — expansão de acabamentos 4×4 — próximo marco
+
+Objetivo: ampliar a personalização de 3×3 para 4×4 sem reinterpretar nenhum valor persistido por mundos existentes.
+
+Escopo autorizado:
+
+- acrescentar `bronze` como quarto metal e `ivory` como quarta empunhadura;
+- preservar exatamente `classic` e os índices históricos `0..8`; novas combinações ocupam somente `9..15`;
+- expandir itens, attachables, materiais de caldeirinha/mesa, UI, localização, ícones, viewer, capturas e validadores para dezesseis combinações;
+- manter a personalização gratuita e os mesmos contratos de snapshot, sessão, reconstrução de ItemStack e fallback clássico;
+- publicar os packs como `[1,2,0]`, preservando UUIDs e todos os IDs/estados existentes.
+
+Gate de saída:
+
+- matriz completa 4×4 comprovada em domínio, geração, manifests, blocos, viewer e captura clássico/PBR;
+- `0..8` mantêm pares metal/empunhadura e identificadores byte-semanticamente equivalentes à 1.1.10;
+- `9..15` persistem após mesa, caldeirinha, reload, retirada, quebra e inventário cheio;
+- orçamento de permutações e textura permanece documentado e abaixo dos limites estáveis;
+- `npm run check`, `npm run package`, Creator Tools e smoke manual comunicados sem regressão.
+
+## v1.1.10 — observabilidade visual e legibilidade dos acabamentos — promovida
 
 Objetivo: tornar a baseline 1.1.9 integralmente inspecionável fora do jogo e melhorar a leitura dos nove acabamentos sem alterar geometria, estado, gameplay ou contratos públicos.
 
@@ -28,6 +48,8 @@ Gate de saída:
 - todos os nove acabamentos carregam nos cinco assuntos de captura em clássico/PBR;
 - ícones permanecem legíveis em 32×32 e distinguem metal e empunhadura sem depender somente do nome;
 - `.mcaddon` final preserva o smoke funcional e o Content Log limpo.
+
+Resultado: viewer/capturador schema 2, água composta, nove acabamentos selecionáveis, sete testes diretos de lifecycle e gate quantitativo dos ícones foram integrados na revisão `[1,1,19]`; gameplay, IDs, states e geometria permanecem inalterados.
 
 ## v1.1.9 — água translúcida por entidade visual — promovida e estável
 

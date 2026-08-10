@@ -364,6 +364,11 @@ h2 {
   border-color: oklch(0.46 0.06 185);
 }
 
+.field-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
 .segmented-control,
 .water-segments {
   display: grid;
@@ -401,9 +406,15 @@ h2 {
   background: oklch(0.25 0.034 185);
 }
 
-.segment-button:disabled {
+.segment-button:disabled,
+.water-button:disabled {
   cursor: not-allowed;
   opacity: 0.42;
+}
+
+.control-group.is-disabled .field-label,
+.control-group.is-disabled .field-value {
+  opacity: 0.48;
 }
 
 .segment-button.is-active,
@@ -469,6 +480,11 @@ input[type="range"]:disabled {
   width: 1px;
   height: 1px;
   opacity: 0;
+}
+
+.toggle-row:has(input:disabled) {
+  cursor: not-allowed;
+  opacity: 0.48;
 }
 
 .toggle-track {

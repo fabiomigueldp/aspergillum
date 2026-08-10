@@ -12,6 +12,10 @@ import {
   getCaptureSubject,
   getCaptureView,
 } from '../shared/capture-contract.js';
+import {
+  cosmeticLabel,
+  resolveCosmetic,
+} from '../shared/cosmetic-contract.js';
 import './styles.css';
 
 const SCALE = 1 / 16;
@@ -42,6 +46,8 @@ const state = {
   currentRenderPath: null,
   sceneModel: null,
   boneGroups: new Map(),
+  waterBoneGroups: new Map(),
+  waterOverlayGeometry: null,
   boneRecords: [],
   meshRecords: [],
   pivotRecords: [],
@@ -50,6 +56,7 @@ const state = {
   selectedBone: null,
   perspective: 'first',
   materialMode: 'pbr',
+  cosmeticId: 'classic',
   action: 'idle',
   timeline: 0,
   timelineLength: 0.82,
@@ -70,6 +77,8 @@ const ui = {
   viewportStage: document.querySelector('#viewport-stage'),
   assetSelect: document.querySelector('#asset-select'),
   geometrySelect: document.querySelector('#geometry-select'),
+  cosmeticSelect: document.querySelector('#cosmetic-select'),
+  cosmeticNote: document.querySelector('#cosmetic-note'),
   perspectiveButtons: [...document.querySelectorAll('[data-perspective]')],
   materialButtons: [...document.querySelectorAll('[data-material]')],
   actionButtons: [...document.querySelectorAll('[data-action]')],
@@ -78,6 +87,7 @@ const ui = {
   timelineReadout: document.querySelector('#timeline-readout'),
   timelineNote: document.querySelector('#timeline-note'),
   waterReadout: document.querySelector('#water-readout'),
+  waterGroup: document.querySelector('#water-group'),
   materialNote: document.querySelector('#material-note'),
   dockedToggle: document.querySelector('#docked-toggle'),
   waterToggle: document.querySelector('#water-toggle'),
@@ -674,7 +684,7 @@ function applyVisibility() {
   grid.visible = state.showGrid;
   axes.visible = state.showAxes;
   for (const waterBone of WATER_BONES) {
-    const group = state.boneGroups.get(waterBone);
+    const group = state.waterBoneGroups.get(waterBone) ?? state.boneGroups.get(waterBone);
     if (group) group.visible = state.waterVisible && state.waterLevel === waterBone.replace('water_', '');
   }
   const dockedGroup = state.boneGroups.get('resting_aspergillum');
@@ -744,11 +754,24 @@ function updateTimelineReadout() {
 }
 
 function updateControls() {
+  const hasWater = state.waterBoneGroups.size > 0
+    || WATER_BONES.some((boneName) => state.boneGroups.has(boneName));
+  const hasDocked = state.boneGroups.has('resting_aspergillum');
+  const currentCosmetic = getCurrentCosmetic();
   ui.perspectiveButtons.forEach((button) => setPressed(button, button.dataset.perspective === state.perspective));
   ui.materialButtons.forEach((button) => setPressed(button, button.dataset.material === state.materialMode));
   ui.actionButtons.forEach((button) => setPressed(button, button.dataset.action === state.action));
-  ui.waterButtons.forEach((button) => setPressed(button, button.dataset.water === state.waterLevel));
+  ui.waterButtons.forEach((button) => {
+    setPressed(button, button.dataset.water === state.waterLevel);
+    button.disabled = !hasWater;
+  });
   ui.waterReadout.textContent = WATER_LABELS[state.waterLevel];
+  ui.waterGroup.classList.toggle('is-disabled', !hasWater);
+  ui.waterToggle.disabled = !hasWater;
+  ui.dockedToggle.disabled = !hasDocked;
+  ui.cosmeticSelect.value = currentCosmetic.id;
+  ui.cosmeticSelect.disabled = !currentCosmetic.textures?.[state.currentModel?.id];
+  ui.cosmeticNote.textContent = cosmeticLabel(currentCosmetic);
   ui.timeline.max = String(state.timelineLength);
   ui.timeline.value = String(Math.min(state.timeline, state.timelineLength));
   const canAnimate = Boolean(state.currentRenderPath?.attachable);
@@ -786,6 +809,13 @@ function populateAssetSelect() {
   ui.assetSelect.innerHTML = state.manifest.models.map((model, index) => (
     `<option value="${index}">${escapeHtml(describeModel(model))}</option>`
   )).join('');
+}
+
+function populateCosmeticSelect() {
+  ui.cosmeticSelect.innerHTML = state.manifest.cosmetics.map((cosmetic) => (
+    `<option value="${escapeHtml(cosmetic.id)}">${escapeHtml(cosmetic.label ?? cosmeticLabel(cosmetic))}</option>`
+  )).join('');
+  ui.cosmeticSelect.value = state.cosmeticId;
 }
 
 function populateGeometrySelect(model) {
@@ -858,7 +888,10 @@ async function loadModelData(model) {
 }
 
 async function createMaterialPalette(renderPath, model) {
-  const stem = renderPath.textureStem || stripTextureExtension(model.texture ?? '');
+  const cosmetic = resolveCosmetic(state.manifest.cosmetics, state.cosmeticId);
+  const stem = cosmetic.textures?.[model.id]
+    || renderPath.textureStem
+    || stripTextureExtension(model.texture ?? '');
   const textureSet = await loadTextureSet(stem);
   const water = await loadTexture('textures/blocks/holy_water.png', true);
   const mersChannels = state.materialMode === 'pbr' && textureSet.mers
@@ -880,8 +913,37 @@ async function createMaterialPalette(renderPath, model) {
   };
 }
 
+async function createOverlayMaterialPalette(model, role) {
+  const colorPath = model.texture;
+  const color = await loadTexture(colorPath, true);
+  const material = createBedrockMaterial({ color, water: role === 'water' });
+  return {
+    default: material,
+    water: material,
+    named: {},
+    textureSet: {
+      definition: null,
+      colorPath,
+      normalPath: null,
+      mersPath: null,
+      color,
+      normal: null,
+      mers: null,
+    },
+    sourceStem: stripTextureExtension(colorPath),
+  };
+}
+
 function getSelectedModel() {
   return state.manifest.models[Number(ui.assetSelect.value)] ?? state.manifest.models[0];
+}
+
+function getCurrentCosmetic() {
+  return resolveCosmetic(state.manifest.cosmetics, state.cosmeticId);
+}
+
+function getModelCompositions(model) {
+  return state.manifest.compositions?.[model.id] ?? [];
 }
 
 function updateRuntimeTrace() {
@@ -914,6 +976,7 @@ function renderInspector() {
   const model = state.currentModel;
   const path = state.currentRenderPath;
   const textureSet = state.sceneModel?.userData?.textureSet;
+  const cosmetic = getCurrentCosmetic();
   if (!geometry || !model || !path) {
     ui.inspectorContent.innerHTML = '<div class="inspector-empty"><span class="empty-glyph" aria-hidden="true">◌</span><strong>Aguardando runtime</strong><p>A cadeia resolvida e os mapas ativos aparecerão aqui.</p></div>';
     return;
@@ -935,6 +998,7 @@ function renderInspector() {
     row('Attachable', path.attachableId ?? 'não aplicável', path.attachable ? 'ok' : ''),
     row('Render controller', path.controllerId ?? 'não aplicável', path.controllerId ? 'ok' : ''),
     row('Material', path.materialId ?? '—'),
+    row('Acabamento', cosmetic.label ?? cosmeticLabel(cosmetic)),
     row('Perspectiva', state.perspective === 'first' ? 'context.is_first_person = 1' : 'context.is_first_person = 0'),
     row('Estado', state.action === 'sprinkle' ? 'controller → sprinkle' : 'controller → idle'),
     row('Pose', state.action === 'sprinkle' ? `${formatNumber(state.timeline, 2)} s` : 'hold'),
@@ -956,6 +1020,7 @@ function renderInspector() {
     status('MERS R/G/B', state.materialMode === 'pbr' && Boolean(textureSet?.mers)),
     status('Attachable + controller', path.attachable),
     status('Animações do pack', path.attachable && state.runtime.animations.size > 0),
+    status('Água composta por entidade', Boolean(state.waterOverlayGeometry)),
     status('Shader Minecraft proprietário', false),
   ];
 
@@ -1015,6 +1080,24 @@ async function loadCurrentModel() {
     if (token !== state.loadToken) return;
     state.materials = new Set();
     const built = buildBedrockGeometry(geometryData, geometrySummary, palette);
+    const compositionResults = [];
+    for (const composition of getModelCompositions(model)) {
+      const overlayModel = state.manifest.models.find((candidate) => candidate.id === composition.modelId);
+      if (!overlayModel) throw new Error(`Modelo de composição ausente: ${composition.modelId}`);
+      const overlaySource = await loadModelData(overlayModel);
+      const overlaySummary = overlayModel.geometries?.[0];
+      const overlayGeometry = overlaySource['minecraft:geometry']?.[0];
+      if (!overlaySummary || !overlayGeometry) {
+        throw new Error(`Geometria de composição ausente: ${composition.modelId}`);
+      }
+      const overlayPalette = await createOverlayMaterialPalette(overlayModel, composition.role);
+      if (token !== state.loadToken) return;
+      compositionResults.push({
+        ...composition,
+        geometry: overlaySummary,
+        built: buildBedrockGeometry(overlayGeometry, overlaySummary, overlayPalette),
+      });
+    }
     const sceneModel = new THREE.Group();
     sceneModel.name = `runtime:${geometrySummary.identifier}`;
     sceneModel.userData = {
@@ -1022,17 +1105,33 @@ async function loadCurrentModel() {
       formatVersion: sourceData.format_version ?? 'unknown',
     };
     sceneModel.add(built.root);
-    applyModelCenter(built.root);
+    for (const composition of compositionResults) sceneModel.add(composition.built.root);
+    applyModelCenter(sceneModel);
     removeCurrentSceneModel();
     scene.add(sceneModel);
     state.sceneModel = sceneModel;
     state.currentGeometry = geometrySummary;
     state.currentRenderPath = renderPath;
     state.boneGroups = built.boneGroups;
-    state.boneRecords = built.boneRecords;
-    state.meshRecords = built.meshRecords;
-    state.pivotRecords = built.pivotRecords;
-    state.locatorRecords = built.locatorRecords;
+    const waterComposition = compositionResults.find(({ role }) => role === 'water');
+    state.waterBoneGroups = waterComposition?.built.boneGroups ?? new Map();
+    state.waterOverlayGeometry = waterComposition?.geometry.identifier ?? null;
+    state.boneRecords = [
+      ...built.boneRecords,
+      ...compositionResults.flatMap(({ built: overlay }) => overlay.boneRecords),
+    ];
+    state.meshRecords = [
+      ...built.meshRecords,
+      ...compositionResults.flatMap(({ built: overlay }) => overlay.meshRecords),
+    ];
+    state.pivotRecords = [
+      ...built.pivotRecords,
+      ...compositionResults.flatMap(({ built: overlay }) => overlay.pivotRecords),
+    ];
+    state.locatorRecords = [
+      ...built.locatorRecords,
+      ...compositionResults.flatMap(({ built: overlay }) => overlay.locatorRecords),
+    ];
     state.timelineLength = renderPath.animationIds
       ? getAnimationLength(state.runtime.animations.get(
         state.perspective === 'first' ? renderPath.animationIds.sprinkleFirstPerson : renderPath.animationIds.sprinkleThirdPerson,
@@ -1080,6 +1179,7 @@ async function loadRuntime() {
   }
 
   populateAssetSelect();
+  populateCosmeticSelect();
   const preferredIndex = getPreferredModelIndex();
   ui.assetSelect.value = String(preferredIndex);
   populateGeometrySelect(state.manifest.models[preferredIndex]);
@@ -1109,6 +1209,11 @@ function onPerspectiveChange(button) {
 
 function onMaterialChange(button) {
   state.materialMode = button.dataset.material;
+  loadCurrentModel();
+}
+
+function onCosmeticChange() {
+  state.cosmeticId = ui.cosmeticSelect.value;
   loadCurrentModel();
 }
 
@@ -1172,6 +1277,7 @@ function bindStablePanInteraction() {
 function wireInteractions() {
   ui.assetSelect.addEventListener('change', onAssetChange);
   ui.geometrySelect.addEventListener('change', () => loadCurrentModel());
+  ui.cosmeticSelect.addEventListener('change', onCosmeticChange);
   ui.perspectiveButtons.forEach((button) => button.addEventListener('click', () => onPerspectiveChange(button)));
   ui.materialButtons.forEach((button) => button.addEventListener('click', () => onMaterialChange(button)));
   ui.actionButtons.forEach((button) => button.addEventListener('click', () => onActionChange(button)));
@@ -1356,6 +1462,10 @@ async function configureCapture(options = {}) {
   state.perspective = options.pose === 'third' ? 'third' : 'first';
   state.action = options.action === 'sprinkle' ? 'sprinkle' : 'idle';
   state.timeline = Number(options.timeline) || 0;
+  state.cosmeticId = resolveCosmetic(
+    state.manifest.cosmetics,
+    options.cosmetic ?? 'classic',
+  ).id;
 
   if (options.material && options.material !== state.materialMode) {
     state.materialMode = options.material;
@@ -1376,15 +1486,25 @@ async function configureCapture(options = {}) {
     material: state.materialMode,
     water: state.waterLevel,
     docked: state.docked,
+    cosmetic: state.cosmeticId,
+    cosmeticLabel: cosmeticLabel(getCurrentCosmetic()),
+    waterOverlayGeometry: state.waterOverlayGeometry,
   };
 }
 
 const captureApi = {
-  version: 1,
+  version: 2,
   ready: false,
   error: null,
   subjects: Object.values(CAPTURE_SUBJECTS).map(({ id, label }) => ({ id, label })),
   views: CAPTURE_VIEWS.map(({ id, label }) => ({ id, label })),
+  cosmetics: () => state.manifest?.cosmetics?.map(({ id, label, metal, grip, index }) => ({
+    id,
+    label,
+    metal,
+    grip,
+    index,
+  })) ?? [],
   configure: configureCapture,
   setView: setCaptureView,
   capture: captureView,

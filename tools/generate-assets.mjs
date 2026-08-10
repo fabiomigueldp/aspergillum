@@ -263,10 +263,10 @@ function albedoPixel(region, x, y, cosmetic = customizationCatalog.cosmetics[0])
     const wrapBand = Math.floor((y + Math.floor(x / 2)) / 2) % 2;
     const seam = (x + y + region.seed) % Math.max(4, region.width + 1) === 0;
     const gripPalette = {
-      chestnut: [[61, 43, 32, 255], [43, 31, 25, 255]],
-      oxblood: [[78, 34, 35, 255], [51, 24, 28, 255]],
-      black: [[39, 37, 34, 255], [25, 25, 24, 255]],
-    }[cosmetic.grip] ?? [[61, 43, 32, 255], [43, 31, 25, 255]];
+      chestnut: [[105, 66, 39, 255], [66, 39, 25, 255]],
+      oxblood: [[116, 32, 45, 255], [67, 18, 28, 255]],
+      black: [[51, 54, 53, 255], [18, 20, 20, 255]],
+    }[cosmetic.grip] ?? [[105, 66, 39, 255], [66, 39, 25, 255]];
     const base = gripPalette[wrapBand];
     return shadeColor(base, Math.round(noise * 0.4) + Math.round(bevel * 0.25) + (seam ? -12 : 0));
   }
@@ -285,9 +285,9 @@ function albedoPixel(region, x, y, cosmetic = customizationCatalog.cosmetics[0])
     ? 8
     : 0;
   const silverBase = {
-    silver: [158, 162, 159, 255],
-    antique: [113, 121, 119, 255],
-    gilded: region.surface === "perforated_silver" ? [177, 151, 91, 255] : [168, 164, 145, 255],
+    silver: [169, 176, 173, 255],
+    antique: [96, 111, 107, 255],
+    gilded: [190, 154, 75, 255],
   }[cosmetic.metal] ?? [158, 162, 159, 255];
   return shadeColor(silverBase, noise + bevel + faceTone + equatorBand);
 }
@@ -421,36 +421,39 @@ const outline = [34, 39, 39, 255];
 function makeItemIcon(cosmetic) {
   const item = png(32, 32, () => [0, 0, 0, 0]);
   const metals = {
-    silver: { dark: [104, 109, 106, 255], base: [178, 180, 172, 255], shine: [229, 228, 211, 255] },
-    antique: { dark: [68, 76, 75, 255], base: [126, 134, 130, 255], shine: [181, 184, 171, 255] },
-    gilded: { dark: [104, 83, 43, 255], base: [190, 164, 103, 255], shine: [235, 216, 164, 255] },
+    silver: { dark: [96, 107, 105, 255], base: [181, 190, 186, 255], shine: [235, 241, 230, 255] },
+    antique: { dark: [48, 65, 63, 255], base: [105, 124, 119, 255], shine: [165, 180, 166, 255] },
+    gilded: { dark: [103, 72, 29, 255], base: [195, 151, 63, 255], shine: [244, 220, 143, 255] },
   };
   const grips = {
-    chestnut: { dark: [54, 40, 32, 255], light: [77, 55, 40, 255] },
-    oxblood: { dark: [65, 28, 31, 255], light: [91, 40, 43, 255] },
-    black: { dark: [31, 30, 28, 255], light: [51, 48, 43, 255] },
+    chestnut: { dark: [62, 34, 20, 255], base: [103, 61, 34, 255], light: [148, 94, 50, 255] },
+    oxblood: { dark: [62, 13, 24, 255], base: [111, 27, 42, 255], light: [163, 55, 65, 255] },
+    black: { dark: [16, 18, 18, 255], base: [43, 47, 46, 255], light: [82, 88, 83, 255] },
   };
   const metal = metals[cosmetic.metal] ?? metals.silver;
   const leather = grips[cosmetic.grip] ?? grips.chestnut;
-  for (let y = 13; y <= 28; y += 1) {
+  for (let y = 12; y <= 29; y += 1) {
     const x = 9 + Math.floor((28 - y) * 0.32);
-    setPixel(item, x - 1, y, outline);
-    setPixel(item, x, y, y > 22 ? leather.dark : metal.base);
-    setPixel(item, x + 1, y, y > 22 ? leather.light : metal.shine);
+    const isGrip = y >= 20;
+    setPixel(item, x - 2, y, outline);
+    setPixel(item, x - 1, y, isGrip ? leather.dark : metal.dark);
+    setPixel(item, x, y, isGrip ? leather.base : metal.base);
+    setPixel(item, x + 1, y, isGrip ? (y % 3 === 1 ? leather.dark : leather.light) : metal.shine);
     setPixel(item, x + 2, y, outline);
   }
-  for (let y = 3; y <= 15; y += 1) {
-    for (let x = 10; x <= 23; x += 1) {
-      const dx = (x - 16.5) / 7;
-      const dy = (y - 9) / 6.5;
+  for (let y = 2; y <= 15; y += 1) {
+    for (let x = 9; x <= 24; x += 1) {
+      const dx = (x - 16.5) / 7.8;
+      const dy = (y - 8.5) / 7;
       if (dx * dx + dy * dy <= 1) {
-        const edge = dx * dx + dy * dy > 0.72;
-        const hole = ((x * 2 + y * 3) % 7) === 0;
-        setPixel(item, x, y, edge ? outline : hole ? metal.dark : (x + y) % 5 === 0 ? metal.shine : metal.base);
+        const edge = dx * dx + dy * dy > 0.75;
+        const hole = !edge && ((x * 2 + y * 3) % 7) === 0;
+        setPixel(item, x, y, edge ? outline : hole ? [25, 30, 30, 255] : (x + y) % 5 === 0 ? metal.shine : metal.base);
       }
     }
   }
-  fillRect(item, 10, 14, 5, 2, cosmetic.metal === "antique" ? [139, 103, 48, 255] : [170, 123, 41, 255]);
+  fillRect(item, 9, 15, 7, 2, cosmetic.metal === "antique" ? [128, 91, 42, 255] : [190, 132, 38, 255]);
+  fillRect(item, 8, 19, 6, 1, metal.shine);
   return item;
 }
 
@@ -462,21 +465,48 @@ for (const cosmetic of customizationCatalog.cosmetics) {
 function makePackIcon() {
   const icon = png(256, 256, (x, y) => {
     const vignette = Math.hypot(x - 128, y - 128) / 181;
-    return [Math.round(31 - vignette * 11), Math.round(48 - vignette * 15), Math.round(54 - vignette * 13), 255];
+    const grain = Math.round((hash(Math.floor(x / 3), Math.floor(y / 3), 411) - 0.5) * 5);
+    return [Math.round(25 - vignette * 8) + grain, Math.round(48 - vignette * 13) + grain, Math.round(43 - vignette * 10) + grain, 255];
   });
-  fillRect(icon, 46, 139, 164, 13, [65, 70, 68, 255]);
-  fillRect(icon, 58, 150, 140, 56, [142, 145, 139, 255]);
-  fillRect(icon, 70, 206, 116, 13, [83, 89, 87, 255]);
-  fillRect(icon, 72, 153, 112, 10, [66, 143, 169, 220]);
-  for (let y = 46; y < 187; y += 1) {
-    const x = 170 - Math.floor((y - 46) * 0.47);
-    fillRect(icon, x - 5, y, 11, 2, y > 118 ? [58, 43, 35, 255] : [185, 184, 171, 255]);
+  for (const inset of [12, 17]) {
+    const color = inset === 12 ? [112, 82, 38, 255] : [184, 140, 63, 255];
+    fillRect(icon, inset, inset, 256 - inset * 2, 2, color);
+    fillRect(icon, inset, 254 - inset, 256 - inset * 2, 2, color);
+    fillRect(icon, inset, inset, 2, 256 - inset * 2, color);
+    fillRect(icon, 254 - inset, inset, 2, 256 - inset * 2, color);
   }
-  for (let y = 30; y < 92; y += 1) {
-    for (let x = 145; x < 211; x += 1) {
-      const dx = (x - 178) / 34;
-      const dy = (y - 61) / 32;
-      if (dx * dx + dy * dy <= 1) setPixel(icon, x, y, ((x + y * 2) % 17 < 3) ? [36, 43, 43, 255] : silver(x, y, 41));
+  for (let y = 142; y <= 215; y += 1) {
+    const halfWidth = Math.round(70 - (y - 142) * 0.32);
+    for (let x = 128 - halfWidth; x <= 128 + halfWidth; x += 1) {
+      const rimShade = x < 128 ? -18 : 5;
+      const grain = Math.round((hash(x, y, 433) - 0.5) * 14);
+      setPixel(icon, x, y, [139 + rimShade + grain, 149 + rimShade + grain, 145 + rimShade + grain, 255]);
+    }
+  }
+  for (let y = 126; y <= 151; y += 1) {
+    for (let x = 49; x <= 207; x += 1) {
+      const dx = (x - 128) / 79;
+      const dy = (y - 138) / 13;
+      if (dx * dx + dy * dy <= 1) setPixel(icon, x, y, [76, 88, 85, 255]);
+      if (dx * dx + dy * dy <= 0.72) setPixel(icon, x, y, [50, 139, 165, 230]);
+    }
+  }
+  fillRect(icon, 80, 214, 96, 9, [74, 82, 79, 255]);
+  for (let y = 52; y < 195; y += 1) {
+    const x = 185 - Math.floor((y - 52) * 0.5);
+    const grip = y >= 132;
+    fillRect(icon, x - 6, y, 13, 2, grip ? [66, 39, 25, 255] : [178, 187, 182, 255]);
+    fillRect(icon, x + 2, y, 3, 2, grip ? [132, 80, 43, 255] : [232, 237, 225, 255]);
+  }
+  for (let y = 31; y < 96; y += 1) {
+    for (let x = 146; x < 218; x += 1) {
+      const dx = (x - 182) / 37;
+      const dy = (y - 63) / 34;
+      if (dx * dx + dy * dy <= 1) {
+        const edge = dx * dx + dy * dy > 0.8;
+        const hole = (x * 2 + y * 3) % 17 < 3;
+        setPixel(icon, x, y, edge ? [72, 82, 80, 255] : hole ? [28, 39, 38, 255] : silver(x, y, 41));
+      }
     }
   }
   return icon;

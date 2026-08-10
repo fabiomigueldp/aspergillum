@@ -4,6 +4,18 @@
 
 Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
 
+## Gate de polimento — v1.1.10
+
+- [x] viewer testa catálogo, ordem de acabamentos, assuntos e nove câmeras e conclui build Vite;
+- [x] capturas `empty|low|mid|high|full` registram `geometry.aspergillum.aspersorium_water_visual` no manifest schema 2 e mostram composição coerente em vistas oblíqua/superior;
+- [x] reconciliação da entidade cobre criação, quatro níveis, recentralização, atualização, deduplicação, remoção diferida, órfão e entity load;
+- [x] gate de ícones exige assinatura opaca de grip, contraste interno e distância mínima entre metais/empunhaduras;
+- [x] executar a matriz `--subject all --cosmetic all` em PBR e clássico com o pacote final; manifests e pranchas em `out/model-captures/1.1.10-all-finishes-{pbr,classic}`;
+- [ ] importar somente `Aspergillum-1.1.10.mcaddon`, confirmar manifests `[1,1,19]` e SHA `f9c9fbdf313ed324d3ab02f2892d1bf9a0ae90220f92127a81fd0e4c3f09844f` publicado em [Release 1.1.10](releases/1.1.10.md);
+- [ ] limpar o Content Log e repetir encher, `16→12→8→4→0`, carregar, quatro aspersões, docking, retirada, mesa, nove acabamentos, quebra e reload;
+- [ ] comparar os nove ícones no inventário/UI em escala normal e confirmar castanho/vinho/preto sem depender do nome;
+- [ ] testar clássico e Vibrant Visuals; nenhum acabamento pode alterar silhueta, UV, pose, binding ou geometria.
+
 ## Gate histórico da release oficial — v1.1.9
 
 **Decisão:** GO em 2026-08-10, conforme [registro de promoção](releases/1.1.9.md). A lista abaixo permanece como runbook reproduzível. Itens sem evidência registrada não são retroativamente marcados como executados; upgrade de cópia 1.1.7 e profiler 1/16/64/256 seguem como monitoramento pós-release.

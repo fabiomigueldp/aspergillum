@@ -86,11 +86,19 @@ function bindVisualToBlock(entity: Entity, location: Vector3, level: 1 | 2 | 3 |
   }
 }
 
-export function reconcileAspersoriumWaterVisual(block: Block): void {
+export function reconcileAspersoriumWaterVisual(block: Block, loadedVisual?: Entity): void {
   if (!block.isValid || block.typeId !== ASPERSORIUM_BLOCK) return;
 
   const level = aspersoriumWaterVisualLevel(readAspersoriumWater(block));
   const visuals = visualEntitiesAt(block.dimension, block.location);
+  if (
+    loadedVisual?.isValid
+    && isWaterVisual(loadedVisual)
+    && !visuals.some((candidate) => candidate.id === loadedVisual.id)
+  ) {
+    visuals.push(loadedVisual);
+    visuals.sort((left, right) => left.id.localeCompare(right.id));
+  }
   if (level === 0) {
     for (const visual of visuals) safelyRemove(visual);
     return;
@@ -159,7 +167,7 @@ export function reconcileLoadedAspersoriumWaterVisual(entity: Entity): void {
       const location = linkedBlockLocation(entity);
       const block = entity.dimension.getBlock(location);
       if (block?.isValid && block.typeId === ASPERSORIUM_BLOCK) {
-        reconcileAspersoriumWaterVisual(block);
+        reconcileAspersoriumWaterVisual(block, entity);
       } else {
         safelyRemove(entity);
       }

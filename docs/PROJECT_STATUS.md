@@ -2,7 +2,7 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.1.9` estável não comercial (revisão numérica dos packs `[1, 1, 18]`)
+- **Versão de referência:** `1.1.10` estável não comercial (revisão numérica dos packs `[1, 1, 19]`)
 - **Engine mínima:** Creator `1.26.40`
 - **Script API:** manifest com `@minecraft/server` `2.9.0` e `@minecraft/server-ui` `2.1.0`, estáveis; `@minecraft/common` `1.3.0` somente no toolchain npm
 - **Experimentos:** nenhum
@@ -13,6 +13,8 @@ A v1.0.20 foi validada em jogo e é a baseline protegida de economia, docking pa
 O reteste físico da v1.1.6 demonstrou que remover somente a segunda tampa coplanar não eliminava o desaparecimento angular no passe `blend` da caldeirinha. A matriz `1.1.7a/b/c` confirmou a composição B como a melhor resposta visual: estrutura/aspersório `opaque` e água `blend`. A v1.1.7 promove esse perfil sem alterar a geometria simples aprovada.
 
 A matriz 1.1.8 rejeitou alpha-test por degradação visual. A 1.1.9c separou a água em uma entidade `entity_alphablend`, eliminou a mistura de render methods no bloco e foi aprovada em jogo pelo usuário com resultado visual satisfatório, funcionalidades sem bugs observados e Content Log limpo. A 1.1.9 promove essa arquitetura como baseline estável sem alterar a autoridade lógica da água; a decisão e a proveniência estão em [Release 1.1.9](releases/1.1.9.md).
+
+A 1.1.10 mantém essa baseline byte/semanticamente protegida no gameplay e fecha a lacuna de observabilidade: o viewer compõe a mesma entidade de água, os nove acabamentos podem ser capturados explicitamente, o lifecycle visual recebe testes diretos e os ícones têm contraste validado. A promoção está registrada em [Release 1.1.10](releases/1.1.10.md).
 
 ## O que está resolvido
 
@@ -73,13 +75,12 @@ A matriz 1.1.8 rejeitou alpha-test por degradação visual. A 1.1.9c separou a �
 
 ## Próxima mudança autorizada
 
-Produzir a `1.1.10` como revisão de polimento sem alterar gameplay, contratos públicos ou a baseline física aprovada:
+Produzir a `1.2.0` como expansão 4×4, preservando os índices `0..8` da matriz atual e acrescentando somente `9..15`:
 
-- compor a entidade de água nas capturas reproduzíveis da caldeirinha;
-- permitir captura explícita de todos os acabamentos;
-- cobrir a política de reconciliação da água por testes puros;
-- melhorar a legibilidade dos ícones e o contraste dos nove acabamentos em clássico/PBR;
-- preservar integralmente binding, poses, animações, VFX, estado, IDs e geometrias autorais.
+- quarto metal: bronze cerimonial;
+- quarta empunhadura: marfim vegetal;
+- dezesseis combinações gratuitas, localizadas, persistentes e capturáveis;
+- nenhuma mudança de geometria, binding, pose, gameplay, UUID ou significado dos states já publicados.
 
 Não faz parte do próximo marco:
 
