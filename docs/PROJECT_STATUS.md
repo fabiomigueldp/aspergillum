@@ -71,7 +71,7 @@ O reteste físico da v1.1.6 demonstrou que remover somente a segunda tampa copla
 
 ## Próxima mudança autorizada
 
-Comparar os três diagnósticos `1.1.8a/b/c` pelo gate dedicado de [TESTING.md](TESTING.md), sem substituir a release 1.1.7: quatro níveis, clássico/dourado, câmera parada/em movimento, curta/média/longa distância, gráficos convencionais/Vibrant Visuals e Content Log. As coberturas são 75%, 81,25% e 87,5%; a técnica só avança se eliminar as mensagens de `MaterialInstances` sem perder a qualidade visual comprovada da 1.1.7.
+Testar somente o diagnóstico corrigido `1.1.8d` pelo gate dedicado de [TESTING.md](TESTING.md), sem substituir a release 1.1.7. A/B provaram que o método uniforme elimina as mensagens de `MaterialInstances`, mas amostravam apenas `2 × 2` texels e ampliavam um deles como quadrante invisível; C foi dispensada. A D conserva 81,25% e usa atlas/textura `256 × 256` com amostragem efetiva `16 × 16`, devendo ser avaliada em câmera parada/em movimento, curta/média/longa distância e gráficos convencionais/Vibrant Visuals.
 
 Não faz parte do próximo marco:
 

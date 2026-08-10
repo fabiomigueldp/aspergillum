@@ -16,7 +16,8 @@ const archiveDate = new Date("2000-01-01T00:00:00.000Z");
 const renderMethod = "alpha_test_single_sided_to_opaque";
 const waterBoneNames = ["water_low", "water_mid", "water_high", "water_full"];
 const maskSize = 16;
-const textureSize = 32;
+const legacyTextureSize = 32;
+const geometryAtlasSize = 256;
 
 const variants = [
   {
@@ -43,8 +44,23 @@ const variants = [
     coverageNumerator: 14,
     badgeColor: [51, 139, 156, 255],
   },
+  {
+    id: "d",
+    label: "1.1.8d",
+    version: [1, 1, 14],
+    title: "Água dither 81% — UV corrigido",
+    coverageNumerator: 13,
+    textureSize: geometryAtlasSize,
+    uvOffset: [8, 8],
+    alignMaskToUv: true,
+    expectedSampleSize: [maskSize, maskSize],
+    badgeColor: [45, 123, 164, 255],
+  },
 ].map((variant) => ({
   ...variant,
+  textureSize: variant.textureSize ?? legacyTextureSize,
+  uvOffset: variant.uvOffset ?? [0, 0],
+  expectedSampleSize: variant.expectedSampleSize ?? [2, 2],
   coverage: variant.coverageNumerator / 16,
   visiblePixels: maskSize * maskSize * variant.coverageNumerator / 16,
 }));
@@ -131,9 +147,13 @@ function buildCoverageMask(coverage) {
   ));
 }
 
-function waterColor(x, y) {
+function positiveModulo(value, divisor) {
+  return ((value % divisor) + divisor) % divisor;
+}
+
+function waterColor(x, y, period = legacyTextureSize) {
   const wave = Math.sin((x + y) * 0.7) * 9 + (spatialHash(x, y, 31) - 0.5) * 10;
-  const highlight = y === (x * 3 + 5) % textureSize ? 34 : 0;
+  const highlight = y === (x * 3 + 5) % period ? 34 : 0;
   return [
     clampByte(56 + wave + highlight * 0.55),
     clampByte(151 + wave + highlight * 0.85),
@@ -141,20 +161,31 @@ function waterColor(x, y) {
   ];
 }
 
-function buildWaterTexture(coverage) {
+function buildWaterTexture(coverage, options = {}) {
+  const outputTextureSize = options.textureSize ?? legacyTextureSize;
+  const uvOffset = options.uvOffset ?? [0, 0];
+  const alignMaskToUv = options.alignMaskToUv ?? false;
   const mask = buildCoverageMask(coverage);
-  const image = new PNG({ width: textureSize, height: textureSize, colorType: 6 });
-  for (let y = 0; y < textureSize; y += 1) {
-    for (let x = 0; x < textureSize; x += 1) {
-      const offset = (y * textureSize + x) * 4;
-      const [red, green, blue] = waterColor(x, y);
+  const image = new PNG({ width: outputTextureSize, height: outputTextureSize, colorType: 6 });
+  for (let y = 0; y < outputTextureSize; y += 1) {
+    for (let x = 0; x < outputTextureSize; x += 1) {
+      const offset = (y * outputTextureSize + x) * 4;
+      const maskX = alignMaskToUv ? positiveModulo(x - uvOffset[0], maskSize) : x % maskSize;
+      const maskY = alignMaskToUv ? positiveModulo(y - uvOffset[1], maskSize) : y % maskSize;
+      const colorX = alignMaskToUv ? maskX : x;
+      const colorY = alignMaskToUv ? maskY : y;
+      const [red, green, blue] = waterColor(colorX, colorY, alignMaskToUv ? maskSize : legacyTextureSize);
       image.data[offset] = red;
       image.data[offset + 1] = green;
       image.data[offset + 2] = blue;
-      image.data[offset + 3] = mask[y % maskSize][x % maskSize] ? 255 : 0;
+      image.data[offset + 3] = mask[maskY][maskX] ? 255 : 0;
     }
   }
   return { image, mask };
+}
+
+function effectiveSampledTexels(uvSize, materialTextureSize, declaredGeometryTextureSize) {
+  return [0, 1].map((axis) => uvSize[axis] * materialTextureSize[axis] / declaredGeometryTextureSize[axis]);
 }
 
 function materialInstanceGroups(blockDefinition) {
@@ -179,7 +210,8 @@ function materialMethods(blockDefinition) {
   ));
 }
 
-function simplifyWaterGeometry(geometryDefinition) {
+function simplifyWaterGeometry(geometryDefinition, options = {}) {
+  const uvOffset = options.uvOffset ?? [0, 0];
   const output = structuredClone(geometryDefinition);
   const geometries = output["minecraft:geometry"] ?? [];
   if (geometries.length === 0) throw new Error("Aspersorium geometry file contains no geometries");
@@ -197,7 +229,7 @@ function simplifyWaterGeometry(geometryDefinition) {
       }
       cube.uv = {
         up: {
-          uv: [0, 0],
+          uv: [...uvOffset],
           uv_size: [maskSize, maskSize],
           material_instance: "water",
         },
@@ -256,6 +288,7 @@ const letters = {
   A: ["01110", "10001", "10001", "11111", "10001", "10001", "10001"],
   B: ["11110", "10001", "10001", "11110", "10001", "10001", "11110"],
   C: ["01111", "10000", "10000", "10000", "10000", "10000", "01111"],
+  D: ["11110", "10001", "10001", "10001", "10001", "10001", "11110"],
 };
 
 function paintPixel(image, x, y, color) {
@@ -394,25 +427,35 @@ function changedPackFiles(stage) {
   return changed;
 }
 
-function rewriteWaterGeometry(stage) {
+function rewriteWaterGeometry(stage, variant) {
   const relativePaths = [
     path.join("models", "blocks", "aspersorium.geo.json"),
     path.join("models", "blocks", "aspersorium.rotations.geo.json"),
   ];
   for (const relativePath of relativePaths) {
     const filePath = path.join(stage, "packs", "resource", relativePath);
-    writeJson(filePath, simplifyWaterGeometry(readJson(filePath)));
+    writeJson(filePath, simplifyWaterGeometry(readJson(filePath), { uvOffset: variant.uvOffset }));
   }
 }
 
-function inspectWaterGeometry(stage) {
+function inspectWaterGeometry(stage, variant, waterTexturePath) {
   const files = ["aspersorium.geo.json", "aspersorium.rotations.geo.json"];
+  const waterTexture = PNG.sync.read(fs.readFileSync(waterTexturePath));
+  const materialTextureSize = [waterTexture.width, waterTexture.height];
   let geometryCount = 0;
   let waterSurfaceCount = 0;
+  const sampledSizes = new Set();
   for (const file of files) {
     const definition = readJson(path.join(stage, "packs", "resource", "models", "blocks", file));
     for (const geometry of definition["minecraft:geometry"] ?? []) {
       geometryCount += 1;
+      const declaredTextureSize = [geometry.description?.texture_width, geometry.description?.texture_height];
+      if (!declaredTextureSize.every((dimension) => Number.isInteger(dimension) && dimension > 0)) {
+        throw new Error(`${geometry.description?.identifier} has an invalid declared texture atlas`);
+      }
+      if (declaredTextureSize[0] !== geometryAtlasSize || declaredTextureSize[1] !== geometryAtlasSize) {
+        throw new Error(`${geometry.description?.identifier} no longer uses the canonical 256x256 atlas`);
+      }
       for (const name of waterBoneNames) {
         const bone = geometry.bones?.find((candidate) => candidate.name === name);
         const faces = Object.keys(bone?.cubes?.[0]?.uv ?? {});
@@ -423,11 +466,33 @@ function inspectWaterGeometry(stage) {
         if (uvSize[0] !== maskSize || uvSize[1] !== maskSize) {
           throw new Error(`${geometry.description?.identifier}/${name} does not use the ${maskSize}x${maskSize} mask`);
         }
+        const uv = bone.cubes[0].uv.up.uv;
+        if (uv[0] !== variant.uvOffset[0] || uv[1] !== variant.uvOffset[1]) {
+          throw new Error(`${geometry.description?.identifier}/${name} has an unexpected UV origin`);
+        }
+        const sampledTexels = effectiveSampledTexels(uvSize, materialTextureSize, declaredTextureSize);
+        sampledSizes.add(sampledTexels.join("x"));
+        if (sampledTexels[0] !== variant.expectedSampleSize[0] || sampledTexels[1] !== variant.expectedSampleSize[1]) {
+          throw new Error(
+            `${geometry.description?.identifier}/${name} samples ${sampledTexels.join("x")} physical texels; `
+            + `expected ${variant.expectedSampleSize.join("x")}`,
+          );
+        }
         waterSurfaceCount += 1;
       }
     }
   }
-  return { geometryCount, waterSurfaceCount, facesPerSurface: 1, uvSize: [maskSize, maskSize] };
+  if (sampledSizes.size !== 1) throw new Error(`Water geometries disagree on effective sampling: ${[...sampledSizes].join(", ")}`);
+  return {
+    geometryCount,
+    waterSurfaceCount,
+    facesPerSurface: 1,
+    uv: [...variant.uvOffset],
+    uvSize: [maskSize, maskSize],
+    declaredGeometryTextureSize: [geometryAtlasSize, geometryAtlasSize],
+    materialTextureSize,
+    effectiveSampledTexels: [...variant.expectedSampleSize],
+  };
 }
 
 async function buildVariant(variant) {
@@ -438,8 +503,8 @@ async function buildVariant(variant) {
   const blockPath = path.join(stage, "packs", "behavior", "blocks", "aspersorium.block.json");
   const block = applyUniformAlphaTest(readJson(blockPath));
   writeJson(blockPath, block);
-  rewriteWaterGeometry(stage);
-  const { image, mask } = buildWaterTexture(variant.coverage);
+  rewriteWaterGeometry(stage, variant);
+  const { image, mask } = buildWaterTexture(variant.coverage, variant);
   const waterTexturePath = path.join(stage, "packs", "resource", "textures", "blocks", "holy_water.png");
   fs.writeFileSync(waterTexturePath, PNG.sync.write(image, { colorType: 6 }));
 
@@ -455,7 +520,7 @@ async function buildVariant(variant) {
   if (visiblePixels !== variant.visiblePixels) {
     throw new Error(`${variant.label} expected ${variant.visiblePixels} visible mask pixels, got ${visiblePixels}`);
   }
-  const waterGeometry = inspectWaterGeometry(stage);
+  const waterGeometry = inspectWaterGeometry(stage, variant, waterTexturePath);
   const baseScript = path.join(root, "packs", "behavior", "scripts", "main.js");
   const stagedScript = path.join(stage, "packs", "behavior", "scripts", "main.js");
   if (hashFile(baseScript) !== hashFile(stagedScript)) throw new Error(`${variant.label} changed the gameplay script`);
@@ -506,15 +571,12 @@ async function main() {
   if (new Set(summaries.map((summary) => summary.gameplayScriptSha256)).size !== 1) {
     throw new Error("Diagnostic packages do not share one gameplay script");
   }
-  if (new Set(summaries.map((summary) => JSON.stringify(summary.waterGeometry))).size !== 1) {
-    throw new Error("Diagnostic packages do not share one water geometry profile");
-  }
   writeJson(path.join(diagnosticRoot, "manifest.json"), {
     diagnosticFamily: "Aspergillum alpha-test water matrix 1.1.8",
     baseline: "1.1.7",
     generatedAt: new Date().toISOString(),
     activationRule: "Use one diagnostic pair per new test world; public item and block identifiers intentionally remain unchanged.",
-    controlledVariable: "Binary visible-pixel coverage of one static dispersed 16x16 water mask.",
+    diagnosticDesign: "A/B/C compare coverage under the original incorrect 32x32 material mapping; D repeats B at 81.25% with a 256x256 material texture and verified 16x16 physical sampling.",
     variants: summaries,
   });
   fs.rmSync(stagingRoot, { recursive: true, force: true });
@@ -529,6 +591,7 @@ export {
   buildCoverageMask,
   buildDispersedHoleOrder,
   buildWaterTexture,
+  effectiveSampledTexels,
   materialMethods,
   renderMethod,
   simplifyWaterGeometry,

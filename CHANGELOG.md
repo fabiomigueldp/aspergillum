@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.8d — 2026-08-10 — correção diagnóstica da amostragem UV
+
+- as capturas físicas de A/B demonstraram um quadrante transparente e três quadrantes opacos; a causa foi isolada no desacordo entre o atlas `256 × 256` declarado pela geometria e a textura de água `32 × 32`, que reduzia `uv_size: 16 × 16` a somente `2 × 2` texels físicos;
+- a D preserva a cobertura nominal B de 81,25%, o método uniforme e a superfície top-only, mas usa textura `256 × 256` correspondente ao atlas e desloca a ilha para `[8,8]`, produzindo amostragem efetiva comprovada de `16 × 16`;
+- o gerador repete a máscara ao redor da ilha para proteger filtragem/mipmaps, mantém RGB ciano sob alpha zero e adiciona teste explícito da fórmula `uv × textura / atlas`;
+- distribuída como diagnóstico isolado `1.1.8d`/`[1,1,14]`, com UUIDs próprios; Creator Tools aprovou o pacote com quinze warnings offline conhecidos e zero Error/Failure;
+- a técnica continua oferecendo transparência binária, não translucidez real; somente o teste no Minecraft decidirá se a dispersão fina é visualmente aceitável.
+
 ## 1.1.8a / 1.1.8b / 1.1.8c — 2026-08-10 — diagnósticos de água alpha-test
 
 - produzida uma matriz isolada para avaliar a substituição do perfil misto da 1.1.7 por `alpha_test_single_sided_to_opaque` uniforme em toda a caldeirinha;

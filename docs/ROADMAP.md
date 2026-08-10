@@ -8,7 +8,7 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
-## v1.1.8a/b/c — matriz de água alpha-test — implementada; QA físico pendente
+## v1.1.8a/b/c/d — matriz de água alpha-test — D implementada; QA físico pendente
 
 Hipótese: uma família uniforme `alpha_test_single_sided_to_opaque` pode conservar a estabilidade estrutural comprovada na 1.1.7, eliminar a incompatibilidade de `MaterialInstances` e aproximar a translucidez por cobertura espacial binária.
 
@@ -18,11 +18,13 @@ Escopo diagnóstico:
 - usar o mesmo método alpha-test na estrutura, no aspersório acomodado e na água em todas as nove permutações materiais;
 - preservar alturas e volumes lógicos, reduzindo somente a apresentação da água a uma face superior `16 × 16` por nível/rotação;
 - comparar máscaras estáticas, binárias e aninhadas de 75%, 81,25% e 87,5%, com distribuição estratificada irregular e RGB ciano válido sob alpha zero;
+- registrar a falha física de A/B: `uv_size 16 × 16` sob geometria `256 × 256` e textura `32 × 32` resolveu para apenas `2 × 2` texels, ampliando um pixel transparente como um quadrante inteiro; C não precisou ser testada porque seus quatro texels iniciais eram opacos;
+- produzir a D `[1,1,14]` com a densidade B de 81,25%, textura `256 × 256`, UV `[8,8]` e amostragem física `16 × 16` comprovada automaticamente;
 - manter scripts, estados, IDs públicos, gameplay, persistência, malha sólida, acabamentos, pivôs e locators byte/semanticamente invariantes.
 
 Gate de saída:
 
-- as duas mensagens de métodos mistos desaparecem sem novas mensagens de material ou renderização;
+- as duas mensagens de métodos mistos permanecem ausentes na D, sem novas mensagens de material ou renderização;
 - estrutura e aspersório mantêm a estabilidade angular e de câmera próxima da 1.1.7;
 - pelo menos uma densidade lê como água em câmera parada/móvel, sem grade, moiré, shimmer ou transição distante intrusiva;
 - clássico/dourado, quatro níveis, gráficos convencionais/Vibrant Visuals e smoke funcional passam no `.mcaddon` exato;
