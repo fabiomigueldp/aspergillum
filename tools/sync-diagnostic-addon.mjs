@@ -12,14 +12,29 @@ const knownUuids = {
     "fa0c5ebd-cd7d-5488-91f5-bed8c2edd1a7",
     "7f815bee-7516-528a-aaa2-8d873c10ba88",
     "ca21ec6a-1103-5f66-80f3-2cb674843dff",
+    "28650fb4-bd45-5bbb-a351-4ea110bd2b0d",
+    "4caf015d-0a40-583a-8b47-ec19e21a3ab5",
+    "acc320fc-2242-5632-b06d-a03a272e0c68",
   ]),
   resource: new Set([
     "fdb8a79c-8f77-4831-9a5c-8e2b8ecca29e",
     "c7c39acd-98a0-535c-80cc-e0521ea73e97",
     "be858629-a2ac-5aa8-93d8-e7382532aabd",
     "085fa6e4-e6b2-57c0-94e2-25b88daa614b",
+    "1592fb5f-67b9-56e7-8d21-1b747688c72d",
+    "f3398817-a6ad-563e-9c52-d745f4845b67",
+    "798650c4-e13d-5534-99fb-b4d0d3f6403d",
   ]),
 };
+
+const diagnosticVersions = new Map([
+  ["1.1.7a", [1, 1, 7]],
+  ["1.1.7b", [1, 1, 8]],
+  ["1.1.7c", [1, 1, 9]],
+  ["1.1.8a", [1, 1, 11]],
+  ["1.1.8b", [1, 1, 12]],
+  ["1.1.8c", [1, 1, 13]],
+]);
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -47,13 +62,15 @@ function parseArgs(argv) {
     else throw new Error(`Argumento desconhecido: ${argument}`);
   }
   if (options.apply && options.dryRun) throw new Error("Use somente --apply ou --dry-run.");
-  if (!/^1\.1\.7[a-c]$/.test(options.variant)) throw new Error("A variante deve ser 1.1.7a, 1.1.7b ou 1.1.7c.");
+  if (!diagnosticVersions.has(options.variant)) {
+    throw new Error(`Variante desconhecida: ${options.variant}. Use ${[...diagnosticVersions.keys()].join(", ")}.`);
+  }
   return options;
 }
 
 function printHelp() {
-  console.log(`Instala uma variante diagnóstica 1.1.7 a partir do .mcaddon oficial.\n\n` +
-    `Uso:\n  node tools/sync-diagnostic-addon.mjs --variant 1.1.7a --apply\n\n` +
+  console.log(`Instala uma variante diagnóstica a partir do .mcaddon oficial.\n\n` +
+    `Uso:\n  node tools/sync-diagnostic-addon.mjs --variant 1.1.8b --apply\n\n` +
     `Opções:\n  --variant TAG  variante diagnóstica; padrão: 1.1.7a\n  --apply        executa a substituição\n  --dry-run      mostra os alvos sem alterar arquivos\n  --world NAME   mundo alvo; padrão: devtest\n  --profile ID   perfil Bedrock; detectado automaticamente`);
 }
 
@@ -199,7 +216,7 @@ function main() {
       resource: readJson(path.join(extracted.resource, "manifest.json")),
     };
     const version = parseVersion(manifests.behavior.header.version, "Behavior manifest");
-    const expectedVersion = [1, 1, 7 + "abc".indexOf(options.variant.at(-1))];
+    const expectedVersion = diagnosticVersions.get(options.variant);
     if (versionText(version) !== versionText(expectedVersion)) {
       throw new Error(`Versão inesperada no diagnóstico: ${versionText(version)}; esperado ${versionText(expectedVersion)}`);
     }

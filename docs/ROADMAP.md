@@ -8,6 +8,28 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
+## v1.1.8a/b/c — matriz de água alpha-test — implementada; QA físico pendente
+
+Hipótese: uma família uniforme `alpha_test_single_sided_to_opaque` pode conservar a estabilidade estrutural comprovada na 1.1.7, eliminar a incompatibilidade de `MaterialInstances` e aproximar a translucidez por cobertura espacial binária.
+
+Escopo diagnóstico:
+
+- preservar a 1.1.7 como release e produzir A/B/C com UUIDs próprios e revisões `[1,1,11]`, `[1,1,12]` e `[1,1,13]`;
+- usar o mesmo método alpha-test na estrutura, no aspersório acomodado e na água em todas as nove permutações materiais;
+- preservar alturas e volumes lógicos, reduzindo somente a apresentação da água a uma face superior `16 × 16` por nível/rotação;
+- comparar máscaras estáticas, binárias e aninhadas de 75%, 81,25% e 87,5%, com distribuição estratificada irregular e RGB ciano válido sob alpha zero;
+- manter scripts, estados, IDs públicos, gameplay, persistência, malha sólida, acabamentos, pivôs e locators byte/semanticamente invariantes.
+
+Gate de saída:
+
+- as duas mensagens de métodos mistos desaparecem sem novas mensagens de material ou renderização;
+- estrutura e aspersório mantêm a estabilidade angular e de câmera próxima da 1.1.7;
+- pelo menos uma densidade lê como água em câmera parada/móvel, sem grade, moiré, shimmer ou transição distante intrusiva;
+- clássico/dourado, quatro níveis, gráficos convencionais/Vibrant Visuals e smoke funcional passam no `.mcaddon` exato;
+- se nenhuma variante alcançar a qualidade da 1.1.7, encerrar o ramo alpha-test sem promover compensações adicionais.
+
+Detalhes, hashes e matriz de registro: [diagnóstico 1.1.8](diagnostics/1.1.8-water-dither-matrix.md).
+
 ## v1.1.7 — separação material da caldeirinha — implementada; reteste oficial pendente
 
 Decisão: promover a composição visualmente aprovada na 1.1.7b, mantendo `opaque` na estrutura e no aspersório acomodado e `blend` somente na água. A geometria permanece a cabeça simples de seis volumes da 1.1.6.

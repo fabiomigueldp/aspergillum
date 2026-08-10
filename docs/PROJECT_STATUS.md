@@ -71,7 +71,7 @@ O reteste físico da v1.1.6 demonstrou que remover somente a segunda tampa copla
 
 ## Próxima mudança autorizada
 
-Retestar o pacote oficial 1.1.7 pelo gate curto de [TESTING.md](TESTING.md): clássico/dourado, caldeirinha vazia/cheia, aproximação da câmera e smoke funcional. As duas mensagens conhecidas de `MaterialInstances` são aceitas somente enquanto a apresentação permanecer estável e nenhuma outra mensagem atribuível ao add-on surgir.
+Comparar os três diagnósticos `1.1.8a/b/c` pelo gate dedicado de [TESTING.md](TESTING.md), sem substituir a release 1.1.7: quatro níveis, clássico/dourado, câmera parada/em movimento, curta/média/longa distância, gráficos convencionais/Vibrant Visuals e Content Log. As coberturas são 75%, 81,25% e 87,5%; a técnica só avança se eliminar as mensagens de `MaterialInstances` sem perder a qualidade visual comprovada da 1.1.7.
 
 Não faz parte do próximo marco:
 

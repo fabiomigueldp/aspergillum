@@ -4,6 +4,21 @@
 
 Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
 
+## Gate da matriz de água alpha-test — v1.1.8a/b/c
+
+- [ ] importar `Aspergillum-1.1.8a.mcaddon`, `Aspergillum-1.1.8b.mcaddon` e `Aspergillum-1.1.8c.mcaddon` em três mundos novos equivalentes, ativando somente um par BP/RP por mundo;
+- [ ] confirmar manifests `[1,1,11]`, `[1,1,12]` e `[1,1,13]` e hashes publicados no [diagnóstico 1.1.8](diagnostics/1.1.8-water-dither-matrix.md);
+- [ ] limpar Content Log, executar `/function aspergillum/dev_kit` e comparar caldeirinhas vazias/cheias com os mesmos FOV, rotação, luz e pontos de câmera;
+- [ ] inspecionar separadamente os quatro níveis, sem item e com aspersórios clássico/dourado acomodados;
+- [ ] orbitar parado e em movimento por topo, diagonais e ângulos rasantes, procurando grade, tecido, pixels agrupados, moiré, shimmer, recorte ou mudança de densidade;
+- [ ] aproximar até o plano próximo e afastar por aproximadamente 1, 4, 8, 16 e 32 blocos, registrando qualquer transição abrupta para opaco;
+- [ ] confirmar que bordas, corpo, pomo, haste e seis níveis da cabeça permanecem sólidos, sem falhas nas quatro laterais, topo ou base;
+- [ ] avaliar A=75%, B=81,25% e C=87,5% pela leitura de líquido e legibilidade do item, sem privilegiar limpeza de log sobre qualidade visual;
+- [ ] repetir em gráficos convencionais e Vibrant Visuals quando disponível;
+- [ ] confirmar ausência das mensagens `All MaterialInstances must use the same render_method for a given block` e `MaterialInstances can't mix and match opaque and transparent materials`; qualquer mensagem nova de material/renderização reprova o candidato;
+- [ ] executar smoke de encher, carregar quatro vezes, aspergir, acomodar, retirar, quebrar, mesa, reload e persistência;
+- [ ] preencher a tabela de resultados do diagnóstico com plataforma, GPU, versão Bedrock, capturas equivalentes e Content Log antes de qualquer promoção.
+
 ## Gate oficial da separação material — v1.1.7
 
 - [ ] fechar o jogo, remover packs ativos anteriores e importar somente `Aspergillum-1.1.7.mcaddon` com manifests `[1,1,10]`;

@@ -30,6 +30,7 @@
     "capture:models": "npm --prefix viewer-3d run capture --",
     "package": "npm run build && node tools/package.mjs && npm run validate:mcaddon",
     "package:render-diagnostics": "npm run build && node tools/package-render-diagnostics.mjs",
+    "package:water-diagnostics": "npm run build && node tools/package-water-dither-diagnostics.mjs",
     "check": "npm run typecheck && npm test && npm --prefix viewer-3d test && npm run validate:docs && npm run build"
   },
   "devDependencies": {

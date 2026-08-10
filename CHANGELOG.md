@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.8a / 1.1.8b / 1.1.8c — 2026-08-10 — diagnósticos de água alpha-test
+
+- produzida uma matriz isolada para avaliar a substituição do perfil misto da 1.1.7 por `alpha_test_single_sided_to_opaque` uniforme em toda a caldeirinha;
+- a água passa a uma máscara binária estática `16 × 16`, com RGB ciano preservado sob pixels transparentes e coberturas aninhadas de 75%, 81,25% e 87,5%;
+- os quatro níveis preservam origem e altura, mas usam somente a face superior, removendo dezessete conjuntos de faces inferiores/laterais encerradas no reservatório sem tocar na estrutura sólida;
+- A/B/C usam revisões monotônicas `[1,1,11]`, `[1,1,12]` e `[1,1,13]`, nomes, ícones e UUIDs próprios; a 1.1.7 permanece a release oficial;
+- scripts e gameplay são byte-idênticos nas três variantes; dentro da matriz, somente a cobertura de pixels visíveis muda;
+- Creator Tools aprovou os três pacotes com quinze warnings offline conhecidos e zero Error/Failure; o teste físico de água, movimento, distância, estrutura e Content Log permanece pendente.
+
 ## 1.1.7 — 2026-08-08
 
 - promovida a composição fisicamente aprovada na diagnóstica 1.1.7b: estrutura da caldeirinha e aspersório acomodado usam `opaque`, enquanto somente a água preserva `blend` e translucidez;
