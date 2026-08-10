@@ -8,7 +8,28 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
-## v1.1.9 — água translúcida por entidade visual — RC promovida; gate final pendente
+## v1.1.10 — observabilidade visual e legibilidade dos acabamentos — próximo marco
+
+Objetivo: tornar a baseline 1.1.9 integralmente inspecionável fora do jogo e melhorar a leitura dos nove acabamentos sem alterar geometria, estado, gameplay ou contratos públicos.
+
+Escopo autorizado:
+
+- compor a entidade `aspersorium_water_visual` sobre a caldeirinha no visualizador e nas capturas;
+- adicionar seleção/captura de acabamento, incluindo matriz reproduzível dos nove cosméticos em clássico e PBR;
+- testar diretamente a decisão pura de reconciliação da entidade de água;
+- ampliar a presença visual da empunhadura nos ícones 32×32 e elevar a separação entre castanho, vinho e preto;
+- atualizar o pack icon para a linguagem visual atual;
+- publicar revisão monotônica `[1,1,19]`, sem IDs, states, poses, pivôs ou geometrias novas.
+
+Gate de saída:
+
+- `npm run check`, `npm run package` e Creator Tools verdes;
+- capturas `water=empty|low|mid|high|full` mostram corretamente a composição bloco + entidade;
+- todos os nove acabamentos carregam nos cinco assuntos de captura em clássico/PBR;
+- ícones permanecem legíveis em 32×32 e distinguem metal e empunhadura sem depender somente do nome;
+- `.mcaddon` final preserva o smoke funcional e o Content Log limpo.
+
+## v1.1.9 — água translúcida por entidade visual — promovida e estável
 
 Hipótese: separar a água do tessellator de blocos permite conservar a excelência visual da 1.1.7b sem misturar render methods no mesmo bloco. A caldeirinha passa a ser integralmente `opaque`; somente a projeção d'água usa o material vanilla `entity_alphablend`.
 
@@ -17,7 +38,7 @@ Resultado: a 1.1.9c foi aprovada em jogo com apresentação satisfatória, funci
 Implementação:
 
 - A/B (`[1,1,15]`/`[1,1,16]`) foram encerradas antes do gate visual: o actor JSON não carregava porque `minecraft:pushable` foi removido do schema a partir do formato 1.26.10; o tipo inválido no script era consequência;
-- RC oficial `[1,1,18]`, UUIDs publicados preservados e artefato `Aspergillum-1.1.9.mcaddon`;
+- release oficial `[1,1,18]`, UUIDs publicados preservados e artefato `Aspergillum-1.1.9.mcaddon`;
 - quatro bones de água retirados das dezessete geometrias de bloco e reaproveitados numa geometria de entidade com mesma textura, área, espessura e alturas;
 - propriedade `client_sync` de quatro níveis derivada das dezessete quantidades autoritativas;
 - entidade mínima invocável pelo script, mas sem spawn egg, gravidade, colisão, componentes de push, IA, spawn natural ou interação;
@@ -32,6 +53,8 @@ Gate de saída:
 - `0..16`, carga, docking, retirada, quebra e snapshots sem regressão;
 - zero órfãos ou duplicatas após reload, chunks, explosão, `/setblock` e remoção forçada da entidade;
 - medição aceitável com 1, 16, 64 e 256 caldeirinhas carregadas.
+
+Decisão: GO registrado em [Release 1.1.9](releases/1.1.9.md). A aprovação física da candidata, a reprodução byte a byte do artefato e os gates automatizados sustentam a promoção. Upgrade direto de cópia 1.1.7 e profiler 1/16/64/256 permanecem monitoramento pós-release, sem declaração retroativa de execução.
 
 Detalhes físicos: [diagnóstico 1.1.9c](diagnostics/1.1.9c-entity-water.md). Os resultados negativos permanecem registrados em [1.1.9a](diagnostics/1.1.9a-entity-water.md) e [1.1.9b](diagnostics/1.1.9b-entity-water.md).
 
@@ -641,11 +664,11 @@ Gate de saída: runbook de [Release Candidate](RELEASE_CANDIDATE.md) e todos os 
 | snapshots por dynamic property crescerem demais | shard por chunk, limites de tamanho e testes de limpeza |
 | eventos de quebra/explosão não cobrirem todos os drops | testes físicos separados e fallback de recuperação idempotente |
 
-## Fora do escopo da V1
+## Fora do escopo histórico da v1.0
+
+Esta lista registra limites da baseline v1.0. A v1.1 promoveu conscientemente cosméticos e perfis de spray, com contratos próprios; eles não são mais itens fora de escopo.
 
 - bênçãos, dano ou efeitos automáticos em entidades;
-- múltiplos modelos/cosméticos distribuídos;
-- regulagem exposta ao jogador;
 - block entity experimental;
 - substituição de arquivos vanilla;
 - sincronização das partículas como autoridade de colisão/gameplay.

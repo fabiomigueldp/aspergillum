@@ -53,7 +53,7 @@ dist/
 
 O empacotador ordena todos os caminhos e usa timestamps ZIP fixos. Duas execuções sobre a mesma árvore devem produzir bytes e SHA-256 idênticos.
 
-Revisões com sufixo diagnóstico usam `package.json > aspergillum.releaseLabel` no nome do artefato e do relatório. Como o manifest Bedrock aceita apenas `[major, minor, patch]` numérico, as revisões publicadas nunca reutilizam uma trinca. A matriz `1.1.7a/b/c` usa `[1,1,7]..[1,1,9]` e a release 1.1.7 usa `[1,1,10]`; a matriz 1.1.8 usa `[1,1,11]..[1,1,14]`; os diagnósticos 1.1.9a/b/c usam `[1,1,15]..[1,1,17]`; a RC oficial 1.1.9 usa `[1,1,18]`. O histórico anterior até 1.1.6 permanece monotônico conforme os manifests e changelog correspondentes.
+Revisões com sufixo diagnóstico usam `package.json > aspergillum.releaseLabel` no nome do artefato e do relatório. Como o manifest Bedrock aceita apenas `[major, minor, patch]` numérico, as revisões publicadas nunca reutilizam uma trinca. A matriz `1.1.7a/b/c` usa `[1,1,7]..[1,1,9]` e a release 1.1.7 usa `[1,1,10]`; a matriz 1.1.8 usa `[1,1,11]..[1,1,14]`; os diagnósticos 1.1.9a/b/c usam `[1,1,15]..[1,1,17]`; a release 1.1.9 usa `[1,1,18]`. O histórico anterior até 1.1.6 permanece monotônico conforme os manifests e changelog correspondentes.
 
 Para instalar uma variante diagnóstica sem trocar o checkout oficial: `npm run sync:diagnostic -- --variant 1.1.7a --apply`. O comando substitui os packs compartilhados e do `devtest`, remove referências ativas das variantes Aspergillum anteriores, grava os UUIDs próprios do diagnóstico e atualiza `docs/LOCAL_INSTALLATION_MAP.md`.
 
@@ -67,7 +67,7 @@ O Creator Tools em modo `--offline` não possui o catálogo completo do jogo nem
 
 ### Exceção runtime histórica da 1.1.7
 
-O Content Log do Bedrock 26.42 registrava duas mensagens de `MaterialInstances` porque a caldeirinha 1.1.7 usava estrutura `opaque` e água `blend` no mesmo bloco. A RC 1.1.9 encerra essa exceção ao transferir a água para um passe de entidade aprovado. Nenhuma dessas mensagens é aceita no gate atual; o histórico permanece no [diagnóstico 1.1.7](diagnostics/1.1.7-render-pipeline-matrix.md).
+O Content Log do Bedrock 26.42 registrava duas mensagens de `MaterialInstances` porque a caldeirinha 1.1.7 usava estrutura `opaque` e água `blend` no mesmo bloco. A 1.1.9 encerra essa exceção ao transferir a água para um passe de entidade aprovado. Nenhuma dessas mensagens é aceita no gate atual; o histórico permanece no [diagnóstico 1.1.7](diagnostics/1.1.7-render-pipeline-matrix.md).
 
 ## Release de desenvolvimento
 

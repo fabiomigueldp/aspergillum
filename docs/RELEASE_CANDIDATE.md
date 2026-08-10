@@ -1,8 +1,10 @@
-# Runbook do Release Candidate
+# Runbook arquivado e decisão da release 1.1.9
+
+> **Decisão: GO em 2026-08-10.** A identidade, evidência automatizada, aceites e limites da promoção estão consolidados em [Release 1.1.9](releases/1.1.9.md). Este arquivo permanece como checklist físico reproduzível.
 
 ## Identidade
 
-- Release Candidate: `1.1.9`.
+- Release: `1.1.9`.
 - Revisão dos packs: `[1, 1, 18]`.
 - Baseline funcional herdada: `1.0.20`, validada pelo usuário.
 - Experimentos: nenhum.
@@ -22,7 +24,7 @@ npm run package
 npm run validate:release
 ```
 
-O gate falha quando versões divergem, catálogos `pt_BR`/`en_US` deixam de ser equivalentes, mensagens ou sons ignoram seus coordenadores, a lore perde instruções, surge `runInterval` ilimitado ou a documentação não identifica o RC.
+O gate falha quando versões divergem, catálogos `pt_BR`/`en_US` deixam de ser equivalentes, mensagens ou sons ignoram seus coordenadores, a lore perde instruções, surge `runInterval` ilimitado ou a documentação não identifica a release.
 
 ## Instalação limpa
 
@@ -68,9 +70,9 @@ Não criar LOD por intuição. Registrar `/script profiler start` e `/script pro
 - nenhum item, água ou snapshot perdido/duplicado;
 - desempenho aceitável na plataforma-alvo disponível.
 
-**No-go** ocorre diante de perda/duplicação, erro de conteúdo novo, falha de input, regressão visual bloqueante, mensagem não localizada ou degradação mensurável. As duas mensagens conhecidas de `MaterialInstances` não autorizam outras exceções. A correção deve virar uma revisão RC incremental; não se altera silenciosamente o artefato já assinado.
+**No-go** ocorre diante de perda/duplicação, erro de conteúdo novo, falha de input, regressão visual bloqueante, mensagem não localizada ou degradação mensurável. As duas mensagens conhecidas de `MaterialInstances` não autorizam outras exceções. A correção deve virar uma revisão incremental; não se altera silenciosamente o artefato já assinado.
 
-Publicação comercial também é **no-go** enquanto os 48 SFX desta RC free-tier não forem regenerados/substituídos sob licença ElevenLabs paga. Para teste não comercial, manter a atribuição “Generated with ElevenLabs”.
+Publicação comercial também é **no-go** enquanto os 48 SFX desta release free-tier não forem regenerados ou substituídos sob licença adequada. Para teste não comercial, manter a atribuição “Generated with ElevenLabs”.
 
 ## Registro da decisão
 

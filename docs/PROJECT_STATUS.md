@@ -2,7 +2,7 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.1.9` Release Candidate (revisão numérica dos packs `[1, 1, 18]`)
+- **Versão de referência:** `1.1.9` estável não comercial (revisão numérica dos packs `[1, 1, 18]`)
 - **Engine mínima:** Creator `1.26.40`
 - **Script API:** manifest com `@minecraft/server` `2.9.0` e `@minecraft/server-ui` `2.1.0`, estáveis; `@minecraft/common` `1.3.0` somente no toolchain npm
 - **Experimentos:** nenhum
@@ -12,7 +12,7 @@ A v1.0.20 foi validada em jogo e é a baseline protegida de economia, docking pa
 
 O reteste físico da v1.1.6 demonstrou que remover somente a segunda tampa coplanar não eliminava o desaparecimento angular no passe `blend` da caldeirinha. A matriz `1.1.7a/b/c` confirmou a composição B como a melhor resposta visual: estrutura/aspersório `opaque` e água `blend`. A v1.1.7 promove esse perfil sem alterar a geometria simples aprovada.
 
-A matriz 1.1.8 rejeitou alpha-test por degradação visual. A 1.1.9c separou a água em uma entidade `entity_alphablend`, eliminou a mistura de render methods no bloco e foi aprovada em jogo pelo usuário com resultado visual satisfatório, funcionalidades sem bugs observados e Content Log limpo. A RC 1.1.9 promove essa arquitetura sem alterar a autoridade lógica da água.
+A matriz 1.1.8 rejeitou alpha-test por degradação visual. A 1.1.9c separou a água em uma entidade `entity_alphablend`, eliminou a mistura de render methods no bloco e foi aprovada em jogo pelo usuário com resultado visual satisfatório, funcionalidades sem bugs observados e Content Log limpo. A 1.1.9 promove essa arquitetura como baseline estável sem alterar a autoridade lógica da água; a decisão e a proveniência estão em [Release 1.1.9](releases/1.1.9.md).
 
 ## O que está resolvido
 
@@ -49,7 +49,7 @@ A matriz 1.1.8 rejeitou alpha-test por degradação visual. A 1.1.9c separou a �
 - Mensagens dinâmicas usam `%s` sequenciais compatíveis com o runtime; lore e action bar reiniciam explicitamente a formatação antes de aplicar a cor.
 - Cues passam por adaptador Bedrock fail-soft, catálogo tipado e shuffle bag sem repetição imediata; feedback de carga mantém somente duas microgotas limitadas à caldeirinha.
 - O pipeline versiona fontes selecionadas, masters, recipes, OGGs e hashes; `validate:audio` garante 48 arquivos mono/48 kHz/Vorbis sem órfãos ou caminhos vanilla.
-- Os SFX atuais foram gerados no plano free ElevenLabs: servem à RC não comercial com atribuição e precisam ser regenerados sob assinatura paga antes de distribuição comercial.
+- Os SFX atuais foram gerados no plano free ElevenLabs: servem à release não comercial com atribuição e precisam ser regenerados ou substituídos sob licença adequada antes de distribuição comercial.
 
 ## Limitações conhecidas
 
@@ -62,18 +62,24 @@ A matriz 1.1.8 rejeitou alpha-test por degradação visual. A 1.1.9c separou a �
 | Persistência | registry por chunk é novo | precisa de QA de reload, quebra, explosão e inventário cheio no runtime |
 | Recuperação | `onBreak` estável cobre destruição; água continua não sendo um item | confirmar fisicamente explosão e comandos `destroy` sem duplicação |
 | Schema/lore | schema 3, `RawMessage`, placeholders `%s` e reset tipográfico implementados | confirmar `0/4..4/4`, ausência de `%` e lore não itálica em pt_BR/en_US |
-| Input de docking | rota dupla `onUseOn` + `onPlayerInteract` validada pelo usuário na 1.0.17a | manter como regressão no RC |
+| Input de docking | rota dupla `onUseOn` + `onPlayerInteract` validada pelo usuário na 1.0.17a | manter como regressão recorrente |
 | UX localizada | catálogo tipado de 32 mensagens, UI com 27 chaves e lore de seis linhas | confirmar `pt_BR` e `en_US` dentro do jogo, incluindo **Fechar**, nomes de perfil/acabamento e docking |
 | Desempenho | nenhum LOD sem evidência | medir profiler com 1, 4, 8 e 16 jogadores antes de autorizar alteração |
 | Entrada vanilla | `playerSwingStart` é after-event | alguns dispositivos podem mostrar feedback breve de mineração |
 | Docking 1.0.20 | validado em jogo pelo usuário; domínio e migração V1→V2 continuam cobertos automaticamente | manter `12+4`, `14+4`, `16+4`, reload, quebra e HUD como regressão da 1.1.2 |
 | Polimento visual 1.0.19b | capturas PBR reproduzíveis aprovam coerência estrutural fora do jogo | confirmar silhueta, mipmaps, culling e materiais no `.mcaddon` importado, em clássico/Vibrant Visuals |
-| Água por entidade 1.1.9 | perfil da C aprovado em jogo, sem bugs observados ou erros no Content Log; bloco opaco e projeção translúcida autorreparável | medir escala com muitas caldeirinhas e confirmar upgrade de uma cópia de mundo persistente antes do GO final |
-| Compatibilidade 1.1.9 | UUIDs oficiais, IDs, states, pivôs, locators e contratos de gameplay são preservados; somente a apresentação da água muda | validar mundo existente da 1.1.7 antes e depois do upgrade, sem cache concorrente |
+| Água por entidade 1.1.9 | perfil da C aprovado em jogo, sem bugs observados ou erros no Content Log; bloco opaco e projeção translúcida autorreparável | manter profiler com muitas caldeirinhas como monitoramento pós-release |
+| Compatibilidade 1.1.9 | UUIDs oficiais, IDs, states, pivôs, locators e contratos de gameplay são preservados; somente a apresentação da água muda | manter upgrade de cópia persistente 1.1.7 como regressão pós-release |
 
 ## Próxima mudança autorizada
 
-Empacotar e testar somente a RC oficial `1.1.9` pelo gate dedicado de [TESTING.md](TESTING.md). A arquitetura visual já foi aprovada na diagnóstica C; o gate restante cobre o artefato oficial, atualização direta de uma cópia de mundo 1.1.7, autorreparo após reload/chunks e custo com muitas caldeirinhas.
+Produzir a `1.1.10` como revisão de polimento sem alterar gameplay, contratos públicos ou a baseline física aprovada:
+
+- compor a entidade de água nas capturas reproduzíveis da caldeirinha;
+- permitir captura explícita de todos os acabamentos;
+- cobrir a política de reconciliação da água por testes puros;
+- melhorar a legibilidade dos ícones e o contraste dos nove acabamentos em clássico/PBR;
+- preservar integralmente binding, poses, animações, VFX, estado, IDs e geometrias autorais.
 
 Não faz parte do próximo marco:
 

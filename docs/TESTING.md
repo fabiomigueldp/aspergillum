@@ -4,7 +4,9 @@
 
 Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
 
-## Gate do Release Candidate oficial — v1.1.9
+## Gate histórico da release oficial — v1.1.9
+
+**Decisão:** GO em 2026-08-10, conforme [registro de promoção](releases/1.1.9.md). A lista abaixo permanece como runbook reproduzível. Itens sem evidência registrada não são retroativamente marcados como executados; upgrade de cópia 1.1.7 e profiler 1/16/64/256 seguem como monitoramento pós-release.
 
 - [ ] preservar o mundo original e criar uma cópia que esteja usando a release 1.1.7; fechar o jogo e importar somente `Aspergillum-1.1.9.mcaddon`;
 - [ ] confirmar manifests `[1,1,18]` e SHA-256 `b0f2a02440f6ef2e551e2cd69699f4fde29b49be0272287f41c750a5117192da`;
@@ -25,7 +27,7 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 - [ ] repetir reload e descarregamento de chunk, remover a projeção com `/kill @e[type=aspergillum:aspersorium_water_visual]` e confirmar autorreparo sem duplicação ou mudança lógica;
 - [ ] medir custo com 1, 16, 64 e 256 caldeirinhas não vazias carregadas, registrando entidades, CPU/tick e memória; a medição de 256 é stress, não uma expectativa de construção normal;
 - [ ] executar smoke test de carga, aspersão, docking, retirada, quebra, Mesa do Sacristão, cosméticos e persistência no mundo migrado;
-- [ ] registrar plataforma, versão Bedrock, hash, capturas/vídeo, Content Log e decisão GO/NO-GO no [runbook da RC](RELEASE_CANDIDATE.md).
+- [x] registrar hash, Content Log observado e decisão GO no [registro da release](releases/1.1.9.md); plataforma/capturas adicionais permanecem no [runbook histórico](RELEASE_CANDIDATE.md).
 
 ## Gate da água alpha-test com UV corrigido — v1.1.8d
 

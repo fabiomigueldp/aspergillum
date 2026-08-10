@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.9 RC — 2026-08-10 — água translúcida em passe de entidade
+## 1.1.9 — 2026-08-10 — água translúcida em passe de entidade
 
 - promovida a arquitetura fisicamente aprovada na diagnóstica 1.1.9c: bloco da caldeirinha e aspersório acomodado usam exclusivamente `opaque`, enquanto a água preserva a qualidade translúcida em uma entidade visual `entity_alphablend`;
 - os quatro volumes continuam autorados uma única vez em `assets-src/models/aspersorium.model.json`; o gerador os deriva para a geometria da entidade e os exclui das dezessete geometrias rotacionadas do bloco, impedindo divergência manual;
@@ -8,7 +8,8 @@
 - promovida a Behavior Entity mínima validada em jogo, sem `minecraft:pushable`, gravidade, colisão, spawn egg, IA ou componentes cosméticos desnecessários;
 - validadores oficiais passam a exigir bloco uniformemente opaco, entidade mínima, geometria derivada, material `entity_alphablend`, propriedade client-sync `1..4`, textura dedicada e lifecycle no JavaScript compilado;
 - preservados UUIDs oficiais, IDs públicos, states `water_base + water_offset`, snapshots, poses, animações, VFX, áudio e todos os contratos de mundo; revisão dos packs elevada monotonicamente para `[1,1,18]`;
-- o usuário confirmou resultado visual satisfatório, ausência de bugs nos testes em jogo realizados e Content Log sem erros; a RC final permanece sujeita somente ao gate de atualização de mundo persistente e escala.
+- o usuário confirmou resultado visual satisfatório, ausência de bugs nos testes em jogo realizados e Content Log sem erros; a revisão foi promovida à baseline estável não comercial por decisão GO registrada em `docs/releases/1.1.9.md`;
+- upgrade direto de uma cópia persistente da 1.1.7 e profiler com 1/16/64/256 caldeirinhas permanecem monitoramento pós-release explicitamente não reivindicado como executado.
 - o artefato oficial `Aspergillum-1.1.9.mcaddon` tem SHA-256 `b0f2a02440f6ef2e551e2cd69699f4fde29b49be0272287f41c750a5117192da`; Creator Tools aprovou com onze warnings offline conhecidos e zero warning inesperado, Error ou Failure.
 
 ## 1.1.9c — 2026-08-10 — entidade visual mínima compatível com schema 1.26.40

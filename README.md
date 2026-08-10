@@ -2,7 +2,7 @@
 
 Add-On para Minecraft: Bedrock Edition 26.40 que adiciona um **aspersório litúrgico funcional**, uma **caldeirinha (aspersorium)** e uma **Mesa do Sacristão** para configuração gratuita. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão 1.1.9 RC:** preserva a cabeça simples de seis volumes e promove a arquitetura visual aprovada na 1.1.9c: caldeirinha integralmente opaca e água translúcida numa entidade visual mínima, sem materiais mistos no bloco nem erros no Content Log.
+> **Versão estável 1.1.9:** preserva a cabeça simples de seis volumes e promove a arquitetura visual aprovada na 1.1.9c: caldeirinha integralmente opaca e água translúcida numa entidade visual mínima, sem materiais mistos no bloco nem erros no Content Log. O registro de GO e a identidade do artefato estão em [`docs/releases/1.1.9.md`](docs/releases/1.1.9.md).
 
 ## Instalação rápida
 
@@ -83,7 +83,7 @@ Comandos importantes:
 
 O modelo autoral fica em [`assets-src/models/aspergillum.model.json`](assets-src/models/aspergillum.model.json). [`tools/generate-assets.mjs`](tools/generate-assets.mjs) remove metadados de produção, respeita as máscaras autorais, empacota apenas as faces visíveis, gera a geometria Bedrock distribuída e pinta deterministicamente color/normal/MER. A referência visual em [`assets-src/concept-art/aspergillum-concept.png`](assets-src/concept-art/aspergillum-concept.png) orienta proporções e materiais, mas não é distribuída no add-on.
 
-Os SFX desta RC foram gerados com ElevenLabs no plano gratuito e, portanto, são **somente para validação não comercial e com atribuição**. Generated with ElevenLabs. Uma publicação comercial exige regenerar as fontes numa assinatura paga e substituir a proveniência antes do gate de release; veja [Contrato de áudio](docs/AUDIO_DESIGN_CONTRACT.md).
+Os SFX desta release foram gerados com ElevenLabs no plano gratuito e, portanto, são **somente para validação não comercial e com atribuição**. Generated with ElevenLabs. Uma publicação comercial exige regenerar ou substituir as fontes sob licença adequada e atualizar a proveniência; veja [Contrato de áudio](docs/AUDIO_DESIGN_CONTRACT.md).
 
 ## Estrutura
 
