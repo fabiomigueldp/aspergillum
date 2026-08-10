@@ -2,7 +2,7 @@
 
 Este documento registra os valores estruturais comprovados até a v1.0.15d, a integração VFX corrigida até a v1.0.16c e o pipeline de superfície/coerência de composição atualizado na v1.0.19b. Eles são baseline, não sugestões de calibração.
 
-A v1.1 adiciona variantes de superfície, perfis de spray, a transição limpa do pomo da v1.1.4, as junções de tampa única da cabeça da v1.1.6 e a separação material da caldeirinha na v1.1.7. Nenhum acabamento pode alterar bones, pivôs, grip, locator ou poses abaixo. `classic` mantém a linguagem material da 1.0.20; as oito variantes trocam apenas color/normal/MER derivados do catálogo. Item empunhado, caldeirinha e mesa derivam as mesmas quatorze peças, máscaras e UVs da fonte autoral, sem exceção geométrica local.
+A v1.1 adiciona variantes de superfície, perfis de spray, a transição limpa do pomo da v1.1.4, as junções de tampa única da cabeça da v1.1.6 e a água por entidade da caldeirinha na v1.1.9. Nenhum acabamento pode alterar bones, pivôs, grip, locator ou poses abaixo. `classic` mantém a linguagem material da 1.0.20; as oito variantes trocam apenas color/normal/MER derivados do catálogo. Item empunhado, caldeirinha e mesa derivam as mesmas quatorze peças, máscaras e UVs da fonte autoral, sem exceção geométrica local.
 
 ## Attachable
 
@@ -37,8 +37,7 @@ rightItem (holder)
 | Padding do atlas | `2` texels dilatados ao redor de cada ilha para proteger mipmaps |
 | Superfícies | grip `leather`; pomo/haste/cabeça `silver`; férula `gold`; corpo da cabeça `perforated_silver` |
 | Cabeça v1.1.6 | seis níveis preservados; quatro paredes integrais por volume e exatamente uma tampa horizontal renderizada por junção |
-| Caldeirinha v1.1.7 | estrutura e réplica acomodada `opaque`; somente os bones de água usam a material instance `water` em `blend` |
-| Diagnóstico v1.1.9c | preserva exatamente área, espessura, alturas e textura da água, mas transfere seus quatro bones para uma entidade mínima `entity_alphablend`; não é baseline até aprovação física; A/B não registraram a entidade por falha no actor JSON |
+| Caldeirinha v1.1.9 | estrutura e réplica acomodada integralmente `opaque`; os quatro níveis autorados são gerados exclusivamente numa entidade mínima `entity_alphablend`, fisicamente aprovada na 1.1.9c |
 | Fonte autoral do bloco | `assets-src/models/aspersorium.model.json` |
 | Composição acomodada | as quatorze peças, máscaras e UVs do item são transformadas pelo gerador; não existe réplica simplificada |
 | Primeira pessoa: posição aditiva | `[0, 0, 0]` |

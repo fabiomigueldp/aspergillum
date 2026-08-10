@@ -106,7 +106,7 @@ describe("water-dither diagnostic packaging", () => {
 
   it("reduces every water level to one 16x16 top face without moving its surface", () => {
     const source = JSON.parse(fs.readFileSync(
-      path.join(root, "packs", "resource", "models", "blocks", "aspersorium.geo.json"),
+      path.join(root, "assets-src", "models", "aspersorium.model.json"),
       "utf8",
     ));
     const output = simplifyWaterGeometry(source);
@@ -124,7 +124,7 @@ describe("water-dither diagnostic packaging", () => {
 
   it("offsets the corrected D mask inside the matching atlas without moving the water", () => {
     const source = JSON.parse(fs.readFileSync(
-      path.join(root, "packs", "resource", "models", "blocks", "aspersorium.geo.json"),
+      path.join(root, "assets-src", "models", "aspersorium.model.json"),
       "utf8",
     ));
     const output = simplifyWaterGeometry(source, variants[3]);

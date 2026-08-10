@@ -2,12 +2,12 @@
 
 Add-On para Minecraft: Bedrock Edition 26.40 que adiciona um **aspersório litúrgico funcional**, uma **caldeirinha (aspersorium)** e uma **Mesa do Sacristão** para configuração gratuita. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão 1.1.7 RC:** preserva a cabeça simples de seis volumes e separa a estrutura opaca da água translúcida na caldeirinha. O perfil foi aprovado em jogo após a matriz diagnóstica 1.1.7a/b/c e estabiliza topo, base e laterais da composição acomodada.
+> **Versão 1.1.9 RC:** preserva a cabeça simples de seis volumes e promove a arquitetura visual aprovada na 1.1.9c: caldeirinha integralmente opaca e água translúcida numa entidade visual mínima, sem materiais mistos no bloco nem erros no Content Log.
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/releases/Aspergillum-1.1.7.mcaddon`](dist/releases/Aspergillum-1.1.7.mcaddon) com o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.1.9.mcaddon`](dist/releases/Aspergillum-1.1.9.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
@@ -51,7 +51,7 @@ As cargas permanecem finitas e persistentes. Ao acomodar, a transferência satur
 - arquitetura híbrida deliberada: o servidor compartilha um único frame de release entre áudio, bridge e primeiro pulso, enquanto o script conserva o leque controlável; não há duplicação pela timeline nem emissão em tentativa vazia;
 - material opaco `entity`, textura com alfa integral, cubos com espessura positiva e UVs per-face explícitos somente nas superfícies renderizadas, sempre com footprint inteiro mínimo de um texel;
 - atlas `128 × 128` gerado da fonte semântica `assets-src/models/aspergillum.model.json`, com superfícies coerentes de couro, prata, ouro e prata perfurada, padding dilatado de dois texels e mapas color/normal/MER derivados do mesmo layout;
-- quatro níveis visuais de água e versão decorativa com o aspersório acomodado;
+- quatro níveis visuais de água projetados por entidade translúcida autorreparável, enquanto bloco e aspersório acomodado permanecem integralmente opacos;
 - mesa de madeira escura com tampo de veludo verde, ferragens discretas e réplica derivada da mesma malha/texturas do item; nove materiais acompanham o acabamento selecionado;
 - rotação visual em 16 direções por estado próprio e geometrias estáveis, sem traits de rotação experimentais;
 - texturas convencionais como fallback e texture sets PBR para Vibrant Visuals;

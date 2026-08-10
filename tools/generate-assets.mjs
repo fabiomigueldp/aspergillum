@@ -9,6 +9,14 @@ const generatedRoot = process.env.ASPERGILLUM_GENERATED_ROOT
 const aspergillumModelSource = process.env.ASPERGILLUM_MODEL_SOURCE
   ? path.resolve(root, process.env.ASPERGILLUM_MODEL_SOURCE)
   : path.join(root, "assets-src/models/aspergillum.model.json");
+const retiredGeneratedAssets = [
+  "packs/resource/textures/entity/thurible.png",
+  "packs/resource/textures/entity/thurible_normal.png",
+  "packs/resource/textures/entity/thurible_mer.png",
+  "packs/resource/textures/items/thurible.png",
+  "packs/resource/textures/particle/incense_smoke.png",
+  "packs/resource/textures/particle/incense_veil.png",
+];
 
 for (const [label, candidate] of [
   ["generated output", generatedRoot],
@@ -101,6 +109,7 @@ const SACRISTAN_TABLE_ATLAS_SIZE = 256;
 const TABLE_ITEM_ATLAS_OFFSET = [128, 0];
 const TABLE_ITEM_MODEL_TRANSLATION = [6, -12.8, -1];
 const TABLE_ITEM_MODEL_SCALE = 0.72;
+const ASPERSORIUM_WATER_BONES = new Set(["water_low", "water_mid", "water_high", "water_full"]);
 const customizationCatalog = JSON.parse(
   fs.readFileSync(path.join(root, "assets-src/customization/catalog.json"), "utf8"),
 );
@@ -118,8 +127,15 @@ function cosmeticItemIdentifier(cosmetic) {
 function aspersoriumMaterialInstances(texture) {
   return {
     "*": { texture, render_method: "opaque" },
-    water: { texture: "aspergillum_holy_water", render_method: "blend" },
   };
+}
+
+for (const relative of retiredGeneratedAssets) {
+  const target = path.resolve(generatedRoot, relative);
+  if (target !== generatedRoot && !target.startsWith(`${generatedRoot}${path.sep}`)) {
+    throw new Error(`Refusing to remove retired generated asset outside the output root: ${target}`);
+  }
+  fs.rmSync(target, { force: true });
 }
 
 function faceTexelSize(size, faceName, texelsPerUnit = 1) {
@@ -387,6 +403,7 @@ const water = png(32, 32, (x, y) => {
 });
 for (let i = 0; i < 32; i += 1) setPixel(water, i, (i * 3 + 5) % 32, [164, 229, 242, 210]);
 write("packs/resource/textures/blocks/holy_water.png", water);
+write("packs/resource/textures/entity/aspersorium_water_visual.png", water);
 
 const particle = png(16, 16, (x, y) => {
   const dx = (x - 7.5) / 7.5;
@@ -590,6 +607,31 @@ const geometrySource = JSON.parse(
   fs.readFileSync(path.join(root, "assets-src/models/aspersorium.model.json"), "utf8"),
 );
 const baseGeometry = geometrySource["minecraft:geometry"][0];
+const authoredWaterBones = baseGeometry.bones.filter((bone) => ASPERSORIUM_WATER_BONES.has(bone.name));
+if (authoredWaterBones.length !== ASPERSORIUM_WATER_BONES.size) {
+  throw new Error("Aspersorium geometry requires all four authored water bones");
+}
+const entityWaterBones = structuredClone(authoredWaterBones);
+for (const bone of entityWaterBones) {
+  for (const cube of bone.cubes ?? []) {
+    for (const face of Object.values(cube.uv ?? {})) delete face.material_instance;
+  }
+}
+writeJson("packs/resource/models/entity/aspersorium_water_visual.geo.json", {
+  format_version: "1.16.0",
+  "minecraft:geometry": [{
+    description: {
+      identifier: "geometry.aspergillum.aspersorium_water_visual",
+      texture_width: 32,
+      texture_height: 32,
+      visible_bounds_width: 1.2,
+      visible_bounds_height: 1.2,
+      visible_bounds_offset: [0, 0.35, 0],
+    },
+    bones: [{ name: "root", pivot: [0, 0, 0] }, ...entityWaterBones],
+  }],
+});
+baseGeometry.bones = baseGeometry.bones.filter((bone) => !ASPERSORIUM_WATER_BONES.has(bone.name));
 const restingAspergillum = baseGeometry.bones.find((bone) => bone.name === "resting_aspergillum");
 if (!restingAspergillum) throw new Error("Aspersorium geometry requires the resting_aspergillum bone");
 restingAspergillum.cubes = buildDockedAspergillumCubes();
@@ -679,8 +721,13 @@ if (blockContent.description.traits) {
   if (Object.keys(blockContent.description.traits).length === 0) delete blockContent.description.traits;
 }
 const boneVisibility = blockContent.components["minecraft:geometry"].bone_visibility;
+for (const boneName of ASPERSORIUM_WATER_BONES) delete boneVisibility[boneName];
 blockContent.components["minecraft:geometry"].identifier = "geometry.aspergillum.aspersorium.rotation_0";
 delete blockContent.components["minecraft:geometry"].n_way_visual_rotation;
+blockContent.components["minecraft:tick"] = {
+  interval_range: [80, 120],
+  looping: true,
+};
 blockContent.permutations = blockContent.permutations.filter(
   (permutation) =>
     !permutation.condition.includes("minecraft:sixteen_way_rotation") &&

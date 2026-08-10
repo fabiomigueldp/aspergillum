@@ -2,7 +2,7 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.1.7` Release Candidate (revisão numérica dos packs `[1, 1, 10]`)
+- **Versão de referência:** `1.1.9` Release Candidate (revisão numérica dos packs `[1, 1, 18]`)
 - **Engine mínima:** Creator `1.26.40`
 - **Script API:** manifest com `@minecraft/server` `2.9.0` e `@minecraft/server-ui` `2.1.0`, estáveis; `@minecraft/common` `1.3.0` somente no toolchain npm
 - **Experimentos:** nenhum
@@ -12,6 +12,8 @@ A v1.0.20 foi validada em jogo e é a baseline protegida de economia, docking pa
 
 O reteste físico da v1.1.6 demonstrou que remover somente a segunda tampa coplanar não eliminava o desaparecimento angular no passe `blend` da caldeirinha. A matriz `1.1.7a/b/c` confirmou a composição B como a melhor resposta visual: estrutura/aspersório `opaque` e água `blend`. A v1.1.7 promove esse perfil sem alterar a geometria simples aprovada.
 
+A matriz 1.1.8 rejeitou alpha-test por degradação visual. A 1.1.9c separou a água em uma entidade `entity_alphablend`, eliminou a mistura de render methods no bloco e foi aprovada em jogo pelo usuário com resultado visual satisfatório, funcionalidades sem bugs observados e Content Log limpo. A RC 1.1.9 promove essa arquitetura sem alterar a autoridade lógica da água.
+
 ## O que está resolvido
 
 - O attachable usa a mão direita por item-slot binding e acompanha integralmente o braço.
@@ -20,7 +22,7 @@ O reteste físico da v1.1.6 demonstrou que remover somente a segunda tampa copla
 - A pose de terceira pessoa está suficientemente calibrada para iniciar a fase de animação.
 - A malha candidata mantém comprimento, largura máxima, grip e locator aprovados; quatorze peças com UV per-face inteiro em densidade 2× produzem o cabo de oito peças e a cabeça de seis volumes com quatro paredes integrais, sem pares de faces renderizadas coincidentes.
 - O estado acomodado não possui mais uma cópia simplificada: origem, tamanho e UV de cada cubo são derivados automaticamente do modelo empunhado e validados face a face.
-- Na caldeirinha, a estrutura e o aspersório acomodado usam o passe `opaque`; somente a água usa `blend`, preservando translucidez e estabilidade visual em todos os ângulos testados.
+- Na caldeirinha, estrutura e aspersório acomodado usam um bloco integralmente `opaque`; somente a projeção descartável da água usa `entity_alphablend`, preservando translucidez e estabilidade sem materiais mistos.
 - Sobrevivência e Aventura consomem cargas; Criativo preserva uma carga real já existente; Espectador é negado.
 - O carregamento usa `instance_id`, uma sessão por jogador, lock leve por bloco, revalidação e rollback defensivo.
 - A rajada usa 36 gotas em seis pulsos, leque anisotrópico, gravidade, colisão e direção suavizada conforme a câmera.
@@ -66,13 +68,12 @@ O reteste físico da v1.1.6 demonstrou que remover somente a segunda tampa copla
 | Entrada vanilla | `playerSwingStart` é after-event | alguns dispositivos podem mostrar feedback breve de mineração |
 | Docking 1.0.20 | validado em jogo pelo usuário; domínio e migração V1→V2 continuam cobertos automaticamente | manter `12+4`, `14+4`, `16+4`, reload, quebra e HUD como regressão da 1.1.2 |
 | Polimento visual 1.0.19b | capturas PBR reproduzíveis aprovam coerência estrutural fora do jogo | confirmar silhueta, mipmaps, culling e materiais no `.mcaddon` importado, em clássico/Vibrant Visuals |
-| Material da caldeirinha 1.1.7 | perfil misto `opaque`/`blend` aprovado em jogo, com todas as funcionalidades e apresentações estáveis | o runtime 26.42 registra warning/error conhecidos de `MaterialInstances`; reavaliar se surgir regressão visual correlata ou mudança de plataforma |
-| Água por entidade 1.1.9c | candidato usa bloco integralmente `opaque` e projeção mínima `entity_alphablend`, com lifecycle autorreparável e sem autoridade de gameplay; A/B falharam no registro por actor JSON incompatível | confirmar primeiro ausência de parse error e criação; depois equivalência visual, reload/chunks, remoção/recriação e custo com muitas caldeirinhas |
-| Compatibilidade 1.1.7 | IDs, states, pivôs, locators e contratos de gameplay são preservados; somente o perfil de renderização muda | validar mundo existente da 1.0.20/1.1.6 antes e depois do upgrade, sem cache concorrente |
+| Água por entidade 1.1.9 | perfil da C aprovado em jogo, sem bugs observados ou erros no Content Log; bloco opaco e projeção translúcida autorreparável | medir escala com muitas caldeirinhas e confirmar upgrade de uma cópia de mundo persistente antes do GO final |
+| Compatibilidade 1.1.9 | UUIDs oficiais, IDs, states, pivôs, locators e contratos de gameplay são preservados; somente a apresentação da água muda | validar mundo existente da 1.1.7 antes e depois do upgrade, sem cache concorrente |
 
 ## Próxima mudança autorizada
 
-Testar somente o diagnóstico `1.1.9c` pelo gate dedicado de [TESTING.md](TESTING.md), sem substituir a release 1.1.7. A matriz 1.1.8 encerrou a hipótese alpha-test. A C remove o `minecraft:pushable` que invalidou o actor JSON em A/B e mantém a separação arquitetural — bloco integralmente `opaque` e água `entity_alphablend` — preservando o estado `0..16` como autoridade.
+Empacotar e testar somente a RC oficial `1.1.9` pelo gate dedicado de [TESTING.md](TESTING.md). A arquitetura visual já foi aprovada na diagnóstica C; o gate restante cobre o artefato oficial, atualização direta de uma cópia de mundo 1.1.7, autorreparo após reload/chunks e custo com muitas caldeirinhas.
 
 Não faz parte do próximo marco:
 

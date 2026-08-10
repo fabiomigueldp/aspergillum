@@ -130,39 +130,93 @@ const blockStateSpace = Object.values(blockStates).reduce(
 if (blockStateSpace !== 5184) {
   errors.push(`Aspersorium must expose the reviewed 5184-state permutation space, found ${blockStateSpace}`);
 }
-const expectedWaterVisibility = {
-  water_low: "q.block_state('aspergillum:water_base') == 0 && q.block_state('aspergillum:water_offset') >= 1 && q.block_state('aspergillum:water_offset') <= 4",
-  water_mid: "q.block_state('aspergillum:water_base') == 0 && q.block_state('aspergillum:water_offset') >= 5",
-  water_high: "q.block_state('aspergillum:water_base') == 9 && q.block_state('aspergillum:water_offset') <= 3",
-  water_full: "q.block_state('aspergillum:water_base') == 9 && q.block_state('aspergillum:water_offset') >= 4",
-};
+const expectedWaterBones = ["water_low", "water_mid", "water_high", "water_full"];
 const baseBoneVisibility = baseGeometry?.bone_visibility ?? {};
-for (const [bone, condition] of Object.entries(expectedWaterVisibility)) {
-  if (baseBoneVisibility[bone] !== condition) {
-    errors.push(`Aspersorium ${bone} must represent its approved quarter-capacity range`);
-  }
+for (const bone of expectedWaterBones) {
+  if (bone in baseBoneVisibility) errors.push(`Official Aspersorium block must not render entity-owned bone ${bone}`);
 }
 const aspersoriumGeometry = JSON.parse(
   fs.readFileSync(path.join(packRoots[1], "models", "blocks", "aspersorium.geo.json"), "utf8"),
 )["minecraft:geometry"]?.[0];
-const waterBones = new Map(
-  (aspersoriumGeometry?.bones ?? [])
-    .filter((bone) => bone.name.startsWith("water_"))
-    .map((bone) => [bone.name, bone]),
-);
-for (const boneName of Object.keys(expectedWaterVisibility)) {
-  if (!waterBones.has(boneName)) errors.push(`Aspersorium geometry is missing ${boneName}`);
+if ((aspersoriumGeometry?.bones ?? []).some((bone) => expectedWaterBones.includes(bone.name))) {
+  errors.push("Official Aspersorium block geometry must not contain entity-owned water bones");
 }
 const materialInstances = block?.components?.["minecraft:material_instances"] ?? {};
 function validateAspersoriumMaterialProfile(instances, label) {
-  if (instances?.["*"]?.render_method !== "opaque") {
-    errors.push(`${label} structure must use the physically validated opaque render method`);
-  }
-  if (instances?.water?.render_method !== "blend") {
-    errors.push(`${label} water must preserve the physically validated blend render method`);
+  if (Object.keys(instances ?? {}).join() !== "*" || instances?.["*"]?.render_method !== "opaque") {
+    errors.push(`${label} must contain only the physically validated opaque structure material`);
   }
 }
 validateAspersoriumMaterialProfile(materialInstances, "Base Aspersorium material profile");
+if (JSON.stringify(block?.components?.["minecraft:tick"])
+  !== JSON.stringify({ interval_range: [80, 120], looping: true })) {
+  errors.push("Official Aspersorium requires its distributed 80..120 tick visual reconciliation");
+}
+
+const waterEntityDefinition = JSON.parse(
+  fs.readFileSync(path.join(packRoots[0], "entities", "aspersorium_water_visual.entity.json"), "utf8"),
+)["minecraft:entity"];
+const waterEntityDescription = waterEntityDefinition?.description;
+if (waterEntityDescription?.identifier !== "aspergillum:aspersorium_water_visual"
+  || waterEntityDescription?.is_spawnable !== false
+  || waterEntityDescription?.is_summonable !== true) {
+  errors.push("Official water visual must be script-spawnable without exposing a spawn egg");
+}
+const expectedWaterEntityComponents = [
+  "minecraft:persistent",
+  "minecraft:cannot_be_attacked",
+  "minecraft:physics",
+  "minecraft:collision_box",
+];
+const waterEntityComponents = waterEntityDefinition?.components ?? {};
+if (JSON.stringify(Object.keys(waterEntityComponents)) !== JSON.stringify(expectedWaterEntityComponents)
+  || waterEntityComponents["minecraft:physics"]?.has_gravity !== false
+  || waterEntityComponents["minecraft:physics"]?.has_collision !== false
+  || waterEntityComponents["minecraft:collision_box"]?.width !== 0
+  || waterEntityComponents["minecraft:collision_box"]?.height !== 0) {
+  errors.push("Official water visual must preserve the approved minimal nonphysical component profile");
+}
+if (waterEntityComponents["minecraft:pushable"] !== undefined) {
+  errors.push("Legacy minecraft:pushable is invalid in entity schema 1.26.40");
+}
+const waterLevelProperty = waterEntityDescription?.properties?.["aspergillum:water_visual_level"];
+if (waterLevelProperty?.client_sync !== true
+  || JSON.stringify(waterLevelProperty?.range) !== JSON.stringify([1, 4])) {
+  errors.push("Official water visual must client-sync exactly the four visual levels");
+}
+const waterClientDescription = JSON.parse(
+  fs.readFileSync(path.join(packRoots[1], "entity", "aspersorium_water_visual.entity.json"), "utf8"),
+)["minecraft:client_entity"]?.description;
+if (waterClientDescription?.identifier !== "aspergillum:aspersorium_water_visual"
+  || waterClientDescription?.materials?.default !== "entity_alphablend"
+  || waterClientDescription?.textures?.default !== "textures/entity/aspersorium_water_visual"
+  || waterClientDescription?.geometry?.default !== "geometry.aspergillum.aspersorium_water_visual") {
+  errors.push("Official water visual client entity must preserve its isolated entity_alphablend pass");
+}
+const waterEntityGeometry = JSON.parse(
+  fs.readFileSync(path.join(packRoots[1], "models", "entity", "aspersorium_water_visual.geo.json"), "utf8"),
+)["minecraft:geometry"]?.[0];
+const waterEntityBones = new Map((waterEntityGeometry?.bones ?? []).map((bone) => [bone.name, bone]));
+if (waterEntityGeometry?.description?.identifier !== "geometry.aspergillum.aspersorium_water_visual"
+  || waterEntityGeometry?.description?.texture_width !== 32
+  || waterEntityGeometry?.description?.texture_height !== 32
+  || JSON.stringify([...waterEntityBones.keys()]) !== JSON.stringify(["root", ...expectedWaterBones])) {
+  errors.push("Official entity geometry must contain exactly root plus the four authored water levels");
+}
+const authoredAspersoriumGeometry = JSON.parse(
+  fs.readFileSync(path.join(root, "assets-src", "models", "aspersorium.model.json"), "utf8"),
+)["minecraft:geometry"]?.[0];
+for (const boneName of expectedWaterBones) {
+  const authored = authoredAspersoriumGeometry?.bones?.find((bone) => bone.name === boneName)?.cubes?.[0];
+  const generated = waterEntityBones.get(boneName)?.cubes?.[0];
+  if (JSON.stringify(generated?.origin) !== JSON.stringify(authored?.origin)
+    || JSON.stringify(generated?.size) !== JSON.stringify(authored?.size)) {
+    errors.push(`Entity water level ${boneName} must derive its origin and size from the authored Aspersorium model`);
+  }
+  if (Object.values(generated?.uv ?? {}).some((face) => face.material_instance !== undefined)) {
+    errors.push(`Entity water level ${boneName} cannot retain block material-instance references`);
+  }
+}
 if (block?.components?.["minecraft:movable"]?.movement_type !== "immovable") {
   errors.push("Persistent docked metadata requires the Aspersorium to remain immovable");
 }
@@ -866,6 +920,11 @@ if (itemComponents?.["minecraft:swing_duration"]?.value !== itemComponents?.["mi
 }
 
 const compiledScript = fs.readFileSync(path.join(packRoots[0], "scripts", "main.js"), "utf8");
+if (!compiledScript.includes("aspergillum:aspersorium_water_visual")
+  || !compiledScript.includes("water_visual_level")
+  || !compiledScript.includes("Could not reconcile water visual")) {
+  errors.push("Compiled release script must include the approved water-visual reconciliation lifecycle");
+}
 if (!compiledScript.includes("playAnimation")
   || !compiledScript.includes("animation.aspergillum.player.load")) {
   errors.push("Compiled script must preserve the accepted one-shot loading animation");
@@ -979,6 +1038,11 @@ const required = [
   "packs/resource/textures/blocks/sacristan_table.png",
   "packs/resource/textures/particle/holy_water.png",
   "packs/resource/models/blocks/aspersorium.rotations.geo.json",
+  "packs/behavior/entities/aspersorium_water_visual.entity.json",
+  "packs/resource/entity/aspersorium_water_visual.entity.json",
+  "packs/resource/models/entity/aspersorium_water_visual.geo.json",
+  "packs/resource/render_controllers/aspersorium_water_visual.render_controllers.json",
+  "packs/resource/textures/entity/aspersorium_water_visual.png",
   "packs/resource/models/blocks/sacristan_table.geo.json",
   "packs/resource/models/blocks/sacristan_table.rotations.geo.json",
   "packs/resource/animations/aspergillum.action.animation.json",

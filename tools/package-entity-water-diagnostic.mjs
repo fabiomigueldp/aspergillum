@@ -89,7 +89,8 @@ function removeBlockWaterBones(geometryDefinition) {
   for (const geometry of geometries) {
     const before = geometry.bones?.length ?? 0;
     geometry.bones = (geometry.bones ?? []).filter((bone) => !waterBones.has(bone.name));
-    if (before - geometry.bones.length !== waterBones.size) {
+    const removed = before - geometry.bones.length;
+    if (removed !== 0 && removed !== waterBones.size) {
       throw new Error(`${geometry.description?.identifier ?? "unknown"} did not contain all four water bones`);
     }
   }
@@ -177,7 +178,6 @@ async function compileDiagnosticScript(stageRoot) {
     external: ["@minecraft/server", "@minecraft/server-ui"],
     target: "es2022",
     outfile,
-    define: { ASPERSORIUM_WATER_ENTITY_DIAGNOSTIC: "true" },
   });
   const script = fs.readFileSync(outfile, "utf8");
   if (!script.includes("aspergillum:aspersorium_water_visual")) {

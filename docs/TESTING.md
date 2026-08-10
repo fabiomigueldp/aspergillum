@@ -4,12 +4,13 @@
 
 Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
 
-## Gate da água por entidade visual — v1.1.9c
+## Gate do Release Candidate oficial — v1.1.9
 
-- [ ] fechar o jogo, remover revisões concorrentes e importar somente `Aspergillum-1.1.9c.mcaddon` num mundo de teste;
-- [ ] confirmar manifests `[1,1,17]` e SHA-256 `4740e10161e9f699b9dd34c9be25d900b289c0954bcac03748f845a315eaba28`;
+- [ ] preservar o mundo original e criar uma cópia que esteja usando a release 1.1.7; fechar o jogo e importar somente `Aspergillum-1.1.9.mcaddon`;
+- [ ] confirmar manifests `[1,1,18]` e SHA-256 `b0f2a02440f6ef2e551e2cd69699f4fde29b49be0272287f41c750a5117192da`;
+- [ ] confirmar que os UUIDs oficiais dos packs continuam `bac9f8bc-71f5-4db7-a0ff-3c5a365749b4` e `fdb8a79c-8f77-4831-9a5c-8e2b8ecca29e`, de modo que o mundo atualize os packs em vez de empilhá-los;
 - [ ] limpar o Content Log antes de abrir o mundo e confirmar ausência de `actor_definitions`, `failed to load from JSON`, `minecraft:pushable`, `not present in the Schema` e `not a valid entity type`;
-- [ ] abrir uma caldeirinha que já contenha água; a lâmina deve surgir de imediato ou, para blocos preexistentes, em no máximo seis segundos;
+- [ ] abrir caldeirinhas preexistentes vazia/¼/½/¾/cheia; cada bloco não vazio deve ganhar exatamente uma projeção correta em no máximo seis segundos, sem alterar suas unidades;
 - [ ] limpar o Content Log e confirmar ausência das duas mensagens de `MaterialInstances`, além de qualquer erro/warning envolvendo `aspersorium_water_visual`, `water_visual_level`, render controller, geometria ou propriedade;
 - [ ] comparar lado a lado com imagens equivalentes da 1.1.7b: cor, translucidez, textura, espessura, reflexo, profundidade e integração com metal/aspersório em sol, sombra e luz quente;
 - [ ] orbitar vazio/¼/½/¾/cheio em câmera parada e em movimento, curta/média/longa distância, gráficos convencionais e Vibrant Visuals;
@@ -21,7 +22,10 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 - [ ] testar multiplayer com observador remoto: mesma altura/translucidez e nenhuma oscilação, duplicação ou entidade selecionável;
 - [ ] medir profiler e contagem de entidades com 1, 16, 64 e 256 caldeirinhas carregadas; registrar CPU/tick e memória antes de autorizar promoção;
 - [ ] executar o smoke test completo de item, carga, aspersão, docking, Mesa do Sacristão, quebra e persistência;
-- [ ] registrar plataforma, versão Bedrock, hash, capturas/vídeo, Content Log e resultado no [diagnóstico 1.1.9c](diagnostics/1.1.9c-entity-water.md).
+- [ ] repetir reload e descarregamento de chunk, remover a projeção com `/kill @e[type=aspergillum:aspersorium_water_visual]` e confirmar autorreparo sem duplicação ou mudança lógica;
+- [ ] medir custo com 1, 16, 64 e 256 caldeirinhas não vazias carregadas, registrando entidades, CPU/tick e memória; a medição de 256 é stress, não uma expectativa de construção normal;
+- [ ] executar smoke test de carga, aspersão, docking, retirada, quebra, Mesa do Sacristão, cosméticos e persistência no mundo migrado;
+- [ ] registrar plataforma, versão Bedrock, hash, capturas/vídeo, Content Log e decisão GO/NO-GO no [runbook da RC](RELEASE_CANDIDATE.md).
 
 ## Gate da água alpha-test com UV corrigido — v1.1.8d
 

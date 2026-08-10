@@ -17,6 +17,12 @@ const targets = [
   "packs/resource/textures/blocks/aspersorium_normal.png",
   "packs/resource/textures/blocks/holy_water.png",
   "packs/resource/textures/particle/holy_water.png",
+  "packs/resource/textures/entity/thurible.png",
+  "packs/resource/textures/entity/thurible_normal.png",
+  "packs/resource/textures/entity/thurible_mer.png",
+  "packs/resource/textures/items/thurible.png",
+  "packs/resource/textures/particle/incense_smoke.png",
+  "packs/resource/textures/particle/incense_veil.png",
   "packs/resource/models/blocks/aspersorium.geo.json",
   "packs/resource/models/blocks/aspersorium.rotations.geo.json"
 ];

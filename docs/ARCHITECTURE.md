@@ -202,13 +202,15 @@ A Mesa do Sacristão possui `2 × 9 × 16 = 288` combinações. O índice cosmé
 
 A estrutura metálica e o aspersório acomodado usam `opaque`; somente a superfície de água usa `blend`. A matriz física 1.1.7a/b/c demonstrou que essa separação estabiliza a composição e preserva a translucidez. O runtime 26.42 ainda registra duas mensagens conhecidas de `MaterialInstances` para métodos mistos. Esse débito é deliberado, restrito à apresentação e deve ser reavaliado se uma atualização, dispositivo, Vibrant Visuals ou aproximação de câmera voltar a produzir falha correlata. Estado, água lógica e gameplay não dependem do resultado do renderizador.
 
-### Candidato híbrido da caldeirinha 1.1.9c
+### Perfil oficial da caldeirinha 1.1.9
 
-A 1.1.9c é um build diagnóstico isolado. Nas dezessete geometrias rotacionadas do bloco, os quatro bones de água são removidos e todos os nove grupos cosméticos usam exclusivamente `opaque`. Uma entidade persistente `aspergillum:aspersorium_water_visual` fornece somente a lâmina d'água com o material vanilla `entity_alphablend`.
+A 1.1.9 promove a arquitetura validada na 1.1.9c. Nas dezessete geometrias rotacionadas do bloco, os quatro bones de água são removidos e todos os nove grupos cosméticos usam exclusivamente `opaque`. Uma entidade persistente `aspergillum:aspersorium_water_visual` fornece somente a lâmina d'água com o material vanilla `entity_alphablend`.
 
 O codec `water_base + water_offset` permanece a autoridade. A projeção recebe apenas `water_visual_level ∈ 1..4`, sincronizado ao cliente, e associa-se às coordenadas inteiras do bloco. Colocação, mudança de state, quebra e entity load reconciliam imediatamente a relação; um tick distribuído por bloco entre 80 e 120 ticks repara mundo existente, ausência, deslocamento e duplicata. O reconciliador não varre o mundo, não executa IA e só transmite posição/propriedade quando há divergência. Se a entidade falhar, nenhuma água, carga ou snapshot é alterado.
 
-A 1.1.9a falhou com tipo inválido e a B tornou a entidade invocável, mas o log completo da B demonstrou a causa anterior: `minecraft:pushable` não é mais analisado em formatos a partir de 1.26.10, invalidando todo o actor JSON. A C remove o legado e limita a entidade a `persistent`, `cannot_be_attacked`, `physics` e `collision_box`; a ausência dos novos componentes opt-in de push preserva a imobilidade. `is_spawnable` continua `false`, sem spawn egg. Essa arquitetura ainda não substitui a 1.1.7. Equivalência visual, ordenação de transparência, ciclo de chunks, comandos, explosões e escala precisam do gate físico registrado no [diagnóstico 1.1.9c](diagnostics/1.1.9c-entity-water.md).
+A 1.1.9a falhou com tipo inválido e a B tornou a entidade invocável, mas o log completo da B demonstrou a causa anterior: `minecraft:pushable` não é mais analisado em formatos a partir de 1.26.10, invalidando todo o actor JSON. A C removeu o legado e limitou a entidade a `persistent`, `cannot_be_attacked`, `physics` e `collision_box`; a ausência dos novos componentes opt-in de push preserva a imobilidade. `is_spawnable` continua `false`, sem spawn egg. A C foi aprovada visual e funcionalmente em jogo, sem erros no Content Log, e tornou-se a baseline da RC 1.1.9. O histórico reproduzível permanece no [diagnóstico 1.1.9c](diagnostics/1.1.9c-entity-water.md).
+
+Os volumes de água não possuem uma segunda fonte manual: permanecem autorados no modelo semântico da caldeirinha, e o gerador copia origem, dimensão e UV para a geometria `1.16.0` da entidade antes de removê-los da saída de bloco. Assim, a autoridade visual também permanece convergente.
 
 ## Schema e inicialização
 

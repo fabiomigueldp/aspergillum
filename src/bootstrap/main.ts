@@ -62,8 +62,6 @@ import {
   scheduleAspersoriumWaterVisualRemoval,
 } from "../presentation/aspersorium-water-visual";
 
-declare const ASPERSORIUM_WATER_ENTITY_DIAGNOSTIC: boolean;
-
 const aspergillumUse: ItemCustomComponent = {
   onUse(event) {
     if (event.itemStack !== undefined && !isAspergillumSchemaSupported(event.itemStack)) {
@@ -180,17 +178,15 @@ system.beforeEvents.startup.subscribe((event) => {
     },
     onPlayerInteract: handleAspersoriumInteraction,
   };
-  if (ASPERSORIUM_WATER_ENTITY_DIAGNOSTIC) {
-    aspersoriumComponent.onPlace = (blockEvent) => {
-      scheduleAspersoriumWaterVisualReconciliation(blockEvent.block);
-    };
-    aspersoriumComponent.onBlockStateChange = (blockEvent) => {
-      scheduleAspersoriumWaterVisualReconciliation(blockEvent.block);
-    };
-    aspersoriumComponent.onTick = (blockEvent) => {
-      scheduleAspersoriumWaterVisualReconciliation(blockEvent.block);
-    };
-  }
+  aspersoriumComponent.onPlace = (blockEvent) => {
+    scheduleAspersoriumWaterVisualReconciliation(blockEvent.block);
+  };
+  aspersoriumComponent.onBlockStateChange = (blockEvent) => {
+    scheduleAspersoriumWaterVisualReconciliation(blockEvent.block);
+  };
+  aspersoriumComponent.onTick = (blockEvent) => {
+    scheduleAspersoriumWaterVisualReconciliation(blockEvent.block);
+  };
   event.blockComponentRegistry.registerCustomComponent(ASPERSORIUM_COMPONENT, aspersoriumComponent);
   event.blockComponentRegistry.registerCustomComponent(SACRISTAN_TABLE_COMPONENT, {
     beforeOnPlayerPlace: orientSacristanTable,
@@ -199,11 +195,9 @@ system.beforeEvents.startup.subscribe((event) => {
   });
 });
 
-if (ASPERSORIUM_WATER_ENTITY_DIAGNOSTIC) {
-  world.afterEvents.entityLoad.subscribe((event) => {
-    reconcileLoadedAspersoriumWaterVisual(event.entity);
-  });
-}
+world.afterEvents.entityLoad.subscribe((event) => {
+  reconcileLoadedAspersoriumWaterVisual(event.entity);
+});
 
 world.afterEvents.playerSwingStart.subscribe((event) => {
   if (event.swingSource !== EntitySwingSource.Attack && event.swingSource !== EntitySwingSource.Mine) return;

@@ -8,14 +8,16 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
-## v1.1.9c — água translúcida por entidade visual — correção de schema implementada; QA físico pendente
+## v1.1.9 — água translúcida por entidade visual — RC promovida; gate final pendente
 
 Hipótese: separar a água do tessellator de blocos permite conservar a excelência visual da 1.1.7b sem misturar render methods no mesmo bloco. A caldeirinha passa a ser integralmente `opaque`; somente a projeção d'água usa o material vanilla `entity_alphablend`.
+
+Resultado: a 1.1.9c foi aprovada em jogo com apresentação satisfatória, funcionalidades sem bugs observados e Content Log limpo. A arquitetura foi promovida ao pipeline oficial na revisão `[1,1,18]`, preservando os UUIDs de produção.
 
 Implementação:
 
 - A/B (`[1,1,15]`/`[1,1,16]`) foram encerradas antes do gate visual: o actor JSON não carregava porque `minecraft:pushable` foi removido do schema a partir do formato 1.26.10; o tipo inválido no script era consequência;
-- revisão diagnóstica corretiva `[1,1,17]`, UUIDs e artefato próprios, sem promover ou renumerar a release 1.1.7;
+- RC oficial `[1,1,18]`, UUIDs publicados preservados e artefato `Aspergillum-1.1.9.mcaddon`;
 - quatro bones de água retirados das dezessete geometrias de bloco e reaproveitados numa geometria de entidade com mesma textura, área, espessura e alturas;
 - propriedade `client_sync` de quatro níveis derivada das dezessete quantidades autoritativas;
 - entidade mínima invocável pelo script, mas sem spawn egg, gravidade, colisão, componentes de push, IA, spawn natural ou interação;
@@ -31,7 +33,7 @@ Gate de saída:
 - zero órfãos ou duplicatas após reload, chunks, explosão, `/setblock` e remoção forçada da entidade;
 - medição aceitável com 1, 16, 64 e 256 caldeirinhas carregadas.
 
-Detalhes e hash: [diagnóstico 1.1.9c](diagnostics/1.1.9c-entity-water.md). Os resultados negativos permanecem registrados em [1.1.9a](diagnostics/1.1.9a-entity-water.md) e [1.1.9b](diagnostics/1.1.9b-entity-water.md).
+Detalhes físicos: [diagnóstico 1.1.9c](diagnostics/1.1.9c-entity-water.md). Os resultados negativos permanecem registrados em [1.1.9a](diagnostics/1.1.9a-entity-water.md) e [1.1.9b](diagnostics/1.1.9b-entity-water.md).
 
 ## v1.1.8a/b/c/d — matriz de água alpha-test — validada e rejeitada
 

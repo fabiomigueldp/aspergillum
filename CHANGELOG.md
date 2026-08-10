@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.1.9 RC — 2026-08-10 — água translúcida em passe de entidade
+
+- promovida a arquitetura fisicamente aprovada na diagnóstica 1.1.9c: bloco da caldeirinha e aspersório acomodado usam exclusivamente `opaque`, enquanto a água preserva a qualidade translúcida em uma entidade visual `entity_alphablend`;
+- os quatro volumes continuam autorados uma única vez em `assets-src/models/aspersorium.model.json`; o gerador os deriva para a geometria da entidade e os exclui das dezessete geometrias rotacionadas do bloco, impedindo divergência manual;
+- integrada ao build oficial a reconciliação imediata em colocação, mudança de state, quebra e entity load, com reparo distribuído a cada 80–120 ticks e sem varredura global ou autoridade de gameplay na entidade;
+- promovida a Behavior Entity mínima validada em jogo, sem `minecraft:pushable`, gravidade, colisão, spawn egg, IA ou componentes cosméticos desnecessários;
+- validadores oficiais passam a exigir bloco uniformemente opaco, entidade mínima, geometria derivada, material `entity_alphablend`, propriedade client-sync `1..4`, textura dedicada e lifecycle no JavaScript compilado;
+- preservados UUIDs oficiais, IDs públicos, states `water_base + water_offset`, snapshots, poses, animações, VFX, áudio e todos os contratos de mundo; revisão dos packs elevada monotonicamente para `[1,1,18]`;
+- o usuário confirmou resultado visual satisfatório, ausência de bugs nos testes em jogo realizados e Content Log sem erros; a RC final permanece sujeita somente ao gate de atualização de mundo persistente e escala.
+- o artefato oficial `Aspergillum-1.1.9.mcaddon` tem SHA-256 `b0f2a02440f6ef2e551e2cd69699f4fde29b49be0272287f41c750a5117192da`; Creator Tools aprovou com onze warnings offline conhecidos e zero warning inesperado, Error ou Failure.
+
 ## 1.1.9c — 2026-08-10 — entidade visual mínima compatível com schema 1.26.40
 
 - o runtime da 1.1.9b revelou a causa primária: `minecraft:pushable` deixou de ser analisado a partir do formato 1.26.10, fazendo o JSON inteiro da entidade falhar e, por consequência, `Dimension.spawnEntity()` continuar reportando tipo inválido;

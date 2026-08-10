@@ -9,8 +9,6 @@ import { aspersoriumWaterVisualLevel } from "../domain/aspersorium-water";
 import { readAspersoriumWater } from "../infrastructure/aspersorium-water-state";
 import { ASPERSORIUM_BLOCK } from "../infrastructure/constants";
 
-declare const ASPERSORIUM_WATER_ENTITY_DIAGNOSTIC: boolean;
-
 export const ASPERSORIUM_WATER_VISUAL_ENTITY = "aspergillum:aspersorium_water_visual";
 export const ASPERSORIUM_WATER_VISUAL_LEVEL_PROPERTY = "aspergillum:water_visual_level";
 
@@ -89,7 +87,7 @@ function bindVisualToBlock(entity: Entity, location: Vector3, level: 1 | 2 | 3 |
 }
 
 export function reconcileAspersoriumWaterVisual(block: Block): void {
-  if (!ASPERSORIUM_WATER_ENTITY_DIAGNOSTIC || !block.isValid || block.typeId !== ASPERSORIUM_BLOCK) return;
+  if (!block.isValid || block.typeId !== ASPERSORIUM_BLOCK) return;
 
   const level = aspersoriumWaterVisualLevel(readAspersoriumWater(block));
   const visuals = visualEntitiesAt(block.dimension, block.location);
@@ -112,7 +110,7 @@ export function reconcileAspersoriumWaterVisual(block: Block): void {
 }
 
 export function scheduleAspersoriumWaterVisualReconciliation(block: Block): void {
-  if (!ASPERSORIUM_WATER_ENTITY_DIAGNOSTIC || !block.isValid) return;
+  if (!block.isValid) return;
   const dimension = block.dimension;
   const location = blockLocation(block.location);
   const key = blockKey(dimension, location);
@@ -137,7 +135,6 @@ export function scheduleAspersoriumWaterVisualRemoval(
   dimension: Dimension,
   locationInput: Vector3,
 ): void {
-  if (!ASPERSORIUM_WATER_ENTITY_DIAGNOSTIC) return;
   const location = blockLocation(locationInput);
   system.run(() => {
     for (const visual of visualEntitiesAt(dimension, location)) safelyRemove(visual);
@@ -155,7 +152,7 @@ function linkedBlockLocation(entity: Entity): Vector3 {
 }
 
 export function reconcileLoadedAspersoriumWaterVisual(entity: Entity): void {
-  if (!ASPERSORIUM_WATER_ENTITY_DIAGNOSTIC || !isWaterVisual(entity)) return;
+  if (!isWaterVisual(entity)) return;
   system.run(() => {
     if (!entity.isValid) return;
     try {
