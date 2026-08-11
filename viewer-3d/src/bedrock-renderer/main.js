@@ -1,11 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import {
-  THREE_BOX_FACE_ORDER,
-  getBedrockFaceRect,
-  writeBedrockFaceUvs,
-} from '../shared/bedrock-uv.js';
+import { buildBedrockGeometry as buildSharedBedrockGeometry } from '../shared/bedrock-geometry.js';
 import {
   CAPTURE_SUBJECTS,
   CAPTURE_VIEWS,
@@ -577,166 +573,10 @@ function applyPose() {
   applyVisibility();
 }
 
-function createCubeMesh(cube, bone, geometrySummary, palette) {
-  const size = cube.size ?? [1, 1, 1];
-  const origin = cube.origin ?? [0, 0, 0];
-  const inflate = Number(cube.inflate) || 0;
-  const inflatedSize = size.map((value) => value + inflate * 2);
-  const inflatedOrigin = origin.map((value) => value - inflate);
-  const pivot = cube.pivot ?? bone.pivot ?? [0, 0, 0];
-  const center = inflatedOrigin.map((value, index) => value + inflatedSize[index] / 2);
-  const cubeGroup = new THREE.Group();
-  cubeGroup.name = `cube:${bone.name}`;
-  cubeGroup.userData = { type: 'cube-transform', boneName: bone.name };
-  cubeGroup.position.set(
-    (pivot[0] - bone.pivot[0]) * SCALE,
-    (pivot[1] - bone.pivot[1]) * SCALE,
-    (pivot[2] - bone.pivot[2]) * SCALE,
-  );
-  if (cube.rotation) {
-    cubeGroup.rotation.set(
-      THREE.MathUtils.degToRad(cube.rotation[0] ?? 0),
-      THREE.MathUtils.degToRad(cube.rotation[1] ?? 0),
-      THREE.MathUtils.degToRad(cube.rotation[2] ?? 0),
-    );
-  }
-
-  const boxGeometry = new THREE.BoxGeometry(
-    inflatedSize[0] * SCALE,
-    inflatedSize[1] * SCALE,
-    inflatedSize[2] * SCALE,
-  );
-  if (cube.mirror) boxGeometry.scale(-1, 1, 1);
-
-  const uvAttribute = boxGeometry.getAttribute('uv');
-  boxGeometry.clearGroups();
-  const materials = [...new Set([
-    palette.default,
-    palette.water,
-    ...Object.values(palette.named ?? {}),
-  ])];
-  const materialIndex = new Map(materials.map((material, index) => [material, index]));
-
-  for (let index = 0; index < THREE_BOX_FACE_ORDER.length; index += 1) {
-    const faceName = THREE_BOX_FACE_ORDER[index];
-    const face = getBedrockFaceRect(cube.uv, faceName, size);
-    if (!face) continue;
-    writeBedrockFaceUvs(uvAttribute, index * 4, face.rect, geometrySummary.textureWidth, geometrySummary.textureHeight);
-    const material = face.materialInstance === 'water'
-      ? palette.water
-      : palette.named?.[face.materialInstance] ?? palette.default;
-    boxGeometry.addGroup(index * 6, 6, materialIndex.get(material) ?? 0);
-  }
-  uvAttribute.needsUpdate = true;
-
-  const mesh = new THREE.Mesh(boxGeometry, materials);
-  mesh.name = `${bone.name} / cube ${bone.cubes.indexOf(cube) + 1}`;
-  mesh.position.set(
-    (center[0] - pivot[0]) * SCALE,
-    (center[1] - pivot[1]) * SCALE,
-    (center[2] - pivot[2]) * SCALE,
-  );
-  mesh.userData = {
-    type: 'cube',
-    boneName: bone.name,
-    cube,
-  };
-  cubeGroup.add(mesh);
-
-  return { cubeGroup, mesh, materials };
-}
-
 function buildBedrockGeometry(geometryData, geometrySummary, palette) {
-  const root = new THREE.Group();
-  root.name = geometrySummary.identifier;
-  root.userData = { type: 'model', identifier: geometrySummary.identifier };
-  const bones = geometryData.bones ?? [];
-  const children = new Map();
-
-  for (const bone of bones) {
-    const parentName = bone.parent ?? null;
-    if (!children.has(parentName)) children.set(parentName, []);
-    children.get(parentName).push(bone);
-  }
-
-  const boneGroups = new Map();
-  const boneRecords = [];
-  const meshRecords = [];
-  const pivotRecords = [];
-  const locatorRecords = [];
-
-  function addBone(bone, parentGroup, parentPivot) {
-    const pivot = bone.pivot ?? [0, 0, 0];
-    const group = new THREE.Group();
-    group.name = `bone:${bone.name}`;
-    group.userData = { type: 'bone', boneName: bone.name };
-    group.position.set(
-      (pivot[0] - parentPivot[0]) * SCALE,
-      (pivot[1] - parentPivot[1]) * SCALE,
-      (pivot[2] - parentPivot[2]) * SCALE,
-    );
-    group.rotation.set(
-      THREE.MathUtils.degToRad(bone.rotation?.[0] ?? 0),
-      THREE.MathUtils.degToRad(bone.rotation?.[1] ?? 0),
-      THREE.MathUtils.degToRad(bone.rotation?.[2] ?? 0),
-    );
-    group.userData.basePosition = group.position.clone();
-    group.userData.baseRotation = group.rotation.clone();
-    group.userData.baseScale = group.scale.clone();
-    group.visible = !bone.neverRender;
-    parentGroup.add(group);
-    boneGroups.set(bone.name, group);
-
-    const pivotMarker = new THREE.Mesh(
-      new THREE.SphereGeometry(0.032, 8, 6),
-      new THREE.MeshBasicMaterial({ color: 0x74d9c3, transparent: true, opacity: 0.88 }),
-    );
-    pivotMarker.name = `pivot:${bone.name}`;
-    pivotMarker.userData = { type: 'pivot', boneName: bone.name };
-    group.add(pivotMarker);
-    pivotRecords.push({ marker: pivotMarker, boneName: bone.name });
-
-    for (const cube of bone.cubes ?? []) {
-      const cubeResult = createCubeMesh(cube, bone, geometrySummary, palette);
-      group.add(cubeResult.cubeGroup);
-      meshRecords.push({ mesh: cubeResult.mesh, boneName: bone.name });
-      cubeResult.materials.forEach((material) => state.materials.add(material));
-    }
-
-    for (const [locatorName, locator] of Object.entries(bone.locators ?? {})) {
-      const marker = new THREE.Mesh(
-        new THREE.SphereGeometry(0.042, 10, 8),
-        new THREE.MeshBasicMaterial({ color: 0xf1c46f }),
-      );
-      marker.name = `locator:${locatorName}`;
-      marker.position.set(
-        (locator[0] - pivot[0]) * SCALE,
-        (locator[1] - pivot[1]) * SCALE,
-        (locator[2] - pivot[2]) * SCALE,
-      );
-      marker.userData = { type: 'locator', boneName: bone.name, locatorName };
-      group.add(marker);
-      locatorRecords.push({ marker, boneName: bone.name, locatorName, position: locator });
-    }
-
-    boneRecords.push({
-      bone,
-      group,
-      pivot: [...pivot],
-      basePosition: group.position.clone(),
-      baseRotation: group.rotation.clone(),
-      baseScale: group.scale.clone(),
-    });
-
-    for (const child of children.get(bone.name) ?? []) addBone(child, group, pivot);
-  }
-
-  for (const rootBone of children.get(null) ?? []) addBone(rootBone, root, [0, 0, 0]);
-  for (const bone of bones) {
-    if (!boneGroups.has(bone.name)) addBone(bone, root, [0, 0, 0]);
-  }
-
-  return { root, boneGroups, boneRecords, meshRecords, pivotRecords, locatorRecords };
+  const built = buildSharedBedrockGeometry(geometryData, geometrySummary, palette);
+  built.materials.forEach((material) => state.materials.add(material));
+  return built;
 }
 
 function disposeObject(object) {
@@ -1061,7 +901,8 @@ function renderInspector() {
     row('Cubos', String(geometry.cubeCount)),
     row('Locators', String(geometry.locatorCount)),
     row('Textura', `${geometry.textureWidth} × ${geometry.textureHeight}`),
-    row('UV Bedrock-safe', geometry.uvSafety?.unsafeSubtexelBoxUvCubes || geometry.uvSafety?.missingOrCollapsedFaces ? 'não' : 'per-face inteiro'),
+    row('UV Bedrock-safe', geometry.uvSafety?.unsafeSubtexelBoxUvCubes || geometry.uvSafety?.invalidOrCollapsedFaces ? 'não' : 'per-face inteiro'),
+    row('Faces omitidas', geometry.uvSafety?.intentionallyOmittedFaces ?? 0),
   ];
 
   const runtimeRows = [
@@ -1085,7 +926,7 @@ function renderInspector() {
 
   const parityRows = [
     status('Geometria Bedrock', true),
-    status('UV inteiro / sem colapso', !(geometry.uvSafety?.unsafeSubtexelBoxUvCubes || geometry.uvSafety?.missingOrCollapsedFaces)),
+    status('UV inteiro / sem colapso', !(geometry.uvSafety?.unsafeSubtexelBoxUvCubes || geometry.uvSafety?.invalidOrCollapsedFaces)),
     status('Pivôs / hierarquia', true),
     status('MERS R/G/B', state.materialMode === 'pbr' && Boolean(textureSet?.mers)),
     status('Attachable + controller', path.attachable),

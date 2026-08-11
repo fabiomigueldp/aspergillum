@@ -64,6 +64,7 @@ A 1.2.4 substitui os dezesseis PNGs de inventário por renderização 3D do pró
 - Cues passam por adaptador Bedrock fail-soft, catálogo tipado e shuffle bag sem repetição imediata; feedback de carga mantém somente duas microgotas limitadas à caldeirinha.
 - O pipeline versiona fontes selecionadas, masters, recipes, OGGs e hashes; `validate:audio` garante 48 arquivos mono/48 kHz/Vorbis sem órfãos ou caminhos vanilla.
 - Os 48 SFX próprios preservam fontes selecionadas, receitas, masters, OGGs e hashes reproduzíveis.
+- O toolchain 3D possui um Avatar Lab não distribuído: a skin padrão de batina, rigs wide/slim, `rightItem`, attachable real, hold/carga/aspersão, PBR, scene trace e captura headless compartilham o mesmo adaptador geométrico dos viewers existentes.
 
 ## Limitações conhecidas
 
@@ -88,6 +89,7 @@ A 1.2.4 substitui os dezesseis PNGs de inventário por renderização 3D do pró
 | Ícones de inventário 1.2.2 | 16 renders derivados do modelo são determinísticos, íntegros e distinguíveis por região semântica | confirmar escala, mipmapping, fundos de UI e cache no pacote final importado |
 | Identidade localizada 1.2.3 | contrato, manifests, idiomas e gates usam `pack.name`/`pack.description` | confirmar ambos os packs em `pt_BR`/`en_US` no seletor real e registrar capturas/Content Log |
 | Inventário 3D 1.2.4 | 16 itens, state/material, geometria derivada, ausência de PNG e três travas de colocação são validados offline | confirmar enquadramento, luz, PBR, cache, uso normal e ausência de colocação no Minecraft |
+| Avatar Lab | binding, grip, animações, skins wide/slim e manifests com hash são verificáveis fora do jogo | câmera/shader proprietários, Persona, culling e aceitação visual final continuam exigindo o `.mcaddon` no Minecraft |
 
 ## Próxima mudança autorizada
 

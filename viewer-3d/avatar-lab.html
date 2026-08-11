@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#11191b" />
+    <meta
+      name="description"
+      content="Laboratório local para inspecionar skins, poses, animações e attachables do Aspergillum em um rig de jogador Bedrock."
+    />
+    <title>Aspergillum / Avatar Lab</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#avatar-main">Saltar para o Avatar Lab</a>
+
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand-lockup" href="./avatar-lab.html" aria-label="Aspergillum Avatar Lab">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span>
+            <span class="eyebrow">ASPERGILLUM / FERRAMENTAS</span>
+            <span class="brand-name">Avatar Lab</span>
+          </span>
+        </a>
+
+        <div class="runtime-status" id="runtime-status" role="status" aria-live="polite">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span id="runtime-status-text">Carregando runtime local</span>
+        </div>
+
+        <nav class="tool-nav" aria-label="Ferramentas 3D">
+          <a href="./index.html">Model Lab</a>
+          <a href="./bedrock-renderer.html">Fidelity</a>
+          <a href="./avatar-lab.html" aria-current="page">Avatar</a>
+        </nav>
+      </header>
+
+      <main class="workspace" id="avatar-main">
+        <aside class="controls-panel panel-border" aria-label="Configuração da cena">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">Cena</p>
+              <h1>Jogador e item</h1>
+            </div>
+            <span class="local-badge">LOCAL</span>
+          </div>
+
+          <section class="control-section" aria-labelledby="skin-heading">
+            <h2 id="skin-heading">Skin</h2>
+            <div class="skin-preset">
+              <img id="skin-preview" src="./avatar-library/batina_preta_com_pelerine.png" alt="Textura da skin Batina preta com pelerine" />
+              <div>
+                <strong id="skin-name">Batina preta com pelerine</strong>
+                <span id="skin-meta">128 × 128 · wide</span>
+              </div>
+            </div>
+            <button class="button button-secondary button-block" id="skin-import-button" type="button">
+              Importar skin PNG
+            </button>
+            <input id="skin-input" type="file" accept="image/png,.png" hidden />
+            <p class="field-help" id="skin-help">Preset padrão versionado apenas nesta ferramenta de desenvolvimento.</p>
+          </section>
+
+          <section class="control-section" aria-labelledby="rig-heading">
+            <h2 id="rig-heading">Rig e acabamento</h2>
+            <label class="field-label" for="model-select">Modelo dos braços</label>
+            <select class="field-select" id="model-select">
+              <option value="wide">Clássico · braços 4 px</option>
+              <option value="slim">Slim · braços 3 px</option>
+            </select>
+
+            <label class="field-label" for="cosmetic-select">Acabamento do aspersório</label>
+            <select class="field-select" id="cosmetic-select">
+              <option value="classic">Prata clássica · Couro castanho</option>
+            </select>
+
+            <span class="field-label">Material</span>
+            <div class="segmented-control" role="group" aria-label="Material do aspersório">
+              <button type="button" class="segment-button is-active" data-material="pbr" aria-pressed="true">PBR / VV</button>
+              <button type="button" class="segment-button" data-material="classic" aria-pressed="false">Clássico</button>
+            </div>
+          </section>
+
+          <section class="control-section" aria-labelledby="pose-heading">
+            <h2 id="pose-heading">Apresentação</h2>
+            <span class="field-label">Perspectiva</span>
+            <div class="segmented-control" role="group" aria-label="Perspectiva da cena">
+              <button type="button" class="segment-button is-active" data-perspective="third" aria-pressed="true">3ª pessoa</button>
+              <button type="button" class="segment-button" data-perspective="first" aria-pressed="false">1ª pessoa</button>
+            </div>
+
+            <span class="field-label">Ação</span>
+            <div class="action-control" role="group" aria-label="Ação do jogador">
+              <button type="button" class="action-button is-active" data-action="idle" aria-pressed="true">Segurando</button>
+              <button type="button" class="action-button" data-action="load" aria-pressed="false">Carregando</button>
+              <button type="button" class="action-button" data-action="sprinkle" aria-pressed="false">Aspersão</button>
+            </div>
+          </section>
+
+          <section class="control-section" aria-labelledby="layers-heading">
+            <h2 id="layers-heading">Diagnóstico</h2>
+            <label class="toggle-row"><span>Camadas externas da skin</span><input id="outer-layers-toggle" type="checkbox" checked /><i aria-hidden="true"></i></label>
+            <label class="toggle-row"><span>Grade de escala</span><input id="grid-toggle" type="checkbox" checked /><i aria-hidden="true"></i></label>
+            <label class="toggle-row"><span>Pivôs e locators</span><input id="pivots-toggle" type="checkbox" /><i aria-hidden="true"></i></label>
+            <label class="toggle-row"><span>Hierarquia óssea</span><input id="skeleton-toggle" type="checkbox" /><i aria-hidden="true"></i></label>
+            <label class="toggle-row"><span>Wireframe</span><input id="wireframe-toggle" type="checkbox" /><i aria-hidden="true"></i></label>
+          </section>
+        </aside>
+
+        <section class="viewport-panel" aria-label="Cena 3D do avatar">
+          <div class="viewport-stage" id="viewport-stage">
+            <canvas id="viewport-canvas" aria-label="Jogador Bedrock segurando o aspersório; use o mouse para orbitar"></canvas>
+
+            <div class="viewport-toolbar" aria-label="Comandos de câmera">
+              <button class="icon-button" id="fit-button" type="button" title="Enquadrar modelo (F)" aria-label="Enquadrar modelo">Enquadrar</button>
+              <button class="icon-button" id="reset-button" type="button" title="Redefinir câmera (R)" aria-label="Redefinir câmera">Redefinir</button>
+            </div>
+
+            <div class="scene-readout" aria-live="polite">
+              <span><i class="readout-dot is-valid" id="binding-dot"></i><b id="binding-readout">Binding exato</b></span>
+              <span id="scene-readout">wide · 3ª pessoa · PBR</span>
+            </div>
+
+            <div class="loading-state" id="loading-state" role="status">
+              <span class="spinner" aria-hidden="true"></span>
+              <strong>Montando cena Bedrock</strong>
+              <span>Skin, rig, attachable e animações</span>
+            </div>
+
+            <div class="error-state" id="error-state" hidden>
+              <strong>Não foi possível montar a cena</strong>
+              <span id="error-message"></span>
+            </div>
+
+            <div class="transport" aria-label="Reprodução da animação">
+              <button class="play-button" id="play-button" type="button" aria-label="Reproduzir animação" title="Reproduzir ou pausar (Espaço)">
+                <span id="play-glyph" aria-hidden="true">▶</span>
+              </button>
+              <div class="transport-main">
+                <div class="transport-labels">
+                  <span id="action-readout">Segurando</span>
+                  <output id="time-readout" for="timeline">0,00 / 0,00 s</output>
+                </div>
+                <input id="timeline" type="range" min="0" max="0" step="0.005" value="0" disabled />
+              </div>
+              <label class="speed-control" title="Velocidade de reprodução">
+                <span class="sr-only">Velocidade</span>
+                <select id="speed-select">
+                  <option value="0.5">0,5×</option>
+                  <option value="1" selected>1×</option>
+                  <option value="1.5">1,5×</option>
+                  <option value="2">2×</option>
+                </select>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <aside class="inspector-panel panel-border" aria-label="Inspetor da cena">
+          <div class="panel-heading inspector-heading">
+            <div>
+              <p class="section-kicker">Evidência</p>
+              <h2>Scene trace</h2>
+            </div>
+            <span class="trace-status" id="trace-status">AGUARDANDO</span>
+          </div>
+
+          <section class="inspector-section">
+            <h3>Cadeia de binding</h3>
+            <ol class="binding-chain" id="binding-chain">
+              <li>rightArm</li><li>rightItem</li><li>aspergillum_bound</li><li>presentation</li><li>action</li>
+            </ol>
+          </section>
+
+          <section class="inspector-section">
+            <h3>Contrato resolvido</h3>
+            <dl class="property-list" id="contract-properties">
+              <div><dt>Slot</dt><dd>mainhand</dd></div>
+              <div><dt>Target</dt><dd>rightItem</dd></div>
+              <div><dt>Erro</dt><dd>aguardando</dd></div>
+            </dl>
+          </section>
+
+          <section class="inspector-section">
+            <div class="section-title-row">
+              <h3>Matrizes</h3>
+              <button class="text-button" id="copy-trace-button" type="button">Copiar JSON</button>
+            </div>
+            <div class="matrix-list" id="matrix-list"><p class="muted">A cena ainda está sendo resolvida.</p></div>
+          </section>
+
+          <section class="inspector-section recipe-section">
+            <h3>Receita reproduzível</h3>
+            <pre id="recipe-output">{}</pre>
+          </section>
+
+          <p class="inspector-note">Prévia diagnóstica em Three.js. A aceitação visual final continua pertencendo ao Minecraft Bedrock.</p>
+        </aside>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="/src/avatar-lab/main.js"></script>
+  </body>
+</html>

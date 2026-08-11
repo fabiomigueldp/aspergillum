@@ -4,6 +4,8 @@
 
 Use this tool to inspect model silhouette, face coverage, UV placement, materials, water states, and composed objects from stable camera directions. It drives the existing Bedrock Fidelity Renderer in headless Chromium and produces clean PNGs plus labeled contact sheets.
 
+For a player skin holding the attachable, coordinated player/item animation, grip close-ups, or first-person viewmodel evidence, use [Avatar Lab](AVATAR_LAB.md) and `npm run capture:avatars -- --help` instead.
+
 The tool is diagnostic. It does not reproduce Minecraft's proprietary shader, world lighting, player/skin integration, complete camera behavior, particles, cache, or runtime culling. Final visual acceptance still requires the imported `.mcaddon` and the relevant gates in `docs/TESTING.md`.
 
 ## Canonical command

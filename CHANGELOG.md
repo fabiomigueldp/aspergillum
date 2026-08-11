@@ -1,5 +1,15 @@
 # Changelog
 
+## Ferramentas de desenvolvimento não distribuídas — 2026-08-11
+
+- adicionado Avatar Lab com a skin **Batina preta com pelerine** como preset wide `128 × 128`, importação de skins, rigs wide/slim, dezesseis acabamentos, materiais clássico/PBR e inspeção de pivôs, locators, hierarquia e matrizes;
+- jogador e attachable passam a ser compostos pela cadeia `rightArm → rightItem → aspergillum_bound → presentation → action`, com hold, carga, swing vanilla, ponte de recuperação e ação local reproduzíveis sem alterar os packs;
+- novo `npm run capture:avatars` gera sequências por ação/tempo/vista, pranchas rotuladas e manifest com hashes da skin, geometria, attachable, animações e configuração;
+- o atlas de jogador é expandido em seis faces explícitas por cubo, alinhando rosto, costas e laterais ao referencial visual do aspersório sem alterar UVs ou geometria do pack;
+- Model Lab, Fidelity Renderer e Avatar Lab passam a compartilhar um construtor Bedrock sem estado global; a auditoria de UV distingue faces autoralmente omitidas de `uv_size` inválido ou colapsado;
+- a auditoria read-only do projeto Sacristia informou câmera, performance, acessibilidade e importação de skin, sem criar dependência em `skinview3d` ou modificar o outro repositório;
+- mudança restrita ao toolchain e à documentação: versão, UUIDs, packs, geometria distribuída, binding, poses, animações e artefato `1.2.4` permanecem inalterados.
+
 ## 1.2.4 — 2026-08-11 — modelos 3D no inventário
 
 - os dezesseis itens removem `minecraft:icon` e passam a ser renderizados pelo motor a partir de sua própria geometria e de seus mapas color/normal/MER;

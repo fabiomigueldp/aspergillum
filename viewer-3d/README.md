@@ -28,6 +28,12 @@ O comando `sync-assets` lê os arquivos atuais em `../packs/resource/models` e `
 - suporte a teclado: `F` enquadra, `R` reseta, `G` grade, `A` eixos, `W` wireframe, `Esc` limpa seleção;
 - controles de viewport: botão esquerdo orbita, botão direito desloca e roda do mouse amplia no ponto sob o cursor;
 
+## Avatar Lab
+
+Abra `avatar-lab.html` ou clique em **Avatar Lab**. A cena monta um rig de jogador wide/slim, aplica a skin padrão **Batina preta com pelerine** ou um PNG importado e vincula a geometria real do aspersório a `rightItem`. O painel executa as poses de hold, carga e aspersão, alterna primeira/terceira pessoa e expõe a cadeia de matrizes, pivôs, locators, esqueleto e receita de cena.
+
+Model Lab, Fidelity Renderer e Avatar Lab compartilham `src/shared/bedrock-geometry.js`; não existem três conversores geométricos independentes. O contrato completo, a relação com o projeto Sacristia e os limites de paridade estão em `../docs/AVATAR_LAB.md`.
+
 ## Renderer Bedrock Fidelity
 
 Abra `bedrock-renderer.html` ou clique em **Renderer Bedrock** no topo do Model Lab. Essa é uma segunda entrada, separada do viewer original, que resolve o caminho do pack na ordem:
@@ -40,13 +46,13 @@ A barra inferior do viewport também controla rapidamente a grade, eixos, pivôs
 
 No modo `PBR / VV`, o `color` é tratado como sRGB, enquanto `normal` e `MERS` são tratados como dados lineares. O MER técnico é decomposto antes de chegar ao material em três mapas escalares: canal R para metalness, G para emissive e B para roughness. Isso evita que a aparência magenta/azul do arquivo de diagnóstico seja confundida com a cor do modelo. A cena usa um ambiente IBL neutro e luzes sem tintas cromáticas para que metais não recebam uma dominante artificial do próprio preview.
 
-Os materiais sólidos usam descarte de faces front-side como o caminho opaco do Bedrock, em vez de `DoubleSide`. O catálogo também audita UVs: Box UV combinado com qualquer dimensão menor que uma unidade é marcado como inseguro, e faces per-face ausentes ou com `uv_size` colapsado aparecem como incompatibilidade. A geometria oficial do aspersório usa seis faces explícitas por cubo, footprints inteiros de pelo menos um texel e padding dilatado de dois texels no atlas.
+Os materiais sólidos usam descarte de faces front-side como o caminho opaco do Bedrock, em vez de `DoubleSide`. O catálogo também audita UVs: Box UV combinado com qualquer dimensão menor que uma unidade é marcado como inseguro; `uv_size` inválido ou colapsado é erro, enquanto uma face ausente é contabilizada separadamente como omissão autoral deliberada. A geometria oficial do aspersório usa somente as faces visíveis explícitas, footprints inteiros de pelo menos um texel e padding dilatado de dois texels no atlas.
 
 Os dois viewers compartilham o mesmo adaptador Bedrock → Three.js para evitar divergência entre motores. Ele respeita a ordem real dos vértices de cada face do `BoxGeometry`, associa `+Z` a `south` e `-Z` a `north` e preserva o sinal de `uv_size` para espelhamento. Assim, cada texel ocupa um quadrilátero contínuo da face, sem a antiga cisão diagonal que fazia pixels escuros parecerem losangos. Execute `npm test` para validar esses contratos sem abrir o navegador.
 
 ## Capturas para agentes
 
-O renderer expõe uma API interna de captura e o CLI `capture-models.mjs` a utiliza em Chromium headless. O comando padrão captura os três assuntos visuais do projeto — `aspergillum`, `aspersorium` e `docked` — em nove direções fixas:
+O renderer expõe uma API interna de captura e o CLI `capture-models.mjs` a utiliza em Chromium headless. O comando padrão captura os cinco assuntos visuais do projeto, incluindo a Mesa do Sacristão vazia ou ocupada, em nove direções fixas:
 
 ```powershell
 # na raiz do projeto
@@ -59,6 +65,14 @@ npm run capture:models -- --subject docked --views front,right,back,top --size 7
 Cada assunto produz PNGs individuais e uma `contact-sheet.png` rotulada. A raiz da execução também recebe `capture-manifest.json`, com versão do pack, opções, câmera e arquivos gerados. Sem `--output`, a evidência é escrita em `out/model-captures/<timestamp>/`, ignorada pelo Git. Use `npm run capture:models -- --help` para consultar materiais, água, pose, animação, wireframe e resolução.
 
 O CLI requer o Chromium gerenciado pelo Playwright. Depois de instalar as dependências do viewer, execute `npx playwright install chromium` dentro de `viewer-3d` caso o browser ainda não esteja disponível na máquina do agente.
+
+Para jogador + skin + attachable, use o capturador dedicado:
+
+```powershell
+npm run capture:avatars -- --action sprinkle --views front-right,grip,head
+```
+
+Ele gera frames por vista e tempo, uma prancha rotulada e um manifest com hashes da skin, geometria, attachable, animações e configuração.
 
 As capturas usam somente cubos visíveis para enquadrar a câmera, ocultam a interface e mantêm direções estáveis. Isso permite comparar revisões sem depender de órbita manual, mas não transforma o preview Three.js em evidência do shader ou da câmera proprietária do Minecraft.
 
@@ -80,6 +94,6 @@ O comando não modifica `assets-src/`, `packs/` nem `dist/`. As candidatas em `o
 
 ## Limite deliberado
 
-O viewer original reproduz a geometria Bedrock e seus pivôs em uma cena standalone. O **Bedrock Fidelity Renderer** aproxima também a cadeia de resolução, animações e mapas do pack, mas não substitui o cliente Minecraft: o shader proprietário, a iluminação do mundo, o jogador/skin, a câmera completa, partículas e comportamento final continuam sendo validados no jogo conforme `docs/TESTING.md`. Portanto, ele é um preview de alta fidelidade e uma ferramenta de diagnóstico, não uma prova de equivalência visual de 100%.
+O viewer original reproduz a geometria Bedrock e seus pivôs em uma cena standalone. O **Bedrock Fidelity Renderer** aproxima a cadeia de resolução, animações e mapas; o **Avatar Lab** acrescenta rig wide/slim, skin, holder e animações coordenadas. Nenhum deles substitui o cliente Minecraft: shader proprietário, iluminação do mundo, Persona, câmera completa, partículas, cache, culling e comportamento final continuam sendo validados no jogo conforme `docs/TESTING.md`. São ferramentas de diagnóstico, não prova de equivalência visual de 100%.
 
 Para uma revisão visual reproduzível, registre a versão do pack, a variação selecionada, a perspectiva desejada e o hash do pacote testado. O viewer é uma ferramenta de diagnóstico, não uma nova fonte autoritativa de assets.

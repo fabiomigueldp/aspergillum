@@ -272,6 +272,20 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 
 `npm run capture:models -- --subject all` gera nove vistas fixas e uma prancha composta para o aspersório, a caldeirinha e a Mesa do Sacristão, vazias ou com o aspersório acomodado. O `capture-manifest.json` registra câmera, geometria, material, versão e opções. Essas imagens servem para revisão de silhueta, faces, UVs e comparação entre revisões; o gate dentro do Minecraft continua obrigatório para culling, shader, câmera, cache e integração reais.
 
+`npm run capture:avatars -- --action sprinkle` monta a skin padrão no rig wide, vincula o attachable real a `rightItem` e captura os tempos diagnósticos do swing vanilla + ação local. Para uma revisão de integração, gerar ao menos `front-right,grip,head,first-person` em `idle`, o frame de release da aspersão e os pontos `0,46/0,54/0,78 s` da carga. O manifest deve registrar `exactBinding: true`, erro de contato zero e hashes idênticos quando os inputs não mudarem.
+
+Checklist mínimo do Avatar Lab:
+
+- [ ] preset padrão tem `128 × 128`, perfil wide e SHA-256 documentado;
+- [ ] a vista `front` mostra rosto e frente da veste, `back` mostra nuca e costas, e direita/esquerda não estão trocadas;
+- [ ] wide e slim mantêm seus pivôs próprios de `rightArm/rightItem`;
+- [ ] grip permanece em contato durante idle, carga e todos os frames da aspersão;
+- [ ] camadas externas não ocultam a mão nem o item;
+- [ ] PBR e clássico usam a mesma geometria e pose;
+- [ ] o viewmodel FP mantém braço e instrumento visíveis, sem afirmar paridade da câmera proprietária;
+- [ ] comparação antes/depois usa a mesma skin, modelo, ação, tempos, vistas, material, acabamento, resolução e flags;
+- [ ] o pacote final repete FP/TP, Steve/Alex/Persona e clássico/Vibrant Visuals dentro do Minecraft.
+
 `npm run render:cover -- --output out/cover-renders/<candidata>` monta uma capa autoral a partir da composição `docked` real e gera tanto a fonte em alta resolução quanto uma prova renderizada diretamente em `256 × 256`. Antes de aprovar uma candidata, verifique as duas imagens e confirme no `cover-manifest.json` a versão, geometria, câmera, acabamento, material, água, fonte e cobertura alfa. O comando não substitui `pack_icon.png`; depois de uma promoção explícita, o `.mcaddon` final ainda deve ser importado para conferir leitura, mipmapping e cache na interface real do Bedrock.
 
 ## Cobertura automatizada a expandir

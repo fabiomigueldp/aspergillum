@@ -85,6 +85,9 @@ function analyzeUvSafety(bones = []) {
     boxUvCubes: 0,
     perFaceUvCubes: 0,
     unsafeSubtexelBoxUvCubes: 0,
+    intentionallyOmittedFaces: 0,
+    invalidOrCollapsedFaces: 0,
+    // Alias legado mantido para consumidores do manifest v2.
     missingOrCollapsedFaces: 0,
   };
   const faceNames = ['north', 'east', 'south', 'west', 'up', 'down'];
@@ -102,7 +105,14 @@ function analyzeUvSafety(bones = []) {
       summary.perFaceUvCubes += 1;
       for (const faceName of faceNames) {
         const face = cube.uv?.[faceName];
-        if (!face || !Array.isArray(face.uv_size) || face.uv_size.some((dimension) => dimension < 1)) {
+        if (!face) {
+          summary.intentionallyOmittedFaces += 1;
+          continue;
+        }
+        if (!Array.isArray(face.uv_size) || face.uv_size.some((dimension) => (
+          !Number.isFinite(Number(dimension)) || Math.abs(Number(dimension)) < 1
+        ))) {
+          summary.invalidOrCollapsedFaces += 1;
           summary.missingOrCollapsedFaces += 1;
         }
       }
@@ -244,7 +254,7 @@ async function main() {
   const textureSets = runtimeFiles.textures.filter((file) => file.endsWith('.texture_set.json'));
 
   const manifest = {
-    version: 2,
+    version: 3,
     source: 'packs/resource',
     models,
     cosmetics: displayCosmetics.map(summarizeCosmetic),

@@ -8,6 +8,7 @@
     "sync-assets": "node scripts/sync-assets.mjs",
     "test": "node --test tests/*.node.mjs",
     "capture": "npm run sync-assets && node scripts/capture-models.mjs",
+    "capture:avatars": "npm run sync-assets && node scripts/capture-avatars.mjs",
     "render:cover": "npm run sync-assets && node scripts/render-cover.mjs",
     "render:inventory-icons": "npm run sync-assets && node scripts/render-inventory-icons.mjs",
     "dev": "npm run sync-assets && vite",

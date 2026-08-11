@@ -81,6 +81,8 @@ Comandos importantes:
 | `npm run validate:vfx` | Verifica locator, bridge, orientação, impacto, sons e fallback de 36 gotas |
 | `npm run validate:audio` | Verifica catálogo, definitions, proveniência, mono/48 kHz/Vorbis e ausência de órfãos |
 | `npm run render:inventory-icons` | Reproduz os antigos PNGs da 1.2.2 apenas como diagnóstico histórico; a 1.2.4 não os publica |
+| `npm run capture:models -- --subject all` | Captura modelos e composições estáticas em vistas reproduzíveis |
+| `npm run capture:avatars -- --action sprinkle` | Captura skin + jogador + attachable e sua animação, sem alterar os packs |
 | `npm run package` | Cria e valida oficialmente o `.mcaddon` |
 | `npm run clean` | Remove somente artefatos gerados conhecidos |
 
@@ -91,6 +93,8 @@ A identidade oficial da 1.2.1 fica em [`assets-src/branding/`](assets-src/brandi
 Nomes, descrições e locales dos dois packs seguem o [contrato de identidade pública](docs/PACK_IDENTITY.md). Ambos usam `pack.name` e `pack.description` em escopos de tradução independentes, preservando `Aspergillum` como marca e distinguindo **Comportamento** de **Recursos** sem incluir a versão no nome.
 
 Os PNGs de item da 1.2.2 permanecem arquivados em [`assets-src/inventory-icons/`](assets-src/inventory-icons/README.md) como evidência reproduzível. Desde a 1.2.4, o pack não os copia nem registra no atlas de itens: o Bedrock renderiza a malha real por uma ponte interna estável descrita em [Arquitetura](docs/ARCHITECTURE.md).
+
+O [Avatar Lab](docs/AVATAR_LAB.md) é uma ferramenta separada do add-on. Ele usa a skin **Batina preta com pelerine** como preset padrão, monta o rig wide/slim do jogador, resolve `rightItem → aspergillum_bound`, executa hold/carga/aspersão e gera PNGs e manifests com hashes em `out/avatar-captures/`.
 
 Os 48 SFX próprios desta release são versionados com suas fontes, receitas de processamento, masters, OGGs e hashes; veja [Contrato de áudio](docs/AUDIO_DESIGN_CONTRACT.md).
 

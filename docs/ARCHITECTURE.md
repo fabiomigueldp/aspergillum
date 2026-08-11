@@ -180,6 +180,20 @@ O gerador deriva `geometry.aspergillum.inventory` dos mesmos quatorze cubos de `
 
 `block_placer` também concede semântica nativa de colocação, por isso a ponte possui defesa em profundidade: `use_on` aceita somente `minecraft:air`, o proxy exige um suporte de ar impossível numa colocação normal, colisão e seleção são nulas, e `aspergillum:inventory_visual_guard` cancela `beforeOnPlayerPlace`. Esse bloco não pertence ao catálogo, não entrega loot e nunca é autoridade de gameplay. O enquadramento, PBR, cache e a inexistência de efeitos colaterais de input ainda exigem validação no Minecraft; o validador offline bloqueia retorno do raster, drift de state/material, perda de cubos/UVs e remoção das quatro salvaguardas.
 
+### Toolchain 3D de desenvolvimento
+
+`viewer-3d/` permanece fora dos packs e possui três consumidores de um único adaptador `src/shared/bedrock-geometry.js`:
+
+1. Model Lab para geometrias diretas, importação e inspeção de bones;
+2. Fidelity Renderer para attachable, render controller, animações e materiais do Resource Pack;
+3. Avatar Lab para rig wide/slim, skin, holder `rightItem`, ações coordenadas e scene trace.
+
+`scripts/sync-assets.mjs` lê somente o Resource Pack atual e publica uma cópia descartável em `public/asset-library/`. O Avatar Lab combina esse catálogo com `public/avatar-library/`, que contém presets exclusivos da ferramenta. A cena é descrita por uma receita serializável; gameplay, inventário e persistência não participam do runtime web.
+
+O player e o attachable mantêm pose stacks separados. O primeiro reproduz holding, swing vanilla, carga e ponte de recuperação; o segundo aplica hold FP/TP e a ação local carregada dos JSONs do pack. Um compositor de binding sobrepõe o grip empírico ao holder sem gravar compensação no `aspergillum_bound`. Tanto a UI quanto `capture-avatars.mjs` consomem a mesma cena. O manifest headless inclui hashes dos inputs e as matrizes da cadeia, permitindo repetir uma revisão sem promover os PNGs a assets.
+
+A arquitetura completa, os limites da câmera FP e a decisão de não depender do renderer do projeto Sacristia estão em [Avatar Lab](AVATAR_LAB.md).
+
 Os PNGs e o renderer promovidos na 1.2.2 permanecem em `assets-src/inventory-icons/` apenas como evidência histórica reproduzível. Eles não entram no atlas nem no pacote 1.2.4.
 
 ## Áudio semântico
