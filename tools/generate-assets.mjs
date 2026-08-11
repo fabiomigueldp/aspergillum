@@ -114,7 +114,6 @@ const ASPERSORIUM_DESTRUCTION_PARTICLE_COUNT = 56;
 const SACRISTAN_TABLE_DESTRUCTION_PARTICLE_COUNT = 80;
 const ASPERSORIUM_WATER_BONES = new Set(["water_low", "water_mid", "water_high", "water_full"]);
 const INVENTORY_VISUAL_BLOCK = "aspergillum:inventory_visual";
-const INVENTORY_COSMETIC_STATE = "aspergillum:inventory_cosmetic";
 const INVENTORY_GEOMETRY = "geometry.aspergillum.inventory";
 const INVENTORY_MODEL_ROTATION = [0, 0, -35];
 
@@ -903,11 +902,8 @@ const baseItemDefinition = JSON.parse(
 const baseAttachableDefinition = JSON.parse(
   fs.readFileSync(path.join(generatedRoot, "packs/resource/attachables/aspergillum.attachable.json"), "utf8"),
 );
-function inventoryBlockDescriptor(cosmetic) {
-  return {
-    name: INVENTORY_VISUAL_BLOCK,
-    states: { [INVENTORY_COSMETIC_STATE]: cosmetic.index },
-  };
+function inventoryVisualBlockIdentifier(cosmetic) {
+  return `${INVENTORY_VISUAL_BLOCK}${cosmeticTextureSuffix(cosmetic)}`;
 }
 
 const inventoryMaterialInstances = (cosmetic) => opaqueMaterialInstances(
@@ -917,43 +913,35 @@ const inventoryItemVisual = (cosmetic) => ({
   geometry: { identifier: INVENTORY_GEOMETRY },
   material_instances: inventoryMaterialInstances(cosmetic),
 });
-const inventoryVisualBlock = {
-  format_version: "1.26.30",
-  "minecraft:block": {
-    description: {
-      identifier: INVENTORY_VISUAL_BLOCK,
-      menu_category: { category: "none", is_hidden_in_commands: true },
-      states: {
-        [INVENTORY_COSMETIC_STATE]: customizationCatalog.cosmetics.map((cosmetic) => cosmetic.index),
+for (const cosmetic of customizationCatalog.cosmetics) {
+  const suffix = cosmeticTextureSuffix(cosmetic);
+  writeJson(`packs/behavior/blocks/inventory_visual${suffix}.block.json`, {
+    format_version: "1.26.30",
+    "minecraft:block": {
+      description: {
+        identifier: inventoryVisualBlockIdentifier(cosmetic),
+        menu_category: { category: "none", is_hidden_in_commands: true },
       },
-    },
-    permutations: customizationCatalog.cosmetics.slice(1).map((cosmetic) => ({
-      condition: `q.block_state('${INVENTORY_COSMETIC_STATE}') == ${cosmetic.index}`,
       components: {
+        "minecraft:geometry": { identifier: INVENTORY_GEOMETRY, uv_lock: false },
         "minecraft:material_instances": inventoryMaterialInstances(cosmetic),
         "minecraft:item_visual": inventoryItemVisual(cosmetic),
+        "minecraft:collision_box": false,
+        "minecraft:selection_box": false,
+        "minecraft:placement_filter": {
+          conditions: [{ allowed_faces: ["up"], block_filter: ["minecraft:air"] }],
+        },
+        "minecraft:light_dampening": 0,
+        "aspergillum:inventory_visual_guard": {},
       },
-    })),
-    components: {
-      "minecraft:geometry": { identifier: INVENTORY_GEOMETRY, uv_lock: false },
-      "minecraft:material_instances": inventoryMaterialInstances(customizationCatalog.cosmetics[0]),
-      "minecraft:item_visual": inventoryItemVisual(customizationCatalog.cosmetics[0]),
-      "minecraft:collision_box": false,
-      "minecraft:selection_box": false,
-      "minecraft:placement_filter": {
-        conditions: [{ allowed_faces: ["up"], block_filter: ["minecraft:air"] }],
-      },
-      "minecraft:light_dampening": 0,
-      "aspergillum:inventory_visual_guard": {},
     },
-  },
-};
-writeJson("packs/behavior/blocks/inventory_visual.block.json", inventoryVisualBlock);
+  });
+}
 
 const baseItem = baseItemDefinition["minecraft:item"];
 delete baseItem.components["minecraft:icon"];
 baseItem.components["minecraft:block_placer"] = {
-  block: inventoryBlockDescriptor(customizationCatalog.cosmetics[0]),
+  block: inventoryVisualBlockIdentifier(customizationCatalog.cosmetics[0]),
   use_on: ["minecraft:air"],
 };
 
@@ -963,7 +951,7 @@ for (const cosmetic of customizationCatalog.cosmetics.slice(1)) {
   const itemDefinition = structuredClone(baseItemDefinition);
   itemDefinition["minecraft:item"].description.identifier = identifier;
   delete itemDefinition["minecraft:item"].description.menu_category;
-  itemDefinition["minecraft:item"].components["minecraft:block_placer"].block = inventoryBlockDescriptor(cosmetic);
+  itemDefinition["minecraft:item"].components["minecraft:block_placer"].block = inventoryVisualBlockIdentifier(cosmetic);
   writeJson(`packs/behavior/items/aspergillum${suffix}.item.json`, itemDefinition);
 
   const attachableDefinition = structuredClone(baseAttachableDefinition);
@@ -1010,7 +998,9 @@ writeJson("packs/resource/textures/terrain_texture.json", terrainTextureDefiniti
 const blocksPath = path.join(generatedRoot, "packs/resource/blocks.json");
 const blocksDefinition = JSON.parse(fs.readFileSync(blocksPath, "utf8"));
 blocksDefinition["aspergillum:sacristan_table"] = { sound: "wood" };
-blocksDefinition[INVENTORY_VISUAL_BLOCK] = { sound: "metal" };
+for (const cosmetic of customizationCatalog.cosmetics) {
+  blocksDefinition[inventoryVisualBlockIdentifier(cosmetic)] = { sound: "metal" };
+}
 writeJson("packs/resource/blocks.json", blocksDefinition);
 
 const audioCatalog = JSON.parse(

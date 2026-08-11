@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.5 — 2026-08-11 — compatibilidade runtime do inventário 3D
+
+- corrige a falha de registro da 1.2.4: Bedrock 26.40 rejeita um descritor com states em `minecraft:block_placer.block`, apesar da tipagem genérica da referência atual; todos os itens passam a usar a forma string demonstrada no exemplo oficial;
+- remove `minecraft:item_visual` de permutations, posição rejeitada pelo parser runtime, e substitui o proxy stateful por dezesseis proxies internos sem states ou permutations;
+- cada proxy declara sua geometria, material PBR e `item_visual` exclusivamente em `components`, preservando o mesmo modelo 3D e o acabamento exato;
+- restaura o registro completo dos itens, inclusive `minecraft:max_stack_size: 1` e o custom component; os erros secundários de propriedades dinâmicas em itens empilháveis deixam de existir;
+- validadores passam a rejeitar descritores não-string, `item_visual` em permutations, proxies com states e ausência de qualquer uma das travas de colocação;
+- pacote e manifests sobem para `1.2.5`/`[1,2,5]`; IDs persistidos dos itens, attachables, binding, gameplay, cargas, água e snapshots permanecem inalterados.
+- artefato `Aspergillum-1.2.5.mcaddon`: `3.096.416` bytes, SHA-256 `e62551816aeac54d1b8c7bfcadac334a92857ea2ab8ad778dbd896fb67bde06a`; Creator Tools aceitou os onze warnings offline conhecidos e nenhum inesperado.
+
 ## Ferramentas de desenvolvimento não distribuídas — 2026-08-11
 
 - adicionado Avatar Lab com a skin **Batina preta com pelerine** como preset wide `128 × 128`, importação de skins, rigs wide/slim, dezesseis acabamentos, materiais clássico/PBR e inspeção de pivôs, locators, hierarquia e matrizes;

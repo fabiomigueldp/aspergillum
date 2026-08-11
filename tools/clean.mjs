@@ -23,7 +23,12 @@ const workTargets = [
   "packs/resource/models/blocks/aspersorium.geo.json",
   "packs/resource/models/blocks/aspersorium.rotations.geo.json",
   "packs/resource/models/blocks/aspergillum.inventory.geo.json",
-  "packs/behavior/blocks/inventory_visual.block.json"
+  "packs/behavior/blocks/inventory_visual.block.json",
+  ...fs.existsSync(path.join(root, "packs/behavior/blocks"))
+    ? fs.readdirSync(path.join(root, "packs/behavior/blocks"))
+      .filter((name) => /^inventory_visual_[a-z_]+\.block\.json$/.test(name))
+      .map((name) => `packs/behavior/blocks/${name}`)
+    : []
 ];
 const artifactTargets = ["dist/releases", "dist/validation", "dist/diagnostics", "out/addon-manager"];
 

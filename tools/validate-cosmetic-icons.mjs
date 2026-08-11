@@ -8,7 +8,6 @@ const catalog = JSON.parse(fs.readFileSync(
 ));
 const errors = [];
 const blockId = "aspergillum:inventory_visual";
-const stateName = "aspergillum:inventory_cosmetic";
 const geometryId = "geometry.aspergillum.inventory";
 
 const readJson = (relative) => JSON.parse(fs.readFileSync(path.join(root, relative), "utf8"));
@@ -16,6 +15,7 @@ const suffixFor = (cosmetic) => cosmetic.id === "classic" ? "" : `_${cosmetic.id
 const itemIdFor = (cosmetic) => cosmetic.id === "classic"
   ? "aspergillum:aspergillum"
   : `aspergillum:aspergillum_${cosmetic.id}`;
+const blockIdFor = (cosmetic) => `${blockId}${suffixFor(cosmetic)}`;
 const materialFor = (cosmetic) => ({
   "*": {
     texture: `aspergillum_inventory${suffixFor(cosmetic)}`,
@@ -27,30 +27,6 @@ const visualFor = (cosmetic) => ({
   material_instances: materialFor(cosmetic),
 });
 
-const block = readJson("packs/behavior/blocks/inventory_visual.block.json")?.["minecraft:block"];
-if (block?.description?.identifier !== blockId) errors.push("Inventory visual proxy block identifier changed");
-if (block?.description?.menu_category?.category !== "none"
-  || block?.description?.menu_category?.is_hidden_in_commands !== true) {
-  errors.push("Inventory visual proxy must remain hidden from catalogs and commands");
-}
-if (JSON.stringify(block?.description?.states?.[stateName])
-  !== JSON.stringify(catalog.cosmetics.map((cosmetic) => cosmetic.index))) {
-  errors.push("Inventory visual state must preserve the cosmetic catalog indices 0..15");
-}
-if (block?.components?.["minecraft:geometry"]?.identifier !== geometryId
-  || JSON.stringify(block?.components?.["minecraft:item_visual"])
-    !== JSON.stringify(visualFor(catalog.cosmetics[0]))) {
-  errors.push("Classic inventory visual must use the generated 3D geometry and real classic material");
-}
-if (block?.components?.["minecraft:collision_box"] !== false
-  || block?.components?.["minecraft:selection_box"] !== false
-  || JSON.stringify(block?.components?.["minecraft:placement_filter"])
-    !== JSON.stringify({ conditions: [{ allowed_faces: ["up"], block_filter: ["minecraft:air"] }] })) {
-  errors.push("Inventory visual proxy must remain nonphysical and impossible to place on a normal support block");
-}
-if (JSON.stringify(block?.components?.["aspergillum:inventory_visual_guard"]) !== JSON.stringify({})) {
-  errors.push("Inventory visual proxy must retain its script-side placement guard");
-}
 const bootstrapSource = fs.readFileSync(path.join(root, "src", "bootstrap", "main.ts"), "utf8");
 if (!bootstrapSource.includes("registerCustomComponent(INVENTORY_VISUAL_COMPONENT")
   || !bootstrapSource.includes("blockEvent.cancel = true")) {
@@ -59,19 +35,49 @@ if (!bootstrapSource.includes("registerCustomComponent(INVENTORY_VISUAL_COMPONEN
 
 for (const cosmetic of catalog.cosmetics) {
   const suffix = suffixFor(cosmetic);
+  const expectedBlockId = blockIdFor(cosmetic);
+  const blockDefinition = readJson(`packs/behavior/blocks/inventory_visual${suffix}.block.json`);
+  const block = blockDefinition?.["minecraft:block"];
+  if (blockDefinition?.format_version !== "1.26.30"
+    || block?.description?.identifier !== expectedBlockId
+    || block?.description?.states !== undefined
+    || block?.permutations !== undefined) {
+    errors.push(`${cosmetic.id} proxy must be a state-free base-component block accepted by Bedrock 26.40`);
+  }
+  if (block?.description?.menu_category?.category !== "none"
+    || block?.description?.menu_category?.is_hidden_in_commands !== true) {
+    errors.push(`${cosmetic.id} proxy must remain hidden from catalogs and commands`);
+  }
+  if (block?.components?.["minecraft:geometry"]?.identifier !== geometryId
+    || JSON.stringify(block?.components?.["minecraft:material_instances"])
+      !== JSON.stringify(materialFor(cosmetic))
+    || JSON.stringify(block?.components?.["minecraft:item_visual"])
+      !== JSON.stringify(visualFor(cosmetic))) {
+    errors.push(`${cosmetic.id} proxy must declare its geometry and item_visual only in base components`);
+  }
+  if (block?.components?.["minecraft:collision_box"] !== false
+    || block?.components?.["minecraft:selection_box"] !== false
+    || JSON.stringify(block?.components?.["minecraft:placement_filter"])
+      !== JSON.stringify({ conditions: [{ allowed_faces: ["up"], block_filter: ["minecraft:air"] }] })
+    || JSON.stringify(block?.components?.["aspergillum:inventory_visual_guard"]) !== JSON.stringify({})) {
+    errors.push(`${cosmetic.id} proxy does not preserve all placement guards`);
+  }
   const item = readJson(`packs/behavior/items/aspergillum${suffix}.item.json`)?.["minecraft:item"];
   const placer = item?.components?.["minecraft:block_placer"];
   if (item?.description?.identifier !== itemIdFor(cosmetic)) {
     errors.push(`${cosmetic.id} item identifier changed`);
   }
+  if (item?.components?.["minecraft:max_stack_size"] !== 1
+    || JSON.stringify(item?.components?.["aspergillum:aspergillum_use"]) !== JSON.stringify({})) {
+    errors.push(`${cosmetic.id} must retain non-stackable state and its registered custom component`);
+  }
   if (item?.components?.["minecraft:icon"] !== undefined) {
     errors.push(`${cosmetic.id} still publishes a raster minecraft:icon`);
   }
-  if (placer?.block?.name !== blockId
-    || placer?.block?.states?.[stateName] !== cosmetic.index
+  if (placer?.block !== expectedBlockId
     || JSON.stringify(placer?.use_on) !== JSON.stringify(["minecraft:air"])
     || placer?.replace_block_item === true) {
-    errors.push(`${cosmetic.id} does not reference its inert 3D inventory state`);
+    errors.push(`${cosmetic.id} does not reference its inert 3D proxy as a runtime-compatible string`);
   }
   const textureAlias = `aspergillum_inventory${suffix}`;
   const terrain = readJson("packs/resource/textures/terrain_texture.json");
@@ -86,20 +92,6 @@ for (const cosmetic of catalog.cosmetics) {
   if (fs.existsSync(path.join(root, `packs/resource/textures/items/aspergillum${suffix}.png`))) {
     errors.push(`${cosmetic.id} retains an obsolete distributed raster icon`);
   }
-  if (cosmetic.index === 0) continue;
-  const permutation = block?.permutations?.find(
-    (candidate) => candidate.condition === `q.block_state('${stateName}') == ${cosmetic.index}`,
-  );
-  if (JSON.stringify(permutation?.components?.["minecraft:item_visual"])
-      !== JSON.stringify(visualFor(cosmetic))
-    || JSON.stringify(permutation?.components?.["minecraft:material_instances"])
-      !== JSON.stringify(materialFor(cosmetic))) {
-    errors.push(`${cosmetic.id} proxy permutation does not select its real material`);
-  }
-}
-
-if (block?.permutations?.length !== catalog.cosmetics.length - 1) {
-  errors.push("Inventory visual proxy must contain exactly fifteen non-classic permutations");
 }
 
 const held = readJson("packs/resource/models/entity/aspergillum.geo.json")?.["minecraft:geometry"]?.[0];
@@ -146,5 +138,5 @@ if (errors.length) {
   console.error(`3D inventory visual validation failed:\n- ${errors.join("\n- ")}`);
   process.exitCode = 1;
 } else {
-  console.log("3D inventory visuals valid: 16 item states reuse the authored mesh, UVs, and PBR texture families without raster icons.");
+  console.log("3D inventory visuals valid: 16 string-addressed, state-free proxies reuse the authored mesh, UVs, and PBR textures without raster icons.");
 }

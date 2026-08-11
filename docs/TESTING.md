@@ -4,7 +4,17 @@
 
 Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
 
-## Gate do modelo 3D no inventário — v1.2.4
+## Gate de compatibilidade runtime do inventário 3D — v1.2.5
+
+- [x] os 16 `block_placer.block` são strings; nenhum descritor contém objeto/state;
+- [x] os 16 proxies não possuem states ou permutations e declaram `item_visual` somente em `components`;
+- [x] itens preservam `max_stack_size: 1`, custom component, IDs e ausência de PNG raster;
+- [x] build direcionado, 130 JSONs, 149 texturas, documentação e Creator Tools aprovados; artefato com `3.096.416` bytes e SHA-256 `e62551816aeac54d1b8c7bfcadac334a92857ea2ab8ad778dbd896fb67bde06a`;
+- [ ] importar somente `Aspergillum-1.2.5.mcaddon` e confirmar ausência de `item_visual is not allowed`, `block: invalid string`, `Missing icon`, custom component não usado e dynamic properties em stackable items;
+- [ ] executar mesa, recuperação de snapshot, inicialização lazy, caldeirinha e quatro aspersões para provar que propriedades dinâmicas voltaram a operar;
+- [ ] confirmar os 16 modelos e todas as travas de colocação nos mesmos cenários visuais/input da lista 1.2.4 abaixo.
+
+## Gate do modelo 3D no inventário — v1.2.4 (rejeitado)
 
 - [x] `package.json`, registro de releases e manifests convergem em `1.2.4`/`[1,2,4]`; `npm run package` passou com 98 testes do Add-On e 21 do viewer;
 - [x] artefato final com `3.087.734` bytes e SHA-256 `752f9ad393240a0d9af73a79fcd1d6c7b503cdd5e4e35bed87840953be34df52`; Creator Tools aceitou 11 warnings offline conhecidos e nenhum inesperado;

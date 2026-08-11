@@ -8,7 +8,19 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
-## v1.2.4 — modelos 3D no inventário — implementada; QA físico pendente
+## v1.2.5 — compatibilidade runtime do inventário 3D — implementada; QA físico pendente
+
+Objetivo: corrigir o parser failure da 1.2.4 sem voltar aos ícones raster.
+
+- `block_placer.block` usa exclusivamente identificadores string, conforme o exemplo oficial e o comportamento observado no Bedrock 26.40;
+- cada acabamento recebe um proxy interno sem states/permutations; `item_visual` permanece somente em `components`;
+- todas as travas de colocação, a geometria comum e os mapas PBR reais são preservados;
+- validação rejeita exatamente as duas formas que o Content Log comprovou inválidas;
+- promoção usa `1.2.5`/`[1,2,5]`, sem alterar qualquer ID de item persistido.
+
+Gate: Content Log sem erro de bloco/item, dezesseis modelos registrados, nenhuma colocação de proxy e smoke completo de propriedades dinâmicas/mesa/cal­deirinha.
+
+## v1.2.4 — modelos 3D no inventário — rejeitada pelo runtime; sucedida pela 1.2.5
 
 Objetivo: eliminar a segunda representação raster dos dezesseis aspersórios e delegar sua aparência de inventário à própria malha/material do add-on em componentes estáveis.
 
