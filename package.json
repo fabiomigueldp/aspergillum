@@ -1,8 +1,8 @@
 {
   "name": "aspergillum-bedrock-addon",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "aspergillum": {
-    "releaseLabel": "1.2.2"
+    "releaseLabel": "1.2.3"
   },
   "private": true,
   "description": "A production-grade liturgical aspergillum and aspersorium Add-On for Minecraft Bedrock Edition.",
@@ -11,7 +11,9 @@
     "node": ">=20.11"
   },
   "scripts": {
-    "clean": "node tools/clean.mjs",
+    "clean": "node tools/clean.mjs --work",
+    "clean:artifacts": "node tools/clean.mjs --artifacts",
+    "clean:all": "node tools/clean.mjs --all",
     "generate:assets": "node tools/generate-assets.mjs",
     "build:audio": "node tools/build-audio.mjs",
     "build:script": "esbuild src/bootstrap/main.ts --bundle --format=esm --platform=neutral --external:@minecraft/server --external:@minecraft/server-ui --target=es2022 --outfile=packs/behavior/scripts/main.js",
@@ -26,15 +28,22 @@
     "validate:release": "node tools/validate-release-readiness.mjs",
     "validate:docs": "node tools/validate-docs.mjs",
     "validate:mcaddon": "node tools/validate-minecraft.mjs",
+    "addon": "node tools/addon-manager.mjs",
     "sync:game": "node tools/sync-installed-addon.mjs",
     "sync:diagnostic": "node tools/sync-diagnostic-addon.mjs",
     "capture:models": "npm --prefix viewer-3d run capture --",
     "render:cover": "npm --prefix viewer-3d run render:cover --",
     "render:inventory-icons": "npm --prefix viewer-3d run render:inventory-icons --",
-    "package": "npm run build && node tools/package.mjs && npm run validate:mcaddon",
-    "package:render-diagnostics": "npm run build && node tools/package-render-diagnostics.mjs",
-    "package:water-diagnostics": "npm run build && node tools/package-water-dither-diagnostics.mjs",
-    "package:entity-water-diagnostic": "npm run build && node tools/package-entity-water-diagnostic.mjs",
+    "package:artifact": "node tools/package.mjs",
+    "verify:artifact": "npm run validate:mcaddon",
+    "release": "npm run check && npm run package:artifact && npm run verify:artifact",
+    "package": "npm run release",
+    "package:render-diagnostics": "node tools/package-render-diagnostics.mjs",
+    "package:water-diagnostics": "node tools/package-water-dither-diagnostics.mjs",
+    "package:entity-water-diagnostic": "node tools/package-entity-water-diagnostic.mjs",
+    "release:render-diagnostics": "npm run build && npm run package:render-diagnostics",
+    "release:water-diagnostics": "npm run build && npm run package:water-diagnostics",
+    "release:entity-water-diagnostic": "npm run build && npm run package:entity-water-diagnostic",
     "check": "npm run typecheck && npm test && npm --prefix viewer-3d test && npm run validate:docs && npm run build"
   },
   "devDependencies": {

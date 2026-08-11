@@ -2,7 +2,7 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.2.2` estável não comercial (revisão numérica dos packs `[1, 2, 2]`)
+- **Versão de referência:** `1.2.3` estável (revisão numérica dos packs `[1, 2, 3]`)
 - **Engine mínima:** Creator `1.26.40`
 - **Script API:** manifest com `@minecraft/server` `2.9.0` e `@minecraft/server-ui` `2.1.0`, estáveis; `@minecraft/common` `1.3.0` somente no toolchain npm
 - **Experimentos:** nenhum
@@ -21,6 +21,8 @@ A 1.2.0 expande somente a superfície de personalização: bronze cerimonial e m
 A 1.2.1 promove a identidade visual aprovada: o ícone passa a ser uma composição autoral reproduzível da caldeirinha cheia com o aspersório acomodado e o título `ASPERGILLUM`. A fonte de produção, o manifest de captura e a capa em alta resolução ficam em `assets-src/branding/`; ambos os packs recebem exatamente o mesmo PNG nativo de 256 px. Nenhum contrato de mundo ou gameplay muda. O registro está em [Release 1.2.1](releases/1.2.1.md).
 
 A 1.2.2 promove duas melhorias de apresentação: blocos usam tiles de destruição `16 × 16` dedicados, e os dezesseis itens usam ícones derivados do modelo, color maps e materiais PBR reais do aspersório. Água, geometria distribuída, binding, poses, states, gameplay e persistência não mudam. Evidência automatizada, compatibilidade e gates físicos estão em [Release 1.2.2](releases/1.2.2.md).
+
+A 1.2.3 promove a identidade localizada dos packs: Behavior e Resource Pack usam `pack.name`/`pack.description` em escopos próprios, com textos objetivos em `pt_BR` e `en_US`. A revisão também torna a proveniência dos SFX autocontida e consolida empacotamento determinístico e instalação local transacional, sem alterar mídia distribuída, gameplay ou contratos de mundo. Contrato, evidências e gates físicos estão em [Identidade pública dos packs](PACK_IDENTITY.md) e [Release 1.2.3](releases/1.2.3.md).
 
 ## O que está resolvido
 
@@ -59,7 +61,7 @@ A 1.2.2 promove duas melhorias de apresentação: blocos usam tiles de destruiç
 - Mensagens dinâmicas usam `%s` sequenciais compatíveis com o runtime; lore e action bar reiniciam explicitamente a formatação antes de aplicar a cor.
 - Cues passam por adaptador Bedrock fail-soft, catálogo tipado e shuffle bag sem repetição imediata; feedback de carga mantém somente duas microgotas limitadas à caldeirinha.
 - O pipeline versiona fontes selecionadas, masters, recipes, OGGs e hashes; `validate:audio` garante 48 arquivos mono/48 kHz/Vorbis sem órfãos ou caminhos vanilla.
-- Os SFX atuais foram gerados no plano free ElevenLabs: servem à release não comercial com atribuição e precisam ser regenerados ou substituídos sob licença adequada antes de distribuição comercial.
+- Os 48 SFX próprios preservam fontes selecionadas, receitas, masters, OGGs e hashes reproduzíveis.
 
 ## Limitações conhecidas
 
@@ -82,10 +84,11 @@ A 1.2.2 promove duas melhorias de apresentação: blocos usam tiles de destruiç
 | Compatibilidade 1.1.9 | UUIDs oficiais, IDs, states, pivôs, locators e contratos de gameplay são preservados; somente a apresentação da água muda | manter upgrade de cópia persistente 1.1.7 como regressão pós-release |
 | Partículas de quebra 1.2.2 | tiles dedicados, aliases e composição material são validados offline | confirmar no Minecraft partículas durante os golpes e no estouro final, em gráficos clássicos e Vibrant Visuals |
 | Ícones de inventário 1.2.2 | 16 renders derivados do modelo são determinísticos, íntegros e distinguíveis por região semântica | confirmar escala, mipmapping, fundos de UI e cache no pacote final importado |
+| Identidade localizada 1.2.3 | contrato, manifests, idiomas e gates usam `pack.name`/`pack.description` | confirmar ambos os packs em `pt_BR`/`en_US` no seletor real e registrar capturas/Content Log |
 
 ## Próxima mudança autorizada
 
-Após a 1.2.2, limitar `1.2.x` a correções comprovadas pelo pacote importado e pelo Content Log. Nenhum novo acabamento, modelo ou state deve entrar antes do smoke físico da matriz completa e da compatibilidade `1.1.10 → 1.2.2`.
+Após a 1.2.3, limitar `1.2.x` a correções comprovadas pelo pacote importado e pelo Content Log. Nenhum novo acabamento, modelo ou state deve entrar antes do smoke físico da matriz completa e da compatibilidade `1.1.10 → 1.2.3`.
 
 Não faz parte do próximo marco:
 

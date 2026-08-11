@@ -3,36 +3,49 @@
 ## Requisitos
 
 - Node.js `20.11` ou superior;
-- dependências instaladas por `npm install`/`npm ci`;
+- dependências instaladas por `npm install` ou `npm ci`;
 - Minecraft Bedrock compatível com Creator `1.26.40` para teste manual.
 
-## Comandos
+## Camadas do pipeline
+
+Os comandos possuem responsabilidades separadas:
 
 ```powershell
-npm run check
+# gera packs a partir das fontes e executa validação estrutural
+npm run build
+
+# empacota exatamente o estado atual de packs/, sem build nem validação
+npm run package:artifact
+
+# executa Creator Tools sobre o artefato atual
+npm run verify:artifact
+
+# gate completo: check + package:artifact + verify:artifact
+npm run release
+
+# alias histórico do gate completo
 npm run package
-npm run sync:game -- --dry-run
-npm run sync:game -- --apply
 ```
 
-`check` executa tipos, testes, documentação, geração, bundle e validação estrutural. `package` repete o build, cria o `.mcaddon`, grava SHA-256 e executa o Minecraft Creator Tools em modo offline.
+`npm run check` cobre tipos, testes do add-on e do viewer, documentação, geração, bundle e validadores. `package:artifact` existe para permitir reempacotamento determinístico de uma árvore já aprovada. O comando de instalação nunca chama nenhuma dessas etapas.
 
-## Sincronização local rápida
+Se já existir um artefato com o mesmo rótulo e bytes diferentes, o empacotador falha antes de sobrescrevê-lo. A ação normal é elevar a versão. Durante a construção deliberada de uma candidata ainda não publicada, `npm run package:artifact -- --replace` autoriza explicitamente a troca.
 
-Depois que o pipeline já aprovou a revisão atual, a troca local pode ser feita diretamente a partir de `packs/`:
+## Instalação local
+
+Use o [Gerenciador local do Aspergillum](ADDON_MANAGER.md):
 
 ```powershell
-# mostra os quatro alvos sem alterar nada
-npm run sync:game -- --dry-run
-
-# substitui Shared e o mundo devtest, atualiza vínculos/históricos e regenera o mapa
-npm run sync:game -- --apply
-
-# opcional: aplica a revisão atual em todos os mundos que já usam Aspergillum
-npm run sync:game -- --apply --all-worlds
+npm run addon -- list
+npm run addon -- status
+npm run addon -- install current
+npm run addon -- install 1.1.8b --dry-run
+npm run addon -- plan-upgrade 1.2.0 1.2.2
+npm run addon -- upgrade 1.2.0 1.2.2
+npm run addon -- map
 ```
 
-A ferramenta é deliberadamente operacional: não faz backup, não extrai o `.mcaddon` e não executa o pipeline. Ela copia os packs aprovados de `packs/behavior` e `packs/resource`, atualiza as versões numéricas em `world_behavior_packs.json`, `world_resource_packs.json` e seus históricos, e reescreve `docs/LOCAL_INSTALLATION_MAP.md`. Feche o Minecraft antes de usar `--apply`. O rótulo vem de `package.json > aspergillum.releaseLabel` e a versão Bedrock vem de `package.json > version`.
+O gerenciador instala o `.mcaddon` exato, verifica o hash, extrai uma vez por SHA, atualiza todos os perfis quando solicitado e protege mundos dependentes de Shared. `install` e `upgrade` aplicam por padrão; feche o Minecraft antes de executá-los.
 
 ## Artefatos
 
@@ -40,66 +53,93 @@ A ferramenta é deliberadamente operacional: não faz backup, não extrai o `.mc
 dist/
 ├── README.md
 ├── releases/
-│   ├── Aspergillum-<versão>.mcaddon
-│   └── Aspergillum-<versão>.mcaddon.sha256
+│   ├── Aspergillum-<rótulo>.mcaddon
+│   ├── Aspergillum-<rótulo>.mcaddon.sha256
+│   ├── Aspergillum-<rótulo>.mcaddon.artifact.json
+│   └── catalog.json
 └── validation/
-    └── <versão>/
+    └── <rótulo>/
         ├── *.csv
         ├── *.mcr.json
         └── *.report.html
 ```
 
-`dist/releases` e `dist/validation` são gerados e ignorados pelo Git. O código distribuído vem exclusivamente de `packs/behavior` e `packs/resource`; `src`, `tests`, `docs`, `assets-src` e `.research` não entram no pacote.
+`dist/releases` e `dist/validation` são gerados e ignorados pelo Git. O código distribuído vem exclusivamente de `packs/behavior` e `packs/resource`; `src`, `tests`, `tools`, `docs`, `assets-src`, `out` e `.research` não entram no pacote.
 
-O empacotador ordena todos os caminhos e usa timestamps ZIP fixos. Duas execuções sobre a mesma árvore devem produzir bytes e SHA-256 idênticos.
+O empacotador ordena caminhos e usa timestamps ZIP fixos. Duas execuções sobre a mesma árvore devem produzir bytes e SHA-256 idênticos. O descritor do artefato registra identidade Bedrock e procedência Git; o catálogo agrega os descritores publicados.
 
-Revisões com sufixo diagnóstico usam `package.json > aspergillum.releaseLabel` no nome do artefato e do relatório. Como o manifest Bedrock aceita apenas `[major, minor, patch]` numérico, as revisões publicadas nunca reutilizam uma trinca. A matriz `1.1.7a/b/c` usa `[1,1,7]..[1,1,9]` e a release 1.1.7 usa `[1,1,10]`; a matriz 1.1.8 usa `[1,1,11]..[1,1,14]`; os diagnósticos 1.1.9a/b/c usam `[1,1,15]..[1,1,17]`; a release 1.1.9 usa `[1,1,18]` e a 1.1.10 usa `[1,1,19]`. A linha 1.2 usa `[1,2,0]` para a matriz 4×4, `[1,2,1]` para a identidade visual e `[1,2,2]` para o polimento de ícones e partículas materiais. O histórico anterior até 1.1.6 permanece monotônico conforme os manifests e changelog correspondentes.
+## Registro de versões
 
-Para instalar uma variante diagnóstica sem trocar o checkout oficial: `npm run sync:diagnostic -- --variant 1.1.7a --apply`. O comando substitui os packs compartilhados e do `devtest`, remove referências ativas das variantes Aspergillum anteriores, grava os UUIDs próprios do diagnóstico e atualiza `docs/LOCAL_INSTALLATION_MAP.md`.
+`tools/release/release-registry.json` é a fonte central das trincas reservadas a partir das matrizes 1.1.7. O empacotador falha se o rótulo atual não estiver registrado, se o canal divergir ou se a versão dos manifests não corresponder.
 
-Os três diagnósticos 1.1.7 são exceções deliberadas ao fluxo de uma única revisão em `package.json`: `npm run package:render-diagnostics` clona a baseline gerada, aplica uma variável por artefato e atribui nomes/UUIDs próprios sem modificar a versão oficial. Como preservam os mesmos IDs públicos de conteúdo, somente um par diagnóstico pode ser ativado por mundo.
+A matriz `1.1.7a/b/c` usa `[1,1,7]..[1,1,9]` e a release 1.1.7 usa `[1,1,10]`; a matriz 1.1.8 usa `[1,1,11]..[1,1,14]`; os diagnósticos 1.1.9a/b/c usam `[1,1,15]..[1,1,17]`; a release 1.1.9 usa `[1,1,18]` e a 1.1.10 usa `[1,1,19]`. A linha 1.2 usa `[1,2,0]`, `[1,2,1]`, `[1,2,2]` e `[1,2,3]`. O histórico anterior permanece definido pelos manifests e changelog correspondentes.
 
-### Avisos offline conhecidos
+## Diagnósticos
 
-O Creator Tools em modo `--offline` não possui o catálogo completo do jogo nem resolve o item implícito de um custom block. Por isso, o relatório oficial contém exatamente onze avisos `UNLINK 323`: sete links de ingredientes vanilla (`stick`, `iron_nugget` em duas receitas, `chain`, `iron_ingot`, `dark_oak_planks`, `green_carpet`) e quatro referências aos itens implícitos dos blocos `aspergillum:aspersorium`/`aspergillum:sacristan_table` nas loot tables.
+Empacotar uma árvore já gerada:
 
-`validate-minecraft.mjs` aceita somente esses onze casos conhecidos e falha diante de qualquer warning novo, Error ou Failure. Eles não substituem o Content Log real.
+```powershell
+npm run package:render-diagnostics
+npm run package:water-diagnostics
+npm run package:entity-water-diagnostic
+```
 
-### Exceção runtime histórica da 1.1.7
+Gerar a baseline e então empacotar:
 
-O Content Log do Bedrock 26.42 registrava duas mensagens de `MaterialInstances` porque a caldeirinha 1.1.7 usava estrutura `opaque` e água `blend` no mesmo bloco. A 1.1.9 encerra essa exceção ao transferir a água para um passe de entidade aprovado. Nenhuma dessas mensagens é aceita no gate atual; o histórico permanece no [diagnóstico 1.1.7](diagnostics/1.1.7-render-pipeline-matrix.md).
+```powershell
+npm run release:render-diagnostics
+npm run release:water-diagnostics
+npm run release:entity-water-diagnostic
+```
+
+Os empacotadores diagnósticos usam o mesmo núcleo de arquivo determinístico, hash, descritor, catálogo e procedência do pacote oficial. Cada variante conserva UUIDs próprios e somente um par deve ficar ativo por mundo.
+
+## Limpeza
+
+```powershell
+# remove somente saídas de trabalho regeneráveis em packs/
+npm run clean
+
+# remove explicitamente releases, validações, diagnósticos e cache do gerenciador
+npm run clean:artifacts
+
+# combina os dois escopos
+npm run clean:all
+```
+
+A limpeza padrão preserva artefatos. Isso evita apagar pacotes aprovados durante iteração ou troca de branch; a procedência do descritor impede que `current` selecione silenciosamente um pacote produzido por outro commit.
+
+## Avisos offline conhecidos
+
+O Creator Tools em modo `--offline` não possui o catálogo completo do jogo nem resolve o item implícito de um custom block. Por isso, o relatório oficial contém onze avisos `UNLINK 323`: sete links de ingredientes vanilla e quatro referências aos itens implícitos de `aspergillum:aspersorium` e `aspergillum:sacristan_table` nas loot tables.
+
+`validate-minecraft.mjs` aceita somente os casos conhecidos e falha diante de warning novo, Error ou Failure. Eles não substituem o Content Log real.
 
 ## Release de desenvolvimento
 
-1. Atualize versão em `package.json`, `package-lock.json` e nos dois manifests.
-2. Atualize `CHANGELOG.md`, `README.md`, `PROJECT_STATUS.md` e checklist específico.
-3. Execute `npm run check`.
-4. Execute `npm run package`.
-5. Confira arquivo, hash e relatórios da versão correta.
-6. Abra o `.mcaddon` gerado; não copie packs manualmente para o mundo.
-7. Remova versões antigas em **Configurações → Armazenamento**, feche completamente o jogo e importe.
-8. Teste em mundo novo sem experimentos e exporte o Content Log.
+1. Reserve o novo rótulo e a nova trinca em `tools/release/release-registry.json`.
+2. Atualize `package.json`, `package-lock.json` e os dois manifests.
+3. Atualize `CHANGELOG.md`, documentação de estado e checklist específico.
+4. Execute `npm run check`.
+5. Execute `npm run package:artifact` e confira pacote, hash e descritor.
+6. Execute `npm run verify:artifact`.
+7. Instale o artefato exato com `npm run addon -- install <rótulo>`.
+8. Teste em mundo novo ou na cópia prevista, limpe o Content Log e registre a evidência manual.
 
 ## Gate de produção
 
-- `git status` contém apenas mudanças intencionais;
-- versão é monotônica e consistente nos manifests/pacote/docs;
-- pacote contém exatamente um Behavior Pack e um Resource Pack dependentes entre si;
-- manifests, UUIDs e identifiers públicos permanecem estáveis;
-- SHA-256 foi registrado junto ao artefato entregue;
+- `git status` contém somente mudanças intencionais;
+- rótulo e versão são monotônicos e coerentes no registro, manifests, pacote e docs;
+- pacote contém exatamente um BP e um RP dependentes entre si;
+- UUIDs e identifiers públicos permanecem estáveis;
+- SHA-256 e descritor correspondem aos bytes testados;
 - Minecraft Creator Tools não reporta erro atribuível ao add-on;
 - teste de instalação limpa e smoke test foram executados;
-- itens aplicáveis de `docs/TESTING.md` foram concluídos;
-- limitações remanescentes estão explícitas no changelog.
+- itens aplicáveis de [TESTING.md](TESTING.md) foram concluídos;
+- limitações remanescentes estão explícitas.
 
 ## Cache e diagnóstico
 
-Modelos e texturas não devem ser avaliados por hot reload. Se o Content Log mencionar expressões removidas ou a pose não corresponder à versão:
+Modelos e texturas não devem ser aprovados por hot reload. Se o Content Log mencionar expressão removida ou a pose não corresponder à revisão, feche o jogo, confirme o rótulo/hash em `npm run addon -- status`, remova packs concorrentes quando necessário, importe novamente e limpe o histórico do Content Log.
 
-1. saia do mundo e feche o Minecraft;
-2. remova Behavior e Resource Packs antigos no armazenamento;
-3. confirme que o nome/versão do `.mcaddon` são os esperados;
-4. importe novamente e abra um mundo limpo;
-5. limpe o histórico do Content Log antes do teste.
-
-O relatório deve sempre indicar jogo, plataforma, controle, perspectiva, modelo do jogador, versão do add-on, passos, resultado esperado/observado e trecho do Content Log.
+O relatório deve indicar jogo, plataforma, controle, perspectiva, modelo, versão do add-on, artefato/hash, passos, resultado esperado/observado e trecho do Content Log.

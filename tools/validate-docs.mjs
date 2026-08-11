@@ -63,6 +63,7 @@ for (const required of [
   "docs/STATE_AND_CONCURRENCY.md",
   "docs/ROADMAP.md",
   "docs/TESTING.md",
+  "docs/PACK_IDENTITY.md",
   "docs/RELEASE.md",
   "docs/RELEASE_CANDIDATE.md",
   "docs/ANIMATION_DESIGN_CONTRACT.md",

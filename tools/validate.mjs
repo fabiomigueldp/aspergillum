@@ -43,7 +43,71 @@ const terrainTextureDefinition = JSON.parse(
 const customizationCatalog = JSON.parse(
   fs.readFileSync(path.join(root, "assets-src", "customization", "catalog.json"), "utf8"),
 );
+const packIdentity = JSON.parse(
+  fs.readFileSync(path.join(root, "assets-src", "branding", "pack-identity.json"), "utf8"),
+);
 const cosmetics = customizationCatalog.cosmetics ?? [];
+
+function readLocaleEntries(packRoot, locale, label) {
+  const file = path.join(packRoot, "texts", `${locale}.lang`);
+  const entries = new Map();
+  const source = fs.readFileSync(file, "utf8");
+  for (const rawLine of source.split(/\r?\n/)) {
+    const line = rawLine.replace(/^\uFEFF/, "");
+    const separator = line.indexOf("=");
+    if (separator <= 0) continue;
+    const key = line.slice(0, separator);
+    if (entries.has(key)) errors.push(`${label} ${locale}.lang contains duplicate key ${key}`);
+    entries.set(key, line.slice(separator + 1));
+  }
+  return entries;
+}
+
+function validatePackIdentity(kind, label, packRoot, manifest) {
+  const manifestKeys = packIdentity.manifestKeys ?? {};
+  const expected = packIdentity.packs?.[kind];
+  const locales = packIdentity.locales;
+  if (manifest.header.name !== manifestKeys.name || manifest.header.description !== manifestKeys.description) {
+    errors.push(`${label} Pack manifest must use canonical pack.name and pack.description localization keys`);
+  }
+  if (!expected || !Array.isArray(locales) || locales.length === 0) {
+    errors.push("Authoritative pack identity contract is incomplete");
+    return;
+  }
+  const declaredLocales = JSON.parse(
+    fs.readFileSync(path.join(packRoot, "texts", "languages.json"), "utf8"),
+  );
+  if (JSON.stringify(declaredLocales) !== JSON.stringify(locales)) {
+    errors.push(`${label} Pack languages.json must match the authoritative locale order`);
+  }
+  for (const locale of locales) {
+    const entries = readLocaleEntries(packRoot, locale, label);
+    for (const field of ["name", "description"]) {
+      const key = manifestKeys[field];
+      const value = entries.get(key);
+      const expectedValue = expected[field]?.[locale];
+      if (value !== expectedValue) {
+        errors.push(`${label} Pack ${locale} ${key} differs from the authoritative identity`);
+      }
+      const maximumLength = field === "name" ? 64 : 120;
+      if (typeof value !== "string" || value.length === 0 || value.length > maximumLength || value.trim() !== value) {
+        errors.push(`${label} Pack ${locale} ${key} must be concise, nonempty, and whitespace-normalized`);
+      }
+    }
+    for (const key of entries.keys()) {
+      if (key.startsWith("pack.aspergillum.")) {
+        errors.push(`${label} Pack ${locale} retains unsupported legacy identity key ${key}`);
+      }
+    }
+  }
+}
+
+if (packIdentity.schemaVersion !== 1
+  || packIdentity.manifestKeys?.name !== "pack.name"
+  || packIdentity.manifestKeys?.description !== "pack.description"
+  || JSON.stringify(packIdentity.locales) !== JSON.stringify(["en_US", "pt_BR"])) {
+  errors.push("Authoritative pack identity contract must use schema 1 with canonical manifest keys");
+}
 const uuids = [
   behaviorManifest.header.uuid,
   ...behaviorManifest.modules.map((module) => module.uuid),
@@ -68,9 +132,8 @@ for (const [label, manifest] of [["Behavior", behaviorManifest], ["Resource", re
     errors.push(`${label} Pack must target min_engine_version 1.26.40`);
   }
 }
-if (behaviorManifest.header.name === resourceManifest.header.name) {
-  errors.push("Behavior and Resource Packs require distinct localization keys");
-}
+validatePackIdentity("behavior", "Behavior", packRoots[0], behaviorManifest);
+validatePackIdentity("resource", "Resource", packRoots[1], resourceManifest);
 
 const expectedPackVersion = packageMetadata.version.split(".").map(Number);
 if (JSON.stringify(behaviorManifest.header.version) !== JSON.stringify(expectedPackVersion)) {

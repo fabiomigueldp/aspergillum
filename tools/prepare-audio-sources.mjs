@@ -3,10 +3,10 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = path.resolve(import.meta.dirname, "..");
-const workspace = path.join(root, "tools/elevenlabs-workspace/outputs");
+const workspace = path.join(root, "tools/audio-source-workspace/outputs");
 const manifestPath = path.join(root, "assets-src/audio/generation-manifest.json");
 const catalogPath = path.join(root, "assets-src/audio/audio-catalog.json");
-const rawRoot = path.join(root, "assets-src/audio/raw/elevenlabs/2026-08-05");
+const rawRoot = path.join(root, "assets-src/audio/raw/selected/2026-08-05");
 const recipePath = path.join(root, "assets-src/audio/audio-recipes.json");
 
 const targetDurationByBatch = {

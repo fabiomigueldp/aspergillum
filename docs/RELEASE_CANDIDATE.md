@@ -72,8 +72,6 @@ Não criar LOD por intuição. Registrar `/script profiler start` e `/script pro
 
 **No-go** ocorre diante de perda/duplicação, erro de conteúdo novo, falha de input, regressão visual bloqueante, mensagem não localizada ou degradação mensurável. As duas mensagens conhecidas de `MaterialInstances` não autorizam outras exceções. A correção deve virar uma revisão incremental; não se altera silenciosamente o artefato já assinado.
 
-Publicação comercial também é **no-go** enquanto os 48 SFX desta release free-tier não forem regenerados ou substituídos sob licença adequada. Para teste não comercial, manter a atribuição “Generated with ElevenLabs”.
-
 ## Registro da decisão
 
 ```text

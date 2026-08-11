@@ -3,9 +3,10 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import archiver from "archiver";
 import { build as esbuild } from "esbuild";
 import { PNG } from "pngjs";
+import { createMcaddon, publishArtifact } from "./release/artifact-core.mjs";
+import { requireReleaseRegistration } from "./release/release-registry.mjs";
 
 const root = path.resolve(import.meta.dirname, "..");
 const label = "1.1.9c";
@@ -16,9 +17,9 @@ const stagingRoot = path.join(diagnosticRoot, ".staging");
 const stage = path.join(stagingRoot, label);
 const sourceRoot = path.join(root, "assets-src", "diagnostics", label);
 const creatorToolsCli = path.join(root, "node_modules", "@minecraft", "creator-tools", "cli", "index.mjs");
-const archiveDate = new Date("2000-01-01T00:00:00.000Z");
 const UUID_NAMESPACE = "5adae868-2995-5995-921b-4102770d0da4";
 const waterBones = new Set(["water_low", "water_mid", "water_high", "water_full"]);
+requireReleaseRegistration(label, version, "diagnostic");
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -228,36 +229,18 @@ function collectFiles(directory) {
     });
 }
 
-function appendPack(archive, source, destination) {
-  for (const file of collectFiles(source)) {
-    const relative = path.relative(source, file).split(path.sep).join("/");
-    archive.append(fs.readFileSync(file), {
-      name: `${destination}/${relative}`,
-      date: archiveDate,
-      mode: 0o644,
-    });
-  }
-}
-
 async function packageStage(stageRoot) {
-  fs.mkdirSync(releases, { recursive: true });
   const outputPath = path.join(releases, `Aspergillum-${label}.mcaddon`);
-  await new Promise((resolve, reject) => {
-    const output = fs.createWriteStream(outputPath);
-    const archive = archiver("zip", { zlib: { level: 9 } });
-    output.on("close", resolve);
-    output.on("error", reject);
-    archive.on("warning", reject);
-    archive.on("error", reject);
-    archive.pipe(output);
-    appendPack(archive, path.join(stageRoot, "packs", "behavior"), `Aspergillum_${label}_BP`);
-    appendPack(archive, path.join(stageRoot, "packs", "resource"), `Aspergillum_${label}_RP`);
-    archive.finalize();
+  await createMcaddon({
+    outputPath,
+    behaviorPath: path.join(stageRoot, "packs", "behavior"),
+    resourcePath: path.join(stageRoot, "packs", "resource"),
+    behaviorRoot: `Aspergillum_${label}_BP`,
+    resourceRoot: `Aspergillum_${label}_RP`,
+    replace: process.argv.includes("--replace"),
   });
-  const bytes = fs.readFileSync(outputPath);
-  const sha256 = crypto.createHash("sha256").update(bytes).digest("hex");
-  fs.writeFileSync(`${outputPath}.sha256`, `${sha256}  ${path.basename(outputPath)}\n`, "utf8");
-  return { outputPath, bytes: bytes.length, sha256 };
+  const descriptor = publishArtifact({ projectRoot: root, artifactPath: outputPath, label, channel: "diagnostic", family: "entity-water-1.1.9", base: "1.1.7" });
+  return { outputPath, bytes: descriptor.bytes, sha256: descriptor.sha256, descriptor };
 }
 
 function findFiles(directory, predicate) {

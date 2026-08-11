@@ -6,6 +6,12 @@ import { LOAD_SPLASH_OFFSETS } from "../../src/presentation/wet-feedback";
 import { AUDIO_VARIANTS, familiesForCue } from "../../src/presentation/audio/audio-catalog";
 
 const root = path.resolve(import.meta.dirname, "../..");
+type PackKind = "behavior" | "resource";
+type Locale = "pt_BR" | "en_US";
+const packIdentity = JSON.parse(fs.readFileSync(
+  path.join(root, "assets-src", "branding", "pack-identity.json"),
+  "utf8",
+));
 const loreKeys = [
   "item.aspergillum.lore.charges",
   "item.aspergillum.lore.profile",
@@ -16,8 +22,8 @@ const loreKeys = [
   "item.aspergillum.lore.creative",
 ] as const;
 
-function localeEntries(locale: "pt_BR" | "en_US"): Map<string, string> {
-  const source = fs.readFileSync(path.join(root, "packs", "resource", "texts", `${locale}.lang`), "utf8");
+function localeEntries(pack: PackKind, locale: Locale): Map<string, string> {
+  const source = fs.readFileSync(path.join(root, "packs", pack, "texts", `${locale}.lang`), "utf8");
   return new Map(source.split(/\r?\n/).flatMap((line) => {
     const separator = line.indexOf("=");
     return separator <= 0 ? [] : [[line.slice(0, separator), line.slice(separator + 1)]];
@@ -29,6 +35,25 @@ function substituteSequentially(template: string, parameters: string[]): string 
 }
 
 describe("release UX contracts", () => {
+  it("publishes an exact localized identity through the canonical pack keys", () => {
+    expect(packIdentity.schemaVersion).toBe(1);
+    expect(packIdentity.manifestKeys).toEqual({ name: "pack.name", description: "pack.description" });
+    expect(packIdentity.locales).toEqual(["en_US", "pt_BR"]);
+    for (const pack of ["behavior", "resource"] as const) {
+      const manifest = JSON.parse(fs.readFileSync(path.join(root, "packs", pack, "manifest.json"), "utf8"));
+      const languages = JSON.parse(fs.readFileSync(path.join(root, "packs", pack, "texts", "languages.json"), "utf8"));
+      expect(manifest.header.name).toBe(packIdentity.manifestKeys.name);
+      expect(manifest.header.description).toBe(packIdentity.manifestKeys.description);
+      expect(languages).toEqual(packIdentity.locales);
+      for (const locale of packIdentity.locales as Locale[]) {
+        const entries = localeEntries(pack, locale);
+        expect(entries.get("pack.name")).toBe(packIdentity.packs[pack].name[locale]);
+        expect(entries.get("pack.description")).toBe(packIdentity.packs[pack].description[locale]);
+        expect([...entries.keys()].some((key) => key.startsWith("pack.aspergillum."))).toBe(false);
+      }
+    }
+  });
+
   it("uses a unique client-localized key for every action-bar message", () => {
     const keys = Object.values(ACTION_MESSAGES);
     expect(keys).toHaveLength(32);
@@ -47,7 +72,7 @@ describe("release UX contracts", () => {
       [ACTION_MESSAGES.dockedTransferred, ["4"]],
     ]);
     for (const locale of ["pt_BR", "en_US"] as const) {
-      const entries = localeEntries(locale);
+      const entries = localeEntries("resource", locale);
       for (const [key, parameters] of dynamicKeys) {
         const template = entries.get(key) ?? "";
         expect(template.match(/%s/g)).toHaveLength(parameters.length);
@@ -59,7 +84,7 @@ describe("release UX contracts", () => {
 
   it("explicitly resets inherited lore styling before applying project colors", () => {
     for (const locale of ["pt_BR", "en_US"] as const) {
-      const entries = localeEntries(locale);
+      const entries = localeEntries("resource", locale);
       for (const key of [...loreKeys, ...Object.values(ACTION_MESSAGES)]) {
         expect(entries.get(key)).toMatch(/^§r§[0-9a-f]/);
       }
@@ -76,7 +101,7 @@ describe("release UX contracts", () => {
       ACTION_MESSAGES.chargesRemaining,
     ];
     for (const locale of ["pt_BR", "en_US"] as const) {
-      const entries = localeEntries(locale);
+      const entries = localeEntries("resource", locale);
       for (const key of chargeKeys) {
         expect(entries.get(key)).toContain("/4");
         expect(entries.get(key)).not.toContain("/3");

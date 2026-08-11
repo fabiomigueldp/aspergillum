@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.2.3 — 2026-08-11 — identidade localizada e tooling de distribuição
+
+- manifests passam a usar as chaves canônicas `pack.name` e `pack.description`, eliminando a exibição literal dos antigos tokens `pack.aspergillum.*` no seletor do Bedrock;
+- nomes e descrições de Behavior e Resource Pack são definidos objetivamente em `pt_BR` e `en_US` por um contrato único em `assets-src/branding/pack-identity.json`;
+- testes, validação estrutural, prontidão de release e QA documental passam a exigir paridade exata entre contrato, manifests, `languages.json` e arquivos `.lang` dos dois packs;
+- as 48 fontes selecionadas de áudio migram para uma árvore neutra e autocontida, removendo registros, metadados e tooling do provedor anterior sem alterar masters, OGGs, receitas de processamento ou hashes de mídia distribuída;
+- um gerenciador local transacional passa a inventariar, planejar, instalar e atualizar o Add-On por artefato/hash, com lock, rollback, cache verificado e proteção de mundos Shared;
+- o empacotamento oficial e os diagnósticos compartilham um núcleo ZIP determinístico, um registro monotônico de releases, descritores de proveniência e catálogo de artefatos; limpeza de trabalho e limpeza de releases ficam explicitamente separadas;
+- versões do pacote e dos packs elevadas para `1.2.3`/`[1,2,3]`, preservando UUIDs, namespace, IDs, states, índices `0..15`, binding, geometria, poses, animações, VFX, cargas, água, sessões e persistência.
+- o artefato `Aspergillum-1.2.3.mcaddon` tem `3.105.394` bytes e SHA-256 `be689665739129f1fbff803eb51e64b451c3fd6f015b598b2d24f356e1164983`; duas construções foram idênticas e o Creator Tools aceitou somente os onze warnings offline conhecidos, sem warning inesperado, Error ou Failure.
+
 ## 1.2.2 — 2026-08-11 — polimento visual e material
 
 - caldeirinha e Mesa do Sacristão passam a declarar `minecraft:destruction_particles`, eliminando a amostragem incidental dos atlas completos durante a mineração e a quebra;
@@ -54,7 +65,7 @@
 - promovida a Behavior Entity mínima validada em jogo, sem `minecraft:pushable`, gravidade, colisão, spawn egg, IA ou componentes cosméticos desnecessários;
 - validadores oficiais passam a exigir bloco uniformemente opaco, entidade mínima, geometria derivada, material `entity_alphablend`, propriedade client-sync `1..4`, textura dedicada e lifecycle no JavaScript compilado;
 - preservados UUIDs oficiais, IDs públicos, states `water_base + water_offset`, snapshots, poses, animações, VFX, áudio e todos os contratos de mundo; revisão dos packs elevada monotonicamente para `[1,1,18]`;
-- o usuário confirmou resultado visual satisfatório, ausência de bugs nos testes em jogo realizados e Content Log sem erros; a revisão foi promovida à baseline estável não comercial por decisão GO registrada em `docs/releases/1.1.9.md`;
+- o usuário confirmou resultado visual satisfatório, ausência de bugs nos testes em jogo realizados e Content Log sem erros; a revisão foi promovida à baseline estável por decisão GO registrada em `docs/releases/1.1.9.md`;
 - upgrade direto de uma cópia persistente da 1.1.7 e profiler com 1/16/64/256 caldeirinhas permanecem monitoramento pós-release explicitamente não reivindicado como executado.
 - o artefato oficial `Aspergillum-1.1.9.mcaddon` tem SHA-256 `b0f2a02440f6ef2e551e2cd69699f4fde29b49be0272287f41c750a5117192da`; Creator Tools aprovou com onze warnings offline conhecidos e zero warning inesperado, Error ou Failure.
 
@@ -252,7 +263,7 @@
 - itens já inicializados deixam de ser regravados em interações comuns e cargas Creative inalteradas não produzem clones desnecessários;
 - controller de ação rearma uma nova aspersão válida mesmo se o cooldown reiniciar durante recovery;
 - adicionada cadeia reprodutível de fontes MP3 versionadas, masters WAV, 48 OGGs, catálogo, recipes, hashes e validação automatizada;
-- registradas as limitações de licença: os candidatos desta RC foram gerados no plano gratuito ElevenLabs, exigem atribuição e não autorizam distribuição comercial; release comercial requer regeneração paga;
+- registrada a cadeia reproduzível dos 48 SFX próprios, das fontes selecionadas aos masters, OGGs e hashes;
 - preservados integralmente binding, poses, animações, steering, 36 gotas/seis pulsos, economia 4/16, schemas e identificadores públicos;
 - o rótulo distribuído é `1.0.19`; a revisão monotônica dos packs é `[1,0,33]`.
 

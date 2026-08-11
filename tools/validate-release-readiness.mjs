@@ -11,12 +11,18 @@ function walk(directory) {
   });
 }
 
-function localeEntries(locale) {
-  const source = fs.readFileSync(path.join(root, "packs", "resource", "texts", `${locale}.lang`), "utf8");
-  return new Map(source.split(/\r?\n/).flatMap((line) => {
+function localeEntries(pack, locale) {
+  const source = fs.readFileSync(path.join(root, "packs", pack, "texts", `${locale}.lang`), "utf8");
+  const entries = new Map();
+  for (const rawLine of source.split(/\r?\n/)) {
+    const line = rawLine.replace(/^\uFEFF/, "");
     const separator = line.indexOf("=");
-    return separator <= 0 ? [] : [[line.slice(0, separator), line.slice(separator + 1)]];
-  }));
+    if (separator <= 0) continue;
+    const key = line.slice(0, separator);
+    if (entries.has(key)) errors.push(`${pack}/${locale}.lang contains duplicate key ${key}`);
+    entries.set(key, line.slice(separator + 1));
+  }
+  return entries;
 }
 
 const metadata = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
@@ -28,12 +34,50 @@ const releaseLabel = metadata.aspergillum?.releaseLabel ?? metadata.version;
 const expectedVersion = metadata.version.split(".").map(Number);
 const behaviorManifest = JSON.parse(fs.readFileSync(path.join(root, "packs", "behavior", "manifest.json"), "utf8"));
 const resourceManifest = JSON.parse(fs.readFileSync(path.join(root, "packs", "resource", "manifest.json"), "utf8"));
+const packIdentity = JSON.parse(fs.readFileSync(
+  path.join(root, "assets-src", "branding", "pack-identity.json"),
+  "utf8",
+));
+if (packIdentity.schemaVersion !== 1
+  || packIdentity.manifestKeys?.name !== "pack.name"
+  || packIdentity.manifestKeys?.description !== "pack.description"
+  || JSON.stringify(packIdentity.locales) !== JSON.stringify(["en_US", "pt_BR"])) {
+  errors.push("Pack identity contract must preserve schema 1, canonical keys, en_US, and pt_BR");
+}
 for (const [label, actual] of [
   ["Behavior Pack", behaviorManifest.header.version],
   ["Resource Pack", resourceManifest.header.version],
 ]) {
   if (JSON.stringify(actual) !== JSON.stringify(expectedVersion)) {
     errors.push(`${label} version does not match package.json`);
+  }
+}
+for (const [kind, label, manifest] of [
+  ["behavior", "Behavior", behaviorManifest],
+  ["resource", "Resource", resourceManifest],
+]) {
+  if (manifest.header.name !== packIdentity.manifestKeys?.name
+    || manifest.header.description !== packIdentity.manifestKeys?.description) {
+    errors.push(`${label} Pack manifest identity does not use the canonical localized keys`);
+  }
+  const declaredLocales = JSON.parse(fs.readFileSync(
+    path.join(root, "packs", kind, "texts", "languages.json"),
+    "utf8",
+  ));
+  if (JSON.stringify(declaredLocales) !== JSON.stringify(packIdentity.locales)) {
+    errors.push(`${label} Pack languages.json differs from the identity contract`);
+  }
+  for (const locale of packIdentity.locales ?? []) {
+    const entries = localeEntries(kind, locale);
+    for (const field of ["name", "description"]) {
+      const key = packIdentity.manifestKeys[field];
+      if (entries.get(key) !== packIdentity.packs?.[kind]?.[field]?.[locale]) {
+        errors.push(`${label} Pack ${locale} ${key} differs from the identity contract`);
+      }
+    }
+    if ([...entries.keys()].some((key) => key.startsWith("pack.aspergillum."))) {
+      errors.push(`${label} Pack ${locale} retains a legacy pack identity key`);
+    }
   }
 }
 
@@ -59,7 +103,7 @@ const dynamicPlaceholderCounts = new Map([
   ["message.aspergillum.docked_transferred", 1],
 ]);
 for (const locale of ["pt_BR", "en_US"]) {
-  const entries = localeEntries(locale);
+  const entries = localeEntries("resource", locale);
   const localizedKeys = [...entries.keys()].filter((key) => key.startsWith("message.aspergillum.")).sort();
   if (JSON.stringify(localizedKeys) !== JSON.stringify(messageKeys)) {
     errors.push(`${locale}.lang action-message catalog differs from the typed catalog`);
@@ -96,10 +140,10 @@ for (const locale of ["pt_BR", "en_US"]) {
     }
   }
 }
-const portugueseUiKeys = [...localeEntries("pt_BR").keys()]
+const portugueseUiKeys = [...localeEntries("resource", "pt_BR").keys()]
   .filter((key) => key.startsWith("ui.aspergillum."))
   .sort();
-const englishUiKeys = [...localeEntries("en_US").keys()]
+const englishUiKeys = [...localeEntries("resource", "en_US").keys()]
   .filter((key) => key.startsWith("ui.aspergillum."))
   .sort();
 const fixedUiKeyCount = 15;

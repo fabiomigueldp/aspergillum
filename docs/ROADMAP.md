@@ -8,6 +8,28 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
+## v1.2.3 — identidade localizada e distribuição confiável — implementada
+
+Objetivo: corrigir a ficha pública observada no Bedrock sem alterar a capa, o conteúdo ou qualquer contrato de mundo.
+
+Escopo integrado:
+
+- manifests de Behavior e Resource Pack usam as chaves canônicas `pack.name` e `pack.description` em seus próprios escopos;
+- `pt_BR` e `en_US` apresentam marca, tipo de pack e descrição factual conforme `assets-src/branding/pack-identity.json`;
+- validadores e testes rejeitam chaves legadas, divergência de locale, duplicatas e textos diferentes do contrato aprovado;
+- documentação separa capa, ícone e metadados públicos e define o gate no seletor real do Minecraft;
+- a proveniência dos SFX usa fontes selecionadas em árvore neutra, sem alterar os 48 OGGs distribuídos;
+- gerenciador transacional, registro de versões e núcleo ZIP determinístico reduzem risco de instalação parcial, colisão de artefato e reutilização acidental de versão;
+- UUIDs, namespace, IDs, states e gameplay permanecem inalterados; pacote e manifests são publicados como `1.2.3`/`[1,2,3]`.
+
+Gate de saída:
+
+- gerar e importar exclusivamente `Aspergillum-1.2.3.mcaddon`, sem cache ou pack concorrente;
+- verificar nome e descrição de BP/RP em `pt_BR` e `en_US`, sem qualquer token `pack.*` visível;
+- registrar hash, capturas e Content Log, além do smoke funcional preservado.
+
+Resultado automatizado: 98 testes do Add-On e 21 do viewer passaram; build, validadores, duas construções determinísticas e Creator Tools foram aprovados. O artefato oficial tem `3.105.394` bytes e SHA-256 `be689665739129f1fbff803eb51e64b451c3fd6f015b598b2d24f356e1164983`. A leitura final dos dois locales, o Content Log e o smoke persistente permanecem gates manuais no cliente.
+
 ## v1.2.2 — polimento visual e material — implementada e promovida
 
 Objetivo: eliminar duas apresentações incidentais sem alterar contratos públicos ou gameplay: fragmentos de bloco amostrados dos atlas completos e ícones do item desenhados separadamente da malha real.
@@ -391,7 +413,6 @@ Gate de saída:
 - cues privados não vazam para observador e cues espaciais têm origem correta;
 - todas as 48 variantes passam por escuta humana no Minecraft sem clipping, ruído, tom inadequado ou desequilíbrio;
 - Content Log não registra arquivo ou evento desconhecido;
-- mídia comercial é regenerada sob plano ElevenLabs pago antes de uma publicação comercial.
 
 ## v1.0.18g — codec compacto do reservatório — implementada; QA físico pendente
 

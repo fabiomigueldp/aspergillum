@@ -4,6 +4,23 @@
 
 Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
 
+## Gate da identidade localizada — v1.2.3
+
+- [x] `assets-src/branding/pack-identity.json` define exatamente `en_US` e `pt_BR`, com nome e descrição distintos para Behavior e Resource Pack;
+- [x] ambos os manifests usam somente `pack.name` e `pack.description`, e nenhum arquivo `.lang` conserva `pack.aspergillum.*`;
+- [x] testes e validadores rejeitam divergência entre contrato, manifests, `languages.json` e os quatro arquivos `.lang`;
+- [ ] importar apenas `Aspergillum-1.2.3.mcaddon` e confirmar **Aspergillum — Comportamento/Recursos** em `pt_BR` e **Aspergillum — Behavior/Resources** em `en_US`;
+- [ ] nome e descrição aparecem traduzidos nos dois seletores, sem token `pack.*`, corte indevido, ícone antigo ou cache concorrente;
+- [ ] registrar versão, hash, locale, capturas de BP/RP e Content Log; repetir o smoke funcional da 1.2.2.
+
+## Gate automatizado da release — v1.2.3
+
+- [x] `package.json`, registro de releases e ambos os manifests convergem em `1.2.3`/`[1,2,3]` sem alterar UUIDs;
+- [x] tipos, 98 testes do Add-On, 21 testes do viewer, 43 documentos, geração e validadores passam no gate completo;
+- [x] duas construções da árvore aprovada produzem `3.105.394` bytes e SHA-256 `be689665739129f1fbff803eb51e64b451c3fd6f015b598b2d24f356e1164983`;
+- [x] Creator Tools aceita somente os onze warnings offline conhecidos, sem warning inesperado, Error ou Failure;
+- [ ] importar o artefato exato e concluir o gate físico de identidade, smoke persistente e Content Log.
+
 ## Gate automatizado da release — v1.2.2
 
 - [x] TypeScript, 85 testes do add-on e 21 testes do viewer foram aprovados durante o desenvolvimento das duas frentes;
@@ -223,7 +240,6 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 - [ ] troca de slot, dimensão, morte, logout e falha de cooldown não deixam cue tardio;
 - [ ] animação, 36 gotas/seis pulsos, bridge, curvatura controlada, economia 4/16 e persistência não regrediram;
 - [ ] registrar plataforma, saída de áudio, volume master, distância e resultado de cada família;
-- [ ] antes de distribuição comercial, substituir os SFX free-tier por mídia gerada sob licença paga e repetir todo este gate.
 
 ## Pipeline automatizado
 

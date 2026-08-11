@@ -14,8 +14,10 @@ Este diretório é a fonte canônica de conhecimento técnico do projeto. Os doc
 | [Estado e concorrência](STATE_AND_CONCURRENCY.md) | Cargas, modos de jogo, identidade, sessões, docking e migração |
 | [Roadmap](ROADMAP.md) | Sequência de versões, riscos, gates e Definition of Done |
 | [Plano de testes](TESTING.md) | Automação, QA manual, multiplayer e relatório de evidência |
+| [Identidade pública dos packs](PACK_IDENTITY.md) | Marca, nomes, descrições, locales, ícone e gate real no seletor de packs |
 | [Renderizador de capa](COVER_RENDERER.md) | Composição autoral reproduzível, tipografia, CLI e fluxo de aprovação do ícone |
 | [Release](RELEASE.md) | Build, empacotamento, validação, instalação limpa e publicação |
+| [Release 1.2.3](releases/1.2.3.md) | Identidade localizada, proveniência sonora autocontida, tooling de release e evidências oficiais |
 | [Release Candidate](RELEASE_CANDIDATE.md) | Runbook de go/no-go, evidência mínima e promoção da V1 |
 | [Mapa da instalação local](LOCAL_INSTALLATION_MAP.md) | Caminhos reais do Bedrock, packs instalados e auditoria do mundo `devtest` |
 | [Lições aprendidas](LESSONS_LEARNED.md) | Conhecimento acumulado para evitar a repetição de falhas |

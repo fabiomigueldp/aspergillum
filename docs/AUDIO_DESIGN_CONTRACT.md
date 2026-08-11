@@ -42,23 +42,16 @@ Os aliases canônicos também permanecem em `sound_definitions.json` para inspe�
 ## Pipeline reprodutível
 
 1. `generation-manifest.json` registra modelo, prompts, parâmetros e candidatos escolhidos.
-2. `raw/elevenlabs/2026-08-05/` contém as 48 fontes escolhidas sem edição.
+2. `raw/selected/2026-08-05/` contém as 48 fontes escolhidas sem edição.
 3. `audio-recipes.json` registra trim, duração, ganho e fades por arquivo.
 4. `npm run build:audio` gera masters WAV e os OGGs distribuídos.
 5. `npm run generate:assets` gera `sound_definitions.json` a partir do catálogo.
 6. `npm run validate:audio` rejeita mídia ausente, órfã, estéreo, fora de 48 kHz, codec incorreto ou caminho vanilla.
 7. `reports/audio/audio-inventory.json` registra hashes das fontes e dos OGGs.
 
-## Proveniência e licença
+## Proveniência
 
-Os arquivos da RC 1.0.19 foram gerados com `eleven_text_to_sound_v2` em uma conta ElevenLabs **free** em 2026-08-05. Isso implica:
-
-- uso desta mídia apenas em validação não comercial;
-- atribuição obrigatória: **Generated with ElevenLabs**;
-- nenhuma afirmação de licença comercial para os 48 arquivos atuais;
-- antes de uma distribuição comercial, regenerar/substituir as fontes durante uma assinatura paga, registrar a nova licença e refazer hashes, masters, OGGs e QA auditivo.
-
-A chave de API e o workspace operacional local nunca entram no Git nem no `.mcaddon`.
+As 48 fontes selecionadas são registradas pelo manifest de geração, preservadas sem edição no diretório `raw/selected/2026-08-05/` e ligadas aos masters e OGGs por receitas e hashes reproduzíveis. Credenciais e workspaces externos nunca entram no Git nem no `.mcaddon`.
 
 ## Gates manuais no Minecraft
 

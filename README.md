@@ -2,12 +2,12 @@
 
 Add-On para Minecraft: Bedrock Edition 26.40 que adiciona um **aspersório litúrgico funcional**, uma **caldeirinha (aspersorium)** e uma **Mesa do Sacristão** para configuração gratuita. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão estável 1.2.2:** melhora a leitura material sem alterar gameplay: caldeirinha e mesa recebem partículas de quebra dedicadas, e os dezesseis itens passam a usar ícones derivados do modelo e dos materiais PBR reais. Escopo, compatibilidade e gates estão em [`docs/releases/1.2.2.md`](docs/releases/1.2.2.md).
+> **Versão estável 1.2.3:** corrige a identidade localizada exibida pelo Minecraft, consolida a proveniência autocontida dos SFX e endurece o fluxo local de empacotamento e instalação, sem alterar gameplay ou compatibilidade de mundo. Escopo, evidências e gates estão em [`docs/releases/1.2.3.md`](docs/releases/1.2.3.md).
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/releases/Aspergillum-1.2.2.mcaddon`](dist/releases/Aspergillum-1.2.2.mcaddon) com o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.2.3.mcaddon`](dist/releases/Aspergillum-1.2.3.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
@@ -88,9 +88,11 @@ O modelo autoral fica em [`assets-src/models/aspergillum.model.json`](assets-src
 
 A identidade oficial da 1.2.1 fica em [`assets-src/branding/`](assets-src/branding/README.md). O Cover Renderer recompõe a cena a partir dos modelos reais, enquanto o gerador publica o PNG de 256 px aprovado de forma byte-idêntica nos dois packs; saídas temporárias de `out/cover-renders/` nunca são usadas diretamente pelo pacote.
 
+Nomes, descrições e locales dos dois packs seguem o [contrato de identidade pública](docs/PACK_IDENTITY.md). Ambos usam `pack.name` e `pack.description` em escopos de tradução independentes, preservando `Aspergillum` como marca e distinguindo **Comportamento** de **Recursos** sem incluir a versão no nome.
+
 Os ícones de item da 1.2.2 ficam em [`assets-src/inventory-icons/`](assets-src/inventory-icons/README.md). O renderer produz candidatos a partir da malha e dos mapas reais; somente `--apply` promove os PNGs nativos, e builds posteriores os copiam sem recompressão nem redesenho procedural.
 
-Os SFX desta release foram gerados com ElevenLabs no plano gratuito e, portanto, são **somente para validação não comercial e com atribuição**. Generated with ElevenLabs. Uma publicação comercial exige regenerar ou substituir as fontes sob licença adequada e atualizar a proveniência; veja [Contrato de áudio](docs/AUDIO_DESIGN_CONTRACT.md).
+Os 48 SFX próprios desta release são versionados com suas fontes, receitas de processamento, masters, OGGs e hashes; veja [Contrato de áudio](docs/AUDIO_DESIGN_CONTRACT.md).
 
 ## Estrutura
 

@@ -1,6 +1,6 @@
 # Mapa da instalação local
 
-Mapa gerado por `tools/sync-installed-addon.mjs` em **2026-08-10T18:52:11.338Z**.
+Mapa gerado por `tools/sync-installed-addon.mjs` em **2026-08-11T17:44:18.910Z**.
 A sincronização usa diretamente `packs/`, substitui os diretórios locais e atualiza os vínculos do mundo selecionado.
 
 ## Instalação do Minecraft
@@ -32,21 +32,21 @@ Mundo sincronizado nesta execução: `devtest` (1 alvo(s)).
 
 ## Aspergillum instalado
 
-- Rótulo: `1.2.0`;
-- Versão numérica dos manifests: `[1, 2, 0]`;
-- Artefato: `C:\Users\fabio\Projects\aspergillum\dist\releases\Aspergillum-1.2.0.mcaddon`;
-- SHA-256: `ceb03c692af8e42bc0dca53e4f4b0ac82fd6b728708c42008a0f564320b05dc6`.
+- Rótulo: `1.2.2`;
+- Versão numérica dos manifests: `[1, 2, 2]`;
+- Artefato: `C:\Users\fabio\Projects\aspergillum\dist\releases\Aspergillum-1.2.2.mcaddon`;
+- SHA-256: `e48f9124e109c3fcea768de6c37b0150cf1f288efd36781c32d80580f4937798`.
 
 | Pack | UUID | Arquivos | Bytes | Caminho compartilhado |
 | --- | --- | ---: | ---: | --- |
-| Behavior | bac9f8bc-71f5-4db7-a0ff-3c5a365749b4 | 33 | 187262 | `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang\behavior_packs\pack.asper` |
-| Resource | fdb8a79c-8f77-4831-9a5c-8e2b8ecca29e | 299 | 5101257 | `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang\resource_packs\pack.asper` |
+| Behavior | bac9f8bc-71f5-4db7-a0ff-3c5a365749b4 | 33 | 205238 | `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang\behavior_packs\pack.asper` |
+| Resource | fdb8a79c-8f77-4831-9a5c-8e2b8ecca29e | 301 | 5126270 | `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang\resource_packs\pack.asper` |
 
 ## Mundo sincronizado
 
 Nome: **devtest**
 Pasta: `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\8414181078248597151\games\com.mojang\minecraftWorlds\RYdEhTaa5t8=`
-Snapshot: 346 arquivos, 38 diretórios; o tamanho varia com o LevelDB.
+Snapshot: 349 arquivos, 38 diretórios; o tamanho varia com o LevelDB.
 
 ```text
 RYdEhTaa5t8=
@@ -62,7 +62,7 @@ RYdEhTaa5t8=
 └── world_resource_pack_history.json
 ```
 
-Os vínculos ativos e históricos de `devtest` apontam para `[1, 2, 0]`.
+Os vínculos ativos e históricos de `devtest` apontam para `[1, 2, 2]`.
 
 ## Mundos do perfil
 
@@ -72,7 +72,7 @@ Os vínculos ativos e históricos de `devtest` apontam para `[1, 2, 0]`.
 | 5DtOOd7sGVU= | My World | 1.0.9 | 1.0.9 | 1.0.9 | 1.0.9 | não |
 | 5VVj-1hSbFA= | a1.0.2 | 1.0.2 | 1.0.2 | 1.0.2 | 1.0.2 | não |
 | 8ynBxumLAPU= | My World | 1.0.12 | 1.0.12 | 1.0.12 | 1.0.12 | não |
-| COsp3Xp0F7g= | My World | — | — | — | — | não |
+| COsp3Xp0F7g= | My World | 1.2.0 | 1.2.0 | — | — | não |
 | e771WoNx958= | My World | 1.0.4 | 1.0.4 | 1.0.4 | 1.0.4 | não |
 | ESiHinvwbGc= | My World | 1.0.8 | 1.0.8 | 1.0.8 | 1.0.8 | não |
 | FOWoEI6uusA= | My World | 1.0.10 | 1.0.10 | 1.0.10 | 1.0.10 | não |
@@ -83,7 +83,7 @@ Os vínculos ativos e históricos de `devtest` apontam para `[1, 2, 0]`.
 | L+1naPlwfQI= | My World | 1.0.30 | 1.0.30 | 1.0.30 | 1.0.30 | não |
 | LAKg42VxeJ8= | My World | 1.0.14 | 1.0.14 | 1.0.14 | 1.0.14 | não |
 | Rk1N0Z9IRbU= | My World | — | — | — | — | não |
-| RYdEhTaa5t8= | devtest | 1.2.0 (1.2.0) | 1.2.0 (1.2.0) | 1.2.0 (1.2.0) | 1.2.0 (1.2.0) | sim |
+| RYdEhTaa5t8= | devtest | 1.2.2 (1.2.2) | 1.2.2 (1.2.2) | 1.2.2 (1.2.2) | 1.2.2 (1.2.2) | sim |
 | vz5XjjBKc8k= | Small Medieval Church 1.0.4 (imported) | 1.0.2 | — | — | — | não |
 | XF60MIBp-Qg= | My World | 1.0.5 | 1.0.5 | 1.0.5 | 1.0.5 | não |
 | y01GRv4EOxU= | My World | 1.0.13 | 1.0.13 | 1.0.13 | 1.0.13 | não |
@@ -251,6 +251,7 @@ resource_packs\pack.asper\textures\blocks\aspersorium_bronze_oxblood_mer.png
 resource_packs\pack.asper\textures\blocks\aspersorium_bronze_oxblood_normal.png
 resource_packs\pack.asper\textures\blocks\aspersorium_bronze_oxblood.png
 resource_packs\pack.asper\textures\blocks\aspersorium_bronze_oxblood.texture_set.json
+resource_packs\pack.asper\textures\blocks\aspersorium_destruction.png
 resource_packs\pack.asper\textures\blocks\aspersorium_gilded_black_mer.png
 resource_packs\pack.asper\textures\blocks\aspersorium_gilded_black_normal.png
 resource_packs\pack.asper\textures\blocks\aspersorium_gilded_black.png
@@ -316,6 +317,7 @@ resource_packs\pack.asper\textures\blocks\sacristan_table_bronze_oxblood_mer.png
 resource_packs\pack.asper\textures\blocks\sacristan_table_bronze_oxblood_normal.png
 resource_packs\pack.asper\textures\blocks\sacristan_table_bronze_oxblood.png
 resource_packs\pack.asper\textures\blocks\sacristan_table_bronze_oxblood.texture_set.json
+resource_packs\pack.asper\textures\blocks\sacristan_table_destruction.png
 resource_packs\pack.asper\textures\blocks\sacristan_table_gilded_black_mer.png
 resource_packs\pack.asper\textures\blocks\sacristan_table_gilded_black_normal.png
 resource_packs\pack.asper\textures\blocks\sacristan_table_gilded_black.png
@@ -440,8 +442,8 @@ resource_packs\pack.asper\textures\terrain_texture.json
 C:\Users\fabio\Projects\aspergillum
 ├── packs\behavior
 ├── packs\resource
-├── dist\releases\Aspergillum-1.2.0.mcaddon
-├── dist\validation\1.2.0
+├── dist\releases\Aspergillum-1.2.2.mcaddon
+├── dist\validation\1.2.2
 └── docs\LOCAL_INSTALLATION_MAP.md
 ```
 

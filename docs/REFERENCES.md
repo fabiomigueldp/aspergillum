@@ -2,6 +2,9 @@
 
 ## Fontes primárias
 
+- [Manifest de packs — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/addonsreference/packmanifest?view=minecraft-bedrock-stable): identidade pública, versões, módulos, dependências, capabilities e metadata de Behavior e Resource Packs.
+- [Conteúdo de Add-On packs — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/documents/comprehensivepackcontents?view=minecraft-bedrock-stable): estrutura oficial dos diretórios `texts`, `languages.json`, arquivos `.lang`, manifests e ícones.
+- [Diretrizes para Add-Ons cooperativos — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/documents/practices/guidelinesforbuildingcooperativeaddons?view=minecraft-bedrock-stable): namespaces e chaves localizadas resistentes à convivência com outros packs.
 - [Attachables — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/documents/attachables?view=minecraft-bedrock-stable): binding por item slot, geometrias e poses distintas por perspectiva.
 - [Geometry schema 1.19.30 — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/schemasreference/schemas/minecraftschema_geometry_1.19.30?view=minecraft-bedrock-stable): `size`, Box UV, UV alternativo por face e `uv_size`; a v1.1.6 mantém UV explícito em densidade 2×, quatro paredes por nível e omissão seletiva de uma das tampas em cada junção.
 - [Materials and Material Files — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/documents/material-files?view=minecraft-bedrock-stable): `entity` mantém culling normal e `entity_nocull` adiciona `DisableCulling`; a correção não depende de nocull.
@@ -42,9 +45,6 @@
 - [Animações oficiais do player — Mojang Bedrock Samples](https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/animations/player.animation.json): fonte da curva vanilla de `rightarm` e da costura de aproximadamente `30°` diagnosticada na v1.0.15d.
 - [Microsoft Minecraft Samples](https://github.com/microsoft/minecraft-samples): exemplos oficiais de Add-Ons e Script API.
 - [Adding custom sounds — Microsoft Learn](https://learn.microsoft.com/en-us/minecraft/creator/documents/addcustomsounds?view=minecraft-bedrock-stable): OGG customizado e `sound_definitions.json` `1.20.20` usados na 1.0.19.
-- [ElevenLabs Sound Effects API](https://elevenlabs.io/docs/api-reference/text-to-sound-effects/convert): endpoint, modelo, duração, prompt influence e formatos usados para gerar os candidatos.
-- [ElevenLabs Sound Effects overview](https://elevenlabs.io/docs/overview/capabilities/sound-effects): fluxo oficial de geração e iteração de efeitos.
-- [ElevenLabs publishing/licensing guidance](https://help.elevenlabs.io/hc/en-us/articles/13313564601361-Can-I-publish-the-content-I-generate-on-the-platform): plano gratuito exige atribuição e não concede licença comercial; registrado como gate explícito da 1.0.19.
 
 ## Pesquisa local
 
