@@ -8,6 +8,7 @@
     "sync-assets": "node scripts/sync-assets.mjs",
     "test": "node --test tests/*.node.mjs",
     "capture": "npm run sync-assets && node scripts/capture-models.mjs",
+    "render:cover": "npm run sync-assets && node scripts/render-cover.mjs",
     "dev": "npm run sync-assets && vite",
     "build": "npm test && npm run sync-assets && vite build",
     "preview": "vite preview"

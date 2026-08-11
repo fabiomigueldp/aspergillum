@@ -12,6 +12,7 @@ export default defineConfig({
       input: {
         modelLab: 'index.html',
         bedrockFidelity: 'bedrock-renderer.html',
+        coverRenderer: 'cover-renderer.html',
       },
     },
   },

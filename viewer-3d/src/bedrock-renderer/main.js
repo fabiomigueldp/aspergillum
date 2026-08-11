@@ -27,6 +27,26 @@ const WATER_LABELS = {
   high: '¾',
   full: 'Cheio',
 };
+const LIGHTING_PRESETS = Object.freeze({
+  neutral: Object.freeze({
+    exposure: 0.96,
+    environmentIntensity: 0.34,
+    hemisphere: Object.freeze({ sky: 0xf0f4ef, ground: 0x202525, intensity: 1.55 }),
+    key: Object.freeze({ color: 0xffffff, intensity: 2.65, position: [4.5, 6.2, 5.2] }),
+    fill: Object.freeze({ color: 0xe8eef0, intensity: 0.72, position: [-4.5, 2.8, -3.8] }),
+    rim: Object.freeze({ color: 0xf2ffff, intensity: 0.38, position: [0, 3.5, -5.5] }),
+    water: Object.freeze({ color: 0x5fd9e6, intensity: 0, distance: 3.4, position: [0, 0.3, 0.35] }),
+  }),
+  cinematic: Object.freeze({
+    exposure: 1.08,
+    environmentIntensity: 0.2,
+    hemisphere: Object.freeze({ sky: 0xe7e0cf, ground: 0x101a17, intensity: 0.82 }),
+    key: Object.freeze({ color: 0xffd2a0, intensity: 3.35, position: [-4.2, 7.4, 5.6] }),
+    fill: Object.freeze({ color: 0x9fcbd0, intensity: 0.58, position: [4.8, 2.6, 3.4] }),
+    rim: Object.freeze({ color: 0xffe2b5, intensity: 1.12, position: [2.4, 4.2, -5.8] }),
+    water: Object.freeze({ color: 0x42d7e8, intensity: 0.72, distance: 2.8, position: [0, 0.28, 0.38] }),
+  }),
+});
 
 const state = {
   manifest: null,
@@ -68,6 +88,7 @@ const state = {
   showPivots: false,
   wireframe: false,
   captureNeutralPose: false,
+  lightingPreset: 'neutral',
   loadToken: 0,
   toastTimer: null,
 };
@@ -112,7 +133,8 @@ const ui = {
 const renderer = new THREE.WebGLRenderer({
   canvas: ui.canvas,
   antialias: true,
-  alpha: false,
+  alpha: true,
+  preserveDrawingBuffer: true,
   powerPreference: 'high-performance',
 });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -159,7 +181,9 @@ const fillLight = new THREE.DirectionalLight(0xe8eef0, 0.72);
 fillLight.position.set(-4.5, 2.8, -3.8);
 const rimLight = new THREE.DirectionalLight(0xf2ffff, 0.38);
 rimLight.position.set(0, 3.5, -5.5);
-scene.add(ambientLight, keyLight, fillLight, rimLight);
+const waterLight = new THREE.PointLight(0x5fd9e6, 0, 3.4, 2);
+waterLight.position.set(0, 0.3, 0.35);
+scene.add(ambientLight, keyLight, fillLight, rimLight, waterLight);
 
 const grid = new THREE.GridHelper(8, 16, 0x557274, 0x2d4245);
 grid.material.transparent = true;
@@ -198,6 +222,43 @@ function formatNumber(value, digits = 2) {
 
 function formatVector(vector, digits = 2) {
   return `[${vector.map((value) => formatNumber(value, digits)).join(' · ')}]`;
+}
+
+function applyDirectionalLight(light, definition) {
+  light.color.setHex(definition.color);
+  light.intensity = definition.intensity;
+  light.position.set(...definition.position);
+}
+
+function applyLightingPreset(presetId = 'neutral') {
+  const preset = LIGHTING_PRESETS[presetId];
+  if (!preset) throw new Error(`Preset de iluminação desconhecido: ${presetId}`);
+
+  state.lightingPreset = presetId;
+  renderer.toneMappingExposure = preset.exposure;
+  scene.environmentIntensity = preset.environmentIntensity;
+  ambientLight.color.setHex(preset.hemisphere.sky);
+  ambientLight.groundColor.setHex(preset.hemisphere.ground);
+  ambientLight.intensity = preset.hemisphere.intensity;
+  applyDirectionalLight(keyLight, preset.key);
+  applyDirectionalLight(fillLight, preset.fill);
+  applyDirectionalLight(rimLight, preset.rim);
+  waterLight.color.setHex(preset.water.color);
+  waterLight.intensity = preset.water.intensity;
+  waterLight.distance = preset.water.distance;
+  waterLight.position.set(...preset.water.position);
+}
+
+function setSceneBackground(background, transparent = false) {
+  if (transparent) {
+    scene.background = null;
+    renderer.setClearColor(0x000000, 0);
+    renderer.setClearAlpha(0);
+    return;
+  }
+
+  scene.background = new THREE.Color(background ?? 0x162326);
+  renderer.setClearAlpha(1);
 }
 
 function showToast(message) {
@@ -1401,18 +1462,27 @@ function getCaptureDistance(bounds, target, direction, up) {
   }), 0.25);
 }
 
-function setCaptureView(viewId) {
+function setCaptureView(viewId, framing = {}) {
   const view = getCaptureView(viewId);
   if (!view) throw new Error(`Vista de captura desconhecida: ${viewId}`);
 
   const bounds = getCaptureBounds();
   if (bounds.isEmpty()) throw new Error('Nenhum modelo disponível para captura.');
   const target = bounds.getCenter(new THREE.Vector3());
-  const direction = new THREE.Vector3(...view.direction).normalize();
-  const up = new THREE.Vector3(...view.up).normalize();
+  const directionValues = Array.isArray(framing.direction) ? framing.direction : view.direction;
+  const upValues = Array.isArray(framing.up) ? framing.up : view.up;
+  const direction = new THREE.Vector3(...directionValues).normalize();
+  const up = new THREE.Vector3(...upValues).normalize();
   const sphere = bounds.getBoundingSphere(new THREE.Sphere());
   const radius = Math.max(sphere.radius, 0.12);
-  const distance = getCaptureDistance(bounds, target, direction, up);
+  const targetOffset = Array.isArray(framing.targetOffset) ? framing.targetOffset : [0, 0, 0];
+  target.add(new THREE.Vector3(
+    Number(targetOffset[0]) || 0,
+    Number(targetOffset[1]) || 0,
+    Number(targetOffset[2]) || 0,
+  ).multiplyScalar(radius));
+  const distanceScale = THREE.MathUtils.clamp(Number(framing.distanceScale) || 1, 0.72, 1.8);
+  const distance = getCaptureDistance(bounds, target, direction, up) * distanceScale;
 
   camera.up.copy(up);
   camera.position.copy(target).addScaledVector(direction, distance);
@@ -1428,11 +1498,17 @@ function setCaptureView(viewId) {
     label: view.label,
     camera: camera.position.toArray(),
     target: target.toArray(),
+    framing: {
+      distanceScale,
+      targetOffset: targetOffset.map((value) => Number(value) || 0),
+      direction: directionValues.map((value) => Number(value) || 0),
+      up: upValues.map((value) => Number(value) || 0),
+    },
   };
 }
 
-function captureView(viewId) {
-  const view = setCaptureView(viewId);
+function captureView(viewId, framing = {}) {
+  const view = setCaptureView(viewId, framing);
   return {
     ...view,
     dataUrl: ui.canvas.toDataURL('image/png'),
@@ -1448,7 +1524,8 @@ async function configureCapture(options = {}) {
   document.body.classList.add('capture-mode');
   controls.enabled = false;
   resizeRenderer();
-  scene.background.set(options.background ?? 0x162326);
+  setSceneBackground(options.background, Boolean(options.transparent));
+  applyLightingPreset(options.lighting ?? 'neutral');
   state.showGrid = Boolean(options.grid);
   state.showAxes = false;
   state.showPivots = false;
@@ -1489,11 +1566,13 @@ async function configureCapture(options = {}) {
     cosmetic: state.cosmeticId,
     cosmeticLabel: cosmeticLabel(getCurrentCosmetic()),
     waterOverlayGeometry: state.waterOverlayGeometry,
+    lighting: state.lightingPreset,
+    transparent: Boolean(options.transparent),
   };
 }
 
 const captureApi = {
-  version: 2,
+  version: 3,
   ready: false,
   error: null,
   subjects: Object.values(CAPTURE_SUBJECTS).map(({ id, label }) => ({ id, label })),

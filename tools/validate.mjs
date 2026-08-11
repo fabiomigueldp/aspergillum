@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { PNG } from "pngjs";
@@ -1101,6 +1102,73 @@ for (const cosmetic of cosmetics) {
   );
 }
 for (const relative of required) if (!fs.existsSync(path.join(root, relative))) errors.push(`Missing generated asset: ${relative}`);
+
+const brandingDirectory = path.join(root, "assets-src", "branding");
+const brandingCoverPath = path.join(brandingDirectory, "aspergillum-cover-2048.png");
+const brandingIconPath = path.join(brandingDirectory, "aspergillum-cover-256.png");
+const brandingManifestPath = path.join(brandingDirectory, "cover-manifest.json");
+
+function validateBrandingPng(file, width, height, label) {
+  if (!fs.existsSync(file)) {
+    errors.push(`Missing authoritative ${label}: ${path.relative(root, file)}`);
+    return null;
+  }
+  try {
+    const source = fs.readFileSync(file);
+    const image = PNG.sync.read(source);
+    if (image.width !== width || image.height !== height) {
+      errors.push(`${label} must be ${width} × ${height}, got ${image.width} × ${image.height}`);
+    }
+    for (let alpha = 3; alpha < image.data.length; alpha += 4) {
+      if (image.data[alpha] !== 255) {
+        errors.push(`${label} must be fully opaque`);
+        break;
+      }
+    }
+    return source;
+  } catch (error) {
+    errors.push(`Unreadable ${label} ${path.relative(root, file)}: ${error.message}`);
+    return null;
+  }
+}
+
+const brandingCover = validateBrandingPng(brandingCoverPath, 2048, 2048, "branding cover");
+const brandingIcon = validateBrandingPng(brandingIconPath, 256, 256, "branding pack icon");
+if (brandingIcon) {
+  for (const relative of ["packs/behavior/pack_icon.png", "packs/resource/pack_icon.png"]) {
+    const generatedIconPath = path.join(root, relative);
+    if (fs.existsSync(generatedIconPath) && !fs.readFileSync(generatedIconPath).equals(brandingIcon)) {
+      errors.push(`${relative} must be byte-identical to the authoritative branding pack icon`);
+    }
+  }
+}
+
+if (!fs.existsSync(brandingManifestPath)) {
+  errors.push(`Missing branding manifest: ${path.relative(root, brandingManifestPath)}`);
+} else {
+  try {
+    const brandingManifest = JSON.parse(fs.readFileSync(brandingManifestPath, "utf8"));
+    if (brandingManifest.pack?.version !== packageMetadata.version) {
+      errors.push("Branding manifest pack version must match package.json");
+    }
+    if (brandingManifest.config?.title !== "ASPERGILLUM" || brandingManifest.config?.subject !== "docked") {
+      errors.push("Branding manifest must preserve the approved ASPERGILLUM docked composition");
+    }
+    const capturesByPath = new Map(
+      (brandingManifest.captures ?? []).map((capture) => [capture.path, capture]),
+    );
+    for (const [file, bytes] of [[brandingCoverPath, brandingCover], [brandingIconPath, brandingIcon]]) {
+      if (!bytes) continue;
+      const capture = capturesByPath.get(path.basename(file));
+      const sha256 = createHash("sha256").update(bytes).digest("hex");
+      if (!capture || capture.bytes !== bytes.byteLength || capture.sha256 !== sha256) {
+        errors.push(`Branding manifest hash/size mismatch for ${path.basename(file)}`);
+      }
+    }
+  } catch (error) {
+    errors.push(`Invalid branding manifest: ${error.message}`);
+  }
+}
 
 const entityTexturePath = path.join(packRoots[1], "textures", "entity", "aspergillum.png");
 const particleTexturePath = path.join(packRoots[1], "textures", "particle", "holy_water.png");

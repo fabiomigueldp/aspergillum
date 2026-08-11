@@ -4,6 +4,17 @@
 
 Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
 
+## Gate da identidade visual — v1.2.1
+
+- [x] `npm run render:cover -- --size 2048` gera capa e prova nativa de 256 px com assunto `docked`, PBR, água cheia e cobertura alfa acima de 4%;
+- [x] duas execuções com as mesmas opções produzem PNGs byte a byte idênticos;
+- [x] `assets-src/branding/cover-manifest.json` registra versão 1.2.1, câmera, geometria, acabamento, água, fonte, bytes e SHA-256 corretos;
+- [x] `npm run build` publica `assets-src/branding/aspergillum-cover-256.png` sem recompressão e os dois `pack_icon.png` permanecem byte-idênticos à fonte;
+- [x] `npm run check`, build do viewer, `npm run package` e Creator Tools passam sem warning inesperado, Error ou Failure;
+- [ ] importar somente `Aspergillum-1.2.1.mcaddon`, confirmar manifests `[1,2,1]`, UUIDs oficiais e o SHA publicado em [Release 1.2.1](releases/1.2.1.md);
+- [ ] na tela de armazenamento e no seletor de packs, confirmar título legível, silhueta reconhecível, água ciano e ausência de corte ou ícone antigo após limpar o cache;
+- [ ] executar o smoke de carga, quatro aspersões, docking, mesa, quebra e reload; a mudança de identidade não altera gameplay nem Content Log.
+
 ## Gate da matriz de acabamentos — v1.2.0
 
 - [x] catálogo, domínio e validadores expõem exatamente quatro metais × quatro empunhaduras e bloqueiam qualquer alteração dos pares/índices históricos `0..8`;
@@ -203,6 +214,8 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 ### Evidência visual automatizada
 
 `npm run capture:models -- --subject all` gera nove vistas fixas e uma prancha composta para o aspersório, a caldeirinha e a Mesa do Sacristão, vazias ou com o aspersório acomodado. O `capture-manifest.json` registra câmera, geometria, material, versão e opções. Essas imagens servem para revisão de silhueta, faces, UVs e comparação entre revisões; o gate dentro do Minecraft continua obrigatório para culling, shader, câmera, cache e integração reais.
+
+`npm run render:cover -- --output out/cover-renders/<candidata>` monta uma capa autoral a partir da composição `docked` real e gera tanto a fonte em alta resolução quanto uma prova renderizada diretamente em `256 × 256`. Antes de aprovar uma candidata, verifique as duas imagens e confirme no `cover-manifest.json` a versão, geometria, câmera, acabamento, material, água, fonte e cobertura alfa. O comando não substitui `pack_icon.png`; depois de uma promoção explícita, o `.mcaddon` final ainda deve ser importado para conferir leitura, mipmapping e cache na interface real do Bedrock.
 
 ## Cobertura automatizada a expandir
 

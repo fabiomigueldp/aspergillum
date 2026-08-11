@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#17221e" />
+    <meta
+      name="description"
+      content="Compositor reproduzível de capas do Add-On Aspergillum."
+    />
+    <title>Aspergillum / Cover Renderer</title>
+  </head>
+  <body>
+    <main class="cover-art" id="cover-art" aria-label="Capa do Add-On Aspergillum">
+      <div class="stone-field" aria-hidden="true"></div>
+      <div class="apse-shadow" aria-hidden="true"></div>
+      <div class="floor-plane" aria-hidden="true"></div>
+
+      <header class="title-lockup">
+        <h1 class="cover-title" id="cover-title" aria-label="ASPERGILLUM">
+          <span class="title-depth" id="title-depth" aria-hidden="true">ASPERGILLUM</span>
+          <span class="title-face" id="title-face">ASPERGILLUM</span>
+        </h1>
+      </header>
+
+      <div class="model-stage" aria-hidden="true">
+        <div class="water-aura"></div>
+        <div class="ground-shadow"></div>
+        <img class="hero-model" id="hero-model" alt="" />
+      </div>
+
+      <div class="edge-keyline" aria-hidden="true"></div>
+      <p class="render-status" id="render-status" role="status">Montando cena autoral</p>
+    </main>
+
+    <iframe
+      class="bedrock-source"
+      id="bedrock-source"
+      src="./bedrock-renderer.html"
+      title="Fonte de geometria Bedrock"
+      tabindex="-1"
+      aria-hidden="true"
+    ></iframe>
+
+    <script type="module" src="/src/cover-renderer/main.js"></script>
+  </body>
+</html>

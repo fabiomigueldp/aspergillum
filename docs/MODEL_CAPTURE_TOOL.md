@@ -142,3 +142,5 @@ With one finish, the legacy `subject/front.png` layout is preserved. With multip
 7. Report the command, manifest path, relevant images, expected result, observed result, and remaining Minecraft-only validation.
 
 Do not approve a visual correction solely from these images. When the Three.js preview and Minecraft disagree, treat the final imported pack and Content Log as authoritative and use the capture tool to isolate the discrepancy.
+
+For authored brand artwork rather than diagnostic contact sheets, use the separate workflow in `docs/COVER_RENDERER.md`. It consumes the same real model pipeline, but adds transparent capture, cinematic lighting, typography, composition, a native 256 px proof, and an approval boundary before any `pack_icon.png` change.

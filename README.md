@@ -2,12 +2,12 @@
 
 Add-On para Minecraft: Bedrock Edition 26.40 que adiciona um **aspersório litúrgico funcional**, uma **caldeirinha (aspersorium)** e uma **Mesa do Sacristão** para configuração gratuita. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão estável 1.2.0:** amplia os acabamentos para uma matriz 4×4 com bronze cerimonial e marfim vegetal, preservando exatamente os nove índices/IDs anteriores, a geometria e todo o gameplay. A identidade e os limites da promoção estão em [`docs/releases/1.2.0.md`](docs/releases/1.2.0.md).
+> **Versão estável 1.2.1:** incorpora a nova identidade visual oficial nos dois packs a partir do renderizador autoral, preservando integralmente a matriz 4×4, a geometria, os IDs e o gameplay da 1.2.0. A identidade e os limites da promoção estão em [`docs/releases/1.2.1.md`](docs/releases/1.2.1.md).
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/releases/Aspergillum-1.2.0.mcaddon`](dist/releases/Aspergillum-1.2.0.mcaddon) com o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.2.1.mcaddon`](dist/releases/Aspergillum-1.2.1.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
@@ -82,6 +82,8 @@ Comandos importantes:
 | `npm run clean` | Remove somente artefatos gerados conhecidos |
 
 O modelo autoral fica em [`assets-src/models/aspergillum.model.json`](assets-src/models/aspergillum.model.json). [`tools/generate-assets.mjs`](tools/generate-assets.mjs) remove metadados de produção, respeita as máscaras autorais, empacota apenas as faces visíveis, gera a geometria Bedrock distribuída e pinta deterministicamente color/normal/MER. A referência visual em [`assets-src/concept-art/aspergillum-concept.png`](assets-src/concept-art/aspergillum-concept.png) orienta proporções e materiais, mas não é distribuída no add-on.
+
+A identidade oficial da 1.2.1 fica em [`assets-src/branding/`](assets-src/branding/README.md). O Cover Renderer recompõe a cena a partir dos modelos reais, enquanto o gerador publica o PNG de 256 px aprovado de forma byte-idêntica nos dois packs; saídas temporárias de `out/cover-renders/` nunca são usadas diretamente pelo pacote.
 
 Os SFX desta release foram gerados com ElevenLabs no plano gratuito e, portanto, são **somente para validação não comercial e com atribuição**. Generated with ElevenLabs. Uma publicação comercial exige regenerar ou substituir as fontes sob licença adequada e atualizar a proveniência; veja [Contrato de áudio](docs/AUDIO_DESIGN_CONTRACT.md).
 

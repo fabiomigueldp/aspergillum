@@ -2,7 +2,7 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.2.0` estável não comercial (revisão numérica dos packs `[1, 2, 0]`)
+- **Versão de referência:** `1.2.1` estável não comercial (revisão numérica dos packs `[1, 2, 1]`)
 - **Engine mínima:** Creator `1.26.40`
 - **Script API:** manifest com `@minecraft/server` `2.9.0` e `@minecraft/server-ui` `2.1.0`, estáveis; `@minecraft/common` `1.3.0` somente no toolchain npm
 - **Experimentos:** nenhum
@@ -17,6 +17,8 @@ A matriz 1.1.8 rejeitou alpha-test por degradação visual. A 1.1.9c separou a �
 A 1.1.10 mantém essa baseline byte/semanticamente protegida no gameplay e fecha a lacuna de observabilidade: o viewer compõe a mesma entidade de água, os nove acabamentos podem ser capturados explicitamente, o lifecycle visual recebe testes diretos e os ícones têm contraste validado. A promoção está registrada em [Release 1.1.10](releases/1.1.10.md).
 
 A 1.2.0 expande somente a superfície de personalização: bronze cerimonial e marfim vegetal completam a matriz 4×4. Os índices `0..8` preservam seus pares históricos; os sete pares novos usam `9..15`. O registro da promoção e do orçamento está em [Release 1.2.0](releases/1.2.0.md).
+
+A 1.2.1 promove a identidade visual aprovada: o ícone passa a ser uma composição autoral reproduzível da caldeirinha cheia com o aspersório acomodado e o título `ASPERGILLUM`. A fonte de produção, o manifest de captura e a capa em alta resolução ficam em `assets-src/branding/`; ambos os packs recebem exatamente o mesmo PNG nativo de 256 px. Nenhum contrato de mundo ou gameplay muda. O registro está em [Release 1.2.1](releases/1.2.1.md).
 
 ## O que está resolvido
 
@@ -77,7 +79,7 @@ A 1.2.0 expande somente a superfície de personalização: bronze cerimonial e m
 
 ## Próxima mudança autorizada
 
-Após a 1.2.0, limitar `1.2.x` a correções comprovadas pelo pacote importado e pelo Content Log. Nenhum novo acabamento, modelo ou state deve entrar antes do smoke físico da matriz completa e da compatibilidade `1.1.10 → 1.2.0`.
+Após a 1.2.1, limitar `1.2.x` a correções comprovadas pelo pacote importado e pelo Content Log. Nenhum novo acabamento, modelo ou state deve entrar antes do smoke físico da matriz completa e da compatibilidade `1.1.10 → 1.2.1`.
 
 Não faz parte do próximo marco:
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.2.1 — 2026-08-11 — identidade visual oficial reproduzível
+
+- adicionado um compositor de capa reproduzível que reaproveita a geometria, texturas, composição acomodada e materiais atuais do Resource Pack, sem redesenhar o produto nem alterar o gameplay;
+- o Bedrock Fidelity Renderer agora oferece fundo transparente, enquadramento autoral e preset de luz cinematográfica, preservando o preset neutro das capturas diagnósticas;
+- incluído o comando `npm run render:cover`, que produz uma fonte de até 4096 px, uma prova renderizada diretamente em 256 px e um manifest com câmera, geometrias resolvidas, acabamento, água e tipografia;
+- adotada localmente a fonte Bowlby One SC sob SIL Open Font License 1.1, com binário e licença versionados para renders offline determinísticos;
+- a captura aquece o pipeline WebGL e rejeita cobertura alfa inferior a 4%, protegendo contra frames transparentes incompletos;
+- a candidata aprovada foi promovida para `assets-src/branding/`; o gerador publica o PNG nativo de 256 px de forma byte-idêntica nos Behavior e Resource Packs;
+- o validador exige capa 2048 px e ícone 256 px opacos, confere manifest, bytes e SHA-256 e bloqueia qualquer divergência entre a fonte oficial e os dois `pack_icon.png`;
+- versões do pacote e dos packs elevadas para `1.2.1`/`[1,2,1]`, preservando UUIDs, namespace, IDs, states, matriz 4×4, binding, geometria, poses, animações, VFX, áudio, cargas, água, sessões e persistência.
+- o artefato `Aspergillum-1.2.1.mcaddon` tem `3.097.584` bytes e SHA-256 `edc10892a591fdda380c63afbe31c6d7fe81297d80bdbf9ef8ade0a6980ba693`; duas execuções foram idênticas e o Creator Tools aceitou somente os onze warnings offline conhecidos.
+
 ## 1.2.0 — 2026-08-10 — matriz de acabamentos 4×4
 
 - adicionados bronze cerimonial e marfim vegetal como quarto metal e quarta empunhadura, formando dezesseis combinações gratuitas e localizadas;

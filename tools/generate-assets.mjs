@@ -9,6 +9,7 @@ const generatedRoot = process.env.ASPERGILLUM_GENERATED_ROOT
 const aspergillumModelSource = process.env.ASPERGILLUM_MODEL_SOURCE
   ? path.resolve(root, process.env.ASPERGILLUM_MODEL_SOURCE)
   : path.join(root, "assets-src/models/aspergillum.model.json");
+const packIconSource = path.join(root, "assets-src/branding/aspergillum-cover-256.png");
 const retiredGeneratedAssets = [
   "packs/resource/textures/entity/thurible.png",
   "packs/resource/textures/entity/thurible_normal.png",
@@ -58,12 +59,6 @@ function hash(x, y, seed = 0) {
   let value = Math.imul(x + seed * 31, 374761393) + Math.imul(y + seed * 17, 668265263);
   value = (value ^ (value >>> 13)) * 1274126177;
   return ((value ^ (value >>> 16)) >>> 0) / 4294967295;
-}
-
-function silver(x, y, seed = 1) {
-  const grain = Math.round((hash(x, y, seed) - 0.5) * 24);
-  const band = ((x + y) % 13 === 0 ? 8 : 0);
-  return [156 + grain + band, 158 + grain + band, 153 + grain + band, 255];
 }
 
 function fillRect(image, x0, y0, width, height, color) {
@@ -488,59 +483,22 @@ for (const cosmetic of customizationCatalog.cosmetics) {
   write(`packs/resource/textures/items/aspergillum${suffix}.png`, makeItemIcon(cosmetic));
 }
 
-function makePackIcon() {
-  const icon = png(256, 256, (x, y) => {
-    const vignette = Math.hypot(x - 128, y - 128) / 181;
-    const grain = Math.round((hash(Math.floor(x / 3), Math.floor(y / 3), 411) - 0.5) * 5);
-    return [Math.round(25 - vignette * 8) + grain, Math.round(48 - vignette * 13) + grain, Math.round(43 - vignette * 10) + grain, 255];
-  });
-  for (const inset of [12, 17]) {
-    const color = inset === 12 ? [112, 82, 38, 255] : [184, 140, 63, 255];
-    fillRect(icon, inset, inset, 256 - inset * 2, 2, color);
-    fillRect(icon, inset, 254 - inset, 256 - inset * 2, 2, color);
-    fillRect(icon, inset, inset, 2, 256 - inset * 2, color);
-    fillRect(icon, 254 - inset, inset, 2, 256 - inset * 2, color);
+function publishPackIcon(relative) {
+  if (!fs.existsSync(packIconSource)) {
+    throw new Error(`Missing authoritative pack icon: ${path.relative(root, packIconSource)}`);
   }
-  for (let y = 142; y <= 215; y += 1) {
-    const halfWidth = Math.round(70 - (y - 142) * 0.32);
-    for (let x = 128 - halfWidth; x <= 128 + halfWidth; x += 1) {
-      const rimShade = x < 128 ? -18 : 5;
-      const grain = Math.round((hash(x, y, 433) - 0.5) * 14);
-      setPixel(icon, x, y, [139 + rimShade + grain, 149 + rimShade + grain, 145 + rimShade + grain, 255]);
-    }
+  const source = fs.readFileSync(packIconSource);
+  const image = PNG.sync.read(source);
+  if (image.width !== 256 || image.height !== 256) {
+    throw new Error(`Authoritative pack icon must be 256 × 256, got ${image.width} × ${image.height}`);
   }
-  for (let y = 126; y <= 151; y += 1) {
-    for (let x = 49; x <= 207; x += 1) {
-      const dx = (x - 128) / 79;
-      const dy = (y - 138) / 13;
-      if (dx * dx + dy * dy <= 1) setPixel(icon, x, y, [76, 88, 85, 255]);
-      if (dx * dx + dy * dy <= 0.72) setPixel(icon, x, y, [50, 139, 165, 230]);
-    }
-  }
-  fillRect(icon, 80, 214, 96, 9, [74, 82, 79, 255]);
-  for (let y = 52; y < 195; y += 1) {
-    const x = 185 - Math.floor((y - 52) * 0.5);
-    const grip = y >= 132;
-    fillRect(icon, x - 6, y, 13, 2, grip ? [66, 39, 25, 255] : [178, 187, 182, 255]);
-    fillRect(icon, x + 2, y, 3, 2, grip ? [132, 80, 43, 255] : [232, 237, 225, 255]);
-  }
-  for (let y = 31; y < 96; y += 1) {
-    for (let x = 146; x < 218; x += 1) {
-      const dx = (x - 182) / 37;
-      const dy = (y - 63) / 34;
-      if (dx * dx + dy * dy <= 1) {
-        const edge = dx * dx + dy * dy > 0.8;
-        const hole = (x * 2 + y * 3) % 17 < 3;
-        setPixel(icon, x, y, edge ? [72, 82, 80, 255] : hole ? [28, 39, 38, 255] : silver(x, y, 41));
-      }
-    }
-  }
-  return icon;
+  const destination = path.join(generatedRoot, relative);
+  fs.mkdirSync(path.dirname(destination), { recursive: true });
+  fs.writeFileSync(destination, source);
 }
 
-const packIcon = makePackIcon();
-write("packs/resource/pack_icon.png", packIcon);
-write("packs/behavior/pack_icon.png", packIcon);
+publishPackIcon("packs/resource/pack_icon.png");
+publishPackIcon("packs/behavior/pack_icon.png");
 
 function offsetFaceUvs(uv, offset) {
   return Object.fromEntries(Object.entries(uv).map(([faceName, face]) => [

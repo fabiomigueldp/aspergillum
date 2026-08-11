@@ -1,0 +1,247 @@
+@font-face {
+  font-family: "Bowlby One SC";
+  src: url("/fonts/bowlby-one-sc/BowlbyOneSC-Regular.ttf") format("truetype");
+  font-display: block;
+  font-style: normal;
+  font-weight: 400;
+}
+
+:root {
+  color-scheme: dark;
+  font-family: "Bowlby One SC", system-ui, sans-serif;
+  font-synthesis: none;
+  --stone-deep: oklch(0.14 0.025 165);
+  --stone-mid: oklch(0.24 0.035 155);
+  --stone-line: oklch(0.48 0.035 145 / 0.17);
+  --title-face: oklch(0.86 0.032 82);
+  --title-depth: oklch(0.38 0.045 72);
+  --title-stroke: oklch(0.15 0.026 155);
+  --brass: oklch(0.62 0.09 78);
+  --water: oklch(0.75 0.13 205);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--stone-deep);
+}
+
+.cover-art {
+  position: relative;
+  isolation: isolate;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  container: cover / inline-size;
+  background:
+    radial-gradient(circle at 24% 12%, oklch(0.75 0.09 78 / 0.2), transparent 27%),
+    radial-gradient(ellipse at 54% 69%, oklch(0.68 0.12 205 / 0.12), transparent 28%),
+    linear-gradient(158deg, var(--stone-mid), var(--stone-deep) 58%, oklch(0.095 0.018 173));
+}
+
+.stone-field,
+.apse-shadow,
+.floor-plane,
+.edge-keyline,
+.model-stage,
+.title-lockup {
+  position: absolute;
+}
+
+.stone-field {
+  z-index: -3;
+  inset: 0;
+  opacity: 0.52;
+  background-image:
+    linear-gradient(var(--stone-line) max(1px, 0.12cqi), transparent max(1px, 0.12cqi)),
+    linear-gradient(90deg, var(--stone-line) max(1px, 0.12cqi), transparent max(1px, 0.12cqi));
+  background-position: center;
+  background-size: 25cqi 12.5cqi;
+  mask-image: radial-gradient(ellipse at 50% 45%, oklch(0.2 0.02 160), transparent 92%);
+}
+
+.apse-shadow {
+  z-index: -2;
+  top: 10%;
+  right: 11%;
+  bottom: 9%;
+  left: 11%;
+  border: max(1px, 0.18cqi) solid oklch(0.57 0.042 143 / 0.13);
+  border-radius: 49% 49% 7% 7% / 24% 24% 4% 4%;
+  background: oklch(0.105 0.023 168 / 0.28);
+  box-shadow:
+    inset 0 0 8cqi oklch(0.055 0.018 175 / 0.5),
+    0 2cqi 5cqi oklch(0.055 0.02 170 / 0.24);
+}
+
+.floor-plane {
+  z-index: -1;
+  right: -14%;
+  bottom: -16%;
+  left: -14%;
+  height: 48%;
+  background:
+    linear-gradient(to bottom, oklch(0.24 0.035 155 / 0.46), oklch(0.085 0.017 170 / 0.95)),
+    repeating-linear-gradient(90deg, transparent 0 12.4%, oklch(0.48 0.04 150 / 0.12) 12.5% 12.7%);
+  clip-path: polygon(9% 0, 91% 0, 100% 100%, 0 100%);
+}
+
+.title-lockup {
+  z-index: 5;
+  top: 4.2%;
+  right: 3.5%;
+  left: 3.5%;
+  display: grid;
+  place-items: center;
+}
+
+.cover-title {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  color: var(--title-face);
+  font-size: 10.25cqi;
+  font-weight: 400;
+  letter-spacing: -0.038em;
+  line-height: 0.92;
+  text-align: center;
+  white-space: nowrap;
+  transform: scaleX(0.93);
+  transform-origin: center top;
+}
+
+.title-depth,
+.title-face {
+  display: block;
+  width: 100%;
+  -webkit-text-stroke: max(1px, 0.24cqi) var(--title-stroke);
+  paint-order: stroke fill;
+}
+
+.title-depth {
+  position: absolute;
+  inset: 0;
+  color: var(--title-depth);
+  text-shadow:
+    0 0.42cqi 0 oklch(0.27 0.04 70),
+    0 0.82cqi 0 oklch(0.18 0.028 158),
+    0 1.3cqi 1.8cqi oklch(0.055 0.018 170 / 0.62);
+  transform: translateY(0.75cqi);
+}
+
+.title-face {
+  position: relative;
+  color: var(--title-face);
+  text-shadow:
+    -0.16cqi -0.16cqi 0 oklch(0.96 0.02 85 / 0.42),
+    0.18cqi 0.2cqi 0 oklch(0.42 0.05 70 / 0.58);
+}
+
+.model-stage {
+  z-index: 2;
+  inset: 12% -7% 1.5%;
+}
+
+.hero-model {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  opacity: 0;
+  filter:
+    drop-shadow(0 2.2cqi 1.7cqi oklch(0.045 0.02 170 / 0.68))
+    drop-shadow(-0.8cqi -0.5cqi 0.9cqi oklch(0.82 0.075 78 / 0.08));
+}
+
+.is-ready .hero-model {
+  opacity: 1;
+}
+
+.water-aura {
+  position: absolute;
+  z-index: 1;
+  right: 26%;
+  bottom: 23%;
+  left: 26%;
+  height: 20%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, var(--water), transparent 68%);
+  filter: blur(3.5cqi);
+  opacity: 0.1;
+}
+
+.ground-shadow {
+  position: absolute;
+  z-index: 1;
+  right: 22%;
+  bottom: 4.5%;
+  left: 22%;
+  height: 11%;
+  border-radius: 50%;
+  background: oklch(0.045 0.018 170 / 0.72);
+  filter: blur(2.3cqi);
+  transform: scaleX(1.12);
+}
+
+.edge-keyline {
+  z-index: 7;
+  inset: 1.7%;
+  border: max(1px, 0.18cqi) solid oklch(0.62 0.09 78 / 0.44);
+  box-shadow:
+    inset 0 0 0 max(1px, 0.14cqi) oklch(0.91 0.04 85 / 0.07),
+    0 0 0 max(1px, 0.44cqi) oklch(0.075 0.019 168 / 0.38);
+  pointer-events: none;
+}
+
+.cover-art::after {
+  position: absolute;
+  z-index: 6;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 50%, transparent 48%, oklch(0.055 0.02 170 / 0.72) 100%),
+    linear-gradient(to bottom, transparent 70%, oklch(0.055 0.02 170 / 0.3));
+  content: "";
+  pointer-events: none;
+}
+
+.render-status {
+  position: absolute;
+  z-index: 10;
+  right: 6%;
+  bottom: 5%;
+  left: 6%;
+  margin: 0;
+  color: oklch(0.78 0.035 84);
+  font: 500 2.2cqi/1.4 system-ui, sans-serif;
+  text-align: center;
+}
+
+.is-ready .render-status {
+  display: none;
+}
+
+.has-error .render-status {
+  color: oklch(0.74 0.12 30);
+}
+
+.bedrock-source {
+  position: fixed;
+  top: 0;
+  left: -120vw;
+  width: 100vw;
+  height: 100vh;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+}

@@ -228,6 +228,11 @@ async function captureSubject(page, context, subjectId, cosmetic, options) {
     grid: options.grid,
     wireframe: options.wireframe,
   });
+  await page.evaluate((viewId) => {
+    window.__ASPERGILLUM_CAPTURE__.setView(viewId);
+    window.__ASPERGILLUM_CAPTURE__.render();
+  }, options.views[0].id);
+  await page.waitForTimeout(120);
 
   const captures = [];
   for (const view of options.views) {

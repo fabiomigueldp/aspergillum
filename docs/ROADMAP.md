@@ -8,6 +8,26 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
+## v1.2.1 — identidade visual oficial — implementada e promovida
+
+Objetivo: substituir o ícone programático anterior pela capa autoral aprovada, usando somente os modelos e materiais reais do add-on e sem alterar gameplay ou compatibilidade de mundo.
+
+Escopo autorizado:
+
+- incorporar o Cover Renderer ao Model Lab e compor o assunto real `docked` com água, material PBR, iluminação cinematográfica e título `ASPERGILLUM`;
+- versionar Bowlby One SC e sua licença OFL para render offline;
+- promover a fonte 2048 px, a prova nativa 256 px e o manifest para `assets-src/branding/`;
+- publicar o mesmo PNG de 256 px nos dois packs e bloquear divergência no validador;
+- publicar os packs como `[1,2,1]`, preservando UUIDs e todos os identificadores, states e índices existentes.
+
+Gate de saída:
+
+- duas renderizações equivalentes produzem PNGs byte a byte idênticos;
+- a prova nativa de 256 px mantém título, silhueta, água e margens legíveis;
+- fonte, manifest e ícones distribuídos têm dimensões, opacidade, bytes e SHA-256 validados;
+- `npm run check`, build do viewer, `npm run package` e Creator Tools passam;
+- importação limpa e leitura do ícone no seletor de packs permanecem gate manual comunicado.
+
 ## v1.2.0 — expansão de acabamentos 4×4 — implementada e promovida
 
 Objetivo: ampliar a personalização de 3×3 para 4×4 sem reinterpretar nenhum valor persistido por mundos existentes.

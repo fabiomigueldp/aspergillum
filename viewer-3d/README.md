@@ -62,6 +62,22 @@ O CLI requer o Chromium gerenciado pelo Playwright. Depois de instalar as depend
 
 As capturas usam somente cubos visíveis para enquadrar a câmera, ocultam a interface e mantêm direções estáveis. Isso permite comparar revisões sem depender de órbita manual, mas não transforma o preview Three.js em evidência do shader ou da câmera proprietária do Minecraft.
 
+## Cover Renderer
+
+O `cover-renderer.html` usa o mesmo Bedrock Fidelity Renderer como fonte transparente e monta uma capa quadrada determinística com o modelo real `docked`, iluminação cinematográfica, cenário de pedra, moldura de latão e o título local Bowlby One SC. O CLI gera a arte principal e uma prova renderizada diretamente em `256 × 256`:
+
+```powershell
+# na raiz do projeto
+npm run render:cover -- --output out/cover-renders/candidate-01
+
+# opções, acabamentos e resolução
+npm run render:cover -- --help
+```
+
+Cada execução também grava `cover-manifest.json` com versão, preset, câmera, geometria resolvida, acabamento, material, nível de água, tipografia, tamanho e SHA-256 de cada PNG. Uma checagem de cobertura alfa interrompe o processo caso o render 3D esteja vazio ou incompleto. A fonte e sua licença OFL ficam em `public/fonts/bowlby-one-sc/`, portanto a composição não depende de rede.
+
+O comando não modifica `assets-src/`, `packs/` nem `dist/`. As candidatas em `out/cover-renders/` são evidência para aprovação; a promoção para `pack_icon.png` é uma mudança distribuível separada. A candidata aprovada para a 1.2.1 foi copiada para `assets-src/branding/` e passou a alimentar o gerador oficial. O contrato completo está em `docs/COVER_RENDERER.md`.
+
 ## Limite deliberado
 
 O viewer original reproduz a geometria Bedrock e seus pivôs em uma cena standalone. O **Bedrock Fidelity Renderer** aproxima também a cadeia de resolução, animações e mapas do pack, mas não substitui o cliente Minecraft: o shader proprietário, a iluminação do mundo, o jogador/skin, a câmera completa, partículas e comportamento final continuam sendo validados no jogo conforme `docs/TESTING.md`. Portanto, ele é um preview de alta fidelidade e uma ferramenta de diagnóstico, não uma prova de equivalência visual de 100%.

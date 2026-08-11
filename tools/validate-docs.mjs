@@ -8,6 +8,7 @@ const documentationRoots = [
   path.join(root, "CHANGELOG.md"),
   path.join(root, "docs"),
   path.join(root, "assets-src", "concept-art", "README.md"),
+  path.join(root, "assets-src", "branding", "README.md"),
   path.join(root, ".research", "README.md"),
   path.join(root, "dist", "README.md"),
 ];
