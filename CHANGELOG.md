@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.2.2 — 2026-08-11 — polimento visual e material
+
+- caldeirinha e Mesa do Sacristão passam a declarar `minecraft:destruction_particles`, eliminando a amostragem incidental dos atlas completos durante a mineração e a quebra;
+- o gerador produz dois tiles opacos de `16 × 16` autorados pixel a pixel: metal martelado/patinado para a caldeirinha e madeira escura com acentos mínimos de veludo e latão para a mesa;
+- água e aspergillum acomodado ficam deliberadamente fora dos fragmentos; a aparência dos blocos, seus modelos, states, persistência e gameplay permanecem inalterados;
+- contagens explícitas de 56 partículas para a caldeirinha e 80 para a mesa adequam o volume visual à massa de cada objeto, usando `tint_method: "none"`;
+- o validador bloqueia alterações de dimensão, transparência, paleta, orçamento material, aliases e componentes; o comportamento final continua sujeito ao QA dentro do Minecraft;
+- os dezesseis ícones do item deixam de ser desenhos procedurais independentes e passam a ser renders `32 × 32` da geometria, texturas e materiais PBR reais do aspersório;
+- um preset de luz dedicado, enquadramento oblíquo, rotação de apresentação e contorno mínimo preservam volume, perfurações e leitura dos quatro metais e quatro cabos na escala do inventário;
+- o novo `render:inventory-icons` gera candidata, prancha e manifest sem alterar produção por padrão; `--apply` promove fontes autoritativas em `assets-src/inventory-icons/`, e o gerador apenas as republica byte a byte;
+- a validação dos ícones agora confere proveniência, hashes, paridade fonte/pack, transparência, margens, cobertura, contraste e assinaturas semânticas de cabeça e cabo;
+- versões do pacote e dos packs elevadas para `1.2.2`/`[1,2,2]`, preservando UUIDs, namespace, IDs, states, índices `0..15`, binding, geometria, poses, animações, VFX, áudio, cargas, água, sessões e persistência.
+- o artefato `Aspergillum-1.2.2.mcaddon` tem `3.105.396` bytes e SHA-256 `e48f9124e109c3fcea768de6c37b0150cf1f288efd36781c32d80580f4937798`; o Creator Tools aceitou somente os onze warnings offline conhecidos, sem warning inesperado, Error ou Failure.
+
 ## 1.2.1 — 2026-08-11 — identidade visual oficial reproduzível
 
 - adicionado um compositor de capa reproduzível que reaproveita a geometria, texturas, composição acomodada e materiais atuais do Resource Pack, sem redesenhar o produto nem alterar o gameplay;

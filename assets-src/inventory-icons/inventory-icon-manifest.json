@@ -1,0 +1,1328 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-11T17:36:11.386Z",
+  "renderer": {
+    "name": "Aspergillum Inventory Icon Renderer",
+    "version": 1,
+    "captureApiVersion": 3
+  },
+  "renderedAgainst": {
+    "version": "1.2.1",
+    "releaseLabel": "1.2.1"
+  },
+  "source": {
+    "geometry": "packs/resource/models/entity/aspergillum.geo.json",
+    "colorMaps": "packs/resource/textures/entity/aspergillum*.png",
+    "normalMaps": "packs/resource/textures/entity/aspergillum*_normal.png",
+    "mersMaps": "packs/resource/textures/entity/aspergillum*_mer.png"
+  },
+  "config": {
+    "subject": "aspergillum",
+    "material": "pbr",
+    "lighting": "inventory",
+    "transparent": true,
+    "water": "empty",
+    "pose": "neutral",
+    "view": "front-right",
+    "framing": {
+      "distanceScale": 0.86,
+      "targetOffset": [
+        0,
+        0,
+        0
+      ],
+      "direction": [
+        1,
+        0.58,
+        1
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ]
+    },
+    "sourceSize": 512,
+    "outputSize": 32,
+    "contentSize": 29,
+    "rotationDegrees": 35,
+    "samplesPerAxis": 4,
+    "sourceAlphaThreshold": 8,
+    "outline": {
+      "radius": 1,
+      "color": [
+        27,
+        33,
+        32,
+        224
+      ]
+    }
+  },
+  "icons": [
+    {
+      "id": "classic",
+      "label": "Prata clássica · Couro castanho",
+      "metal": "silver",
+      "grip": "chestnut",
+      "index": 0,
+      "file": "aspergillum.png",
+      "bytes": 1106,
+      "sha256": "bc3893806010d0f87bbbab2bf2e855724a2c86a2598c0aaf97fce1e2eda69d3d",
+      "alphaBounds": {
+        "minX": 10,
+        "minY": 4,
+        "maxX": 27,
+        "maxY": 29,
+        "width": 18,
+        "height": 26,
+        "visiblePixels": 294,
+        "opaquePixels": 234
+      },
+      "sourceCapture": {
+        "file": "source-captures/classic.png",
+        "bytes": 37228,
+        "sha256": "c4171a9a64298f8f054fb244fa86b3e22e7b355802099adbfed3390511aafb8f",
+        "alphaBounds": {
+          "minX": 125,
+          "minY": 58,
+          "maxX": 332,
+          "maxY": 392,
+          "width": 208,
+          "height": 335,
+          "visiblePixels": 32143,
+          "opaquePixels": 31655
+        },
+        "configuration": {
+          "subject": "aspergillum",
+          "label": "Aspersório",
+          "geometry": "geometry.aspergillum.held",
+          "material": "pbr",
+          "water": "empty",
+          "docked": false,
+          "cosmetic": "classic",
+          "cosmeticLabel": "Prata clássica · Couro castanho",
+          "waterOverlayGeometry": null,
+          "lighting": "inventory",
+          "transparent": true
+        },
+        "view": {
+          "id": "front-right",
+          "camera": [
+            1.3979712291545712,
+            1.4719036131418544,
+            1.452226782961621
+          ],
+          "target": [
+            -0.05425555380704987,
+            0.6296120790241142,
+            2.7755575615628914e-17
+          ],
+          "framing": {
+            "distanceScale": 0.86,
+            "targetOffset": [
+              0,
+              0,
+              0
+            ],
+            "direction": [
+              1,
+              0.58,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "silver_oxblood",
+      "label": "Prata clássica · Couro vinho",
+      "metal": "silver",
+      "grip": "oxblood",
+      "index": 1,
+      "file": "aspergillum_silver_oxblood.png",
+      "bytes": 1107,
+      "sha256": "fc72b627c9f4fc22ef6d92474c0cd625aa087bf96a5fdd3da64fdce0d7f262b3",
+      "alphaBounds": {
+        "minX": 10,
+        "minY": 4,
+        "maxX": 27,
+        "maxY": 29,
+        "width": 18,
+        "height": 26,
+        "visiblePixels": 294,
+        "opaquePixels": 234
+      },
+      "sourceCapture": {
+        "file": "source-captures/silver_oxblood.png",
+        "bytes": 37187,
+        "sha256": "bbb44c26a652f5a2a671f198c1841bce56f7169caea177b6fda15a99f36abb53",
+        "alphaBounds": {
+          "minX": 125,
+          "minY": 58,
+          "maxX": 332,
+          "maxY": 392,
+          "width": 208,
+          "height": 335,
+          "visiblePixels": 32143,
+          "opaquePixels": 31655
+        },
+        "configuration": {
+          "subject": "aspergillum",
+          "label": "Aspersório",
+          "geometry": "geometry.aspergillum.held",
+          "material": "pbr",
+          "water": "empty",
+          "docked": false,
+          "cosmetic": "silver_oxblood",
+          "cosmeticLabel": "Prata clássica · Couro vinho",
+          "waterOverlayGeometry": null,
+          "lighting": "inventory",
+          "transparent": true
+        },
+        "view": {
+          "id": "front-right",
+          "camera": [
+            1.3979712291545712,
+            1.4719036131418544,
+            1.452226782961621
+          ],
+          "target": [
+            -0.05425555380704987,
+            0.6296120790241142,
+            2.7755575615628914e-17
+          ],
+          "framing": {
+            "distanceScale": 0.86,
+            "targetOffset": [
+              0,
+              0,
+              0
+            ],
+            "direction": [
+              1,
+              0.58,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "silver_black",
+      "label": "Prata clássica · Couro preto",
+      "metal": "silver",
+      "grip": "black",
+      "index": 2,
+      "file": "aspergillum_silver_black.png",
+      "bytes": 1106,
+      "sha256": "370941cbcaf882df955bba816b662e3df1eb2b86e2573a8949ab9a2c71e3807d",
+      "alphaBounds": {
+        "minX": 10,
+        "minY": 4,
+        "maxX": 27,
+        "maxY": 29,
+        "width": 18,
+        "height": 26,
+        "visiblePixels": 294,
+        "opaquePixels": 234
+      },
+      "sourceCapture": {
+        "file": "source-captures/silver_black.png",
+        "bytes": 37156,
+        "sha256": "ef9c58e3fffb90b12b0d31fda8f39d376f6a2afb35ac4f2a31d47646d1e2c897",
+        "alphaBounds": {
+          "minX": 125,
+          "minY": 58,
+          "maxX": 332,
+          "maxY": 392,
+          "width": 208,
+          "height": 335,
+          "visiblePixels": 32143,
+          "opaquePixels": 31655
+        },
+        "configuration": {
+          "subject": "aspergillum",
+          "label": "Aspersório",
+          "geometry": "geometry.aspergillum.held",
+          "material": "pbr",
+          "water": "empty",
+          "docked": false,
+          "cosmetic": "silver_black",
+          "cosmeticLabel": "Prata clássica · Couro preto",
+          "waterOverlayGeometry": null,
+          "lighting": "inventory",
+          "transparent": true
+        },
+        "view": {
+          "id": "front-right",
+          "camera": [
+            1.3979712291545712,
+            1.4719036131418544,
+            1.452226782961621
+          ],
+          "target": [
+            -0.05425555380704987,
+            0.6296120790241142,
+            2.7755575615628914e-17
+          ],
+          "framing": {
+            "distanceScale": 0.86,
+            "targetOffset": [
+              0,
+              0,
+              0
+            ],
+            "direction": [
+              1,
+              0.58,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "silver_ivory",
+      "label": "Prata clássica · Marfim vegetal",
+      "metal": "silver",
+      "grip": "ivory",
+      "index": 9,
+      "file": "aspergillum_silver_ivory.png",
+      "bytes": 1133,
+      "sha256": "bae6688aade343d869e768fadca3c8650ae352aadced7996d52e59f2dcad1a33",
+      "alphaBounds": {
+        "minX": 10,
+        "minY": 4,
+        "maxX": 27,
+        "maxY": 29,
+        "width": 18,
+        "height": 26,
+        "visiblePixels": 294,
+        "opaquePixels": 234
+      },
+      "sourceCapture": {
+        "file": "source-captures/silver_ivory.png",
+        "bytes": 37245,
+        "sha256": "67e449036a768c38eff054cfdee4d7bfedc1d63346ad20991945094774db3ae5",
+        "alphaBounds": {
+          "minX": 125,
+          "minY": 58,
+          "maxX": 332,
+          "maxY": 392,
+          "width": 208,
+          "height": 335,
+          "visiblePixels": 32143,
+          "opaquePixels": 31655
+        },
+        "configuration": {
+          "subject": "aspergillum",
+          "label": "Aspersório",
+          "geometry": "geometry.aspergillum.held",
+          "material": "pbr",
+          "water": "empty",
+          "docked": false,
+          "cosmetic": "silver_ivory",
+          "cosmeticLabel": "Prata clássica · Marfim vegetal",
+          "waterOverlayGeometry": null,
+          "lighting": "inventory",
+          "transparent": true
+        },
+        "view": {
+          "id": "front-right",
+          "camera": [
+            1.3979712291545712,
+            1.4719036131418544,
+            1.452226782961621
+          ],
+          "target": [
+            -0.05425555380704987,
+            0.6296120790241142,
+            2.7755575615628914e-17
+          ],
+          "framing": {
+            "distanceScale": 0.86,
+            "targetOffset": [
+              0,
+              0,
+              0
+            ],
+            "direction": [
+              1,
+              0.58,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "antique_chestnut",
+      "label": "Prata envelhecida · Couro castanho",
+      "metal": "antique",
+      "grip": "chestnut",
+      "index": 3,
+      "file": "aspergillum_antique_chestnut.png",
+      "bytes": 1100,
+      "sha256": "405f2eccae231116577bba3fa840bf324cceda5297c28bb41ff8c2329dcdf50b",
+      "alphaBounds": {
+        "minX": 10,
+        "minY": 4,
+        "maxX": 27,
+        "maxY": 29,
+        "width": 18,
+        "height": 26,
+        "visiblePixels": 294,
+        "opaquePixels": 234
+      },
+      "sourceCapture": {
+        "file": "source-captures/antique_chestnut.png",
+        "bytes": 35798,
+        "sha256": "9a98408cb9f4ffe5c637008e65cc110eca41ed0838c30021acb8ce05e3b593a9",
+        "alphaBounds": {
+          "minX": 125,
+          "minY": 58,
+          "maxX": 332,
+          "maxY": 392,
+          "width": 208,
+          "height": 335,
+          "visiblePixels": 32143,
+          "opaquePixels": 31655
+        },
+        "configuration": {
+          "subject": "aspergillum",
+          "label": "Aspersório",
+          "geometry": "geometry.aspergillum.held",
+          "material": "pbr",
+          "water": "empty",
+          "docked": false,
+          "cosmetic": "antique_chestnut",
+          "cosmeticLabel": "Prata envelhecida · Couro castanho",
+          "waterOverlayGeometry": null,
+          "lighting": "inventory",
+          "transparent": true
+        },
+        "view": {
+          "id": "front-right",
+          "camera": [
+            1.3979712291545712,
+            1.4719036131418544,
+            1.452226782961621
+          ],
+          "target": [
+            -0.05425555380704987,
+            0.6296120790241142,
+            2.7755575615628914e-17
+          ],
+          "framing": {
+            "distanceScale": 0.86,
+            "targetOffset": [
+              0,
+              0,
+              0
+            ],
+            "direction": [
+              1,
+              0.58,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "antique_oxblood",
+      "label": "Prata envelhecida · Couro vinho",
+      "metal": "antique",
+      "grip": "oxblood",
+      "index": 4,
+      "file": "aspergillum_antique_oxblood.png",
+      "bytes": 1104,
+      "sha256": "6765a2d73187af6687f8585ec1b8c5cd6d6b2466cc62a03f46e89c7d3b8d5fa0",
+      "alphaBounds": {
+        "minX": 10,
+        "minY": 4,
+        "maxX": 27,
+        "maxY": 29,
+        "width": 18,
+        "height": 26,
+        "visiblePixels": 294,
+        "opaquePixels": 234
+      },
+      "sourceCapture": {
+        "file": "source-captures/antique_oxblood.png",
+        "bytes": 35800,
+        "sha256": "ba05560b7223a5166dbe5eb541f676f451f7cd8c04dd9d62029f6b896697b92a",
+        "alphaBounds": {
+          "minX": 125,
+          "minY": 58,
+          "maxX": 332,
+          "maxY": 392,
+          "width": 208,
+          "height": 335,
+          "visiblePixels": 32143,
+          "opaquePixels": 31655
+        },
+        "configuration": {
+          "subject": "aspergillum",
+          "label": "Aspersório",
+          "geometry": "geometry.aspergillum.held",
+          "material": "pbr",
+          "water": "empty",
+          "docked": false,
+          "cosmetic": "antique_oxblood",
+          "cosmeticLabel": "Prata envelhecida · Couro vinho",
+          "waterOverlayGeometry": null,
+          "lighting": "inventory",
+          "transparent": true
+        },
+        "view": {
+          "id": "front-right",
+          "camera": [
+            1.3979712291545712,
+            1.4719036131418544,
+            1.452226782961621
+          ],
+          "target": [
+            -0.05425555380704987,
+            0.6296120790241142,
+            2.7755575615628914e-17
+          ],
+          "framing": {
+            "distanceScale": 0.86,
+            "targetOffset": [
+              0,
+              0,
+              0
+            ],
+            "direction": [
+              1,
+              0.58,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "antique_black",
+      "label": "Prata envelhecida · Couro preto",
+      "metal": "antique",
+      "grip": "black",
+      "index": 5,
+      "file": "aspergillum_antique_black.png",
+      "bytes": 1094,
+      "sha256": "6d1ed63b9192e99424d78e43f4c811fab9b44875243c73d9c125841882a98b26",
+      "alphaBounds": {
+        "minX": 10,
+        "minY": 4,
+        "maxX": 27,
+        "maxY": 29,
+        "width": 18,
+        "height": 26,
+        "visiblePixels": 294,
+        "opaquePixels": 234
+      },
+      "sourceCapture": {
+        "file": "source-captures/antique_black.png",
+        "bytes": 35740,
+        "sha256": "39d649a5b52756afabd607e932b032c1f93e287e1a825cf67eb2a78264388892",
+        "alphaBounds": {
+          "minX": 125,
+          "minY": 58,
+          "maxX": 332,
+          "maxY": 392,
+          "width": 208,
+          "height": 335,
+          "visiblePixels": 32143,
+          "opaquePixels": 31655
+        },
+        "configuration": {
+          "subject": "aspergillum",
+          "label": "Aspersório",
+          "geometry": "geometry.aspergillum.held",
+          "material": "pbr",
+          "water": "empty",
+          "docked": false,
+          "cosmetic": "antique_black",
+          "cosmeticLabel": "Prata envelhecida · Couro preto",
+          "waterOverlayGeometry": null,
+          "lighting": "inventory",
+          "transparent": true
+        },
+        "view": {
+          "id": "front-right",
+          "camera": [
+            1.3979712291545712,
+            1.4719036131418544,
+            1.452226782961621
+          ],
+          "target": [
+            -0.05425555380704987,
+            0.6296120790241142,
+            2.7755575615628914e-17
+          ],
+          "framing": {
+            "distanceScale": 0.86,
+            "targetOffset": [
+              0,
+              0,
+              0
+            ],
+            "direction": [
+              1,
+              0.58,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "antique_ivory",
+      "label": "Prata envelhecida · Marfim vegetal",
+      "metal": "antique",
+      "grip": "ivory",
+      "index": 10,
+      "file": "aspergillum_antique_ivory.png",
+      "bytes": 1129,
+      "sha256": "58e61acc966caf749087033a121a5bafa0f15b83d38653ad339b612061bb742d",
+      "alphaBounds": {
+        "minX": 10,
+        "minY": 4,
+        "maxX": 27,
+        "maxY": 29,
+        "width": 18,
+        "height": 26,
+        "visiblePixels": 294,
+        "opaquePixels": 234
+      },
+      "sourceCapture": {
+        "file": "source-captures/antique_ivory.png",
+        "bytes": 35842,
+        "sha256": "3748c93b16d06c6471fb83e623f5f9dbd5f3f0c974a14da53c7b34dc65515d79",
+        "alphaBounds": {
+          "minX": 125,
+          "minY": 58,
+          "maxX": 332,
+          "maxY": 392,
+          "width": 208,
+          "height": 335,
+          "visiblePixels": 32143,
+          "opaquePixels": 31655
+        },
+        "configuration": {
+          "subject": "aspergillum",
+          "label": "Aspersório",
+          "geometry": "geometry.aspergillum.held",
+          "material": "pbr",
+          "water": "empty",
+          "docked": false,
+          "cosmetic": "antique_ivory",
+          "cosmeticLabel": "Prata envelhecida · Marfim vegetal",
+          "waterOverlayGeometry": null,
+          "lighting": "inventory",
+          "transparent": true
+        },
+        "view": {
+          "id": "front-right",
+          "camera": [
+            1.3979712291545712,
+            1.4719036131418544,
+            1.452226782961621
+          ],
+          "target": [
+            -0.05425555380704987,
+            0.6296120790241142,
+            2.7755575615628914e-17
+          ],
+          "framing": {
+            "distanceScale": 0.86,
+            "targetOffset": [
+              0,
+              0,
+              0
+            ],
+            "direction": [
+              1,
+              0.58,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "gilded_chestnut",
+      "label": "Dourado festivo · Couro castanho",
+      "metal": "gilded",
+      "grip": "chestnut",
+      "index": 6,
+      "file": "aspergillum_gilded_chestnut.png",
+      "bytes": 1079,
+      "sha256": "6867a4e044822e155557206be26ca9cf07db63cd56c35af1d5c8db7f41ee0354",
+      "alphaBounds": {
+        "minX": 10,
+        "minY": 4,
+        "maxX": 27,
+        "maxY": 29,
+        "width": 18,
+        "height": 26,
+        "visiblePixels": 294,
+        "opaquePixels": 234
+      },
+      "sourceCapture": {
+        "file": "source-captures/gilded_chestnut.png",
+        "bytes": 35485,
+        "sha256": "6d5452c99e12e8249e2d441f42c74e236a7fb2193e20330d6d8af3e0b5e29065",
+        "alphaBounds": {
+          "minX": 125,
+          "minY": 58,
+          "maxX": 332,
+          "maxY": 392,
+          "width": 208,
+          "height": 335,
+          "visiblePixels": 32143,
+          "opaquePixels": 31655
+        },
+        "configuration": {
+          "subject": "aspergillum",
+          "label": "Aspersório",
+          "geometry": "geometry.aspergillum.held",
+          "material": "pbr",
+          "water": "empty",
+          "docked": false,
+          "cosmetic": "gilded_chestnut",
+          "cosmeticLabel": "Dourado festivo · Couro castanho",
+          "waterOverlayGeometry": null,
+          "lighting": "inventory",
+          "transparent": true
+        },
+        "view": {
+          "id": "front-right",
+          "camera": [
+            1.3979712291545712,
+            1.4719036131418544,
+            1.452226782961621
+          ],
+          "target": [
+            -0.05425555380704987,
+            0.6296120790241142,
+            2.7755575615628914e-17
+          ],
+          "framing": {
+            "distanceScale": 0.86,
+            "targetOffset": [
+              0,
+              0,
+              0
+            ],
+            "direction": [
+              1,
+              0.58,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "gilded_oxblood",
+      "label": "Dourado festivo · Couro vinho",
+      "metal": "gilded",
+      "grip": "oxblood",
+      "index": 7,
+      "file": "aspergillum_gilded_oxblood.png",
+      "bytes": 1078,
+      "sha256": "aadc81d50b29c14ccb0f02641e43447c61432db85b323cf6540e5414ef653a9e",
+      "alphaBounds": {
+        "minX": 10,
+        "minY": 4,
+        "maxX": 27,
+        "maxY": 29,
+        "width": 18,
+        "height": 26,
+        "visiblePixels": 294,
+        "opaquePixels": 234
+      },
+      "sourceCapture": {
+        "file": "source-captures/gilded_oxblood.png",
+        "bytes": 35505,
+        "sha256": "39045045d62c2b0bc08beef1accc6ef9ee7f9b385c77fa23d6c1136843589ed8",
+        "alphaBounds": {
+          "minX": 125,
+          "minY": 58,
+          "maxX": 332,
+          "maxY": 392,
+          "width": 208,
+          "height": 335,
+          "visiblePixels": 32143,
+          "opaquePixels": 31655
+        },
+        "configuration": {
+          "subject": "aspergillum",
+          "label": "Aspersório",
+          "geometry": "geometry.aspergillum.held",
+          "material": "pbr",
+          "water": "empty",
+          "docked": false,
+          "cosmetic": "gilded_oxblood",
+          "cosmeticLabel": "Dourado festivo · Couro vinho",
+          "waterOverlayGeometry": null,
+          "lighting": "inventory",
+          "transparent": true
+        },
+        "view": {
+          "id": "front-right",
+          "camera": [
+            1.3979712291545712,
+            1.4719036131418544,
+            1.452226782961621
+          ],
+          "target": [
+            -0.05425555380704987,
+            0.6296120790241142,
+            2.7755575615628914e-17
+          ],
+          "framing": {
+            "distanceScale": 0.86,
+            "targetOffset": [
+              0,
+              0,
+              0
+            ],
+            "direction": [
+              1,
+              0.58,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "gilded_black",
+      "label": "Dourado festivo · Couro preto",
+      "metal": "gilded",
+      "grip": "black",
+      "index": 8,
+      "file": "aspergillum_gilded_black.png",
+      "bytes": 1073,
+      "sha256": "eb2160073d2ad2fb1a41c47d3834cfa367cbd1cf7244d8e0ea789e918dab5e26",
+      "alphaBounds": {
+        "minX": 10,
+        "minY": 4,
+        "maxX": 27,
+        "maxY": 29,
+        "width": 18,
+        "height": 26,
+        "visiblePixels": 294,
+        "opaquePixels": 234
+      },
+      "sourceCapture": {
+        "file": "source-captures/gilded_black.png",
+        "bytes": 35488,
+        "sha256": "267a2dc689dd349320fd9dcb4aabdb6eefbdbbb92b1fb8bb0974b70b76e8764c",
+        "alphaBounds": {
+          "minX": 125,
+          "minY": 58,
+          "maxX": 332,
+          "maxY": 392,
+          "width": 208,
+          "height": 335,
+          "visiblePixels": 32143,
+          "opaquePixels": 31655
+        },
+        "configuration": {
+          "subject": "aspergillum",
+          "label": "Aspersório",
+          "geometry": "geometry.aspergillum.held",
+          "material": "pbr",
+          "water": "empty",
+          "docked": false,
+          "cosmetic": "gilded_black",
+          "cosmeticLabel": "Dourado festivo · Couro preto",
+          "waterOverlayGeometry": null,
+          "lighting": "inventory",
+          "transparent": true
+        },
+        "view": {
+          "id": "front-right",
+          "camera": [
+            1.3979712291545712,
+            1.4719036131418544,
+            1.452226782961621
+          ],
+          "target": [
+            -0.05425555380704987,
+            0.6296120790241142,
+            2.7755575615628914e-17
+          ],
+          "framing": {
+            "distanceScale": 0.86,
+            "targetOffset": [
+              0,
+              0,
+              0
+            ],
+            "direction": [
+              1,
+              0.58,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "gilded_ivory",
+      "label": "Dourado festivo · Marfim vegetal",
+      "metal": "gilded",
+      "grip": "ivory",
+      "index": 11,
+      "file": "aspergillum_gilded_ivory.png",
+      "bytes": 1111,
+      "sha256": "6b248cc742d011603194b5a344c8d66f8b75ab74e640982ee676e95b47c43950",
+      "alphaBounds": {
+        "minX": 10,
+        "minY": 4,
+        "maxX": 27,
+        "maxY": 29,
+        "width": 18,
+        "height": 26,
+        "visiblePixels": 294,
+        "opaquePixels": 234
+      },
+      "sourceCapture": {
+        "file": "source-captures/gilded_ivory.png",
+        "bytes": 35601,
+        "sha256": "da58497e7e5957514225e316c9960132845cb589f6e56ebcfad26db397908f78",
+        "alphaBounds": {
+          "minX": 125,
+          "minY": 58,
+          "maxX": 332,
+          "maxY": 392,
+          "width": 208,
+          "height": 335,
+          "visiblePixels": 32143,
+          "opaquePixels": 31655
+        },
+        "configuration": {
+          "subject": "aspergillum",
+          "label": "Aspersório",
+          "geometry": "geometry.aspergillum.held",
+          "material": "pbr",
+          "water": "empty",
+          "docked": false,
+          "cosmetic": "gilded_ivory",
+          "cosmeticLabel": "Dourado festivo · Marfim vegetal",
+          "waterOverlayGeometry": null,
+          "lighting": "inventory",
+          "transparent": true
+        },
+        "view": {
+          "id": "front-right",
+          "camera": [
+            1.3979712291545712,
+            1.4719036131418544,
+            1.452226782961621
+          ],
+          "target": [
+            -0.05425555380704987,
+            0.6296120790241142,
+            2.7755575615628914e-17
+          ],
+          "framing": {
+            "distanceScale": 0.86,
+            "targetOffset": [
+              0,
+              0,
+              0
+            ],
+            "direction": [
+              1,
+              0.58,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "bronze_chestnut",
+      "label": "Bronze cerimonial · Couro castanho",
+      "metal": "bronze",
+      "grip": "chestnut",
+      "index": 12,
+      "file": "aspergillum_bronze_chestnut.png",
+      "bytes": 1075,
+      "sha256": "14277a8ad8f1ad30e131ce4158e5cf82b8be8f715d9842d3a210739d885eb5f6",
+      "alphaBounds": {
+        "minX": 10,
+        "minY": 4,
+        "maxX": 27,
+        "maxY": 29,
+        "width": 18,
+        "height": 26,
+        "visiblePixels": 294,
+        "opaquePixels": 234
+      },
+      "sourceCapture": {
+        "file": "source-captures/bronze_chestnut.png",
+        "bytes": 35872,
+        "sha256": "ed2c80d3bf896d536df83a46dd18d5e29aaead7871d50aa2e2f1237ce378d51a",
+        "alphaBounds": {
+          "minX": 125,
+          "minY": 58,
+          "maxX": 332,
+          "maxY": 392,
+          "width": 208,
+          "height": 335,
+          "visiblePixels": 32143,
+          "opaquePixels": 31655
+        },
+        "configuration": {
+          "subject": "aspergillum",
+          "label": "Aspersório",
+          "geometry": "geometry.aspergillum.held",
+          "material": "pbr",
+          "water": "empty",
+          "docked": false,
+          "cosmetic": "bronze_chestnut",
+          "cosmeticLabel": "Bronze cerimonial · Couro castanho",
+          "waterOverlayGeometry": null,
+          "lighting": "inventory",
+          "transparent": true
+        },
+        "view": {
+          "id": "front-right",
+          "camera": [
+            1.3979712291545712,
+            1.4719036131418544,
+            1.452226782961621
+          ],
+          "target": [
+            -0.05425555380704987,
+            0.6296120790241142,
+            2.7755575615628914e-17
+          ],
+          "framing": {
+            "distanceScale": 0.86,
+            "targetOffset": [
+              0,
+              0,
+              0
+            ],
+            "direction": [
+              1,
+              0.58,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "bronze_oxblood",
+      "label": "Bronze cerimonial · Couro vinho",
+      "metal": "bronze",
+      "grip": "oxblood",
+      "index": 13,
+      "file": "aspergillum_bronze_oxblood.png",
+      "bytes": 1073,
+      "sha256": "ceeaa304838c6adf66573d9a5615b936eadfbcd31f3de5c6c94161f57a3336cc",
+      "alphaBounds": {
+        "minX": 10,
+        "minY": 4,
+        "maxX": 27,
+        "maxY": 29,
+        "width": 18,
+        "height": 26,
+        "visiblePixels": 294,
+        "opaquePixels": 234
+      },
+      "sourceCapture": {
+        "file": "source-captures/bronze_oxblood.png",
+        "bytes": 35872,
+        "sha256": "92f8491d153882c5575f2c75779b7f39a771bb0033f0af9d26bfe588f6de410a",
+        "alphaBounds": {
+          "minX": 125,
+          "minY": 58,
+          "maxX": 332,
+          "maxY": 392,
+          "width": 208,
+          "height": 335,
+          "visiblePixels": 32143,
+          "opaquePixels": 31655
+        },
+        "configuration": {
+          "subject": "aspergillum",
+          "label": "Aspersório",
+          "geometry": "geometry.aspergillum.held",
+          "material": "pbr",
+          "water": "empty",
+          "docked": false,
+          "cosmetic": "bronze_oxblood",
+          "cosmeticLabel": "Bronze cerimonial · Couro vinho",
+          "waterOverlayGeometry": null,
+          "lighting": "inventory",
+          "transparent": true
+        },
+        "view": {
+          "id": "front-right",
+          "camera": [
+            1.3979712291545712,
+            1.4719036131418544,
+            1.452226782961621
+          ],
+          "target": [
+            -0.05425555380704987,
+            0.6296120790241142,
+            2.7755575615628914e-17
+          ],
+          "framing": {
+            "distanceScale": 0.86,
+            "targetOffset": [
+              0,
+              0,
+              0
+            ],
+            "direction": [
+              1,
+              0.58,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "bronze_black",
+      "label": "Bronze cerimonial · Couro preto",
+      "metal": "bronze",
+      "grip": "black",
+      "index": 14,
+      "file": "aspergillum_bronze_black.png",
+      "bytes": 1072,
+      "sha256": "a05b720c959666062aa02f266bfe7ec45f906bcc1ddea100aee9f886569a6729",
+      "alphaBounds": {
+        "minX": 10,
+        "minY": 4,
+        "maxX": 27,
+        "maxY": 29,
+        "width": 18,
+        "height": 26,
+        "visiblePixels": 294,
+        "opaquePixels": 234
+      },
+      "sourceCapture": {
+        "file": "source-captures/bronze_black.png",
+        "bytes": 35889,
+        "sha256": "b9f5a7e7eb40f7d4d4449482931511247aab6d4fb61d024da8154e7403da6077",
+        "alphaBounds": {
+          "minX": 125,
+          "minY": 58,
+          "maxX": 332,
+          "maxY": 392,
+          "width": 208,
+          "height": 335,
+          "visiblePixels": 32143,
+          "opaquePixels": 31655
+        },
+        "configuration": {
+          "subject": "aspergillum",
+          "label": "Aspersório",
+          "geometry": "geometry.aspergillum.held",
+          "material": "pbr",
+          "water": "empty",
+          "docked": false,
+          "cosmetic": "bronze_black",
+          "cosmeticLabel": "Bronze cerimonial · Couro preto",
+          "waterOverlayGeometry": null,
+          "lighting": "inventory",
+          "transparent": true
+        },
+        "view": {
+          "id": "front-right",
+          "camera": [
+            1.3979712291545712,
+            1.4719036131418544,
+            1.452226782961621
+          ],
+          "target": [
+            -0.05425555380704987,
+            0.6296120790241142,
+            2.7755575615628914e-17
+          ],
+          "framing": {
+            "distanceScale": 0.86,
+            "targetOffset": [
+              0,
+              0,
+              0
+            ],
+            "direction": [
+              1,
+              0.58,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "bronze_ivory",
+      "label": "Bronze cerimonial · Marfim vegetal",
+      "metal": "bronze",
+      "grip": "ivory",
+      "index": 15,
+      "file": "aspergillum_bronze_ivory.png",
+      "bytes": 1108,
+      "sha256": "f13b46f3bc3e56f8bd8752f90c108c46c60ee976a83d778f067aebd32790e50a",
+      "alphaBounds": {
+        "minX": 10,
+        "minY": 4,
+        "maxX": 27,
+        "maxY": 29,
+        "width": 18,
+        "height": 26,
+        "visiblePixels": 294,
+        "opaquePixels": 234
+      },
+      "sourceCapture": {
+        "file": "source-captures/bronze_ivory.png",
+        "bytes": 35963,
+        "sha256": "54664df0fba9acee5aa0d1adf74491333b2d538c8697a34d8bc7ebc9f8def0b9",
+        "alphaBounds": {
+          "minX": 125,
+          "minY": 58,
+          "maxX": 332,
+          "maxY": 392,
+          "width": 208,
+          "height": 335,
+          "visiblePixels": 32143,
+          "opaquePixels": 31655
+        },
+        "configuration": {
+          "subject": "aspergillum",
+          "label": "Aspersório",
+          "geometry": "geometry.aspergillum.held",
+          "material": "pbr",
+          "water": "empty",
+          "docked": false,
+          "cosmetic": "bronze_ivory",
+          "cosmeticLabel": "Bronze cerimonial · Marfim vegetal",
+          "waterOverlayGeometry": null,
+          "lighting": "inventory",
+          "transparent": true
+        },
+        "view": {
+          "id": "front-right",
+          "camera": [
+            1.3979712291545712,
+            1.4719036131418544,
+            1.452226782961621
+          ],
+          "target": [
+            -0.05425555380704987,
+            0.6296120790241142,
+            2.7755575615628914e-17
+          ],
+          "framing": {
+            "distanceScale": 0.86,
+            "targetOffset": [
+              0,
+              0,
+              0
+            ],
+            "direction": [
+              1,
+              0.58,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "limitation": "Render Three.js derivado dos assets reais; o teste do inventário no Minecraft Bedrock continua obrigatório para escala, mipmapping, fundo e cache reais."
+}

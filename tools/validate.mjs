@@ -37,6 +37,9 @@ for (const packRoot of packRoots) {
 const behaviorManifest = JSON.parse(fs.readFileSync(path.join(packRoots[0], "manifest.json"), "utf8"));
 const resourceManifest = JSON.parse(fs.readFileSync(path.join(packRoots[1], "manifest.json"), "utf8"));
 const packageMetadata = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+const terrainTextureDefinition = JSON.parse(
+  fs.readFileSync(path.join(packRoots[1], "textures", "terrain_texture.json"), "utf8"),
+);
 const customizationCatalog = JSON.parse(
   fs.readFileSync(path.join(root, "assets-src", "customization", "catalog.json"), "utf8"),
 );
@@ -151,6 +154,19 @@ function validateAspersoriumMaterialProfile(instances, label) {
   }
 }
 validateAspersoriumMaterialProfile(materialInstances, "Base Aspersorium material profile");
+const expectedAspersoriumDestructionParticles = {
+  texture: "aspersorium_destruction",
+  tint_method: "none",
+  particle_count: 56,
+};
+if (JSON.stringify(block?.components?.["minecraft:destruction_particles"])
+  !== JSON.stringify(expectedAspersoriumDestructionParticles)) {
+  errors.push("Aspersorium must use its reviewed 16x16 hammered-metal destruction texture and count");
+}
+if (JSON.stringify(terrainTextureDefinition.texture_data?.aspersorium_destruction?.textures)
+  !== JSON.stringify(["textures/blocks/aspersorium_destruction"])) {
+  errors.push("Aspersorium destruction texture must be registered in terrain_texture.json");
+}
 if (JSON.stringify(block?.components?.["minecraft:tick"])
   !== JSON.stringify({ interval_range: [80, 120], looping: true })) {
   errors.push("Official Aspersorium requires its distributed 80..120 tick visual reconciliation");
@@ -320,6 +336,19 @@ if (tableBlock?.components?.["minecraft:movable"]?.movement_type !== "immovable"
 }
 if (tableBlock?.components?.["aspergillum:sacristan_table_interaction"] === undefined) {
   errors.push("Sacristan table requires its stable custom interaction component");
+}
+const expectedTableDestructionParticles = {
+  texture: "sacristan_table_destruction",
+  tint_method: "none",
+  particle_count: 80,
+};
+if (JSON.stringify(tableBlock?.components?.["minecraft:destruction_particles"])
+  !== JSON.stringify(expectedTableDestructionParticles)) {
+  errors.push("Sacristan table must use its reviewed 16x16 wood/velvet/brass destruction texture and count");
+}
+if (JSON.stringify(terrainTextureDefinition.texture_data?.sacristan_table_destruction?.textures)
+  !== JSON.stringify(["textures/blocks/sacristan_table_destruction"])) {
+  errors.push("Sacristan table destruction texture must be registered in terrain_texture.json");
 }
 const tableBaseGeometry = tableBlock?.components?.["minecraft:geometry"];
 if (tableBaseGeometry?.identifier !== "geometry.aspergillum.sacristan_table.rotation_0"
@@ -1071,7 +1100,9 @@ const required = [
   "packs/resource/textures/entity/aspergillum_normal.png",
   "packs/resource/textures/entity/aspergillum_mer.png",
   "packs/resource/textures/blocks/aspersorium.png",
+  "packs/resource/textures/blocks/aspersorium_destruction.png",
   "packs/resource/textures/blocks/sacristan_table.png",
+  "packs/resource/textures/blocks/sacristan_table_destruction.png",
   "packs/resource/textures/particle/holy_water.png",
   "packs/resource/models/blocks/aspersorium.rotations.geo.json",
   "packs/behavior/entities/aspersorium_water_visual.entity.json",
@@ -1148,8 +1179,10 @@ if (!fs.existsSync(brandingManifestPath)) {
 } else {
   try {
     const brandingManifest = JSON.parse(fs.readFileSync(brandingManifestPath, "utf8"));
-    if (brandingManifest.pack?.version !== packageMetadata.version) {
-      errors.push("Branding manifest pack version must match package.json");
+    const brandingPublicationVersion = brandingManifest.publication?.currentRelease
+      ?? brandingManifest.pack?.version;
+    if (brandingPublicationVersion !== packageMetadata.version) {
+      errors.push("Branding manifest publication version must match package.json");
     }
     if (brandingManifest.config?.title !== "ASPERGILLUM" || brandingManifest.config?.subject !== "docked") {
       errors.push("Branding manifest must preserve the approved ASPERGILLUM docked composition");
@@ -1172,6 +1205,12 @@ if (!fs.existsSync(brandingManifestPath)) {
 
 const entityTexturePath = path.join(packRoots[1], "textures", "entity", "aspergillum.png");
 const particleTexturePath = path.join(packRoots[1], "textures", "particle", "holy_water.png");
+const aspersoriumDestructionTexturePath = path.join(
+  packRoots[1], "textures", "blocks", "aspersorium_destruction.png",
+);
+const tableDestructionTexturePath = path.join(
+  packRoots[1], "textures", "blocks", "sacristan_table_destruction.png",
+);
 for (const file of walk(path.join(root, "packs", "resource", "textures")).filter((entry) => entry.endsWith(".png"))) {
   try {
     const image = PNG.sync.read(fs.readFileSync(file));
@@ -1198,6 +1237,38 @@ for (const file of walk(path.join(root, "packs", "resource", "textures")).filter
         }
       }
       if (visiblePixels < 40) errors.push("Holy-water droplet texture has insufficient visible coverage");
+    }
+    if (file === aspersoriumDestructionTexturePath) {
+      const colors = new Set();
+      for (let offset = 0; offset < image.data.length; offset += 4) {
+        const [r, g, b, alpha] = image.data.subarray(offset, offset + 4);
+        colors.add(`${r},${g},${b},${alpha}`);
+        if (alpha !== 255 || Math.max(r, g, b) - Math.min(r, g, b) > 20) {
+          errors.push("Aspersorium destruction texture must remain opaque neutral/patinated metal");
+          break;
+        }
+      }
+      if (image.width !== 16 || image.height !== 16 || colors.size !== 6) {
+        errors.push("Aspersorium destruction texture must preserve its exact 16x16 six-tone pixel-art profile");
+      }
+    }
+    if (file === tableDestructionTexturePath) {
+      const colors = new Set();
+      let velvetPixels = 0;
+      let brassPixels = 0;
+      let woodPixels = 0;
+      for (let offset = 0; offset < image.data.length; offset += 4) {
+        const [r, g, b, alpha] = image.data.subarray(offset, offset + 4);
+        colors.add(`${r},${g},${b},${alpha}`);
+        if (alpha !== 255) continue;
+        if (g > r && g > b) velvetPixels += 1;
+        else if (r >= 130 && g >= 90 && b <= 70) brassPixels += 1;
+        else if (r > g && g > b) woodPixels += 1;
+      }
+      if (image.width !== 16 || image.height !== 16 || colors.size !== 8
+        || velvetPixels !== 12 || brassPixels !== 4 || woodPixels !== 240) {
+        errors.push("Sacristan table destruction texture must preserve its 240/12/4 wood-velvet-brass pixel budget");
+      }
     }
   } catch (error) {
     errors.push(`Unreadable PNG ${path.relative(root, file)}: ${error.message}`);

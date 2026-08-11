@@ -8,6 +8,8 @@ Esta pasta contém as fontes de produção da identidade promovida na versão 1.
 
 Os PNGs foram produzidos pelo Cover Renderer a partir do assunto real `docked`, com acabamento clássico, material PBR e água cheia. Não foram pintados ou retocados manualmente após a captura. A tipografia Bowlby One SC e a licença SIL Open Font License 1.1 ficam versionadas em `viewer-3d/public/fonts/bowlby-one-sc/`.
 
+O bloco `pack` do manifest registra a release 1.2.1 contra a qual a imagem foi realmente renderizada. O bloco `publication` registra separadamente a release corrente que reutiliza os mesmos bytes aprovados; assim, uma promoção posterior não falsifica a proveniência da captura.
+
 Para gerar uma nova candidata:
 
 ```powershell

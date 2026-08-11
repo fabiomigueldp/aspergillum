@@ -1,6 +1,6 @@
 # Mapa da instalação local
 
-Mapa gerado por `tools/sync-installed-addon.mjs` em **2026-08-08T02:19:51.739Z**.
+Mapa gerado por `tools/sync-installed-addon.mjs` em **2026-08-10T18:52:11.338Z**.
 A sincronização usa diretamente `packs/`, substitui os diretórios locais e atualiza os vínculos do mundo selecionado.
 
 ## Instalação do Minecraft
@@ -32,21 +32,21 @@ Mundo sincronizado nesta execução: `devtest` (1 alvo(s)).
 
 ## Aspergillum instalado
 
-- Rótulo: `1.1.6`;
-- Versão numérica dos manifests: `[1, 1, 6]`;
-- Artefato: `C:\Users\fabio\Projects\aspergillum\dist\releases\Aspergillum-1.1.6.mcaddon`;
-- SHA-256: `728014e1c382ad55ebaabc34886a7b2de4551a512b1239766b9300973d20ef93`.
+- Rótulo: `1.2.0`;
+- Versão numérica dos manifests: `[1, 2, 0]`;
+- Artefato: `C:\Users\fabio\Projects\aspergillum\dist\releases\Aspergillum-1.2.0.mcaddon`;
+- SHA-256: `ceb03c692af8e42bc0dca53e4f4b0ac82fd6b728708c42008a0f564320b05dc6`.
 
 | Pack | UUID | Arquivos | Bytes | Caminho compartilhado |
 | --- | --- | ---: | ---: | --- |
-| Behavior | bac9f8bc-71f5-4db7-a0ff-3c5a365749b4 | 25 | 151321 | `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang\behavior_packs\pack.asper` |
-| Resource | fdb8a79c-8f77-4831-9a5c-8e2b8ecca29e | 197 | 3811565 | `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang\resource_packs\pack.asper` |
+| Behavior | bac9f8bc-71f5-4db7-a0ff-3c5a365749b4 | 33 | 187262 | `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang\behavior_packs\pack.asper` |
+| Resource | fdb8a79c-8f77-4831-9a5c-8e2b8ecca29e | 299 | 5101257 | `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang\resource_packs\pack.asper` |
 
 ## Mundo sincronizado
 
 Nome: **devtest**
 Pasta: `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\8414181078248597151\games\com.mojang\minecraftWorlds\RYdEhTaa5t8=`
-Snapshot: 237 arquivos, 36 diretórios; o tamanho varia com o LevelDB.
+Snapshot: 346 arquivos, 38 diretórios; o tamanho varia com o LevelDB.
 
 ```text
 RYdEhTaa5t8=
@@ -62,7 +62,7 @@ RYdEhTaa5t8=
 └── world_resource_pack_history.json
 ```
 
-Os vínculos ativos e históricos de `devtest` apontam para `[1, 1, 6]`.
+Os vínculos ativos e históricos de `devtest` apontam para `[1, 2, 0]`.
 
 ## Mundos do perfil
 
@@ -83,7 +83,7 @@ Os vínculos ativos e históricos de `devtest` apontam para `[1, 1, 6]`.
 | L+1naPlwfQI= | My World | 1.0.30 | 1.0.30 | 1.0.30 | 1.0.30 | não |
 | LAKg42VxeJ8= | My World | 1.0.14 | 1.0.14 | 1.0.14 | 1.0.14 | não |
 | Rk1N0Z9IRbU= | My World | — | — | — | — | não |
-| RYdEhTaa5t8= | devtest | 1.1.6 (1.1.6) | 1.1.6 (1.1.6) | 1.1.6 (1.1.6) | 1.1.6 (1.1.6) | sim |
+| RYdEhTaa5t8= | devtest | 1.2.0 (1.2.0) | 1.2.0 (1.2.0) | 1.2.0 (1.2.0) | 1.2.0 (1.2.0) | sim |
 | vz5XjjBKc8k= | Small Medieval Church 1.0.4 (imported) | 1.0.2 | — | — | — | não |
 | XF60MIBp-Qg= | My World | 1.0.5 | 1.0.5 | 1.0.5 | 1.0.5 | não |
 | y01GRv4EOxU= | My World | 1.0.13 | 1.0.13 | 1.0.13 | 1.0.13 | não |
@@ -97,14 +97,22 @@ Os vínculos ativos e históricos de `devtest` apontam para `[1, 1, 6]`.
 ```text
 behavior_packs\pack.asper\blocks\aspersorium.block.json
 behavior_packs\pack.asper\blocks\sacristan_table.block.json
+behavior_packs\pack.asper\entities\aspersorium_water_visual.entity.json
 behavior_packs\pack.asper\functions\aspergillum\dev_kit.mcfunction
 behavior_packs\pack.asper\items\aspergillum_antique_black.item.json
 behavior_packs\pack.asper\items\aspergillum_antique_chestnut.item.json
+behavior_packs\pack.asper\items\aspergillum_antique_ivory.item.json
 behavior_packs\pack.asper\items\aspergillum_antique_oxblood.item.json
+behavior_packs\pack.asper\items\aspergillum_bronze_black.item.json
+behavior_packs\pack.asper\items\aspergillum_bronze_chestnut.item.json
+behavior_packs\pack.asper\items\aspergillum_bronze_ivory.item.json
+behavior_packs\pack.asper\items\aspergillum_bronze_oxblood.item.json
 behavior_packs\pack.asper\items\aspergillum_gilded_black.item.json
 behavior_packs\pack.asper\items\aspergillum_gilded_chestnut.item.json
+behavior_packs\pack.asper\items\aspergillum_gilded_ivory.item.json
 behavior_packs\pack.asper\items\aspergillum_gilded_oxblood.item.json
 behavior_packs\pack.asper\items\aspergillum_silver_black.item.json
+behavior_packs\pack.asper\items\aspergillum_silver_ivory.item.json
 behavior_packs\pack.asper\items\aspergillum_silver_oxblood.item.json
 behavior_packs\pack.asper\items\aspergillum.item.json
 behavior_packs\pack.asper\loot_tables\blocks\aspersorium_docked.loot.json
@@ -130,25 +138,35 @@ resource_packs\pack.asper\animations\aspergillum.action.animation.json
 resource_packs\pack.asper\animations\aspergillum.hold.animation.json
 resource_packs\pack.asper\attachables\aspergillum_antique_black.attachable.json
 resource_packs\pack.asper\attachables\aspergillum_antique_chestnut.attachable.json
+resource_packs\pack.asper\attachables\aspergillum_antique_ivory.attachable.json
 resource_packs\pack.asper\attachables\aspergillum_antique_oxblood.attachable.json
+resource_packs\pack.asper\attachables\aspergillum_bronze_black.attachable.json
+resource_packs\pack.asper\attachables\aspergillum_bronze_chestnut.attachable.json
+resource_packs\pack.asper\attachables\aspergillum_bronze_ivory.attachable.json
+resource_packs\pack.asper\attachables\aspergillum_bronze_oxblood.attachable.json
 resource_packs\pack.asper\attachables\aspergillum_gilded_black.attachable.json
 resource_packs\pack.asper\attachables\aspergillum_gilded_chestnut.attachable.json
+resource_packs\pack.asper\attachables\aspergillum_gilded_ivory.attachable.json
 resource_packs\pack.asper\attachables\aspergillum_gilded_oxblood.attachable.json
 resource_packs\pack.asper\attachables\aspergillum_silver_black.attachable.json
+resource_packs\pack.asper\attachables\aspergillum_silver_ivory.attachable.json
 resource_packs\pack.asper\attachables\aspergillum_silver_oxblood.attachable.json
 resource_packs\pack.asper\attachables\aspergillum.attachable.json
 resource_packs\pack.asper\blocks.json
+resource_packs\pack.asper\entity\aspersorium_water_visual.entity.json
 resource_packs\pack.asper\manifest.json
 resource_packs\pack.asper\models\blocks\aspersorium.geo.json
 resource_packs\pack.asper\models\blocks\aspersorium.rotations.geo.json
 resource_packs\pack.asper\models\blocks\sacristan_table.geo.json
 resource_packs\pack.asper\models\blocks\sacristan_table.rotations.geo.json
 resource_packs\pack.asper\models\entity\aspergillum.geo.json
+resource_packs\pack.asper\models\entity\aspersorium_water_visual.geo.json
 resource_packs\pack.asper\pack_icon.png
 resource_packs\pack.asper\particles\holy_water_droplet.particle.json
 resource_packs\pack.asper\particles\holy_water_micro_splash.particle.json
 resource_packs\pack.asper\particles\holy_water_release.particle.json
 resource_packs\pack.asper\render_controllers\aspergillum.render_controllers.json
+resource_packs\pack.asper\render_controllers\aspersorium_water_visual.render_controllers.json
 resource_packs\pack.asper\sounds\aspergillum\aspersorium\fill_01.ogg
 resource_packs\pack.asper\sounds\aspergillum\aspersorium\fill_02.ogg
 resource_packs\pack.asper\sounds\aspergillum\aspersorium\fill_03.ogg
@@ -209,10 +227,30 @@ resource_packs\pack.asper\textures\blocks\aspersorium_antique_chestnut_mer.png
 resource_packs\pack.asper\textures\blocks\aspersorium_antique_chestnut_normal.png
 resource_packs\pack.asper\textures\blocks\aspersorium_antique_chestnut.png
 resource_packs\pack.asper\textures\blocks\aspersorium_antique_chestnut.texture_set.json
+resource_packs\pack.asper\textures\blocks\aspersorium_antique_ivory_mer.png
+resource_packs\pack.asper\textures\blocks\aspersorium_antique_ivory_normal.png
+resource_packs\pack.asper\textures\blocks\aspersorium_antique_ivory.png
+resource_packs\pack.asper\textures\blocks\aspersorium_antique_ivory.texture_set.json
 resource_packs\pack.asper\textures\blocks\aspersorium_antique_oxblood_mer.png
 resource_packs\pack.asper\textures\blocks\aspersorium_antique_oxblood_normal.png
 resource_packs\pack.asper\textures\blocks\aspersorium_antique_oxblood.png
 resource_packs\pack.asper\textures\blocks\aspersorium_antique_oxblood.texture_set.json
+resource_packs\pack.asper\textures\blocks\aspersorium_bronze_black_mer.png
+resource_packs\pack.asper\textures\blocks\aspersorium_bronze_black_normal.png
+resource_packs\pack.asper\textures\blocks\aspersorium_bronze_black.png
+resource_packs\pack.asper\textures\blocks\aspersorium_bronze_black.texture_set.json
+resource_packs\pack.asper\textures\blocks\aspersorium_bronze_chestnut_mer.png
+resource_packs\pack.asper\textures\blocks\aspersorium_bronze_chestnut_normal.png
+resource_packs\pack.asper\textures\blocks\aspersorium_bronze_chestnut.png
+resource_packs\pack.asper\textures\blocks\aspersorium_bronze_chestnut.texture_set.json
+resource_packs\pack.asper\textures\blocks\aspersorium_bronze_ivory_mer.png
+resource_packs\pack.asper\textures\blocks\aspersorium_bronze_ivory_normal.png
+resource_packs\pack.asper\textures\blocks\aspersorium_bronze_ivory.png
+resource_packs\pack.asper\textures\blocks\aspersorium_bronze_ivory.texture_set.json
+resource_packs\pack.asper\textures\blocks\aspersorium_bronze_oxblood_mer.png
+resource_packs\pack.asper\textures\blocks\aspersorium_bronze_oxblood_normal.png
+resource_packs\pack.asper\textures\blocks\aspersorium_bronze_oxblood.png
+resource_packs\pack.asper\textures\blocks\aspersorium_bronze_oxblood.texture_set.json
 resource_packs\pack.asper\textures\blocks\aspersorium_gilded_black_mer.png
 resource_packs\pack.asper\textures\blocks\aspersorium_gilded_black_normal.png
 resource_packs\pack.asper\textures\blocks\aspersorium_gilded_black.png
@@ -221,6 +259,10 @@ resource_packs\pack.asper\textures\blocks\aspersorium_gilded_chestnut_mer.png
 resource_packs\pack.asper\textures\blocks\aspersorium_gilded_chestnut_normal.png
 resource_packs\pack.asper\textures\blocks\aspersorium_gilded_chestnut.png
 resource_packs\pack.asper\textures\blocks\aspersorium_gilded_chestnut.texture_set.json
+resource_packs\pack.asper\textures\blocks\aspersorium_gilded_ivory_mer.png
+resource_packs\pack.asper\textures\blocks\aspersorium_gilded_ivory_normal.png
+resource_packs\pack.asper\textures\blocks\aspersorium_gilded_ivory.png
+resource_packs\pack.asper\textures\blocks\aspersorium_gilded_ivory.texture_set.json
 resource_packs\pack.asper\textures\blocks\aspersorium_gilded_oxblood_mer.png
 resource_packs\pack.asper\textures\blocks\aspersorium_gilded_oxblood_normal.png
 resource_packs\pack.asper\textures\blocks\aspersorium_gilded_oxblood.png
@@ -231,6 +273,10 @@ resource_packs\pack.asper\textures\blocks\aspersorium_silver_black_mer.png
 resource_packs\pack.asper\textures\blocks\aspersorium_silver_black_normal.png
 resource_packs\pack.asper\textures\blocks\aspersorium_silver_black.png
 resource_packs\pack.asper\textures\blocks\aspersorium_silver_black.texture_set.json
+resource_packs\pack.asper\textures\blocks\aspersorium_silver_ivory_mer.png
+resource_packs\pack.asper\textures\blocks\aspersorium_silver_ivory_normal.png
+resource_packs\pack.asper\textures\blocks\aspersorium_silver_ivory.png
+resource_packs\pack.asper\textures\blocks\aspersorium_silver_ivory.texture_set.json
 resource_packs\pack.asper\textures\blocks\aspersorium_silver_oxblood_mer.png
 resource_packs\pack.asper\textures\blocks\aspersorium_silver_oxblood_normal.png
 resource_packs\pack.asper\textures\blocks\aspersorium_silver_oxblood.png
@@ -246,10 +292,30 @@ resource_packs\pack.asper\textures\blocks\sacristan_table_antique_chestnut_mer.p
 resource_packs\pack.asper\textures\blocks\sacristan_table_antique_chestnut_normal.png
 resource_packs\pack.asper\textures\blocks\sacristan_table_antique_chestnut.png
 resource_packs\pack.asper\textures\blocks\sacristan_table_antique_chestnut.texture_set.json
+resource_packs\pack.asper\textures\blocks\sacristan_table_antique_ivory_mer.png
+resource_packs\pack.asper\textures\blocks\sacristan_table_antique_ivory_normal.png
+resource_packs\pack.asper\textures\blocks\sacristan_table_antique_ivory.png
+resource_packs\pack.asper\textures\blocks\sacristan_table_antique_ivory.texture_set.json
 resource_packs\pack.asper\textures\blocks\sacristan_table_antique_oxblood_mer.png
 resource_packs\pack.asper\textures\blocks\sacristan_table_antique_oxblood_normal.png
 resource_packs\pack.asper\textures\blocks\sacristan_table_antique_oxblood.png
 resource_packs\pack.asper\textures\blocks\sacristan_table_antique_oxblood.texture_set.json
+resource_packs\pack.asper\textures\blocks\sacristan_table_bronze_black_mer.png
+resource_packs\pack.asper\textures\blocks\sacristan_table_bronze_black_normal.png
+resource_packs\pack.asper\textures\blocks\sacristan_table_bronze_black.png
+resource_packs\pack.asper\textures\blocks\sacristan_table_bronze_black.texture_set.json
+resource_packs\pack.asper\textures\blocks\sacristan_table_bronze_chestnut_mer.png
+resource_packs\pack.asper\textures\blocks\sacristan_table_bronze_chestnut_normal.png
+resource_packs\pack.asper\textures\blocks\sacristan_table_bronze_chestnut.png
+resource_packs\pack.asper\textures\blocks\sacristan_table_bronze_chestnut.texture_set.json
+resource_packs\pack.asper\textures\blocks\sacristan_table_bronze_ivory_mer.png
+resource_packs\pack.asper\textures\blocks\sacristan_table_bronze_ivory_normal.png
+resource_packs\pack.asper\textures\blocks\sacristan_table_bronze_ivory.png
+resource_packs\pack.asper\textures\blocks\sacristan_table_bronze_ivory.texture_set.json
+resource_packs\pack.asper\textures\blocks\sacristan_table_bronze_oxblood_mer.png
+resource_packs\pack.asper\textures\blocks\sacristan_table_bronze_oxblood_normal.png
+resource_packs\pack.asper\textures\blocks\sacristan_table_bronze_oxblood.png
+resource_packs\pack.asper\textures\blocks\sacristan_table_bronze_oxblood.texture_set.json
 resource_packs\pack.asper\textures\blocks\sacristan_table_gilded_black_mer.png
 resource_packs\pack.asper\textures\blocks\sacristan_table_gilded_black_normal.png
 resource_packs\pack.asper\textures\blocks\sacristan_table_gilded_black.png
@@ -258,6 +324,10 @@ resource_packs\pack.asper\textures\blocks\sacristan_table_gilded_chestnut_mer.pn
 resource_packs\pack.asper\textures\blocks\sacristan_table_gilded_chestnut_normal.png
 resource_packs\pack.asper\textures\blocks\sacristan_table_gilded_chestnut.png
 resource_packs\pack.asper\textures\blocks\sacristan_table_gilded_chestnut.texture_set.json
+resource_packs\pack.asper\textures\blocks\sacristan_table_gilded_ivory_mer.png
+resource_packs\pack.asper\textures\blocks\sacristan_table_gilded_ivory_normal.png
+resource_packs\pack.asper\textures\blocks\sacristan_table_gilded_ivory.png
+resource_packs\pack.asper\textures\blocks\sacristan_table_gilded_ivory.texture_set.json
 resource_packs\pack.asper\textures\blocks\sacristan_table_gilded_oxblood_mer.png
 resource_packs\pack.asper\textures\blocks\sacristan_table_gilded_oxblood_normal.png
 resource_packs\pack.asper\textures\blocks\sacristan_table_gilded_oxblood.png
@@ -268,6 +338,10 @@ resource_packs\pack.asper\textures\blocks\sacristan_table_silver_black_mer.png
 resource_packs\pack.asper\textures\blocks\sacristan_table_silver_black_normal.png
 resource_packs\pack.asper\textures\blocks\sacristan_table_silver_black.png
 resource_packs\pack.asper\textures\blocks\sacristan_table_silver_black.texture_set.json
+resource_packs\pack.asper\textures\blocks\sacristan_table_silver_ivory_mer.png
+resource_packs\pack.asper\textures\blocks\sacristan_table_silver_ivory_normal.png
+resource_packs\pack.asper\textures\blocks\sacristan_table_silver_ivory.png
+resource_packs\pack.asper\textures\blocks\sacristan_table_silver_ivory.texture_set.json
 resource_packs\pack.asper\textures\blocks\sacristan_table_silver_oxblood_mer.png
 resource_packs\pack.asper\textures\blocks\sacristan_table_silver_oxblood_normal.png
 resource_packs\pack.asper\textures\blocks\sacristan_table_silver_oxblood.png
@@ -282,10 +356,30 @@ resource_packs\pack.asper\textures\entity\aspergillum_antique_chestnut_mer.png
 resource_packs\pack.asper\textures\entity\aspergillum_antique_chestnut_normal.png
 resource_packs\pack.asper\textures\entity\aspergillum_antique_chestnut.png
 resource_packs\pack.asper\textures\entity\aspergillum_antique_chestnut.texture_set.json
+resource_packs\pack.asper\textures\entity\aspergillum_antique_ivory_mer.png
+resource_packs\pack.asper\textures\entity\aspergillum_antique_ivory_normal.png
+resource_packs\pack.asper\textures\entity\aspergillum_antique_ivory.png
+resource_packs\pack.asper\textures\entity\aspergillum_antique_ivory.texture_set.json
 resource_packs\pack.asper\textures\entity\aspergillum_antique_oxblood_mer.png
 resource_packs\pack.asper\textures\entity\aspergillum_antique_oxblood_normal.png
 resource_packs\pack.asper\textures\entity\aspergillum_antique_oxblood.png
 resource_packs\pack.asper\textures\entity\aspergillum_antique_oxblood.texture_set.json
+resource_packs\pack.asper\textures\entity\aspergillum_bronze_black_mer.png
+resource_packs\pack.asper\textures\entity\aspergillum_bronze_black_normal.png
+resource_packs\pack.asper\textures\entity\aspergillum_bronze_black.png
+resource_packs\pack.asper\textures\entity\aspergillum_bronze_black.texture_set.json
+resource_packs\pack.asper\textures\entity\aspergillum_bronze_chestnut_mer.png
+resource_packs\pack.asper\textures\entity\aspergillum_bronze_chestnut_normal.png
+resource_packs\pack.asper\textures\entity\aspergillum_bronze_chestnut.png
+resource_packs\pack.asper\textures\entity\aspergillum_bronze_chestnut.texture_set.json
+resource_packs\pack.asper\textures\entity\aspergillum_bronze_ivory_mer.png
+resource_packs\pack.asper\textures\entity\aspergillum_bronze_ivory_normal.png
+resource_packs\pack.asper\textures\entity\aspergillum_bronze_ivory.png
+resource_packs\pack.asper\textures\entity\aspergillum_bronze_ivory.texture_set.json
+resource_packs\pack.asper\textures\entity\aspergillum_bronze_oxblood_mer.png
+resource_packs\pack.asper\textures\entity\aspergillum_bronze_oxblood_normal.png
+resource_packs\pack.asper\textures\entity\aspergillum_bronze_oxblood.png
+resource_packs\pack.asper\textures\entity\aspergillum_bronze_oxblood.texture_set.json
 resource_packs\pack.asper\textures\entity\aspergillum_gilded_black_mer.png
 resource_packs\pack.asper\textures\entity\aspergillum_gilded_black_normal.png
 resource_packs\pack.asper\textures\entity\aspergillum_gilded_black.png
@@ -294,6 +388,10 @@ resource_packs\pack.asper\textures\entity\aspergillum_gilded_chestnut_mer.png
 resource_packs\pack.asper\textures\entity\aspergillum_gilded_chestnut_normal.png
 resource_packs\pack.asper\textures\entity\aspergillum_gilded_chestnut.png
 resource_packs\pack.asper\textures\entity\aspergillum_gilded_chestnut.texture_set.json
+resource_packs\pack.asper\textures\entity\aspergillum_gilded_ivory_mer.png
+resource_packs\pack.asper\textures\entity\aspergillum_gilded_ivory_normal.png
+resource_packs\pack.asper\textures\entity\aspergillum_gilded_ivory.png
+resource_packs\pack.asper\textures\entity\aspergillum_gilded_ivory.texture_set.json
 resource_packs\pack.asper\textures\entity\aspergillum_gilded_oxblood_mer.png
 resource_packs\pack.asper\textures\entity\aspergillum_gilded_oxblood_normal.png
 resource_packs\pack.asper\textures\entity\aspergillum_gilded_oxblood.png
@@ -304,20 +402,32 @@ resource_packs\pack.asper\textures\entity\aspergillum_silver_black_mer.png
 resource_packs\pack.asper\textures\entity\aspergillum_silver_black_normal.png
 resource_packs\pack.asper\textures\entity\aspergillum_silver_black.png
 resource_packs\pack.asper\textures\entity\aspergillum_silver_black.texture_set.json
+resource_packs\pack.asper\textures\entity\aspergillum_silver_ivory_mer.png
+resource_packs\pack.asper\textures\entity\aspergillum_silver_ivory_normal.png
+resource_packs\pack.asper\textures\entity\aspergillum_silver_ivory.png
+resource_packs\pack.asper\textures\entity\aspergillum_silver_ivory.texture_set.json
 resource_packs\pack.asper\textures\entity\aspergillum_silver_oxblood_mer.png
 resource_packs\pack.asper\textures\entity\aspergillum_silver_oxblood_normal.png
 resource_packs\pack.asper\textures\entity\aspergillum_silver_oxblood.png
 resource_packs\pack.asper\textures\entity\aspergillum_silver_oxblood.texture_set.json
 resource_packs\pack.asper\textures\entity\aspergillum.png
 resource_packs\pack.asper\textures\entity\aspergillum.texture_set.json
+resource_packs\pack.asper\textures\entity\aspersorium_water_visual.png
 resource_packs\pack.asper\textures\item_texture.json
 resource_packs\pack.asper\textures\items\aspergillum_antique_black.png
 resource_packs\pack.asper\textures\items\aspergillum_antique_chestnut.png
+resource_packs\pack.asper\textures\items\aspergillum_antique_ivory.png
 resource_packs\pack.asper\textures\items\aspergillum_antique_oxblood.png
+resource_packs\pack.asper\textures\items\aspergillum_bronze_black.png
+resource_packs\pack.asper\textures\items\aspergillum_bronze_chestnut.png
+resource_packs\pack.asper\textures\items\aspergillum_bronze_ivory.png
+resource_packs\pack.asper\textures\items\aspergillum_bronze_oxblood.png
 resource_packs\pack.asper\textures\items\aspergillum_gilded_black.png
 resource_packs\pack.asper\textures\items\aspergillum_gilded_chestnut.png
+resource_packs\pack.asper\textures\items\aspergillum_gilded_ivory.png
 resource_packs\pack.asper\textures\items\aspergillum_gilded_oxblood.png
 resource_packs\pack.asper\textures\items\aspergillum_silver_black.png
+resource_packs\pack.asper\textures\items\aspergillum_silver_ivory.png
 resource_packs\pack.asper\textures\items\aspergillum_silver_oxblood.png
 resource_packs\pack.asper\textures\items\aspergillum.png
 resource_packs\pack.asper\textures\particle\holy_water.png
@@ -330,24 +440,9 @@ resource_packs\pack.asper\textures\terrain_texture.json
 C:\Users\fabio\Projects\aspergillum
 ├── packs\behavior
 ├── packs\resource
-├── dist\releases\Aspergillum-1.1.6.mcaddon
-├── dist\validation\1.1.6
+├── dist\releases\Aspergillum-1.2.0.mcaddon
+├── dist\validation\1.2.0
 └── docs\LOCAL_INSTALLATION_MAP.md
 ```
 
 O diretório `db` é binário e volátil; a presença do add-on é determinada pelos manifests, referências de mundo e cópias dos packs.
-<!-- diagnostic-installation:start -->
-
-## Variante diagnóstica instalada: 1.1.9c
-
-- Artefato: `C:\Users\fabio\Projects\aspergillum\dist\releases\Aspergillum-1.1.9c.mcaddon`
-- SHA-256: `4740e10161e9f699b9dd34c9be25d900b289c0954bcac03748f845a315eaba28`
-- Versão dos manifests: `[1, 1, 17]`
-- Behavior UUID: `052a831d-4f02-5800-9287-6350299c05ef`
-- Resource UUID: `752e9598-e045-5c99-8653-f9a938bdbf85`
-- Instalação compartilhada: `C:\Users\fabio\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang`
-- Mundo atualizado: **devtest** (`RYdEhTaa5t8=`)
-- Perfil: `8414181078248597151`
-- Variante anterior removida das referências ativas; somente este par diagnóstico permanece ativo.
-
-<!-- diagnostic-installation:end -->

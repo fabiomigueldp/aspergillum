@@ -10,6 +10,7 @@ const aspergillumModelSource = process.env.ASPERGILLUM_MODEL_SOURCE
   ? path.resolve(root, process.env.ASPERGILLUM_MODEL_SOURCE)
   : path.join(root, "assets-src/models/aspergillum.model.json");
 const packIconSource = path.join(root, "assets-src/branding/aspergillum-cover-256.png");
+const inventoryIconSourceDirectory = path.join(root, "assets-src/inventory-icons");
 const retiredGeneratedAssets = [
   "packs/resource/textures/entity/thurible.png",
   "packs/resource/textures/entity/thurible_normal.png",
@@ -104,7 +105,79 @@ const SACRISTAN_TABLE_ATLAS_SIZE = 256;
 const TABLE_ITEM_ATLAS_OFFSET = [128, 0];
 const TABLE_ITEM_MODEL_TRANSLATION = [6, -12.8, -1];
 const TABLE_ITEM_MODEL_SCALE = 0.72;
+const BLOCK_DESTRUCTION_TEXTURE_SIZE = 16;
+const ASPERSORIUM_DESTRUCTION_PARTICLE_COUNT = 56;
+const SACRISTAN_TABLE_DESTRUCTION_PARTICLE_COUNT = 80;
 const ASPERSORIUM_WATER_BONES = new Set(["water_low", "water_mid", "water_high", "water_full"]);
+
+function pixelArtTexture(rows, palette, label) {
+  if (rows.length !== BLOCK_DESTRUCTION_TEXTURE_SIZE
+    || rows.some((row) => row.length !== BLOCK_DESTRUCTION_TEXTURE_SIZE)) {
+    throw new Error(`${label} must be authored as an exact 16x16 pixel grid`);
+  }
+  return png(BLOCK_DESTRUCTION_TEXTURE_SIZE, BLOCK_DESTRUCTION_TEXTURE_SIZE, (x, y) => {
+    const color = palette[rows[y][x]];
+    if (color === undefined) throw new Error(`${label} uses an unknown palette key at ${x},${y}`);
+    return color;
+  });
+}
+
+const aspersoriumDestructionTexture = pixelArtTexture([
+  "2211222233322221",
+  "2110222333322211",
+  "1022222333222112",
+  "1222233322221122",
+  "2222333443221222",
+  "2223334443322222",
+  "2233334433222225",
+  "2222333332222555",
+  "2211222332222552",
+  "2100122233332222",
+  "1222112233443322",
+  "2222222334433221",
+  "2333222333322211",
+  "3443322222222112",
+  "3333222100222222",
+  "2222211122223332",
+], {
+  0: [105, 113, 110, 255],
+  1: [122, 128, 126, 255],
+  2: [143, 147, 145, 255],
+  3: [160, 166, 163, 255],
+  4: [181, 188, 184, 255],
+  5: [119, 139, 135, 255],
+}, "Aspersorium destruction texture");
+
+const sacristanTableDestructionTexture = pixelArtTexture([
+  "2222332222211122",
+  "2334553332221122",
+  "12223322vvvv1122",
+  "00122222vvvv2211",
+  "22222333vvvv2222",
+  "3333222333222112",
+  "2220012222333222",
+  "1122223334553322",
+  "2222332222111122",
+  "2334455332222222",
+  "2222223333bb1112",
+  "0012222233bb2222",
+  "2223344433222112",
+  "1222333222111122",
+  "2222111222333222",
+  "3455333222221112",
+], {
+  0: [40, 23, 17, 255],
+  1: [53, 32, 23, 255],
+  2: [67, 44, 32, 255],
+  3: [82, 54, 36, 255],
+  4: [101, 69, 45, 255],
+  5: [120, 82, 50, 255],
+  v: [45, 78, 60, 255],
+  b: [151, 111, 49, 255],
+}, "Sacristan table destruction texture");
+
+write("packs/resource/textures/blocks/aspersorium_destruction.png", aspersoriumDestructionTexture);
+write("packs/resource/textures/blocks/sacristan_table_destruction.png", sacristanTableDestructionTexture);
 const customizationCatalog = JSON.parse(
   fs.readFileSync(path.join(root, "assets-src/customization/catalog.json"), "utf8"),
 );
@@ -430,58 +503,29 @@ const particle = png(16, 16, (x, y) => {
 });
 write("packs/resource/textures/particle/holy_water.png", particle);
 
-const outline = [34, 39, 39, 255];
-function makeItemIcon(cosmetic) {
-  const item = png(32, 32, () => [0, 0, 0, 0]);
-  const metals = {
-    silver: { dark: [96, 107, 105, 255], base: [181, 190, 186, 255], shine: [235, 241, 230, 255] },
-    antique: { dark: [48, 65, 63, 255], base: [105, 124, 119, 255], shine: [165, 180, 166, 255] },
-    gilded: { dark: [103, 72, 29, 255], base: [195, 151, 63, 255], shine: [244, 220, 143, 255] },
-    bronze: { dark: [79, 43, 25, 255], base: [156, 91, 48, 255], shine: [222, 154, 89, 255] },
-  };
-  const grips = {
-    chestnut: { dark: [62, 34, 20, 255], base: [103, 61, 34, 255], light: [148, 94, 50, 255] },
-    oxblood: { dark: [62, 13, 24, 255], base: [111, 27, 42, 255], light: [163, 55, 65, 255] },
-    black: { dark: [16, 18, 18, 255], base: [43, 47, 46, 255], light: [82, 88, 83, 255] },
-    ivory: { dark: [115, 101, 73, 255], base: [194, 178, 137, 255], light: [241, 228, 188, 255] },
-  };
-  const metal = metals[cosmetic.metal] ?? metals.silver;
-  const leather = grips[cosmetic.grip] ?? grips.chestnut;
-  for (let y = 12; y <= 29; y += 1) {
-    const x = 9 + Math.floor((28 - y) * 0.32);
-    const isGrip = y >= 20;
-    setPixel(item, x - 2, y, outline);
-    setPixel(item, x - 1, y, isGrip ? leather.dark : metal.dark);
-    setPixel(item, x, y, isGrip ? leather.base : metal.base);
-    setPixel(item, x + 1, y, isGrip ? (y % 3 === 1 ? leather.dark : leather.light) : metal.shine);
-    setPixel(item, x + 2, y, outline);
+function publishInventoryIcon(cosmetic) {
+  const suffix = cosmeticTextureSuffix(cosmetic);
+  const fileName = `aspergillum${suffix}.png`;
+  const sourcePath = path.join(inventoryIconSourceDirectory, fileName);
+  if (!fs.existsSync(sourcePath)) {
+    throw new Error(`Missing authoritative inventory icon: ${path.relative(root, sourcePath)}`);
   }
-  for (let y = 2; y <= 15; y += 1) {
-    for (let x = 9; x <= 24; x += 1) {
-      const dx = (x - 16.5) / 7.8;
-      const dy = (y - 8.5) / 7;
-      if (dx * dx + dy * dy <= 1) {
-        const edge = dx * dx + dy * dy > 0.75;
-        const hole = !edge && ((x * 2 + y * 3) % 7) === 0;
-        setPixel(item, x, y, edge ? outline : hole ? [25, 30, 30, 255] : (x + y) % 5 === 0 ? metal.shine : metal.base);
-      }
-    }
+  const source = fs.readFileSync(sourcePath);
+  const image = PNG.sync.read(source);
+  if (image.width !== 32 || image.height !== 32) {
+    throw new Error(`${fileName} must remain 32 × 32, got ${image.width} × ${image.height}`);
   }
-  const ferrule = {
-    silver: [190, 132, 38, 255],
-    antique: [128, 91, 42, 255],
-    gilded: [220, 169, 62, 255],
-    bronze: [151, 89, 39, 255],
-  }[cosmetic.metal] ?? [190, 132, 38, 255];
-  fillRect(item, 9, 15, 7, 2, ferrule);
-  fillRect(item, 8, 19, 6, 1, metal.shine);
-  return item;
+  let transparentPixels = 0;
+  for (let offset = 3; offset < image.data.length; offset += 4) {
+    if (image.data[offset] < 255) transparentPixels += 1;
+  }
+  if (transparentPixels === 0) throw new Error(`${fileName} must preserve a transparent background`);
+  const destination = path.join(generatedRoot, "packs/resource/textures/items", fileName);
+  fs.mkdirSync(path.dirname(destination), { recursive: true });
+  fs.writeFileSync(destination, source);
 }
 
-for (const cosmetic of customizationCatalog.cosmetics) {
-  const suffix = cosmeticTextureSuffix(cosmetic);
-  write(`packs/resource/textures/items/aspergillum${suffix}.png`, makeItemIcon(cosmetic));
-}
+for (const cosmetic of customizationCatalog.cosmetics) publishInventoryIcon(cosmetic);
 
 function publishPackIcon(relative) {
   if (!fs.existsSync(packIconSource)) {
@@ -730,6 +774,11 @@ blockContent.description.states["aspergillum:water_offset"] = Array.from({ lengt
 blockContent.description.states["aspergillum:cosmetic"] = customizationCatalog.cosmetics.map((cosmetic) => cosmetic.index);
 blockContent.description.states["aspergillum:rotation"] = Array.from({ length: 16 }, (_, index) => index);
 blockContent.components["minecraft:material_instances"] = opaqueMaterialInstances("aspersorium");
+blockContent.components["minecraft:destruction_particles"] = {
+  texture: "aspersorium_destruction",
+  tint_method: "none",
+  particle_count: ASPERSORIUM_DESTRUCTION_PARTICLE_COUNT,
+};
 if (blockContent.description.traits) {
   delete blockContent.description.traits["minecraft:placement_direction"];
   if (Object.keys(blockContent.description.traits).length === 0) delete blockContent.description.traits;
@@ -774,6 +823,11 @@ writeJson("packs/behavior/blocks/aspersorium.block.json", blockDefinition);
 const tableBlockPath = path.join(generatedRoot, "packs/behavior/blocks/sacristan_table.block.json");
 const tableBlockDefinition = JSON.parse(fs.readFileSync(tableBlockPath, "utf8"));
 const tableBlockContent = tableBlockDefinition["minecraft:block"];
+tableBlockContent.components["minecraft:destruction_particles"] = {
+  texture: "sacristan_table_destruction",
+  tint_method: "none",
+  particle_count: SACRISTAN_TABLE_DESTRUCTION_PARTICLE_COUNT,
+};
 tableBlockContent.description.states["aspergillum:table_cosmetic"] = customizationCatalog.cosmetics.map(
   (cosmetic) => cosmetic.index,
 );
@@ -848,6 +902,12 @@ writeJson("packs/resource/textures/item_texture.json", itemTextureDefinition);
 
 const terrainTexturePath = path.join(generatedRoot, "packs/resource/textures/terrain_texture.json");
 const terrainTextureDefinition = JSON.parse(fs.readFileSync(terrainTexturePath, "utf8"));
+terrainTextureDefinition.texture_data.aspersorium_destruction = {
+  textures: ["textures/blocks/aspersorium_destruction"],
+};
+terrainTextureDefinition.texture_data.sacristan_table_destruction = {
+  textures: ["textures/blocks/sacristan_table_destruction"],
+};
 for (const cosmetic of customizationCatalog.cosmetics) {
   const suffix = cosmeticTextureSuffix(cosmetic);
   terrainTextureDefinition.texture_data[`aspersorium${suffix}`] = {

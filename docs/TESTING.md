@@ -4,6 +4,33 @@
 
 Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
 
+## Gate automatizado da release — v1.2.2
+
+- [x] TypeScript, 85 testes do add-on e 21 testes do viewer foram aprovados durante o desenvolvimento das duas frentes;
+- [x] `npm run package` regenerou assets/áudio, compilou o bundle estável, aprovou validação estrutural, animação, VFX, áudio, ícones e prontidão da release;
+- [x] `Aspergillum-1.2.2.mcaddon` tem `3.105.396` bytes e SHA-256 `e48f9124e109c3fcea768de6c37b0150cf1f288efd36781c32d80580f4937798`;
+- [x] Creator Tools aceitou somente os onze warnings offline conhecidos, sem warning inesperado, Error ou Failure;
+- [ ] importar o artefato exato e concluir os gates físicos de partículas, inventário, smoke persistente e Content Log abaixo.
+
+## Gate das partículas de quebra — v1.2.2
+
+- [x] o gerador cria deterministicamente dois tiles opacos de `16 × 16`, e o validador confere dimensões, aliases, componentes, contagens e `tint_method: "none"`;
+- [x] o tile da caldeirinha contém somente seis tons metálicos neutros/patinados; o tile da mesa contém exatamente 240 pixels de madeira, doze de veludo e quatro de latão;
+- [x] água e cores do aspergillum acomodado não entram nos tiles; as dezesseis variantes reutilizam a mesma textura estrutural por bloco;
+- [ ] com o Content Log limpo, bater e quebrar caldeirinha vazia, cheia e ocupada; os fragmentos durante os golpes e no estouro final devem parecer metal, sem ciano, couro ou dourado do item;
+- [ ] bater e quebrar Mesa do Sacristão vazia e ocupada; o efeito deve ser predominantemente madeira escura, com raros acentos verdes e de latão, nunca um mosaico do aspergillum;
+- [ ] repetir em Sobrevivência e Criativo, nas dezesseis rotações, com gráficos clássicos e Vibrant Visuals; a contagem deve ser legível sem encobrir o objeto e o Content Log não deve registrar textura ou componente desconhecido;
+- [ ] confirmar que quebra, recuperação do item acomodado, água, drops, inventário cheio e persistência permanecem idênticos à 1.2.1 no pacote final 1.2.2.
+
+## Gate dos ícones de inventário — v1.2.2
+
+- [x] `npm run render:inventory-icons -- --apply` deriva os dezesseis PNGs da geometria e dos mapas PBR reais, grava fontes `32 × 32`, manifest com câmera/hashes e uma prancha 4×4;
+- [x] o validador exige fundo transparente, margem segura, cobertura, contraste interno, bytes fonte/pack idênticos e assinaturas distintas nas regiões projetadas de cabeça e cabo;
+- [x] o item preserva as mesmas dezesseis chaves de `minecraft:icon`; attachables, IDs, índices cosméticos, binding, geometria e poses não mudam;
+- [ ] depois de integrar as demais mudanças da 1.2.2 e gerar o pacote final, limpar revisões/cache anteriores e comparar os dezesseis ícones em escala normal no inventário Criativo, hotbar, baú e Mesa do Sacristão;
+- [ ] em UI clara e escura, confirmar silhueta 3D reconhecível, perfurações e pomo sem corte; prata/envelhecida/dourada/bronze e castanho/vinho/preto/marfim devem ser distinguíveis sem depender somente do nome;
+- [ ] comparar inventário, primeira pessoa, terceira pessoa, item acomodado e mesa: todos devem representar o mesmo acabamento, sem regressão funcional ou novo erro no Content Log.
+
 ## Gate da identidade visual — v1.2.1
 
 - [x] `npm run render:cover -- --size 2048` gera capa e prova nativa de 256 px com assunto `docked`, PBR, água cheia e cobertura alfa acima de 4%;

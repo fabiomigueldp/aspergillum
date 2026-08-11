@@ -28,6 +28,33 @@ const PACKS = {
   },
 };
 
+const DIAGNOSTIC_UUIDS = {
+  behavior: new Set([
+    "fa0c5ebd-cd7d-5488-91f5-bed8c2edd1a7",
+    "7f815bee-7516-528a-aaa2-8d873c10ba88",
+    "ca21ec6a-1103-5f66-80f3-2cb674843dff",
+    "28650fb4-bd45-5bbb-a351-4ea110bd2b0d",
+    "4caf015d-0a40-583a-8b47-ec19e21a3ab5",
+    "acc320fc-2242-5632-b06d-a03a272e0c68",
+    "81327908-8963-548f-8b88-ea61d417f437",
+    "e5ae7a23-b9e2-5eb2-b28a-84caf8f1ce98",
+    "cbe3111b-81bd-539a-b060-58663252ec93",
+    "052a831d-4f02-5800-9287-6350299c05ef",
+  ]),
+  resource: new Set([
+    "c7c39acd-98a0-535c-80cc-e0521ea73e97",
+    "be858629-a2ac-5aa8-93d8-e7382532aabd",
+    "085fa6e4-e6b2-57c0-94e2-25b88daa614b",
+    "1592fb5f-67b9-56e7-8d21-1b747688c72d",
+    "f3398817-a6ad-563e-9c52-d745f4845b67",
+    "798650c4-e13d-5534-99fb-b4d0d3f6403d",
+    "e910058d-b78d-56b0-a225-8eaa8ab66cb8",
+    "a84b3d44-5dd0-589c-90fb-9e060945cc07",
+    "8a39027c-e394-5df0-a21a-98dbc0af9f30",
+    "752e9598-e045-5c99-8653-f9a938bdbf85",
+  ]),
+};
+
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
@@ -259,6 +286,14 @@ function updateJsonVersions(filePath, uuid, version, history) {
   return changed;
 }
 
+function replaceActiveReference(filePath, kind, uuid, version) {
+  const current = fs.existsSync(filePath) ? readJson(filePath) : [];
+  if (!Array.isArray(current)) throw new Error(`Formato inesperado: ${filePath}`);
+  const entries = current.filter((entry) => entry.pack_id !== uuid && !DIAGNOSTIC_UUIDS[kind].has(entry.pack_id));
+  entries.push({ pack_id: uuid, version: [...version] });
+  fs.writeFileSync(filePath, `${JSON.stringify(entries, null, "\t")}\n`, "utf8");
+}
+
 function copyPack(source, target, bedrockRoot) {
   assertInside(bedrockRoot, target, "dados Bedrock");
   fs.rmSync(target, { recursive: true, force: true });
@@ -472,7 +507,7 @@ function main() {
     for (const world of selectedWorlds) {
       for (const [kind, pack] of Object.entries(PACKS)) {
         if (selectedKinds.get(world.folder).includes(kind)) {
-          updateJsonVersions(path.join(world.path, pack.reference), pack.uuid, numericVersion, false);
+          replaceActiveReference(path.join(world.path, pack.reference), kind, pack.uuid, numericVersion);
           updateJsonVersions(path.join(world.path, pack.history), pack.uuid, numericVersion, true);
         }
       }

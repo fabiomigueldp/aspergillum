@@ -8,6 +8,28 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
+## v1.2.2 — polimento visual e material — implementada e promovida
+
+Objetivo: eliminar duas apresentações incidentais sem alterar contratos públicos ou gameplay: fragmentos de bloco amostrados dos atlas completos e ícones do item desenhados separadamente da malha real.
+
+Escopo local integrado:
+
+- caldeirinha e Mesa do Sacristão usam tiles opacos dedicados de destruição e contagens compatíveis com sua massa visual;
+- os dezesseis ícones do item são derivados da geometria, color maps e materiais PBR reais, com preset de luz e enquadramento reproduzíveis;
+- fontes, manifests e validadores bloqueiam drift de paleta, dimensão, transparência, bytes, cobertura e distinção entre acabamentos;
+- UUIDs, IDs, índices cosméticos, states, binding, geometria, poses, água, cargas, sessões e persistência permanecem intocados;
+- pacote e manifests publicados como `1.2.2`/`[1,2,2]`, com os mesmos UUIDs e contratos públicos.
+
+Gate de saída:
+
+- partículas aprovadas em golpes e quebra final nos dois pipelines gráficos, sem pixels de água ou do item acomodado;
+- dezesseis ícones aprovados em escala normal no inventário, hotbar, contêineres e mesa, sobre fundos claros e escuros;
+- inventário, mão, terceira pessoa e composições acomodadas representam o mesmo acabamento;
+- Content Log limpo e smoke funcional/persistente da 1.2.1 preservado;
+- validação física desses itens permanece obrigatória mesmo após o gate automatizado e a produção do `.mcaddon` final.
+
+Resultado: build, validadores, prontidão de release, empacotamento e Creator Tools passaram. O artefato oficial tem `3.105.396` bytes e SHA-256 `e48f9124e109c3fcea768de6c37b0150cf1f288efd36781c32d80580f4937798`; escala real dos ícones, partículas nos dois pipelines gráficos e smoke persistente permanecem gates manuais pós-build.
+
 ## v1.2.1 — identidade visual oficial — implementada e promovida
 
 Objetivo: substituir o ícone programático anterior pela capa autoral aprovada, usando somente os modelos e materiais reais do add-on e sem alterar gameplay ou compatibilidade de mundo.

@@ -172,6 +172,12 @@ O controller usa a categoria de cooldown válida como ponte visual. Tentativa va
 
 Esse limite evita quatro classes de drift: geometria fracionária com Box UV que colapsa no runtime, mapas PBR que deixam de corresponder ao color map, réplica acomodada diferente do item e reintrodução de faces internas concorrentes. A silhueta continua autorada em unidades de modelo; a resolução da face é uma decisão independente do atlas. O validador compara origem/tamanho/máscara da fonte e do pack, bloqueia interseção volumétrica na transição do pomo e fiscaliza bounds, inteiros, footprints, sobreposição de UV e paridade completa entre item e composição.
 
+### Ícones de inventário derivados do modelo
+
+Os itens continuam no caminho estável `minecraft:icon`: o attachable governa somente a malha segurada/equipada e não é reutilizado pelo renderer da GUI. Para evitar uma segunda interpretação artística, `npm run render:inventory-icons` carrega a geometria e os mapas color/normal/MER reais no Bedrock Fidelity Renderer, captura cada acabamento em `512 × 512` com fundo transparente e converte a mesma vista oblíqua em um PNG nativo de `32 × 32`. A pós-composição limita-se a rotação de apresentação, amostragem com alfa premultiplicado e contorno de um pixel; não transforma bones nem altera a pose distribuída.
+
+As dezesseis fontes promovidas e o manifest ficam em `assets-src/inventory-icons/`. `tools/generate-assets.mjs` valida dimensão e transparência e copia os bytes para `packs/resource/textures/items/`, impedindo que um build futuro restaure o desenho procedural antigo. `tools/validate-cosmetic-icons.mjs` exige igualdade fonte/pack, hashes, margens, cobertura e contraste nas faixas projetadas da cabeça metálica e do cabo. A prancha externa é evidência diagnóstica; escala, mipmapping, fundo e cache da GUI ainda dependem de validação no Minecraft.
+
 ## Áudio semântico
 
 Application emite intenções (`AudioCue`) e não IDs Bedrock. `BedrockAudioAdapter` resolve 15 famílias, escolhe variantes por shuffle bag e roteia pistas privadas via `Player.playSound` ou eventos espaciais via `Dimension.playSound`. Fill, load, dock, undock e release só emitem depois do commit correspondente; `load.prepare` e `sprinkle.prepare` só após a sessão e o cooldown serem aceitos. O catálogo, pipeline, mix, licença e QA estão em [Contrato de áudio](AUDIO_DESIGN_CONTRACT.md).
@@ -189,6 +195,12 @@ A geometria mantém a arquitetura `sprinkler_head -> spray_aim -> aspergillum_ti
 - o cooldown válido e o commit impedem bridge e som molhado em tentativa vazia ou cancelada antes do tick 5.
 
 O bridge não é um segundo leque e não substitui o emissor matemático. Não remover as 36 gotas atuais até locator, condição de disparo, primeira/terceira pessoa e multiplayer provarem equivalência. O contrato detalhado está em [Contrato de VFX](VFX_DESIGN_CONTRACT.md).
+
+### Partículas de quebra dos blocos
+
+Caldeirinha e Mesa do Sacristão delegam ao componente estável `minecraft:destruction_particles` a apresentação dos fragmentos de mineração e destruição. Cada bloco referencia um tile opaco dedicado de `16 × 16`, gerado junto com os demais assets e registrado em `terrain_texture.json`; isso impede o motor de sortear pixels de água ou do aspergillum acomodado a partir dos atlas completos. A caldeirinha usa somente metal martelado/patinado e 56 partículas; a mesa usa majoritariamente madeira, doze pixels de veludo, quatro de latão e 80 partículas. Ambos usam `tint_method: "none"`.
+
+Essas partículas são exclusivamente apresentação do cliente. Os handlers de quebra continuam responsáveis apenas por lifecycle, snapshot e recuperação autoritativa; não emitem fragmentos, não alteram água, cargas, drops ou permissões. A textura é compartilhada entre as dezesseis variantes porque o acabamento muda somente o aspergillum acomodado, não o material estrutural do móvel.
 
 ## Bloco
 

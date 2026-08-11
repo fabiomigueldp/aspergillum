@@ -2,12 +2,12 @@
 
 Add-On para Minecraft: Bedrock Edition 26.40 que adiciona um **aspersório litúrgico funcional**, uma **caldeirinha (aspersorium)** e uma **Mesa do Sacristão** para configuração gratuita. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão estável 1.2.1:** incorpora a nova identidade visual oficial nos dois packs a partir do renderizador autoral, preservando integralmente a matriz 4×4, a geometria, os IDs e o gameplay da 1.2.0. A identidade e os limites da promoção estão em [`docs/releases/1.2.1.md`](docs/releases/1.2.1.md).
+> **Versão estável 1.2.2:** melhora a leitura material sem alterar gameplay: caldeirinha e mesa recebem partículas de quebra dedicadas, e os dezesseis itens passam a usar ícones derivados do modelo e dos materiais PBR reais. Escopo, compatibilidade e gates estão em [`docs/releases/1.2.2.md`](docs/releases/1.2.2.md).
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/releases/Aspergillum-1.2.1.mcaddon`](dist/releases/Aspergillum-1.2.1.mcaddon) com o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.2.2.mcaddon`](dist/releases/Aspergillum-1.2.2.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
@@ -53,6 +53,8 @@ As cargas permanecem finitas e persistentes. Ao acomodar, a transferência satur
 - atlas `128 × 128` gerado da fonte semântica `assets-src/models/aspergillum.model.json`, com superfícies coerentes de couro, prata, ouro e prata perfurada, padding dilatado de dois texels e mapas color/normal/MER derivados do mesmo layout;
 - quatro níveis visuais de água projetados por entidade translúcida autorreparável, enquanto bloco e aspersório acomodado permanecem integralmente opacos;
 - mesa de madeira escura com tampo de veludo verde, ferragens discretas e réplica derivada da mesma malha/texturas do item; dezesseis materiais acompanham o acabamento selecionado;
+- ícones de inventário `32 × 32` renderizados da mesma geometria e dos mesmos materiais PBR, com fonte autoritativa, manifest e validação por região semântica;
+- partículas de destruição explícitas: 56 fragmentos de metal martelado/patinado para a caldeirinha e 80 fragmentos predominantemente de madeira para a mesa, sem amostrar água ou o item acomodado;
 - rotação visual em 16 direções por estado próprio e geometrias estáveis, sem traits de rotação experimentais;
 - texturas convencionais como fallback e texture sets PBR para Vibrant Visuals;
 - localização `pt_BR` e `en_US`.
@@ -78,12 +80,15 @@ Comandos importantes:
 | `npm run validate:animation` | Amostra a coreografia a 120 Hz e verifica envelopes/continuidade |
 | `npm run validate:vfx` | Verifica locator, bridge, orientação, impacto, sons e fallback de 36 gotas |
 | `npm run validate:audio` | Verifica catálogo, definitions, proveniência, mono/48 kHz/Vorbis e ausência de órfãos |
+| `npm run render:inventory-icons` | Gera uma candidata reproduzível dos dezesseis ícones derivados do modelo; `--apply` promove após revisão |
 | `npm run package` | Cria e valida oficialmente o `.mcaddon` |
 | `npm run clean` | Remove somente artefatos gerados conhecidos |
 
 O modelo autoral fica em [`assets-src/models/aspergillum.model.json`](assets-src/models/aspergillum.model.json). [`tools/generate-assets.mjs`](tools/generate-assets.mjs) remove metadados de produção, respeita as máscaras autorais, empacota apenas as faces visíveis, gera a geometria Bedrock distribuída e pinta deterministicamente color/normal/MER. A referência visual em [`assets-src/concept-art/aspergillum-concept.png`](assets-src/concept-art/aspergillum-concept.png) orienta proporções e materiais, mas não é distribuída no add-on.
 
 A identidade oficial da 1.2.1 fica em [`assets-src/branding/`](assets-src/branding/README.md). O Cover Renderer recompõe a cena a partir dos modelos reais, enquanto o gerador publica o PNG de 256 px aprovado de forma byte-idêntica nos dois packs; saídas temporárias de `out/cover-renders/` nunca são usadas diretamente pelo pacote.
+
+Os ícones de item da 1.2.2 ficam em [`assets-src/inventory-icons/`](assets-src/inventory-icons/README.md). O renderer produz candidatos a partir da malha e dos mapas reais; somente `--apply` promove os PNGs nativos, e builds posteriores os copiam sem recompressão nem redesenho procedural.
 
 Os SFX desta release foram gerados com ElevenLabs no plano gratuito e, portanto, são **somente para validação não comercial e com atribuição**. Generated with ElevenLabs. Uma publicação comercial exige regenerar ou substituir as fontes sob licença adequada e atualizar a proveniência; veja [Contrato de áudio](docs/AUDIO_DESIGN_CONTRACT.md).
 

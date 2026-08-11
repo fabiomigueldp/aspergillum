@@ -1,8 +1,8 @@
 {
   "name": "aspergillum-bedrock-addon",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "aspergillum": {
-    "releaseLabel": "1.2.1"
+    "releaseLabel": "1.2.2"
   },
   "private": true,
   "description": "A production-grade liturgical aspergillum and aspersorium Add-On for Minecraft Bedrock Edition.",
@@ -30,6 +30,7 @@
     "sync:diagnostic": "node tools/sync-diagnostic-addon.mjs",
     "capture:models": "npm --prefix viewer-3d run capture --",
     "render:cover": "npm --prefix viewer-3d run render:cover --",
+    "render:inventory-icons": "npm --prefix viewer-3d run render:inventory-icons --",
     "package": "npm run build && node tools/package.mjs && npm run validate:mcaddon",
     "package:render-diagnostics": "npm run build && node tools/package-render-diagnostics.mjs",
     "package:water-diagnostics": "npm run build && node tools/package-water-dither-diagnostics.mjs",

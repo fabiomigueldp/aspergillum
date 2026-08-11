@@ -463,7 +463,12 @@
         ]
       },
       "minecraft:loot": "loot_tables/blocks/sacristan_table.loot.json",
-      "aspergillum:sacristan_table_interaction": {}
+      "aspergillum:sacristan_table_interaction": {},
+      "minecraft:destruction_particles": {
+        "texture": "sacristan_table_destruction",
+        "tint_method": "none",
+        "particle_count": 80
+      }
     }
   }
 }

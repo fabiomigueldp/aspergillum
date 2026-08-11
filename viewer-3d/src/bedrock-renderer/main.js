@@ -37,6 +37,15 @@ const LIGHTING_PRESETS = Object.freeze({
     rim: Object.freeze({ color: 0xf2ffff, intensity: 0.38, position: [0, 3.5, -5.5] }),
     water: Object.freeze({ color: 0x5fd9e6, intensity: 0, distance: 3.4, position: [0, 0.3, 0.35] }),
   }),
+  inventory: Object.freeze({
+    exposure: 1.28,
+    environmentIntensity: 0.5,
+    hemisphere: Object.freeze({ sky: 0xf5f7ef, ground: 0x35413e, intensity: 1.9 }),
+    key: Object.freeze({ color: 0xfff8e9, intensity: 3.15, position: [4.8, 6.6, 5.5] }),
+    fill: Object.freeze({ color: 0xe4f1f2, intensity: 1.18, position: [-4.5, 3.4, 1.8] }),
+    rim: Object.freeze({ color: 0xffffff, intensity: 0.66, position: [0.8, 4.2, -5.2] }),
+    water: Object.freeze({ color: 0x5fd9e6, intensity: 0, distance: 3.4, position: [0, 0.3, 0.35] }),
+  }),
   cinematic: Object.freeze({
     exposure: 1.08,
     environmentIntensity: 0.2,

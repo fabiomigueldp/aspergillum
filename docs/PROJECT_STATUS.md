@@ -2,7 +2,7 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.2.1` estável não comercial (revisão numérica dos packs `[1, 2, 1]`)
+- **Versão de referência:** `1.2.2` estável não comercial (revisão numérica dos packs `[1, 2, 2]`)
 - **Engine mínima:** Creator `1.26.40`
 - **Script API:** manifest com `@minecraft/server` `2.9.0` e `@minecraft/server-ui` `2.1.0`, estáveis; `@minecraft/common` `1.3.0` somente no toolchain npm
 - **Experimentos:** nenhum
@@ -19,6 +19,8 @@ A 1.1.10 mantém essa baseline byte/semanticamente protegida no gameplay e fecha
 A 1.2.0 expande somente a superfície de personalização: bronze cerimonial e marfim vegetal completam a matriz 4×4. Os índices `0..8` preservam seus pares históricos; os sete pares novos usam `9..15`. O registro da promoção e do orçamento está em [Release 1.2.0](releases/1.2.0.md).
 
 A 1.2.1 promove a identidade visual aprovada: o ícone passa a ser uma composição autoral reproduzível da caldeirinha cheia com o aspersório acomodado e o título `ASPERGILLUM`. A fonte de produção, o manifest de captura e a capa em alta resolução ficam em `assets-src/branding/`; ambos os packs recebem exatamente o mesmo PNG nativo de 256 px. Nenhum contrato de mundo ou gameplay muda. O registro está em [Release 1.2.1](releases/1.2.1.md).
+
+A 1.2.2 promove duas melhorias de apresentação: blocos usam tiles de destruição `16 × 16` dedicados, e os dezesseis itens usam ícones derivados do modelo, color maps e materiais PBR reais do aspersório. Água, geometria distribuída, binding, poses, states, gameplay e persistência não mudam. Evidência automatizada, compatibilidade e gates físicos estão em [Release 1.2.2](releases/1.2.2.md).
 
 ## O que está resolvido
 
@@ -47,6 +49,8 @@ A 1.2.1 promove a identidade visual aprovada: o ícone passa a ser uma composiç
 - Docking guarda cargas restantes, `instance_id`, `nameTag`, cosmético, perfil e propriedades customizadas em shards persistentes por dimensão/chunk.
 - Todas as combinações 4/16 podem ser acomodadas: a água satura em 16, o restante fica no snapshot e retirada/quebra recuperam o item exato.
 - A Mesa do Sacristão possui modelo próprio de madeira escura, nicho integral de veludo verde, ferragem restrita ao puxador, dezesseis rotações e apresentação centralizada do aspersório derivada da mesma malha autoral.
+- Caldeirinha e Mesa do Sacristão possuem partículas de quebra explícitas e independentes dos atlas de variantes: 56 fragmentos metálicos e 80 fragmentos predominantemente de madeira, respectivamente, ambos sem tint contextual.
+- Os dezesseis itens usam ícones `32 × 32` derivados da malha real em uma vista oblíqua reproduzível; `assets-src/inventory-icons/` preserva fontes e manifest, e o gerador publica cópias byte-idênticas sem redesenhar a silhueta.
 - A interface nativa `CustomForm` organiza somente perfil, metal e empunhadura em seções reativas, usa espaçadores nativos para ritmo vertical, reserva o único divisor ao grupo final e oferece restauração, retirada e fechamento localizados sem custos.
 - Os perfis `standard`, `processional` e `contained` mantêm 36 gotas, seis pulsos, uma carga, release e cooldown; somente geometria, velocidade e steering do leque variam.
 - Nove combinações cosméticas têm item/attachable/textura próprios; a variante original continua em `aspergillum:aspergillum` e mundos/itens existentes permanecem clássicos por default.
@@ -76,10 +80,12 @@ A 1.2.1 promove a identidade visual aprovada: o ícone passa a ser uma composiç
 | Polimento visual 1.0.19b | capturas PBR reproduzíveis aprovam coerência estrutural fora do jogo | confirmar silhueta, mipmaps, culling e materiais no `.mcaddon` importado, em clássico/Vibrant Visuals |
 | Água por entidade 1.1.9 | perfil da C aprovado em jogo, sem bugs observados ou erros no Content Log; bloco opaco e projeção translúcida autorreparável | manter profiler com muitas caldeirinhas como monitoramento pós-release |
 | Compatibilidade 1.1.9 | UUIDs oficiais, IDs, states, pivôs, locators e contratos de gameplay são preservados; somente a apresentação da água muda | manter upgrade de cópia persistente 1.1.7 como regressão pós-release |
+| Partículas de quebra 1.2.2 | tiles dedicados, aliases e composição material são validados offline | confirmar no Minecraft partículas durante os golpes e no estouro final, em gráficos clássicos e Vibrant Visuals |
+| Ícones de inventário 1.2.2 | 16 renders derivados do modelo são determinísticos, íntegros e distinguíveis por região semântica | confirmar escala, mipmapping, fundos de UI e cache no pacote final importado |
 
 ## Próxima mudança autorizada
 
-Após a 1.2.1, limitar `1.2.x` a correções comprovadas pelo pacote importado e pelo Content Log. Nenhum novo acabamento, modelo ou state deve entrar antes do smoke físico da matriz completa e da compatibilidade `1.1.10 → 1.2.1`.
+Após a 1.2.2, limitar `1.2.x` a correções comprovadas pelo pacote importado e pelo Content Log. Nenhum novo acabamento, modelo ou state deve entrar antes do smoke físico da matriz completa e da compatibilidade `1.1.10 → 1.2.2`.
 
 Não faz parte do próximo marco:
 
