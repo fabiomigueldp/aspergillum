@@ -4,6 +4,20 @@
 
 Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
 
+## Gate do modelo 3D no inventário — v1.2.4
+
+- [x] `package.json`, registro de releases e manifests convergem em `1.2.4`/`[1,2,4]`; `npm run package` passou com 98 testes do Add-On e 21 do viewer;
+- [x] artefato final com `3.087.734` bytes e SHA-256 `752f9ad393240a0d9af73a79fcd1d6c7b503cdd5e4e35bed87840953be34df52`; Creator Tools aceitou 11 warnings offline conhecidos e nenhum inesperado;
+- [x] os 16 itens não declaram `minecraft:icon`, referenciam o state cosmético correto do único proxy e preservam seus IDs publicados;
+- [x] a geometria de inventário contém os mesmos 14 cubos e UVs do modelo equipado, usa formato `1.16.0` e não copia o binding do attachable;
+- [x] os materiais apontam diretamente para os 16 color maps reais e seus texture sets PBR; o pack não contém PNGs nem aliases raster dos itens;
+- [x] `use_on: minecraft:air`, filtro de suporte impossível e custom component cancelável protegem contra colocação do proxy;
+- [ ] fechar o Minecraft, remover revisões/cache concorrentes e importar somente `Aspergillum-1.2.4.mcaddon`;
+- [ ] comparar os 16 modelos em inventário Criativo, hotbar, baú e Mesa do Sacristão, em UI clara/escura e gráficos clássicos/Vibrant Visuals;
+- [ ] confirmar silhueta inteira, escala útil, inclinação consistente, perfurações e distinção dos quatro metais/quatro cabos, sem clipping ou miniatura excessivamente estreita;
+- [ ] usar cada rota de interação sobre ar, chão, parede, caldeirinha e mesa; nenhum gesto pode colocar `aspergillum:inventory_visual` ou consumir o item;
+- [ ] repetir carregar, quatro aspersões, personalizar, acomodar/retirar, quebrar, reload, inventário cheio e persistência; exportar Content Log limpo.
+
 ## Gate da identidade localizada — v1.2.3
 
 - [x] `assets-src/branding/pack-identity.json` define exatamente `en_US` e `pt_BR`, com nome e descrição distintos para Behavior e Resource Pack;

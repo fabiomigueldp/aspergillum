@@ -17,6 +17,7 @@ export const TABLE_ROTATION_STATE = "aspergillum:table_rotation";
 export const ASPERSORIUM_COMPONENT = "aspergillum:aspersorium_interaction";
 export const SACRISTAN_TABLE_COMPONENT = "aspergillum:sacristan_table_interaction";
 export const ASPERGILLUM_COMPONENT = "aspergillum:aspergillum_use";
+export const INVENTORY_VISUAL_COMPONENT = "aspergillum:inventory_visual_guard";
 export const DROPLET_PARTICLE = "aspergillum:holy_water_droplet";
 export const RELEASE_BRIDGE_PARTICLE = "aspergillum:holy_water_release";
 export const MICRO_SPLASH_PARTICLE = "aspergillum:holy_water_micro_splash";

@@ -2,12 +2,12 @@
 
 Add-On para Minecraft: Bedrock Edition 26.40 que adiciona um **aspersório litúrgico funcional**, uma **caldeirinha (aspersorium)** e uma **Mesa do Sacristão** para configuração gratuita. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
 
-> **Versão estável 1.2.3:** corrige a identidade localizada exibida pelo Minecraft, consolida a proveniência autocontida dos SFX e endurece o fluxo local de empacotamento e instalação, sem alterar gameplay ou compatibilidade de mundo. Escopo, evidências e gates estão em [`docs/releases/1.2.3.md`](docs/releases/1.2.3.md).
+> **Versão 1.2.4:** os dezesseis aspersórios agora usam a própria geometria 3D e seus materiais PBR no inventário, sem ícones raster distribuídos. A ponte estável, as salvaguardas de colocação e o gate físico estão em [`docs/releases/1.2.4.md`](docs/releases/1.2.4.md).
 
 ## Instalação rápida
 
 1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
-2. Abra [`dist/releases/Aspergillum-1.2.3.mcaddon`](dist/releases/Aspergillum-1.2.3.mcaddon) com o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.2.4.mcaddon`](dist/releases/Aspergillum-1.2.4.mcaddon) com o Minecraft.
 3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
 4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
 
@@ -53,7 +53,7 @@ As cargas permanecem finitas e persistentes. Ao acomodar, a transferência satur
 - atlas `128 × 128` gerado da fonte semântica `assets-src/models/aspergillum.model.json`, com superfícies coerentes de couro, prata, ouro e prata perfurada, padding dilatado de dois texels e mapas color/normal/MER derivados do mesmo layout;
 - quatro níveis visuais de água projetados por entidade translúcida autorreparável, enquanto bloco e aspersório acomodado permanecem integralmente opacos;
 - mesa de madeira escura com tampo de veludo verde, ferragens discretas e réplica derivada da mesma malha/texturas do item; dezesseis materiais acompanham o acabamento selecionado;
-- ícones de inventário `32 × 32` renderizados da mesma geometria e dos mesmos materiais PBR, com fonte autoritativa, manifest e validação por região semântica;
+- apresentação de inventário renderizada pelo motor a partir de uma geometria de enquadramento derivada dos mesmos quatorze cubos/UVs e dos mesmos mapas color/normal/MER do attachable; uma ponte `block_placer`/`item_visual` interna seleciona os dezesseis acabamentos sem publicar PNGs de item;
 - partículas de destruição explícitas: 56 fragmentos de metal martelado/patinado para a caldeirinha e 80 fragmentos predominantemente de madeira para a mesa, sem amostrar água ou o item acomodado;
 - rotação visual em 16 direções por estado próprio e geometrias estáveis, sem traits de rotação experimentais;
 - texturas convencionais como fallback e texture sets PBR para Vibrant Visuals;
@@ -80,7 +80,7 @@ Comandos importantes:
 | `npm run validate:animation` | Amostra a coreografia a 120 Hz e verifica envelopes/continuidade |
 | `npm run validate:vfx` | Verifica locator, bridge, orientação, impacto, sons e fallback de 36 gotas |
 | `npm run validate:audio` | Verifica catálogo, definitions, proveniência, mono/48 kHz/Vorbis e ausência de órfãos |
-| `npm run render:inventory-icons` | Gera uma candidata reproduzível dos dezesseis ícones derivados do modelo; `--apply` promove após revisão |
+| `npm run render:inventory-icons` | Reproduz os antigos PNGs da 1.2.2 apenas como diagnóstico histórico; a 1.2.4 não os publica |
 | `npm run package` | Cria e valida oficialmente o `.mcaddon` |
 | `npm run clean` | Remove somente artefatos gerados conhecidos |
 
@@ -90,7 +90,7 @@ A identidade oficial da 1.2.1 fica em [`assets-src/branding/`](assets-src/brandi
 
 Nomes, descrições e locales dos dois packs seguem o [contrato de identidade pública](docs/PACK_IDENTITY.md). Ambos usam `pack.name` e `pack.description` em escopos de tradução independentes, preservando `Aspergillum` como marca e distinguindo **Comportamento** de **Recursos** sem incluir a versão no nome.
 
-Os ícones de item da 1.2.2 ficam em [`assets-src/inventory-icons/`](assets-src/inventory-icons/README.md). O renderer produz candidatos a partir da malha e dos mapas reais; somente `--apply` promove os PNGs nativos, e builds posteriores os copiam sem recompressão nem redesenho procedural.
+Os PNGs de item da 1.2.2 permanecem arquivados em [`assets-src/inventory-icons/`](assets-src/inventory-icons/README.md) como evidência reproduzível. Desde a 1.2.4, o pack não os copia nem registra no atlas de itens: o Bedrock renderiza a malha real por uma ponte interna estável descrita em [Arquitetura](docs/ARCHITECTURE.md).
 
 Os 48 SFX próprios desta release são versionados com suas fontes, receitas de processamento, masters, OGGs e hashes; veja [Contrato de áudio](docs/AUDIO_DESIGN_CONTRACT.md).
 

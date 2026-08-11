@@ -8,6 +8,26 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
+## v1.2.4 — modelos 3D no inventário — implementada; QA físico pendente
+
+Objetivo: eliminar a segunda representação raster dos dezesseis aspersórios e delegar sua aparência de inventário à própria malha/material do add-on em componentes estáveis.
+
+Escopo integrado:
+
+- um bloco interno com state cosmético `0..15` expõe `minecraft:item_visual` com a geometria de inventário e os mapas PBR reais de cada item;
+- cada ID de aspersório remove `minecraft:icon` e referencia somente seu state pela ponte estável `minecraft:block_placer`;
+- colocação é impedida por `use_on` restrito a ar, filtro de suporte impossível, colisão/seleção nulas e cancelamento no custom component do proxy;
+- a geometria de inventário deriva deterministicamente os mesmos quatorze cubos e UVs do attachable, sem copiar o binding do osso equipado;
+- PNGs e aliases raster deixam o pack; as fontes 1.2.2 permanecem apenas como arquivo histórico;
+- versões sobem para `1.2.4`/`[1,2,4]`, mantendo UUIDs, todos os IDs de item e todos os contratos autoritativos.
+
+Gate de saída:
+
+- Creator Tools aceita o pacote sem erro ou warning inesperado;
+- os dezesseis itens aparecem como modelos 3D corretamente enquadrados e distinguíveis no inventário, hotbar, baú e mesa;
+- usar/segurar/aspergir/carregar/acomodar continua acionando os fluxos existentes e nunca coloca `aspergillum:inventory_visual`;
+- primeira/terceira pessoa, cargas, água, snapshots, reload e compatibilidade de mundo permanecem intactos.
+
 ## v1.2.3 — identidade localizada e distribuição confiável — implementada
 
 Objetivo: corrigir a ficha pública observada no Bedrock sem alterar a capa, o conteúdo ou qualquer contrato de mundo.

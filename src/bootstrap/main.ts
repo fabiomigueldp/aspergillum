@@ -31,6 +31,7 @@ import {
 } from "../application/sprinkle";
 import {
   ASPERGILLUM_COMPONENT,
+  INVENTORY_VISUAL_COMPONENT,
   ASPERSORIUM_BLOCK,
   ASPERSORIUM_COMPONENT,
   SACRISTAN_TABLE_BLOCK,
@@ -192,6 +193,11 @@ system.beforeEvents.startup.subscribe((event) => {
     beforeOnPlayerPlace: orientSacristanTable,
     onBreak: handleSacristanTableBreak,
     onPlayerInteract: handleSacristanTableInteraction,
+  });
+  event.blockComponentRegistry.registerCustomComponent(INVENTORY_VISUAL_COMPONENT, {
+    beforeOnPlayerPlace(blockEvent) {
+      blockEvent.cancel = true;
+    },
   });
 });
 

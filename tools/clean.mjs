@@ -6,7 +6,6 @@ const workTargets = [
   "packs/behavior/scripts/main.js",
   "packs/behavior/pack_icon.png",
   "packs/resource/pack_icon.png",
-  "packs/resource/textures/items/aspergillum.png",
   "packs/resource/textures/entity/aspergillum.png",
   "packs/resource/textures/entity/aspergillum_mer.png",
   "packs/resource/textures/entity/aspergillum_normal.png",
@@ -22,7 +21,9 @@ const workTargets = [
   "packs/resource/textures/particle/incense_smoke.png",
   "packs/resource/textures/particle/incense_veil.png",
   "packs/resource/models/blocks/aspersorium.geo.json",
-  "packs/resource/models/blocks/aspersorium.rotations.geo.json"
+  "packs/resource/models/blocks/aspersorium.rotations.geo.json",
+  "packs/resource/models/blocks/aspergillum.inventory.geo.json",
+  "packs/behavior/blocks/inventory_visual.block.json"
 ];
 const artifactTargets = ["dist/releases", "dist/validation", "dist/diagnostics", "out/addon-manager"];
 

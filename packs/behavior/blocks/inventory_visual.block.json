@@ -1,0 +1,403 @@
+{
+  "format_version": "1.26.30",
+  "minecraft:block": {
+    "description": {
+      "identifier": "aspergillum:inventory_visual",
+      "menu_category": {
+        "category": "none",
+        "is_hidden_in_commands": true
+      },
+      "states": {
+        "aspergillum:inventory_cosmetic": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ]
+      }
+    },
+    "permutations": [
+      {
+        "condition": "q.block_state('aspergillum:inventory_cosmetic') == 1",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspergillum_inventory_silver_oxblood",
+              "render_method": "opaque"
+            }
+          },
+          "minecraft:item_visual": {
+            "geometry": {
+              "identifier": "geometry.aspergillum.inventory"
+            },
+            "material_instances": {
+              "*": {
+                "texture": "aspergillum_inventory_silver_oxblood",
+                "render_method": "opaque"
+              }
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:inventory_cosmetic') == 2",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspergillum_inventory_silver_black",
+              "render_method": "opaque"
+            }
+          },
+          "minecraft:item_visual": {
+            "geometry": {
+              "identifier": "geometry.aspergillum.inventory"
+            },
+            "material_instances": {
+              "*": {
+                "texture": "aspergillum_inventory_silver_black",
+                "render_method": "opaque"
+              }
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:inventory_cosmetic') == 3",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspergillum_inventory_antique_chestnut",
+              "render_method": "opaque"
+            }
+          },
+          "minecraft:item_visual": {
+            "geometry": {
+              "identifier": "geometry.aspergillum.inventory"
+            },
+            "material_instances": {
+              "*": {
+                "texture": "aspergillum_inventory_antique_chestnut",
+                "render_method": "opaque"
+              }
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:inventory_cosmetic') == 4",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspergillum_inventory_antique_oxblood",
+              "render_method": "opaque"
+            }
+          },
+          "minecraft:item_visual": {
+            "geometry": {
+              "identifier": "geometry.aspergillum.inventory"
+            },
+            "material_instances": {
+              "*": {
+                "texture": "aspergillum_inventory_antique_oxblood",
+                "render_method": "opaque"
+              }
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:inventory_cosmetic') == 5",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspergillum_inventory_antique_black",
+              "render_method": "opaque"
+            }
+          },
+          "minecraft:item_visual": {
+            "geometry": {
+              "identifier": "geometry.aspergillum.inventory"
+            },
+            "material_instances": {
+              "*": {
+                "texture": "aspergillum_inventory_antique_black",
+                "render_method": "opaque"
+              }
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:inventory_cosmetic') == 6",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspergillum_inventory_gilded_chestnut",
+              "render_method": "opaque"
+            }
+          },
+          "minecraft:item_visual": {
+            "geometry": {
+              "identifier": "geometry.aspergillum.inventory"
+            },
+            "material_instances": {
+              "*": {
+                "texture": "aspergillum_inventory_gilded_chestnut",
+                "render_method": "opaque"
+              }
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:inventory_cosmetic') == 7",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspergillum_inventory_gilded_oxblood",
+              "render_method": "opaque"
+            }
+          },
+          "minecraft:item_visual": {
+            "geometry": {
+              "identifier": "geometry.aspergillum.inventory"
+            },
+            "material_instances": {
+              "*": {
+                "texture": "aspergillum_inventory_gilded_oxblood",
+                "render_method": "opaque"
+              }
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:inventory_cosmetic') == 8",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspergillum_inventory_gilded_black",
+              "render_method": "opaque"
+            }
+          },
+          "minecraft:item_visual": {
+            "geometry": {
+              "identifier": "geometry.aspergillum.inventory"
+            },
+            "material_instances": {
+              "*": {
+                "texture": "aspergillum_inventory_gilded_black",
+                "render_method": "opaque"
+              }
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:inventory_cosmetic') == 9",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspergillum_inventory_silver_ivory",
+              "render_method": "opaque"
+            }
+          },
+          "minecraft:item_visual": {
+            "geometry": {
+              "identifier": "geometry.aspergillum.inventory"
+            },
+            "material_instances": {
+              "*": {
+                "texture": "aspergillum_inventory_silver_ivory",
+                "render_method": "opaque"
+              }
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:inventory_cosmetic') == 10",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspergillum_inventory_antique_ivory",
+              "render_method": "opaque"
+            }
+          },
+          "minecraft:item_visual": {
+            "geometry": {
+              "identifier": "geometry.aspergillum.inventory"
+            },
+            "material_instances": {
+              "*": {
+                "texture": "aspergillum_inventory_antique_ivory",
+                "render_method": "opaque"
+              }
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:inventory_cosmetic') == 11",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspergillum_inventory_gilded_ivory",
+              "render_method": "opaque"
+            }
+          },
+          "minecraft:item_visual": {
+            "geometry": {
+              "identifier": "geometry.aspergillum.inventory"
+            },
+            "material_instances": {
+              "*": {
+                "texture": "aspergillum_inventory_gilded_ivory",
+                "render_method": "opaque"
+              }
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:inventory_cosmetic') == 12",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspergillum_inventory_bronze_chestnut",
+              "render_method": "opaque"
+            }
+          },
+          "minecraft:item_visual": {
+            "geometry": {
+              "identifier": "geometry.aspergillum.inventory"
+            },
+            "material_instances": {
+              "*": {
+                "texture": "aspergillum_inventory_bronze_chestnut",
+                "render_method": "opaque"
+              }
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:inventory_cosmetic') == 13",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspergillum_inventory_bronze_oxblood",
+              "render_method": "opaque"
+            }
+          },
+          "minecraft:item_visual": {
+            "geometry": {
+              "identifier": "geometry.aspergillum.inventory"
+            },
+            "material_instances": {
+              "*": {
+                "texture": "aspergillum_inventory_bronze_oxblood",
+                "render_method": "opaque"
+              }
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:inventory_cosmetic') == 14",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspergillum_inventory_bronze_black",
+              "render_method": "opaque"
+            }
+          },
+          "minecraft:item_visual": {
+            "geometry": {
+              "identifier": "geometry.aspergillum.inventory"
+            },
+            "material_instances": {
+              "*": {
+                "texture": "aspergillum_inventory_bronze_black",
+                "render_method": "opaque"
+              }
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:inventory_cosmetic') == 15",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspergillum_inventory_bronze_ivory",
+              "render_method": "opaque"
+            }
+          },
+          "minecraft:item_visual": {
+            "geometry": {
+              "identifier": "geometry.aspergillum.inventory"
+            },
+            "material_instances": {
+              "*": {
+                "texture": "aspergillum_inventory_bronze_ivory",
+                "render_method": "opaque"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "components": {
+      "minecraft:geometry": {
+        "identifier": "geometry.aspergillum.inventory",
+        "uv_lock": false
+      },
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "aspergillum_inventory",
+          "render_method": "opaque"
+        }
+      },
+      "minecraft:item_visual": {
+        "geometry": {
+          "identifier": "geometry.aspergillum.inventory"
+        },
+        "material_instances": {
+          "*": {
+            "texture": "aspergillum_inventory",
+            "render_method": "opaque"
+          }
+        }
+      },
+      "minecraft:collision_box": false,
+      "minecraft:selection_box": false,
+      "minecraft:placement_filter": {
+        "conditions": [
+          {
+            "allowed_faces": [
+              "up"
+            ],
+            "block_filter": [
+              "minecraft:air"
+            ]
+          }
+        ]
+      },
+      "minecraft:light_dampening": 0,
+      "aspergillum:inventory_visual_guard": {}
+    }
+  }
+}

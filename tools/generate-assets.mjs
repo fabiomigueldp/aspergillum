@@ -10,7 +10,6 @@ const aspergillumModelSource = process.env.ASPERGILLUM_MODEL_SOURCE
   ? path.resolve(root, process.env.ASPERGILLUM_MODEL_SOURCE)
   : path.join(root, "assets-src/models/aspergillum.model.json");
 const packIconSource = path.join(root, "assets-src/branding/aspergillum-cover-256.png");
-const inventoryIconSourceDirectory = path.join(root, "assets-src/inventory-icons");
 const retiredGeneratedAssets = [
   "packs/resource/textures/entity/thurible.png",
   "packs/resource/textures/entity/thurible_normal.png",
@@ -18,6 +17,11 @@ const retiredGeneratedAssets = [
   "packs/resource/textures/items/thurible.png",
   "packs/resource/textures/particle/incense_smoke.png",
   "packs/resource/textures/particle/incense_veil.png",
+  ...fs.existsSync(path.join(root, "packs/resource/textures/items"))
+    ? fs.readdirSync(path.join(root, "packs/resource/textures/items"))
+      .filter((name) => /^aspergillum(?:_[a-z_]+)?\.png$/.test(name))
+      .map((name) => `packs/resource/textures/items/${name}`)
+    : [],
 ];
 
 for (const [label, candidate] of [
@@ -109,6 +113,10 @@ const BLOCK_DESTRUCTION_TEXTURE_SIZE = 16;
 const ASPERSORIUM_DESTRUCTION_PARTICLE_COUNT = 56;
 const SACRISTAN_TABLE_DESTRUCTION_PARTICLE_COUNT = 80;
 const ASPERSORIUM_WATER_BONES = new Set(["water_low", "water_mid", "water_high", "water_full"]);
+const INVENTORY_VISUAL_BLOCK = "aspergillum:inventory_visual";
+const INVENTORY_COSMETIC_STATE = "aspergillum:inventory_cosmetic";
+const INVENTORY_GEOMETRY = "geometry.aspergillum.inventory";
+const INVENTORY_MODEL_ROTATION = [0, 0, -35];
 
 function pixelArtTexture(rows, palette, label) {
   if (rows.length !== BLOCK_DESTRUCTION_TEXTURE_SIZE
@@ -408,6 +416,55 @@ function paintAtlasRegion(image, region, painter) {
 const entityModel = buildEntityGeometry();
 writeJson("packs/resource/models/entity/aspergillum.geo.json", entityModel.geometry);
 
+function buildInventoryGeometry() {
+  const held = entityModel.geometry["minecraft:geometry"][0];
+  const visualBones = held.bones.filter((bone) => bone.name === "handle" || bone.name === "sprinkler_head");
+  const cubes = visualBones.flatMap((bone) => bone.cubes ?? []);
+  const minima = [0, 1, 2].map((axis) => Math.min(...cubes.map((cube) => cube.origin[axis])));
+  const maxima = [0, 1, 2].map((axis) => Math.max(...cubes.map((cube) => cube.origin[axis] + cube.size[axis])));
+  const scale = 14 / (maxima[1] - minima[1]);
+  const center = maxima.map((maximum, axis) => (minima[axis] + maximum) / 2);
+  const normalized = (value) => {
+    const rounded = Number(value.toFixed(6));
+    return Object.is(rounded, -0) ? 0 : rounded;
+  };
+  const transformPoint = (point) => [
+    normalized((point[0] - center[0]) * scale),
+    normalized(1 + (point[1] - minima[1]) * scale),
+    normalized((point[2] - center[2]) * scale),
+  ];
+
+  return {
+    format_version: "1.16.0",
+    "minecraft:geometry": [{
+      description: {
+        identifier: INVENTORY_GEOMETRY,
+        texture_width: held.description.texture_width,
+        texture_height: held.description.texture_height,
+        visible_bounds_width: 2,
+        visible_bounds_height: 2,
+        visible_bounds_offset: [0, 0.5, 0],
+      },
+      bones: [{
+        name: "root",
+        pivot: [0, 8, 0],
+        rotation: INVENTORY_MODEL_ROTATION,
+      }, ...visualBones.map((bone) => ({
+        name: bone.name,
+        parent: "root",
+        pivot: transformPoint(bone.pivot),
+        cubes: (bone.cubes ?? []).map((cube) => ({
+          origin: transformPoint(cube.origin),
+          size: cube.size.map((dimension) => normalized(dimension * scale)),
+          uv: structuredClone(cube.uv),
+        })),
+      }))],
+    }],
+  };
+}
+
+writeJson("packs/resource/models/blocks/aspergillum.inventory.geo.json", buildInventoryGeometry());
+
 const entityTextures = new Map();
 for (const cosmetic of customizationCatalog.cosmetics) {
   const suffix = cosmeticTextureSuffix(cosmetic);
@@ -502,30 +559,6 @@ const particle = png(16, 16, (x, y) => {
   return [245, 249, 255, alpha];
 });
 write("packs/resource/textures/particle/holy_water.png", particle);
-
-function publishInventoryIcon(cosmetic) {
-  const suffix = cosmeticTextureSuffix(cosmetic);
-  const fileName = `aspergillum${suffix}.png`;
-  const sourcePath = path.join(inventoryIconSourceDirectory, fileName);
-  if (!fs.existsSync(sourcePath)) {
-    throw new Error(`Missing authoritative inventory icon: ${path.relative(root, sourcePath)}`);
-  }
-  const source = fs.readFileSync(sourcePath);
-  const image = PNG.sync.read(source);
-  if (image.width !== 32 || image.height !== 32) {
-    throw new Error(`${fileName} must remain 32 × 32, got ${image.width} × ${image.height}`);
-  }
-  let transparentPixels = 0;
-  for (let offset = 3; offset < image.data.length; offset += 4) {
-    if (image.data[offset] < 255) transparentPixels += 1;
-  }
-  if (transparentPixels === 0) throw new Error(`${fileName} must preserve a transparent background`);
-  const destination = path.join(generatedRoot, "packs/resource/textures/items", fileName);
-  fs.mkdirSync(path.dirname(destination), { recursive: true });
-  fs.writeFileSync(destination, source);
-}
-
-for (const cosmetic of customizationCatalog.cosmetics) publishInventoryIcon(cosmetic);
 
 function publishPackIcon(relative) {
   if (!fs.existsSync(packIconSource)) {
@@ -870,13 +903,67 @@ const baseItemDefinition = JSON.parse(
 const baseAttachableDefinition = JSON.parse(
   fs.readFileSync(path.join(generatedRoot, "packs/resource/attachables/aspergillum.attachable.json"), "utf8"),
 );
+function inventoryBlockDescriptor(cosmetic) {
+  return {
+    name: INVENTORY_VISUAL_BLOCK,
+    states: { [INVENTORY_COSMETIC_STATE]: cosmetic.index },
+  };
+}
+
+const inventoryMaterialInstances = (cosmetic) => opaqueMaterialInstances(
+  `aspergillum_inventory${cosmeticTextureSuffix(cosmetic)}`,
+);
+const inventoryItemVisual = (cosmetic) => ({
+  geometry: { identifier: INVENTORY_GEOMETRY },
+  material_instances: inventoryMaterialInstances(cosmetic),
+});
+const inventoryVisualBlock = {
+  format_version: "1.26.30",
+  "minecraft:block": {
+    description: {
+      identifier: INVENTORY_VISUAL_BLOCK,
+      menu_category: { category: "none", is_hidden_in_commands: true },
+      states: {
+        [INVENTORY_COSMETIC_STATE]: customizationCatalog.cosmetics.map((cosmetic) => cosmetic.index),
+      },
+    },
+    permutations: customizationCatalog.cosmetics.slice(1).map((cosmetic) => ({
+      condition: `q.block_state('${INVENTORY_COSMETIC_STATE}') == ${cosmetic.index}`,
+      components: {
+        "minecraft:material_instances": inventoryMaterialInstances(cosmetic),
+        "minecraft:item_visual": inventoryItemVisual(cosmetic),
+      },
+    })),
+    components: {
+      "minecraft:geometry": { identifier: INVENTORY_GEOMETRY, uv_lock: false },
+      "minecraft:material_instances": inventoryMaterialInstances(customizationCatalog.cosmetics[0]),
+      "minecraft:item_visual": inventoryItemVisual(customizationCatalog.cosmetics[0]),
+      "minecraft:collision_box": false,
+      "minecraft:selection_box": false,
+      "minecraft:placement_filter": {
+        conditions: [{ allowed_faces: ["up"], block_filter: ["minecraft:air"] }],
+      },
+      "minecraft:light_dampening": 0,
+      "aspergillum:inventory_visual_guard": {},
+    },
+  },
+};
+writeJson("packs/behavior/blocks/inventory_visual.block.json", inventoryVisualBlock);
+
+const baseItem = baseItemDefinition["minecraft:item"];
+delete baseItem.components["minecraft:icon"];
+baseItem.components["minecraft:block_placer"] = {
+  block: inventoryBlockDescriptor(customizationCatalog.cosmetics[0]),
+  use_on: ["minecraft:air"],
+};
+
 for (const cosmetic of customizationCatalog.cosmetics.slice(1)) {
   const suffix = cosmeticTextureSuffix(cosmetic);
   const identifier = cosmeticItemIdentifier(cosmetic);
   const itemDefinition = structuredClone(baseItemDefinition);
   itemDefinition["minecraft:item"].description.identifier = identifier;
   delete itemDefinition["minecraft:item"].description.menu_category;
-  itemDefinition["minecraft:item"].components["minecraft:icon"].textures.default = `aspergillum${suffix}`;
+  itemDefinition["minecraft:item"].components["minecraft:block_placer"].block = inventoryBlockDescriptor(cosmetic);
   writeJson(`packs/behavior/items/aspergillum${suffix}.item.json`, itemDefinition);
 
   const attachableDefinition = structuredClone(baseAttachableDefinition);
@@ -891,9 +978,7 @@ const itemTexturePath = path.join(generatedRoot, "packs/resource/textures/item_t
 const itemTextureDefinition = JSON.parse(fs.readFileSync(itemTexturePath, "utf8"));
 for (const cosmetic of customizationCatalog.cosmetics) {
   const suffix = cosmeticTextureSuffix(cosmetic);
-  itemTextureDefinition.texture_data[`aspergillum${suffix}`] = {
-    textures: [`textures/items/aspergillum${suffix}`],
-  };
+  delete itemTextureDefinition.texture_data[`aspergillum${suffix}`];
 }
 itemTextureDefinition.texture_data.sacristan_table = {
   textures: ["textures/blocks/sacristan_table"],
@@ -910,6 +995,9 @@ terrainTextureDefinition.texture_data.sacristan_table_destruction = {
 };
 for (const cosmetic of customizationCatalog.cosmetics) {
   const suffix = cosmeticTextureSuffix(cosmetic);
+  terrainTextureDefinition.texture_data[`aspergillum_inventory${suffix}`] = {
+    textures: [`textures/entity/aspergillum${suffix}`],
+  };
   terrainTextureDefinition.texture_data[`aspersorium${suffix}`] = {
     textures: [`textures/blocks/aspersorium${suffix}`],
   };
@@ -922,6 +1010,7 @@ writeJson("packs/resource/textures/terrain_texture.json", terrainTextureDefiniti
 const blocksPath = path.join(generatedRoot, "packs/resource/blocks.json");
 const blocksDefinition = JSON.parse(fs.readFileSync(blocksPath, "utf8"));
 blocksDefinition["aspergillum:sacristan_table"] = { sound: "wood" };
+blocksDefinition[INVENTORY_VISUAL_BLOCK] = { sound: "metal" };
 writeJson("packs/resource/blocks.json", blocksDefinition);
 
 const audioCatalog = JSON.parse(

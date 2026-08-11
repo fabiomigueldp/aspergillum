@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.2.4 — 2026-08-11 — modelos 3D no inventário
+
+- os dezesseis itens removem `minecraft:icon` e passam a ser renderizados pelo motor a partir de sua própria geometria e de seus mapas color/normal/MER;
+- uma única ponte interna `aspergillum:inventory_visual` usa `minecraft:item_visual` e o state `aspergillum:inventory_cosmetic` `0..15`, evitando dezesseis novos IDs de bloco;
+- a geometria de apresentação é derivada deterministicamente dos mesmos quatorze cubos e UVs do attachable, normalizada e inclinada somente para a GUI, sem tocar em `aspergillum_bound`, no binding ou nas poses equipadas;
+- o `block_placer` exigido pela API fica restrito a ar; filtro de suporte, colisão/seleção nulas e custom component cancelável impedem colocação normal ou consumo do item;
+- os PNGs 32×32 e aliases do atlas de itens deixam o pacote, reduzindo a textura distribuída para 149 arquivos; as fontes da 1.2.2 permanecem arquivadas como evidência histórica;
+- validadores bloqueiam retorno do raster, drift de IDs/states/material, perda de cubos/UVs e remoção das travas de colocação;
+- versões do pacote e dos packs elevadas para `1.2.4`/`[1,2,4]`, preservando UUIDs, IDs dos itens, attachables, estados existentes, cargas, água, sessões, snapshots e persistência.
+- o artefato `Aspergillum-1.2.4.mcaddon` tem `3.087.734` bytes e SHA-256 `752f9ad393240a0d9af73a79fcd1d6c7b503cdd5e4e35bed87840953be34df52`; o Creator Tools aceitou somente os onze warnings offline conhecidos, sem warning inesperado, Error ou Failure.
+
 ## 1.2.3 — 2026-08-11 — identidade localizada e tooling de distribuição
 
 - manifests passam a usar as chaves canônicas `pack.name` e `pack.description`, eliminando a exibição literal dos antigos tokens `pack.aspergillum.*` no seletor do Bedrock;

@@ -2,7 +2,7 @@
 
 ## Baseline
 
-- **Versão de referência:** `1.2.3` estável (revisão numérica dos packs `[1, 2, 3]`)
+- **Versão de referência:** `1.2.4` (revisão numérica dos packs `[1, 2, 4]`; gate visual/físico pendente)
 - **Engine mínima:** Creator `1.26.40`
 - **Script API:** manifest com `@minecraft/server` `2.9.0` e `@minecraft/server-ui` `2.1.0`, estáveis; `@minecraft/common` `1.3.0` somente no toolchain npm
 - **Experimentos:** nenhum
@@ -23,6 +23,8 @@ A 1.2.1 promove a identidade visual aprovada: o ícone passa a ser uma composiç
 A 1.2.2 promove duas melhorias de apresentação: blocos usam tiles de destruição `16 × 16` dedicados, e os dezesseis itens usam ícones derivados do modelo, color maps e materiais PBR reais do aspersório. Água, geometria distribuída, binding, poses, states, gameplay e persistência não mudam. Evidência automatizada, compatibilidade e gates físicos estão em [Release 1.2.2](releases/1.2.2.md).
 
 A 1.2.3 promove a identidade localizada dos packs: Behavior e Resource Pack usam `pack.name`/`pack.description` em escopos próprios, com textos objetivos em `pt_BR` e `en_US`. A revisão também torna a proveniência dos SFX autocontida e consolida empacotamento determinístico e instalação local transacional, sem alterar mídia distribuída, gameplay ou contratos de mundo. Contrato, evidências e gates físicos estão em [Identidade pública dos packs](PACK_IDENTITY.md) e [Release 1.2.3](releases/1.2.3.md).
+
+A 1.2.4 substitui os dezesseis PNGs de inventário por renderização 3D do próprio modelo. Como itens customizados não expõem geometria arbitrária na GUI, a implementação estável usa um único bloco interno `aspergillum:inventory_visual`, `minecraft:item_visual` e um `minecraft:block_placer` restrito a ar. O bloco possui colisão/seleção nulas, filtro impossível em suporte normal e um custom component que cancela qualquer tentativa nativa de colocação. IDs dos itens, attachables, binding, pose, cargas e persistência permanecem inalterados; o novo ID/state interno é documentado em [Release 1.2.4](releases/1.2.4.md).
 
 ## O que está resolvido
 
@@ -85,10 +87,11 @@ A 1.2.3 promove a identidade localizada dos packs: Behavior e Resource Pack usam
 | Partículas de quebra 1.2.2 | tiles dedicados, aliases e composição material são validados offline | confirmar no Minecraft partículas durante os golpes e no estouro final, em gráficos clássicos e Vibrant Visuals |
 | Ícones de inventário 1.2.2 | 16 renders derivados do modelo são determinísticos, íntegros e distinguíveis por região semântica | confirmar escala, mipmapping, fundos de UI e cache no pacote final importado |
 | Identidade localizada 1.2.3 | contrato, manifests, idiomas e gates usam `pack.name`/`pack.description` | confirmar ambos os packs em `pt_BR`/`en_US` no seletor real e registrar capturas/Content Log |
+| Inventário 3D 1.2.4 | 16 itens, state/material, geometria derivada, ausência de PNG e três travas de colocação são validados offline | confirmar enquadramento, luz, PBR, cache, uso normal e ausência de colocação no Minecraft |
 
 ## Próxima mudança autorizada
 
-Após a 1.2.3, limitar `1.2.x` a correções comprovadas pelo pacote importado e pelo Content Log. Nenhum novo acabamento, modelo ou state deve entrar antes do smoke físico da matriz completa e da compatibilidade `1.1.10 → 1.2.3`.
+Após a 1.2.4, não calibrar a malha por compensações especulativas. Primeiro importar somente o artefato final, comprovar os dezesseis acabamentos em inventário/hotbar/contêiner, confirmar que o item não coloca o proxy e repetir o smoke `1.1.10 → 1.2.4`; qualquer ajuste de câmera deve permanecer exclusivo da geometria de apresentação de inventário.
 
 Não faz parte do próximo marco:
 

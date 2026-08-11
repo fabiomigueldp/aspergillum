@@ -519,8 +519,12 @@ for (const cosmetic of cosmetics) {
   const variantItem = JSON.parse(
     fs.readFileSync(path.join(packRoots[0], "items", `aspergillum${suffix}.item.json`), "utf8"),
   )?.["minecraft:item"];
+  const blockPlacer = variantItem?.components?.["minecraft:block_placer"];
   if (variantItem?.description?.identifier !== expectedIdentifier
-    || variantItem?.components?.["minecraft:icon"]?.textures?.default !== `aspergillum${suffix}`) {
+    || variantItem?.components?.["minecraft:icon"] !== undefined
+    || blockPlacer?.block?.name !== "aspergillum:inventory_visual"
+    || blockPlacer?.block?.states?.["aspergillum:inventory_cosmetic"] !== cosmetic.index
+    || JSON.stringify(blockPlacer?.use_on) !== JSON.stringify(["minecraft:air"])) {
     errors.push(`Generated item definition diverges for cosmetic ${cosmetic.id}`);
   }
   if (cosmetic.id !== "classic" && variantItem?.description?.menu_category !== undefined) {
@@ -1158,7 +1162,8 @@ const required = [
   "packs/behavior/scripts/main.js",
   "packs/resource/pack_icon.png",
   "packs/behavior/pack_icon.png",
-  "packs/resource/textures/items/aspergillum.png",
+  "packs/resource/models/blocks/aspergillum.inventory.geo.json",
+  "packs/behavior/blocks/inventory_visual.block.json",
   "packs/resource/textures/entity/aspergillum.png",
   "packs/resource/textures/entity/aspergillum_normal.png",
   "packs/resource/textures/entity/aspergillum_mer.png",
@@ -1187,7 +1192,6 @@ const required = [
 for (const cosmetic of cosmetics) {
   const suffix = cosmetic.id === "classic" ? "" : `_${cosmetic.id}`;
   required.push(
-    `packs/resource/textures/items/aspergillum${suffix}.png`,
     `packs/resource/textures/entity/aspergillum${suffix}.png`,
     `packs/resource/textures/entity/aspergillum${suffix}_normal.png`,
     `packs/resource/textures/entity/aspergillum${suffix}_mer.png`,
