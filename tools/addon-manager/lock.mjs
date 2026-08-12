@@ -16,7 +16,7 @@ function processExists(pid) {
 export function acquireInstallLock(bedrockRoot) {
   const normalizedRoot = path.resolve(bedrockRoot).toLowerCase();
   const key = createHash("sha256").update(normalizedRoot).digest("hex").slice(0, 24);
-  const lockPath = path.join(os.tmpdir(), "aspergillum-addon-manager", `${key}.lock`);
+  const lockPath = path.join(os.tmpdir(), "bedrock-addon-manager", `${key}.lock`);
   fs.mkdirSync(path.dirname(lockPath), { recursive: true });
   if (fs.existsSync(lockPath)) {
     let existing;

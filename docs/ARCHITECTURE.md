@@ -16,6 +16,24 @@ bootstrap ──► application ──► domain
 
 O servidor é autoritativo para carga, água, cooldown e permissões. Resource Pack, attachable, animações e partículas representam o resultado, mas nunca concedem estado.
 
+## Toolchain de instalações multi-add-on
+
+`tools/addon-manager.mjs` é infraestrutura de desenvolvimento externa aos packs. O processo principal fornece CLI e estado operacional; cada projeto registrado fornece sua própria identidade por `package.json`, e o motor compartilhado recebe esse contexto em vez de importar constantes do produto.
+
+```text
+registro local de projetos
+        │
+        ├──► contexto Aspergillum ──► catálogo/UUIDs/caminhos próprios
+        └──► contexto Ornatum ──────► catálogo/UUIDs/caminhos próprios
+                                      │
+                                      ▼
+                       inventário → plano → transação → verificação
+```
+
+Catálogo, inspeção, planejamento e relatório são isolados por `addonId`; cache de extração continua endereçado por SHA-256. Um lock global derivado da raiz Bedrock serializa qualquer escrita, inclusive entre add-ons diferentes. Referências são substituídas no primeiro índice pertencente ao projeto selecionado, preservando prioridade e ordem relativa dos demais packs. Instalação e remoção usam o mesmo staging/rename/rollback e nunca abrem o LevelDB.
+
+O registro guarda somente caminhos locais e fica fora do pacote e do Git. Colisão de IDs, diretórios reservados ou UUIDs públicos é rejeitada antes da operação. Consulte [Gerenciador local de Add-Ons](ADDON_MANAGER.md).
+
 ## Identificadores e compatibilidade
 
 - Namespace: `aspergillum`.

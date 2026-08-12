@@ -26,8 +26,8 @@ export function pairKey(pair) {
 
 export function descriptorPair(descriptor) {
   return {
-    behavior: { uuid: descriptor.behaviorUuid, version: [...descriptor.bedrockVersion] },
-    resource: { uuid: descriptor.resourceUuid, version: [...descriptor.bedrockVersion] },
+    behavior: { uuid: descriptor.behavior.uuid, version: [...descriptor.behavior.version] },
+    resource: { uuid: descriptor.resource.uuid, version: [...descriptor.resource.version] },
   };
 }
 

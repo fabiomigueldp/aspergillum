@@ -35,4 +35,25 @@ describe("file transaction", () => {
     expect(fs.readFileSync(path.join(target, "value.txt"), "utf8")).toBe("old");
     expect(JSON.parse(fs.readFileSync(json, "utf8"))).toEqual([]);
   });
+
+  it("restores a removed directory on rollback and deletes it only on commit", () => {
+    const root = temporaryRoot();
+    const rollbackTarget = path.join(root, "data", "rollback-pack");
+    const commitTarget = path.join(root, "data", "commit-pack");
+    for (const target of [rollbackTarget, commitTarget]) {
+      fs.mkdirSync(target, { recursive: true });
+      fs.writeFileSync(path.join(target, "value.txt"), "preserved", "utf8");
+    }
+
+    const rollback = new FileTransaction(root);
+    expect(rollback.removeDirectory(rollbackTarget)).toBe(true);
+    expect(fs.existsSync(rollbackTarget)).toBe(false);
+    rollback.rollback();
+    expect(fs.readFileSync(path.join(rollbackTarget, "value.txt"), "utf8")).toBe("preserved");
+
+    const commit = new FileTransaction(root);
+    expect(commit.removeDirectory(commitTarget)).toBe(true);
+    commit.commit();
+    expect(fs.existsSync(commitTarget)).toBe(false);
+  });
 });

@@ -2,6 +2,12 @@
 
 ## Ferramentas de desenvolvimento não distribuídas — 2026-08-12
 
+- o instalador deixa de assumir uma única identidade Aspergillum e passa a administrar projetos registrados por `addonId`, incluindo Ornatum, com catálogo, estado, caminhos Shared/local e relatórios isolados;
+- `projects`, `register`, `status`, `list`, `install`, `upgrade`, `remove` e `map` oferecem visão agregada ou seleção explícita, mantendo a sintaxe histórica como atalho do Aspergillum;
+- atualização preserva o índice da referência do add-on e a ordem relativa dos demais packs; remoção filtra somente UUIDs pertencentes ao projeto escolhido;
+- instalação e remoção compartilham lock global por árvore Bedrock, staging, rename, verificação pós-escrita e rollback transacional; Shared permanece a última mutação;
+- descritores schema 2 publicam `addonId` e identidade completa, enquanto artefatos schema 1 permanecem compatíveis por normalização; registros e caches passam a ser particionados por projeto;
+- testes cobrem coexistência, atualização de A preservando B, prioridade das referências, remoção isolada, colisões de UUID/projeto e rollback de diretório removido;
 - unifica Model Lab, Bedrock Renderer e Avatar Lab em um 3D Workbench com shell persistente, rotas profundas pela History API e alternância sem recarregar o documento;
 - elimina o flash branco de CSS tardio: o shell possui estilo crítico no `<head>` e habilita exclusivamente a folha de estilos do laboratório ativo;
 - cada laboratório é inicializado uma única vez e tem sua árvore DOM estacionada quando inativa, preservando câmera, seleção, pose e controles sem manter render loops ou atalhos invisíveis;

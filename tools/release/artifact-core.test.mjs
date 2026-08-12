@@ -56,6 +56,9 @@ describe("artifact core", () => {
 
     const descriptor = inspectArtifact({ projectRoot: root, artifactPath: first, label: "test", channel: "diagnostic" });
     expect(descriptor).toMatchObject({
+      schemaVersion: 2,
+      addonId: "aspergillum",
+      displayName: "Aspergillum",
       label: "test",
       bedrockVersion: packs.version,
       behaviorUuid: packs.behaviorUuid,

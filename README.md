@@ -83,10 +83,15 @@ Comandos importantes:
 | `npm run render:inventory-icons` | Reproduz os antigos PNGs da 1.2.2 apenas como diagnóstico histórico; a 1.2.4 não os publica |
 | `npm run capture:models -- --subject all` | Captura modelos e composições estáticas em vistas reproduzíveis |
 | `npm run capture:avatars -- --action sprinkle` | Captura skin + jogador + attachable e sua animação, sem alterar os packs |
+| `npm run addon -- projects` | Lista os projetos administrados pelo gerenciador local multi-add-on |
+| `npm run addon -- status` | Mapeia Shared e mundos para Aspergillum, Ornatum e demais projetos registrados |
+| `npm run addon -- install <add-on> current` | Instala um artefato pronto sem reconstruí-lo ou afetar outros add-ons |
 | `npm run package` | Cria e valida oficialmente o `.mcaddon` |
 | `npm run clean` | Remove somente artefatos gerados conhecidos |
 
 O modelo autoral fica em [`assets-src/models/aspergillum.model.json`](assets-src/models/aspergillum.model.json). [`tools/generate-assets.mjs`](tools/generate-assets.mjs) remove metadados de produção, respeita as máscaras autorais, empacota apenas as faces visíveis, gera a geometria Bedrock distribuída e pinta deterministicamente color/normal/MER. A referência visual em [`assets-src/concept-art/aspergillum-concept.png`](assets-src/concept-art/aspergillum-concept.png) orienta proporções e materiais, mas não é distribuída no add-on.
+
+O [gerenciador local de Add-Ons](docs/ADDON_MANAGER.md) é uma ferramenta de desenvolvimento não distribuída. Ele registra projetos independentes, mantém catálogos e estados separados por `addonId` e consegue instalar, atualizar ou remover um add-on sem alterar os demais presentes no mesmo mundo.
 
 A identidade oficial da 1.2.1 fica em [`assets-src/branding/`](assets-src/branding/README.md). O Cover Renderer recompõe a cena a partir dos modelos reais, enquanto o gerador publica o PNG de 256 px aprovado de forma byte-idêntica nos dois packs; saídas temporárias de `out/cover-renders/` nunca são usadas diretamente pelo pacote.
 

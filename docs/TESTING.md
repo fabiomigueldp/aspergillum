@@ -278,6 +278,23 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 
 `npm run package` também cria o `.mcaddon`, SHA-256 e relatórios oficiais em `dist/validation/<versão>/`.
 
+### Gerenciador multi-add-on
+
+Os testes sob `tools/addon-manager/` devem provar:
+
+- registro e remoção de projetos sem embutir caminhos no `package.json` principal;
+- rejeição de IDs, diretórios reservados e UUIDs pertencentes a dois projetos;
+- descoberta independente de Shared, referências, históricos e packs locais;
+- atualização de A sem alterar bytes, referências ou estado de B;
+- substituição da referência no mesmo índice, preservando a ordem relativa dos demais packs;
+- remoção de A sem remover B, incluindo Shared e mundo local;
+- fixação local de mundos não selecionados antes de atualizar ou remover Shared;
+- rollback de cópias, JSONs e diretórios retirados;
+- compatibilidade de descritores schema 1 e publicação schema 2;
+- compatibilidade dos comandos históricos do Aspergillum.
+
+No armazenamento real, `status` deve reconhecer simultaneamente Aspergillum e Ornatum no `devtest`. Planos `--dry-run` de cada projeto precisam selecionar somente seus UUIDs; nenhuma aplicação de teste automatizado escreve na árvore real do Minecraft.
+
 ### Evidência visual automatizada
 
 `npm --prefix viewer-3d run smoke:workbench` abre a bancada integrada em Chromium e valida o contrato de integração sem produzir assets. O teste deve confirmar fundo escuro já no primeiro paint, uma única entrada de navegação, exatamente uma folha de estilos de laboratório ativa, `aria-current` e `aria-busy` coerentes, ausência de erros no console e preservação do estado do Avatar Lab após alternar ferramentas. Ele também abre `bedrock-renderer.html` e `avatar-lab.html` diretamente e aguarda suas APIs de captura, protegendo a compatibilidade dos consumidores headless.

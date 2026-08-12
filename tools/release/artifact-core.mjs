@@ -95,6 +95,18 @@ function sameVersion(left, right) {
   return left.length === right.length && left.every((value, index) => value === right[index]);
 }
 
+function addonMetadata(projectRoot) {
+  const packagePath = path.join(projectRoot, "package.json");
+  if (!fs.existsSync(packagePath)) return { id: "aspergillum", displayName: "Aspergillum", publicIdentity: registry.publicIdentity };
+  const metadata = JSON.parse(fs.readFileSync(packagePath, "utf8"));
+  const configured = metadata.addonManager ?? {};
+  return {
+    id: configured.id ?? metadata.name?.replace(/-bedrock-addon$/i, "") ?? "aspergillum",
+    displayName: configured.displayName ?? configured.id ?? "Aspergillum",
+    publicIdentity: configured.publicIdentity ?? (configured.id === "aspergillum" ? registry.publicIdentity : null),
+  };
+}
+
 export function gitProvenance(projectRoot) {
   const commit = spawnSync("git", ["rev-parse", "HEAD"], { cwd: projectRoot, encoding: "utf8", windowsHide: true });
   if (commit.status !== 0) return { sourceCommit: null, sourceDirty: null };
@@ -106,6 +118,7 @@ export function gitProvenance(projectRoot) {
 }
 
 export function inspectArtifact({ projectRoot, artifactPath, label, channel, family, base, sourceCommit = null, sourceDirty = null, sha256 }) {
+  const addon = addonMetadata(projectRoot);
   const packs = readMcaddonManifests(artifactPath);
   const behaviorVersion = normalizeVersion(packs.behavior.manifest.header?.version, `${packs.behavior.root}/manifest.json`);
   const resourceVersion = normalizeVersion(packs.resource.manifest.header?.version, `${packs.resource.root}/manifest.json`);
@@ -113,15 +126,18 @@ export function inspectArtifact({ projectRoot, artifactPath, label, channel, fam
   const behaviorUuid = packs.behavior.manifest.header?.uuid;
   const resourceUuid = packs.resource.manifest.header?.uuid;
   if (typeof behaviorUuid !== "string" || typeof resourceUuid !== "string") throw new Error(`UUID ausente em ${artifactPath}`);
-  const resourceDependency = (packs.behavior.manifest.dependencies ?? []).find((dependency) => dependency.uuid === resourceUuid);
+  const resourceDependency = (packs.behavior.manifest.dependencies ?? []).find((dependency) => dependency.uuid?.toLowerCase() === resourceUuid.toLowerCase());
   if (!resourceDependency || !sameVersion(normalizeVersion(resourceDependency.version, "dependência do Resource Pack"), resourceVersion)) {
     throw new Error(`Dependência BP→RP inconsistente em ${artifactPath}`);
   }
-  const official = behaviorUuid === registry.publicIdentity.behaviorUuid && resourceUuid === registry.publicIdentity.resourceUuid;
-  const registration = getReleaseRegistration(label);
+  const official = behaviorUuid.toLowerCase() === addon.publicIdentity?.behaviorUuid?.toLowerCase()
+    && resourceUuid.toLowerCase() === addon.publicIdentity?.resourceUuid?.toLowerCase();
+  const registration = addon.id === "aspergillum" ? getReleaseRegistration(label) : undefined;
   const resolvedChannel = channel ?? registration?.channel ?? (official ? "official" : "diagnostic");
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
+    addonId: addon.id,
+    displayName: addon.displayName,
     label,
     bedrockVersion: [...behaviorVersion],
     channel: resolvedChannel,
@@ -170,7 +186,7 @@ export function updateArtifactCatalog(projectRoot) {
     .map((file) => JSON.parse(fs.readFileSync(file, "utf8")))
     .filter((descriptor) => fs.existsSync(path.resolve(projectRoot, descriptor.artifact)))
     .sort((left, right) => left.label.localeCompare(right.label, "en", { numeric: true }));
-  const catalog = { schemaVersion: 1, generatedAt: new Date().toISOString(), artifacts: descriptors };
+  const catalog = { schemaVersion: 2, addonId: addonMetadata(projectRoot).id, generatedAt: new Date().toISOString(), artifacts: descriptors };
   writeJsonAtomic(path.join(releases, "catalog.json"), catalog);
   return catalog;
 }
@@ -184,4 +200,4 @@ export function publishArtifact({ projectRoot, artifactPath, label, channel, fam
   return descriptor;
 }
 
-export { archiveDate, collectFiles, writeJsonAtomic };
+export { addonMetadata, archiveDate, collectFiles, writeJsonAtomic };

@@ -8,6 +8,19 @@
 - Não misturar refatoração ampla, calibração visual e mudança de semântica na mesma revisão.
 - Versionar sempre de forma monotônica; não reutilizar versões já importadas pelo Minecraft.
 
+## Tooling multi-add-on — implementado; não distribuído
+
+Objetivo: manter Aspergillum, Ornatum e futuros projetos na mesma instalação Bedrock sem acoplamento entre seus ciclos de release.
+
+- projetos declaram identidade, versão atual e caminhos próprios em `package.json` e são registrados localmente por caminho;
+- status, mapa, catálogo, instalação, upgrade X→Y e remoção operam por `addonId` ou de forma agregada;
+- referências de outros add-ons permanecem byte-semanticamente preservadas e na mesma ordem;
+- Shared é protegido por fixação local específica do add-on e continua sendo a última mutação;
+- instalação e remoção compartilham lock global, cache por hash, staging, verificação e rollback;
+- descritor schema 2 converge Aspergillum e Ornatum sem invalidar artefatos schema 1 já produzidos.
+
+Gate: testes de coexistência A/B, ordem, remoção isolada, colisão e rollback verdes; planos reais de Aspergillum e Ornatum reconhecem somente suas próprias identidades no `devtest`.
+
 ## v1.2.5 — compatibilidade runtime do inventário 3D — implementada; QA físico pendente
 
 Objetivo: corrigir o parser failure da 1.2.4 sem voltar aos ícones raster.

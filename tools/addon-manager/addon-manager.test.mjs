@@ -6,8 +6,8 @@ import { createMcaddon, publishArtifact } from "../release/artifact-core.mjs";
 import { prepareArtifactCache } from "./artifact-cache.mjs";
 import { loadArtifactCatalog, findArtifact } from "./catalog.mjs";
 import { inspectBedrock } from "./bedrock.mjs";
-import { applyInstallPlan } from "./installer.mjs";
-import { createInstallPlan } from "./planner.mjs";
+import { applyInstallPlan, applyRemovePlan } from "./installer.mjs";
+import { createInstallPlan, createRemovePlan } from "./planner.mjs";
 
 const temporaryRoots = [];
 
@@ -81,11 +81,141 @@ function installShared(bedrockRoot, artifact) {
   copyPack(artifact.resource, path.join(shared, "resource_packs", "pack.asper"));
 }
 
+function managedProject(projectRoot, id, identitySuffix) {
+  const title = id[0].toUpperCase() + id.slice(1);
+  const project = {
+    schemaVersion: 1,
+    id,
+    displayName: title,
+    artifactPrefix: title,
+    projectRoot,
+    aliases: [id],
+    sharedDirectory: `pack.${id}`,
+    worldDirectory: `${id}.managed`,
+    currentLabel: "2.0.0",
+    publicIdentity: {
+      behaviorUuid: `51000000-0000-4000-8000-0000000000${identitySuffix}`,
+      resourceUuid: `52000000-0000-4000-8000-0000000000${identitySuffix}`,
+    },
+  };
+  writeJson(path.join(projectRoot, "package.json"), {
+    name: `${id}-bedrock-addon`,
+    version: project.currentLabel,
+    addonManager: {
+      schemaVersion: 1,
+      id: project.id,
+      displayName: project.displayName,
+      artifactPrefix: project.artifactPrefix,
+      sharedDirectory: project.sharedDirectory,
+      worldDirectory: project.worldDirectory,
+      aliases: project.aliases,
+      publicIdentity: project.publicIdentity,
+    },
+  });
+  return project;
+}
+
+async function createManagedArtifact(project, label, version, revisionSuffix) {
+  const source = path.join(project.projectRoot, "sources", label);
+  const behavior = path.join(source, "behavior");
+  const resource = path.join(source, "resource");
+  writeJson(path.join(behavior, "manifest.json"), {
+    format_version: 2,
+    header: { name: `${project.displayName} ${label} BP`, uuid: project.publicIdentity.behaviorUuid, version },
+    modules: [{ type: "data", uuid: `53000000-0000-4000-8000-0000000000${revisionSuffix}`, version }],
+    dependencies: [{ uuid: project.publicIdentity.resourceUuid, version }],
+  });
+  writeJson(path.join(resource, "manifest.json"), {
+    format_version: 2,
+    header: { name: `${project.displayName} ${label} RP`, uuid: project.publicIdentity.resourceUuid, version },
+    modules: [{ type: "resources", uuid: `54000000-0000-4000-8000-0000000000${revisionSuffix}`, version }],
+  });
+  fs.writeFileSync(path.join(behavior, "payload.txt"), `${project.id}/${label}`, "utf8");
+  fs.writeFileSync(path.join(resource, "payload.txt"), `${project.id}/${label}`, "utf8");
+  const artifactPath = path.join(project.projectRoot, "dist", "releases", `${project.artifactPrefix}-${label}.mcaddon`);
+  await createMcaddon({
+    outputPath: artifactPath,
+    behaviorPath: behavior,
+    resourcePath: resource,
+    behaviorRoot: `${project.displayName}_BP`,
+    resourceRoot: `${project.displayName}_RP`,
+  });
+  const descriptor = publishArtifact({
+    projectRoot: project.projectRoot,
+    artifactPath,
+    label,
+    channel: "official",
+    family: "release",
+    provenance: { sourceCommit: `commit-${project.id}-${label}`, sourceDirty: false },
+  });
+  return { behavior, resource, descriptor };
+}
+
+function installSharedProject(bedrockRoot, project, artifact) {
+  const shared = path.join(bedrockRoot, "Users", "Shared", "games", "com.mojang");
+  copyPack(artifact.behavior, path.join(shared, "behavior_packs", project.sharedDirectory));
+  copyPack(artifact.resource, path.join(shared, "resource_packs", project.sharedDirectory));
+}
+
+function createEmptyWorld(bedrockRoot, profile, folder, name) {
+  const world = path.join(bedrockRoot, "Users", profile, "games", "com.mojang", "minecraftWorlds", folder);
+  fs.mkdirSync(world, { recursive: true });
+  fs.writeFileSync(path.join(world, "levelname.txt"), name, "utf8");
+  writeJson(path.join(world, "world_behavior_packs.json"), []);
+  writeJson(path.join(world, "world_resource_packs.json"), []);
+  writeJson(path.join(world, "world_behavior_pack_history.json"), { packs: [] });
+  writeJson(path.join(world, "world_resource_pack_history.json"), { packs: [] });
+  return world;
+}
+
+function addProjectToWorld(world, project, artifact, directory = `${project.id}.local`) {
+  for (const [kind, uuid, packRoot, source] of [
+    ["behavior", project.publicIdentity.behaviorUuid, "behavior_packs", artifact.behavior],
+    ["resource", project.publicIdentity.resourceUuid, "resource_packs", artifact.resource],
+  ]) {
+    const referencePath = path.join(world, `world_${kind}_packs.json`);
+    const references = JSON.parse(fs.readFileSync(referencePath, "utf8"));
+    references.push({ pack_id: uuid, version: artifact.descriptor.bedrockVersion });
+    writeJson(referencePath, references);
+    const historyPath = path.join(world, `world_${kind}_pack_history.json`);
+    const history = JSON.parse(fs.readFileSync(historyPath, "utf8"));
+    history.packs.push({ name: `${project.displayName} ${artifact.descriptor.label} ${kind}`, uuid, version: artifact.descriptor.bedrockVersion });
+    writeJson(historyPath, history);
+    copyPack(source, path.join(world, packRoot, directory));
+  }
+}
+
 afterEach(() => {
   for (const root of temporaryRoots.splice(0)) fs.rmSync(root, { recursive: true, force: true });
 });
 
 describe("addon manager", () => {
+  it("normalizes legacy descriptors that only declare per-pack versions", async () => {
+    const root = temporaryRoot();
+    const legacy = await createArtifact(root, "legacy", [6, 4, 2], "00");
+    const legacyDescriptor = {
+      schemaVersion: 1,
+      label: "legacy",
+      artifact: legacy.descriptor.artifact,
+      bytes: legacy.descriptor.bytes,
+      sha256: legacy.descriptor.sha256,
+      behavior: legacy.descriptor.behavior,
+      resource: legacy.descriptor.resource,
+    };
+    writeJson(`${path.resolve(root, legacy.descriptor.artifact)}.artifact.json`, legacyDescriptor);
+
+    const [normalized] = loadArtifactCatalog({ projectRoot: root, refresh: true });
+    expect(normalized).toMatchObject({
+      schemaVersion: 2,
+      sourceSchemaVersion: 1,
+      addonId: "aspergillum",
+      label: "legacy",
+      bedrockVersion: [6, 4, 2],
+      behaviorUuid: legacy.descriptor.behaviorUuid,
+      resourceUuid: legacy.descriptor.resourceUuid,
+    });
+  });
+
   it("updates every exact X world across profiles and preserves other versions", async () => {
     const root = temporaryRoot();
     const bedrockRoot = path.join(root, "bedrock");
@@ -156,5 +286,87 @@ describe("addon manager", () => {
     expect(plan.selected).toHaveLength(0);
     expect(plan.conflicts).toHaveLength(1);
     expect(plan.conflicts[0].reason).toMatch(/parte da identidade X/);
+  });
+
+  it("updates one add-on without changing the other add-on or reference priority", async () => {
+    const managerRoot = temporaryRoot();
+    const alphaRoot = path.join(managerRoot, "alpha-project");
+    const betaRoot = path.join(managerRoot, "beta-project");
+    fs.mkdirSync(path.join(alphaRoot, "dist", "releases"), { recursive: true });
+    fs.mkdirSync(path.join(betaRoot, "dist", "releases"), { recursive: true });
+    const alpha = managedProject(alphaRoot, "alpha", "41");
+    const beta = managedProject(betaRoot, "beta", "42");
+    const alphaX = await createManagedArtifact(alpha, "1.0.0", [1, 0, 0], "41");
+    const alphaY = await createManagedArtifact(alpha, "2.0.0", [2, 0, 0], "43");
+    const betaX = await createManagedArtifact(beta, "1.0.0", [1, 0, 0], "42");
+    const bedrockRoot = path.join(managerRoot, "bedrock");
+    installSharedProject(bedrockRoot, alpha, alphaX);
+    installSharedProject(bedrockRoot, beta, betaX);
+    const world = createEmptyWorld(bedrockRoot, "P1", "DEV", "devtest");
+    addProjectToWorld(world, alpha, alphaX);
+    addProjectToWorld(world, beta, betaX);
+
+    const alphaCatalog = loadArtifactCatalog({ projectRoot: alphaRoot, stateRoot: managerRoot, project: alpha });
+    const betaCatalog = loadArtifactCatalog({ projectRoot: betaRoot, stateRoot: managerRoot, project: beta });
+    const alphaInventory = inspectBedrock({ bedrockRoot, catalog: alphaCatalog, project: alpha });
+    const plan = createInstallPlan({ inventory: alphaInventory, target: findArtifact(alphaCatalog, "2.0.0"), world: "devtest" });
+    applyInstallPlan({ projectRoot: alphaRoot, stateRoot: managerRoot, inventory: alphaInventory, plan, checkMinecraft: false });
+
+    const expectedBehavior = [
+      { pack_id: alpha.publicIdentity.behaviorUuid, version: [2, 0, 0] },
+      { pack_id: beta.publicIdentity.behaviorUuid, version: [1, 0, 0] },
+    ];
+    const expectedResource = [
+      { pack_id: alpha.publicIdentity.resourceUuid, version: [2, 0, 0] },
+      { pack_id: beta.publicIdentity.resourceUuid, version: [1, 0, 0] },
+    ];
+    expect(JSON.parse(fs.readFileSync(path.join(world, "world_behavior_packs.json"), "utf8"))).toEqual(expectedBehavior);
+    expect(JSON.parse(fs.readFileSync(path.join(world, "world_resource_packs.json"), "utf8"))).toEqual(expectedResource);
+    expect(fs.readFileSync(path.join(world, "behavior_packs", "beta.local", "payload.txt"), "utf8")).toBe("beta/1.0.0");
+    expect(fs.readFileSync(path.join(bedrockRoot, "Users", "Shared", "games", "com.mojang", "resource_packs", beta.sharedDirectory, "payload.txt"), "utf8")).toBe("beta/1.0.0");
+
+    const betaAfter = inspectBedrock({ bedrockRoot, catalog: betaCatalog, project: beta });
+    expect(betaAfter.shared.labels).toEqual(["1.0.0"]);
+    expect(betaAfter.worlds.find((entry) => entry.name === "devtest").active.labels).toEqual(["1.0.0"]);
+  });
+
+  it("removes one add-on transactionally while preserving the other", async () => {
+    const managerRoot = temporaryRoot();
+    const alphaRoot = path.join(managerRoot, "alpha-project");
+    const betaRoot = path.join(managerRoot, "beta-project");
+    fs.mkdirSync(path.join(alphaRoot, "dist", "releases"), { recursive: true });
+    fs.mkdirSync(path.join(betaRoot, "dist", "releases"), { recursive: true });
+    const alpha = managedProject(alphaRoot, "alpha", "61");
+    const beta = managedProject(betaRoot, "beta", "62");
+    const alphaX = await createManagedArtifact(alpha, "1.0.0", [1, 0, 0], "61");
+    const betaX = await createManagedArtifact(beta, "1.0.0", [1, 0, 0], "62");
+    const bedrockRoot = path.join(managerRoot, "bedrock");
+    installSharedProject(bedrockRoot, alpha, alphaX);
+    installSharedProject(bedrockRoot, beta, betaX);
+    const world = createEmptyWorld(bedrockRoot, "P1", "DEV", "devtest");
+    addProjectToWorld(world, alpha, alphaX);
+    addProjectToWorld(world, beta, betaX);
+
+    const alphaCatalog = loadArtifactCatalog({ projectRoot: alphaRoot, stateRoot: managerRoot, project: alpha });
+    const betaCatalog = loadArtifactCatalog({ projectRoot: betaRoot, stateRoot: managerRoot, project: beta });
+    const betaInventory = inspectBedrock({ bedrockRoot, catalog: betaCatalog, project: beta });
+    const plan = createRemovePlan({ inventory: betaInventory, world: "devtest" });
+    const result = applyRemovePlan({ stateRoot: managerRoot, inventory: betaInventory, plan, checkMinecraft: false });
+    expect(result).toMatchObject({ changed: true, addonId: "beta", selected: 1, sharedUpdated: true });
+
+    expect(JSON.parse(fs.readFileSync(path.join(world, "world_behavior_packs.json"), "utf8")))
+      .toEqual([{ pack_id: alpha.publicIdentity.behaviorUuid, version: [1, 0, 0] }]);
+    expect(JSON.parse(fs.readFileSync(path.join(world, "world_resource_packs.json"), "utf8")))
+      .toEqual([{ pack_id: alpha.publicIdentity.resourceUuid, version: [1, 0, 0] }]);
+    expect(fs.existsSync(path.join(world, "behavior_packs", "beta.local"))).toBe(false);
+    expect(fs.existsSync(path.join(world, "behavior_packs", "alpha.local"))).toBe(true);
+    expect(fs.existsSync(path.join(bedrockRoot, "Users", "Shared", "games", "com.mojang", "behavior_packs", beta.sharedDirectory))).toBe(false);
+    expect(fs.existsSync(path.join(bedrockRoot, "Users", "Shared", "games", "com.mojang", "behavior_packs", alpha.sharedDirectory))).toBe(true);
+
+    const alphaAfter = inspectBedrock({ bedrockRoot, catalog: alphaCatalog, project: alpha });
+    const betaAfter = inspectBedrock({ bedrockRoot, catalog: betaCatalog, project: beta });
+    expect(alphaAfter.worlds.find((entry) => entry.name === "devtest").state).toBe("managed");
+    expect(betaAfter.shared.state).toBe("none");
+    expect(betaAfter.worlds.find((entry) => entry.name === "devtest").state).toBe("none");
   });
 });

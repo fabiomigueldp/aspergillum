@@ -17,7 +17,7 @@ function validateCachedPack(directory, expected, kind) {
   try {
     const manifest = JSON.parse(fs.readFileSync(path.join(directory, "manifest.json"), "utf8"));
     const version = normalizeVersion(manifest.header?.version, `${kind} cache`);
-    return manifest.header?.uuid === expected.uuid && sameVersion(version, expected.version);
+    return manifest.header?.uuid?.toLowerCase() === expected.uuid.toLowerCase() && sameVersion(version, expected.version);
   } catch {
     return false;
   }
@@ -36,9 +36,9 @@ function validCache(directory, descriptor) {
     && validateCachedPack(path.join(directory, "resource"), descriptor.resource, "resource");
 }
 
-export function prepareArtifactCache({ projectRoot, descriptor }) {
+export function prepareArtifactCache({ projectRoot, stateRoot = projectRoot, descriptor }) {
   verifyArtifact(descriptor);
-  const cacheRoot = path.join(projectRoot, "out", "addon-manager", "cache");
+  const cacheRoot = path.join(stateRoot, "out", "addon-manager", "cache");
   const target = assertInside(cacheRoot, path.join(cacheRoot, descriptor.sha256), "cache do addon-manager");
   fs.mkdirSync(cacheRoot, { recursive: true });
   if (validCache(target, descriptor)) {
@@ -59,7 +59,7 @@ export function prepareArtifactCache({ projectRoot, descriptor }) {
     fs.renameSync(sourceBehavior, path.join(temporary, "behavior"));
     fs.renameSync(sourceResource, path.join(temporary, "resource"));
     fs.rmSync(archiveRoot, { recursive: true, force: true });
-    fs.writeFileSync(path.join(temporary, "cache.json"), `${JSON.stringify({ schemaVersion: 1, label: descriptor.label, sha256: descriptor.sha256 }, null, 2)}\n`, "utf8");
+    fs.writeFileSync(path.join(temporary, "cache.json"), `${JSON.stringify({ schemaVersion: 2, addonId: descriptor.addonId, label: descriptor.label, sha256: descriptor.sha256 }, null, 2)}\n`, "utf8");
     if (validCache(target, descriptor)) {
       fs.rmSync(temporary, { recursive: true, force: true });
       return { root: target, behavior: path.join(target, "behavior"), resource: path.join(target, "resource"), reused: true };

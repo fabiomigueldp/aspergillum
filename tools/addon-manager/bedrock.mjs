@@ -16,13 +16,30 @@ export const PACK_KINDS = {
   },
 };
 
+function legacyProject() {
+  return {
+    id: "aspergillum",
+    displayName: "Aspergillum",
+    aliases: ["aspergillum"],
+    sharedDirectory: "pack.asper",
+    worldDirectory: "aspergillum.managed",
+    publicIdentity: null,
+  };
+}
+
+function normalizedUuid(value) {
+  return typeof value === "string" ? value.toLowerCase() : value;
+}
+
 export function readJsonOptional(filePath, fallback) {
   if (!fs.existsSync(filePath)) return structuredClone(fallback);
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
-function isAspergillumText(value) {
-  return typeof value === "string" && value.toLowerCase().includes("aspergillum");
+function projectTextMatches(value, project) {
+  if (typeof value !== "string") return false;
+  const normalized = value.toLowerCase();
+  return project.aliases.some((alias) => normalized.includes(alias));
 }
 
 function manifestKind(manifest) {
@@ -32,26 +49,33 @@ function manifestKind(manifest) {
   return undefined;
 }
 
-function readPackCandidate(directory, expectedKind, knownIds) {
+function readPackCandidate(directory, expectedKind, knownIds, project, reservedNames = []) {
   const manifestPath = path.join(directory, "manifest.json");
   if (!fs.existsSync(manifestPath)) return undefined;
   try {
     const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
     if (manifestKind(manifest) !== expectedKind) return undefined;
-    const uuid = manifest.header?.uuid;
+    const uuid = normalizedUuid(manifest.header?.uuid);
     const version = normalizeVersion(manifest.header?.version, manifestPath);
-    if (!knownIds.has(uuid) && !isAspergillumText(manifest.header?.name) && !isAspergillumText(manifest.header?.description)) return undefined;
+    const reserved = reservedNames.some((value) => value.toLowerCase() === path.basename(directory).toLowerCase());
+    if (!knownIds.has(uuid) && !projectTextMatches(manifest.header?.name, project) && !projectTextMatches(manifest.header?.description, project)) {
+      return reserved
+        ? { kind: expectedKind, path: directory, error: `O caminho reservado de ${project.displayName} contém o UUID ${uuid ?? "ausente"}.` }
+        : undefined;
+    }
     return { kind: expectedKind, uuid, version, name: manifest.header?.name ?? null, path: directory, manifestPath };
   } catch (error) {
+    const basename = path.basename(directory).toLowerCase();
+    if (!reservedNames.map((value) => value.toLowerCase()).includes(basename)) return undefined;
     return { kind: expectedKind, path: directory, error: error instanceof Error ? error.message : String(error) };
   }
 }
 
-function scanPackRoot(root, kind, knownIds) {
+function scanPackRoot(root, kind, knownIds, project, reservedNames = []) {
   if (!fs.existsSync(root)) return [];
   return fs.readdirSync(root, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
-    .map((entry) => readPackCandidate(path.join(root, entry.name), kind, knownIds))
+    .map((entry) => readPackCandidate(path.join(root, entry.name), kind, knownIds, project, reservedNames))
     .filter(Boolean);
 }
 
@@ -74,7 +98,7 @@ function readReferences(worldPath, kind) {
   return { filePath, value };
 }
 
-function pairSummary(behavior, resource, pairLabels) {
+function pairSummary(behavior, resource, pairLabels, project) {
   const validBehavior = behavior.filter((entry) => !entry.error);
   const validResource = resource.filter((entry) => !entry.error);
   const packs = { behavior: validBehavior, resource: validResource };
@@ -83,32 +107,32 @@ function pairSummary(behavior, resource, pairLabels) {
   if (validBehavior.length === 0 && validResource.length === 0) return { state: "none", pair: undefined, labels: [], packs };
   if (validBehavior.length !== 1 || validResource.length !== 1) {
     const state = validBehavior.length > 1 || validResource.length > 1 ? "multiple" : "partial";
-    return { state, issues: [`Par Aspergillum ${state === "partial" ? "incompleto" : "duplicado"}: BP=${validBehavior.length}, RP=${validResource.length}.`], packs };
+    return { state, issues: [`Par ${project.displayName} ${state === "partial" ? "incompleto" : "duplicado"}: BP=${validBehavior.length}, RP=${validResource.length}.`], packs };
   }
   const pair = { behavior: validBehavior[0], resource: validResource[0] };
   const labels = pairLabels.get(pairKey(pair)) ?? [];
   return { state: labels.length ? "known" : "unknown", pair, labels, packs };
 }
 
-function historyOwnedIds(history, baseIds) {
-  const ids = new Set(baseIds);
-  for (const entry of history.entries) if (isAspergillumText(entry.name)) ids.add(entry.uuid);
+function historyOwnedIds(history, baseIds, project) {
+  const ids = new Set([...baseIds].map(normalizedUuid));
+  for (const entry of history.entries) if (projectTextMatches(entry.name, project) && entry.uuid) ids.add(normalizedUuid(entry.uuid));
   return ids;
 }
 
-function inspectWorld({ worldPath, folder, profile, bedrockRoot, identityMaps }) {
+function inspectWorld({ worldPath, folder, profile, bedrockRoot, identityMaps, project }) {
   const histories = {
     behavior: readHistory(worldPath, "behavior"),
     resource: readHistory(worldPath, "resource"),
   };
   const ownedIds = {
-    behavior: historyOwnedIds(histories.behavior, identityMaps.behaviorIds),
-    resource: historyOwnedIds(histories.resource, identityMaps.resourceIds),
+    behavior: historyOwnedIds(histories.behavior, identityMaps.behaviorIds, project),
+    resource: historyOwnedIds(histories.resource, identityMaps.resourceIds, project),
   };
   const localCandidates = {};
   for (const kind of Object.keys(PACK_KINDS)) {
     const root = path.join(worldPath, PACK_KINDS[kind].directory);
-    localCandidates[kind] = scanPackRoot(root, kind, ownedIds[kind]);
+    localCandidates[kind] = scanPackRoot(root, kind, ownedIds[kind], project, [project.worldDirectory]);
     for (const candidate of localCandidates[kind]) if (candidate.uuid) ownedIds[kind].add(candidate.uuid);
   }
   const references = {
@@ -119,18 +143,19 @@ function inspectWorld({ worldPath, folder, profile, bedrockRoot, identityMaps })
   const referenceErrors = [];
   for (const kind of Object.keys(PACK_KINDS)) {
     activeCandidates[kind] = references[kind].value.flatMap((entry) => {
-      if (!ownedIds[kind].has(entry.pack_id)) return [];
+      const uuid = normalizedUuid(entry.pack_id);
+      if (!ownedIds[kind].has(uuid)) return [];
       try {
-        return [{ kind, uuid: entry.pack_id, version: normalizeVersion(entry.version, references[kind].filePath) }];
+        return [{ kind, uuid, version: normalizeVersion(entry.version, references[kind].filePath) }];
       } catch (error) {
         referenceErrors.push(error instanceof Error ? error.message : String(error));
         return [];
       }
     });
   }
-  const active = pairSummary(activeCandidates.behavior, activeCandidates.resource, identityMaps.pairs);
+  const active = pairSummary(activeCandidates.behavior, activeCandidates.resource, identityMaps.pairs, project);
   if (referenceErrors.length > 0) active.issues = [...(active.issues ?? []), ...referenceErrors];
-  const local = pairSummary(localCandidates.behavior, localCandidates.resource, identityMaps.pairs);
+  const local = pairSummary(localCandidates.behavior, localCandidates.resource, identityMaps.pairs, project);
   let state = "none";
   const issues = [...(active.issues ?? []), ...(local.issues ?? [])];
   if (issues.length > 0 || ["partial", "multiple", "conflict"].includes(active.state) || ["partial", "multiple", "conflict"].includes(local.state)) {
@@ -150,6 +175,7 @@ function inspectWorld({ worldPath, folder, profile, bedrockRoot, identityMaps })
     path: worldPath,
     relativePath: path.relative(bedrockRoot, worldPath).split(path.sep).join("\\"),
     profile,
+    project,
     histories,
     references,
     ownedIds,
@@ -172,20 +198,32 @@ function listProfiles(usersRoot) {
     .filter((profile) => fs.existsSync(profile.path));
 }
 
-function inspectShared(usersRoot, identityMaps) {
+function inspectShared(usersRoot, identityMaps, project) {
   const pathRoot = path.join(usersRoot, "Shared", "games", "com.mojang");
   const candidates = {};
   const selected = {};
   for (const kind of Object.keys(PACK_KINDS)) {
     const packRoot = path.join(pathRoot, PACK_KINDS[kind].directory);
-    candidates[kind] = scanPackRoot(packRoot, kind, kind === "behavior" ? identityMaps.behaviorIds : identityMaps.resourceIds);
-    const canonical = candidates[kind].find((candidate) => path.basename(candidate.path).toLowerCase() === "pack.asper");
+    candidates[kind] = scanPackRoot(
+      packRoot,
+      kind,
+      kind === "behavior" ? identityMaps.behaviorIds : identityMaps.resourceIds,
+      project,
+      [project.sharedDirectory],
+    );
+    const canonical = candidates[kind].find((candidate) => path.basename(candidate.path).toLowerCase() === project.sharedDirectory.toLowerCase());
     if (canonical) selected[kind] = [canonical];
     else selected[kind] = candidates[kind];
   }
-  const summary = pairSummary(selected.behavior, selected.resource, identityMaps.pairs);
+  const summary = pairSummary(selected.behavior, selected.resource, identityMaps.pairs, project);
   for (const kind of Object.keys(PACK_KINDS)) {
-    const canonicalPath = path.join(pathRoot, PACK_KINDS[kind].directory, "pack.asper");
+    if (selected[kind].length === 1 && candidates[kind].filter((candidate) => !candidate.error).length > 1) {
+      summary.state = "conflict";
+      summary.issues = [...(summary.issues ?? []), `Mais de um ${kind} pack ${project.displayName} foi encontrado em Shared.`];
+    }
+  }
+  for (const kind of Object.keys(PACK_KINDS)) {
+    const canonicalPath = path.join(pathRoot, PACK_KINDS[kind].directory, project.sharedDirectory);
     if (fs.existsSync(canonicalPath) && !candidates[kind].some((candidate) => path.resolve(candidate.path) === path.resolve(canonicalPath))) {
       summary.state = "conflict";
       summary.issues = [...(summary.issues ?? []), `O caminho reservado de Shared contém outro pack: ${canonicalPath}`];
@@ -193,11 +231,12 @@ function inspectShared(usersRoot, identityMaps) {
   }
   return {
     path: pathRoot,
+    project,
     candidates,
     ...summary,
     targetPaths: {
-      behavior: selected.behavior.length === 1 ? selected.behavior[0].path : path.join(pathRoot, "behavior_packs", "pack.asper"),
-      resource: selected.resource.length === 1 ? selected.resource[0].path : path.join(pathRoot, "resource_packs", "pack.asper"),
+      behavior: selected.behavior.length === 1 ? selected.behavior[0].path : path.join(pathRoot, "behavior_packs", project.sharedDirectory),
+      resource: selected.resource.length === 1 ? selected.resource[0].path : path.join(pathRoot, "resource_packs", project.sharedDirectory),
     },
   };
 }
@@ -208,10 +247,10 @@ export function defaultBedrockRoot() {
   return path.join(process.env.APPDATA, "Minecraft Bedrock");
 }
 
-export function inspectBedrock({ bedrockRoot = defaultBedrockRoot(), catalog, profileId } = {}) {
+export function inspectBedrock({ bedrockRoot = defaultBedrockRoot(), catalog, project = legacyProject(), profileId } = {}) {
   const resolvedRoot = path.resolve(bedrockRoot);
   const usersRoot = path.join(resolvedRoot, "Users");
-  const identityMaps = catalogIdentityMaps(catalog);
+  const identityMaps = catalogIdentityMaps(catalog, project);
   const profiles = listProfiles(usersRoot).filter((profile) => !profileId || profile.id === profileId);
   if (profileId && profiles.length === 0) throw new Error(`Perfil Bedrock não encontrado: ${profileId}`);
   const worlds = [];
@@ -220,15 +259,17 @@ export function inspectBedrock({ bedrockRoot = defaultBedrockRoot(), catalog, pr
     if (!fs.existsSync(worldsRoot)) continue;
     for (const entry of fs.readdirSync(worldsRoot, { withFileTypes: true }).filter((item) => item.isDirectory())) {
       const worldPath = path.join(worldsRoot, entry.name);
-      worlds.push(inspectWorld({ worldPath, folder: entry.name, profile, bedrockRoot: resolvedRoot, identityMaps }));
+      worlds.push(inspectWorld({ worldPath, folder: entry.name, profile, bedrockRoot: resolvedRoot, identityMaps, project }));
     }
   }
   return {
+    project,
+    catalog,
     bedrockRoot: resolvedRoot,
     usersRoot,
     profiles,
     worlds,
-    shared: inspectShared(usersRoot, identityMaps),
+    shared: inspectShared(usersRoot, identityMaps, project),
     identityMaps,
   };
 }
@@ -240,11 +281,13 @@ export function resolveWorld(worlds, requested, profileId) {
   throw new Error(`Mais de um mundo corresponde a ${requested}; informe --profile.`);
 }
 
-export function managedWorldPackPath(world, kind) {
+export function managedWorldPackPath(world, kind, project = world.project ?? legacyProject()) {
   const candidates = world.localCandidates[kind].filter((candidate) => !candidate.error);
-  if (candidates.length > 1) throw new Error(`${world.name}: mais de um ${kind} pack Aspergillum local.`);
+  if (candidates.length > 1) throw new Error(`${world.name}: mais de um ${kind} pack ${project.displayName} local.`);
   if (candidates[0]) return candidates[0].path;
-  const target = path.join(world.path, PACK_KINDS[kind].directory, "aspergillum.managed");
+  const target = path.join(world.path, PACK_KINDS[kind].directory, project.worldDirectory);
   if (fs.existsSync(target)) throw new Error(`${world.name}: o caminho reservado contém outro ${kind} pack: ${target}`);
   return target;
 }
+
+export { legacyProject, projectTextMatches };

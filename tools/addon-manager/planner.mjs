@@ -21,8 +21,8 @@ function selectedWorld(world) {
   return {
     world,
     targets: {
-      behavior: managedWorldPackPath(world, "behavior"),
-      resource: managedWorldPackPath(world, "resource"),
+      behavior: managedWorldPackPath(world, "behavior", world.project),
+      resource: managedWorldPackPath(world, "resource", world.project),
     },
   };
 }
@@ -93,7 +93,7 @@ function selectSpecificWorld(inventory, target, worldName, profileId) {
 }
 
 function planPins(inventory, selected, target, updateShared) {
-  if (!updateShared || !inventory.shared.pair || pairMatchesDescriptor(inventory.shared.pair, target)) return { pins: [], conflicts: [] };
+  if (!updateShared || !inventory.shared.pair || (target && pairMatchesDescriptor(inventory.shared.pair, target))) return { pins: [], conflicts: [] };
   const selectedIds = new Set(selected.map((entry) => entry.world.id));
   const pins = [];
   const conflicts = [];
@@ -110,7 +110,7 @@ function planPins(inventory, selected, target, updateShared) {
 
 export function createInstallPlan({ inventory, target, source, world = "devtest", profileId, allWorlds = false, updateShared = true, action = source ? "upgrade" : "install" }) {
   if (["partial", "multiple", "conflict"].includes(inventory.shared.state) && updateShared) {
-    throw new Error(`Instalação Shared inconsistente: ${(inventory.shared.issues ?? []).join(" ")}`);
+    throw new Error(`Instalação Shared de ${inventory.project.displayName} inconsistente: ${(inventory.shared.issues ?? []).join(" ")}`);
   }
   const selection = source
     ? selectExactSourceWorlds(inventory, source, target)
@@ -120,7 +120,9 @@ export function createInstallPlan({ inventory, target, source, world = "devtest"
   const pinPlan = planPins(inventory, selection.selected, target, updateShared);
   const sharedChange = updateShared && !pairMatchesDescriptor(inventory.shared.pair, target);
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
+    addonId: inventory.project.id,
+    project: inventory.project,
     action,
     source: source ?? null,
     sourcePair: selection.sourcePair ?? null,
@@ -142,13 +144,58 @@ export function createInstallPlan({ inventory, target, source, world = "devtest"
   };
 }
 
+function selectWorldsForRemoval(inventory, worldName, profileId, allWorlds) {
+  const candidates = allWorlds ? inventory.worlds : [resolveWorld(inventory.worlds, worldName, profileId)];
+  const selected = [];
+  const skipped = [];
+  const conflicts = [];
+  for (const world of candidates) {
+    if (world.state === "none") skipped.push({ world, reason: "add-on ausente" });
+    else if (world.state === "conflict") conflicts.push(conflict(world, world.issues.join(" ") || "estado inconsistente"));
+    else selected.push(selectedWorld(world));
+  }
+  return { selected, skipped, conflicts };
+}
+
+export function createRemovePlan({ inventory, world = "devtest", profileId, allWorlds = false, updateShared = true }) {
+  if (["partial", "multiple", "conflict"].includes(inventory.shared.state) && updateShared) {
+    throw new Error(`Instalação Shared de ${inventory.project.displayName} inconsistente: ${(inventory.shared.issues ?? []).join(" ")}`);
+  }
+  const selection = selectWorldsForRemoval(inventory, world, profileId, allWorlds);
+  const pinPlan = planPins(inventory, selection.selected, null, updateShared);
+  return {
+    schemaVersion: 2,
+    addonId: inventory.project.id,
+    project: inventory.project,
+    action: "remove",
+    source: null,
+    sourcePair: inventory.shared.pair ?? null,
+    target: null,
+    selected: selection.selected,
+    skipped: selection.skipped,
+    preserved: [],
+    pins: pinPlan.pins,
+    conflicts: [...selection.conflicts, ...pinPlan.conflicts],
+    shared: {
+      update: updateShared && inventory.shared.state !== "none",
+      currentPair: inventory.shared.pair ?? null,
+      sources: inventory.shared.pair ? {
+        behavior: inventory.shared.pair.behavior.path,
+        resource: inventory.shared.pair.resource.path,
+      } : null,
+      targets: inventory.shared.targetPaths,
+    },
+  };
+}
+
 export function serializablePlan(plan) {
   const worldEntry = (entry) => ({ id: entry.world.id, profile: entry.world.profile.id, folder: entry.world.folder, name: entry.world.name, targets: entry.targets });
   return {
     schemaVersion: plan.schemaVersion,
+    addonId: plan.addonId,
     action: plan.action,
     source: plan.source?.label ?? null,
-    target: plan.target.label,
+    target: plan.target?.label ?? null,
     selected: plan.selected.map(worldEntry),
     pins: plan.pins.map(worldEntry),
     skipped: plan.skipped.map((entry) => ({ id: entry.world.id, name: entry.world.name, reason: entry.reason })),
@@ -163,5 +210,5 @@ export function planIsNoop(plan) {
 }
 
 export function planSourceText(plan) {
-  return plan.source?.label ?? (plan.sourcePair ? pairKey(plan.sourcePair) : "instalação nova");
+  return plan.source?.label ?? (plan.sourcePair ? pairKey(plan.sourcePair) : plan.action === "remove" ? "instalação atual" : "instalação nova");
 }

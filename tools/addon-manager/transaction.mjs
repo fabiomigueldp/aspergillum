@@ -45,6 +45,21 @@ export class FileTransaction {
     this.commitActions.push(() => fs.rmSync(previous, { recursive: true, force: true }));
   }
 
+  removeDirectory(target) {
+    if (this.finished) throw new Error("Transação já encerrada.");
+    const destination = assertInside(this.scopeRoot, target, "dados Bedrock");
+    if (!fs.existsSync(destination)) return false;
+    const parent = path.dirname(destination);
+    const previous = assertInside(this.scopeRoot, path.join(parent, `.${path.basename(destination)}.removed-${token()}`), "dados Bedrock");
+    fs.renameSync(destination, previous);
+    this.rollbackActions.unshift(() => {
+      fs.rmSync(destination, { recursive: true, force: true });
+      if (fs.existsSync(previous)) fs.renameSync(previous, destination);
+    });
+    this.commitActions.push(() => fs.rmSync(previous, { recursive: true, force: true }));
+    return true;
+  }
+
   writeJson(filePath, value) {
     if (this.finished) throw new Error("Transação já encerrada.");
     const destination = assertInside(this.scopeRoot, filePath, "dados Bedrock");
