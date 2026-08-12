@@ -11,6 +11,7 @@ import {
   getAvatarCaptureView,
   getAvatarModel,
   normalizeAvatarRecipe,
+  resolveBoundGripComposition,
 } from '../shared/avatar-contract.js';
 import {
   evaluateAvatarPose,
@@ -33,7 +34,7 @@ const ITEM_MODEL_ID = 'entity__aspergillum';
 const BINDING_EXPRESSION = 'q.item_slot_to_bone_name(context.item_slot)';
 const DEFAULT_BACKGROUND = 0x121a1c;
 const FIRST_PERSON_VISIBLE_BONES = new Set(['rightarm', 'rightsleeve']);
-const THIRD_PERSON_GRIP_SEAM_LIMIT = 3;
+const GRIP_CENTER_TOLERANCE = 0.05;
 
 function assetUrl(relativePath) {
   return new URL(`./asset-library/${relativePath}`, document.baseURI).href;
@@ -519,28 +520,18 @@ export class AvatarScene {
     this.applyAnimation(this.itemBuilt, holdAnimation, 0);
 
     // A bound Bedrock root inherits the holder while its authored vertices stay
-    // in player-model space. Our two independent Three.js scene graphs instead
-    // need an explicit inverse seam transform: it preserves the rightItem grip
-    // after the presentation channel is evaluated, without changing pack data.
+    // in player-model space. Our independent Three.js graphs need the complete
+    // inverse seam transform so the authored leather-grip pivot remains exactly
+    // centered on rightItem. Retaining even part of the hold translation makes
+    // the handle merely touch the outside face of the hand.
     const holdPosition = sampleAnimationChannel(
       holdAnimation?.bones?.aspergillum_presentation?.position,
       0,
       Number(holdAnimation?.animation_length) || 0,
     );
     const resolvedHoldPosition = bedrockAnimationPosition(holdPosition);
-    const retainedPresentationOffset = this.recipe.presentation.perspective === 'third'
-      ? [
-        THREE.MathUtils.clamp(
-          resolvedHoldPosition[0],
-          -THIRD_PERSON_GRIP_SEAM_LIMIT,
-          THIRD_PERSON_GRIP_SEAM_LIMIT,
-        ),
-        0,
-        0,
-      ]
-      : [0, 0, 0];
-    const compositionCalibration = retainedPresentationOffset.map(
-      (value, index) => value - resolvedHoldPosition[index],
+    const { retainedPresentationOffset, compositionCalibration } = resolveBoundGripComposition(
+      resolvedHoldPosition,
     );
     const boundGroup = findBoneGroup(this.itemBuilt, 'aspergillum_bound');
     boundGroup.position.add(
@@ -667,6 +658,14 @@ export class AvatarScene {
     return bounds;
   }
 
+  getGripAnchorBounds(sizeInBedrockUnits = 8) {
+    const rightItem = findBoneGroup(this.playerBuilt, 'rightItem');
+    if (!rightItem) return new THREE.Box3();
+    const center = rightItem.getWorldPosition(new THREE.Vector3());
+    const size = Math.max(1, Number(sizeInBedrockUnits) || 8) * BEDROCK_UNIT_SCALE * PLAYER_SCALE;
+    return new THREE.Box3().setFromCenterAndSize(center, new THREE.Vector3(size, size, size));
+  }
+
   frameBounds(bounds, direction = [1, 0.25, 1], distanceScale = 1.14) {
     if (bounds.isEmpty()) return;
     const target = bounds.getCenter(new THREE.Vector3());
@@ -689,6 +688,44 @@ export class AvatarScene {
     this.render();
   }
 
+  configureCaptureMarkers(view) {
+    const allPivots = [
+      ...(this.playerBuilt?.pivotRecords ?? []),
+      ...(this.itemBuilt?.pivotRecords ?? []),
+    ];
+    const allLocators = [
+      ...(this.playerBuilt?.locatorRecords ?? []),
+      ...(this.itemBuilt?.locatorRecords ?? []),
+    ];
+    for (const { marker } of allPivots) {
+      marker.visible = this.showPivots;
+      marker.scale.setScalar(1);
+      marker.renderOrder = 100;
+      marker.material.color.setHex(0x74d9c3);
+    }
+    for (const { marker } of allLocators) marker.visible = this.showPivots;
+    if (!this.showPivots || view.focus !== 'grip-anchor') return;
+
+    for (const { marker } of allPivots) marker.visible = false;
+    for (const { marker } of allLocators) marker.visible = false;
+    const handPivot = this.playerBuilt.pivotRecords.find(({ boneName }) => (
+      boneName.toLowerCase() === 'rightitem'
+    ));
+    const gripPivot = this.itemBuilt.pivotRecords.find(({ boneName }) => (
+      boneName.toLowerCase() === 'aspergillum_presentation'
+    ));
+    if (gripPivot) {
+      gripPivot.marker.visible = true;
+      gripPivot.marker.scale.setScalar(1.55);
+      gripPivot.marker.renderOrder = 101;
+      gripPivot.marker.material.color.setHex(0xf1c46f);
+    }
+    if (handPivot) {
+      handPivot.marker.visible = true;
+      handPivot.marker.renderOrder = 102;
+    }
+  }
+
   setCaptureView(viewId) {
     const view = getAvatarCaptureView(viewId);
     if (!view) throw new Error(`Vista de avatar desconhecida: ${viewId}`);
@@ -697,18 +734,17 @@ export class AvatarScene {
       return this.cameraSnapshot(view);
     }
     if (this.recipe.presentation.perspective !== 'third') this.setPerspective('third', { fit: false });
-    let records = null;
-    if (view.focus === 'grip') {
-      records = [
-        ...this.playerBuilt.meshRecords.filter(({ boneName }) => ['rightArm', 'rightSleeve'].includes(boneName)),
-        ...this.itemBuilt.meshRecords.filter(({ boneName }) => boneName === 'handle'),
-      ];
+    let bounds = null;
+    if (view.focus === 'grip-anchor') {
+      bounds = this.getGripAnchorBounds(view.focusSize);
     } else if (view.focus === 'sprinkler-head') {
-      records = this.itemBuilt.meshRecords.filter(({ boneName }) => boneName === 'sprinkler_head');
+      const records = this.itemBuilt.meshRecords.filter(({ boneName }) => boneName === 'sprinkler_head');
+      bounds = this.getVisibleBounds(records);
     }
-    this.camera.fov = view.focus ? 27 : 32;
+    this.camera.fov = view.focus === 'grip-anchor' ? 22 : view.focus ? 27 : 32;
     this.camera.up.set(...view.up);
-    this.frameBounds(this.getVisibleBounds(records), view.direction, view.focus ? 1.38 : 1.15);
+    this.frameBounds(bounds ?? this.getVisibleBounds(), view.direction, view.focus ? 1.12 : 1.15);
+    this.configureCaptureMarkers(view);
     this.render();
     return this.cameraSnapshot(view);
   }
@@ -753,6 +789,8 @@ export class AvatarScene {
     const hand = this.playerBuilt.meshRecords.filter(({ mesh, boneName }) => (
       ['rightarm', 'rightsleeve'].includes(boneName.toLowerCase()) && isVisible(mesh)
     ));
+    const rightItemGroup = findBoneGroup(this.playerBuilt, 'rightItem');
+    const presentationGroup = findBoneGroup(this.itemBuilt, 'aspergillum_presentation');
     const intersections = [];
     let minimumHeadClearance = Number.POSITIVE_INFINITY;
     for (const itemRecord of itemHead) {
@@ -766,15 +804,35 @@ export class AvatarScene {
         }
       }
     }
-    const gripEngaged = handle.some(({ mesh }) => {
-      const handleObb = worldObb(mesh);
-      return hand.some(({ mesh: handMesh }) => handleObb.intersectsOBB(worldObb(handMesh)));
-    });
     const unitScale = BEDROCK_UNIT_SCALE * PLAYER_SCALE;
+    const handAnchor = rightItemGroup?.getWorldPosition(new THREE.Vector3()) ?? null;
+    const gripCenter = presentationGroup?.getWorldPosition(new THREE.Vector3()) ?? null;
+    const gripCenterOffset = rightItemGroup && gripCenter
+      ? rightItemGroup.worldToLocal(gripCenter.clone()).toArray().map(
+        (value) => value / BEDROCK_UNIT_SCALE,
+      )
+      : [Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY];
+    const gripCenterError = Math.hypot(...gripCenterOffset);
+    const gripCentered = gripCenterError <= GRIP_CENTER_TOLERANCE;
+    const handContainsGripCenter = Boolean(gripCenter && hand.some(({ mesh }) => (
+      worldObb(mesh).containsPoint(gripCenter)
+    )));
+    const handleContainsHandAnchor = Boolean(handAnchor && handle.some(({ mesh }) => (
+      worldObb(mesh).containsPoint(handAnchor)
+    )));
+    const gripEngaged = gripCentered && handContainsGripCenter && handleContainsHandAnchor;
     return {
       applicable: true,
       headClear: intersections.length === 0,
       gripEngaged,
+      gripCentered,
+      gripCenterOffset: formatVector(gripCenterOffset),
+      gripCenterError: Number.isFinite(gripCenterError)
+        ? Number(gripCenterError.toFixed(4))
+        : null,
+      gripCenterTolerance: GRIP_CENTER_TOLERANCE,
+      handContainsGripCenter,
+      handleContainsHandAnchor,
       minimumHeadClearance: Number.isFinite(minimumHeadClearance)
         ? Number((minimumHeadClearance / unitScale).toFixed(4))
         : null,
@@ -894,7 +952,12 @@ export class AvatarScene {
       skinSource: options.skinSource ?? this.skinSource,
       skinMetadata: options.skinMetadata ?? this.skinMetadata,
     });
-    this.setDebug({ grid: Boolean(options.grid), pivots: false, skeleton: false, wireframe: Boolean(options.wireframe) });
+    this.setDebug({
+      grid: Boolean(options.grid),
+      pivots: Boolean(options.pivots),
+      skeleton: false,
+      wireframe: Boolean(options.wireframe),
+    });
     await new Promise((resolve) => requestAnimationFrame(resolve));
     this.resize();
     this.render(true);

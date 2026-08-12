@@ -282,14 +282,15 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 
 `npm run capture:models -- --subject all` gera nove vistas fixas e uma prancha composta para o aspersório, a caldeirinha e a Mesa do Sacristão, vazias ou com o aspersório acomodado. O `capture-manifest.json` registra câmera, geometria, material, versão e opções. Essas imagens servem para revisão de silhueta, faces, UVs e comparação entre revisões; o gate dentro do Minecraft continua obrigatório para culling, shader, câmera, cache e integração reais.
 
-`npm run capture:avatars -- --action sprinkle` monta a skin padrão no rig wide, vincula o attachable real a `rightItem` e captura dez tempos diagnósticos do swing vanilla + ação local. Para uma revisão de integração, gerar ao menos `front-right,grip,head` em terceira pessoa, `first-person` em `16:9`, o frame de release da aspersão e os pontos `0,46/0,54/0,78 s` da carga. O manifest deve registrar `exactBinding: true`, `bindingError: 0`, `allFramesGripEngaged: true`, `allFramesHeadClear: true` e hashes idênticos quando os inputs não mudarem.
+`npm run capture:avatars -- --action sprinkle` monta a skin padrão no rig wide, vincula o attachable real a `rightItem` e captura dez tempos diagnósticos do swing vanilla + ação local. Para uma revisão de integração, gerar ao menos `front-right,grip-front,grip-inside,grip-outside,head` em terceira pessoa, `first-person` em `16:9`, o frame de release da aspersão e os pontos `0,46/0,54/0,78 s` da carga. Inspecione os PNGs macro individualmente em resolução integral; a prancha serve somente para trajetória. O manifest deve registrar `exactBinding: true`, `bindingError: 0`, `allFramesGripCentered: true`, `allFramesGripEngaged: true` e hashes idênticos quando os inputs não mudarem. `allFramesHeadClear` permanece um gate separado.
 
 Checklist mínimo do Avatar Lab:
 
 - [ ] preset padrão tem `128 × 128`, perfil wide e SHA-256 documentado;
 - [ ] a vista `front` mostra rosto e frente da veste, `back` mostra nuca e costas, e direita/esquerda não estão trocadas;
 - [ ] wide e slim mantêm seus pivôs próprios de `rightArm/rightItem`;
-- [ ] grip permanece em contato durante idle, carga e todos os frames da aspersão;
+- [ ] `gripCenterOffset` permanece `[0,0,0]` em idle, carga e todos os frames da aspersão, com tolerância máxima de `0,05` unidade;
+- [ ] `grip-front`, `grip-inside`, `grip-outside` e `grip-back` mostram couro/eixo atravessando o volume da mão; mero contato com a face externa reprova;
 - [ ] `sprinkler_head` não intersecta `head/hat` em nenhuma amostra e a trajetória sai para fora do avatar;
 - [ ] camadas externas não ocultam a mão nem o item;
 - [ ] PBR e clássico usam a mesma geometria e pose;

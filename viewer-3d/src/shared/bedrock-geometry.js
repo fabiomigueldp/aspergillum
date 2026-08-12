@@ -54,10 +54,18 @@ export function canonicalBoneName(name) {
 }
 
 function createMarker(radius, color) {
-  return new THREE.Mesh(
+  const marker = new THREE.Mesh(
     new THREE.SphereGeometry(radius, 8, 6),
-    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.88 }),
+    new THREE.MeshBasicMaterial({
+      color,
+      transparent: true,
+      opacity: 0.92,
+      depthTest: false,
+      depthWrite: false,
+    }),
   );
+  marker.renderOrder = 100;
+  return marker;
 }
 
 function createCubeMesh(cube, bone, geometrySummary, palette, scale) {

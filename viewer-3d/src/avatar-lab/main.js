@@ -125,8 +125,9 @@ function renderSnapshot(snapshot) {
     <div><dt>Binding</dt><dd title="${escapeHtml(runtime.binding)}">item slot → bone</dd></div>
     <div><dt>Target</dt><dd>${escapeHtml(binding.targetBone)}</dd></div>
     <div><dt>Pivot target</dt><dd>${binding.targetPivot.join(' · ')}</dd></div>
-    <div><dt>Costura visual</dt><dd>${binding.presentationOffset.join(' · ')}</dd></div>
-    <div><dt>Empunhadura</dt><dd>${collision.gripEngaged ? 'em contato' : 'separada'}</dd></div>
+    <div><dt>Centro do cabo</dt><dd>${collision.applicable ? (collision.gripCentered ? `centralizado · ${formatNumber(collision.gripCenterError)} u` : `deslocado · ${formatNumber(collision.gripCenterError)} u`) : 'viewmodel'}</dd></div>
+    <div><dt>Offset XYZ</dt><dd>${collision.applicable ? collision.gripCenterOffset.join(' · ') : '—'}</dd></div>
+    <div><dt>Empunhadura</dt><dd>${collision.gripEngaged ? 'eixo dentro da mão' : 'encaixe inválido'}</dd></div>
     <div><dt>Cabeça</dt><dd>${collision.applicable ? (collision.headClear ? `livre · ${formatNumber(collision.minimumHeadClearance)} u` : 'interseção') : 'viewmodel'}</dd></div>
     <div><dt>Erro</dt><dd>${binding.error.toExponential(1)}</dd></div>
   `;

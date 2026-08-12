@@ -55,14 +55,16 @@ O pack continua sendo a autoridade para os três valores protegidos:
 
 O compositor não grava translação artística no osso vinculado. Para sobrepor no Three.js dois scene graphs independentes, ele usa o grip empírico `[-6, 24, 1]` já aprovado no Minecraft e resolve a diferença entre o binding nativo — que conserva vértices no espaço do modelo do jogador — e dois graphs Three.js comuns.
 
-Em terceira pessoa, o offset autorado `[5, -1.5, -2.25]` torna-se `[-5, -1.5, -2.25]` no perfil visual. A costura absorve Y/Z e conserva `-3` unidades no eixo externo. Esse limite não é um deslocamento do pack: ele fica `0,125` unidade dentro do alcance geométrico mão–cabo (`2` unidades de meia largura do braço + `1,125` da maior seção do cabo) e foi validado por OBB durante toda a curva. Conservar as cinco unidades completas separa o item da mão no graph web; absorvê-las por inteiro reintroduz a interseção com a cabeça. O scene trace registra separadamente:
+Em terceira pessoa, o offset autorado `[5, -1.5, -2.25]` torna-se `[-5, -1.5, -2.25]` no perfil visual. Como player e attachable já foram enxertados como graphs independentes pelo centro autorado do grip `[-6, 24, 1]`, a costura absorve integralmente esse offset depois de avaliá-lo. O resultado exigido no espaço local de `rightItem` é `[0, 0, 0]`: o eixo do couro atravessa o centro da mão, em vez de apenas tocar sua face externa. Essa compensação existe somente no compositor web e não altera os JSONs do pack.
+
+O teste anterior aceitava `-3` unidades no eixo lateral porque uma OBB do cabo ainda tocava `0,125` unidade da manga. As ampliações do vídeo e do viewer demonstraram que isso era um falso positivo: contato de volumes não prova empunhadura. O contrato atual exige simultaneamente erro central máximo de `0,05` unidade, centro do grip contido na mão e âncora da mão contida no volume do cabo. O scene trace registra separadamente:
 
 - pivot de `rightItem` para wide ou slim;
 - grip empírico do attachable;
 - offset de apresentação autorado no pack;
-- offset convertido, parcela retida e compensação exclusiva do compositor;
+- offset convertido, offset final zero e compensação exclusiva do compositor;
 - matrizes locais e mundiais de `rightArm`, `rightItem`, `bound`, `presentation` e `action`;
-- erro da costura, contato OBB entre mão e cabo e colisões OBB entre `sprinkler_head` e `head/hat`.
+- erro da costura, offset XYZ do centro, contenção bidirecional mão–grip e colisões OBB entre `sprinkler_head` e `head/hat`.
 
 Isso torna um desalinhamento observável sem transformar a calibração da ferramenta em mudança no add-on. Erro diferente de zero reprova a composição local, mas erro zero ainda não substitui o teste no Minecraft.
 
@@ -127,6 +129,9 @@ npm run capture:avatars -- --action idle
 # sequência completa da aspersão nos tempos diagnósticos padrão
 npm run capture:avatars -- --action sprinkle --views front-right,grip,head
 
+# prova macro da empunhadura nos dois lados, com pivôs visíveis
+npm run capture:avatars -- --action sprinkle --times 0,0.25,0.5,0.75 --views grip-front,grip-inside,grip-outside,grip-back --size 1600 --pivots
+
 # frames escolhidos da carga
 npm run capture:avatars -- --action load --times 0,0.25,0.46,0.54,0.78,1.1
 
@@ -148,7 +153,7 @@ out/avatar-captures/<run>/
 └── ...
 ```
 
-O manifest registra versões do pack, Three.js, Playwright e API de captura; hash e dimensões da skin; hashes da geometria, attachable e animações; hash da configuração; câmera; tempo; matrizes da cadeia, costura visual, binding, contato de empunhadura e folga da cabeça para cada PNG. `allFramesHeadClear` e `allFramesGripEngaged` resumem a execução.
+O manifest registra versões do pack, Three.js, Playwright e API de captura; hash e dimensões da skin; hashes da geometria, attachable e animações; hash da configuração; câmera; tempo; matrizes da cadeia, costura visual, binding, centralização/contenção da empunhadura e folga da cabeça para cada PNG. `allFramesGripCentered`, `allFramesGripEngaged` e `allFramesHeadClear` resumem critérios independentes; uma interseção de cabeça nunca deve ser “corrigida” deslocando o grip para fora da mão.
 
 ## Evidência de paridade de 11 de agosto de 2026
 
@@ -157,7 +162,7 @@ A gravação fornecida para esta correção mede `1918 × 1004`, contém 1.042 f
 - primeira pessoa, aproximadamente `28,75–29,65 s`: o instrumento parte do canto inferior direito, cruza para o centro durante a liberação e retorna continuamente;
 - terceira pessoa frontal, aproximadamente `32,50–33,40 s`: braço e instrumento projetam-se para fora, sem atravessar rosto, chapéu ou tórax.
 
-A varredura diagnóstica equivalente usa 28 amostras de `0,033 s` entre `0` e `0,90 s`. A execução de referência registrou erro de binding zero, contato mão–cabo e ausência de colisão cabeça/chapéu em todos os 28 frames. A gravação e os PNGs continuam evidência local descartável; o pack e as animações aprovadas não foram alterados.
+A varredura diagnóstica equivalente usa 28 amostras de `0,033 s` entre `0` e `0,90 s`. A reauditoria de empunhadura substituiu o antigo “algum contato OBB” pelo centro autorado: todas as amostras devem registrar `gripCenterOffset: [0, 0, 0]`, contenção bidirecional e binding zero. Colisões de cabeça continuam registradas como um eixo separado da análise de movimento. A gravação e os PNGs continuam evidência local descartável; o pack e as animações aprovadas não foram alterados.
 
 ## Relação com o Sacristia
 

@@ -10,6 +10,7 @@ import {
   createPlayerGeometry,
   inferSkinModelFromRgba,
   normalizeAvatarRecipe,
+  resolveBoundGripComposition,
   resolveAvatarCaptureViews,
   validateSkinDimensions,
 } from '../src/shared/avatar-contract.js';
@@ -90,9 +91,24 @@ test('validates modern square skins and resolves capture views in requested orde
   assert.equal(validateSkinDimensions(128, 128), true);
   assert.equal(validateSkinDimensions(64, 32), false);
   assert.equal(validateSkinDimensions(256, 256), false);
-  assert.deepEqual(resolveAvatarCaptureViews(['grip', 'front']).map(({ id }) => id), ['grip', 'front']);
+  assert.deepEqual(
+    resolveAvatarCaptureViews(['grip-front', 'grip-outside', 'grip-inside', 'front'])
+      .map(({ id }) => id),
+    ['grip-front', 'grip-outside', 'grip-inside', 'front'],
+  );
   assert.equal(AVATAR_CAPTURE_VIEWS.some(({ id }) => id === 'first-person'), true);
   assert.throws(() => resolveAvatarCaptureViews(['unknown']), /desconhecida/);
+});
+
+test('centers the authored leather-grip pivot exactly on rightItem', () => {
+  assert.deepEqual(resolveBoundGripComposition([-5, -1.5, -2.25]), {
+    retainedPresentationOffset: [0, 0, 0],
+    compositionCalibration: [5, 1.5, 2.25],
+  });
+  assert.deepEqual(resolveBoundGripComposition([0, 0, 0]), {
+    retainedPresentationOffset: [0, 0, 0],
+    compositionCalibration: [0, 0, 0],
+  });
 });
 
 test('infers slim only from transparent reserved arm strips and keeps the result advisory', () => {

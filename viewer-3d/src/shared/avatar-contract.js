@@ -13,6 +13,19 @@ export const DEFAULT_AVATAR_PRESET = Object.freeze({
 // O compositor usa este referencial sem alterar a geometria distribuída.
 export const ASPERGILLUM_EMPIRICAL_GRIP = Object.freeze([-6, 24, 1]);
 
+/**
+ * Resolves the seam required when the bound item and the player are built as
+ * independent Three.js graphs. The authored hold translation is meaningful in
+ * Bedrock's bound-geometry space, but retaining any part of it after grafting
+ * the graphs displaces the authored grip pivot away from rightItem.
+ */
+export function resolveBoundGripComposition(resolvedHoldPosition = [0, 0, 0]) {
+  const resolved = [0, 1, 2].map((index) => Number(resolvedHoldPosition[index]) || 0);
+  const retainedPresentationOffset = [0, 0, 0];
+  const compositionCalibration = resolved.map((value) => (value === 0 ? 0 : -value));
+  return { retainedPresentationOffset, compositionCalibration };
+}
+
 export const AVATAR_MODELS = Object.freeze({
   wide: Object.freeze({
     id: 'wide',
@@ -49,10 +62,43 @@ export const AVATAR_CAPTURE_VIEWS = Object.freeze([
   Object.freeze({ id: 'left', label: 'Esquerda', direction: [-1, 0.15, 0], up: [0, 1, 0] }),
   Object.freeze({
     id: 'grip',
-    label: 'Detalhe · empunhadura',
+    label: 'Empunhadura · oblíqua',
     direction: [1, 0.2, 1],
     up: [0, 1, 0],
-    focus: 'grip',
+    focus: 'grip-anchor',
+    focusSize: 8,
+  }),
+  Object.freeze({
+    id: 'grip-front',
+    label: 'Empunhadura · frente',
+    direction: [0, 0.04, 1],
+    up: [0, 1, 0],
+    focus: 'grip-anchor',
+    focusSize: 8,
+  }),
+  Object.freeze({
+    id: 'grip-outside',
+    label: 'Empunhadura · lado externo',
+    direction: [-1, 0.04, 0],
+    up: [0, 1, 0],
+    focus: 'grip-anchor',
+    focusSize: 8,
+  }),
+  Object.freeze({
+    id: 'grip-inside',
+    label: 'Empunhadura · lado interno',
+    direction: [1, 0.04, 0],
+    up: [0, 1, 0],
+    focus: 'grip-anchor',
+    focusSize: 8,
+  }),
+  Object.freeze({
+    id: 'grip-back',
+    label: 'Empunhadura · costas',
+    direction: [0, 0.04, -1],
+    up: [0, 1, 0],
+    focus: 'grip-anchor',
+    focusSize: 8,
   }),
   Object.freeze({
     id: 'head',

@@ -42,12 +42,14 @@ Opções:
   --output <pasta>       destino (padrão: out/avatar-captures/<timestamp>)
   --no-outer-layers      oculta chapéu, jaqueta, mangas e calças externas
   --grid                 inclui grade diagnóstica
+  --pivots               inclui pivôs e locators diagnósticos
   --wireframe            sobrepõe o modo wireframe
   --transparent          fundo transparente
   --help                 mostra esta ajuda
 
 Vistas:
-  front, front-right, right, back, left, grip, head, first-person
+  front, front-right, right, back, left, grip, grip-front, grip-outside,
+  grip-inside, grip-back, head, first-person
 `;
 
 function parseList(value) {
@@ -83,6 +85,7 @@ function parseArgs(args) {
     output: null,
     outerLayers: true,
     grid: false,
+    pivots: false,
     wireframe: false,
     transparent: false,
     help: false,
@@ -92,6 +95,7 @@ function parseArgs(args) {
     const argument = args[index];
     if (argument === '--help' || argument === '-h') options.help = true;
     else if (argument === '--grid') options.grid = true;
+    else if (argument === '--pivots') options.pivots = true;
     else if (argument === '--wireframe') options.wireframe = true;
     else if (argument === '--transparent') options.transparent = true;
     else if (argument === '--no-outer-layers') options.outerLayers = false;
@@ -289,6 +293,7 @@ async function main() {
       cosmetic: options.cosmetic,
       outerLayers: options.outerLayers,
       grid: options.grid,
+      pivots: options.pivots,
       wireframe: options.wireframe,
       transparent: options.transparent,
     });
@@ -342,6 +347,7 @@ async function main() {
       cosmetic: options.cosmetic,
       outerLayers: options.outerLayers,
       grid: options.grid,
+      pivots: options.pivots,
       wireframe: options.wireframe,
       transparent: options.transparent,
       width: options.width,
@@ -376,6 +382,9 @@ async function main() {
         bindingError: configured.binding.error,
         allFramesHeadClear: captures.every(({ collision }) => collision.headClear),
         allFramesGripEngaged: captures.every(({ collision }) => collision.gripEngaged),
+        allFramesGripCentered: captures.every(({ collision }) => (
+          collision.applicable === false || collision.gripCentered
+        )),
       },
       captures: captures.map(({ absolutePath, ...capture }) => capture),
       contactSheet: path.basename(contactSheet),
