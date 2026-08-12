@@ -6,6 +6,48 @@ import {
 } from './bedrock-uv.js';
 
 export const BEDROCK_UNIT_SCALE = 1 / 16;
+export const BEDROCK_EULER_ORDER = 'ZYX';
+
+function negateNumber(value) {
+  const number = Number(value) || 0;
+  return number === 0 ? 0 : -number;
+}
+
+/**
+ * Converts Bedrock animation translations into the visual coordinate system
+ * used by our Three.js scene. The scene deliberately presents the player from
+ * +Z, while Bedrock authoring uses the opposite handed X axis for animation
+ * channels. Keeping this conversion explicit prevents pack data from being
+ * "fixed" with compensating offsets in individual viewers.
+ */
+export function bedrockAnimationPosition(value = [0, 0, 0]) {
+  return [negateNumber(value[0]), Number(value[1]) || 0, Number(value[2]) || 0];
+}
+
+/**
+ * Bedrock's player curves are composed in ZYX order. Third-person assets in
+ * this renderer use the established +Z inspection basis; the actual Bedrock
+ * first-person viewmodel uses the canonical imported pitch sign.
+ */
+export function bedrockAnimationRotation(value = [0, 0, 0], perspective = 'third') {
+  const x = Number(value[0]) || 0;
+  const z = Number(value[2]) || 0;
+  return [
+    perspective === 'first' ? negateNumber(x) : x,
+    negateNumber(value[1]),
+    perspective === 'first' ? z : negateNumber(z),
+  ];
+}
+
+export function bedrockGeometryRotation(value = [0, 0, 0], perspective = 'third') {
+  const x = Number(value[0]) || 0;
+  const z = Number(value[2]) || 0;
+  return [
+    perspective === 'first' ? negateNumber(x) : x,
+    negateNumber(value[1]),
+    perspective === 'first' ? z : negateNumber(z),
+  ];
+}
 
 export function canonicalBoneName(name) {
   return String(name ?? '').toLowerCase();
@@ -36,10 +78,12 @@ function createCubeMesh(cube, bone, geometrySummary, palette, scale) {
     (pivot[2] - bonePivot[2]) * scale,
   );
   if (cube.rotation) {
+    const rotation = bedrockGeometryRotation(cube.rotation);
     cubeGroup.rotation.set(
-      THREE.MathUtils.degToRad(cube.rotation[0] ?? 0),
-      THREE.MathUtils.degToRad(cube.rotation[1] ?? 0),
-      THREE.MathUtils.degToRad(cube.rotation[2] ?? 0),
+      THREE.MathUtils.degToRad(rotation[0]),
+      THREE.MathUtils.degToRad(rotation[1]),
+      THREE.MathUtils.degToRad(rotation[2]),
+      BEDROCK_EULER_ORDER,
     );
   }
 
@@ -136,10 +180,12 @@ export function buildBedrockGeometry(
       (pivot[1] - parentPivot[1]) * scale,
       (pivot[2] - parentPivot[2]) * scale,
     );
+    const rotation = bedrockGeometryRotation(bone.rotation);
     group.rotation.set(
-      THREE.MathUtils.degToRad(bone.rotation?.[0] ?? 0),
-      THREE.MathUtils.degToRad(bone.rotation?.[1] ?? 0),
-      THREE.MathUtils.degToRad(bone.rotation?.[2] ?? 0),
+      THREE.MathUtils.degToRad(rotation[0]),
+      THREE.MathUtils.degToRad(rotation[1]),
+      THREE.MathUtils.degToRad(rotation[2]),
+      BEDROCK_EULER_ORDER,
     );
     group.visible = !bone.neverRender;
     parentGroup.add(group);

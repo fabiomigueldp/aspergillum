@@ -1,7 +1,12 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { buildBedrockGeometry as buildSharedBedrockGeometry } from '../shared/bedrock-geometry.js';
+import {
+  bedrockAnimationPosition,
+  bedrockAnimationRotation,
+  bedrockGeometryRotation,
+  buildBedrockGeometry as buildSharedBedrockGeometry,
+} from '../shared/bedrock-geometry.js';
 import {
   CAPTURE_SUBJECTS,
   CAPTURE_VIEWS,
@@ -525,11 +530,14 @@ function applyAnimation(animation, time) {
     if (!group) continue;
 
     if (channels.position) {
-      const value = sampleChannel(channels.position, time, length);
+      const value = bedrockAnimationPosition(sampleChannel(channels.position, time, length));
       group.position.add(new THREE.Vector3(...value).multiplyScalar(SCALE));
     }
     if (channels.rotation) {
-      const value = sampleChannel(channels.rotation, time, length);
+      const value = bedrockAnimationRotation(
+        sampleChannel(channels.rotation, time, length),
+        state.perspective,
+      );
       group.rotation.x += THREE.MathUtils.degToRad(value[0]);
       group.rotation.y += THREE.MathUtils.degToRad(value[1]);
       group.rotation.z += THREE.MathUtils.degToRad(value[2]);
@@ -552,6 +560,19 @@ function resetPose() {
 function applyPose() {
   if (!state.currentGeometry) return;
   resetPose();
+
+  if (state.perspective === 'first') {
+    for (const { bone, group } of state.boneRecords) {
+      if (!bone.rotation) continue;
+      const rotation = bedrockGeometryRotation(bone.rotation, 'first');
+      group.rotation.set(
+        THREE.MathUtils.degToRad(rotation[0]),
+        THREE.MathUtils.degToRad(rotation[1]),
+        THREE.MathUtils.degToRad(rotation[2]),
+        group.rotation.order,
+      );
+    }
+  }
 
   const path = state.currentRenderPath;
   if (path?.attachable && !state.captureNeutralPose) {

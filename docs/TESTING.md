@@ -282,7 +282,7 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 
 `npm run capture:models -- --subject all` gera nove vistas fixas e uma prancha composta para o aspersório, a caldeirinha e a Mesa do Sacristão, vazias ou com o aspersório acomodado. O `capture-manifest.json` registra câmera, geometria, material, versão e opções. Essas imagens servem para revisão de silhueta, faces, UVs e comparação entre revisões; o gate dentro do Minecraft continua obrigatório para culling, shader, câmera, cache e integração reais.
 
-`npm run capture:avatars -- --action sprinkle` monta a skin padrão no rig wide, vincula o attachable real a `rightItem` e captura os tempos diagnósticos do swing vanilla + ação local. Para uma revisão de integração, gerar ao menos `front-right,grip,head,first-person` em `idle`, o frame de release da aspersão e os pontos `0,46/0,54/0,78 s` da carga. O manifest deve registrar `exactBinding: true`, erro de contato zero e hashes idênticos quando os inputs não mudarem.
+`npm run capture:avatars -- --action sprinkle` monta a skin padrão no rig wide, vincula o attachable real a `rightItem` e captura dez tempos diagnósticos do swing vanilla + ação local. Para uma revisão de integração, gerar ao menos `front-right,grip,head` em terceira pessoa, `first-person` em `16:9`, o frame de release da aspersão e os pontos `0,46/0,54/0,78 s` da carga. O manifest deve registrar `exactBinding: true`, `bindingError: 0`, `allFramesGripEngaged: true`, `allFramesHeadClear: true` e hashes idênticos quando os inputs não mudarem.
 
 Checklist mínimo do Avatar Lab:
 
@@ -290,9 +290,10 @@ Checklist mínimo do Avatar Lab:
 - [ ] a vista `front` mostra rosto e frente da veste, `back` mostra nuca e costas, e direita/esquerda não estão trocadas;
 - [ ] wide e slim mantêm seus pivôs próprios de `rightArm/rightItem`;
 - [ ] grip permanece em contato durante idle, carga e todos os frames da aspersão;
+- [ ] `sprinkler_head` não intersecta `head/hat` em nenhuma amostra e a trajetória sai para fora do avatar;
 - [ ] camadas externas não ocultam a mão nem o item;
 - [ ] PBR e clássico usam a mesma geometria e pose;
-- [ ] o viewmodel FP mantém braço e instrumento visíveis, sem afirmar paridade da câmera proprietária;
+- [ ] o viewmodel FP em `16:9` parte do canto inferior direito, cruza o centro na liberação e retorna continuamente;
 - [ ] comparação antes/depois usa a mesma skin, modelo, ação, tempos, vistas, material, acabamento, resolução e flags;
 - [ ] o pacote final repete FP/TP, Steve/Alex/Persona e clássico/Vibrant Visuals dentro do Minecraft.
 

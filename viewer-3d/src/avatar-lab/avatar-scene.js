@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { OBB } from 'three/addons/math/OBB.js';
 import {
   AVATAR_ACTIONS,
   ASPERGILLUM_EMPIRICAL_GRIP,
@@ -17,6 +18,9 @@ import {
 } from '../shared/avatar-motion.js';
 import {
   BEDROCK_UNIT_SCALE,
+  bedrockAnimationPosition,
+  bedrockAnimationRotation,
+  bedrockGeometryRotation,
   buildBedrockGeometry,
   findBoneGroup,
   resetBedrockPose,
@@ -29,6 +33,7 @@ const ITEM_MODEL_ID = 'entity__aspergillum';
 const BINDING_EXPRESSION = 'q.item_slot_to_bone_name(context.item_slot)';
 const DEFAULT_BACKGROUND = 0x121a1c;
 const FIRST_PERSON_VISIBLE_BONES = new Set(['rightarm', 'rightsleeve']);
+const THIRD_PERSON_GRIP_SEAM_LIMIT = 3;
 
 function assetUrl(relativePath) {
   return new URL(`./asset-library/${relativePath}`, document.baseURI).href;
@@ -73,6 +78,20 @@ function isVisible(object) {
     current = current.parent;
   }
   return true;
+}
+
+function worldObb(mesh) {
+  if (!mesh.geometry.boundingBox) mesh.geometry.computeBoundingBox();
+  return new OBB().fromBox3(mesh.geometry.boundingBox).applyMatrix4(mesh.matrixWorld);
+}
+
+function boxDistance(left, right) {
+  const gaps = [
+    Math.max(0, left.min.x - right.max.x, right.min.x - left.max.x),
+    Math.max(0, left.min.y - right.max.y, right.min.y - left.max.y),
+    Math.max(0, left.min.z - right.max.z, right.min.z - left.max.z),
+  ];
+  return Math.hypot(...gaps);
 }
 
 export class AvatarScene {
@@ -429,18 +448,23 @@ export class AvatarScene {
     this.bindingLine.visible = this.showSkeleton;
   }
 
-  applyAnimation(built, animation, time) {
+  applyAnimation(built, animation, time, perspective = this.recipe.presentation.perspective) {
     if (!animation?.bones) return;
     const length = Number(animation.animation_length) || 0.82;
     for (const [boneName, channels] of Object.entries(animation.bones)) {
       const group = findBoneGroup(built, boneName);
       if (!group) continue;
       if (channels.position) {
-        const value = sampleAnimationChannel(channels.position, time, length);
+        const value = bedrockAnimationPosition(
+          sampleAnimationChannel(channels.position, time, length),
+        );
         group.position.add(new THREE.Vector3(...value).multiplyScalar(BEDROCK_UNIT_SCALE));
       }
       if (channels.rotation) {
-        const value = sampleAnimationChannel(channels.rotation, time, length);
+        const value = bedrockAnimationRotation(
+          sampleAnimationChannel(channels.rotation, time, length),
+          perspective,
+        );
         group.rotation.x += THREE.MathUtils.degToRad(value[0]);
         group.rotation.y += THREE.MathUtils.degToRad(value[1]);
         group.rotation.z += THREE.MathUtils.degToRad(value[2]);
@@ -456,6 +480,18 @@ export class AvatarScene {
     if (!this.playerBuilt || !this.itemBuilt) return;
     resetBedrockPose(this.playerBuilt.boneRecords);
     resetBedrockPose(this.itemBuilt.boneRecords);
+    if (this.recipe.presentation.perspective === 'first') {
+      for (const { bone, group } of this.itemBuilt.boneRecords) {
+        if (!bone.rotation) continue;
+        const rotation = bedrockGeometryRotation(bone.rotation, 'first');
+        group.rotation.set(
+          THREE.MathUtils.degToRad(rotation[0]),
+          THREE.MathUtils.degToRad(rotation[1]),
+          THREE.MathUtils.degToRad(rotation[2]),
+          group.rotation.order,
+        );
+      }
+    }
     const pose = evaluateAvatarPose({
       action: this.recipe.presentation.action,
       time: this.recipe.presentation.time,
@@ -464,9 +500,17 @@ export class AvatarScene {
     for (const [boneName, channels] of Object.entries(pose.bones)) {
       const group = findBoneGroup(this.playerBuilt, boneName);
       if (!group) continue;
-      group.rotation.x += THREE.MathUtils.degToRad(channels.rotation[0]);
-      group.rotation.y += THREE.MathUtils.degToRad(channels.rotation[1]);
-      group.rotation.z += THREE.MathUtils.degToRad(channels.rotation[2]);
+      if (channels.position) {
+        const position = bedrockAnimationPosition(channels.position);
+        group.position.add(new THREE.Vector3(...position).multiplyScalar(BEDROCK_UNIT_SCALE));
+      }
+      const rotation = bedrockAnimationRotation(
+        channels.rotation,
+        this.recipe.presentation.perspective,
+      );
+      group.rotation.x += THREE.MathUtils.degToRad(rotation[0]);
+      group.rotation.y += THREE.MathUtils.degToRad(rotation[1]);
+      group.rotation.z += THREE.MathUtils.degToRad(rotation[2]);
     }
 
     const aliases = this.attachable?.['minecraft:attachable']?.description?.animations ?? {};
@@ -474,19 +518,37 @@ export class AvatarScene {
     const holdAnimation = this.animations.get(aliases[`hold_${perspectiveSuffix}`]);
     this.applyAnimation(this.itemBuilt, holdAnimation, 0);
 
-    // O binding nativo mantém os vértices no espaço de modelo do jogador. Para
-    // compor dois scene graphs independentes no Three.js, normalizamos a
-    // translação de apresentação contra o grip empírico já aprovado no jogo.
-    // A rotação de apresentação permanece integral e o offset continua exposto
-    // no scene trace, em vez de ser gravado no osso vinculado do pack.
+    // A bound Bedrock root inherits the holder while its authored vertices stay
+    // in player-model space. Our two independent Three.js scene graphs instead
+    // need an explicit inverse seam transform: it preserves the rightItem grip
+    // after the presentation channel is evaluated, without changing pack data.
     const holdPosition = sampleAnimationChannel(
       holdAnimation?.bones?.aspergillum_presentation?.position,
       0,
       Number(holdAnimation?.animation_length) || 0,
     );
+    const resolvedHoldPosition = bedrockAnimationPosition(holdPosition);
+    const retainedPresentationOffset = this.recipe.presentation.perspective === 'third'
+      ? [
+        THREE.MathUtils.clamp(
+          resolvedHoldPosition[0],
+          -THIRD_PERSON_GRIP_SEAM_LIMIT,
+          THIRD_PERSON_GRIP_SEAM_LIMIT,
+        ),
+        0,
+        0,
+      ]
+      : [0, 0, 0];
+    const compositionCalibration = retainedPresentationOffset.map(
+      (value, index) => value - resolvedHoldPosition[index],
+    );
     const boundGroup = findBoneGroup(this.itemBuilt, 'aspergillum_bound');
-    boundGroup.position.add(new THREE.Vector3(...holdPosition).multiplyScalar(-BEDROCK_UNIT_SCALE));
-    boundGroup.userData.compositionCalibration = holdPosition.map((value) => -value);
+    boundGroup.position.add(
+      new THREE.Vector3(...compositionCalibration).multiplyScalar(BEDROCK_UNIT_SCALE),
+    );
+    boundGroup.userData.compositionCalibration = compositionCalibration;
+    boundGroup.userData.retainedPresentationOffset = retainedPresentationOffset;
+
     if (this.recipe.presentation.action === 'sprinkle') {
       this.applyAnimation(
         this.itemBuilt,
@@ -545,16 +607,15 @@ export class AvatarScene {
   }
 
   setFirstPersonCamera() {
-    this.camera.fov = 50;
+    this.camera.fov = 70.25;
     this.camera.up.set(0, 1, 0);
-    // A malha de primeira pessoa do Bedrock é um viewmodel separado. O Avatar
-    // Lab preserva a pose FP real do attachable e enquadra somente braço + item
-    // para examinar clipping, pele e contato, sem fingir a câmera proprietária.
-    const records = [
-      ...this.playerBuilt.meshRecords.filter(({ boneName }) => FIRST_PERSON_VISIBLE_BONES.has(boneName.toLowerCase())),
-      ...this.itemBuilt.meshRecords,
-    ];
-    this.frameBounds(this.getVisibleBounds(records), [0.8, 0.22, -1.35], 1.24);
+    const eye = 27.41 * BEDROCK_UNIT_SCALE * PLAYER_SCALE;
+    this.camera.position.set(0, eye, 0);
+    this.controls.target.set(0, eye, 10 * BEDROCK_UNIT_SCALE * PLAYER_SCALE);
+    this.camera.near = 0.01;
+    this.camera.far = 50;
+    this.camera.lookAt(this.controls.target);
+    this.camera.updateProjectionMatrix();
   }
 
   setDebug({ grid, pivots, skeleton, wireframe } = {}) {
@@ -676,6 +737,51 @@ export class AvatarScene {
     };
   }
 
+  collisionSnapshot() {
+    if (this.recipe.presentation.perspective === 'first') {
+      return { applicable: false, headClear: true, gripEngaged: true, intersections: [] };
+    }
+    const itemHead = this.itemBuilt.meshRecords.filter(({ mesh, boneName }) => (
+      boneName === 'sprinkler_head' && isVisible(mesh)
+    ));
+    const avatarHead = this.playerBuilt.meshRecords.filter(({ mesh, boneName }) => (
+      ['head', 'hat'].includes(boneName.toLowerCase()) && isVisible(mesh)
+    ));
+    const handle = this.itemBuilt.meshRecords.filter(({ mesh, boneName }) => (
+      boneName === 'handle' && isVisible(mesh)
+    ));
+    const hand = this.playerBuilt.meshRecords.filter(({ mesh, boneName }) => (
+      ['rightarm', 'rightsleeve'].includes(boneName.toLowerCase()) && isVisible(mesh)
+    ));
+    const intersections = [];
+    let minimumHeadClearance = Number.POSITIVE_INFINITY;
+    for (const itemRecord of itemHead) {
+      const itemBox = new THREE.Box3().setFromObject(itemRecord.mesh, true);
+      const itemObb = worldObb(itemRecord.mesh);
+      for (const avatarRecord of avatarHead) {
+        const avatarBox = new THREE.Box3().setFromObject(avatarRecord.mesh, true);
+        minimumHeadClearance = Math.min(minimumHeadClearance, boxDistance(itemBox, avatarBox));
+        if (itemObb.intersectsOBB(worldObb(avatarRecord.mesh))) {
+          intersections.push(`${itemRecord.boneName}:${avatarRecord.boneName}`);
+        }
+      }
+    }
+    const gripEngaged = handle.some(({ mesh }) => {
+      const handleObb = worldObb(mesh);
+      return hand.some(({ mesh: handMesh }) => handleObb.intersectsOBB(worldObb(handMesh)));
+    });
+    const unitScale = BEDROCK_UNIT_SCALE * PLAYER_SCALE;
+    return {
+      applicable: true,
+      headClear: intersections.length === 0,
+      gripEngaged,
+      minimumHeadClearance: Number.isFinite(minimumHeadClearance)
+        ? Number((minimumHeadClearance / unitScale).toFixed(4))
+        : null,
+      intersections,
+    };
+  }
+
   snapshot() {
     if (!this.playerBuilt || !this.itemBuilt) return null;
     this.scene.updateMatrixWorld(true);
@@ -692,19 +798,33 @@ export class AvatarScene {
       0,
       Number(holdAnimation?.animation_length) || 0,
     );
-    const expectedOffset = ASPERGILLUM_EMPIRICAL_GRIP
-      .map((value, index) => -(value + holdPosition[index]) * BEDROCK_UNIT_SCALE);
+    const resolvedHoldPosition = bedrockAnimationPosition(holdPosition);
+    const retainedPresentationOffset = boundGroup?.userData?.retainedPresentationOffset ?? [0, 0, 0];
+    const compositionCalibration = boundGroup?.userData?.compositionCalibration ?? [0, 0, 0];
+    const boundRecord = this.itemBuilt.boneRecords.find(({ bone }) => (
+      bone.name.toLowerCase() === 'aspergillum_bound'
+    ));
+    const expectedOffset = boundRecord.basePosition.clone().add(
+      new THREE.Vector3(...compositionCalibration).multiplyScalar(BEDROCK_UNIT_SCALE),
+    ).toArray();
     const actualOffset = boundGroup?.position.toArray() ?? [0, 0, 0];
     const localOffsetError = Math.sqrt(expectedOffset.reduce(
       (sum, value, index) => sum + ((value - actualOffset[index]) ** 2),
       0,
     ));
-    const contactError = rightItemGroup && presentationGroup
-      ? rightItemGroup.getWorldPosition(new THREE.Vector3()).distanceTo(
+    let presentationOffset = [0, 0, 0];
+    let presentationOffsetError = Number.POSITIVE_INFINITY;
+    if (rightItemGroup && presentationGroup) {
+      const localPresentation = rightItemGroup.worldToLocal(
         presentationGroup.getWorldPosition(new THREE.Vector3()),
-      )
-      : Number.POSITIVE_INFINITY;
-    const error = Math.max(localOffsetError, contactError);
+      );
+      presentationOffset = localPresentation.toArray().map((value) => value / BEDROCK_UNIT_SCALE);
+      presentationOffsetError = Math.hypot(...presentationOffset.map(
+        (value, index) => value - retainedPresentationOffset[index],
+      ));
+    }
+    const contactError = Math.hypot(...presentationOffset);
+    const error = Math.max(localOffsetError, presentationOffsetError * BEDROCK_UNIT_SCALE);
     return {
       recipe: JSON.parse(JSON.stringify(this.recipe)),
       skin: {
@@ -726,11 +846,15 @@ export class AvatarScene {
         targetPivot: [...model.rightItemPivot],
         empiricalGrip: [...ASPERGILLUM_EMPIRICAL_GRIP],
         authoredPresentationOffset: holdPosition,
-        compositionCalibration: holdPosition.map((value) => -value),
+        resolvedPresentationOffset: resolvedHoldPosition,
+        retainedPresentationOffset,
+        compositionCalibration,
         boundPivot: [0, 0, 0],
         expectedLocalOffset: formatVector(expectedOffset),
         actualLocalOffset: formatVector(actualOffset),
         localOffsetError: Number(localOffsetError.toFixed(8)),
+        presentationOffset: formatVector(presentationOffset),
+        presentationOffsetError: Number(presentationOffsetError.toFixed(8)),
         contactError: Number(contactError.toFixed(8)),
         error: Number(error.toFixed(8)),
         exact: error < 1e-7,
@@ -742,6 +866,7 @@ export class AvatarScene {
           this.matrixSnapshot(this.itemBuilt, 'aspergillum_action'),
         ].filter(Boolean),
       },
+      collision: this.collisionSnapshot(),
       playback: {
         playing: this.playing,
         speed: this.speed,

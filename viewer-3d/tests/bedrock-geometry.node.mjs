@@ -3,6 +3,9 @@ import test from 'node:test';
 import * as THREE from 'three';
 import {
   BEDROCK_UNIT_SCALE,
+  bedrockAnimationPosition,
+  bedrockAnimationRotation,
+  bedrockGeometryRotation,
   buildBedrockGeometry,
   findBoneGroup,
   resetBedrockPose,
@@ -11,6 +14,14 @@ import {
 function material() {
   return new THREE.MeshBasicMaterial({ color: 0xffffff });
 }
+
+test('converts Bedrock channels for the established third-person and canonical viewmodel bases', () => {
+  assert.deepEqual(bedrockAnimationPosition([5, -1.5, -2.25]), [-5, -1.5, -2.25]);
+  assert.deepEqual(bedrockAnimationRotation([10, 20, -12], 'third'), [10, -20, 12]);
+  assert.deepEqual(bedrockAnimationRotation([10, 20, -12], 'first'), [-10, -20, -12]);
+  assert.deepEqual(bedrockGeometryRotation([25, 0, -12], 'third'), [25, 0, 12]);
+  assert.deepEqual(bedrockGeometryRotation([25, 0, -12], 'first'), [-25, 0, -12]);
+});
 
 test('subtracts an external Bedrock pivot when grafting a bound geometry', () => {
   const built = buildBedrockGeometry({

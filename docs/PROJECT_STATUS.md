@@ -64,7 +64,7 @@ A 1.2.4 tentou selecionar os dezesseis materiais em um proxy stateful, mas o Bed
 - Cues passam por adaptador Bedrock fail-soft, catálogo tipado e shuffle bag sem repetição imediata; feedback de carga mantém somente duas microgotas limitadas à caldeirinha.
 - O pipeline versiona fontes selecionadas, masters, recipes, OGGs e hashes; `validate:audio` garante 48 arquivos mono/48 kHz/Vorbis sem órfãos ou caminhos vanilla.
 - Os 48 SFX próprios preservam fontes selecionadas, receitas, masters, OGGs e hashes reproduzíveis.
-- O toolchain 3D possui um Avatar Lab não distribuído: a skin padrão de batina, rigs wide/slim, `rightItem`, attachable real, hold/carga/aspersão, PBR, scene trace e captura headless compartilham o mesmo adaptador geométrico dos viewers existentes.
+- O toolchain 3D possui um Avatar Lab não distribuído: a skin padrão de batina, rigs wide/slim, `rightItem`, attachable real, hold/carga/aspersão, viewmodel FP, PBR, scene trace, testes OBB e captura headless compartilham o mesmo adaptador geométrico dos viewers existentes. A correção guiada pelo vídeo de 11/08/2026 mantém grip durante 28 amostras a 30 fps e elimina a trajetória através da cabeça sem alterar o Resource Pack.
 
 ## Limitações conhecidas
 

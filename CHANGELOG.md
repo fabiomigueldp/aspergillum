@@ -8,6 +8,8 @@
 - restaura o registro completo dos itens, inclusive `minecraft:max_stack_size: 1` e o custom component; os erros secundários de propriedades dinâmicas em itens empilháveis deixam de existir;
 - validadores passam a rejeitar descritores não-string, `item_visual` em permutations, proxies com states e ausência de qualquer uma das travas de colocação;
 - pacote e manifests sobem para `1.2.5`/`[1,2,5]`; IDs persistidos dos itens, attachables, binding, gameplay, cargas, água e snapshots permanecem inalterados.
+- o Avatar Lab corrige a conversão de eixos/ordem Euler do player e do attachable, preserva contato mão–cabo sem projetar a aspersão através da cabeça e passa a validar binding, grip e colisões OBB por frame;
+- o viewmodel usa a pose/cinemática vanilla de primeira pessoa e a captura de avatar aceita `--width/--height` para provas `16:9`; nenhuma geometria ou animação distribuída foi alterada;
 - artefato `Aspergillum-1.2.5.mcaddon`: `3.096.416` bytes, SHA-256 `e62551816aeac54d1b8c7bfcadac334a92857ea2ab8ad778dbd896fb67bde06a`; Creator Tools aceitou os onze warnings offline conhecidos e nenhum inesperado.
 
 ## Ferramentas de desenvolvimento não distribuídas — 2026-08-11

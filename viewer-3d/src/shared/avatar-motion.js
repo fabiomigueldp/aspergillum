@@ -43,6 +43,33 @@ export function evaluateVanillaAttack(attackTime) {
   };
 }
 
+/**
+ * Vanilla Bedrock first-person swing from player_firstperson.animation.json.
+ * It is a viewmodel curve and must not be replaced by the third-person attack
+ * applied to the full player rig.
+ */
+export function evaluateFirstPersonAttack(attackTime) {
+  const progress = clamp01(attackTime);
+  if (progress <= 0 || progress >= 1) {
+    return { position: [0, 0, 0], rotation: [0, 0, 0], factor: 0 };
+  }
+
+  const factor = sinDegrees((1 - progress) * 180);
+  const lateral = sinDegrees(factor * progress * 112);
+  const arc = sinDegrees(factor * ((1 - progress) ** 2) * 200);
+  const depth = sinDegrees(factor * progress * 120);
+  const rotationArc = sinDegrees(factor * ((1 - progress) ** 2) * 280);
+  return {
+    position: [
+      Math.max(-7, -15.5 * lateral) * lateral,
+      (arc * 7.5) - (factor * progress * 15),
+      depth * 1.75,
+    ],
+    rotation: [rotationArc * -60, rotationArc * 40, rotationArc * 20],
+    factor,
+  };
+}
+
 export function evaluateRecoveryBridge(attackTime, perspective = 'third') {
   const progress = clamp01(attackTime);
   if (perspective === 'first' || progress <= 0 || progress >= 1) return 0;
@@ -54,35 +81,47 @@ export function evaluateAvatarPose({ action = 'idle', time = 0, perspective = 't
   const boundedTime = definition.duration > 0
     ? Math.min(Math.max(0, Number(time) || 0), definition.duration)
     : 0;
-  const holding = -18;
+  const firstPerson = perspective === 'first';
+  const holding = firstPerson ? 0 : -18;
   const pose = {
     action: definition.id,
     time: boundedTime,
     duration: definition.duration,
     attackTime: 0,
-    loadWeight: perspective === 'first' ? 0.32 : 1,
+    loadWeight: firstPerson ? 0.32 : 1,
     bones: {
       body: { rotation: [0, 0, 0] },
       leftArm: { rotation: [0, 0, 0] },
-      rightArm: { rotation: [holding, 0, 0] },
+      rightArm: firstPerson
+        ? { position: [13.5, -10, 12], rotation: [95, -45, 115] }
+        : { rotation: [holding, 0, 0] },
+      ...(firstPerson ? { rightItem: { position: [0, 0, -1], rotation: [0, 0, 0] } } : {}),
     },
   };
 
   if (definition.id === 'load') {
     const envelope = loadEnvelope(boundedTime) * pose.loadWeight;
-    pose.bones.rightArm.rotation = [
-      holding - (20 * envelope),
-      -4 * envelope,
-      3 * envelope,
-    ];
+    pose.bones.rightArm.rotation = pose.bones.rightArm.rotation.map(
+      (value, index) => value + ([-20, -4, 3][index] * envelope),
+    );
     return pose;
   }
 
   if (definition.id === 'sprinkle') {
     const attackTime = definition.duration > 0 ? boundedTime / definition.duration : 0;
+    pose.attackTime = attackTime;
+    if (firstPerson) {
+      const vanilla = evaluateFirstPersonAttack(attackTime);
+      pose.bones.rightArm.position = pose.bones.rightArm.position.map(
+        (value, index) => value + vanilla.position[index],
+      );
+      pose.bones.rightArm.rotation = pose.bones.rightArm.rotation.map(
+        (value, index) => value + vanilla.rotation[index],
+      );
+      return pose;
+    }
     const vanilla = evaluateVanillaAttack(attackTime);
     const bridge = evaluateRecoveryBridge(attackTime, perspective);
-    pose.attackTime = attackTime;
     pose.bones.body.rotation = vanilla.body;
     pose.bones.leftArm.rotation = vanilla.leftArm;
     pose.bones.rightArm.rotation = [

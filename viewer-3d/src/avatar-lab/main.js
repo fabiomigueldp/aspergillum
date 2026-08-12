@@ -108,21 +108,26 @@ function renderSnapshot(snapshot) {
   if (!snapshot) return;
   currentSnapshot = snapshot;
   renderPlayback(snapshot);
-  const { recipe, binding, runtime } = snapshot;
+  const {
+    recipe, binding, runtime, collision,
+  } = snapshot;
   const exact = binding.exact;
-  ui.bindingDot.classList.toggle('is-valid', exact);
-  ui.bindingDot.classList.toggle('is-invalid', !exact);
-  ui.bindingReadout.textContent = exact ? 'Binding exato' : 'Binding divergente';
+  const parityValid = exact && collision.headClear && collision.gripEngaged;
+  ui.bindingDot.classList.toggle('is-valid', parityValid);
+  ui.bindingDot.classList.toggle('is-invalid', !parityValid);
+  ui.bindingReadout.textContent = parityValid ? 'Binding e folgas válidos' : 'Paridade divergente';
   ui.sceneReadout.textContent = `${recipe.avatar.model} · ${recipe.presentation.perspective === 'first' ? '1ª pessoa' : '3ª pessoa'} · ${recipe.presentation.material.toUpperCase()}`;
-  ui.traceStatus.textContent = exact ? 'VALIDADO' : 'REVISAR';
-  ui.traceStatus.classList.toggle('is-valid', exact);
+  ui.traceStatus.textContent = parityValid ? 'VALIDADO' : 'REVISAR';
+  ui.traceStatus.classList.toggle('is-valid', parityValid);
   ui.contractProperties.innerHTML = `
     <div><dt>Attachable</dt><dd>${escapeHtml(runtime.attachable)}</dd></div>
     <div><dt>Geometria</dt><dd>${escapeHtml(runtime.geometry)}</dd></div>
     <div><dt>Binding</dt><dd title="${escapeHtml(runtime.binding)}">item slot → bone</dd></div>
     <div><dt>Target</dt><dd>${escapeHtml(binding.targetBone)}</dd></div>
     <div><dt>Pivot target</dt><dd>${binding.targetPivot.join(' · ')}</dd></div>
-    <div><dt>Offset local</dt><dd>${binding.actualLocalOffset.join(' · ')}</dd></div>
+    <div><dt>Costura visual</dt><dd>${binding.presentationOffset.join(' · ')}</dd></div>
+    <div><dt>Empunhadura</dt><dd>${collision.gripEngaged ? 'em contato' : 'separada'}</dd></div>
+    <div><dt>Cabeça</dt><dd>${collision.applicable ? (collision.headClear ? `livre · ${formatNumber(collision.minimumHeadClearance)} u` : 'interseção') : 'viewmodel'}</dd></div>
     <div><dt>Erro</dt><dd>${binding.error.toExponential(1)}</dd></div>
   `;
   ui.matrixList.innerHTML = binding.chain.map((entry, index) => `

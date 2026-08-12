@@ -35,7 +35,9 @@ Opções:
   --perspective <modo>   third ou first (padrão: third)
   --material <modo>      pbr ou classic (padrão: pbr)
   --cosmetic <id>        acabamento do catálogo (padrão: classic)
-  --size <px>            320..2048 por PNG (padrão: 720)
+  --size <px>            largura e altura 320..2048 (padrão: 720)
+  --width <px>           largura 320..2048; útil para viewmodel 16:9
+  --height <px>          altura 320..2048; útil para viewmodel 16:9
   --columns <n>          1..6 na prancha (padrão: 3)
   --output <pasta>       destino (padrão: out/avatar-captures/<timestamp>)
   --no-outer-layers      oculta chapéu, jaqueta, mangas e calças externas
@@ -60,7 +62,7 @@ function readValue(args, index, flag) {
 
 function defaultTimes(action) {
   if (action === 'load') return [0, 0.25, 0.46, 0.54, 0.78, 1.1];
-  if (action === 'sprinkle') return [0, 0.18, 0.28, 0.48, 0.68, 0.9];
+  if (action === 'sprinkle') return [0, 0.09, 0.18, 0.28, 0.38, 0.48, 0.58, 0.68, 0.78, 0.9];
   return [0];
 }
 
@@ -75,6 +77,8 @@ function parseArgs(args) {
     material: 'pbr',
     cosmetic: 'classic',
     size: 720,
+    width: 720,
+    height: 720,
     columns: 3,
     output: null,
     outerLayers: true,
@@ -117,6 +121,14 @@ function parseArgs(args) {
       index += 1;
     } else if (argument === '--size') {
       options.size = Number(readValue(args, index, argument));
+      options.width = options.size;
+      options.height = options.size;
+      index += 1;
+    } else if (argument === '--width') {
+      options.width = Number(readValue(args, index, argument));
+      index += 1;
+    } else if (argument === '--height') {
+      options.height = Number(readValue(args, index, argument));
       index += 1;
     } else if (argument === '--columns') {
       options.columns = Number(readValue(args, index, argument));
@@ -133,8 +145,10 @@ function parseArgs(args) {
   if (!AVATAR_ACTIONS[options.action]) throw new Error('--action deve ser idle, load ou sprinkle.');
   if (!['first', 'third'].includes(options.perspective)) throw new Error('--perspective deve ser first ou third.');
   if (!['pbr', 'classic'].includes(options.material)) throw new Error('--material deve ser pbr ou classic.');
-  if (!Number.isInteger(options.size) || options.size < 320 || options.size > 2048) {
-    throw new Error('--size deve ser um inteiro entre 320 e 2048.');
+  if (![options.width, options.height].every((value) => (
+    Number.isInteger(value) && value >= 320 && value <= 2048
+  ))) {
+    throw new Error('--size, --width e --height devem ser inteiros entre 320 e 2048.');
   }
   if (!Number.isInteger(options.columns) || options.columns < 1 || options.columns > 6) {
     throw new Error('--columns deve ser um inteiro entre 1 e 6.');
@@ -191,13 +205,14 @@ function timeKey(time) {
 }
 
 async function createContactSheet(context, captures, options) {
-  const tile = Math.min(options.size, 480);
+  const tileWidth = Math.min(options.width, 640);
+  const tileHeight = Math.round(tileWidth * (options.height / options.width));
   const gap = 10;
   const padding = 24;
   const captionHeight = 42;
   const rows = Math.ceil(captures.length / options.columns);
-  const width = (padding * 2) + (options.columns * tile) + ((options.columns - 1) * gap);
-  const height = (padding * 2) + 86 + (rows * (tile + captionHeight)) + ((rows - 1) * gap);
+  const width = (padding * 2) + (options.columns * tileWidth) + ((options.columns - 1) * gap);
+  const height = (padding * 2) + 86 + (rows * (tileHeight + captionHeight)) + ((rows - 1) * gap);
   const page = await context.newPage();
   await page.setViewportSize({ width, height });
   const figures = await Promise.all(captures.map(async (capture) => {
@@ -205,8 +220,8 @@ async function createContactSheet(context, captures, options) {
     return `<figure><img src="data:image/png;base64,${image}" alt="${escapeHtml(capture.label)}"><figcaption>${escapeHtml(capture.label)}</figcaption></figure>`;
   }));
   await page.setContent(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><style>
-    *{box-sizing:border-box}html,body{margin:0;background:#0d1416;color:#e8eeeb;font-family:Inter,"Segoe UI",sans-serif}.sheet{width:${width}px;min-height:${height}px;padding:${padding}px;background:#111a1c}header{height:72px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px}h1{margin:0 0 6px;font-size:24px;font-weight:650}p{margin:0;color:#91a39e;font-size:12px}.badge{padding:6px 8px;border:1px solid #49635e;color:#a4d4c4;font:650 9px/1 monospace;letter-spacing:.08em}main{display:grid;grid-template-columns:repeat(${options.columns},${tile}px);gap:${gap}px}figure{margin:0;overflow:hidden;border:1px solid #2d4140;background:#172224}img{display:block;width:${tile}px;height:${tile}px;object-fit:cover}figcaption{height:${captionHeight}px;padding:12px;color:#c8d3cf;font-size:11px}
-  </style></head><body><section class="sheet"><header><div><h1>${escapeHtml(options.title)}</h1><p>${escapeHtml(options.subtitle)}</p></div><span class="badge">AVATAR TRACE</span></header><main>${figures.join('')}</main></section></body></html>`);
+    *{box-sizing:border-box}html,body{margin:0;background:#0d1416;color:#e8eeeb;font-family:Inter,"Segoe UI",sans-serif}.sheet{width:${width}px;min-height:${height}px;padding:${padding}px;background:#111a1c}header{height:72px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px}h1{margin:0 0 6px;font-size:24px;font-weight:650}p{margin:0;color:#91a39e;font-size:12px}.badge{padding:6px 8px;border:1px solid #49635e;color:#a4d4c4;font:650 9px/1 monospace;letter-spacing:.08em}main{display:grid;grid-template-columns:repeat(${options.columns},${tileWidth}px);gap:${gap}px}figure{margin:0;overflow:hidden;border:1px solid #2d4140;background:#172224}img{display:block;width:${tileWidth}px;height:${tileHeight}px;object-fit:cover}figcaption{height:${captionHeight}px;padding:12px;color:#c8d3cf;font-size:11px}
+    </style></head><body><section class="sheet"><header><div><h1>${escapeHtml(options.title)}</h1><p>${escapeHtml(options.subtitle)}</p></div><span class="badge">AVATAR TRACE</span></header><main>${figures.join('')}</main></section></body></html>`);
   await page.locator('.sheet').screenshot({ path: options.output });
   await page.close();
 }
@@ -244,7 +259,7 @@ async function main() {
     browser = await chromium.launch({ headless: true });
     const context = await browser.newContext({ deviceScaleFactor: 1 });
     const page = await context.newPage();
-    await page.setViewportSize({ width: options.size, height: options.size });
+    await page.setViewportSize({ width: options.width, height: options.height });
     const pageErrors = [];
     page.on('pageerror', (error) => pageErrors.push(error.message));
     await page.goto(`http://127.0.0.1:${address.port}/avatar-lab.html`, { waitUntil: 'networkidle' });
@@ -301,6 +316,7 @@ async function main() {
           target: result.target,
           perspective: result.perspective,
           binding: result.snapshot.binding,
+          collision: result.snapshot.collision,
         });
       }
     }
@@ -308,7 +324,8 @@ async function main() {
 
     const contactSheet = path.join(options.output, 'contact-sheet.png');
     await createContactSheet(context, captures, {
-      size: options.size,
+      width: options.width,
+      height: options.height,
       columns: options.columns,
       title: 'Jogador com aspersório',
       subtitle: `${path.basename(options.skin)} · ${options.model} · ${options.action} · ${options.material.toUpperCase()} · pack ${projectPackage.aspergillum.releaseLabel}`,
@@ -327,7 +344,8 @@ async function main() {
       grid: options.grid,
       wireframe: options.wireframe,
       transparent: options.transparent,
-      size: options.size,
+      width: options.width,
+      height: options.height,
       columns: options.columns,
     };
     const manifest = {
@@ -356,6 +374,8 @@ async function main() {
         binding: configured.runtime.binding,
         exactBinding: configured.binding.exact,
         bindingError: configured.binding.error,
+        allFramesHeadClear: captures.every(({ collision }) => collision.headClear),
+        allFramesGripEngaged: captures.every(({ collision }) => collision.gripEngaged),
       },
       captures: captures.map(({ absolutePath, ...capture }) => capture),
       contactSheet: path.basename(contactSheet),
