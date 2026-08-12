@@ -10,7 +10,8 @@ export default defineConfig({
     target: 'es2022',
     rolldownOptions: {
       input: {
-        modelLab: 'index.html',
+        workbench: 'index.html',
+        modelLab: 'model-lab.html',
         bedrockFidelity: 'bedrock-renderer.html',
         avatarLab: 'avatar-lab.html',
         coverRenderer: 'cover-renderer.html',

@@ -193,7 +193,13 @@ export class AvatarScene {
     this.scene.add(this.platform);
 
     this.textureLoader = new THREE.TextureLoader();
-    this.resizeObserver = new ResizeObserver(() => this.resize());
+    this.resizeFrame = 0;
+    this.resizeObserver = new ResizeObserver(() => {
+      cancelAnimationFrame(this.resizeFrame);
+      this.resizeFrame = requestAnimationFrame(() => {
+        if (this.stage.isConnected) this.resize();
+      });
+    });
     this.resizeObserver.observe(stage);
     this.intersectionObserver = new IntersectionObserver(([entry]) => {
       this.visible = entry?.isIntersecting !== false;
@@ -1014,6 +1020,7 @@ export class AvatarScene {
 
   dispose() {
     cancelAnimationFrame(this.frameRequest);
+    cancelAnimationFrame(this.resizeFrame);
     this.resizeObserver.disconnect();
     this.intersectionObserver.disconnect();
     this.controls.dispose();

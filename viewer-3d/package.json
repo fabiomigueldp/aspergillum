@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Viewer web isolado para inspeção dos modelos Bedrock do Aspergillum.",
+  "description": "Bancada 3D integrada e ferramentas headless para inspeção do Aspergillum.",
   "scripts": {
     "sync-assets": "node scripts/sync-assets.mjs",
     "test": "node --test tests/*.node.mjs",
+    "smoke:workbench": "node scripts/smoke-workbench.mjs",
     "capture": "npm run sync-assets && node scripts/capture-models.mjs",
     "capture:avatars": "npm run sync-assets && node scripts/capture-avatars.mjs",
     "render:cover": "npm run sync-assets && node scripts/render-cover.mjs",

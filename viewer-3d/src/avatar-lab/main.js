@@ -7,7 +7,6 @@ import {
   validateSkinDimensions,
 } from '../shared/avatar-contract.js';
 import { AvatarScene } from './avatar-scene.js';
-import './styles.css';
 
 const ui = {
   canvas: document.querySelector('#viewport-canvas'),
@@ -291,6 +290,7 @@ function bindInteractions() {
     }
   });
   window.addEventListener('keydown', (event) => {
+    if (!ui.canvas.isConnected) return;
     if (event.target instanceof HTMLInputElement || event.target instanceof HTMLSelectElement) return;
     if (event.code === 'Space') {
       event.preventDefault();

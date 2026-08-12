@@ -4,7 +4,7 @@
 
 O Avatar Lab é uma ferramenta de desenvolvimento local para montar um jogador, aplicar uma skin, vincular o attachable real do aspersório ao holder `rightItem`, executar as animações aprovadas e produzir evidência visual reproduzível. Ele não entra no `.mcaddon`, não altera `assets-src/`, `packs/` ou estado de gameplay e não cria uma segunda fonte autoritativa para o item.
 
-Abra `viewer-3d/avatar-lab.html` com `npm --prefix viewer-3d run dev` ou use a captura headless pela raiz:
+Execute `npm --prefix viewer-3d run dev` e abra `http://127.0.0.1:4173/?tool=avatar` para usar o Avatar Lab dentro do 3D Workbench. A bancada troca entre os três laboratórios sem recarregar o documento e preserva receita, câmera, pose e controles. `viewer-3d/avatar-lab.html` permanece como adaptador autônomo para isolamento, compatibilidade e captura headless. Pela raiz, use:
 
 ```powershell
 npm run capture:avatars -- --help

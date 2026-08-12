@@ -1,5 +1,14 @@
 # Changelog
 
+## Ferramentas de desenvolvimento não distribuídas — 2026-08-12
+
+- unifica Model Lab, Bedrock Renderer e Avatar Lab em um 3D Workbench com shell persistente, rotas profundas pela History API e alternância sem recarregar o documento;
+- elimina o flash branco de CSS tardio: o shell possui estilo crítico no `<head>` e habilita exclusivamente a folha de estilos do laboratório ativo;
+- cada laboratório é inicializado uma única vez e tem sua árvore DOM estacionada quando inativa, preservando câmera, seleção, pose e controles sem manter render loops ou atalhos invisíveis;
+- mantém `model-lab.html`, `bedrock-renderer.html` e `avatar-lab.html` como adaptadores autônomos para agentes, capturas headless e diagnóstico isolado, consumindo as mesmas implementações e assets;
+- adiciona contrato compartilhado de ferramentas, testes unitários de rota e um smoke test Playwright para first paint, navegação em documento único, estado, isolamento CSS, responsividade básica e APIs headless;
+- aplica uma linguagem visual única, sóbria e responsiva à navegação, ao contexto de runtime e às ações globais, sem alterar packs, geometria, binding, animações ou gameplay.
+
 ## 1.2.5 — 2026-08-11 — compatibilidade runtime do inventário 3D
 
 - corrige a falha de registro da 1.2.4: Bedrock 26.40 rejeita um descritor com states em `minecraft:block_placer.block`, apesar da tipagem genérica da referência atual; todos os itens passam a usar a forma string demonstrada no exemplo oficial;

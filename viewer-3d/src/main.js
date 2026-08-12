@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { buildBedrockGeometry as buildSharedBedrockGeometry } from './shared/bedrock-geometry.js';
-import './styles.css';
 
 const WATER_BONES = ['water_low', 'water_mid', 'water_high', 'water_full'];
 const WATER_LABELS = {
@@ -786,6 +785,7 @@ function bindEvents() {
   }
 
   window.addEventListener('keydown', (event) => {
+    if (!ui.canvas.isConnected) return;
     if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
     const key = event.key.toLowerCase();
     if (key === 'f') fitCamera();
@@ -796,13 +796,18 @@ function bindEvents() {
     if (event.key === 'Escape') ui.clearSelectionButton.click();
   });
 
+  let resizeFrame = 0;
   const resizeObserver = new ResizeObserver(() => {
-    const width = ui.viewportStage.clientWidth;
-    const height = ui.viewportStage.clientHeight;
-    if (!width || !height) return;
-    renderer.setSize(width, height, false);
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
+    cancelAnimationFrame(resizeFrame);
+    resizeFrame = requestAnimationFrame(() => {
+      if (!ui.viewportStage.isConnected) return;
+      const width = ui.viewportStage.clientWidth;
+      const height = ui.viewportStage.clientHeight;
+      if (!width || !height) return;
+      renderer.setSize(width, height, false);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    });
   });
   resizeObserver.observe(ui.viewportStage);
 }
@@ -832,6 +837,7 @@ async function loadManifest() {
 
 function animate() {
   requestAnimationFrame(animate);
+  if (!ui.canvas.isConnected) return;
   controls.update();
   renderer.render(scene, camera);
 }

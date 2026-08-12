@@ -280,6 +280,18 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 
 ### Evidência visual automatizada
 
+`npm --prefix viewer-3d run smoke:workbench` abre a bancada integrada em Chromium e valida o contrato de integração sem produzir assets. O teste deve confirmar fundo escuro já no primeiro paint, uma única entrada de navegação, exatamente uma folha de estilos de laboratório ativa, `aria-current` e `aria-busy` coerentes, ausência de erros no console e preservação do estado do Avatar Lab após alternar ferramentas. Ele também abre `bedrock-renderer.html` e `avatar-lab.html` diretamente e aguarda suas APIs de captura, protegendo a compatibilidade dos consumidores headless.
+
+Checklist manual da interface web:
+
+- [ ] `?tool=model`, `?tool=bedrock` e `?tool=avatar` possuem links profundos e voltar/avançar restaura a ferramenta esperada sem recarregar o documento;
+- [ ] a barra da bancada permanece estável e não aparece tela branca ou HTML sem estilo durante a troca;
+- [ ] câmera, seleção, pose, ação e opções já carregadas permanecem intactas ao sair e retornar a um laboratório;
+- [ ] somente a ferramenta visível reage aos atalhos globais e mantém render loop ativo;
+- [ ] em `1600 × 1000`, `760 × 900` e `390 × 844` não há overflow horizontal nem controles essenciais inacessíveis;
+- [ ] `Alt+1`, `Alt+2` e `Alt+3`, foco visível e o link de salto funcionam por teclado;
+- [ ] as páginas autônomas continuam operacionais para isolamento e captura, mesmo sem o shell.
+
 `npm run capture:models -- --subject all` gera nove vistas fixas e uma prancha composta para o aspersório, a caldeirinha e a Mesa do Sacristão, vazias ou com o aspersório acomodado. O `capture-manifest.json` registra câmera, geometria, material, versão e opções. Essas imagens servem para revisão de silhueta, faces, UVs e comparação entre revisões; o gate dentro do Minecraft continua obrigatório para culling, shader, câmera, cache e integração reais.
 
 `npm run capture:avatars -- --action sprinkle` monta a skin padrão no rig wide, vincula o attachable real a `rightItem` e captura dez tempos diagnósticos do swing vanilla + ação local. Para uma revisão de integração, gerar ao menos `front-right,grip-front,grip-inside,grip-outside,head` em terceira pessoa, `first-person` em `16:9`, o frame de release da aspersão e os pontos `0,46/0,54/0,78 s` da carga. Inspecione os PNGs macro individualmente em resolução integral; a prancha serve somente para trajetória. O manifest deve registrar `exactBinding: true`, `bindingError: 0`, `allFramesGripCentered: true`, `allFramesGripEngaged: true` e hashes idênticos quando os inputs não mudarem. `allFramesHeadClear` permanece um gate separado.

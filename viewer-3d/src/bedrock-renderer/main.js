@@ -17,7 +17,6 @@ import {
   cosmeticLabel,
   resolveCosmetic,
 } from '../shared/cosmetic-contract.js';
-import './styles.css';
 
 const SCALE = 1 / 16;
 const WATER_BONES = ['water_low', 'water_mid', 'water_high', 'water_full'];
@@ -1260,6 +1259,7 @@ function wireInteractions() {
   ui.canvas.addEventListener('click', selectFromCanvas);
 
   window.addEventListener('keydown', (event) => {
+    if (!ui.canvas.isConnected) return;
     if (event.target instanceof HTMLInputElement || event.target instanceof HTMLSelectElement) return;
     const key = event.key.toLowerCase();
     if (key === 'f') fitCamera(true);
@@ -1285,6 +1285,7 @@ function resizeRenderer() {
 
 function animate() {
   requestAnimationFrame(animate);
+  if (!ui.canvas.isConnected) return;
   if (controls.enabled) controls.update();
   renderer.render(scene, camera);
 }
@@ -1463,7 +1464,13 @@ const captureApi = {
 
 window.__ASPERGILLUM_CAPTURE__ = captureApi;
 
-const resizeObserver = new ResizeObserver(resizeRenderer);
+let resizeFrame = 0;
+const resizeObserver = new ResizeObserver(() => {
+  cancelAnimationFrame(resizeFrame);
+  resizeFrame = requestAnimationFrame(() => {
+    if (ui.viewportStage.isConnected) resizeRenderer();
+  });
+});
 resizeObserver.observe(ui.viewportStage);
 wireInteractions();
 resizeRenderer();

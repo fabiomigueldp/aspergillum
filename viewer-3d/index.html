@@ -3,140 +3,71 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#111a1d" />
+    <meta name="theme-color" content="#101719" />
     <meta
       name="description"
-      content="Visualizador 3D isolado para os modelos do add-on Aspergillum."
+      content="Bancada integrada para inspecionar modelos, render paths Bedrock, skins, poses e animações do Aspergillum."
     />
-    <title>Aspergillum / Model Lab</title>
+    <title>Aspergillum / Developer Workbench</title>
+    <style>
+      html { background: #101719; color-scheme: dark; }
+      body { margin: 0; background: #101719; }
+      .workbench-boot { position: fixed; inset: 0; background: #101719; }
+    </style>
+    <link rel="stylesheet" href="/src/workbench/styles.css" />
+    <link rel="stylesheet" href="/src/styles.css" data-tool-styles="model" media="not all" />
+    <link rel="stylesheet" href="/src/bedrock-renderer/styles.css" data-tool-styles="bedrock" media="not all" />
+    <link rel="stylesheet" href="/src/avatar-lab/styles.css" data-tool-styles="avatar" media="not all" />
   </head>
-  <body>
-    <a class="skip-link" href="#viewer-main">Saltar para o visualizador</a>
+  <body data-active-tool="pending">
+    <a class="workbench-skip-link" id="workbench-skip-link" href="#tool-host">Saltar para a ferramenta ativa</a>
 
-    <div class="app-shell">
-      <header class="topbar">
-        <div class="brand-lockup" aria-label="Aspergillum Model Lab">
-          <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
-          <div>
-            <p class="eyebrow">ASPERGILLUM</p>
-            <p class="brand-name">Model Lab</p>
+    <div class="workbench-shell">
+      <header class="workbench-header">
+        <a class="workbench-brand" href="?tool=model" data-tool-link="model" aria-label="Aspergillum Developer Workbench">
+          <span class="workbench-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="workbench-brand-copy">
+            <span class="workbench-eyebrow">ASPERGILLUM / DEV</span>
+            <strong>3D Workbench</strong>
+          </span>
+        </a>
+
+        <nav class="workbench-nav" aria-label="Ferramentas de desenvolvimento 3D">
+          <a href="?tool=model" data-tool-link="model">
+            <span class="nav-glyph" aria-hidden="true">◇</span>
+            <span><strong>Model Lab</strong><small>Geometria e UV</small></span>
+          </a>
+          <a href="?tool=bedrock" data-tool-link="bedrock">
+            <span class="nav-glyph" aria-hidden="true">⌁</span>
+            <span><strong>Bedrock Renderer</strong><small>Render path e materiais</small></span>
+          </a>
+          <a href="?tool=avatar" data-tool-link="avatar">
+            <span class="nav-glyph" aria-hidden="true">⌾</span>
+            <span><strong>Avatar Lab</strong><small>Rig, pose e attachable</small></span>
+          </a>
+        </nav>
+
+        <div class="workbench-context">
+          <div class="workbench-runtime-slot" id="workbench-runtime-slot" aria-live="polite">
+            <span class="workbench-runtime-fallback"><i aria-hidden="true"></i>Preparando ferramenta</span>
           </div>
-        </div>
-
-        <div class="topbar-context" aria-live="polite">
-          <span class="status-dot" aria-hidden="true"></span>
-          <span id="sync-status">Catálogo local</span>
-        </div>
-
-        <div class="topbar-actions">
-          <a class="button button-subtle" href="./avatar-lab.html">Avatar Lab</a>
-          <a class="button button-subtle" href="./bedrock-renderer.html">Renderer Bedrock</a>
-          <button class="button button-subtle" id="import-button" type="button">
-            <span class="button-glyph" aria-hidden="true">＋</span>
-            Importar modelo
-          </button>
-          <input id="file-input" type="file" accept=".json,.geo.json,.gltf,.glb" hidden multiple />
+          <div class="workbench-actions-slot" id="workbench-actions-slot"></div>
+          <span class="workbench-version" title="Versão de referência do add-on">1.2.5</span>
         </div>
       </header>
 
-      <main class="workspace" id="viewer-main">
-        <aside class="sidebar panel-border" aria-label="Biblioteca de modelos">
-          <div class="sidebar-heading">
-            <div>
-              <p class="section-kicker">Biblioteca</p>
-              <h1>Modelos do pack</h1>
-            </div>
-            <span class="count-badge" id="model-count">0</span>
-          </div>
-
-          <p class="sidebar-intro">
-            Geometrias Bedrock sincronizadas do Resource Pack. Arraste um arquivo para a cena para testar uma variação.
-          </p>
-
-          <div class="library-list" id="library-list" role="listbox" aria-label="Modelos disponíveis">
-            <div class="library-loading" aria-live="polite">
-              <span class="loading-bar"></span>
-              <span class="loading-bar short"></span>
-            </div>
-          </div>
-
-          <div class="sidebar-footer">
-            <div class="legend-row">
-              <span class="legend-swatch accent"></span>
-              <span>Ativo</span>
-            </div>
-            <div class="legend-row">
-              <span class="legend-swatch muted"></span>
-              <span>Arquivo local</span>
-            </div>
-          </div>
-        </aside>
-
-        <section class="viewport-panel" aria-label="Visualizador 3D">
-          <div class="viewport-stage" id="viewport-stage">
-            <canvas id="viewport-canvas" aria-label="Cena 3D interativa"></canvas>
-
-            <div class="drop-hint" id="drop-hint" aria-hidden="true">
-              <span class="drop-icon">↥</span>
-              <strong>Solte o modelo aqui</strong>
-              <span>Bedrock Geometry, GLTF ou GLB</span>
-            </div>
-
-            <div class="scene-readout overlay-panel" aria-live="polite">
-              <span class="readout-label">Seleção</span>
-              <strong id="selection-readout">Nenhum bone selecionado</strong>
-            </div>
-
-            <div class="viewport-toolbar overlay-panel" role="toolbar" aria-label="Controles da cena">
-              <button class="tool-button" id="fit-button" type="button" title="Enquadrar modelo (F)">
-                <span aria-hidden="true">⌗</span>
-                <span>Enquadrar</span>
-              </button>
-              <button class="tool-button" id="reset-button" type="button" title="Resetar câmera (R)">
-                <span aria-hidden="true">↺</span>
-                <span>Resetar</span>
-              </button>
-              <span class="toolbar-divider" aria-hidden="true"></span>
-              <button class="tool-button is-active" id="grid-button" type="button" aria-pressed="true" title="Alternar grade (G)">
-                <span aria-hidden="true">⊞</span>
-                <span>Grade</span>
-              </button>
-              <button class="tool-button" id="axes-button" type="button" aria-pressed="false" title="Alternar eixos (A)">
-                <span aria-hidden="true">⊕</span>
-                <span>Eixos</span>
-              </button>
-              <button class="tool-button" id="wireframe-button" type="button" aria-pressed="false" title="Alternar wireframe (W)">
-                <span aria-hidden="true">◇</span>
-                <span>Wireframe</span>
-              </button>
-            </div>
-
-            <p class="viewport-tip">Esquerdo orbita · direito desloca · roda amplia · clique em um bone para inspecionar</p>
+      <main class="workbench-content">
+        <section class="workbench-host" id="tool-host" aria-live="off" aria-busy="true">
+          <div class="workbench-loading" role="status" aria-live="polite">
+            <span class="workbench-loading-mark" aria-hidden="true"></span>
+            <div><strong>Preparando a bancada</strong><span>Carregando o laboratório local</span></div>
           </div>
         </section>
-
-        <aside class="inspector panel-border" aria-label="Inspetor do modelo">
-          <div class="inspector-heading">
-            <div>
-              <p class="section-kicker">Inspetor</p>
-              <h2 id="inspector-title">Sem seleção</h2>
-            </div>
-            <button class="icon-button" id="clear-selection-button" type="button" title="Limpar seleção" aria-label="Limpar seleção">×</button>
-          </div>
-
-          <div class="inspector-scroll" id="inspector-content">
-            <div class="inspector-empty">
-              <span class="empty-glyph" aria-hidden="true">◌</span>
-              <strong>Escolha um modelo</strong>
-              <p>Os dados de geometria, textura, bones e locators aparecem aqui.</p>
-            </div>
-          </div>
-        </aside>
       </main>
 
-      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+      <div class="workbench-route-status" id="workbench-route-status" role="status" aria-live="polite"></div>
     </div>
 
-    <script type="module" src="/src/main.js"></script>
+    <script type="module" src="/src/workbench/main.js"></script>
   </body>
 </html>
