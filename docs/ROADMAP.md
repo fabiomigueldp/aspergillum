@@ -21,6 +21,19 @@ Objetivo: manter Aspergillum, Ornatum e futuros projetos na mesma instalação B
 
 Gate: testes de coexistência A/B, ordem, remoção isolada, colisão e rollback verdes; planos reais de Aspergillum e Ornatum reconhecem somente suas próprias identidades no `devtest`.
 
+## Tooling 3D multi-add-on — implementado; não distribuído
+
+Objetivo: transformar o Workbench e os capturadores numa plataforma de inspeção compartilhada, sem incorporar lógica de Ornatum ao produto Aspergillum nem promover o preview web a engine autoritativa.
+
+- sincronização deriva `workspace.json` e manifestos schema 4 de todos os projetos registrados, descobrindo geometria moderna/legada, equipamento, slot, attachable, textura, animação e capacidades;
+- os três laboratórios compartilham `?addon=`, seletor persistente e troca sem reload; páginas autônomas e aliases históricos continuam compatíveis;
+- Avatar Lab oferece composição genérica `bedrock-attachable-v1` por merge-by-bone e mantém `aspergillum-held-v1` isolado;
+- conversões de documento, geometria estática, animação e base visual têm fronteiras distintas, com regressões para orientação `-Z→+Z`, Head legado e painéis rotacionados 1.12;
+- `capture:assets` e `capture:equipment` aceitam add-on/asset e geram PNGs, pranchas e manifestos para pessoas e agents;
+- Ornatum é integrado read-only com 41 modelos e 39 equipamentos resolvidos, sem alteração em seu repositório ou nos packs do Aspergillum.
+
+Gate: 54 testes do viewer, build Vite, smoke de troca de projeto, capturas reais de mitra/báculo/barrete e regressão do aspersório verdes. Aceitação final de cada asset continua no Minecraft e no projeto proprietário correspondente.
+
 ## v1.2.5 — compatibilidade runtime do inventário 3D — implementada; QA físico pendente
 
 Objetivo: corrigir o parser failure da 1.2.4 sem voltar aos ícones raster.

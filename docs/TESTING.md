@@ -297,7 +297,7 @@ No armazenamento real, `status` deve reconhecer simultaneamente Aspergillum e Or
 
 ### Evidência visual automatizada
 
-`npm --prefix viewer-3d run smoke:workbench` abre a bancada integrada em Chromium e valida o contrato de integração sem produzir assets. O teste deve confirmar fundo escuro já no primeiro paint, uma única entrada de navegação, exatamente uma folha de estilos de laboratório ativa, `aria-current` e `aria-busy` coerentes, ausência de erros no console e preservação do estado do Avatar Lab após alternar ferramentas. Ele também abre `bedrock-renderer.html` e `avatar-lab.html` diretamente e aguarda suas APIs de captura, protegendo a compatibilidade dos consumidores headless.
+`npm --prefix viewer-3d run smoke:workbench` abre a bancada integrada em Chromium e valida o contrato de integração sem produzir assets. O teste confirma fundo escuro já no primeiro paint, uma única entrada de navegação, uma folha de estilos de laboratório ativa, `aria-current`/`aria-busy`, ausência de erros e preservação do estado. Quando Ornatum está disponível no workspace sincronizado, também troca Aspergillum→Ornatum no mesmo documento e exige 39 equipamentos pela API neutra. Sempre abre os três adaptadores autônomos, protegendo consumidores headless. Um projeto externo registrado sem `package.json` deve produzir aviso e ser omitido apenas do viewer; o gerenciador de instalações permanece estrito.
 
 Checklist manual da interface web:
 
@@ -307,11 +307,25 @@ Checklist manual da interface web:
 - [ ] somente a ferramenta visível reage aos atalhos globais e mantém render loop ativo;
 - [ ] em `1600 × 1000`, `760 × 900` e `390 × 844` não há overflow horizontal nem controles essenciais inacessíveis;
 - [ ] `Alt+1`, `Alt+2` e `Alt+3`, foco visível e o link de salto funcionam por teclado;
+- [ ] o seletor Aspergillum/Ornatum atualiza título, catálogo, capacidades e URL sem flash, reload ou estado cruzado entre projetos;
 - [ ] as páginas autônomas continuam operacionais para isolamento e captura, mesmo sem o shell.
 
 `npm run capture:models -- --subject all` gera nove vistas fixas e uma prancha composta para o aspersório, a caldeirinha e a Mesa do Sacristão, vazias ou com o aspersório acomodado. O `capture-manifest.json` registra câmera, geometria, material, versão e opções. Essas imagens servem para revisão de silhueta, faces, UVs e comparação entre revisões; o gate dentro do Minecraft continua obrigatório para culling, shader, câmera, cache e integração reais.
 
 `npm run capture:avatars -- --action sprinkle` monta a skin padrão no rig wide, vincula o attachable real a `rightItem` e captura dez tempos diagnósticos do swing vanilla + ação local. Para uma revisão de integração, gerar ao menos `front-right,grip-front,grip-inside,grip-outside,head` em terceira pessoa, `first-person` em `16:9`, o frame de release da aspersão e os pontos `0,46/0,54/0,78 s` da carga. Inspecione os PNGs macro individualmente em resolução integral; a prancha serve somente para trajetória. O manifest deve registrar `exactBinding: true`, `bindingError: 0`, `allFramesGripCentered: true`, `allFramesGripEngaged: true` e hashes idênticos quando os inputs não mudarem. `allFramesHeadClear` permanece um gate separado.
+
+Para um projeto genérico, execute `npm run capture:assets -- --addon <id> --equipment <id> ...` para o modelo isolado e `npm run capture:equipment -- --addon <id> --equipment <id> ...` para composição com avatar. Em Ornatum, o gate mínimo usa mitra, barrete, báculo e pálio: `front`, `back` e `equipment*` devem provar frente/costas e montagem; o manifest de avatar deve registrar projeto/equipamento corretos, perfil `bedrock-attachable-v1`, `merge_by_bone`, pelo menos um graft para wearables e erro zero. Isso não substitui armor offsets, swing, primeira pessoa e grip observados no Minecraft.
+
+Regressões obrigatórias do importador multi-add-on:
+
+- [ ] documentos `minecraft:geometry` e `geometry.*` são enumerados sem perder `format_version`;
+- [ ] a transformação de base é aplicada uma vez: frente da mitra na frente, ínfulas atrás e objeto de mão no mesmo hemisfério da mão direita;
+- [ ] um wearable `Head` com pivot `[0,0,0]` é alinhado ao bone `head`, sem translação absoluta de `-24`;
+- [ ] pivôs de cubo `1.12` permanecem como serializados e cubo sem pivot gira no próprio centro;
+- [ ] os painéis reais do barrete permanecem num único volume; nenhuma peça flutua acima ou ao redor do avatar;
+- [ ] alternar para o perfil genérico não muda as capturas de regressão do `aspergillum-held-v1`.
+
+`npm --prefix viewer-3d run validate:workspace` percorre cada manifesto sincronizado, exige IDs únicos e equipamentos integralmente resolvidos, verifica arquivos de modelo/textura/attachable e constrói todas as geometrias para rejeitar bounds ou matrizes não finitos. O build do viewer executa esse gate depois de `sync-assets`.
 
 Checklist mínimo do Avatar Lab:
 

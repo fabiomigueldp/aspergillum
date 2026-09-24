@@ -7,6 +7,7 @@ import {
   bedrockGeometryRotation,
   buildBedrockGeometry as buildSharedBedrockGeometry,
 } from '../shared/bedrock-geometry.js';
+import { extractBedrockGeometries } from '../shared/bedrock-document.js';
 import {
   CAPTURE_SUBJECTS,
   CAPTURE_VIEWS,
@@ -17,6 +18,11 @@ import {
   cosmeticLabel,
   resolveCosmetic,
 } from '../shared/cosmetic-contract.js';
+import {
+  getSelectedProject,
+  onSelectedProjectChange,
+  projectAssetUrl,
+} from '../shared/project-context.js';
 
 const SCALE = 1 / 16;
 const WATER_BONES = ['water_low', 'water_mid', 'water_high', 'water_full'];
@@ -58,10 +64,11 @@ const LIGHTING_PRESETS = Object.freeze({
 });
 
 const state = {
+  project: null,
   manifest: null,
   runtime: {
-    attachable: null,
-    renderController: null,
+    attachables: new Map(),
+    renderControllers: new Map(),
     animations: new Map(),
     animationControllers: new Map(),
     textureSets: new Map(),
@@ -217,7 +224,7 @@ function escapeHtml(value) {
 }
 
 function assetUrl(relativePath) {
-  return new URL(`./asset-library/${relativePath}`, document.baseURI).href;
+  return projectAssetUrl(relativePath, state.project?.id);
 }
 
 function runtimeAssetPath(relativePath) {
@@ -700,18 +707,29 @@ function updateControls() {
   ui.waterToggle.disabled = !hasWater;
   ui.dockedToggle.disabled = !hasDocked;
   ui.cosmeticSelect.value = currentCosmetic.id;
-  ui.cosmeticSelect.disabled = !currentCosmetic.textures?.[state.currentModel?.id];
-  ui.cosmeticNote.textContent = cosmeticLabel(currentCosmetic);
+  ui.cosmeticSelect.disabled = (state.manifest?.cosmetics?.length ?? 0) < 2;
+  ui.cosmeticNote.textContent = displayCosmetic(currentCosmetic);
   ui.timeline.max = String(state.timelineLength);
   ui.timeline.value = String(Math.min(state.timeline, state.timelineLength));
-  const canAnimate = Boolean(state.currentRenderPath?.attachable);
-  ui.perspectiveButtons.forEach((button) => { button.disabled = !canAnimate; });
-  ui.actionButtons.forEach((button) => { button.disabled = !canAnimate; });
-  ui.timeline.disabled = !canAnimate;
-  ui.timelineNote.textContent = canAnimate
+  const hasAttachable = Boolean(state.currentRenderPath?.attachable);
+  const hasAction = Boolean(
+    state.currentRenderPath?.animationIds?.sprinkleFirstPerson
+    || state.currentRenderPath?.animationIds?.sprinkleThirdPerson,
+  );
+  ui.perspectiveButtons.forEach((button) => { button.disabled = !hasAttachable; });
+  ui.actionButtons.forEach((button) => {
+    button.disabled = !hasAttachable || (button.dataset.action === 'sprinkle' && !hasAction);
+  });
+  ui.timeline.disabled = !hasAction;
+  const idleButton = ui.actionButtons.find((button) => button.dataset.action === 'idle');
+  const actionButton = ui.actionButtons.find((button) => button.dataset.action === 'sprinkle');
+  if (idleButton) idleButton.textContent = state.manifest?.capabilities?.advancedAvatarProfile ? 'Segurando' : 'Pose base';
+  if (actionButton) actionButton.textContent = state.manifest?.capabilities?.advancedAvatarProfile ? 'Aspersão' : 'Ação do pack';
+  if (!hasAction && state.action === 'sprinkle') state.action = 'idle';
+  ui.timelineNote.textContent = hasAction
     ? state.action === 'sprinkle'
-      ? 'Aspersão ativa: o tempo controla a animação do pack.'
-      : 'Arraste para iniciar a prévia da aspersão.'
+      ? 'Ação ativa: o tempo controla a animação declarada no pack.'
+      : 'Selecione a ação para examinar sua curva no tempo.'
     : 'Esta geometria não possui animação de attachable.';
   setPressed(ui.gridButton, state.showGrid);
   setPressed(ui.axesButton, state.showAxes);
@@ -731,7 +749,7 @@ function findGeometrySource(model, geometrySummary) {
 }
 
 function describeModel(model) {
-  const sourceName = model.source.split('/').at(-1).replace('.geo.json', '');
+  const sourceName = model.source.split('/').at(-1).replace(/\.geo\.json$|\.json$/i, '');
   return `${model.label} · ${sourceName}`;
 }
 
@@ -756,18 +774,29 @@ function populateGeometrySelect(model) {
 }
 
 function getPreferredModelIndex() {
-  const index = state.manifest.models.findIndex((model) => model.source.includes('models/entity/aspergillum.geo.json'));
+  const advanced = state.manifest.capabilities?.advancedAvatarProfile;
+  const preferredModelId = advanced
+    ? state.manifest.equipment?.find(({ geometryId }) => geometryId === 'geometry.aspergillum.held')?.modelId
+    : state.manifest.equipment?.find(({ resolved }) => resolved)?.modelId;
+  const index = state.manifest.models.findIndex((model) => model.id === preferredModelId);
   return index >= 0 ? index : 0;
 }
 
 function findRuntimePath(model, geometrySummary) {
-  const isAttachableGeometry = geometrySummary?.identifier === 'geometry.aspergillum.held'
-    || model?.source.includes('models/entity/aspergillum.geo.json');
-  const attachableDescription = state.runtime.attachable?.['minecraft:attachable']?.description;
-  const controllerId = attachableDescription?.render_controllers?.[0] ?? null;
-  const controller = controllerId ? state.runtime.renderController?.render_controllers?.[controllerId] : null;
+  const equipment = state.manifest.equipment?.find((candidate) => (
+    candidate.modelId === model?.id && candidate.geometryId === geometrySummary?.identifier
+  ));
+  const candidates = equipment?.attachableVariants?.length
+    ? equipment.attachableVariants
+    : model?.renderPaths ?? [];
+  const summary = candidates.find(({ path }) => path === equipment?.attachable?.path)
+    ?? candidates.find(({ playerVariant }) => playerVariant === ['head', 'chest'].includes(equipment?.slot ?? model?.slot))
+    ?? candidates[0]
+    ?? null;
+  const attachableDocument = summary ? state.runtime.attachables.get(summary.path) : null;
+  const attachableDescription = attachableDocument?.['minecraft:attachable']?.description;
 
-  if (!isAttachableGeometry || !attachableDescription || !controller) {
+  if (!attachableDescription) {
     const textureStem = stripTextureExtension(model?.texture ?? '');
     return {
       attachable: false,
@@ -780,32 +809,40 @@ function findRuntimePath(model, geometrySummary) {
     };
   }
 
-  const geometryReference = controller.geometry;
+  const controllerId = attachableDescription.render_controllers?.[0] ?? null;
+  const controller = controllerId ? state.runtime.renderControllers.get(controllerId) : null;
+  const geometryReference = controller?.geometry ?? 'Geometry.default';
   const geometryId = typeof geometryReference === 'string' && geometryReference.startsWith('Geometry.')
     ? attachableDescription.geometry?.[geometryReference.slice('Geometry.'.length)]
     : geometryReference;
-  const textureReference = controller.textures?.[0];
+  const textureReference = controller?.textures?.[0] ?? 'Texture.default';
   const textureStem = typeof textureReference === 'string' && textureReference.startsWith('Texture.')
     ? attachableDescription.textures?.[textureReference.slice('Texture.'.length)]
     : textureReference;
-  const materialReference = controller.materials?.[0]?.['*'] ?? controller.materials?.[0]?.default;
+  const materialReference = controller?.materials?.[0]?.['*']
+    ?? controller?.materials?.[0]?.default
+    ?? 'Material.default';
   const materialId = typeof materialReference === 'string' && materialReference.startsWith('Material.')
     ? attachableDescription.materials?.[materialReference.slice('Material.'.length)]
     : materialReference;
 
   return {
     attachable: true,
+    attachablePath: summary.path,
     attachableId: attachableDescription.identifier,
     controllerId,
     geometryId,
     materialId: materialId ?? 'entity',
     textureStem: stripTextureExtension(textureStem),
     animationIds: {
-      holdFirstPerson: attachableDescription.animations?.hold_first_person,
-      holdThirdPerson: attachableDescription.animations?.hold_third_person,
+      holdFirstPerson: attachableDescription.animations?.hold_first_person
+        ?? attachableDescription.animations?.wield_first_person,
+      holdThirdPerson: attachableDescription.animations?.hold_third_person
+        ?? attachableDescription.animations?.wield_third_person,
       sprinkleFirstPerson: attachableDescription.animations?.sprinkle_first_person,
       sprinkleThirdPerson: attachableDescription.animations?.sprinkle_third_person,
       actionController: attachableDescription.animations?.action_controller,
+      declared: Object.values(attachableDescription.animations ?? {}),
     },
   };
 }
@@ -872,6 +909,10 @@ function getCurrentCosmetic() {
   return resolveCosmetic(state.manifest.cosmetics, state.cosmeticId);
 }
 
+function displayCosmetic(cosmetic) {
+  return cosmetic?.label ?? cosmeticLabel(cosmetic);
+}
+
 function getModelCompositions(model) {
   return state.manifest.compositions?.[model.id] ?? [];
 }
@@ -929,7 +970,7 @@ function renderInspector() {
     row('Attachable', path.attachableId ?? 'não aplicável', path.attachable ? 'ok' : ''),
     row('Render controller', path.controllerId ?? 'não aplicável', path.controllerId ? 'ok' : ''),
     row('Material', path.materialId ?? '—'),
-    row('Acabamento', cosmetic.label ?? cosmeticLabel(cosmetic)),
+    row('Acabamento', displayCosmetic(cosmetic)),
     row('Perspectiva', state.perspective === 'first' ? 'context.is_first_person = 1' : 'context.is_first_person = 0'),
     row('Estado', state.action === 'sprinkle' ? 'controller → sprinkle' : 'controller → idle'),
     row('Pose', state.action === 'sprinkle' ? `${formatNumber(state.timeline, 2)} s` : 'hold'),
@@ -1005,7 +1046,9 @@ async function loadCurrentModel() {
   try {
     const sourceData = await loadModelData(model);
     if (token !== state.loadToken) return;
-    const geometryData = sourceData['minecraft:geometry']?.[index] ?? sourceData['minecraft:geometry']?.[0];
+    const geometries = extractBedrockGeometries(sourceData);
+    const geometryData = geometries[index] ?? geometries[0];
+    if (!geometryData) throw new Error(`Geometria Bedrock ausente em ${model.source}.`);
     const renderPath = findRuntimePath(model, geometrySummary);
     const palette = await createMaterialPalette(renderPath, model);
     if (token !== state.loadToken) return;
@@ -1017,7 +1060,7 @@ async function loadCurrentModel() {
       if (!overlayModel) throw new Error(`Modelo de composição ausente: ${composition.modelId}`);
       const overlaySource = await loadModelData(overlayModel);
       const overlaySummary = overlayModel.geometries?.[0];
-      const overlayGeometry = overlaySource['minecraft:geometry']?.[0];
+      const overlayGeometry = extractBedrockGeometries(overlaySource)[0];
       if (!overlaySummary || !overlayGeometry) {
         throw new Error(`Geometria de composição ausente: ${composition.modelId}`);
       }
@@ -1063,11 +1106,12 @@ async function loadCurrentModel() {
       ...built.locatorRecords,
       ...compositionResults.flatMap(({ built: overlay }) => overlay.locatorRecords),
     ];
-    state.timelineLength = renderPath.animationIds
-      ? getAnimationLength(state.runtime.animations.get(
-        state.perspective === 'first' ? renderPath.animationIds.sprinkleFirstPerson : renderPath.animationIds.sprinkleThirdPerson,
-      ))
-      : 0.82;
+    const actionAnimationId = state.perspective === 'first'
+      ? renderPath.animationIds?.sprinkleFirstPerson
+      : renderPath.animationIds?.sprinkleThirdPerson;
+    state.timelineLength = actionAnimationId
+      ? getAnimationLength(state.runtime.animations.get(actionAnimationId))
+      : 0;
     state.timeline = Math.min(state.timeline, state.timelineLength);
     applyPose();
     applyVisibility();
@@ -1085,20 +1129,34 @@ async function loadCurrentModel() {
 }
 
 async function loadRuntime() {
+  state.project = await getSelectedProject();
   const manifest = await fetchJson('manifest.json');
   state.manifest = manifest;
+  state.modelCache.clear();
+  state.textureCache.clear();
+  state.runtime.attachables.clear();
+  state.runtime.renderControllers.clear();
+  state.runtime.animations.clear();
+  state.runtime.animationControllers.clear();
+  state.runtime.textureSets.clear();
 
   const runtimeFiles = manifest.runtime ?? {};
-  const [attachable, renderController, animationFiles, controllerFiles, textureSetFiles] = await Promise.all([
-    loadRuntimeJson(runtimeFiles.attachables?.find((file) => file.endsWith('aspergillum.attachable.json'))),
-    loadRuntimeJson(runtimeFiles.renderControllers?.find((file) => file.endsWith('aspergillum.render_controllers.json'))),
+  const [attachableFiles, renderControllerFiles, animationFiles, controllerFiles, textureSetFiles] = await Promise.all([
+    Promise.all((runtimeFiles.attachables ?? []).map(async (file) => [file, await loadRuntimeJson(file)])),
+    Promise.all((runtimeFiles.renderControllers ?? []).map(async (file) => [file, await loadRuntimeJson(file)])),
     Promise.all((runtimeFiles.animations ?? []).map(async (file) => [file, await loadRuntimeJson(file)])),
     Promise.all((runtimeFiles.animationControllers ?? []).map(async (file) => [file, await loadRuntimeJson(file)])),
     Promise.all((runtimeFiles.textureSets ?? []).map(async (file) => [file, await loadRuntimeJson(file)])),
   ]);
 
-  state.runtime.attachable = attachable;
-  state.runtime.renderController = renderController;
+  for (const [file, data] of attachableFiles) {
+    if (data) state.runtime.attachables.set(file, data);
+  }
+  for (const [, data] of renderControllerFiles) {
+    for (const [identifier, controller] of Object.entries(data?.render_controllers ?? {})) {
+      state.runtime.renderControllers.set(identifier, controller);
+    }
+  }
   for (const [, data] of animationFiles) {
     for (const [identifier, animation] of Object.entries(data?.animations ?? {})) state.runtime.animations.set(identifier, animation);
   }
@@ -1109,6 +1167,10 @@ async function loadRuntime() {
     if (data) state.runtime.textureSets.set(stripTextureExtension(file), data);
   }
 
+  state.cosmeticId = manifest.cosmetics?.find(({ id }) => id === 'classic')?.id
+    ?? manifest.cosmetics?.[0]?.id
+    ?? 'default';
+  if (!manifest.capabilities?.pbr) state.materialMode = 'classic';
   populateAssetSelect();
   populateCosmeticSelect();
   const preferredIndex = getPreferredModelIndex();
@@ -1116,7 +1178,7 @@ async function loadRuntime() {
   populateGeometrySelect(state.manifest.models[preferredIndex]);
   updateControls();
   await loadCurrentModel();
-  showToast('Runtime Bedrock local montado a partir do Resource Pack.');
+  showToast(`${state.project.displayName}: runtime local montado a partir do Resource Pack.`);
 }
 
 function onAssetChange() {
@@ -1132,7 +1194,7 @@ function onPerspectiveChange(button) {
     const animationId = state.perspective === 'first'
       ? state.currentRenderPath.animationIds.sprinkleFirstPerson
       : state.currentRenderPath.animationIds.sprinkleThirdPerson;
-    state.timelineLength = getAnimationLength(state.runtime.animations.get(animationId));
+    state.timelineLength = animationId ? getAnimationLength(state.runtime.animations.get(animationId)) : 0;
   }
   applyCurrentState();
   fitCamera();
@@ -1388,10 +1450,18 @@ function captureView(viewId, framing = {}) {
 }
 
 async function configureCapture(options = {}) {
-  const subject = getCaptureSubject(options.subject ?? 'aspergillum');
-  if (!subject) throw new Error(`Assunto de captura desconhecido: ${options.subject}`);
-  const modelIndex = state.manifest.models.findIndex((model) => model.id === subject.modelId);
-  if (modelIndex < 0) throw new Error(`Modelo não encontrado no catálogo: ${subject.modelId}`);
+  const requestedModel = options.modelId ?? options.model ?? null;
+  const equipment = requestedModel
+    ? state.manifest.equipment?.find(({ id, localId }) => id === requestedModel || localId === requestedModel)
+    : null;
+  const subject = requestedModel ? null : getCaptureSubject(options.subject ?? 'aspergillum');
+  if (!requestedModel && !subject) throw new Error(`Assunto de captura desconhecido: ${options.subject}`);
+  const modelId = equipment?.modelId ?? requestedModel ?? subject.modelId;
+  const modelIndex = state.manifest.models.findIndex((model) => (
+    model.id === modelId || model.geometries?.some(({ identifier }) => identifier === modelId)
+  ));
+  if (modelIndex < 0) throw new Error(`Modelo não encontrado no catálogo: ${modelId}`);
+  const selectedModel = state.manifest.models[modelIndex];
 
   document.body.classList.add('capture-mode');
   controls.enabled = false;
@@ -1404,16 +1474,18 @@ async function configureCapture(options = {}) {
   state.wireframe = Boolean(options.wireframe);
   state.waterVisible = options.water !== 'empty';
   state.waterLevel = options.water ?? 'full';
-  state.docked = subject.docked;
+  state.docked = subject?.docked ?? false;
   state.captureNeutralPose = options.pose
     ? options.pose === 'neutral'
-    : subject.neutralPose && options.action !== 'sprinkle';
-  state.perspective = options.pose === 'third' ? 'third' : 'first';
+    : requestedModel
+      ? true
+      : Boolean(subject?.neutralPose) && options.action !== 'sprinkle';
+  state.perspective = options.pose === 'first' ? 'first' : 'third';
   state.action = options.action === 'sprinkle' ? 'sprinkle' : 'idle';
   state.timeline = Number(options.timeline) || 0;
   state.cosmeticId = resolveCosmetic(
     state.manifest.cosmetics,
-    options.cosmetic ?? 'classic',
+    options.cosmetic ?? state.manifest.cosmetics.find(({ id }) => id === 'classic')?.id ?? state.manifest.cosmetics[0].id,
   ).id;
 
   if (options.material && options.material !== state.materialMode) {
@@ -1429,14 +1501,16 @@ async function configureCapture(options = {}) {
   renderCaptureFrame();
 
   return {
-    subject: subject.id,
-    label: subject.label,
+    project: state.project.id,
+    subject: subject?.id ?? null,
+    model: selectedModel.id,
+    label: equipment?.label ?? subject?.label ?? selectedModel.label,
     geometry: state.currentGeometry?.identifier ?? null,
     material: state.materialMode,
     water: state.waterLevel,
     docked: state.docked,
     cosmetic: state.cosmeticId,
-    cosmeticLabel: cosmeticLabel(getCurrentCosmetic()),
+    cosmeticLabel: displayCosmetic(getCurrentCosmetic()),
     waterOverlayGeometry: state.waterOverlayGeometry,
     lighting: state.lightingPreset,
     transparent: Boolean(options.transparent),
@@ -1444,11 +1518,25 @@ async function configureCapture(options = {}) {
 }
 
 const captureApi = {
-  version: 3,
+  version: 4,
   ready: false,
   error: null,
   subjects: Object.values(CAPTURE_SUBJECTS).map(({ id, label }) => ({ id, label })),
   views: CAPTURE_VIEWS.map(({ id, label }) => ({ id, label })),
+  project: () => state.manifest?.project ?? null,
+  models: () => state.manifest?.models?.map(({ id, label, category, geometries }) => ({
+    id,
+    label,
+    category,
+    geometries: geometries.map(({ identifier }) => identifier),
+  })) ?? [],
+  equipment: () => state.manifest?.equipment?.map(({ id, label, kind, slot, modelId }) => ({
+    id,
+    label,
+    kind,
+    slot,
+    modelId,
+  })) ?? [],
   cosmetics: () => state.manifest?.cosmetics?.map(({ id, label, metal, grip, index }) => ({
     id,
     label,
@@ -1463,6 +1551,7 @@ const captureApi = {
 };
 
 window.__ASPERGILLUM_CAPTURE__ = captureApi;
+window.__BEDROCK_CAPTURE__ = captureApi;
 
 let resizeFrame = 0;
 const resizeObserver = new ResizeObserver(() => {
@@ -1475,6 +1564,21 @@ resizeObserver.observe(ui.viewportStage);
 wireInteractions();
 resizeRenderer();
 animate();
+
+onSelectedProjectChange(() => {
+  captureApi.ready = false;
+  captureApi.error = null;
+  setLoading(true);
+  removeCurrentSceneModel();
+  loadRuntime().then(() => {
+    captureApi.ready = true;
+  }).catch((error) => {
+    console.error(error);
+    captureApi.error = error instanceof Error ? error.message : String(error);
+    ui.runtimeStatus.textContent = 'Falha ao trocar de projeto';
+    setLoading(false);
+  });
+});
 
 loadRuntime().catch((error) => {
   console.error(error);

@@ -14,7 +14,7 @@ npm run dev
 
 Abra o endereço mostrado pelo Vite, normalmente `http://127.0.0.1:4173`. Use `?tool=model`, `?tool=bedrock` ou `?tool=avatar` para criar um link direto para qualquer laboratório. A barra superior permanece montada durante a troca, e voltar/avançar funciona sem navegação de documento.
 
-O comando `sync-assets` lê os arquivos atuais em `../packs/resource/models` e `../packs/resource/textures`, além dos JSONs de attachables, render controllers, animações e texture sets. Ele gera um catálogo temporário em `public/asset-library/`. Esse diretório é ignorado pelo Git para evitar duplicar PNGs gerados e modelos derivados.
+O comando `sync-assets` lê os packs dos projetos registrados no gerenciador, incluindo modelos, texturas, attachables, render controllers, animações e texture sets. Ele gera um workspace temporário em `public/asset-library/`. Um projeto externo registrado cujo `package.json` não esteja disponível recebe um aviso e é omitido do viewer; o gerenciador de instalações mantém sua validação estrita. O diretório gerado é ignorado pelo Git para evitar duplicar PNGs e modelos derivados.
 
 ## O que já está disponível
 
@@ -108,6 +108,10 @@ npm run render:cover -- --help
 Cada execução também grava `cover-manifest.json` com versão, preset, câmera, geometria resolvida, acabamento, material, nível de água, tipografia, tamanho e SHA-256 de cada PNG. Uma checagem de cobertura alfa interrompe o processo caso o render 3D esteja vazio ou incompleto. A fonte e sua licença OFL ficam em `public/fonts/bowlby-one-sc/`, portanto a composição não depende de rede.
 
 O comando não modifica `assets-src/`, `packs/` nem `dist/`. As candidatas em `out/cover-renders/` são evidência para aprovação; a promoção para `pack_icon.png` é uma mudança distribuível separada. A candidata aprovada para a 1.2.1 foi copiada para `assets-src/branding/` e passou a alimentar o gerador oficial. O contrato completo está em `docs/COVER_RENDERER.md`.
+
+## Convites locais
+
+`npm run render:invitation -- --help` mostra as opções do renderer de convites. Ele combina um avatar e equipamento do workspace com título, celebrante, celebração, local e horário, e grava um PNG em `out/invitation-renders/`. O preset usa Ornatum; esse projeto precisa estar disponível no registro local para gerar o convite padrão. A ferramenta não altera os packs do Aspergillum.
 
 ## Limite deliberado
 

@@ -18,6 +18,7 @@ import {
   sampleAnimationChannel,
 } from '../shared/avatar-motion.js';
 import {
+  BEDROCK_GEOMETRY_BASIS,
   BEDROCK_UNIT_SCALE,
   bedrockAnimationPosition,
   bedrockAnimationRotation,
@@ -27,17 +28,28 @@ import {
   resetBedrockPose,
   setPivotVisibility,
 } from '../shared/bedrock-geometry.js';
-import { resolveCosmetic } from '../shared/cosmetic-contract.js';
+import { findBedrockGeometry } from '../shared/bedrock-document.js';
+import {
+  applyEquipmentVisualBasis,
+  authoredPlayerBoneRotation,
+  equipmentAnchor,
+  equipmentMode,
+  graftEquipmentBones,
+  graftSnapshot,
+} from '../shared/avatar-equipment.js';
+import {
+  getSelectedProject,
+  projectAssetUrl,
+} from '../shared/project-context.js';
 
 const PLAYER_SCALE = 0.9375;
-const ITEM_MODEL_ID = 'entity__aspergillum';
 const BINDING_EXPRESSION = 'q.item_slot_to_bone_name(context.item_slot)';
 const DEFAULT_BACKGROUND = 0x121a1c;
 const FIRST_PERSON_VISIBLE_BONES = new Set(['rightarm', 'rightsleeve']);
 const GRIP_CENTER_TOLERANCE = 0.05;
 
-function assetUrl(relativePath) {
-  return new URL(`./asset-library/${relativePath}`, document.baseURI).href;
+function assetUrl(relativePath, projectId) {
+  return projectAssetUrl(relativePath, projectId);
 }
 
 function pageAssetUrl(relativePath) {
@@ -104,7 +116,11 @@ export class AvatarScene {
     this.recipe = normalizeAvatarRecipe();
     this.skinSource = pageAssetUrl(DEFAULT_AVATAR_PRESET.skin);
     this.skinMetadata = { ...DEFAULT_AVATAR_PRESET };
+    this.project = null;
     this.manifest = null;
+    this.equipment = null;
+    this.profile = null;
+    this.equipmentGrafts = [];
     this.itemModel = null;
     this.itemGeometry = null;
     this.itemSummary = null;
@@ -112,6 +128,7 @@ export class AvatarScene {
     this.animations = new Map();
     this.playerBuilt = null;
     this.itemBuilt = null;
+    this.equipmentGrafts = [];
     this.avatarRoot = null;
     this.debugLines = null;
     this.bindingLine = null;
@@ -210,35 +227,81 @@ export class AvatarScene {
   }
 
   async initialize() {
-    this.onStatus({ state: 'loading', message: 'Resolvendo runtime local' });
+    await this.loadProject();
+    return this.snapshot();
+  }
+
+  async loadProject({ equipmentId = null } = {}) {
+    this.onStatus({ state: 'loading', message: 'Resolvendo projeto e runtime local' });
+    this.project = await getSelectedProject();
     this.manifest = await this.fetchJson('manifest.json');
-    this.itemModel = this.manifest.models.find(({ id }) => id === ITEM_MODEL_ID);
-    if (!this.itemModel) throw new Error(`Modelo ausente no catálogo: ${ITEM_MODEL_ID}`);
-    const modelFile = await this.fetchJson(this.itemModel.source);
-    this.itemGeometry = modelFile['minecraft:geometry']?.[0];
-    this.itemSummary = this.itemModel.geometries?.[0];
-    if (!this.itemGeometry || !this.itemSummary) throw new Error('Geometria do aspersório não pôde ser resolvida.');
-
-    const attachablePath = this.manifest.runtime.attachables
-      .find((value) => value.endsWith('/aspergillum.attachable.json'));
-    this.attachable = attachablePath ? await this.fetchJson(`pack/${attachablePath}`) : null;
-    const binding = this.itemGeometry.bones?.find(({ name }) => name === 'aspergillum_bound')?.binding;
-    if (binding !== BINDING_EXPRESSION) {
-      throw new Error(`Binding incompatível no pack: ${binding ?? 'ausente'}`);
-    }
-
-    await Promise.all(this.manifest.runtime.animations.map(async (relativePath) => {
+    this.profile = this.manifest.capabilities?.advancedAvatarProfile ?? null;
+    this.animations.clear();
+    this.textureCache.clear();
+    this.derivedTextureCache.clear();
+    await Promise.all((this.manifest.runtime?.animations ?? []).map(async (relativePath) => {
       const file = await this.fetchJson(`pack/${relativePath}`);
       for (const [id, animation] of Object.entries(file.animations ?? {})) this.animations.set(id, animation);
     }));
 
-    await this.rebuild();
-    this.onStatus({ state: 'ready', message: 'Runtime e binding resolvidos' });
+    const preferred = equipmentId
+      ?? (this.profile === 'aspergillum-held-v1'
+        ? this.manifest.equipment.find(({ id }) => id === 'aspergillum:aspergillum')?.id
+          ?? this.manifest.equipment.find(({ geometryId }) => geometryId === 'geometry.aspergillum.held')?.id
+        : this.manifest.equipment.find(({ resolved }) => resolved)?.id);
+    if (!preferred) throw new Error(`${this.project.displayName} não possui equipamento resolvido para o Avatar Lab.`);
+    await this.loadEquipment(preferred);
+    await this.rebuild({
+      project: this.project.id,
+      equipmentId: this.equipment.id,
+      item: this.equipment.id,
+      slot: this.equipment.sourceSlot ?? this.equipment.slot,
+      targetBone: equipmentAnchor(null, this.equipment.slot).targetName,
+      binding: this.profile === 'aspergillum-held-v1' ? BINDING_EXPRESSION : 'merge_by_bone',
+      profile: this.profile ?? 'bedrock-attachable-v1',
+      cosmetic: this.manifest.cosmetics.find(({ id }) => id === 'classic')?.id
+        ?? this.manifest.cosmetics[0]?.id
+        ?? 'default',
+      material: this.manifest.capabilities?.pbr ? this.recipe.presentation.material : 'classic',
+      action: 'idle',
+    });
+    this.onStatus({
+      state: 'ready',
+      message: `${this.project.displayName} · ${this.equipment.label} resolvido`,
+    });
     return this.snapshot();
   }
 
+  async loadEquipment(equipmentId) {
+    const equipment = this.manifest.equipment?.find(({ id, localId }) => (
+      id === equipmentId || localId === equipmentId
+    ));
+    if (!equipment?.resolved) throw new Error(`Equipamento não resolvido no catálogo: ${equipmentId}`);
+    const model = this.manifest.models.find(({ id }) => id === equipment.modelId);
+    if (!model) throw new Error(`Modelo ausente para ${equipment.label}: ${equipment.modelId}`);
+    const summary = model.geometries.find(({ identifier }) => identifier === equipment.geometryId)
+      ?? model.geometries[0];
+    const modelFile = await this.fetchJson(model.source);
+    const geometry = findBedrockGeometry(modelFile, summary?.identifier, summary?.index ?? 0);
+    if (!summary || !geometry) throw new Error(`Geometria ausente para ${equipment.label}.`);
+    const attachablePath = equipment.attachable?.path;
+    this.equipment = equipment;
+    this.itemModel = model;
+    this.itemSummary = summary;
+    this.itemGeometry = geometry;
+    this.attachable = attachablePath ? await this.fetchJson(`pack/${attachablePath}`) : null;
+
+    if (this.profile === 'aspergillum-held-v1') {
+      const binding = geometry.bones?.find(({ name }) => name === 'aspergillum_bound')?.binding;
+      if (binding !== BINDING_EXPRESSION) {
+        throw new Error(`Binding incompatível no pack: ${binding ?? 'ausente'}`);
+      }
+    }
+    return equipment;
+  }
+
   async fetchJson(relativePath) {
-    const response = await fetch(assetUrl(relativePath));
+    const response = await fetch(assetUrl(relativePath, this.project?.id));
     if (!response.ok) throw new Error(`Falha ao carregar ${relativePath}: ${response.status}`);
     return response.json();
   }
@@ -247,7 +310,7 @@ export class AvatarScene {
     if (!source) return null;
     const url = source.startsWith('data:') || source.startsWith('blob:') || source.startsWith('http')
       ? source
-      : assetUrl(source);
+      : assetUrl(source, this.project?.id);
     const key = `${url}:${color ? 'color' : 'data'}`;
     if (!this.textureCache.has(key)) {
       this.textureCache.set(key, this.textureLoader.loadAsync(url).then((texture) => {
@@ -293,8 +356,10 @@ export class AvatarScene {
   }
 
   async createItemMaterial() {
-    const cosmetic = resolveCosmetic(this.manifest.cosmetics, this.recipe.presentation.cosmetic);
-    const stem = cosmetic.textures[ITEM_MODEL_ID] ?? stripTextureExtension(this.itemModel.texture);
+    const cosmetic = this.manifest.cosmetics.find(({ id }) => id === this.recipe.presentation.cosmetic)
+      ?? this.manifest.cosmetics[0];
+    const stem = cosmetic?.textures?.[this.itemModel.id]
+      ?? stripTextureExtension(this.equipment?.texture ?? this.itemModel.texture);
     const set = await this.fetchJson(`pack/${textureSetPath(stem)}`).catch(() => null);
     const definition = set?.['minecraft:texture_set'];
     const directory = baseDirectory(stem);
@@ -329,7 +394,7 @@ export class AvatarScene {
       metalness: channels?.metalness ? 1 : 0.2,
       roughness: channels?.roughness ? 1 : 0.48,
     });
-    material.userData = { colorPath, normalPath, mersPath, cosmetic: cosmetic.id };
+    material.userData = { colorPath, normalPath, mersPath, cosmetic: cosmetic?.id ?? 'default' };
     return material;
   }
 
@@ -348,6 +413,18 @@ export class AvatarScene {
 
   async rebuild(overrides = {}) {
     const token = ++this.loadToken;
+    if (overrides.equipmentId && overrides.equipmentId !== this.equipment?.id) {
+      await this.loadEquipment(overrides.equipmentId);
+      if (token !== this.loadToken) return this.snapshot();
+      overrides = {
+        ...overrides,
+        item: this.equipment.id,
+        slot: this.equipment.sourceSlot ?? this.equipment.slot,
+        targetBone: equipmentAnchor(null, this.equipment.slot).targetName,
+        binding: this.profile === 'aspergillum-held-v1' ? BINDING_EXPRESSION : 'merge_by_bone',
+        profile: this.profile ?? 'bedrock-attachable-v1',
+      };
+    }
     if (overrides.skinSource) this.skinSource = overrides.skinSource;
     if (overrides.skinMetadata) this.skinMetadata = { ...this.skinMetadata, ...overrides.skinMetadata };
     const skinReference = this.skinMetadata.reference
@@ -356,6 +433,7 @@ export class AvatarScene {
       ?? DEFAULT_AVATAR_PRESET.skin;
     this.recipe = normalizeAvatarRecipe({
       ...this.recipe.avatar,
+      ...this.recipe.equipment,
       ...this.recipe.presentation,
       ...overrides,
       skin: skinReference,
@@ -373,21 +451,39 @@ export class AvatarScene {
       identifier: playerGeometry.description.identifier,
       textureWidth: playerGeometry.description.texture_width,
       textureHeight: playerGeometry.description.texture_height,
-    }, { default: skinMaterial }, { includePivots: true, includeLocators: true });
+    }, { default: skinMaterial }, {
+      includePivots: true,
+      includeLocators: true,
+      // The local player rig deliberately exposes the skin front on +Z.
+      coordinateBasis: BEDROCK_GEOMETRY_BASIS.LEGACY_VIEWER,
+    });
     const model = getAvatarModel(this.recipe.avatar.model);
+    const advancedProfile = this.profile === 'aspergillum-held-v1';
     this.itemBuilt = buildBedrockGeometry(
       this.itemGeometry,
       this.itemSummary,
       { default: itemMaterial },
       {
-        externalParentPivot: ASPERGILLUM_EMPIRICAL_GRIP,
+        externalParentPivot: advancedProfile ? ASPERGILLUM_EMPIRICAL_GRIP : [0, 0, 0],
         includePivots: true,
         includeLocators: true,
+        // Preserve the approved Aspergillum calibration while all generic pack
+        // geometry enters through the standards-correct Bedrock adapter.
+        coordinateBasis: advancedProfile
+          ? BEDROCK_GEOMETRY_BASIS.LEGACY_VIEWER
+          : BEDROCK_GEOMETRY_BASIS.BEDROCK,
       },
     );
-    const rightItem = findBoneGroup(this.playerBuilt, 'rightItem');
-    if (!rightItem) throw new Error('O rig do avatar não contém o osso rightItem.');
-    rightItem.add(this.itemBuilt.root);
+    if (advancedProfile) {
+      const rightItem = findBoneGroup(this.playerBuilt, 'rightItem');
+      if (!rightItem) throw new Error('O rig do avatar não contém o osso rightItem.');
+      rightItem.add(this.itemBuilt.root);
+      this.equipmentGrafts = [];
+    } else {
+      this.playerBuilt.root.add(this.itemBuilt.root);
+      this.equipmentGrafts = graftEquipmentBones(this.playerBuilt, this.itemBuilt);
+      applyEquipmentVisualBasis(this.itemBuilt, this.equipmentGrafts);
+    }
 
     this.avatarRoot = this.playerBuilt.root;
     this.avatarRoot.name = 'avatar-scene-root';
@@ -446,7 +542,12 @@ export class AvatarScene {
       }
     }
     this.debugLines.geometry.setAttribute('position', new THREE.Float32BufferAttribute(segments, 3));
-    const chain = ['rightArm', 'rightItem', 'aspergillum_bound', 'aspergillum_presentation', 'aspergillum_action'];
+    const chain = this.profile === 'aspergillum-held-v1'
+      ? ['rightArm', 'rightItem', 'aspergillum_bound', 'aspergillum_presentation', 'aspergillum_action']
+      : [
+        equipmentAnchor(this.playerBuilt, this.equipment?.slot).targetName,
+        ...this.equipmentGrafts.map(({ boneName }) => boneName),
+      ];
     const points = chain.map((name) => (
       findBoneGroup(this.playerBuilt, name) ?? findBoneGroup(this.itemBuilt, name)
     )?.getWorldPosition(new THREE.Vector3())).filter(Boolean);
@@ -483,11 +584,24 @@ export class AvatarScene {
     }
   }
 
+  applyAttachableAnimation(animation, time) {
+    if (!animation?.bones) return;
+    for (const [boneName, channels] of Object.entries(animation.bones)) {
+      const playerTarget = findBoneGroup(this.playerBuilt, boneName);
+      const itemTarget = findBoneGroup(this.itemBuilt, boneName);
+      const target = playerTarget ?? itemTarget;
+      if (!target) continue;
+      const built = playerTarget ? this.playerBuilt : this.itemBuilt;
+      this.applyAnimation(built, { ...animation, bones: { [boneName]: channels } }, time);
+    }
+  }
+
   applyPose() {
     if (!this.playerBuilt || !this.itemBuilt) return;
+    const advancedProfile = this.profile === 'aspergillum-held-v1';
     resetBedrockPose(this.playerBuilt.boneRecords);
     resetBedrockPose(this.itemBuilt.boneRecords);
-    if (this.recipe.presentation.perspective === 'first') {
+    if (advancedProfile && this.recipe.presentation.perspective === 'first') {
       for (const { bone, group } of this.itemBuilt.boneRecords) {
         if (!bone.rotation) continue;
         const rotation = bedrockGeometryRotation(bone.rotation, 'first');
@@ -500,10 +614,16 @@ export class AvatarScene {
       }
     }
     const pose = evaluateAvatarPose({
-      action: this.recipe.presentation.action,
+      action: advancedProfile ? this.recipe.presentation.action : 'idle',
       time: this.recipe.presentation.time,
       perspective: this.recipe.presentation.perspective,
     });
+    if (!advancedProfile && this.recipe.presentation.perspective === 'third') {
+      const authoredArm = this.equipment?.slot === 'hand'
+        ? authoredPlayerBoneRotation(this.itemBuilt, 'rightArm')
+        : null;
+      pose.bones.rightArm = { rotation: authoredArm ?? [0, 0, 0] };
+    }
     for (const [boneName, channels] of Object.entries(pose.bones)) {
       const group = findBoneGroup(this.playerBuilt, boneName);
       if (!group) continue;
@@ -522,36 +642,38 @@ export class AvatarScene {
 
     const aliases = this.attachable?.['minecraft:attachable']?.description?.animations ?? {};
     const perspectiveSuffix = this.recipe.presentation.perspective === 'first' ? 'first_person' : 'third_person';
-    const holdAnimation = this.animations.get(aliases[`hold_${perspectiveSuffix}`]);
-    this.applyAnimation(this.itemBuilt, holdAnimation, 0);
+    const holdAnimation = this.animations.get(
+      aliases[`hold_${perspectiveSuffix}`] ?? aliases[`wield_${perspectiveSuffix}`],
+    );
+    if (advancedProfile) this.applyAnimation(this.itemBuilt, holdAnimation, 0);
+    else this.applyAttachableAnimation(holdAnimation, 0);
 
-    // A bound Bedrock root inherits the holder while its authored vertices stay
-    // in player-model space. Our independent Three.js graphs need the complete
-    // inverse seam transform so the authored leather-grip pivot remains exactly
-    // centered on rightItem. Retaining even part of the hold translation makes
-    // the handle merely touch the outside face of the hand.
-    const holdPosition = sampleAnimationChannel(
-      holdAnimation?.bones?.aspergillum_presentation?.position,
-      0,
-      Number(holdAnimation?.animation_length) || 0,
-    );
-    const resolvedHoldPosition = bedrockAnimationPosition(holdPosition);
-    const { retainedPresentationOffset, compositionCalibration } = resolveBoundGripComposition(
-      resolvedHoldPosition,
-    );
-    const boundGroup = findBoneGroup(this.itemBuilt, 'aspergillum_bound');
-    boundGroup.position.add(
-      new THREE.Vector3(...compositionCalibration).multiplyScalar(BEDROCK_UNIT_SCALE),
-    );
-    boundGroup.userData.compositionCalibration = compositionCalibration;
-    boundGroup.userData.retainedPresentationOffset = retainedPresentationOffset;
-
-    if (this.recipe.presentation.action === 'sprinkle') {
-      this.applyAnimation(
-        this.itemBuilt,
-        this.animations.get(aliases[`sprinkle_${perspectiveSuffix}`]),
-        Math.min(this.recipe.presentation.time, 0.82),
+    if (advancedProfile) {
+      // O perfil calibrado do Aspergillum preserva a costura aprovada entre
+      // rightItem e o pivô do cabo; nenhum outro add-on herda esta compensação.
+      const holdPosition = sampleAnimationChannel(
+        holdAnimation?.bones?.aspergillum_presentation?.position,
+        0,
+        Number(holdAnimation?.animation_length) || 0,
       );
+      const resolvedHoldPosition = bedrockAnimationPosition(holdPosition);
+      const { retainedPresentationOffset, compositionCalibration } = resolveBoundGripComposition(
+        resolvedHoldPosition,
+      );
+      const boundGroup = findBoneGroup(this.itemBuilt, 'aspergillum_bound');
+      boundGroup.position.add(
+        new THREE.Vector3(...compositionCalibration).multiplyScalar(BEDROCK_UNIT_SCALE),
+      );
+      boundGroup.userData.compositionCalibration = compositionCalibration;
+      boundGroup.userData.retainedPresentationOffset = retainedPresentationOffset;
+
+      if (this.recipe.presentation.action === 'sprinkle') {
+        this.applyAnimation(
+          this.itemBuilt,
+          this.animations.get(aliases[`sprinkle_${perspectiveSuffix}`]),
+          Math.min(this.recipe.presentation.time, 0.82),
+        );
+      }
     }
 
     const firstPerson = this.recipe.presentation.perspective === 'first';
@@ -560,7 +682,8 @@ export class AvatarScene {
       mesh.visible = (!firstPerson || FIRST_PERSON_VISIBLE_BONES.has(boneName.toLowerCase()))
         && (!isOuter || this.recipe.avatar.outerLayers);
     }
-    for (const { mesh } of this.itemBuilt.meshRecords) mesh.visible = true;
+    const hideWearableInFirstPerson = firstPerson && equipmentMode(this.equipment?.slot) === 'wearable';
+    for (const { mesh } of this.itemBuilt.meshRecords) mesh.visible = !hideWearableInFirstPerson;
     setPivotVisibility(
       [...this.playerBuilt.pivotRecords, ...this.itemBuilt.pivotRecords],
       this.showPivots,
@@ -575,6 +698,7 @@ export class AvatarScene {
   }
 
   setAction(action, { resetTime = true } = {}) {
+    if (this.profile !== 'aspergillum-held-v1' && action !== 'idle') return;
     if (!AVATAR_ACTIONS[action]) return;
     this.recipe.presentation.action = action;
     this.recipe.presentation.duration = AVATAR_ACTIONS[action].duration;
@@ -741,7 +865,11 @@ export class AvatarScene {
     }
     if (this.recipe.presentation.perspective !== 'third') this.setPerspective('third', { fit: false });
     let bounds = null;
-    if (view.focus === 'grip-anchor') {
+    if (view.focus === 'equipment') {
+      bounds = this.getVisibleBounds(this.itemBuilt.meshRecords);
+    } else if (this.profile !== 'aspergillum-held-v1') {
+      bounds = this.getVisibleBounds();
+    } else if (view.focus === 'grip-anchor') {
       bounds = this.getGripAnchorBounds(view.focusSize);
     } else if (view.focus === 'sprinkler-head') {
       const records = this.itemBuilt.meshRecords.filter(({ boneName }) => boneName === 'sprinkler_head');
@@ -780,6 +908,17 @@ export class AvatarScene {
   }
 
   collisionSnapshot() {
+    if (this.profile !== 'aspergillum-held-v1') {
+      return {
+        applicable: false,
+        headClear: true,
+        gripEngaged: true,
+        gripCentered: true,
+        gripCenterOffset: [0, 0, 0],
+        gripCenterError: 0,
+        intersections: [],
+      };
+    }
     if (this.recipe.presentation.perspective === 'first') {
       return { applicable: false, headClear: true, gripEngaged: true, intersections: [] };
     }
@@ -846,8 +985,68 @@ export class AvatarScene {
     };
   }
 
+  genericSnapshot() {
+    this.scene.updateMatrixWorld(true);
+    const anchor = equipmentAnchor(this.playerBuilt, this.equipment?.slot);
+    const chain = [
+      this.matrixSnapshot(this.playerBuilt, anchor.targetName),
+      ...this.equipmentGrafts.map(({ boneName }) => this.matrixSnapshot(this.itemBuilt, boneName)),
+    ].filter(Boolean);
+    const mode = equipmentMode(this.equipment?.slot);
+    const exact = Boolean(this.equipment?.resolved)
+      && (mode !== 'wearable' || this.equipmentGrafts.length > 0);
+    return {
+      recipe: JSON.parse(JSON.stringify(this.recipe)),
+      skin: {
+        ...this.skinMetadata,
+        source: this.recipe.avatar.skin,
+        runtimeSource: this.skinSource.startsWith('data:')
+          ? 'inline-data'
+          : this.skinSource.startsWith('blob:') ? 'local-blob' : 'local-url',
+      },
+      runtime: {
+        project: this.project?.id ?? null,
+        projectLabel: this.project?.displayName ?? null,
+        profile: this.profile ?? 'bedrock-attachable-v1',
+        mode,
+        equipment: this.equipment?.id ?? null,
+        equipmentLabel: this.equipment?.label ?? null,
+        geometry: this.itemSummary.identifier,
+        formatVersion: this.itemSummary.formatVersion,
+        binding: 'merge_by_bone',
+        attachable: this.attachable?.['minecraft:attachable']?.description?.identifier ?? null,
+        attachablePath: this.equipment?.attachable?.path ?? null,
+        animationCount: this.animations.size,
+        grafts: graftSnapshot(this.equipmentGrafts),
+      },
+      binding: {
+        targetBone: anchor.targetName,
+        targetPivot: anchor.pivot,
+        empiricalGrip: null,
+        authoredPresentationOffset: [0, 0, 0],
+        resolvedPresentationOffset: [0, 0, 0],
+        retainedPresentationOffset: [0, 0, 0],
+        compositionCalibration: [0, 0, 0],
+        boundPivot: anchor.pivot,
+        expectedLocalOffset: [0, 0, 0],
+        actualLocalOffset: [0, 0, 0],
+        localOffsetError: 0,
+        presentationOffset: [0, 0, 0],
+        presentationOffsetError: 0,
+        contactError: 0,
+        error: exact ? 0 : 1,
+        exact,
+        chain,
+      },
+      collision: this.collisionSnapshot(),
+      playback: { playing: this.playing, speed: this.speed },
+      camera: this.cameraSnapshot(),
+    };
+  }
+
   snapshot() {
     if (!this.playerBuilt || !this.itemBuilt) return null;
+    if (this.profile !== 'aspergillum-held-v1') return this.genericSnapshot();
     this.scene.updateMatrixWorld(true);
     const model = getAvatarModel(this.recipe.avatar.model);
     const bound = this.matrixSnapshot(this.itemBuilt, 'aspergillum_bound');
@@ -899,6 +1098,12 @@ export class AvatarScene {
           : this.skinSource.startsWith('blob:') ? 'local-blob' : 'local-url',
       },
       runtime: {
+        project: this.project?.id ?? 'aspergillum',
+        projectLabel: this.project?.displayName ?? 'Aspergillum',
+        profile: 'aspergillum-held-v1',
+        mode: 'bound-held',
+        equipment: this.equipment?.id ?? 'aspergillum:aspergillum',
+        equipmentLabel: this.equipment?.label ?? 'Aspersório',
         geometry: this.itemSummary.identifier,
         formatVersion: this.itemSummary.formatVersion,
         binding: BINDING_EXPRESSION,
@@ -949,11 +1154,15 @@ export class AvatarScene {
     this.renderer.setClearAlpha(options.transparent ? 0 : 1);
     await this.rebuild({
       model: options.model ?? 'wide',
+      equipmentId: options.equipment ?? options.equipmentId ?? this.equipment?.id,
       action: options.action ?? 'idle',
       time: Number(options.time) || 0,
       perspective: options.perspective ?? 'third',
-      material: options.material ?? 'pbr',
-      cosmetic: options.cosmetic ?? 'classic',
+      material: options.material ?? (this.manifest.capabilities?.pbr ? 'pbr' : 'classic'),
+      cosmetic: options.cosmetic
+        ?? this.manifest.cosmetics.find(({ id }) => id === 'classic')?.id
+        ?? this.manifest.cosmetics[0]?.id
+        ?? 'default',
       outerLayers: options.outerLayers !== false,
       skinSource: options.skinSource ?? this.skinSource,
       skinMetadata: options.skinMetadata ?? this.skinMetadata,

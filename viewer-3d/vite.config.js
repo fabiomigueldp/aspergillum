@@ -15,6 +15,7 @@ export default defineConfig({
         bedrockFidelity: 'bedrock-renderer.html',
         avatarLab: 'avatar-lab.html',
         coverRenderer: 'cover-renderer.html',
+        invitationRenderer: 'invitation-renderer.html',
       },
     },
   },

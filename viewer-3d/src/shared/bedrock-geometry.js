@@ -7,6 +7,11 @@ import {
 
 export const BEDROCK_UNIT_SCALE = 1 / 16;
 export const BEDROCK_EULER_ORDER = 'ZYX';
+export const BEDROCK_GEOMETRY_EULER_ORDER = 'ZYX';
+export const BEDROCK_GEOMETRY_BASIS = Object.freeze({
+  BEDROCK: 'bedrock',
+  LEGACY_VIEWER: 'legacy-viewer',
+});
 
 function negateNumber(value) {
   const number = Number(value) || 0;
@@ -49,6 +54,41 @@ export function bedrockGeometryRotation(value = [0, 0, 0], perspective = 'third'
   ];
 }
 
+/**
+ * Converts Bedrock's authored model coordinates into the viewer scene.
+ *
+ * This viewer intentionally keeps Bedrock positions verbatim. Its player-space
+ * compositor performs the explicit 180° presentation-basis rotation later, so
+ * reflecting X here would invert held-item handedness a second time. Authored
+ * rotations still need a basis-aware sign conversion; applying only the outer
+ * yaw makes unrotated boxes look plausible, but rotated cubes (notably legacy
+ * hats) separate because their pivots are evaluated with incompatible Euler
+ * signs.
+ */
+export function bedrockGeometryPoint(value = [0, 0, 0], basis = BEDROCK_GEOMETRY_BASIS.BEDROCK) {
+  const point = [0, 1, 2].map((index) => Number(value[index]) || 0);
+  void basis;
+  return point;
+}
+
+export function bedrockAuthoredRotation(
+  value = [0, 0, 0],
+  basis = BEDROCK_GEOMETRY_BASIS.BEDROCK,
+) {
+  if (basis === BEDROCK_GEOMETRY_BASIS.LEGACY_VIEWER) {
+    return bedrockGeometryRotation(value);
+  }
+  return [negateNumber(value[0]), Number(value[1]) || 0, negateNumber(value[2])];
+}
+
+function bedrockGeometryDelta(from, to, basis) {
+  return bedrockGeometryPoint([
+    (Number(from[0]) || 0) - (Number(to[0]) || 0),
+    (Number(from[1]) || 0) - (Number(to[1]) || 0),
+    (Number(from[2]) || 0) - (Number(to[2]) || 0),
+  ], basis);
+}
+
 export function canonicalBoneName(name) {
   return String(name ?? '').toLowerCase();
 }
@@ -68,30 +108,50 @@ function createMarker(radius, color) {
   return marker;
 }
 
-function createCubeMesh(cube, bone, geometrySummary, palette, scale) {
+function versionParts(value) {
+  return String(value ?? '').split('.').map((part) => Number(part) || 0);
+}
+
+export function usesUpsideDownCubePivot(formatVersion) {
+  const [major, minor] = versionParts(formatVersion);
+  return major === 1 && minor >= 12 && minor < 14;
+}
+
+export function resolveBedrockCubePivot(cube, bone, formatVersion) {
+  if (!cube.pivot) return cube.origin?.map((value, index) => (
+    Number(value) + ((Number(cube.size?.[index]) || 0) / 2)
+  )) ?? bone.pivot ?? [0, 0, 0];
+  // 1.12 serializes the cube pivot with its legacy upside-down convention.
+  // The stored value is already the value consumed by the transform. Flipping
+  // it here a second time breaks valid legacy models; 1.14+ simply authors the
+  // corrected value. `formatVersion` remains part of this resolver so callers
+  // can diagnose the convention without mutating pack data.
+  void formatVersion;
+  return cube.pivot.map((value) => Number(value) || 0);
+}
+
+function createCubeMesh(cube, bone, geometrySummary, palette, scale, coordinateBasis) {
   const size = cube.size ?? [1, 1, 1];
   const origin = cube.origin ?? [0, 0, 0];
   const inflate = Number(cube.inflate) || 0;
   const inflatedSize = size.map((value) => value + (inflate * 2));
   const inflatedOrigin = origin.map((value) => value - inflate);
   const bonePivot = bone.pivot ?? [0, 0, 0];
-  const pivot = cube.pivot ?? bonePivot;
+  const pivot = resolveBedrockCubePivot(cube, bone, geometrySummary.formatVersion);
   const center = inflatedOrigin.map((value, index) => value + (inflatedSize[index] / 2));
   const cubeGroup = new THREE.Group();
   cubeGroup.name = `cube:${bone.name}`;
   cubeGroup.userData = { type: 'cube-transform', boneName: bone.name };
-  cubeGroup.position.set(
-    (pivot[0] - bonePivot[0]) * scale,
-    (pivot[1] - bonePivot[1]) * scale,
-    (pivot[2] - bonePivot[2]) * scale,
+  cubeGroup.position.fromArray(
+    bedrockGeometryDelta(pivot, bonePivot, coordinateBasis).map((value) => value * scale),
   );
   if (cube.rotation) {
-    const rotation = bedrockGeometryRotation(cube.rotation);
+    const rotation = bedrockAuthoredRotation(cube.rotation, coordinateBasis);
     cubeGroup.rotation.set(
       THREE.MathUtils.degToRad(rotation[0]),
       THREE.MathUtils.degToRad(rotation[1]),
       THREE.MathUtils.degToRad(rotation[2]),
-      BEDROCK_EULER_ORDER,
+      BEDROCK_GEOMETRY_EULER_ORDER,
     );
   }
 
@@ -131,10 +191,8 @@ function createCubeMesh(cube, bone, geometrySummary, palette, scale) {
 
   const mesh = new THREE.Mesh(boxGeometry, materials);
   mesh.name = `${bone.name} / cube ${(bone.cubes ?? []).indexOf(cube) + 1}`;
-  mesh.position.set(
-    (center[0] - pivot[0]) * scale,
-    (center[1] - pivot[1]) * scale,
-    (center[2] - pivot[2]) * scale,
+  mesh.position.fromArray(
+    bedrockGeometryDelta(center, pivot, coordinateBasis).map((value) => value * scale),
   );
   mesh.userData = { type: 'cube', boneName: bone.name, cube };
   cubeGroup.add(mesh);
@@ -155,6 +213,7 @@ export function buildBedrockGeometry(
     externalParentPivot = [0, 0, 0],
     includePivots = true,
     includeLocators = true,
+    coordinateBasis = BEDROCK_GEOMETRY_BASIS.BEDROCK,
   } = {},
 ) {
   const root = new THREE.Group();
@@ -183,17 +242,15 @@ export function buildBedrockGeometry(
     const group = new THREE.Group();
     group.name = `bone:${bone.name}`;
     group.userData = { type: 'bone', boneName: bone.name, pivot: [...pivot] };
-    group.position.set(
-      (pivot[0] - parentPivot[0]) * scale,
-      (pivot[1] - parentPivot[1]) * scale,
-      (pivot[2] - parentPivot[2]) * scale,
+    group.position.fromArray(
+      bedrockGeometryDelta(pivot, parentPivot, coordinateBasis).map((value) => value * scale),
     );
-    const rotation = bedrockGeometryRotation(bone.rotation);
+    const rotation = bedrockAuthoredRotation(bone.rotation, coordinateBasis);
     group.rotation.set(
       THREE.MathUtils.degToRad(rotation[0]),
       THREE.MathUtils.degToRad(rotation[1]),
       THREE.MathUtils.degToRad(rotation[2]),
-      BEDROCK_EULER_ORDER,
+      BEDROCK_GEOMETRY_EULER_ORDER,
     );
     group.visible = !bone.neverRender;
     parentGroup.add(group);
@@ -209,7 +266,14 @@ export function buildBedrockGeometry(
     }
 
     for (const cube of bone.cubes ?? []) {
-      const cubeResult = createCubeMesh(cube, bone, geometrySummary, palette, scale);
+      const cubeResult = createCubeMesh(
+        cube,
+        bone,
+        geometrySummary,
+        palette,
+        scale,
+        coordinateBasis,
+      );
       group.add(cubeResult.cubeGroup);
       meshRecords.push({ mesh: cubeResult.mesh, boneName: bone.name });
       cubeResult.materials.forEach((material) => materials.add(material));
@@ -219,10 +283,8 @@ export function buildBedrockGeometry(
       for (const [locatorName, locator] of Object.entries(bone.locators ?? {})) {
         const marker = createMarker(0.042, 0xf1c46f);
         marker.name = `locator:${locatorName}`;
-        marker.position.set(
-          (locator[0] - pivot[0]) * scale,
-          (locator[1] - pivot[1]) * scale,
-          (locator[2] - pivot[2]) * scale,
+        marker.position.fromArray(
+          bedrockGeometryDelta(locator, pivot, coordinateBasis).map((value) => value * scale),
         );
         marker.userData = { type: 'locator', boneName: bone.name, locatorName };
         group.add(marker);
@@ -249,6 +311,7 @@ export function buildBedrockGeometry(
 
   return {
     root,
+    coordinateBasis,
     boneGroups,
     canonicalBoneGroups,
     boneByName,

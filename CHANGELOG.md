@@ -2,6 +2,15 @@
 
 ## Ferramentas de desenvolvimento não distribuídas — 2026-08-12
 
+- o Workbench ignora com aviso projetos externos registrados cujo `package.json` está indisponível, mantendo o projeto principal utilizável; o gerenciador de instalações continua recusando registros inválidos;
+- adiciona um renderer local de convites com avatar/equipamento do workspace, texto configurável e exportação PNG; a ferramenta não integra os packs distribuídos;
+- eleva o viewer privado para `0.2.0` e expande o 3D Workbench de um catálogo Aspergillum fixo para um workspace gerado de todos os projetos registrados; o seletor `?addon=` alterna Aspergillum e Ornatum nos três laboratórios sem recarregar o documento;
+- `sync-assets` passa a descobrir documentos de geometria modernos e legados, cruzar catálogo/attachables/texturas/animações e emitir manifestos schema 4; Ornatum entra com 41 modelos e seus 39 equipamentos resolvidos;
+- Avatar Lab ganha composição genérica por merge-by-bone para cabeça, peito e mão, mantendo o perfil calibrado `aspergillum-held-v1` isolado; a skin padrão de batina continua exclusiva da ferramenta;
+- corrige a causa comum que colocava mitras e báculos atrás do jogador: a transformação entre a frente canônica Bedrock e a frente `+Z` do avatar agora é aplicada uma única vez ao grafo do equipamento, em vez de offsets por asset;
+- corrige wearables legados com roots divergentes e rotações de cubo compostas: branches coincidentes alinham-se ao bone do player, pivôs `1.12` são consumidos sem double flip, cubos sem pivot giram no centro e rotações geométricas deixam de reutilizar sinais de animação; o barrete possui regressão com seus painéis reais;
+- adiciona `capture:assets` para modelos/equipamentos isolados e generaliza `capture:equipment`/`capture:avatars` com `--addon` e `--equipment`, APIs neutras, vistas macro `equipment*`, pranchas e manifestos reproduzíveis;
+- valida visualmente mitra frente/costas, báculo no plano da mão, barrete montado e a captura de regressão do aspersório; nenhuma fonte ou pack de Ornatum e nenhum asset distribuído do Aspergillum é alterado;
 - o instalador deixa de assumir uma única identidade Aspergillum e passa a administrar projetos registrados por `addonId`, incluindo Ornatum, com catálogo, estado, caminhos Shared/local e relatórios isolados;
 - `projects`, `register`, `status`, `list`, `install`, `upgrade`, `remove` e `map` oferecem visão agregada ou seleção explícita, mantendo a sintaxe histórica como atalho do Aspergillum;
 - atualização preserva o índice da referência do add-on e a ordem relativa dos demais packs; remoção filtra somente UUIDs pertencentes ao projeto escolhido;

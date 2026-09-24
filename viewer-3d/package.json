@@ -1,19 +1,23 @@
 {
   "name": "aspergillum-model-viewer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "Bancada 3D integrada e ferramentas headless para inspeção do Aspergillum.",
+  "description": "Bancada 3D multi-add-on e ferramentas headless para inspeção de assets Bedrock.",
   "scripts": {
     "sync-assets": "node scripts/sync-assets.mjs",
+    "validate:workspace": "node scripts/validate-workspace.mjs",
     "test": "node --test tests/*.node.mjs",
     "smoke:workbench": "node scripts/smoke-workbench.mjs",
     "capture": "npm run sync-assets && node scripts/capture-models.mjs",
+    "capture:assets": "npm run sync-assets && node scripts/capture-assets.mjs",
     "capture:avatars": "npm run sync-assets && node scripts/capture-avatars.mjs",
+    "capture:equipment": "npm run sync-assets && node scripts/capture-avatars.mjs",
     "render:cover": "npm run sync-assets && node scripts/render-cover.mjs",
+    "render:invitation": "npm run sync-assets && node scripts/render-invitation.mjs",
     "render:inventory-icons": "npm run sync-assets && node scripts/render-inventory-icons.mjs",
     "dev": "npm run sync-assets && vite",
-    "build": "npm test && npm run sync-assets && vite build",
+    "build": "npm test && npm run sync-assets && npm run validate:workspace && vite build",
     "preview": "vite preview"
   },
   "dependencies": {

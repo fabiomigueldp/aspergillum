@@ -65,6 +65,8 @@ A 1.2.4 tentou selecionar os dezesseis materiais em um proxy stateful, mas o Bed
 - O pipeline versiona fontes selecionadas, masters, recipes, OGGs e hashes; `validate:audio` garante 48 arquivos mono/48 kHz/Vorbis sem órfãos ou caminhos vanilla.
 - Os 48 SFX próprios preservam fontes selecionadas, receitas, masters, OGGs e hashes reproduzíveis.
 - O toolchain 3D possui uma bancada web persistente e não distribuída que integra Model Lab, Bedrock Renderer e Avatar Lab sem navegação de documento, flash de HTML sem estilo ou perda de estado. A skin padrão de batina, rigs wide/slim, `rightItem`, attachable real, hold/carga/aspersão, viewmodel FP, PBR, scene trace, testes OBB e capturas headless continuam compartilhando o mesmo adaptador geométrico. A reauditoria guiada pelo vídeo de 11/08/2026 exige centro do grip exatamente sobre `rightItem`, contenção bidirecional mão–cabo e vistas macro dedicadas, sem alterar o Resource Pack.
+- O mesmo Workbench agora consome um workspace multi-add-on gerado pelo registro do gerenciador: Aspergillum publica 7 modelos/16 equipamentos e Ornatum 41 modelos/39 equipamentos resolvidos, selecionáveis sem reload nos três laboratórios. Geometrias modernas e legadas, attachables, slots, texturas e animações são descobertos por manifesto, e os CLIs `capture:assets`/`capture:equipment` usam as APIs neutras compartilhadas.
+- A composição genérica de avatar possui contratos testados para merge-by-bone, transformação única entre a frente canônica Bedrock e a frente `+Z` da skin, pivôs de cubo `1.12` consumidos sem double flip e rotações geométricas separadas de canais de animação. Na amostra validada, a mitra fica com face frontal voltada ao rosto/câmera e ínfulas atrás, o báculo ocupa o plano frontal da mão direita e os painéis rotacionados do barrete permanecem montados. O perfil avançado do aspersório continua isolado e sem regressão visual observada.
 - O gerenciador local de instalações administra múltiplos projetos por `addonId`; Aspergillum e Ornatum possuem catálogos, UUIDs, caminhos e estado separados, com visão agregada, upgrade X→Y, remoção isolada, ordem de referências preservada e transação global por árvore Bedrock.
 
 ## Limitações conhecidas
@@ -91,6 +93,7 @@ A 1.2.4 tentou selecionar os dezesseis materiais em um proxy stateful, mas o Bed
 | Identidade localizada 1.2.3 | contrato, manifests, idiomas e gates usam `pack.name`/`pack.description` | confirmar ambos os packs em `pt_BR`/`en_US` no seletor real e registrar capturas/Content Log |
 | Inventário 3D 1.2.5 | 16 itens/proxies string-addressed, geometria derivada, ausência de PNG e travas de colocação são validados offline | confirmar registro sem erros, enquadramento, PBR, inputs e ausência de colocação no Minecraft |
 | Avatar Lab | binding, grip, animações, skins wide/slim e manifests com hash são verificáveis fora do jogo | câmera/shader proprietários, Persona, culling e aceitação visual final continuam exigindo o `.mcaddon` no Minecraft |
+| Ornatum no Workbench | 39 equipamentos e 41 modelos são resolvidos; orientação, merge de bones e barrete 1.12 têm regressões automatizadas e capturas headless reais | a equivalência final de cada item, animação vanilla/armor offset e grip dos modelos legados ainda requer comparação dentro do Minecraft Ornatum |
 
 ## Próxima mudança autorizada
 

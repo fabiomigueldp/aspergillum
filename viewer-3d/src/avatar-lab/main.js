@@ -6,6 +6,7 @@ import {
   inferSkinModelFromRgba,
   validateSkinDimensions,
 } from '../shared/avatar-contract.js';
+import { onSelectedProjectChange } from '../shared/project-context.js';
 import { AvatarScene } from './avatar-scene.js';
 
 const ui = {
@@ -23,7 +24,11 @@ const ui = {
   skinImportButton: document.querySelector('#skin-import-button'),
   skinInput: document.querySelector('#skin-input'),
   modelSelect: document.querySelector('#model-select'),
+  equipmentSelect: document.querySelector('#equipment-select'),
   cosmeticSelect: document.querySelector('#cosmetic-select'),
+  cosmeticField: document.querySelector('#cosmetic-field'),
+  materialControl: document.querySelector('#material-control'),
+  actionControl: document.querySelector('#action-control'),
   materialButtons: [...document.querySelectorAll('[data-material]')],
   perspectiveButtons: [...document.querySelectorAll('[data-perspective]')],
   actionButtons: [...document.querySelectorAll('[data-action]')],
@@ -42,6 +47,9 @@ const ui = {
   speedSelect: document.querySelector('#speed-select'),
   bindingDot: document.querySelector('#binding-dot'),
   bindingReadout: document.querySelector('#binding-readout'),
+  bindingChainHeading: document.querySelector('#binding-chain-heading'),
+  bindingChain: document.querySelector('#binding-chain'),
+  contractHeading: document.querySelector('#contract-heading'),
   sceneReadout: document.querySelector('#scene-readout'),
   traceStatus: document.querySelector('#trace-status'),
   contractProperties: document.querySelector('#contract-properties'),
@@ -110,15 +118,21 @@ function renderSnapshot(snapshot) {
   const {
     recipe, binding, runtime, collision,
   } = snapshot;
+  const advanced = runtime.profile === 'aspergillum-held-v1';
   const exact = binding.exact;
-  const parityValid = exact && collision.headClear && collision.gripEngaged;
+  const parityValid = exact && (!advanced || (collision.headClear && collision.gripEngaged));
   ui.bindingDot.classList.toggle('is-valid', parityValid);
   ui.bindingDot.classList.toggle('is-invalid', !parityValid);
-  ui.bindingReadout.textContent = parityValid ? 'Binding e folgas válidos' : 'Paridade divergente';
-  ui.sceneReadout.textContent = `${recipe.avatar.model} · ${recipe.presentation.perspective === 'first' ? '1ª pessoa' : '3ª pessoa'} · ${recipe.presentation.material.toUpperCase()}`;
+  ui.bindingReadout.textContent = parityValid
+    ? advanced ? 'Binding e folgas válidos' : 'Composição por bones válida'
+    : 'Paridade divergente';
+  ui.sceneReadout.textContent = `${runtime.equipmentLabel ?? runtime.geometry} · ${recipe.avatar.model} · ${recipe.presentation.perspective === 'first' ? '1ª pessoa' : '3ª pessoa'} · ${recipe.presentation.material.toUpperCase()}`;
   ui.traceStatus.textContent = parityValid ? 'VALIDADO' : 'REVISAR';
   ui.traceStatus.classList.toggle('is-valid', parityValid);
-  ui.contractProperties.innerHTML = `
+  ui.bindingChainHeading.textContent = advanced ? 'Cadeia de binding' : 'Cadeia de composição';
+  ui.contractHeading.textContent = advanced ? 'Contrato resolvido' : 'Attachable resolvido';
+  ui.bindingChain.innerHTML = binding.chain.map((entry) => `<li>${escapeHtml(entry.name.replace(/^bone:/, ''))}</li>`).join('');
+  ui.contractProperties.innerHTML = advanced ? `
     <div><dt>Attachable</dt><dd>${escapeHtml(runtime.attachable)}</dd></div>
     <div><dt>Geometria</dt><dd>${escapeHtml(runtime.geometry)}</dd></div>
     <div><dt>Binding</dt><dd title="${escapeHtml(runtime.binding)}">item slot → bone</dd></div>
@@ -129,6 +143,17 @@ function renderSnapshot(snapshot) {
     <div><dt>Empunhadura</dt><dd>${collision.gripEngaged ? 'eixo dentro da mão' : 'encaixe inválido'}</dd></div>
     <div><dt>Cabeça</dt><dd>${collision.applicable ? (collision.headClear ? `livre · ${formatNumber(collision.minimumHeadClearance)} u` : 'interseção') : 'viewmodel'}</dd></div>
     <div><dt>Erro</dt><dd>${binding.error.toExponential(1)}</dd></div>
+  ` : `
+    <div><dt>Projeto</dt><dd>${escapeHtml(runtime.projectLabel)}</dd></div>
+    <div><dt>Equipamento</dt><dd>${escapeHtml(runtime.equipmentLabel)}</dd></div>
+    <div><dt>Attachable</dt><dd>${escapeHtml(runtime.attachable ?? '—')}</dd></div>
+    <div><dt>Geometria</dt><dd>${escapeHtml(runtime.geometry)}</dd></div>
+    <div><dt>Modo</dt><dd>${escapeHtml(runtime.mode)}</dd></div>
+    <div><dt>Composição</dt><dd>merge por nome de bone</dd></div>
+    <div><dt>Target</dt><dd>${escapeHtml(binding.targetBone)}</dd></div>
+    <div><dt>Pivot target</dt><dd>${binding.targetPivot.join(' · ')}</dd></div>
+    <div><dt>Branches</dt><dd>${runtime.grafts?.length ?? 0} graft(s)</dd></div>
+    <div><dt>Erro</dt><dd>${Number(binding.error).toExponential(1)}</dd></div>
   `;
   ui.matrixList.innerHTML = binding.chain.map((entry, index) => `
     <details ${index < 2 ? 'open' : ''}>
@@ -187,6 +212,56 @@ async function rebuild(overrides, successMessage = null) {
   }
 }
 
+function configureProjectUi() {
+  const { manifest, equipment, profile } = avatarScene;
+  if (!manifest || !equipment) return;
+  const equipmentEntries = profile === 'aspergillum-held-v1'
+    ? [equipment]
+    : manifest.equipment.filter(({ resolved }) => resolved);
+  const groups = new Map();
+  for (const entry of equipmentEntries) {
+    const key = entry.kind ?? 'asset';
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(entry);
+  }
+  const kindLabels = {
+    mitre: 'Mitras',
+    barrette: 'Barretes',
+    baculum: 'Báculos',
+    cane: 'Bengalas',
+    pallium: 'Pálios',
+    asset: 'Equipamentos',
+  };
+  ui.equipmentSelect.innerHTML = [...groups].map(([kind, entries]) => {
+    const options = entries.map(({ id, label }) => (
+      `<option value="${escapeHtml(id)}">${escapeHtml(label)}</option>`
+    )).join('');
+    return groups.size > 1
+      ? `<optgroup label="${escapeHtml(kindLabels[kind] ?? kind)}">${options}</optgroup>`
+      : options;
+  }).join('');
+  ui.equipmentSelect.value = equipment.id;
+
+  ui.cosmeticSelect.innerHTML = manifest.cosmetics.map(({ id, label }) => (
+    `<option value="${escapeHtml(id)}">${escapeHtml(label ?? id)}</option>`
+  )).join('');
+  ui.cosmeticSelect.value = avatarScene.recipe.presentation.cosmetic;
+  ui.cosmeticField.hidden = manifest.cosmetics.length < 2;
+
+  const pbrAvailable = Boolean(manifest.capabilities?.pbr);
+  for (const button of ui.materialButtons) {
+    button.disabled = button.dataset.material === 'pbr' && !pbrAvailable;
+  }
+  setPressed(ui.materialButtons, avatarScene.recipe.presentation.material, 'material');
+  const advanced = profile === 'aspergillum-held-v1';
+  for (const button of ui.actionButtons) {
+    button.hidden = !advanced && button.dataset.action !== 'idle';
+    button.disabled = !advanced && button.dataset.action !== 'idle';
+    if (button.dataset.action === 'idle') button.textContent = advanced ? 'Segurando' : 'Pose base';
+  }
+  setPressed(ui.actionButtons, avatarScene.recipe.presentation.action, 'action');
+}
+
 function bindInteractions() {
   ui.skinImportButton.addEventListener('click', () => ui.skinInput.click());
   ui.skinInput.addEventListener('change', async () => {
@@ -240,6 +315,15 @@ function bindInteractions() {
   });
 
   ui.modelSelect.addEventListener('change', () => rebuild({ model: ui.modelSelect.value }, 'Rig do avatar atualizado.'));
+  ui.equipmentSelect.addEventListener('change', async () => {
+    const accepted = await rebuild({
+      equipmentId: ui.equipmentSelect.value,
+      action: 'idle',
+      time: 0,
+    }, 'Equipamento recomposto a partir do pack.');
+    if (accepted) configureProjectUi();
+    else ui.equipmentSelect.value = avatarScene.equipment.id;
+  });
   ui.cosmeticSelect.addEventListener('change', () => rebuild({ cosmetic: ui.cosmeticSelect.value }));
   for (const button of ui.materialButtons) {
     button.addEventListener('click', async () => {
@@ -303,12 +387,16 @@ function bindInteractions() {
 }
 
 const captureApi = {
-  version: 1,
+  version: 2,
   ready: false,
   error: null,
   views: AVATAR_CAPTURE_VIEWS.map(({ id, label }) => ({ id, label })),
   models: Object.values(AVATAR_MODELS).map(({ id, label }) => ({ id, label })),
   actions: Object.values(AVATAR_ACTIONS).map(({ id, label, duration }) => ({ id, label, duration })),
+  project: () => avatarScene.manifest?.project ?? null,
+  equipment: () => avatarScene.manifest?.equipment?.filter(({ resolved }) => resolved).map(({
+    id, label, kind, slot, modelId,
+  }) => ({ id, label, kind, slot, modelId })) ?? [],
   configure: (options) => avatarScene.configureCapture(options),
   setTime: (time) => {
     avatarScene.setTime(time);
@@ -324,15 +412,13 @@ const captureApi = {
   render: () => avatarScene.render(),
 };
 window.__ASPERGILLUM_AVATAR_CAPTURE__ = captureApi;
+window.__BEDROCK_AVATAR_CAPTURE__ = captureApi;
 
 bindInteractions();
 avatarScene.initialize().then((snapshot) => {
   ui.loading.hidden = true;
   ui.error.hidden = true;
-  ui.cosmeticSelect.innerHTML = avatarScene.manifest.cosmetics.map(({ id, label }) => (
-    `<option value="${escapeHtml(id)}">${escapeHtml(label)}</option>`
-  )).join('');
-  ui.cosmeticSelect.value = 'classic';
+  configureProjectUi();
   renderSnapshot(snapshot);
   captureApi.ready = true;
 }).catch((error) => {
@@ -343,6 +429,23 @@ avatarScene.initialize().then((snapshot) => {
   ui.runtimeStatus.dataset.state = 'error';
   ui.runtimeStatusText.textContent = 'Falha no runtime local';
   captureApi.error = error instanceof Error ? error.message : String(error);
+});
+
+onSelectedProjectChange(() => {
+  captureApi.ready = false;
+  captureApi.error = null;
+  setBusy(true);
+  avatarScene.loadProject().then((snapshot) => {
+    configureProjectUi();
+    renderSnapshot(snapshot);
+    ui.error.hidden = true;
+    captureApi.ready = true;
+  }).catch((error) => {
+    console.error(error);
+    ui.error.hidden = false;
+    ui.errorMessage.textContent = error instanceof Error ? error.message : String(error);
+    captureApi.error = error instanceof Error ? error.message : String(error);
+  }).finally(() => setBusy(false));
 });
 
 window.addEventListener('beforeunload', () => {

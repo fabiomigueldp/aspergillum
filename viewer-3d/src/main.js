@@ -1,6 +1,12 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { buildBedrockGeometry as buildSharedBedrockGeometry } from './shared/bedrock-geometry.js';
+import { extractBedrockGeometries } from './shared/bedrock-document.js';
+import {
+  getSelectedProject,
+  onSelectedProjectChange,
+  projectAssetUrl,
+} from './shared/project-context.js';
 
 const WATER_BONES = ['water_low', 'water_mid', 'water_high', 'water_full'];
 const WATER_LABELS = {
@@ -13,6 +19,10 @@ const WATER_LABELS = {
 
 const state = {
   library: [],
+  manifest: null,
+  project: null,
+  search: '',
+  category: 'all',
   currentModel: null,
   currentGeometry: null,
   currentRoot: null,
@@ -39,6 +49,8 @@ const ui = {
   viewportStage: document.querySelector('#viewport-stage'),
   library: document.querySelector('#library-list'),
   modelCount: document.querySelector('#model-count'),
+  modelSearch: document.querySelector('#model-search'),
+  categoryFilter: document.querySelector('#category-filter'),
   syncStatus: document.querySelector('#sync-status'),
   selectionReadout: document.querySelector('#selection-readout'),
   inspectorTitle: document.querySelector('#inspector-title'),
@@ -118,7 +130,7 @@ function escapeHtml(value) {
 }
 
 function assetUrl(relativePath) {
-  return new URL(`./asset-library/${relativePath}`, document.baseURI).href;
+  return projectAssetUrl(relativePath, state.project?.id);
 }
 
 function formatNumber(value, digits = 2) {
@@ -426,13 +438,27 @@ function renderInspector() {
 }
 
 function renderLibrary() {
-  ui.modelCount.textContent = String(state.library.length);
-  if (!state.library.length) {
-    ui.library.innerHTML = `<div class="inspector-empty"><strong>Nenhum modelo encontrado</strong><p>Execute <code>npm run sync-assets</code> no viewer.</p></div>`;
+  const query = state.search.trim().toLocaleLowerCase('pt-BR');
+  const visibleModels = state.library.filter((model) => {
+    const categoryMatch = state.category === 'all' || model.category === state.category;
+    const haystack = [
+      model.label,
+      model.id,
+      model.category,
+      ...(model.itemIds ?? []),
+      ...(model.geometries ?? []).map(({ identifier }) => identifier),
+    ].join(' ').toLocaleLowerCase('pt-BR');
+    return categoryMatch && (!query || haystack.includes(query));
+  });
+  ui.modelCount.textContent = visibleModels.length === state.library.length
+    ? String(state.library.length)
+    : `${visibleModels.length}/${state.library.length}`;
+  if (!visibleModels.length) {
+    ui.library.innerHTML = `<div class="inspector-empty"><strong>Nenhum modelo corresponde aos filtros</strong><p>Limpe a busca ou escolha outra categoria.</p></div>`;
     return;
   }
 
-  ui.library.innerHTML = state.library.map((model) => {
+  ui.library.innerHTML = visibleModels.map((model) => {
     const isActive = state.currentModel?.id === model.id;
     const geometryCount = model.geometries?.length ?? 0;
     const thumb = model.kind === 'gltf' ? '◇' : model.label === 'Aspersório' ? '✦' : '◈';
@@ -458,7 +484,7 @@ async function fetchGeometry(model, index) {
   const response = await fetch(assetUrl(model.source));
   if (!response.ok) throw new Error(`Não foi possível ler ${model.source}.`);
   const sourceData = await response.json();
-  const geometries = sourceData['minecraft:geometry'] ?? [];
+  const geometries = extractBedrockGeometries(sourceData);
   const geometryData = geometries[index];
   if (!geometryData) throw new Error(`Geometry ${index} não encontrada em ${model.source}.`);
   return { sourceData, geometryData, summary: model.geometries[index] };
@@ -501,7 +527,7 @@ async function loadModel(model, geometryIndex = 0) {
       : model.kind === 'imported-bedrock'
         ? {
           sourceData: model.sourceData,
-          geometryData: model.sourceData['minecraft:geometry'][geometryIndex],
+          geometryData: extractBedrockGeometries(model.sourceData)[geometryIndex],
           summary: model.geometries[geometryIndex],
         }
         : await fetchGeometry(model, geometryIndex);
@@ -582,8 +608,8 @@ function handleCanvasClick(event) {
 }
 
 function createImportedBedrockModel(file, sourceData) {
-  const geometries = sourceData['minecraft:geometry'] ?? [];
-  if (!geometries.length) throw new Error(`${file.name} não contém minecraft:geometry.`);
+  const geometries = extractBedrockGeometries(sourceData);
+  if (!geometries.length) throw new Error(`${file.name} não contém uma geometria Bedrock reconhecida.`);
   const modelId = `imported:${file.name}:${Date.now()}`;
   return {
     id: modelId,
@@ -643,7 +669,7 @@ async function importFile(file) {
 
 async function loadImportedBedrockModel(model, geometryIndex) {
   const token = ++state.loadToken;
-  const geometryData = model.sourceData['minecraft:geometry'][geometryIndex];
+  const geometryData = extractBedrockGeometries(model.sourceData)[geometryIndex];
   const summary = model.geometries[geometryIndex];
   clearCurrentScene();
   state.currentModel = model;
@@ -814,16 +840,27 @@ function bindEvents() {
 
 async function loadManifest() {
   try {
+    const project = await getSelectedProject();
+    state.project = project;
     const response = await fetch(assetUrl('manifest.json'));
     if (!response.ok) throw new Error('Catálogo ainda não sincronizado.');
     const manifest = await response.json();
+    state.manifest = manifest;
+    state.textureCache.clear();
+    state.search = '';
+    state.category = 'all';
+    ui.modelSearch.value = '';
     state.library = (manifest.models ?? []).sort((left, right) => {
       const priority = (model) => model.label === 'Aspersório' ? 0 : model.label === 'Caldeirinha' ? 1 : 2;
       return priority(left) - priority(right) || left.label.localeCompare(right.label);
     });
-    ui.syncStatus.textContent = `${state.library.length} arquivos locais · ${manifest.textureCount ?? 0} texturas`;
+    const categories = [...new Set(state.library.map(({ category }) => category).filter(Boolean))]
+      .sort((left, right) => left.localeCompare(right, 'pt-BR'));
+    ui.categoryFilter.innerHTML = '<option value="all">Todas as categorias</option>'
+      + categories.map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join('');
+    ui.syncStatus.textContent = `${project.displayName} · ${state.library.length} modelos · ${manifest.textureCount ?? 0} texturas`;
     renderLibrary();
-    await loadModel(state.library[0], 0);
+    if (state.library[0]) await loadModel(state.library[0], 0);
   } catch (error) {
     ui.syncStatus.textContent = 'Catálogo ausente';
     ui.library.innerHTML = `<div class="inspector-empty">
@@ -843,5 +880,19 @@ function animate() {
 }
 
 bindEvents();
+ui.modelSearch.addEventListener('input', () => {
+  state.search = ui.modelSearch.value;
+  renderLibrary();
+});
+ui.categoryFilter.addEventListener('change', () => {
+  state.category = ui.categoryFilter.value;
+  renderLibrary();
+});
+onSelectedProjectChange(() => {
+  clearCurrentScene();
+  state.currentModel = null;
+  state.currentGeometry = null;
+  loadManifest();
+});
 animate();
 loadManifest();

@@ -16,25 +16,26 @@ import {
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const viewerDirectory = path.resolve(scriptDirectory, '..');
 const projectDirectory = path.resolve(viewerDirectory, '..');
-const projectPackage = JSON.parse(await readFile(path.join(projectDirectory, 'package.json'), 'utf8'));
 const viewerPackage = JSON.parse(await readFile(path.join(viewerDirectory, 'package.json'), 'utf8'));
 const defaultSkinPath = path.join(viewerDirectory, 'public', DEFAULT_AVATAR_PRESET.skin);
 
 const HELP = `
-Captura um jogador Bedrock com skin e aspersório vinculados ao rightItem.
+Captura um jogador Bedrock com equipamento de qualquer add-on do workspace.
 
 Uso:
   npm run capture:avatars -- [opções]
 
 Opções:
+  --addon <id>          projeto do workspace (padrão: aspergillum)
+  --equipment <id>      item ou localId resolvido pelo manifesto do projeto
   --skin <arquivo>       PNG 64×64 ou 128×128 (padrão: Batina preta com pelerine)
   --model <perfil>       wide ou slim (padrão: wide)
   --action <ação>        idle, load ou sprinkle (padrão: idle)
   --times <s,...>        instantes; sem valor usa os quadros-chave da ação
   --views <id,...>       vistas na ordem solicitada (padrão: 5 vistas corporais)
   --perspective <modo>   third ou first (padrão: third)
-  --material <modo>      pbr ou classic (padrão: pbr)
-  --cosmetic <id>        acabamento do catálogo (padrão: classic)
+  --material <modo>      pbr ou classic (padrão: capacidade do projeto)
+  --cosmetic <id>        acabamento do catálogo (padrão: primeiro disponível)
   --size <px>            largura e altura 320..2048 (padrão: 720)
   --width <px>           largura 320..2048; útil para viewmodel 16:9
   --height <px>          altura 320..2048; útil para viewmodel 16:9
@@ -49,7 +50,8 @@ Opções:
 
 Vistas:
   front, front-right, right, back, left, grip, grip-front, grip-outside,
-  grip-inside, grip-back, head, first-person
+  grip-inside, grip-back, head, equipment, equipment-front, equipment-back,
+  first-person
 `;
 
 function parseList(value) {
@@ -70,14 +72,16 @@ function defaultTimes(action) {
 
 function parseArgs(args) {
   const options = {
+    addon: 'aspergillum',
+    equipment: null,
     skin: defaultSkinPath,
     model: 'wide',
     action: 'idle',
     times: null,
     views: resolveAvatarCaptureViews(),
     perspective: 'third',
-    material: 'pbr',
-    cosmetic: 'classic',
+    material: null,
+    cosmetic: null,
     size: 720,
     width: 720,
     height: 720,
@@ -99,7 +103,13 @@ function parseArgs(args) {
     else if (argument === '--wireframe') options.wireframe = true;
     else if (argument === '--transparent') options.transparent = true;
     else if (argument === '--no-outer-layers') options.outerLayers = false;
-    else if (argument === '--skin') {
+    else if (argument === '--addon') {
+      options.addon = readValue(args, index, argument);
+      index += 1;
+    } else if (argument === '--equipment') {
+      options.equipment = readValue(args, index, argument);
+      index += 1;
+    } else if (argument === '--skin') {
       options.skin = path.resolve(projectDirectory, readValue(args, index, argument));
       index += 1;
     } else if (argument === '--model') {
@@ -148,7 +158,9 @@ function parseArgs(args) {
   if (!AVATAR_MODELS[options.model]) throw new Error('--model deve ser wide ou slim.');
   if (!AVATAR_ACTIONS[options.action]) throw new Error('--action deve ser idle, load ou sprinkle.');
   if (!['first', 'third'].includes(options.perspective)) throw new Error('--perspective deve ser first ou third.');
-  if (!['pbr', 'classic'].includes(options.material)) throw new Error('--material deve ser pbr ou classic.');
+  if (options.material && !['pbr', 'classic'].includes(options.material)) {
+    throw new Error('--material deve ser pbr ou classic.');
+  }
   if (![options.width, options.height].every((value) => (
     Number.isInteger(value) && value >= 320 && value <= 2048
   ))) {
@@ -164,7 +176,7 @@ function parseArgs(args) {
   }
   if (!options.output) {
     const stamp = new Date().toISOString().replace(/[:.]/g, '-');
-    options.output = path.join(projectDirectory, 'out', 'avatar-captures', stamp);
+    options.output = path.join(projectDirectory, 'out', 'avatar-captures', options.addon, stamp);
   }
   return options;
 }
@@ -242,12 +254,45 @@ async function main() {
   const skinSource = `data:image/png;base64,${skinBytes.toString('base64')}`;
   await mkdir(options.output, { recursive: true });
 
+  const workspace = JSON.parse(await readFile(
+    path.join(viewerDirectory, 'public', 'asset-library', 'workspace.json'),
+    'utf8',
+  ));
+  const workspaceProject = workspace.projects.find(({ id }) => id === options.addon);
+  if (!workspaceProject) {
+    throw new Error(`Add-on desconhecido: ${options.addon}. Disponíveis: ${workspace.projects.map(({ id }) => id).join(', ')}.`);
+  }
+  const assetRoot = path.join(
+    viewerDirectory,
+    'public',
+    'asset-library',
+    'projects',
+    workspaceProject.id,
+  );
+  const assetManifest = JSON.parse(await readFile(path.join(assetRoot, 'manifest.json'), 'utf8'));
+  const selectedEquipment = options.equipment
+    ? assetManifest.equipment.find(({ id, localId }) => (
+      id === options.equipment || localId === options.equipment
+    ))
+    : assetManifest.equipment.find(({ resolved }) => resolved);
+  if (!selectedEquipment?.resolved) {
+    throw new Error(`Equipamento não resolvido em ${workspaceProject.displayName}: ${options.equipment ?? 'nenhum'}.`);
+  }
+  options.equipment = selectedEquipment.id;
+  options.material ??= workspaceProject.capabilities?.pbr ? 'pbr' : 'classic';
+  options.cosmetic ??= assetManifest.cosmetics.find(({ id }) => id === 'classic')?.id
+    ?? assetManifest.cosmetics[0]?.id
+    ?? 'default';
+  const selectedModel = assetManifest.models.find(({ id }) => id === selectedEquipment.modelId);
   const sourceFiles = [
-    path.join(projectDirectory, 'packs', 'resource', 'models', 'entity', 'aspergillum.geo.json'),
-    path.join(projectDirectory, 'packs', 'resource', 'attachables', 'aspergillum.attachable.json'),
-    path.join(projectDirectory, 'packs', 'resource', 'animations', 'aspergillum.hold.animation.json'),
-    path.join(projectDirectory, 'packs', 'resource', 'animations', 'aspergillum.action.animation.json'),
-  ];
+    path.join(assetRoot, 'manifest.json'),
+    selectedModel ? path.join(assetRoot, selectedModel.source) : null,
+    selectedEquipment.attachable?.path
+      ? path.join(assetRoot, 'pack', selectedEquipment.attachable.path)
+      : null,
+    ...(assetManifest.runtime.animations ?? [])
+      .map((relativePath) => path.join(assetRoot, 'pack', relativePath)),
+  ].filter(Boolean);
   const sourceFingerprints = await Promise.all(sourceFiles.map(fingerprint));
   const server = await createServer({
     root: viewerDirectory,
@@ -266,17 +311,21 @@ async function main() {
     await page.setViewportSize({ width: options.width, height: options.height });
     const pageErrors = [];
     page.on('pageerror', (error) => pageErrors.push(error.message));
-    await page.goto(`http://127.0.0.1:${address.port}/avatar-lab.html`, { waitUntil: 'networkidle' });
+    await page.goto(
+      `http://127.0.0.1:${address.port}/avatar-lab.html?addon=${encodeURIComponent(options.addon)}`,
+      { waitUntil: 'networkidle' },
+    );
     await page.waitForFunction(() => {
-      const api = window.__ASPERGILLUM_AVATAR_CAPTURE__;
+      const api = window.__BEDROCK_AVATAR_CAPTURE__;
       return Boolean(api?.ready || api?.error);
     });
-    const runtimeError = await page.evaluate(() => window.__ASPERGILLUM_AVATAR_CAPTURE__.error);
+    const runtimeError = await page.evaluate(() => window.__BEDROCK_AVATAR_CAPTURE__.error);
     if (runtimeError) throw new Error(`Falha no Avatar Lab: ${runtimeError}`);
 
     const configured = await page.evaluate((configuration) => (
-      window.__ASPERGILLUM_AVATAR_CAPTURE__.configure(configuration)
+      window.__BEDROCK_AVATAR_CAPTURE__.configure(configuration)
     ), {
+      equipment: options.equipment,
       skinSource,
       skinMetadata: {
         label: path.basename(options.skin),
@@ -297,14 +346,17 @@ async function main() {
       wireframe: options.wireframe,
       transparent: options.transparent,
     });
+    if (configured.runtime.profile !== 'aspergillum-held-v1' && options.action !== 'idle') {
+      throw new Error(`${workspaceProject.displayName} ainda não declara ações de avatar; use --action idle.`);
+    }
 
     const captures = [];
     for (const time of options.times) {
-      await page.evaluate((value) => window.__ASPERGILLUM_AVATAR_CAPTURE__.setTime(value), time);
+      await page.evaluate((value) => window.__BEDROCK_AVATAR_CAPTURE__.setTime(value), time);
       for (const view of options.views) {
         process.stdout.write(`Capturando ${view.label} · ${options.action} ${time.toFixed(3)} s...\n`);
         const result = await page.evaluate((viewId) => (
-          window.__ASPERGILLUM_AVATAR_CAPTURE__.capture(viewId)
+          window.__BEDROCK_AVATAR_CAPTURE__.capture(viewId)
         ), view.id);
         const fileName = `${options.action}-${timeKey(time)}s-${view.id}.png`;
         const absolutePath = path.join(options.output, fileName);
@@ -332,12 +384,14 @@ async function main() {
       width: options.width,
       height: options.height,
       columns: options.columns,
-      title: 'Jogador com aspersório',
-      subtitle: `${path.basename(options.skin)} · ${options.model} · ${options.action} · ${options.material.toUpperCase()} · pack ${projectPackage.aspergillum.releaseLabel}`,
+      title: `Jogador com ${selectedEquipment.label}`,
+      subtitle: `${workspaceProject.displayName} ${workspaceProject.currentLabel} · ${path.basename(options.skin)} · ${options.model} · ${options.action} · ${options.material.toUpperCase()}`,
       output: contactSheet,
     });
 
     const captureConfiguration = {
+      addon: options.addon,
+      equipment: options.equipment,
       model: options.model,
       action: options.action,
       times: options.times,
@@ -365,8 +419,9 @@ async function main() {
         playwright: viewerPackage.devDependencies.playwright,
       },
       pack: {
-        releaseLabel: projectPackage.aspergillum.releaseLabel,
-        version: projectPackage.version,
+        id: workspaceProject.id,
+        displayName: workspaceProject.displayName,
+        releaseLabel: workspaceProject.currentLabel,
       },
       inputs: {
         skin: { ...skinFingerprint, ...skinDimensions, model: options.model },
@@ -376,6 +431,9 @@ async function main() {
       options: captureConfiguration,
       resolved: {
         geometry: configured.runtime.geometry,
+        equipment: configured.runtime.equipment,
+        equipmentLabel: configured.runtime.equipmentLabel,
+        profile: configured.runtime.profile,
         attachable: configured.runtime.attachable,
         binding: configured.runtime.binding,
         exactBinding: configured.binding.exact,

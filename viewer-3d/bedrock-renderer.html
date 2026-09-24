@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#101719" />
     <meta
       name="description"
-      content="Preview de alta fidelidade para os modelos Bedrock do add-on Aspergillum."
+      content="Preview multi-addon para geometrias e render paths Bedrock sincronizados."
     />
-    <title>Aspergillum / Bedrock Fidelity</title>
+    <title>Bedrock Add-ons / Fidelity Renderer</title>
     <link rel="stylesheet" href="/src/bedrock-renderer/styles.css" />
   </head>
   <body>
@@ -16,10 +16,10 @@
 
     <div class="fidelity-shell">
       <header class="topbar">
-        <div class="brand-lockup" aria-label="Aspergillum Bedrock Fidelity">
+        <div class="brand-lockup" aria-label="Bedrock Runtime Fidelity">
           <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
           <div>
-            <p class="eyebrow">ASPERGILLUM / BEDROCK</p>
+            <p class="eyebrow">BEDROCK ADD-ONS / DEV</p>
             <p class="brand-name">Fidelity Renderer</p>
           </div>
         </div>
@@ -46,7 +46,7 @@
           </div>
 
           <p class="panel-intro">
-            A cena resolve o attachable, o render controller, a geometria, as animações e os mapas do Resource Pack local.
+            A cena resolve attachable, render controller, geometria, animações e mapas diretamente do projeto ativo.
           </p>
 
           <div class="control-group">
@@ -62,7 +62,7 @@
           <div class="control-group">
             <label class="field-label" for="cosmetic-select">Acabamento</label>
             <select class="field-select" id="cosmetic-select"></select>
-            <p class="field-help" id="cosmetic-note">Prata clássica · Couro castanho</p>
+            <p class="field-help" id="cosmetic-note">Textura declarada pelo pack</p>
           </div>
 
           <div class="control-group">
@@ -83,10 +83,10 @@
           </div>
 
           <div class="control-group">
-            <span class="field-label">Estado do attachable</span>
-            <div class="segmented-control" role="group" aria-label="Estado do attachable">
-              <button class="segment-button is-active" type="button" data-action="idle" aria-pressed="true">Segurando</button>
-              <button class="segment-button" type="button" data-action="sprinkle" aria-pressed="false">Aspersão</button>
+            <span class="field-label">Apresentação do attachable</span>
+            <div class="segmented-control" role="group" aria-label="Apresentação do attachable">
+              <button class="segment-button is-active" type="button" data-action="idle" aria-pressed="true">Pose base</button>
+              <button class="segment-button" type="button" data-action="sprinkle" aria-pressed="false">Ação do pack</button>
             </div>
           </div>
 
@@ -97,7 +97,7 @@
             </div>
             <input id="timeline" type="range" min="0" max="0.82" step="0.01" value="0" />
             <div class="timeline-scale" aria-hidden="true"><span>0,00</span><span>0,41</span><span>0,82</span></div>
-            <p class="field-help" id="timeline-note">Arraste para iniciar a prévia da aspersão.</p>
+            <p class="field-help" id="timeline-note">Disponível quando o attachable declara uma ação temporal.</p>
           </div>
 
           <div class="control-group">

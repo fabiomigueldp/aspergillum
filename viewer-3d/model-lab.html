@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#111a1d" />
     <meta
       name="description"
-      content="Laboratório standalone para inspecionar geometrias Bedrock do add-on Aspergillum."
+      content="Laboratório multi-addon para inspecionar geometrias Bedrock sincronizadas ou importadas."
     />
     <title>Aspergillum / Model Lab</title>
     <link rel="stylesheet" href="/src/styles.css" />
@@ -51,8 +51,19 @@
           </div>
 
           <p class="sidebar-intro">
-            Geometrias Bedrock sincronizadas do Resource Pack. Arraste um arquivo para a cena para testar uma variação.
+            Geometrias Bedrock do projeto ativo. Arraste um arquivo para a cena para testar uma variação sem alterar o pack.
           </p>
+
+          <div class="library-filters" aria-label="Filtros da biblioteca">
+            <label class="library-search" for="model-search">
+              <span class="visually-hidden">Buscar modelo</span>
+              <input id="model-search" type="search" placeholder="Buscar modelo ou geometry…" autocomplete="off" />
+            </label>
+            <label class="visually-hidden" for="category-filter">Filtrar por categoria</label>
+            <select class="library-category" id="category-filter">
+              <option value="all">Todas as categorias</option>
+            </select>
+          </div>
 
           <div class="library-list" id="library-list" role="listbox" aria-label="Modelos disponíveis">
             <div class="library-loading" aria-live="polite">
@@ -68,7 +79,7 @@
             </div>
             <div class="legend-row">
               <span class="legend-swatch muted"></span>
-              <span>Arquivo local</span>
+              <span>Fonte sincronizada</span>
             </div>
           </div>
         </aside>

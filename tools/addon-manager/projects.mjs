@@ -116,13 +116,17 @@ function registryEntry(project) {
   return { id: project.id, projectRoot: project.projectRoot };
 }
 
-export function loadProjects({ managerRoot }) {
+export function loadProjects({ managerRoot, skipMissing = false, onMissing }) {
   const resolvedManagerRoot = path.resolve(managerRoot);
   const primary = loadProject(resolvedManagerRoot);
   const entries = readRegistry(resolvedManagerRoot).projects;
   const projects = [primary];
   for (const entry of entries) {
     if (!entry || typeof entry.projectRoot !== "string") throw new Error("Entrada inválida no registro de projetos.");
+    if (skipMissing && !fs.existsSync(path.join(path.resolve(entry.projectRoot), "package.json"))) {
+      onMissing?.(entry);
+      continue;
+    }
     const external = loadProject(entry.projectRoot, { idOverride: entry.id });
     if (path.resolve(external.projectRoot) === resolvedManagerRoot) continue;
     projects.push(external);

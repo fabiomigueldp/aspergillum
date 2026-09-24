@@ -97,6 +97,15 @@ test('validates modern square skins and resolves capture views in requested orde
     ['grip-front', 'grip-outside', 'grip-inside', 'front'],
   );
   assert.equal(AVATAR_CAPTURE_VIEWS.some(({ id }) => id === 'first-person'), true);
+  assert.deepEqual(
+    resolveAvatarCaptureViews(['equipment', 'equipment-front', 'equipment-back'])
+      .map(({ id, focus }) => [id, focus]),
+    [
+      ['equipment', 'equipment'],
+      ['equipment-front', 'equipment'],
+      ['equipment-back', 'equipment'],
+    ],
+  );
   assert.throws(() => resolveAvatarCaptureViews(['unknown']), /desconhecida/);
 });
 

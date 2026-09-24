@@ -58,6 +58,22 @@ describe("add-on project registry", () => {
     expect(loadProjects({ managerRoot: manager }).map((project) => project.id)).toEqual(["alpha"]);
   });
 
+  it("lets read-only viewers skip an unavailable registered project while the manager stays strict", () => {
+    const workspace = temporaryRoot();
+    const manager = path.join(workspace, "alpha");
+    const external = path.join(workspace, "beta");
+    writeProject(manager, "alpha", "10000000-0000-4000-8000-000000000001", "20000000-0000-4000-8000-000000000001");
+    writeProject(external, "beta", "10000000-0000-4000-8000-000000000002", "20000000-0000-4000-8000-000000000002");
+    registerProject({ managerRoot: manager, projectRoot: external });
+    fs.rmSync(external, { recursive: true });
+
+    expect(() => loadProjects({ managerRoot: manager })).toThrow(/package.json não encontrado/);
+    const missing = [];
+    expect(loadProjects({ managerRoot: manager, skipMissing: true, onMissing: (entry) => missing.push(entry.id) })
+      .map((project) => project.id)).toEqual(["alpha"]);
+    expect(missing).toEqual(["beta"]);
+  });
+
   it("refuses a registration that collides with an existing public UUID", () => {
     const workspace = temporaryRoot();
     const manager = path.join(workspace, "alpha");

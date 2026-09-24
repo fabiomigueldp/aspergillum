@@ -2,7 +2,7 @@
 
 ## Finalidade
 
-O Avatar Lab é uma ferramenta de desenvolvimento local para montar um jogador, aplicar uma skin, vincular o attachable real do aspersório ao holder `rightItem`, executar as animações aprovadas e produzir evidência visual reproduzível. Ele não entra no `.mcaddon`, não altera `assets-src/`, `packs/` ou estado de gameplay e não cria uma segunda fonte autoritativa para o item.
+O Avatar Lab é uma ferramenta de desenvolvimento local multi-add-on para montar um jogador, aplicar uma skin, resolver um equipamento real do Resource Pack, executar sua apresentação disponível e produzir evidência visual reproduzível. Aspergillum usa o perfil avançado já calibrado em `rightItem`; Ornatum e projetos futuros usam composição genérica por bones para equipamentos de cabeça, peito e mão. A ferramenta não entra no `.mcaddon`, não altera `assets-src/`, `packs/` ou gameplay e não cria uma segunda fonte autoritativa.
 
 Execute `npm --prefix viewer-3d run dev` e abra `http://127.0.0.1:4173/?tool=avatar` para usar o Avatar Lab dentro do 3D Workbench. A bancada troca entre os três laboratórios sem recarregar o documento e preserva receita, câmera, pose e controles. `viewer-3d/avatar-lab.html` permanece como adaptador autônomo para isolamento, compatibilidade e captura headless. Pela raiz, use:
 
@@ -16,18 +16,18 @@ npm run capture:avatars -- --help
 flowchart LR
   Skin["Skin 64×64 ou 128×128"] --> Recipe["SceneRecipe"]
   Rig["Rig wide ou slim"] --> Recipe
-  Pack["Resource Pack atual"] --> Sync["sync-assets"]
-  Sync --> Runtime["Bedrock scene runtime"]
+  Packs["Resource Packs registrados"] --> Sync["sync-assets / workspace"]
+  Sync --> Runtime["Manifesto por add-on"]
   Recipe --> Runtime
   Runtime --> Player["player / rightArm / rightItem"]
-  Runtime --> Item["bound / presentation / action"]
+  Runtime --> Item["attachable / equipamento"]
   Player --> Bind["Compositor de binding"]
   Item --> Bind
   Bind --> Lab["Avatar Lab interativo"]
   Bind --> Capture["Chromium / PNG / manifest"]
 ```
 
-O scene graph resultante preserva a cadeia:
+No perfil avançado do Aspergillum, o scene graph preserva a cadeia:
 
 ```text
 player.root
@@ -43,7 +43,11 @@ player.root
                                 └── spray_aim / aspergillum_tip
 ```
 
-O adaptador de geometria em `viewer-3d/src/shared/bedrock-geometry.js` é compartilhado por Model Lab, Fidelity Renderer e Avatar Lab. Ele cria bones sem estado global, respeita pivôs e parents, preserva faces UV omitidas, suporta nomes de bone sem diferença de caixa e devolve registros de meshes, pivôs, locators e materiais para inspeção. Canais Bedrock passam por uma conversão explícita antes do Three.js: posição X, sinais angulares e ordem Euler `ZYX` não ficam mais implícitos em cada consumidor. O perfil de inspeção em terceira pessoa mantém a frente visual em `+Z`; o viewmodel usa o perfil canônico de primeira pessoa.
+Em equipamentos genéricos, `avatar-equipment.js` encontra cada branch cujo nome coincide com um bone do player e o enxerta com offset local zero, reproduzindo merge-by-bone inclusive em hierarquias aninhadas. Roots e filhos sem bone correspondente permanecem ligados ao branch autorado mais próximo. Em seguida, uma transformação de base única converte a frente canônica dos attachables para a frente visual `+Z` da skin. Essa operação é aplicada ao grafo inteiro, nunca como offset específico de um item.
+
+O adaptador de geometria em `viewer-3d/src/shared/bedrock-geometry.js` é compartilhado por Model Lab, Bedrock Renderer e Avatar Lab. Ele cria bones sem estado global, respeita pivôs/parents, preserva faces UV omitidas, suporta nomes sem diferença de caixa e devolve registros de meshes, pivôs, locators e materiais. Geometria estática e canais de animação possuem conversões deliberadamente separadas. A geometria usa Euler `ZYX` para realizar a ordem Bedrock x→y→z, centro do cubo quando não há pivot e valores `1.12` como serializados; o player local e o perfil avançado conservam sua base retrocompatível explicitamente.
+
+Essa separação corrige três classes de falha que se pareciam visualmente: ausência da transformação de base fazia mitras e báculos aparecerem atrás; preservar `sourcePivot-targetPivot` num branch merged deslocava wearables cujo `Head` legado tinha pivot zero; reutilizar sinais de rotação de animação em cubos estáticos desmontava os painéis rotacionados do barrete. Testes cobrem a frente `-Z→+Z`, o merge de um `Head [0,0,0]` e os quatro painéis reais do barrete `1.12`.
 
 ## Binding e calibração
 
@@ -105,9 +109,10 @@ Play, pause, velocidade e scrub da timeline funcionam no browser. Capturas headl
 
 O modo interativo oferece:
 
+- seleção persistente de add-on sem reload e equipamento agrupado por família;
 - preset ou importação de skin;
 - rig wide/slim;
-- dezesseis acabamentos do catálogo;
+- acabamentos e PBR somente quando o projeto os declara;
 - material clássico ou PBR com color, normal e MERS;
 - terceira pessoa e viewmodel Bedrock de primeira pessoa;
 - ações segurando, carregando e aspergindo;
@@ -140,12 +145,18 @@ npm run capture:avatars -- --skin C:\caminho\skin.png --model slim --action spri
 
 # prova do viewmodel de primeira pessoa em 16:9
 npm run capture:avatars -- --action sprinkle --perspective first --views first-person --width 1280 --height 720
+
+# barrete Ornatum no avatar, incluindo close frontal e traseiro do equipamento
+npm run capture:equipment -- --addon ornatum --equipment barretepadre --views front,back,equipment,equipment-front,equipment-back --size 1024
+
+# báculo Ornatum com a skin padrão, em terceira pessoa
+npm run capture:equipment -- --addon ornatum --equipment baculodourado1 --views front-right,right,back --size 1024
 ```
 
-Sem `--output`, a execução cria `out/avatar-captures/<timestamp>/`. A pasta é descartável e ignorada pelo Git.
+Sem `--output`, a execução cria `out/avatar-captures/<addon>/<timestamp>/`. A pasta é descartável e ignorada pelo Git.
 
 ```text
-out/avatar-captures/<run>/
+out/avatar-captures/<addon>/<run>/
 ├── capture-manifest.json
 ├── contact-sheet.png
 ├── sprinkle-0-180s-front-right.png
@@ -153,7 +164,7 @@ out/avatar-captures/<run>/
 └── ...
 ```
 
-O manifest registra versões do pack, Three.js, Playwright e API de captura; hash e dimensões da skin; hashes da geometria, attachable e animações; hash da configuração; câmera; tempo; matrizes da cadeia, costura visual, binding, centralização/contenção da empunhadura e folga da cabeça para cada PNG. `allFramesGripCentered`, `allFramesGripEngaged` e `allFramesHeadClear` resumem critérios independentes; uma interseção de cabeça nunca deve ser “corrigida” deslocando o grip para fora da mão.
+O manifest registra projeto/versão, equipamento e perfil resolvidos, versões de Three.js/Playwright/API, hash e dimensões da skin, hashes do manifesto/geometria/attachable/animações sincronizados, configuração, câmera, tempo, matrizes e composição. No perfil avançado, `allFramesGripCentered`, `allFramesGripEngaged` e `allFramesHeadClear` resumem critérios independentes; em composição genérica o manifest registra `merge_by_bone`, branches enxertados e erro de binding zero, sem fingir que um teste especializado de grip existe para todo formato legado.
 
 ## Evidência de paridade de 11 de agosto de 2026
 
@@ -177,7 +188,7 @@ Já existe um contrato de cena extensível para adicionar, sem trocar o núcleo:
 - mão esquerda e offhand;
 - capas, elytra e armor layers;
 - poses de caminhada, agachamento e uso;
-- outros attachables e itens do addon;
+- novos add-ons registrados, attachables e itens sem código específico por asset;
 - efeitos no locator como camada de apresentação;
 - golden captures por skin/modelo/perspectiva;
 - diff de pixels entre duas revisões com inputs idênticos.

@@ -3,6 +3,11 @@ import {
   getWorkbenchTool,
   workbenchUrl,
 } from '../shared/workbench-contract.js';
+import {
+  getSelectedProject,
+  loadAssetWorkspace,
+  setSelectedProject,
+} from '../shared/project-context.js';
 
 const MODULE_LOADERS = Object.freeze({
   model: () => import('../main.js'),
@@ -20,6 +25,9 @@ const ui = {
   actionsSlot: document.querySelector('#workbench-actions-slot'),
   routeStatus: document.querySelector('#workbench-route-status'),
   skipLink: document.querySelector('#workbench-skip-link'),
+  projectSelect: document.querySelector('#workbench-project-select'),
+  projectEyebrow: document.querySelector('#workbench-project-eyebrow'),
+  projectVersion: document.querySelector('#workbench-project-version'),
   links: [...document.querySelectorAll('[data-tool-link]')],
   styles: new Map([...document.querySelectorAll('[data-tool-styles]')].map((link) => (
     [link.dataset.toolStyles, link]
@@ -30,6 +38,7 @@ let activeTool = null;
 let activeEntry = null;
 let pendingNavigation = null;
 let navigationDrain = null;
+let currentProject = null;
 
 function normalizeTool(value) {
   return getWorkbenchTool(value).id;
@@ -215,7 +224,7 @@ async function navigate(requestedTool, { replace = false, fromHistory = false } 
     activeEntry = entry;
     const main = entry.node.querySelector(definition.main);
     ui.skipLink.href = `#${main.id}`;
-    document.title = `Aspergillum / ${definition.title}`;
+    document.title = `${currentProject?.displayName ?? 'Bedrock Add-ons'} / ${definition.title}`;
     setNavigationState(tool, false);
     ui.host.setAttribute('aria-busy', 'false');
     document.body.classList.remove('is-tool-changing');
@@ -282,7 +291,14 @@ for (const link of ui.links) {
   link.addEventListener('focus', preload, { once: true });
 }
 
-window.addEventListener('popstate', () => requestNavigation(toolFromLocation(), { fromHistory: true }));
+window.addEventListener('popstate', async () => {
+  const requestedProject = new URL(window.location.href).searchParams.get('addon');
+  if (requestedProject) {
+    currentProject = await setSelectedProject(requestedProject, { updateHistory: false }).catch(() => currentProject);
+    if (currentProject) updateProjectHeader(currentProject);
+  }
+  requestNavigation(toolFromLocation(), { fromHistory: true });
+});
 window.addEventListener('keydown', (event) => {
   if (!event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
   const tool = { Digit1: 'model', Digit2: 'bedrock', Digit3: 'avatar' }[event.code];
@@ -291,4 +307,40 @@ window.addEventListener('keydown', (event) => {
   requestNavigation(tool);
 });
 
-requestNavigation(toolFromLocation(), { replace: true });
+function updateProjectHeader(project) {
+  currentProject = project;
+  ui.projectSelect.value = project.id;
+  ui.projectEyebrow.textContent = `${project.displayName.toUpperCase()} / DEV`;
+  ui.projectVersion.textContent = project.currentLabel;
+  ui.projectVersion.title = `Versão de referência do ${project.displayName}`;
+}
+
+async function bootstrap() {
+  const workspace = await loadAssetWorkspace();
+  ui.projectSelect.innerHTML = workspace.projects.map((project) => (
+    `<option value="${project.id}">${project.displayName}</option>`
+  )).join('');
+  ui.projectSelect.disabled = workspace.projects.length < 2;
+  currentProject = await getSelectedProject();
+  await setSelectedProject(currentProject.id);
+  updateProjectHeader(currentProject);
+  ui.projectSelect.addEventListener('change', async () => {
+    ui.projectSelect.disabled = true;
+    try {
+      const project = await setSelectedProject(ui.projectSelect.value);
+      updateProjectHeader(project);
+      document.title = `${project.displayName} / ${activeEntry?.definition.title ?? 'Developer Workbench'}`;
+      announce(`${project.displayName} selecionado. Recarregando o contexto das ferramentas.`);
+    } finally {
+      ui.projectSelect.disabled = workspace.projects.length < 2;
+    }
+  });
+  await requestNavigation(toolFromLocation(), { replace: true });
+}
+
+bootstrap().catch((error) => {
+  console.error(error);
+  ui.runtimeSlot.textContent = 'Falha ao carregar workspace de add-ons';
+  ui.host.replaceChildren(errorView(TOOL_DEFINITIONS.model, error));
+  ui.host.setAttribute('aria-busy', 'false');
+});

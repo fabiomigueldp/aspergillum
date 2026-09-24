@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#101719" />
     <meta
       name="description"
-      content="Bancada integrada para inspecionar modelos, render paths Bedrock, skins, poses e animações do Aspergillum."
+      content="Bancada multi-addon para inspecionar modelos, render paths Bedrock, skins, equipamentos, poses e animações."
     />
-    <title>Aspergillum / Developer Workbench</title>
+    <title>Bedrock Add-ons / Developer Workbench</title>
     <style>
       html { background: #101719; color-scheme: dark; }
       body { margin: 0; background: #101719; }
@@ -24,10 +24,10 @@
 
     <div class="workbench-shell">
       <header class="workbench-header">
-        <a class="workbench-brand" href="?tool=model" data-tool-link="model" aria-label="Aspergillum Developer Workbench">
+        <a class="workbench-brand" href="?tool=model" data-tool-link="model" aria-label="Bedrock Add-on Developer Workbench">
           <span class="workbench-mark" aria-hidden="true"><i></i><i></i><i></i></span>
           <span class="workbench-brand-copy">
-            <span class="workbench-eyebrow">ASPERGILLUM / DEV</span>
+            <span class="workbench-eyebrow" id="workbench-project-eyebrow">BEDROCK ADD-ONS / DEV</span>
             <strong>3D Workbench</strong>
           </span>
         </a>
@@ -48,11 +48,17 @@
         </nav>
 
         <div class="workbench-context">
+          <label class="workbench-project-picker" for="workbench-project-select">
+            <span>Projeto</span>
+            <select id="workbench-project-select" aria-label="Add-on ativo" disabled>
+              <option>Carregando…</option>
+            </select>
+          </label>
           <div class="workbench-runtime-slot" id="workbench-runtime-slot" aria-live="polite">
             <span class="workbench-runtime-fallback"><i aria-hidden="true"></i>Preparando ferramenta</span>
           </div>
           <div class="workbench-actions-slot" id="workbench-actions-slot"></div>
-          <span class="workbench-version" title="Versão de referência do add-on">1.2.5</span>
+          <span class="workbench-version" id="workbench-project-version" title="Versão de referência do add-on">—</span>
         </div>
       </header>
 

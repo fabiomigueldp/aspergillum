@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#eee9de" />
+    <meta
+      name="description"
+      content="Compositor de convite cerimonial com avatar e equipamentos Bedrock reais."
+    />
+    <title>Bedrock Add-ons / Invitation Renderer</title>
+  </head>
+  <body>
+    <main class="invitation-art" id="invitation-art" aria-label="Primícias Sacerdotais">
+      <div class="paper-grain" aria-hidden="true"></div>
+      <div class="quiet-arch" aria-hidden="true"></div>
+
+      <header class="title-lockup">
+        <h1 class="invitation-title" id="invitation-title"><span id="title-first">PRIMÍCIAS</span><span id="title-second">SACERDOTAIS</span></h1>
+        <p class="invitation-celebrant" id="invitation-celebrant" hidden></p>
+        <div class="invitation-details" id="invitation-details" hidden>
+          <p class="invitation-feast" id="invitation-feast"></p>
+          <p class="invitation-venue" id="invitation-venue"></p>
+          <p class="invitation-time" id="invitation-time"></p>
+        </div>
+      </header>
+
+      <div class="avatar-shadow" aria-hidden="true"></div>
+      <div class="avatar-stage" id="avatar-stage" aria-hidden="true">
+        <canvas id="avatar-canvas"></canvas>
+      </div>
+
+      <p class="render-status" id="render-status" role="status">Montando composição</p>
+    </main>
+
+    <script type="module" src="/src/invitation-renderer/main.js"></script>
+  </body>
+</html>
