@@ -10,6 +10,8 @@ O repositório `fabiomigueldp/aspergillum` contém os projetos e ferramentas aba
 | Evangeliário | `addons/evangeliarium/`, incluindo o protótipo e suas fontes |
 | 3D Workbench e Render Studio | `viewer-3d/` |
 
+O experimento de turíbulo está preservado na branch `codex/experimental-thurible` do mesmo repositório. Essa branch não foi integrada à `main`; seus contratos e estado experimental permanecem separados do Aspergillum principal.
+
 ## Preparar um clone
 
 Requer Node.js 24 ou posterior e Python para os importadores que o utilizam. Na raiz:
