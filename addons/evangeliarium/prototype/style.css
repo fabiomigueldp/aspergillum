@@ -1,0 +1,48 @@
+:root {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #272923;
+  background: #e9e7df;
+  font-synthesis: none;
+  line-height: 1.5;
+}
+* { box-sizing: border-box; }
+body { margin: 0; padding: 24px 16px 32px; }
+.study-note, .outside-links { max-width: 620px; margin: 0 auto; color: #55584f; font-size: 13px; }
+.study-note { margin-bottom: 12px; }
+.reader { max-width: 620px; margin: 0 auto; padding: 28px; background: #f7f6f0; border: 1px solid #aaa99e; }
+h1 { margin: 0; font-size: 25px; line-height: 1.25; font-weight: 650; overflow-wrap: anywhere; }
+.context { margin: 8px 0 22px; font-size: 14px; color: #55584f; }
+.passage { font-size: 18px; line-height: 1.75; overflow-wrap: anywhere; }
+.passage p { margin: 0 0 18px; }
+.passage p:last-child { margin-bottom: 24px; }
+.verse-number { color: #5c6056; font-size: 0.68em; vertical-align: super; margin-right: 0.22em; }
+.progress { margin: 0 0 12px; text-align: center; color: #55584f; font-size: 13px; }
+.actions, form { display: flex; flex-direction: column; gap: 8px; }
+button, select, input { font: inherit; color: inherit; border: 1px solid #8c8f81; border-radius: 0; min-height: 44px; }
+button { padding: 10px 16px; background: #e1e3d8; cursor: pointer; }
+button:hover { background: #d4d9c9; }
+button:active { background: #c8cfbb; }
+button:disabled { color: #666b5f; cursor: default; background: transparent; }
+.secondary { background: transparent; border-color: transparent; font-size: 14px; }
+.secondary:hover { background: #e9eade; }
+.secondary:disabled:hover { background: transparent; }
+:focus-visible { outline: 3px solid #355d35; outline-offset: 3px; }
+h1:focus { outline: none; }
+select, input { width: 100%; background: #fffefa; padding: 10px; }
+label { margin-top: 16px; font-weight: 600; }
+.optional { font-weight: 400; font-size: 14px; color: #55584f; }
+.submit { margin-top: 18px; }
+.error { color: #8b2525; margin: 8px 0 0; font-size: 14px; }
+.back { padding: 0; min-height: 44px; border: 0; background: transparent; margin: -8px 0 14px; }
+.outside-links { margin-top: 14px; }
+a { color: #365b35; text-underline-offset: 3px; }
+.credits p { margin: 18px 0; }
+.credits h2 { font-size: 18px; margin-top: 28px; }
+.credits .back { display: inline-flex; align-items: center; }
+[hidden] { display: none !important; }
+@media (max-width: 440px) {
+  body { padding: 16px 10px 24px; }
+  .reader { padding: 22px 18px; }
+  .study-note { font-size: 12px; }
+  h1 { font-size: 23px; }
+}

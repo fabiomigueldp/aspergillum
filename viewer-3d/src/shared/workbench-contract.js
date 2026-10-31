@@ -23,6 +23,15 @@ export const WORKBENCH_TOOLS = Object.freeze([
     status: '.runtime-status',
     actions: Object.freeze([]),
   }),
+  Object.freeze({
+    id: 'studio',
+    title: 'Render Studio',
+    document: './render-studio.html',
+    main: '#studio-main',
+    status: '.studio-runtime',
+    actions: Object.freeze([]),
+    projectId: 'altare',
+  }),
 ]);
 
 export const WORKBENCH_TOOL_ALIASES = Object.freeze({

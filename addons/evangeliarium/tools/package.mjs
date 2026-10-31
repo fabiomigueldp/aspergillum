@@ -1,0 +1,26 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {spawnSync} from 'node:child_process';
+import {createMcaddon,publishArtifact} from '../../../tools/release/artifact-core.mjs';
+import {readZip} from '../../../tools/lib/zip.mjs';
+const root=path.resolve(import.meta.dirname,'..'),manager=path.resolve(root,'../..');
+const {version}=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
+const output=path.join(root,'dist/releases',`Evangeliarium-${version}.mcaddon`);
+await createMcaddon({outputPath:output,behaviorPath:path.join(root,'packs/behavior'),resourcePath:path.join(root,'packs/resource'),behaviorRoot:'Evangeliarium_BP',resourceRoot:'Evangeliarium_RP',replace:process.argv.includes('--replace')});
+const artifact=publishArtifact({projectRoot:root,artifactPath:output,label:version,channel:'official',family:'release'});
+const {entries}=readZip(output);
+if(!entries.some(e=>e.name.endsWith('scripts/main.js')))throw Error('Script missing from package');
+const report=path.resolve(root,'dist/validation',version);
+if(!report.startsWith(path.join(root,'dist/validation')+path.sep))throw Error('Unsafe validation directory');
+// Creator Tools reuses an existing report; regenerate it against the current archive bytes.
+fs.rmSync(report,{recursive:true,force:true});fs.mkdirSync(report,{recursive:true});
+const result=spawnSync(process.execPath,[path.join(manager,'node_modules/@minecraft/creator-tools/cli/index.mjs'),'--input-file',output,'--output-folder',report,'--offline','--yes','validate'],{cwd:root,stdio:'inherit',windowsHide:true});
+if(result.error)throw result.error;if(result.status!==0)process.exit(result.status??1);
+const csv=fs.readFileSync(path.join(report,`evangeliarium-${version}.csv`),'utf8');
+const failures=csv.split(/\r?\n/).filter(l=>/,"?(Error|Failure)"?,/i.test(l));
+const warnings=csv.split(/\r?\n/).filter(l=>/,"?Warning"?,/i.test(l));
+const vanillaItems=['minecraft:gold_nugget','minecraft:red_dye','minecraft:book','minecraft:leather'];
+const unexpected=warnings.filter(l=>!l.includes('Link to item type is not found in this pack')||!vanillaItems.some(id=>l.includes('`'+id+'`')));
+fs.writeFileSync(path.join(report,'release-summary.json'),JSON.stringify({version,bytes:artifact.bytes,sha256:artifact.sha256,files:entries.length,failures,warnings,unexpectedWarnings:unexpected,minecraftContentLog:'PENDING — import and testing by user'},null,2)+'\n');
+if(failures.length||unexpected.length)throw Error([...failures,...unexpected].join('\n'));
+console.log(`Created ${output}\nSHA256 ${artifact.sha256}\nCreator Tools: no errors; ${warnings.length} documented offline vanilla links.`);

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Evangeliário · estudo de leitura</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="data.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <p class="study-note">Estudo de fluxo · aparência final nativa do Minecraft</p>
+  <main class="reader" aria-label="Leitor de Evangelhos">
+    <section id="reading-view" aria-labelledby="reference">
+      <h1 id="reference" tabindex="-1">Lucas 13,1–9</h1>
+      <p id="context" class="context">Exemplo · Bíblia Livre</p>
+      <div id="passage" class="passage"></div>
+      <p id="progress" class="progress" aria-live="polite" hidden></p>
+      <nav class="actions" aria-label="Leitura">
+        <button id="previous" type="button" hidden>Anterior</button>
+        <button id="next" type="button" hidden>Próxima</button>
+        <button id="choose" type="button">Escolher</button>
+        <button id="bookmark" class="secondary" type="button">Marcar no livro</button>
+      </nav>
+      <p id="storage-error" class="error" role="status" hidden></p>
+    </section>
+    <section id="choosing-view" aria-labelledby="choose-title" hidden>
+      <button id="back" class="back" type="button">← Voltar</button>
+      <h1 id="choose-title" tabindex="-1">Escolher passagem</h1>
+      <form id="selection-form" novalidate>
+        <label for="book">Evangelho</label>
+        <select id="book" name="book"></select>
+        <label for="chapter">Capítulo</label>
+        <select id="chapter" name="chapter"></select>
+        <label for="verses">Versículos <span class="optional">(opcional)</span></label>
+        <input id="verses" name="verses" type="text" inputmode="text" placeholder="1–18" autocomplete="off" aria-describedby="selection-error">
+        <p id="selection-error" class="error" role="alert" hidden></p>
+        <button class="submit" type="submit">Ler</button>
+      </form>
+    </section>
+    <noscript>Ative JavaScript para abrir o texto local.</noscript>
+  </main>
+  <footer class="outside-links"><a href="credits.html">Créditos</a></footer>
+</body>
+</html>

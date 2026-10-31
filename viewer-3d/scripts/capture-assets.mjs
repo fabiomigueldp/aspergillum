@@ -1,3 +1,4 @@
+import {launchRenderBrowser} from './lib/render-browser.mjs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
@@ -204,7 +205,7 @@ async function main() {
     await server.listen();
     const address = server.httpServer.address();
     if (!address || typeof address === 'string') throw new Error('Servidor de captura sem porta TCP.');
-    browser = await chromium.launch({ headless: true });
+    browser = await launchRenderBrowser(chromium);
     const context = await browser.newContext({ deviceScaleFactor: 1 });
     const page = await context.newPage();
     await page.setViewportSize({ width: options.size, height: options.size });
@@ -270,6 +271,7 @@ async function main() {
 
     await writeFile(path.join(options.output, 'capture-manifest.json'), `${JSON.stringify({
       schemaVersion: 1,
+      backend: browser.renderDiagnostics,
       generatedAt: new Date().toISOString(),
       tool: { name: viewerPackage.name, version: viewerPackage.version, captureApiVersion: 4 },
       project: manifest.project,

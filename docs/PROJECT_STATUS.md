@@ -1,5 +1,70 @@
 # Estado do projeto
 
+## Chanfros de Ogivas Altare — 31/10/2026
+
+Altare 0.11.2 / Estúdio 2.2.1 refina os recessos de Ogivas com planos inclinados e mitras fechadas, incluindo a ponta. Relevos ímpares cabem no campo do fundo; corpo, apoios, toalhas, mapas, definições de bloco e runtime/editor são preservados. Não aumenta registros/faces, arquivos ou estados. [Construção e reteste](../addons/altare/docs/OGIVE_DETAIL_0.11.2.md). Aspergillum permanece 1.2.5; importação e profiling pendentes.
+
+## Editor Altare — 31/10/2026
+
+Altare 0.11.1 corrige `InvalidObservableError` na abertura do editor: dropdowns fixos exigem valor `clientWritable` mesmo ocultos/desabilitados. Regressão reproduz o erro e preserva a autoridade do rascunho/commit. Geometrias, estados e recursos 0.11.0 preservados; Aspergillum 1.2.5 e Estúdio 2.2.0 permanecem. [Causa e reteste do pacote](../addons/altare/docs/EDITOR_FIX_0.11.1.md); confirmação no Minecraft pendente.
+
+## Ogivas Altare — 31/10/2026
+
+Altare 0.11.0 / Estúdio 2.2.0 reconstrói Ogivas como arcada cega com recessos, intradorso, pilares compartilhados e perfis contínuos em todo o perímetro. Mesmo corpo nas dez toalhas; relevos ajustados ao teto ogival. Contratos de mundo, runtime, colisões e demais famílias preservados. Três cores recortadas compartilham PBR existente, sem novos estados. [Construção, custo e reteste](../addons/altare/docs/OGIVE_REBUILD_0.11.0.md). Aspergillum permanece 1.2.5; importação, Content Log e profiling pendentes.
+
+## Perfis de Pilastras Altare — 31/10/2026
+
+Altare 0.10.1 / Estúdio 2.1.1 integra os painéis às pilastras por rebaixos chanfrados, com encontros diagonais, apoios e coroamento refinados. Mesmos cubos, catálogo, definições de bloco, mapas e runtime; menos faces. Testes independentes de rotação e cobertura dos cantos. [Contrato e reteste](../addons/altare/docs/PILASTER_DETAIL_0.10.1.md). Aspergillum permanece 1.2.5; validação nativa e profiling pendentes.
+
+## Ferramentas gráficas — 31/10/2026
+
+Seleção automática de GPU para os CLIs Playwright, fallback SwiftShader com prioridade/afinidade limitada no Windows, diagnóstico do backend e modo software explícito preservado. Smoke compilado completo: 17,7 s na Iris Xe, contra 102,3 s na execução anterior. [Contrato e limites](RENDER_PERFORMANCE.md).
+
+
+## Pilastras Altare — 31/10/2026
+
+Altare 0.10.0 / Estúdio 2.1.0 reconstrói Pilastras com campos recuados, apoios intermediários e de quina, chanfros, bases/capitéis e perfis em volume. Preserva blocos, estados, runtime, texturas e demais modelos; testa o encaixe das dez toalhas e relevos. Contornos compilados têm custo diagnóstico limitado; importação exata, Content Log e profiling continuam pendentes. [Contrato e reteste](../addons/altare/docs/PILASTERS_0.10.0.md). Aspergillum permanece 1.2.5.
+
+## Toalhas universais Altare — 31/10/2026
+
+Altare 0.9.0 e Estúdio 2.0.0 compartilham dez escolhas de toalha entre os sete modelos, renda floral redesenhada, caimento/cantos comuns e Guadalupe independente no Clássico. Os 225 blocos anteriores mantêm identidade e colisões; 172 IDs compactos completam as combinações. A expansão excede a referência global de estados sob exceção diagnóstica documentada, com teste nativo e profiling pendentes. [Contrato, migração e reteste](../addons/altare/docs/UNIVERSAL_TEXTILES_0.9.0.md). Aspergillum permanece 1.2.5.
+
+
+## Encaixe têxtil Altare — 31/10/2026
+
+Altare 0.8.3 corrige o encontro entre linho, dobra e renda da Colunata, remove sobreposições e liga as quinas por costuras geométricas. Perfil compartilhado e testes de cobertura/afastamento/preservação de rascunho. Estúdio 1.8.3. Mesmos blocos, texturas, estados e runtime; Aspergillum permanece 1.2.5. [Contrato e reteste](../addons/altare/docs/COLONNADE_CLOTH_0.8.3.md).
+
+
+## Perfis da Colunata Altare — 31/10/2026
+
+Altare 0.8.2 refina fustes octogonais, apoios únicos de canto, bases e capitéis em três níveis e terminações de caneluras. Estúdio 1.8.2. Mesmos contratos de mundo, runtime e limites diagnósticos; reteste visual/físico e desempenho continuam pendentes. [Contrato e reteste](../addons/altare/docs/COLONNADE_DETAIL_0.8.2.md). Aspergillum permanece 1.2.5.
+
+
+## Reconstrução da Colunata Altare — 31/10/2026
+
+Altare 0.8.1 reconstrói painéis, molduras, fustes, bases, capitéis e cornija, mantendo os mesmos contratos de mundo e runtime. Estúdio 1.8.1 com os sete modelos. A revisão controla a complexidade adicional por contorno e faces; o teste físico e o profiling permanecem pendentes. [Contrato e reteste](../addons/altare/docs/COLONNADE_REBUILD_0.8.1.md). Aspergillum permanece 1.2.5.
+
+
+## Polimento Altare — 31/10/2026
+
+Altare 0.7.1 refina colunata e renda: capitéis escalonados, retornos de arquitrave, caneluras e bainha curva. Estúdio 1.7.1 com os mesmos sete modelos. [Contrato e reteste](../addons/altare/docs/COLONNADE_POLISH_0.7.1.md). Não acrescenta estados; Aspergillum permanece 1.2.5.
+
+## Colunata Altare — 31/10/2026
+
+Altare 0.7.0 acrescenta Colunata dourada com ou sem renda branca vazada, inspirada na referência enviada. O codec simétrico acrescenta 32 combinações de estados; o estúdio 1.7.0 tem sete modelos. [Contrato e reteste](../addons/altare/docs/COLONNADE_0.7.0.md). [Variações e foco Criativo](../addons/altare/docs/VARIATIONS.md). Aspergillum permanece 1.2.5; gate Minecraft pendente.
+
+## Marcenaria Altare — 31/10/2026
+
+Altare 0.6.1 acrescenta Arca e Balaústres, com veios orientados, apoios por módulo e travessas recortadas nos cantos. Estúdio 1.6.0 com seis modelos. [Construção, orçamento e reteste](../addons/altare/docs/JOINERY_0.6.1.md). As 199 definições anteriores são preservadas; Aspergillum permanece 1.2.5. Gate Minecraft pendente.
+
+## Personalização Altare — 30/10/2026
+
+Altare 0.5.0 introduz editor nativo unificado e estruturas invariantes à troca de tecido. O estúdio 1.5.0 compartilha as regras, tem seleção visual, abas e desfazer/refazer. [Contrato e limites](../addons/altare/docs/CUSTOMIZATION_0.5.0.md). A validação física continua pendente; Aspergillum permanece 1.2.5.
+
+## Render Studio local — histórico 1.4.0
+
+A bancada existente inclui a aba de composição e exportação dos altares Altare, com domínio/modelos reais, ambientes em blocos e texturas vanilla verificadas, iluminação clássica e exportação PNG/JSON. O renderer 1.4.0 oferece presbitério com vitrais, capela de madeira e claustro com jardim, bancos, degraus, tetos e decoração; a vista superior oculta o teto. A montagem usa objetos de nove packs locais, verificados por hash e em escala nativa, com castiçais, crucifixo, vasos, flores, Aparecida e Evangeliário. Contagem de velas, montagem e ornamentação sazonal são configuráveis. [Uso, arquitetura e limites](RENDER_STUDIO.md). O presbitério possui piso contínuo, luzes embutidas, nicho, ambão e cadeiras com assentos vermelhos; as câmeras ajustam o enquadramento aos objetos e abrem cortes nas vistas de inspeção. A ferramenta não muda a baseline 1.2.5 nem o Altare 0.4.2 e não confirma paridade com o renderer do jogo.
+
 ## Baseline
 
 - **Versão de referência:** `1.2.5` (revisão numérica dos packs `[1, 2, 5]`; gate visual/físico pendente)
@@ -96,6 +161,12 @@ A 1.2.4 tentou selecionar os dezesseis materiais em um proxy stateful, mas o Bed
 | Ornatum no Workbench | 39 equipamentos e 41 modelos são resolvidos; orientação, merge de bones e barrete 1.12 têm regressões automatizadas e capturas headless reais | a equivalência final de cada item, animação vanilla/armor offset e grip dos modelos legados ainda requer comparação dentro do Minecraft Ornatum |
 
 ## Próxima mudança autorizada
+
+### Conteúdo complementar independente — Aurifrita
+
+A solicitação de 19/10/2026 originou a [Mitra Aurifrita 0.1.1](../addons/aurifrita/README.md), em `addons/aurifrita/`. O subprojeto tem packs, versão, namespace, UUIDs, build e pacote próprios; usa o Workbench existente. O pacote passou na validação oficial sem erros/avisos. A aceitação dentro do Minecraft permanece pendente. Nenhum asset ou contrato distribuído do Aspergillum foi alterado.
+
+### Aspergillum 1.2.5
 
 Após a 1.2.5, importar somente o artefato final e primeiro confirmar ausência total dos erros de registro observados na 1.2.4. Depois comprovar os dezesseis acabamentos, confirmar que nenhum proxy é colocado e repetir o smoke `1.1.10 → 1.2.5`; qualquer ajuste de câmera deve permanecer exclusivo da geometria de inventário.
 

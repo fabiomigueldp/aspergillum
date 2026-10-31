@@ -1,6 +1,19 @@
 # Aspergillum 3D Workbench
 
+## Desempenho das capturas
+
+Os CLIs agora selecionam GPU verificada automaticamente, mantendo fallback software e escolha explícita para baselines. Consulte [execução, limites e medições](../docs/RENDER_PERFORMANCE.md).
+
+
 Bancada web integrada e toolchain headless para inspecionar geometrias, texturas, bones, locators, render paths, materiais, jogadores e animações do add-on. A pasta não altera `src/`, `packs/`, os manifests ou o build do Bedrock.
+
+## Render Studio de altares
+
+Estúdio 2.2.1 integra Ogivas com chanfros e mitras refinados no Altare 0.11.2, preservando o editor corrigido. Miniaturas derivam dos recursos reais; [construção, comparação e reteste](../addons/altare/docs/OGIVE_DETAIL_0.11.2.md).
+
+Na raiz, `npm run studio:altare` abre a quarta aba da bancada, com os modelos reais do Altare e cenários de blocos/texturas vanilla. Estruturas, toalhas, cores, dimensões, câmeras e ambientes são ajustáveis. Exporta PNG até 4K e salva cenas JSON. `npm run render:altars -- --presets all --size 2560` gera a coleção e suas miniaturas. [Instruções e limites](../docs/RENDER_STUDIO.md).
+
+Renderer 1.4.0: montagem com objetos verificados dos packs locais, opções de velas, flores sazonais, credência e corporal. `--dressing ready|gifts|none`, `--candles 2|4|6|7` e `--season ordinary|advent|lent|festive` também estão disponíveis no CLI. Os objetos permanecem em cache local ignorado pelo Git; nenhum mundo ou pack de origem é alterado.
 
 ## Rodar localmente
 
@@ -18,7 +31,7 @@ O comando `sync-assets` lê os packs dos projetos registrados no gerenciador, in
 
 ## O que já está disponível
 
-- shell persistente para Model Lab, Bedrock Renderer e Avatar Lab, com estado preservado entre alternâncias;
+- shell persistente para Model Lab, Bedrock Renderer, Avatar Lab e Render Studio, com estado preservado entre alternâncias;
 - carregamento de CSS no `<head>`, primeiro paint escuro e isolamento da folha de estilos da ferramenta ativa;
 - catálogo automático de todos os `*.geo.json` dentro do Resource Pack;
 - Aspersório e Caldeirinha com textura real do pack;
@@ -118,3 +131,15 @@ O comando não modifica `assets-src/`, `packs/` nem `dist/`. As candidatas em `o
 O **Model Lab** reproduz a geometria Bedrock e seus pivôs em uma cena standalone. O **Bedrock Fidelity Renderer** aproxima a cadeia de resolução, animações e mapas; o **Avatar Lab** acrescenta rig wide/slim, skin, holder e animações coordenadas. Nenhum deles substitui o cliente Minecraft: shader proprietário, iluminação do mundo, Persona, câmera completa, partículas, cache, culling e comportamento final continuam sendo validados no jogo conforme `docs/TESTING.md`. São ferramentas de diagnóstico, não prova de equivalência visual de 100%.
 
 Para uma revisão visual reproduzível, registre a versão do pack, a variação selecionada, a perspectiva desejada e o hash do pacote testado. O viewer é uma ferramenta de diagnóstico, não uma nova fonte autoritativa de assets.
+
+### Personalização 1.5.0
+
+Altar, Cena e Imagem compartilham uma coluna; modelos têm miniaturas reais e desfazer/refazer. Floral IHS usa a mesma regra de capacidades do editor nativo Altare 0.5.0. A preparação gera as miniaturas pelo capturador e hashes de fonte. [Contrato](../addons/altare/docs/CUSTOMIZATION_0.5.0.md).
+
+## Render Studio 1.6.0
+
+Seis modelos Altare, incluindo Arca e Balaústres em nogueira. Preparação gera as miniaturas dos modelos reais. As duas famílias novas mantêm todos os tecidos e cores do Floral IHS; material/relevo incompatíveis são tratados pelo domínio compartilhado.
+
+## Render Studio 1.7.0
+
+Colunata dourada é o sétimo modelo, com a opção Toalha de renda. O acabamento tem painéis em mármore claro, douramento e renda branca vazada. O estúdio mantém as escolhas suspensas dos modelos anteriores.

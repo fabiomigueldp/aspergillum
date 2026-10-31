@@ -1,0 +1,27 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { spawnSync } from 'node:child_process';
+import { createMcaddon, publishArtifact } from '../../../tools/release/artifact-core.mjs';
+import { readZip } from '../../../tools/lib/zip.mjs';
+const root=path.resolve(import.meta.dirname,'..');
+const manager=path.resolve(root,'../..');
+const {version}=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
+const outputPath=path.join(root,'dist/releases',`Aurifrita-${version}.mcaddon`);
+await createMcaddon({outputPath,behaviorPath:path.join(root,'packs/behavior'),resourcePath:path.join(root,'packs/resource'),behaviorRoot:'Aurifrita_BP',resourceRoot:'Aurifrita_RP'});
+const descriptor=publishArtifact({projectRoot:root,artifactPath:outputPath,label:version,channel:'official',family:'release'});
+const {entries}=readZip(outputPath);
+if(entries.some(e=>/aspergillum:|ornatum|\.js$|assets-src/.test(e.name)))throw new Error('Unexpected packaged file');
+const report=path.join(root,'dist/validation',version);
+fs.mkdirSync(report,{recursive:true});
+const cli=path.join(manager,'node_modules/@minecraft/creator-tools/cli/index.mjs');
+const result=spawnSync(process.execPath,[cli,'--input-file',outputPath,'--output-folder',report,'--offline','--yes','validate'],{cwd:root,stdio:'inherit',windowsHide:true});
+if(result.error)throw result.error;
+if(result.status!==0)process.exit(result.status??1);
+const csv=fs.readFileSync(path.join(report,`aurifrita-${version}.csv`),'utf8');
+const failures=csv.split(/\r?\n/).filter(l=>/,"?(Error|Failure)"?,/i.test(l));
+const warnings=csv.split(/\r?\n/).filter(l=>/,"?Warning"?,/i.test(l));
+// Warnings are reported verbatim; no generic warning suppression is permitted.
+fs.writeFileSync(path.join(report,'release-summary.json'),JSON.stringify({version,bytes:descriptor.bytes,sha256:descriptor.sha256,files:entries.length,failures,warnings,minecraftContentLog:'PENDING — import and test by user'},null,2)+'\n');
+if(failures.length)throw new Error(failures.join('\n'));
+if(warnings.length)throw new Error(`Creator Tools warnings (${warnings.length}):\n${warnings.join('\n')}`);
+console.log(`Created ${outputPath}\nSHA-256 ${descriptor.sha256}\nCreator Tools: ${failures.length} failures, ${warnings.length} warnings.`);

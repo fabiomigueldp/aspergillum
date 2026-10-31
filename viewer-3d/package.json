@@ -1,10 +1,14 @@
 {
   "name": "aspergillum-model-viewer",
-  "version": "0.2.0",
+  "version": "2.2.1",
   "private": true,
   "type": "module",
   "description": "Bancada 3D multi-add-on e ferramentas headless para inspeção de assets Bedrock.",
   "scripts": {
+    "renderer:check": "node scripts/probe-renderer.mjs",
+    "studio": "node scripts/prepare-studio.mjs && vite --open \"/?tool=studio&addon=altare\"",
+    "render:altars": "node scripts/prepare-studio.mjs && node scripts/render-altars.mjs",
+    "smoke:studio": "node scripts/smoke-studio.mjs",
     "sync-assets": "node scripts/sync-assets.mjs",
     "validate:workspace": "node scripts/validate-workspace.mjs",
     "test": "node --test tests/*.node.mjs",

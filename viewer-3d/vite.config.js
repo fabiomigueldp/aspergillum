@@ -16,6 +16,7 @@ export default defineConfig({
         avatarLab: 'avatar-lab.html',
         coverRenderer: 'cover-renderer.html',
         invitationRenderer: 'invitation-renderer.html',
+        renderStudio: 'render-studio.html',
       },
     },
   },

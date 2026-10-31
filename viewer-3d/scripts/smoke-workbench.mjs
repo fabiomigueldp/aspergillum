@@ -1,30 +1,33 @@
+import {launchRenderBrowser} from './lib/render-browser.mjs';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
-import { createServer } from 'vite';
+import { createServer, preview } from 'vite';
 
 const viewerRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const workspace = JSON.parse(await readFile(path.join(viewerRoot, 'public', 'asset-library', 'workspace.json'), 'utf8'));
-const server = await createServer({
+const built = process.argv.includes('--built');
+const server = await (built ? preview : createServer)({
   root: viewerRoot,
   configFile: path.join(viewerRoot, 'vite.config.js'),
   logLevel: 'error',
   server: { host: '127.0.0.1', port: 0, strictPort: false },
+  preview: { host: '127.0.0.1', port: 0, strictPort: false },
 });
 
 let browser;
 try {
-  await server.listen();
+  if (!built) await server.listen();
   const address = server.httpServer.address();
   if (!address || typeof address === 'string') throw new Error('O servidor do smoke test não expôs uma porta TCP.');
   const baseUrl = `http://127.0.0.1:${address.port}`;
-  browser = await chromium.launch({ headless: true });
+  browser = await launchRenderBrowser(chromium);
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   const errors = [];
   page.on('console', (message) => {
-    if (message.type() === 'error') errors.push(`console: ${message.text()}`);
+    if (message.type() === 'error') errors.push(`console: ${message.text()} (${message.location().url || 'unknown source'})`);
   });
   page.on('pageerror', (error) => errors.push(`pageerror: ${error.message}`));
 
@@ -158,5 +161,6 @@ try {
   process.stdout.write(`${JSON.stringify({ firstPaint, timings, projectSwitch, workbench, responsive }, null, 2)}\n`);
 } finally {
   await browser?.close();
-  await server.close();
+  if (built) await new Promise(resolve => server.httpServer.close(resolve));
+  else await server.close();
 }

@@ -1,0 +1,120 @@
+{
+  "version": "0.1.1",
+  "sourceHashes": {
+    "models/entity/mitra.geo.json": "59e64777a9a9219a8f18201080e296af014c31e677b724c48b98ab45b576079d",
+    "textures/entity/mitra.png": "d07027288dbe8e91c49978556404733510405fe6d9c537081bf72edb19c62fba",
+    "textures/entity/mitra_normal.png": "7b32eb24f0bbd11a09f55b838e2d8029a9f56f120081987b33edb3eb73912fb0",
+    "textures/entity/mitra_mer.png": "10ee0a8954fe2e72ffe96c91f7f05fdfe3b31499c8a94fb7be6856fb53e72f03"
+  },
+  "renderer": "shared __BEDROCK_CAPTURE__ v4, native pixel dimensions",
+  "captures": [
+    {
+      "file": "item-64.png",
+      "size": 64,
+      "transparent": true,
+      "material": "classic",
+      "configuration": {
+        "project": "aurifrita",
+        "subject": null,
+        "model": "entity__mitra",
+        "label": "Mitra Aurifrita",
+        "geometry": "geometry.aurifrita.mitra",
+        "material": "classic",
+        "water": "full",
+        "docked": false,
+        "cosmetic": "default",
+        "cosmeticLabel": "Textura do pack",
+        "waterOverlayGeometry": null,
+        "lighting": "neutral",
+        "transparent": true
+      },
+      "camera": [
+        1.9782570231836607,
+        1.0440800955691545,
+        -2.7352265645214398
+      ],
+      "target": [
+        0,
+        1.6653345369377348e-16,
+        0.01235263434475517
+      ],
+      "sha256": "e2dfc70434ecb2d2e5b149ef342b8f40bea6e1411a8b98b03dfd6e3e15ea40d0",
+      "promotedFrom": {
+        "artifact": "Aurifrita-0.1.1.mcaddon",
+        "entry": "Aurifrita_RP/textures/items/aurifrita_mitra.png",
+        "sha256": "0999370a9df80e816da59de2e0b76cb5c3e922d2202ad93c001b3bab03c3ddfc"
+      }
+    },
+    {
+      "file": "pack-256.png",
+      "size": 256,
+      "transparent": false,
+      "material": "classic",
+      "configuration": {
+        "project": "aurifrita",
+        "subject": null,
+        "model": "entity__mitra",
+        "label": "Mitra Aurifrita",
+        "geometry": "geometry.aurifrita.mitra",
+        "material": "classic",
+        "water": "full",
+        "docked": false,
+        "cosmetic": "default",
+        "cosmeticLabel": "Textura do pack",
+        "waterOverlayGeometry": null,
+        "lighting": "neutral",
+        "transparent": false
+      },
+      "camera": [
+        1.9782570231836607,
+        1.0440800955691545,
+        -2.7352265645214398
+      ],
+      "target": [
+        0,
+        1.6653345369377348e-16,
+        0.01235263434475517
+      ],
+      "sha256": "6fb1fce6bfac719d1b664178faa5ea5fa2c6c24e2ac401281b6d198d0904c399",
+      "promotedFrom": {
+        "artifact": "Aurifrita-0.1.1.mcaddon",
+        "entry": "Aurifrita_RP/pack_icon.png",
+        "sha256": "0999370a9df80e816da59de2e0b76cb5c3e922d2202ad93c001b3bab03c3ddfc"
+      }
+    },
+    {
+      "file": "mitra-hero.png",
+      "size": 1600,
+      "transparent": false,
+      "material": "pbr",
+      "configuration": {
+        "project": "aurifrita",
+        "subject": null,
+        "model": "entity__mitra",
+        "label": "Mitra Aurifrita",
+        "geometry": "geometry.aurifrita.mitra",
+        "material": "pbr",
+        "water": "full",
+        "docked": false,
+        "cosmetic": "default",
+        "cosmeticLabel": "Textura do pack",
+        "waterOverlayGeometry": null,
+        "lighting": "neutral",
+        "transparent": false
+      },
+      "camera": [
+        1.9782570231836607,
+        1.0440800955691545,
+        -2.7352265645214398
+      ],
+      "target": [
+        0,
+        1.6653345369377348e-16,
+        0.01235263434475517
+      ],
+      "sha256": "290490aeee959846d8fc4b526f2acc32d4eeaedaca0d7fa2e61618ac3568c861"
+    }
+  ],
+  "limitation": "Three.js preview, not proof of Minecraft parity",
+  "pixelRenderDeterminism": "GPU/browser raster output is not assumed byte-identical across runs. Promoted icon bytes are frozen and verified; package builds from those sources are deterministic."
+}

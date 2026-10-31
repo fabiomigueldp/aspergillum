@@ -1,5 +1,72 @@
 # Estratégia de testes e QA
 
+## Estúdio 2.2.1 e Altare 0.11.2
+
+Conferir chanfros, mitras da ponta e nascimentos, continuidade nas quatro orientações e relevos no campo do fundo. Dez tecidos, tamanhos 1×1 a 16×8 e centro par/ímpar. Auditoria preserva os 397 blocos e todas as texturas/runtime; comparação com a mesma GPU/navegador da 0.11.1. [Reteste e profiling](../addons/altare/docs/OGIVE_DETAIL_0.11.2.md).
+
+## Editor Altare 0.11.1
+
+Confirmar abertura sem `InvalidObservableError`, alternância dos sete modelos, material fixo, aplique indisponível e aplicar/cancelar/restaurar. Reabrir e recarregar para conferir persistência e sessão liberada. O adaptador de teste exige `clientWritable` também nos dropdowns ocultos/desabilitados. [Passos e sinais no Content Log](../addons/altare/docs/EDITOR_FIX_0.11.1.md).
+
+## Estúdio 2.2.0 e Altare 0.11.0
+
+Conferir Ogivas em todo o perímetro, nascimentos/pontas/intradorso, apoios, base e mesa; recorte em movimento e sombras nos dois perfis. Dez tecidos, três materiais, relevos pares/ímpares, quatro frentes e tamanhos 1×1 a 16×8. Capturas controladas com o mesmo backend GPU, auditoria do arquivo final e smokes compilados. [Reteste nativo e profiling](../addons/altare/docs/OGIVE_REBUILD_0.11.0.md).
+
+## Estúdio 2.1.1 e Altare 0.10.1
+
+Conferir biséis, encontros das molduras, bases/capitéis, chanfros e coroamento do Pilastras, nas quatro frentes e com as toalhas/relevos. Mesmas câmeras da 0.10.0, auditoria byte a byte das definições de bloco e smokes compilados. [Reteste nativo e profiling](../addons/altare/docs/PILASTER_DETAIL_0.10.1.md).
+
+## Backend dos testes visuais
+
+Os testes Playwright mantêm a matriz funcional completa. Use GPU verificada para iteração e fixe o backend em comparações de imagem. Consulte [RENDER_PERFORMANCE.md](RENDER_PERFORMANCE.md).
+
+
+## Estúdio 2.1.0 e Altare 0.10.0
+
+Conferir Pilastras em mármore, calcário e nogueira, com os dez tecidos; emendas de apoios, chanfros, perfis inferiores, relevos pares/ímpares e plano superior livre. Testar 1×1, 1×8, 7×2, 8×2 e 16×8 nas quatro frentes. Auditoria de recursos protegidos, capturas controladas, smokes compilados e reteste nativo/profiling documentados em [Pilastras 0.10.0](../addons/altare/docs/PILASTERS_0.10.0.md).
+
+## Estúdio 2.0.0 e Altare 0.9.0
+
+Conferir as dez escolhas nos sete modelos, renda em cantos e diferentes tamanhos, todas as cores na Colunata/Clássico, Guadalupe independente e objetos sobre o tampo. Migrar cenas schema 1, reabrir schema 2 e testar histórico. 79 testes do add-on e 76 do viewer; smokes compilados e validação do arquivo final. [Reteste, compatibilidade e profiling](../addons/altare/docs/UNIVERSAL_TEXTILES_0.9.0.md).
+
+
+## Estúdio 1.8.3 e Altare 0.8.3
+
+Conferir linho e renda, tampo em movimento, retornos, quinas e afastamento de cornija/capitéis. Repetir as cenas, exportação, rascunhos e smokes; o comparador deve abrir uma vista modificada. [Reteste nativo](../addons/altare/docs/COLONNADE_CLOTH_0.8.3.md).
+
+
+## Estúdio 1.8.2 e Altare 0.8.2
+
+Conferir a coluna única em cada quina, bases/capitéis em três níveis, terminação das caneluras e igualdade da estrutura com e sem renda. Repetir smokes compilados e regressão dos demais modelos. [Reteste nativo e profiling](../addons/altare/docs/COLONNADE_DETAIL_0.8.2.md).
+
+
+## Estúdio 1.8.1 e Altare 0.8.1
+
+Conferir a Colunata reconstruída, com e sem renda, inclusive quinas, base e parte inferior dos perfis; verificar exportação, cenas, histórico e demais modelos. Rodar smoke compilado do estúdio e Workbench. O [reteste 0.8.1](../addons/altare/docs/COLONNADE_REBUILD_0.8.1.md) inclui apoio, Content Log e profiling com vários altares no Minecraft.
+
+
+## Estúdio 1.7.1 e Altare 0.7.1
+
+Repetir o smoke compilado com o novo material dos fustes; conferir capitéis e renda na colunata, exportação e cenas anteriores. A geometria distribuída segue a [comparação e o reteste 0.7.1](../addons/altare/docs/COLONNADE_POLISH_0.7.1.md).
+
+## Estúdio 1.7.0 e Altare 0.7.0
+
+Conferir Colunata, alternar a renda e voltar às ogivas sem perder material/relevo/tecido. Testar as cenas schema 1, desfazer/refazer e exportação. O pacote segue o [reteste da colunata](../addons/altare/docs/COLONNADE_0.7.0.md).
+
+## Estúdio 1.6.0 e Altare 0.6.1
+
+Validar Arca/Balaústres no seletor, nogueira fixa, relevo oculto, cores e recuperação de material/relevo ao voltar às ogivas. O smoke do estúdio cobre essas transições; o [reteste do pacote](../addons/altare/docs/RELEASE_0.6.1.md) cobre aplicação, apoio e Content Log.
+
+## Render Studio local de altares
+
+Na revisão 1.5.0, verificar abas Altar/Cena/Imagem por mouse e teclado, os quatro seletores visuais, Floral IHS e cores sem entradas duplicadas, preservação de material/toalha ao trocar estrutura, restauração do relevo temporariamente suspenso e desfazer/refazer. Edições rápidas devem preservar todas as escolhas. Reabrir cenas schema 1 antigas e conferir textos pt-BR, câmera, exportação e mobile sem overflow. O editor nativo segue os [gates do Altare 0.5.0](../addons/altare/docs/RELEASE_0.5.0.md).
+
+Na revisão 1.4.0, conferir o piso elevado até a abside, as luzes embutidas, o nicho, o ambão, as cadeiras e os recipientes baixos. No verso, a parede deve ser cortada e o altar continuar visível; no superior, ocultar o teto. O rótulo de corte pertence à interface e não aparece no PNG. Conferir a vista Jogador a y=0,62 e os planos nave=-1/presbitério=0 no JSON.
+
+A montagem 1.4.0 deve preservar a escala dos objetos dos packs, manter crucifixo único, conferir 2/4/6/7 chamas, retirar flores em Quaresma, transferir vasos entre credência/corporal e nunca tratar Evangeliário como missal. Conferir o catálogo em `out/render-studio/prop-inspection/`, as posições no JSON exportado, as bases apoiadas e a ausência de sobreposição. A configuração **Vasos sobre o corporal** é parcial: faltam missal, pala e purificatório na biblioteca. Verificar também Só altar e fundo transparente sem montagem.
+
+Executar `npm run check`, `npm --prefix viewer-3d run build` e `npm --prefix viewer-3d run smoke:studio -- --built`. Inspecionar a galeria de renders e os screenshots em `out/studio-smoke/`; confirmar 7 × 2, centro par em 8 × 2, mínimo 1 × 1, verso 16 × 8, superior 16 × 8 com teto oculto, vitrais, arcadas, telhado, apoio e corredor livres, PNG transparente e restauração de cena/câmera. Os contratos e limites estão em [Render Studio](RENDER_STUDIO.md). Testes do estúdio não aprovam alterações dos packs no Minecraft.
+
 ## Princípio
 
 Automação prova regras e estrutura; somente o Minecraft prova input, cache, animação, câmera, skin, rendering e integração real. Uma revisão não é aprovada por inspeção de JSON ou por “não haver erro de build”.
@@ -266,6 +333,12 @@ Automação prova regras e estrutura; somente o Minecraft prova input, cache, an
 - [ ] registrar plataforma, saída de áudio, volume master, distância e resultado de cada família;
 
 ## Pipeline automatizado
+
+### Add-on complementar Aurifrita
+
+`npm --prefix addons/aurifrita run check` valida a mitra independente; `npm --prefix addons/aurifrita run package` produz seu `.mcaddon` e exige zero erros/avisos no Creator Tools. O [runbook de Aurifrita](../addons/aurifrita/README.md) registra o pacote, hash, capturas e gates de equipamento, perspectivas, rigs, gráficos e Content Log. A suíte principal continua protegendo o Aspergillum 1.2.5.
+
+### Aspergillum
 
 `npm run check` deve cobrir:
 

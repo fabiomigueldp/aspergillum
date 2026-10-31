@@ -1,3 +1,4 @@
+import {launchRenderBrowser} from './lib/render-browser.mjs';
 import { createHash } from 'node:crypto';
 import {
   copyFile,
@@ -259,7 +260,7 @@ async function main() {
     await server.listen();
     const address = server.httpServer.address();
     if (!address || typeof address === 'string') throw new Error('O renderer não publicou uma porta TCP.');
-    browser = await chromium.launch({ headless: true });
+    browser = await launchRenderBrowser(chromium);
     const context = await browser.newContext({
       deviceScaleFactor: 1,
       viewport: {
@@ -293,6 +294,7 @@ async function main() {
 
     const manifest = {
       schemaVersion: 1,
+      backend: browser.renderDiagnostics,
       generatedAt: new Date().toISOString(),
       renderer: {
         name: 'Aspergillum Inventory Icon Renderer',

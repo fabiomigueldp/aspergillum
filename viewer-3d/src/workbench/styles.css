@@ -113,7 +113,7 @@ body {
 
 .workbench-nav {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   min-width: 0;
   padding: 7px 0;
 }
@@ -474,6 +474,7 @@ body.capture-mode .tool-surface { width: 100vw; height: 100vh; }
   .workbench-brand-copy { display: none; }
   .workbench-nav a { display: flex; justify-content: center; }
   .workbench-nav a > span:last-child { display: block; }
+  .workbench-nav { grid-template-columns: repeat(4, minmax(116px, 1fr)); }
   .workbench-actions-slot .button { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
 

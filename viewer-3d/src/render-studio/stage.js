@@ -1,0 +1,110 @@
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
+import {SSAARenderPass} from 'three/addons/postprocessing/SSAARenderPass.js';
+import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
+import {createEnvironment,loadVanillaResources} from './environments.js';
+import {STUDIO_VIEWS,studioDimensions,validateStudioCamera} from '../shared/studio-contract.js';
+import {disposeDressing} from './liturgical-scene.js';
+import {fitObjectBounds,placementBounds} from './camera-framing.js';
+import {sceneCutaway} from './scene-layout.js';
+
+export class StudioStage{
+ constructor(canvas,onMove=()=>{}){
+  this.canvas=canvas;this.renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,preserveDrawingBuffer:true,powerPreference:'high-performance'});
+  this.renderer.setPixelRatio(1);this.renderer.outputColorSpace=THREE.SRGBColorSpace;this.renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  this.scene=new THREE.Scene();this.perspective=new THREE.PerspectiveCamera(45,1,.05,150);this.orthographic=new THREE.OrthographicCamera(-5,5,3,-3,.05,150);this.camera=this.perspective;
+  const pmrem=new THREE.PMREMGenerator(this.renderer),room=new RoomEnvironment();this.environment=pmrem.fromScene(room,.04);this.scene.environment=this.environment.texture;pmrem.dispose();room.dispose();
+  this.ambient=new THREE.AmbientLight(0xffffff,1);this.key=new THREE.DirectionalLight(0xfff6e6,2);this.key.position.set(-5,7,-5);
+  this.key.castShadow=true;this.key.shadow.mapSize.set(4096,4096);this.key.shadow.normalBias=.008;this.key.shadow.bias=-.00005;this.key.shadow.camera.near=.1;this.key.shadow.camera.far=45;
+  this.fill=new THREE.DirectionalLight(0xdbe4e7,.7);this.fill.position.set(6,4,-2);this.rim=new THREE.DirectionalLight(0xffe3af,.9);this.rim.position.set(1,5,5);
+  this.scene.add(this.ambient,this.key,this.key.target,this.fill,this.rim);
+  this.controls=new OrbitControls(this.camera,canvas);this.controls.enableDamping=false;this.controls.minDistance=.5;this.controls.maxDistance=60;this.controls.minPolarAngle=.03;this.controls.maxPolarAngle=Math.PI/2+.3;this.controls.target.set(0,.5,0);
+  this.controls.addEventListener('change',()=>{if(!this.exporting){
+   if(this.config&&this.stage&&this.config.environment!=='transparent'){
+    const minY=this.stage.layout.floor.nave+.12;
+    if(this.camera.position.y<minY){this.camera.position.y=minY;this.camera.lookAt(this.controls.target);}
+   }
+   this.render();onMove();
+  }});
+  this.sceneModel=null;this.stage=null;this.config=null;this.active=true;this.size={width:1000,height:600};
+ }
+ async prepare(){this.vanilla=await loadVanillaResources(this.renderer);}
+ resize(width,height){if(this.exporting||width<1||height<1)return;this.size={width:Math.round(width),height:Math.round(height)};this.renderer.setSize(this.size.width,this.size.height,false);this.updateProjection();this.render();}
+ updateProjection(){const aspect=this.renderer.domElement.width/this.renderer.domElement.height;this.perspective.aspect=aspect;this.perspective.updateProjectionMatrix();const span=this.orthoSpan??4;this.orthographic.left=-span*aspect/2;this.orthographic.right=span*aspect/2;this.orthographic.top=span/2;this.orthographic.bottom=-span/2;this.orthographic.updateProjectionMatrix();}
+ setModel(model){if(this.sceneModel){this.scene.remove(this.sceneModel);this.sceneModel.traverse(m=>m.geometry?.dispose());}this.sceneModel=model;this.scene.add(model);}
+ setDressing(model){if(this.dressing){this.scene.remove(this.dressing);disposeDressing(this.dressing);}this.dressing=model;this.arrangement=model.userData.plan;this.scene.add(model);}
+ configure(config,fit=true){
+  this.config=config;
+  if(this.stage){this.scene.remove(this.stage.root);this.stage.root.userData.dispose();}
+  this.stage=createEnvironment(this.vanilla,config.environment,config.width,config.depth,config.lighting,this.arrangement);this.scene.add(this.stage.root);this.scene.background=this.stage.background===null?null:new THREE.Color(this.stage.background);
+  this.setRoofVisibility(config.view);
+  const classic=config.lighting==='classic';this.renderer.setClearColor(this.stage.background??0,config.environment==='transparent'?0:1);this.renderer.toneMappingExposure=config.exposure;
+  this.renderer.toneMapping=classic?THREE.LinearToneMapping:THREE.ACESFilmicToneMapping;this.renderer.shadowMap.enabled=!classic;
+  // Lambert's diffuse BRDF divides by PI; unit texture brightness needs PI irradiance.
+  this.scene.environmentIntensity=classic?0:.35;this.ambient.intensity=classic?Math.PI:1.2;this.key.intensity=classic?0:2.2;this.fill.intensity=classic?0:.25;this.rim.intensity=classic?0:.3;
+  const angle=config.light*Math.PI/180,base=new THREE.Vector3(-5,7,-5).applyAxisAngle(new THREE.Vector3(0,1,0),angle);this.key.position.copy(base);const span=Math.max(config.width,config.depth)+4;
+  Object.assign(this.key.shadow.camera,{left:-span/2,right:span/2,top:span/2,bottom:-span/2});this.key.shadow.camera.updateProjectionMatrix();this.key.shadow.needsUpdate=true;
+  const next=config.projection==='orthographic'?this.orthographic:this.perspective;
+  if(this.camera!==next){next.position.copy(this.camera.position);next.quaternion.copy(this.camera.quaternion);this.camera=next;this.controls.object=next;}
+  if(fit)this.setView(config.view);else{this.updateProjection();this.render();}
+ }
+ setView(id){
+  const view=STUDIO_VIEWS.find(v=>v.id===id)??STUDIO_VIEWS[0];this.config.view=view.id;
+  this.setRoofVisibility(view.id);
+  const direction=new THREE.Vector3(...view.direction).normalize(),target=new THREE.Vector3(0,.48,0),aspect=this.size.width/this.size.height;
+  if(id==='hero'&&this.arrangement?.candlesOnAltar)direction.set(-.14,.22,-1).normalize();
+  else if(id==='hero'&&this.arrangement?.active)direction.set(.26,.22,-1).normalize();
+  const box=new THREE.Box3(new THREE.Vector3(-this.config.width/2,-.2,-this.config.depth/2),new THREE.Vector3(this.config.width/2,1.05,this.config.depth/2)),boxes=[box];
+  const contextual=this.config.environment!=='transparent';
+  if(id==='hero'&&contextual)target.y=1.15;
+  if(this.arrangement?.active&&['hero','front','back','player'].includes(id)){
+   target.set(0,this.arrangement.candlesOnAltar?1.7:1.25,0);
+   for(const p of this.arrangement.placements.filter(p=>['crucifix','candle'].includes(p.role))){
+    boxes.push(placementBounds(p));
+   }
+   const {amboCell}=this.stage.layout;
+   boxes.push(placementBounds({position:[amboCell[0]+.5-this.config.width/2,0,amboCell[1]+.5-this.config.depth/2],size:[1,1.5,1]}));
+   boxes.push(placementBounds({position:this.arrangement.credence.position,size:[2,1,1]}));
+  }
+  if(id==='wide'&&contextual){
+    target.set(0,2,1.5);
+    box.min.set(-this.config.width/2-4,-1,-this.config.depth/2-4);
+    box.max.set(this.config.width/2+4,6.5,this.stage.layout.back-this.config.depth/2);
+    boxes.splice(1);
+  }
+  const margin=id==='hero'&&contextual?(this.arrangement?.active?1.16:1.35):id==='wide'&&contextual?1.08:1.16;
+  let {distance,span}=fitObjectBounds(boxes,target,direction,aspect,this.perspective.fov,margin);
+  if(id==='detail'){target.set(0,.72,-this.config.depth/2);distance=3.5;span=1.7;}
+  if(id==='wide'&&!contextual){distance*=1.6;span*=1.6;}
+  this.orthoSpan=span;this.camera.position.copy(target).addScaledVector(direction,distance);this.controls.target.copy(target);this.camera.lookAt(target);this.updateProjection();this.controls.update();this.render();
+  if(id==='player'){
+   const eye=(contextual?this.stage.layout.floor.nave:0)+1.62;
+   this.camera.position.set(0,eye,-this.config.depth/2-Math.max(5.5,this.config.width/2/Math.tan(THREE.MathUtils.degToRad(this.perspective.fov/2))/aspect+1));
+   this.controls.target.set(0,.75,0);this.camera.lookAt(this.controls.target);this.controls.update();this.render();
+  }
+ }
+ setRoofVisibility(view){
+  if(!this.stage||!this.config)return;
+  const hidden=sceneCutaway(view,this.camera.position.toArray(),this.stage.layout,this.config.width,this.config.depth,this.config.environment);
+  for(const mesh of this.stage.root.children)mesh.visible=!hidden.includes(mesh.userData.layer);
+  if(JSON.stringify(this.stage.cutaway)!==JSON.stringify(hidden))this.canvas.dispatchEvent(new CustomEvent('studio:cutaway',{detail:hidden}));
+  this.stage.cutaway=hidden;
+ }
+ cameraState(){const round=v=>Number(v.toFixed(9));return {projection:this.camera.isOrthographicCamera?'orthographic':'perspective',position:this.camera.position.toArray().map(round),target:this.controls.target.toArray().map(round),orthoSpan:round(this.orthoSpan)};}
+ restoreCamera(state){if(!state)return;validateStudioCamera(state);this.orthoSpan=state.orthoSpan;this.camera.position.fromArray(state.position);this.controls.target.fromArray(state.target);this.camera.lookAt(this.controls.target);this.updateProjection();this.controls.update();this.render();}
+ render(){if(this.active&&!this.exporting){this.setRoofVisibility(this.config?.view);this.renderer.render(this.scene,this.camera);}}
+ async capture(longEdge=3840){
+  if(this.exporting)throw Error('A exportação anterior ainda está em andamento.');
+  const {width,height}=studioDimensions(this.config.ratio,longEdge);if(Math.max(width,height)>this.renderer.capabilities.maxTextureSize)throw Error('A GPU não suporta essa resolução.');
+  this.exporting=true;this.controls.enabled=false;let composer,ssaa,output;
+  try{
+   this.renderer.setSize(width,height,false);this.updateProjection();
+   composer=new EffectComposer(this.renderer);ssaa=new SSAARenderPass(this.scene,this.camera,this.stage.background??0,this.config.environment==='transparent'?0:1);ssaa.sampleLevel=this.config.quality==='high'?2:0;output=new OutputPass();composer.addPass(ssaa);composer.addPass(output);composer.render();
+   const dataUrl=this.canvas.toDataURL('image/png');
+   return {dataUrl,width,height,camera:this.cameraState(),samples:2**ssaa.sampleLevel,drawCalls:this.renderer.info.render.calls};
+  }finally{ssaa?.dispose();output?.dispose();composer?.dispose();this.exporting=false;this.controls.enabled=true;this.resize(this.size.width,this.size.height);}
+ }
+}

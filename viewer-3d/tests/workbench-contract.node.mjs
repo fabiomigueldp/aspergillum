@@ -10,8 +10,8 @@ import {
 const viewerRoot = new URL('../', import.meta.url);
 
 test('defines one stable route and standalone document for every 3D laboratory', () => {
-  assert.deepEqual(WORKBENCH_TOOLS.map(({ id }) => id), ['model', 'bedrock', 'avatar']);
-  assert.equal(new Set(WORKBENCH_TOOLS.map(({ document }) => document)).size, 3);
+  assert.deepEqual(WORKBENCH_TOOLS.map(({ id }) => id), ['model', 'bedrock', 'avatar', 'studio']);
+  assert.equal(new Set(WORKBENCH_TOOLS.map(({ document }) => document)).size, 4);
   assert.ok(WORKBENCH_TOOLS.every(({ main, status }) => main.startsWith('#') && status.length > 1));
 });
 

@@ -1,3 +1,4 @@
+import {launchRenderBrowser} from './lib/render-browser.mjs';
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -125,7 +126,7 @@ async function main() {
     await server.listen();
     const address = server.httpServer.address();
     if (!address || typeof address === 'string') throw new Error('Servidor sem porta TCP.');
-    browser = await chromium.launch({ headless: true });
+    browser = await launchRenderBrowser(chromium);
     const context = await browser.newContext({
       deviceScaleFactor: 1,
       viewport: { width: options.size, height: options.size },
@@ -174,6 +175,7 @@ async function main() {
     const bytes = await readFile(options.output);
     const manifest = {
       schemaVersion: 1,
+      backend: browser.renderDiagnostics,
       generatedAt: new Date().toISOString(),
       output: {
         path: path.relative(projectDirectory, options.output).split(path.sep).join('/'),

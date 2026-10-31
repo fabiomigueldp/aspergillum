@@ -1,0 +1,26 @@
+{
+  "name": "aurifrita-bedrock-addon",
+  "version": "0.1.2",
+  "private": true,
+  "type": "module",
+  "description": "Mitra dourada com bordado, arcos em relevo e batatas tridimensionais.",
+  "addonManager": {
+    "schemaVersion": 1,
+    "id": "aurifrita",
+    "displayName": "Aurifrita",
+    "artifactPrefix": "Aurifrita",
+    "sharedDirectory": "pack.aurifrita",
+    "worldDirectory": "aurifrita.managed",
+    "publicIdentity": {
+      "behaviorUuid": "a79c7b32-c20c-4e51-b56c-aee801cbf395",
+      "resourceUuid": "f6728931-04fa-4675-bf31-2c8832708964"
+    }
+  },
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "render:icons": "npm run build && node tools/render-icons.mjs && npm run build",
+    "check": "npm run build && node tools/validate.mjs",
+    "package": "npm run check && node tools/package.mjs",
+    "register:viewer": "node tools/register-viewer.mjs"
+  }
+}

@@ -1,0 +1,145 @@
+# Arquitetura e pesquisa
+
+## Perfis biselados — 0.10.1
+
+Pilastras liga o campo recuado às pilastras, embasamento e friso por quatro planos chanfrados, sem extremidades de filetes expostas. Encontros diagonais e transporte de rotação X/Z são verificados por normais e raios contra volumes orientados. Bases/capitéis são contíguos e invariantes ao tecido; a revisão conserva cubos e reduz faces. Contratos persistidos permanecem. [Contrato e reteste](PILASTER_DETAIL_0.10.1.md).
+
+## Pilastras por contorno — 0.10.0
+
+`pilaster-model.mjs` constrói campo recuado, molduras, apoios e perfis em função dos 16 contornos já persistidos. Meias pilastras se encontram entre módulos; uma pilastra serve aos dois lados de cada quina. Geometria corporal invariante ao tecido; materiais cardinais conservam a frente bordada sem duplicar orientações sem relevo. Sem alterações de domínio/runtime, IDs, estados ou colisões. [Contrato, custo e reteste](PILASTERS_0.10.0.md).
+
+## Coleção compartilhada — 0.9.0
+
+O construtor `garment.mjs` é fonte única para cobertura, facetas, dobras e costuras. Estrutura e desenho são eixos independentes no editor; 172 IDs aditivos completam a matriz. O codec clássico adicional persiste papéis independentes de tecido e Guadalupe em 54 poses, sem reinterpretar states anteriores. Cenas do estúdio recebem migração explícita schema 1→2. Esta revisão substitui o gate de 65.536 por exceção diagnóstica limitada e documentada; não altera contratos do Aspergillum. [Contrato, custos e migração](UNIVERSAL_TEXTILES_0.9.0.md).
+
+
+Pesquisa em 30/10/2026; baseline local `@minecraft/server` 2.9.0, `@minecraft/server-ui` 2.1.0 e Creator Tools 0.17.7. API estável, sem experimento obrigatório. Altare 0.8.3 é um diagnóstico isolado; nenhum contrato distribuído do Aspergillum muda.
+
+## Decisão: superfície modular, geometria de tecido integrada
+
+O domínio compila o retângulo em células com papéis visuais. Cada célula possui estrutura, tampa e bones de bordas. O Resource Pack recebe somente geometria e estados enumerados, não um tamanho arbitrário nem um solver de tecido. O jogo já persiste e replica os estados; a mesma configuração produz a mesma forma em todos os clientes.
+
+Clássico, pilastras e ogivas usam `minecraft:collision_box: true`. A mesa aberta usa caixas multipartes `origin/size`, em coordenadas de mundo centradas na base: X/Z entre −8 e 8, Y entre 0 e 16. O tampo contínuo vai de y=14,2 a 16. Os oito vértices transformados de cada escora determinam sua caixa conservadora; o meio da mesa permanece aberto. A forma `min/max` anterior foi rejeitada no Minecraft do usuário e não deve ser reintroduzida; ver [evidência e fontes](STRUCTURES_0.4.2.md). `minecraft:support` é omitido: a documentação atual define suporte unitário como default de custom blocks. A geometria usa `y <= 16`; o tampo termina em 16. A inferência de projeto é que isso preserva o apoio na célula acima. A aceitação de cada objeto e seu eventual filtro de suporte continuam sendo gates físicos, sobretudo com outros add-ons. Não reduzir a altura para 15/16 apenas para criar espessura de tecido: isso introduziria flutuação visual de objetos vanilla.
+
+Fontes: [collision_box](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/blockreference/examples/blockcomponents/minecraftblock_collision_box?view=minecraft-bedrock-stable) e [support](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/blockreference/examples/blockcomponents/minecraftblock_support?view=minecraft-bedrock-stable).
+
+## Modelo e materiais clássicos (baseline 0.2.1)
+
+- Oito modelos, duas quedas × quatro frentes; 48 cubos cada, incluindo bones ocultos, sob o teto de 50. Pivôs e UVs derivam da fonte autoral. A seleção de geometria por `cloth`/`facing` elimina três frontais que ficariam sempre ocultos. O aumento em relação à 0.1.3 é de um cubo por modelo.
+- A tampa de pedra e a tampa de tecido são mutuamente exclusivas. Quedas existem somente no perímetro, com seis segmentos inclinados por face e transição superior contínua.
+- Cada variante tem um frontal e fechamentos condicionais nas pontas. O material seleciona fundo, centro/metades, roseta legada, lua, sol, pares de figuras ou composição compacta. `domain/frontal-layout.ts` decide o papel, não o renderer.
+- UVs explícitos inteiros em grade 128². A face principal do frontal usa todo esse UV, amostrando uma superfície física lógica 128×84: todos os novos painéis são 256×256, roseta legada 256×128. Essa transformação conserva o aspecto físico dos motivos e aproveita a imagem inteira. Pedra/linho/moldura usam 128²; bainhas 256².
+- Vinte conjuntos de material, 60 PNGs color/normal/MER, **11,8125 MiB RGBA decodificados**, excluindo mipmaps e ícones (0.1.3: 7,5 MiB). Na baseline 0.2.1, o validador limitava esses mapas a 12 MiB no total e 256 KiB por camada. Todas as instâncias usam `opaque`; nenhum shader customizado ou método misto. O aumento é de arte/estados/cubos fixos; nenhum callback ou solver novo foi adicionado.
+- Normais, metalicidade e rugosidade derivam da mesma função de superfície. O color map conserva a leitura no modo gráfico convencional; PBR é complementar.
+- A capability `pbr` é declarada no Resource Pack. A 0.1.0 falhou no validador oficial por omiti-la; a revisão 0.1.1 corrige o manifest e testa essa exigência.
+
+Fontes: [geometry/bone_visibility](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/blockreference/examples/blockcomponents/minecraftblock_geometry?view=minecraft-bedrock-stable), [material_instances](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/blockreference/examples/blockcomponents/minecraftblock_material_instances?view=minecraft-bedrock-stable) e [manifest](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/addonsreference/packmanifest?view=minecraft-bedrock-stable).
+
+A 0.1.3 separa o espaço de autoria dos cubos (X leste positivo) da serialização Bedrock (`origin.x = -(x + largura)`, pivô X e rotação Y invertidos). Isso corrige a correspondência entre bones laterais e máscaras persistidas. O capturador recebe a conversão inversa em uma ponte exclusiva do Altare, mantendo intacto o renderer de attachables. Evidências, fonte primária do codec e limites da inferência: [VISUAL_POLISH_0.1.3.md](VISUAL_POLISH_0.1.3.md). Nenhum valor público de state foi trocado de significado.
+
+A 0.2.1 introduz um compositor de símbolos com fonte raster revisável. O fundo é periódico, com transição restrita às margens; os símbolos são amostrados isotropicamente no domínio físico e só mudam de escala na composição compacta. Máscaras de cor separam ouro, prata, esmalte e fundo para o diagnóstico PBR; são aproximações autoradas, não medições. Ver [GUADALUPE_FRONTAL.md](GUADALUPE_FRONTAL.md).
+
+## Orçamento de estados clássicos
+
+| State | Valores | Responsabilidade |
+| --- | --- | --- |
+| `altare:edges` | 16 máscaras | norte/leste/sul/oeste expostos |
+| `altare:stone` | 3 | material da estrutura |
+| `altare:cloth` | 5 | sem toalha; linho/bordado curto/longo |
+| `altare:frontal` | 12 | nenhum, fundo, centro/metades, legado, lua/sol, figuras, compactos |
+| `altare:facing` | 4 | frente litúrgica |
+
+Produto cartesiano: **11.520** permutações possíveis. Cento e oitenta regras materiais completas e oito regras de geometria mutuamente exclusivas evitam ambiguidades na substituição de componentes. Os 16 valores de `edges` têm default 15, bordas visíveis num módulo isolado. A cardinalidade do catálogo é fixa; não cresce com as dimensões de cada altar. IDs, UUIDs e valores publicados não podem ser reordenados semanticamente em versões futuras. A extensão 6–11 e a atualização explícita de conjuntos estão no [plano de migração](MIGRATION_0.2.1.md).
+
+O teto de 65.536 permutações é compartilhado pelo mundo, e outros add-ons consomem parte dele. A página histórica de [states/permutations](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/blockreference/examples/blockstatesandpermutations?view=minecraft-bedrock-stable) ainda menciona o antigo experimento Holiday Creator Features; essa observação de 2024 não é usada para justificar experimentos no alvo 1.26.40, que já utiliza states estáveis no projeto.
+
+## Catálogo arquitetônico — base 0.3.0
+
+A nova coleção separa estrutura, superfície, tecido e aplique na autoria e na interface. O compilador combina esses eixos em **135 IDs públicos**. Cada receita precisa apenas de `edges`, `facing` e `role`; não amplia o produto cartesiano de estados do bloco clássico. O total do pack passa a **46.080** combinações, teto interno 49.152 e teto global compartilhado 65.536.
+
+`domain/catalog.ts` define identidades; `domain/block-codec.ts` traduz valores sem importar Minecraft; `assets-src/atelier/` define perfis, pintura e geometria; `tools/catalog-pack.mjs` emite os blocos e suas condições. São 180 geometrias novas, 188 totais, máximo 50 cubos. Há 38 materiais/114 mapas, 24,75 MiB RGBA antes de mipmaps/ícones, teto 26 MiB e 256 KiB por camada. As geometrias e PNGs clássicos permanecem iguais à 0.2.1.
+
+Todas as instâncias de material de cada bloco novo usam `alpha_test`. Apenas os color maps de tecido possuem alpha 0/255; normals/MER permanecem opacos. Assim a mesma família recebe festões, dobras e corpo opaco sem misturar métodos de renderização. Os clássicos continuam `opaque`. A documentação estável descreve alpha-test com faces de verso visíveis; a ausência de costuras/artefatos no jogo é gate físico.
+
+A mesa aberta compila colisões com até 16 caixas, selecionadas por frente e perímetro. A documentação estável admite arrays desde 1.26.0, sob o alvo 1.26.40. A seleção visual é um cubo completo; detalhes decorativos não entram na colisão. Pilastras/ogivas mantêm atenuação de luz 15; a mesa aberta usa 0 para não se comportar como corpo sólido na iluminação.
+
+Na 0.5.0, o editor mantém uma única tela reativa e um rascunho dentro da mesma sessão/prazo; o módulo puro de capacidades é compartilhado com o estúdio. [Contrato atual](CUSTOMIZATION_0.5.0.md). Trocar família altera o ID somente após revalidar o retângulo e sua identidade original. Rollback restaura ID e estados. Módulos padrão colocados ao lado de uma receita herdam seu ID e direção; itens de receitas explícitas conservam a identidade. O contorno se reconcilia localmente; motivos são recentralizados pela aplicação da ferramenta.
+
+Fontes oficiais: [colisão multipartes](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/blockreference/examples/blockcomponents/minecraftblock_collision_box?view=minecraft-bedrock-stable) e [materiais alpha-test](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/blockreference/examples/blockcomponents/minecraftblock_material_instances?view=minecraft-bedrock-stable). Detalhes de autoria, papéis centrais e extensão: [COLLECTION_0.3.0.md](COLLECTION_0.3.0.md). Identidade e downgrade: [MIGRATION_0.3.0.md](MIGRATION_0.3.0.md).
+
+## Arcadas de Ogivas — 0.11.0
+
+A [0.11.2](OGIVE_DETAIL_0.11.2.md) introduz `opening-reveal.mjs`: perfil recuado, referencial de faceta e mitras por interseção de planos. O gerador emite os mesmos quatorze registros por abertura e dimensiona o relevo ímpar pelo campo do fundo, sem alterar estados, materiais ou desenho do tecido.
+
+`atelier/ogive-model.mjs` gera curva, distância ao campo, intradorso, apoios e cursos do perímetro. `ogive-art.mjs` deriva três cores recortadas dos doadores atuais, com normal/MER compartilhados. Recorte e planos de profundidade usam um só polígono. Contornos resolvem quinas/meios apoios sem states novos; materiais cardinais mantêm o bordado na frente selecionada. Relevos usam escala uniforme limitada também pelo teto apontado. Os 397 contratos publicados e os recursos das demais famílias são protegidos pelo auditor do arquivo final. [Detalhes, custo e gate nativo](OGIVE_REBUILD_0.11.0.md).
+
+## Paleta e contorno compacto — 0.4.0
+
+A família Floral IHS possui oito cores nas três estruturas e três materiais, sem aplique adicional no corpo. Vermelho referencia os IDs rubi existentes. As outras sete cores adicionam 63 IDs `altare:l_<estrutura>_<material>_<cor>`. As receitas anteriores e seus states permanecem; não há migração automática.
+
+`domain/palette-layout.ts` codifica 28 situações em `altare:shape` (0–6) e `altare:detail` (0–3), mais `altare:facing` (0–3): **112 estados** por ID. As 16 máscaras sem centro são sempre válidas. Um centro inteiro ou cada meia figura precisa de apenas quatro contornos relativos realmente encontrados em retângulos. O compilador resolve a visibilidade desses estados em booleans, sem consultas a states ausentes. A tabela publicada está em [migração 0.4.0](MIGRATION_0.4.0.md).
+
+O codec restitui o mesmo Tile lógico usado na busca, comparação tardia e rollback. `withEdges` preserva cor e posição e volta à repetição somente se a mudança local tornar o centro impossível no novo contorno. Reaplicar o acabamento recompõe os centros. Não há registry de cores, entidade visual ou solver; o bloco persiste a aparência.
+
+Total Altare: **53.136**, teto interno 53.248. O validador também conta os packs gerados do Aspergillum: 9.744, total conjunto 62.880 e reserva 2.656 frente à referência global 65.536. Outros add-ons precisam ser somados separadamente. A referência oficial é um limite de orçamento/desempenho, não uma promessa de que todo conjunto abaixo dele funcionará sem profiling.
+
+A fonte v2 refina somente a coleção arquitetônica. O linho do tampo passa a ter 0,09 unidade, sobre uma laje estrutural de 1,71; o plano superior continua y=16. Dobras recebem inclinação suave e menor profundidade; cantos passam a uma face fina diagonal. A cruz usa dois volumes escalonados sem faces frontais coplanares para reservar o cubo do tampo sem superar 50.
+
+A máscara de tecido recolore o fundo carmesim, mantendo flores e ouro. São **66 texture sets, 142 PNGs e 31,75 MiB RGBA únicos**, teto 32 MiB, antes de mipmaps/ícones. As 28 cores/partes novas reutilizam os quatro normais e quatro MER do floral. Build, validador e capturador consomem as referências reais dos texture sets; seus JSONs integram os hashes da evidência. O perfil continua alpha-test uniforme. [Fonte/prompt](../assets-src/atelier/SOURCE_V2.md) e [contrato visual](TEXTILES_0.4.0.md).
+
+## Revisão dos bordados — 0.4.1
+
+A 0.4.1 corrige somente a apresentação arquitetônica: repetição de desenho sem crossfade de motivos distintos, domínio retangular/isotrópico para símbolos, reserva de tecido abaixo do bordado e classificação do fio prateado. As faces renderizadas passam pelos extremos autorados das dobras; espessura para dentro e mitras exatas substituem os deslocamentos/inclinações individuais que criavam frestas. Runtime, colisão, block states e catálogo não mudam. [Diagnóstico aproximado](CLOTH_POLISH_0.4.1.md).
+
+## Atualização de vizinhança
+
+Colocação/quebra reconciliam a célula e seus quatro vizinhos horizontais. Um tick de bloco distribuído entre 80 e 120 ticks repara contornos depois de comandos, reload e carregamento de chunks. Cada atualização lê no máximo cinco células; não cria entidades, registries persistentes, `runInterval` global ou varredura de jogadores/mundo. Uma célula descarregada significa **desconhecido**, não ar; conserva-se a borda anterior até uma leitura válida.
+
+Não usar `minecraft:connection`, ainda documentado como experimental, nem `onNeighborChanged`, marcado como pre-release mesmo na página estável. Fontes: [traits](https://learn.microsoft.com/en-us/minecraft/creator/documents/intro-block-traits?view=minecraft-bedrock-stable) e [BlockCustomComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/blockcustomcomponent?view=minecraft-bedrock-stable).
+
+Os ticks reparam contornos, não recompõem a iconografia inteira. Redimensionar exige reaplicar a configuração. Isso evita que a colocação de um único módulo reescreva um altar vizinho ou substitua uma decisão artística automaticamente.
+
+## Edição, concorrência e persistência
+
+1. Somente a ferramenta explícita intercepta a interação; colocar outro bloco conserva o fluxo nativo. Uma interação já cancelada por outro handler é respeitada.
+2. Busca horizontal limitada, com no máximo 128 módulos e fronteira local; chunks desconhecidos, buracos, formatos não retangulares e limites excedidos abortam antes de editar.
+3. Aquisição exclusiva do jogador e de todas as coordenadas do conjunto, incluindo dimensão. O formulário não publica mudanças parciais ao selecionar opções.
+4. Ao aplicar, revalidar sessão, prazo de 60 s, modo, jogador, dimensão, alcance, slot/ferramenta, composição da superfície e cada estado original.
+5. Planejar em domínio puro, preflight completo e escrita síncrona, sem `await` entre as escritas. Antes da primeira mutação, `SurfacePort.prepare` resolve todas as permutações únicas de destino e recuperação; um ID não registrado aborta com zero escritas. Em exceção de escrita, restaurar apenas células que ainda contêm o valor previsto; falha de rollback é registrada explicitamente, sem declarar atomicidade inexistente. O Content Log preserva uma cadeia limitada de causas, incluindo ID/states ou posição da falha.
+6. Saída, morte, respawn, dimensão, quebra da célula reservada, fechamento e timeout liberam locks. Mudanças de alcance/slot/modo são revalidadas no commit. `finally` limpa o timer da sessão.
+
+O servidor autoriza tudo. Não existe valor lógico na textura. Os acabamentos clássicos vivem nos block states; as receitas novas vivem na identidade do bloco e nos estados locais de contorno/direção/centro; não há itens armazenados no altar, logo não há snapshots de vasos, instâncias de ItemStack ou drops produzidos pelo script. Se a futura acomodação armazenar um cálice, ela exigirá `instance_id`, snapshot exato, sessão, migração, recuperação idempotente e ledger/journal separado. Não generalizar o mecanismo atual para esse caso sem contrato novo.
+
+A 0.1.2 usa arrays de caminhos nos atlas, conforme o schema do Creator Tools, e omite a loot table redundante: sem `minecraft:loot`, o bloco entrega a si mesmo segundo o [contrato oficial de loot](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/blockreference/examples/blockcomponents/minecraftblock_loot?view=minecraft-bedrock-stable). Isso elimina a referência ao item implícito que o validador offline não resolvia; não se adiciona um item proxy só para silenciar esse aviso.
+
+Rollback defensivo não é transação durável contra crash do processo entre escritas. Um crash pode deixar acabamentos diferentes, mas não pode perder um vaso que o Altare nunca tomou em custódia. A revisão futura de edição em massa deve incluir journal caso exija atomicidade durável de estilo.
+
+## Fronteiras
+
+`domain/surface.ts` não importa Minecraft. `application/finish.ts` e `sessions.ts` dependem de interfaces/valores. `infrastructure` adapta blocos, eventos e editor. `presentation/menu.ts` contém textos e formulário. `bootstrap/main.ts` somente conecta handlers. Nenhum arquivo do Aspergillum é importado pelo bundle; somente o empacotador e o adaptador geométrico de desenvolvimento são compartilhados.
+
+## Marcenaria 0.6.1
+
+Duas famílias em nogueira acrescentam 24 receitas, sem mudar nenhuma definição de bloco anterior. O codec compacto cobre os tecidos; sem toalha, somente contorno e frente são persistidos. Geometrias por contorno resolvem juntas dos balaústres sem novo state. A colisão possui até 13 caixas e conserva os vãos. [Contrato, orçamento e fontes](JOINERY_0.6.1.md).
+
+## Codec simétrico — 0.7.0
+
+A colunata usa dois IDs e somente edges (16 valores/default 15). O domínio normaliza facing/frontal para zero; somente o perímetro muda a geometria. A renda é uma escolha separada no rascunho; os outros modelos conservam seu tecido. [Contrato](COLONNADE_0.7.0.md). A contagem de combinações não representa crafts: [explicação](VARIATIONS.md).
+
+## Polimento da colunata — 0.7.1
+
+Capitéis compartilhados nos cantos e arquitrave sob o tampo refinam os perfis mantendo o teto de 50 cubos. Um mapa 64×64 acrescenta caneluras aos fustes. IDs, estados, runtime, colisão e apoio permanecem; [contrato e comparação](COLONNADE_POLISH_0.7.1.md).
+
+## Colunata reconstruída — 0.8.1
+
+`assets-src/atelier/colonnade-model.mjs` separa a autoria geométrica da pintura em `ornate.mjs`. Os dois IDs simétricos e as 32 geometrias existentes são preservados. O contorno compila painéis, filetes, fustes hexagonais, apoios de canto e perfis da base/cornija apenas nas faces expostas. Três prismas com faces opostas fecham cada fuste; bases/capitéis fecham suas extremidades. As demais saliências têm superfícies superiores/inferiores visíveis. O tampo continua em y=16.
+
+A recomendação de 50 cubos continua como teto interno dos outros modelos. Somente a colunata diagnóstica tem orçamento explícito de até 112 registros e 400 faces UV, máximo atual 107/391 na peça vestida isolada; média 43,86/155,57 no conjunto principal 7×2. Não é um novo limite do motor. Exige profiling no dispositivo de destino; fonte oficial, métricas e critérios no [contrato 0.8.1](COLONNADE_REBUILD_0.8.1.md). Um material 64² leva os mapas únicos a 32,9805 MiB. Estados, colisões e runtime permanecem iguais à 0.7.1.
+
+## Perfis da Colunata — 0.8.2
+
+Os fustes usam oito faces em quatro prismas; cada par de fachadas adjacentes recebe uma coluna única, mais robusta e com apoios centrados no próprio eixo. Bases e capitéis passam a três níveis. Testes independentes aplicam as rotações, fecham os oito vértices da seção e comprovam sua contenção nas superfícies de apoio. O orçamento não muda: 112 registros/400 faces, máximo real 107/399. O altar 7×2 vestido tem média 49,86 registros/176,14 faces por módulo. Não há novos mapas, IDs, estados, definições de bloco, colisões ou runtime. [Contrato e reteste](COLONNADE_DETAIL_0.8.2.md).
+
+## Envelope têxtil da Colunata — 0.8.3
+
+`assets-src/atelier/colonnade-textile.mjs` emite a cobertura, retornos, caimento e costuras, consumindo um único perfil de cotas. O linho é a única superfície superior; a dobra termina em y=15,91 e seus retornos se encontram sem sobreposição. A costura diagonal liga as duas faces da renda e termina na mesma fase da bainha da pintura. A arquitetura sem renda, todas as definições de bloco e todas as texturas são preservadas. [Contrato e reteste](COLONNADE_CLOTH_0.8.3.md).

@@ -1,3 +1,4 @@
+import {launchRenderBrowser} from './lib/render-browser.mjs';
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -175,7 +176,7 @@ async function main() {
     if (!address || typeof address === 'string') throw new Error('O servidor não publicou uma porta TCP.');
     const baseUrl = `http://127.0.0.1:${address.port}`;
     const query = createCoverSearchParams(options.config).toString();
-    browser = await chromium.launch({ headless: true });
+    browser = await launchRenderBrowser(chromium);
     const sourceOutput = path.join(options.output, `aspergillum-cover-${options.size}.png`);
     const packOutput = path.join(options.output, 'aspergillum-cover-256.png');
 
@@ -190,6 +191,7 @@ async function main() {
 
     const manifest = {
       schemaVersion: 1,
+      backend: browser.renderDiagnostics,
       generatedAt: new Date().toISOString(),
       renderer: {
         name: 'Aspergillum Cover Renderer',

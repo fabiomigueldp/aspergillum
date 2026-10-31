@@ -1,5 +1,100 @@
 # Changelog
 
+## Ferramenta local — 2026-10-31 — Render Studio 2.2.1
+
+- Integra Altare 0.11.2: chanfros e mitras de Ogivas, com o mesmo custo geométrico e relevos ajustados ao campo do fundo.
+- Preserva tecidos, cenas, controles e editor corrigido; Aspergillum permanece 1.2.5. [Construção e QA](addons/altare/docs/OGIVE_DETAIL_0.11.2.md).
+
+## Altare — 2026-10-31 — editor 0.11.1
+
+- Corrige `InvalidObservableError` na abertura da personalização; testes reproduzem a exigência de valores `clientWritable` mesmo em listas fixas ocultas/desabilitadas.
+- Preserva a árvore visual 0.11.0, o Estúdio 2.2.0 e o Aspergillum 1.2.5. [Causa e reteste](addons/altare/docs/EDITOR_FIX_0.11.1.md).
+
+## Ferramenta local — 2026-10-31 — Render Studio 2.2.0
+
+- Integra Altare 0.11.0: Ogivas com arcada cega contínua, intradorso, pilares compartilhados, relevos ajustados e dez toalhas compatíveis.
+- Miniaturas e comparação controlada dos recursos distribuídos. Preserva cenas, controles e Aspergillum 1.2.5. [Construção e QA](addons/altare/docs/OGIVE_REBUILD_0.11.0.md).
+
+## Ferramenta local — 2026-10-31 — Render Studio 2.1.1
+
+- Integra Altare 0.10.1: rebaixos chanfrados, encontros diagonais, apoios e coroamento refinados no Pilastras, com menos faces e sem expansão de estados/texturas.
+- Capturas e miniaturas atualizadas; cenas e controles preservados. Aspergillum permanece 1.2.5. [Perfis e QA](addons/altare/docs/PILASTER_DETAIL_0.10.1.md).
+
+## Ferramentas de captura — 31/10/2026
+
+- CLIs Playwright usam GPU quando verificada, registram backend e preservam modo software para referências reproduzíveis. Fallback software com prioridade reduzida e afinidade monitorada no Windows. Sem mudanças em packs, resolução ou cobertura do smoke. Ver `docs/RENDER_PERFORMANCE.md`.
+
+
+## Ferramenta local — 2026-10-31 — Render Studio 2.1.0
+
+- Integra o modelo Pilastras do Altare 0.10.0: campos recuados, pilastras por módulo, chanfros e perfis escalonados; relevos apoiados e veios orientados.
+- Miniaturas atualizadas e comparação controlada, preservando cenas e personalização. Aspergillum permanece 1.2.5. [Construção e QA](addons/altare/docs/PILASTERS_0.10.0.md).
+
+## Ferramenta local — 2026-10-31 — Render Studio 2.0.0
+
+- Integra Altare 0.9.0: renda e demais toalhas nos sete modelos, com um único seletor. Cor do Floral disponível também no Clássico/Colunata; Guadalupe independente.
+- Cenas schema 2, importação schema 1 com aparência preservada, histórico e API legada adaptados. Novas capturas e regressões de personalização. Aspergillum permanece 1.2.5.
+
+
+## Ferramenta local — 2026-10-31 — Render Studio 1.8.3
+
+- Integra o encaixe corrigido do linho e da renda do Altare 0.8.3, com cobertura superior, retornos e costuras de canto.
+- Miniaturas com hash do perfil têxtil; o comparador abre uma vista alterada. Aspergillum permanece 1.2.5.
+
+
+## Ferramenta local — 2026-10-31 — Render Studio 1.8.2
+
+- Integra a Colunata do Altare 0.8.2: fustes octogonais, coluna única por canto e bases/capitéis em três níveis.
+- Mantém os sete modelos, cenas e controles. Aspergillum permanece 1.2.5.
+
+
+## Ferramenta local — 2026-10-31 — Render Studio 1.8.1
+
+- Reconstrói a Colunata do Altare 0.8.1 com painéis recuados, molduras em relevo, fustes facetados, perfis de base/cornija e renda ajustada.
+- Miniaturas e comparação controlada dos arquivos distribuídos. Aspergillum permanece 1.2.5.
+
+
+## Ferramenta local — 2026-10-31 — Render Studio 1.7.1
+
+- Atualiza a colunata e sua renda com perfis refinados, capitéis compartilhados nos cantos e material dos fustes. Controles e catálogo de modelos permanecem.
+- Altare 0.7.1; Aspergillum permanece 1.2.5.
+
+## Ferramenta local — 2026-10-31 — Render Studio 1.7.0
+
+- Sétimo modelo Altare: Colunata dourada, com e sem renda vazada, miniatura real e composição. Integra o domínio compartilhado, cenas e histórico.
+- Altare 0.7.0; Aspergillum permanece 1.2.5.
+
+## Ferramenta local — 2026-10-31 — Render Studio 1.6.0
+
+- Integra os modelos Arca/Balaústres do Altare 0.6.1, miniaturas reais e composições, com personalização compartilhada e restauração de escolhas suspensas.
+- Os packs e a versão 1.2.5 do Aspergillum permanecem inalterados.
+
+## Ferramenta local — 2026-10-30 — estúdio 1.5.0
+
+- Personalização do Altare organizada em Altar, Cena e Imagem, com seleção visual dos modelos, uma entrada Floral IHS e desfazer/refazer.
+- Regras compartilhadas com Altare 0.5.0; opções compatíveis preservadas e câmera serializada sem deriva. A baseline Aspergillum 1.2.5 permanece.
+
+## Render Studio local de altares — 2026-10-30
+
+- Renderer 1.4.0 / construções 4 / montagem 3: unifica o piso do presbitério, retira os volumes salientes das luminárias, separa credência e flores, acrescenta nicho, ambão e cadeiras em madeira com assentos vermelhos. A geometria do cenário mantém a grade e as texturas Minecraft.
+- Câmeras passam a enquadrar objetos individualmente; verso/superior e órbitas externas têm cortes identificados de parede/teto. A vista Jogador usa 1,62 bloco acima do piso da nave. Testes cobrem apoios nos cantos, circulação, interseções, luzes embutidas, faces expostas e projeção dos objetos.
+
+- Revisão 1.3.0: curadoria ampliada para 23 modelos de nove packs, cruz de madeira na abside, castiçais de chão escolhidos no painel, grupos laterais sem sobrepor o frontal, credência lateral e âmbula aberta no corporal. [Critérios e dimensões](docs/STUDIO_PROP_CURATION.md).
+
+- Integra uma quarta aba ao Workbench existente, reutilizando o adaptador Bedrock/UV e o domínio real do Altare para compor altares de dimensões variáveis, estruturas, toalhas e cores litúrgicas.
+- Renderer 1.3.0 / cenários revisão 3: presbitério com vitrais e caixotões, capela com vigas e telhado inclinado, claustro com arcadas e jardim. Bancos, corredores, degraus e luminárias em blocos, com 32 texturas vanilla oficiais fixadas por revisão/hash.
+- Descobre e verifica 23 objetos de nove packs locais por UUID/SHA-256; preserva geometria, UVs e escala. Incorpora castiçais, crucifixo, vasos, flores, Aparecida e Evangeliário, com credência de cavaletes. Biblioteca local isolada dos packs distribuídos.
+- Montagem orientada pela IGMR, com 2/4/6 velas e opção episcopal explícita de 7, vasos na credência ou no corporal, flores sazonais fora da mesa e castiçais no chão para altares pequenos. Testes de espaço/apoio e contagem, inspeção frontal/posterior dos objetos e metadados de proveniência acompanham a ferramenta.
+- Escadas, arcos invertidos, postes e vidros preservam a escala dos pixels; o mesher recorta faces parcialmente ocultas e separa o teto para a vista superior. Vistas de três quartos e ambiente recompostas; miniaturas atualizadas por versão do renderer. Iluminação clássica padrão, sombras opcionais e fundo transparente.
+- Exportação PNG até 4K, sete vistas, cenas JSON e CLI de coleção com galeria e manifestos reproduzíveis. Testes de domínio/geometria e smoke da interface cobrem filas de edição, downloads, alfa, abas e celular.
+- Ferramenta de desenvolvimento não distribuída: preserva packs, mundos e versões Aspergillum 1.2.5 / Altare 0.4.2. [Uso e limites](docs/RENDER_STUDIO.md).
+
+## Add-on complementar Aurifrita — 2026-10-19
+
+- adiciona `addons/aurifrita/` com uma mitra autoral inspirada na referência do usuário: tecido dourado, arcos em relevo, 19 batatas tridimensionais e ínfulas bordadas;
+- o subprojeto possui versão `0.1.1`, namespace/UUIDs próprios, fontes reproduzíveis, ícones derivados do modelo, pacote e validação oficial separados; integra-se ao Workbench pelo registro local existente;
+- não altera a versão `1.2.5`, os packs ou os contratos de gameplay do Aspergillum. Instalação e gate manual estão no [README de Aurifrita](addons/aurifrita/README.md).
+
 ## Ferramentas de desenvolvimento não distribuídas — 2026-08-12
 
 - o Workbench ignora com aviso projetos externos registrados cujo `package.json` está indisponível, mantendo o projeto principal utilizável; o gerenciador de instalações continua recusando registros inválidos;

@@ -1,0 +1,68 @@
+import {createHash} from 'node:crypto';
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {UNIVERSAL_DESIGNS,LITURGICAL_COLORS,TEXTILE_VALUES,sharedDesignFor,textileOf} from '../src/domain/catalog.ts';
+import {MODELS,CLOTHS,customizationFromFinish,customizationFinish,changeCustomization} from '../src/domain/customization.ts';
+import {CLASSIC_TEXTILE_POSES} from '../src/domain/classic-textile-layout.ts';
+import {decodeTile,encodeTile} from '../src/domain/block-codec.ts';
+import {planFinish,withEdges,sameTile,isolatedTile,type Tile} from '../src/domain/surface.ts';
+import {frontalRole} from '../src/domain/frontal-layout.ts';
+import {compileCollection} from '../tools/catalog-pack.mjs';
+const grid=(w:number,d:number):Tile[]=>Array.from({length:w*d},(_,i)=>({position:{x:i%w,y:0,z:Math.floor(i/w)},stone:0,cloth:0,frontal:0,facing:0,edges:15}));
+
+test('one cloth collection is available across all seven structures and all floral dyes',()=>{
+ const initial=customizationFromFinish({stone:2,cloth:3,ornamental:true,facing:3});
+ for(const textile of CLOTHS)for(const color of textile==='floral'?LITURGICAL_COLORS:['red'] as const)for(const model of MODELS){
+  const d=changeCustomization(initial,{model,textile,color}),finish=customizationFinish(d),opened=customizationFromFinish(finish);
+  assert.equal(opened.textile,textile);if(textile==='floral')assert.equal(opened.color,color);
+  for(const other of MODELS){const moved=changeCustomization(d,{model:other});assert.equal(moved.textile,textile);assert.doesNotThrow(()=>customizationFinish(moved));}
+ }
+});
+
+test('universal layouts round-trip rectangular centres and arbitrary contour repairs',()=>{
+ for(const d of UNIVERSAL_DESIGNS)for(const w of [1,2,3,7,8,16])for(const depth of [1,2,8])for(let f=0;f<4;f++){
+  const tiles=planFinish(grid(f%2?depth:w,f%2?w:depth),{stone:2,cloth:0,ornamental:true,facing:f,design:d.id});
+  for(const tile of tiles){
+   const extension=isolatedTile(tile,{x:40,y:0,z:40}),placed=encodeTile(extension);assert.deepEqual(decodeTile(placed.id,extension.position,placed.states),extension);assert.equal(extension.textileRole??0,0);
+   const encoded=encodeTile(tile);assert.deepEqual(decodeTile(encoded.id,tile.position,encoded.states),tile);
+   for(const mask of [0,1,3,5,7,11,15]){const repaired=withEdges(tile,mask),e=encodeTile(repaired);assert.deepEqual(decodeTile(e.id,repaired.position,e.states),repaired);}
+  }
+ }
+});
+
+test('classic textile roles remain independent of the complete Guadalupe iconographic programme',()=>{
+ const design=sharedDesignFor('classic','marble','lace','none');
+ assert.equal(createHash('sha256').update(JSON.stringify(CLASSIC_TEXTILE_POSES.slice(0,54))).digest('hex'),'a63d26e61a6165c4b3ce711b4a59f66a133625cc6e043d1b4337362ff7164c6c','published pose indices must never change');
+ assert.equal(CLASSIC_TEXTILE_POSES.length,54);assert.equal(new Set(CLASSIC_TEXTILE_POSES.map(p=>JSON.stringify(p))).size,54);
+ for(let w=1;w<=16;w++)for(let f=0;f<4;f++)for(const ornamental of [false,true]){
+  const tiles=planFinish(grid(f%2?2:w,f%2?w:2),{stone:2,cloth:0,ornamental,facing:f,design:design.id});
+  const front=tiles.filter(t=>t.edges&(1<<f)).sort((a,b)=>(f<2?1:-1)*(f%2?a.position.z-b.position.z:a.position.x-b.position.x));
+  assert.deepEqual(front.map(t=>t.frontal),Array.from({length:w},(_,i)=>ornamental?frontalRole(w,i):0));
+  assert.equal(front.filter(t=>t.textileRole!>0).length,w%2?1:2);
+  for(const tile of tiles){const e=encodeTile(tile);assert.deepEqual(decodeTile(e.id,tile.position,e.states),tile);}
+  const first=front[0]!;assert.equal(sameTile({...first,textileRole:(first.textileRole!+1)%4},first),false);
+ }
+});
+
+const collection=compileCollection();
+test('directional Colonnade embroidery occurs on the selected face and never repeats a central emblem behind it',()=>{
+ for(let facing=0;facing<4;facing++)for(const width of [1,7,8]){
+  const design=sharedDesignFor('colonnade','marble','floral','none','green');
+  for(const tile of planFinish(grid(facing%2?2:width,facing%2?width:2),{stone:0,cloth:0,ornamental:false,facing,design:design.id})){
+   const e=encodeTile(tile),block=collection.blocks[e.id]['minecraft:block'],q={block_state:(k:string)=>e.states[k]};
+   const row=block.permutations.find((p:any)=>Function('q',`return ${p.condition}`)(q));assert.ok(row);
+   for(let side=0;side<4;side++)assert.equal(row.components['minecraft:material_instances'][`cloth_${side}`].texture,`altare_textile_ruby_${side===facing?tile.frontal:0}_green`);
+  }
+ }
+});
+
+test('long falls retain full reliefs above the plinth, with square motifs scaled in both axes',()=>{
+ for(const design of UNIVERSAL_DESIGNS.filter(d=>d.textile.endsWith('long')&&d.frontal!=='none'))for(let facing=0;facing<4;facing++){
+  const suffix=`universal_${design.structure}_${design.textile}_${design.frontal}_${facing}`;
+  const g=collection.models[suffix].doc['minecraft:geometry'][0];
+  for(const b of g.bones.filter((b:any)=>b.name.startsWith('applique_')))for(const c of b.cubes.filter((c:any)=>Object.values(c.uv).some((u:any)=>u?.material_instance==='metal'||u?.material_instance==='plaque'))){assert.ok(c.origin[1]>=.75-1e-8);assert.ok(c.origin[1]+c.size[1]<=5+1e-8);}
+ }
+ assert.equal(UNIVERSAL_DESIGNS.length,172);
+ assert.equal(TEXTILE_VALUES.indexOf('ruby'),2,'published logical textile axes must retain their meaning');
+ assert.equal(textileOf(sharedDesignFor('colonnade','marble','lace','none')),'lace');
+});

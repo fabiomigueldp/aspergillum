@@ -62,6 +62,8 @@ Não faça a reorganização-alvo inteira como mudança puramente mecânica. Mig
 
 ## Agent model capture tool
 
+- Headless rendering CLIs must use `viewer-3d/scripts/lib/render-browser.mjs`: verified GPU by default, with a bounded software fallback. Do not force unrestricted SwiftShader for normal local iteration. See `docs/RENDER_PERFORMANCE.md` and `npm --prefix viewer-3d run renderer:check`.
+- For visual baseline comparisons, explicitly pin the same backend/browser/driver and preserve scene, quality and resolution. `ASPERGILLUM_RENDER_BACKEND=software` retains the previous renderer; never weaken assertions or lower capture quality to obtain a speedup.
 - Use `npm run capture:models -- --subject all` to generate reproducible multi-angle PNGs, labeled contact sheets, and a capture manifest for the aspergillum, aspersorium, and docked composition.
 - Read `docs/MODEL_CAPTURE_TOOL.md` before using capture output as evidence. Keep identical options for before/after comparisons and inspect individual views when the contact sheet reveals a defect.
 - Capture output under `out/model-captures/` is disposable and ignored by Git. It is diagnostic evidence, not an authoritative asset and not proof of Minecraft Bedrock rendering parity.

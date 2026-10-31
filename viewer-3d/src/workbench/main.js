@@ -13,6 +13,7 @@ const MODULE_LOADERS = Object.freeze({
   model: () => import('../main.js'),
   bedrock: () => import('../bedrock-renderer/main.js'),
   avatar: () => import('../avatar-lab/main.js'),
+  studio: () => import('../render-studio/main.js'),
 });
 const TOOL_DEFINITIONS = Object.freeze(Object.fromEntries(WORKBENCH_TOOLS.map((tool) => (
   [tool.id, Object.freeze({ ...tool, loadModule: MODULE_LOADERS[tool.id] })]
@@ -206,6 +207,10 @@ async function navigate(requestedTool, { replace = false, fromHistory = false } 
   setNavigationState(tool, true);
 
   try {
+    if(definition.projectId){
+      const project=await setSelectedProject(definition.projectId);
+      updateProjectHeader(project);
+    }
     entry = await getEntry(tool);
     await waitForStyles(tool);
 
@@ -222,6 +227,7 @@ async function navigate(requestedTool, { replace = false, fromHistory = false } 
 
     activeTool = tool;
     activeEntry = entry;
+    ui.projectSelect.disabled=Boolean(definition.projectId);
     const main = entry.node.querySelector(definition.main);
     ui.skipLink.href = `#${main.id}`;
     document.title = `${currentProject?.displayName ?? 'Bedrock Add-ons'} / ${definition.title}`;
@@ -301,7 +307,7 @@ window.addEventListener('popstate', async () => {
 });
 window.addEventListener('keydown', (event) => {
   if (!event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
-  const tool = { Digit1: 'model', Digit2: 'bedrock', Digit3: 'avatar' }[event.code];
+  const tool = { Digit1: 'model', Digit2: 'bedrock', Digit3: 'avatar', Digit4: 'studio' }[event.code];
   if (!tool) return;
   event.preventDefault();
   requestNavigation(tool);

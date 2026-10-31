@@ -1,3 +1,4 @@
+import {launchRenderBrowser} from './lib/render-browser.mjs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
@@ -300,7 +301,7 @@ async function main() {
     const address = server.httpServer.address();
     if (!address || typeof address === 'string') throw new Error('O servidor de captura não publicou uma porta TCP.');
     const url = `http://127.0.0.1:${address.port}/bedrock-renderer.html`;
-    browser = await chromium.launch({ headless: true });
+    browser = await launchRenderBrowser(chromium);
     const context = await browser.newContext({ deviceScaleFactor: 1 });
     const page = await context.newPage();
     await page.setViewportSize({ width: options.size, height: options.size });
@@ -354,6 +355,7 @@ async function main() {
 
     const manifest = {
       schemaVersion: 2,
+      backend: browser.renderDiagnostics,
       generatedAt: new Date().toISOString(),
       source: 'packs/resource',
       pack: {

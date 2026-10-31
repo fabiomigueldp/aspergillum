@@ -105,6 +105,8 @@ Os 48 SFX próprios desta release são versionados com suas fontes, receitas de 
 
 ## Estrutura
 
+Os projetos relacionados e suas fontes também ficam neste repositório: [Altare](addons/altare/README.md), [Aurifrita](addons/aurifrita/README.md), [Evangeliário](addons/evangeliarium/README.md) e [3D Workbench / Render Studio](viewer-3d/README.md). Consulte [preparação do workspace e política de arquivos gerados](docs/WORKSPACE.md) para reconstruir o ambiente em outro computador.
+
 ```text
 packs/behavior/       Behavior Pack e JavaScript compilado
 packs/resource/       Resource Pack, modelos, animações e partículas

@@ -1,0 +1,70 @@
+import {PALETTE_STATES} from './palette-layout.ts';
+import {CLASSIC_TEXTILE_STATES} from './classic-textile-layout.ts';
+// Public recipe keys are persistent world identity. Append; never reorder meanings.
+export const STRUCTURES=['pilaster','ogive','trestle'] as const;
+export const JOINERY_STRUCTURES=['coffer','baluster'] as const;
+export const SURFACES=['marble','limestone','walnut'] as const;
+export const TEXTILES=['none','agnus','ruby','verdant','requiem'] as const;
+export const TEXTILE_VALUES=[...TEXTILES,'lace','linen_short','linen_long','gold_short','gold_long'] as const;
+export const SHARED_TEXTILES=['none','linen_short','linen_long','gold_short','gold_long','agnus','floral','verdant','requiem','lace'] as const;
+export type SharedTextile=typeof SHARED_TEXTILES[number];
+export const FRONTALS=['none','cross','agnus'] as const;
+export const LITURGICAL_COLORS=['white','red','green','purple','rose','black','gold','silver'] as const;
+export type LiturgicalColor=typeof LITURGICAL_COLORS[number];
+export interface Design {id:string;structure:typeof STRUCTURES[number]|typeof JOINERY_STRUCTURES[number]|'colonnade'|'classic';surface:typeof SURFACES[number];textile:typeof TEXTILE_VALUES[number];frontal:typeof FRONTALS[number];palette?:LiturgicalColor;codec?:'compact'|'edges'|'symmetric'|'classic_textile';universal?:boolean}
+export const ATELIER_DESIGNS:readonly Design[]=Object.freeze(STRUCTURES.flatMap(structure=>SURFACES.flatMap(surface=>TEXTILES.flatMap(textile=>FRONTALS.map(frontal=>Object.freeze({id:`altare:a_${structure}_${surface}_${textile}_${frontal}`,structure,surface,textile,frontal}))))));
+export const PALETTE_DESIGNS:readonly Design[]=Object.freeze(STRUCTURES.flatMap(structure=>SURFACES.flatMap(surface=>LITURGICAL_COLORS.filter(c=>c!=='red').map(palette=>Object.freeze({id:`altare:l_${structure}_${surface}_${palette}`,structure,surface,textile:'ruby' as const,frontal:'none' as const,palette})))));
+export const JOINERY_DESIGNS:readonly Design[]=Object.freeze(JOINERY_STRUCTURES.flatMap(structure=>[
+ ...TEXTILES.map(textile=>Object.freeze({id:`altare:j_${structure}_${textile}`,structure,surface:'walnut' as const,textile,frontal:'none' as const,codec:textile==='none'?'edges' as const:'compact' as const})),
+ ...LITURGICAL_COLORS.filter(c=>c!=='red').map(palette=>Object.freeze({id:`altare:j_${structure}_ruby_${palette}`,structure,surface:'walnut' as const,textile:'ruby' as const,frontal:'none' as const,palette,codec:'compact' as const})),
+]));
+// A perimeter repeat has no directional emblem: retain only its exposed sides.
+// The two finishes deliberately share the same 16-pose symmetric topology.
+export const ORNATE_DESIGNS:readonly Design[]=Object.freeze(['none','agnus'].map(textile=>Object.freeze({id:`altare:s_colonnade_${textile==='none'?'bare':'lace'}`,structure:'colonnade' as const,surface:'marble' as const,textile:textile as 'none'|'agnus',frontal:'none' as const,codec:'symmetric' as const})));
+const additions:Design[]=[];
+for(const structure of STRUCTURES)for(const surface of SURFACES)for(const textile of ['linen_short','linen_long','gold_short','gold_long','lace'] as const)for(const frontal of FRONTALS)additions.push({id:`altare:u_${structure}_${surface}_${textile}_${frontal}`,structure,surface,textile,frontal,codec:frontal==='none'?'edges':'compact',universal:true});
+for(const structure of JOINERY_STRUCTURES)for(const textile of ['linen_short','linen_long','gold_short','gold_long','lace'] as const)additions.push({id:`altare:u_${structure}_walnut_${textile}_none`,structure,surface:'walnut',textile,frontal:'none',codec:'edges',universal:true});
+for(const structure of ['classic','colonnade'] as const)for(const textile of ['linen_short','linen_long','gold_short','gold_long','agnus','ruby','verdant','requiem','lace'] as const){
+ if(structure==='classic'&&textile.includes('_')||structure==='colonnade'&&textile==='lace')continue;
+ for(const palette of textile==='ruby'?LITURGICAL_COLORS:[undefined])additions.push({id:`altare:u_${structure}_${textile}${palette?'_'+palette:''}`,structure,surface:'marble',textile,frontal:'none',...(palette?{palette}:{}),codec:structure==='classic'?'classic_textile':textile.includes('_')?'symmetric':'compact',universal:true});
+}
+export const UNIVERSAL_DESIGNS:readonly Design[]=Object.freeze(additions.map(d=>Object.freeze(d)));
+export const DESIGNS:readonly Design[]=Object.freeze([...ATELIER_DESIGNS,...PALETTE_DESIGNS,...JOINERY_DESIGNS,...ORNATE_DESIGNS,...UNIVERSAL_DESIGNS]);
+export const compactLayout=(d:Design|undefined):boolean=>!!d&&d.codec!=='classic_textile'&&(!!d.palette||d.codec==='compact');
+export const textileOf=(d:Design):SharedTextile=>d.id==='altare:s_colonnade_lace'?'lace':d.textile==='ruby'?'floral':d.textile;
+export function sharedDesignFor(structure:Design['structure'],surface:Design['surface'],textile:SharedTextile,frontal:Design['frontal'],color:LiturgicalColor='red'):Design {
+ if(structure==='classic'||structure==='colonnade'&&textile!=='none'&&textile!=='lace'){
+  const d=UNIVERSAL_DESIGNS.find(d=>d.structure===structure&&textileOf(d)===textile&&(textile!=='floral'||d.palette===color));if(!d)throw Error('configuration');return d;
+ }
+ if(structure==='colonnade')return ORNATE_DESIGNS.find(d=>textileOf(d)===textile)!;
+ if(['none','agnus','floral','verdant','requiem'].includes(textile))return textile==='floral'&&color!=='red'?liturgicalDesign(structure,surface,color):designFor(structure,surface,textile==='floral'?'ruby':textile,frontal);
+ const d=UNIVERSAL_DESIGNS.find(d=>d.structure===structure&&d.surface===surface&&textileOf(d)===textile&&d.frontal===frontal);if(!d)throw Error('configuration');return d;
+}
+const byId=new Map(DESIGNS.map(d=>[d.id,d]));
+export const designById=(id:string|undefined):Design|undefined=>id?byId.get(id):undefined;
+export function designFor(structure:string,surface:string,textile:string,frontal:string):Design {
+ if(structure==='colonnade'){
+  const d=ORNATE_DESIGNS.find(d=>d.textile===textile);if(!d||surface!=='marble'||frontal!=='none')throw Error('configuration');return d;
+ }
+ if(JOINERY_STRUCTURES.includes(structure as typeof JOINERY_STRUCTURES[number])){
+  const d=byId.get(`altare:j_${structure}_${textile}`);if(!d||surface!=='walnut'||frontal!=='none')throw Error('configuration');return d;
+ }
+ const d=byId.get(`altare:a_${structure}_${surface}_${textile}_${frontal}`);if(!d)throw Error('configuration');return d;
+}
+export function liturgicalDesign(structure:string,surface:string,color:string):Design {
+ if(color==='red')return designFor(structure,surface,'ruby','none');
+ if(JOINERY_STRUCTURES.includes(structure as typeof JOINERY_STRUCTURES[number])){
+  const d=byId.get(`altare:j_${structure}_ruby_${color}`);if(!d||surface!=='walnut')throw Error('configuration');return d;
+ }
+ const d=byId.get(`altare:l_${structure}_${surface}_${color}`);if(!d)throw Error('configuration');return d;
+}
+export function colorOf(d:Design|undefined):LiturgicalColor|undefined {return d?.palette??(d?.textile==='ruby'&&d.frontal==='none'?'red':undefined);}
+export const LEGACY_ID='altare:mensa';
+export const isAltarId=(id:string):boolean=>id===LEGACY_ID||byId.has(id);
+export const ROLE_STATES=[0,1,2,3] as const;
+export const CATALOG_PERMUTATIONS=11520+ATELIER_DESIGNS.length*256+PALETTE_DESIGNS.length*PALETTE_STATES+JOINERY_DESIGNS.reduce((n,d)=>n+(d.codec==='edges'?64:PALETTE_STATES),0)+ORNATE_DESIGNS.length*16+UNIVERSAL_DESIGNS.reduce((n,d)=>n+(d.codec==='classic_textile'?CLASSIC_TEXTILE_STATES:d.codec==='symmetric'?16:d.codec==='edges'?64:PALETTE_STATES),0);
+export function centerRole(width:number,index:number):number {
+ if(!Number.isInteger(width)||width<1||width>16||!Number.isInteger(index)||index<0||index>=width)throw Error('configuration');
+ if(width%2)return index===Math.floor(width/2)?1:0;
+ return index===width/2-1?2:index===width/2?3:0;
+}

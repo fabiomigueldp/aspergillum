@@ -2,6 +2,8 @@ import { cp, mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promi
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadProjects } from '../../tools/addon-manager/projects.mjs';
+import { syncStudioVanilla } from './sync-studio-vanilla.mjs';
+import { syncStudioProps } from './sync-studio-props.mjs';
 import {
   extractBedrockGeometries,
   modelIdFromSource,
@@ -387,6 +389,10 @@ async function syncProject(project) {
   }
 
   const cosmetics = await loadCosmetics(project.projectRoot);
+  if(project.id==='altare'){
+    const {syncAltareStudio}=await import('../../addons/altare/tools/sync-studio.mjs');
+    await syncAltareStudio(project.projectRoot,projectOutput);
+  }
   const compositions = project.id === 'aspergillum' ? {
     blocks__aspersorium: [{ role: 'water', modelId: 'entity__aspersorium_water_visual' }],
     'blocks__aspersorium.rotations': [{ role: 'water', modelId: 'entity__aspersorium_water_visual' }],
@@ -442,6 +448,7 @@ async function main() {
   await mkdir(projectsOutputDirectory, { recursive: true });
   const summaries = [];
   for (const project of projects) summaries.push(await syncProject(project));
+  if (projects.some(project => project.id === 'altare')) { await syncStudioVanilla(); await syncStudioProps(); }
   const workspace = {
     version: 1,
     generatedAt: new Date().toISOString(),

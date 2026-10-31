@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR"><head>
+    <link rel="icon" href="data:," /><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#eeece5"><title>Altare / Estúdio</title><link rel="stylesheet" href="/src/render-studio/styles.css"></head>
+<body><main id="studio-main" class="studio" tabindex="-1">
+ <header class="studio-heading"><div class="studio-brand"><h1>Altare</h1><span id="studio-pack-version"></span></div><div class="studio-heading-actions"><span id="studio-status" role="status" aria-live="polite">Carregando modelos</span><div class="studio-history"><button id="studio-undo" aria-label="Desfazer" title="Desfazer · Ctrl+Z" disabled>↶</button><button id="studio-redo" aria-label="Refazer" title="Refazer · Ctrl+Y" disabled>↷</button></div><button id="studio-export" class="studio-primary" disabled>Exportar PNG</button></div></header>
+ <div class="studio-workspace">
+  <aside class="studio-panel" aria-label="Personalização">
+   <div class="studio-tabs" role="tablist" aria-label="Personalização"><button id="studio-tab-altar" role="tab" aria-selected="true" aria-controls="studio-panel-altar" data-panel="altar">Altar</button><button id="studio-tab-scene" role="tab" aria-selected="false" aria-controls="studio-panel-scene" data-panel="scene" tabindex="-1">Cena</button><button id="studio-tab-image" role="tab" aria-selected="false" aria-controls="studio-panel-image" data-panel="image" tabindex="-1">Imagem</button></div>
+   <section id="studio-panel-altar" role="tabpanel" aria-labelledby="studio-tab-altar">
+    <h2>Estrutura</h2>
+    <div id="studio-models" class="studio-models" role="group" aria-label="Modelo"></div>
+    <select id="studio-family" hidden aria-label="Modelo"><option value="classic">Clássico</option><option value="pilaster">Pilastras</option><option value="ogive">Ogivas</option><option value="trestle">Cavaletes</option><option value="coffer">Arca</option><option value="baluster">Balaústres</option><option value="colonnade">Colunata dourada</option></select>
+    <div id="studio-architectural"><label>Material<select id="studio-surface"><option value="marble">Mármore</option><option value="limestone">Calcário</option><option value="walnut">Nogueira</option></select></label></div>
+    <div id="studio-classic"><label>Material<select id="studio-stone"><option value="0">Mármore</option><option value="1">Calcário</option><option value="2">Pedra escura</option></select></label></div>
+    <div class="studio-rule"></div><h2>Toalha</h2>
+    <label id="studio-pattern-field">Desenho<select id="studio-textile"><option value="none">Sem toalha</option><option value="linen_short">Linho · curta</option><option value="linen_long">Linho · longa</option><option value="gold_short">Bordada · curta</option><option value="gold_long">Bordada · longa</option><option value="agnus">Cordeiro</option><option value="floral">Floral IHS</option><option value="verdant">Faixa verde IHS</option><option value="requiem">Cruzes em prata</option><option value="lace">Renda floral</option></select></label>
+    <fieldset id="studio-colors"><legend>Cor</legend><div class="studio-swatches" id="studio-swatches"></div><output id="studio-color-label">Verde</output></fieldset>
+    <div id="studio-frontal-title"><div class="studio-rule"></div><h2>Frontal</h2></div>
+    <label id="studio-frontal-field">Relevo<select id="studio-frontal"><option value="none">Sem relevo</option><option value="cross">Cruz</option><option value="agnus">Cordeiro</option></select></label>
+    <p id="studio-relief-limit" class="studio-note" hidden>Relevo disponível no floral vermelho.</p>
+    <label id="studio-guadalupe-field" class="studio-check"><input id="studio-ornamental" type="checkbox" checked> Guadalupe</label>
+    <div class="studio-rule"></div><h2>Dimensões <span class="studio-unit">em blocos</span></h2>
+    <div class="studio-pair"><label>Frente<input id="studio-width" type="number" min="1" max="16" value="7"></label><label>Profundidade<input id="studio-depth" type="number" min="1" max="8" value="2"></label><label>Altura<input value="1" type="number" disabled aria-label="Altura fixa de um bloco"></label></div>
+    <details class="studio-library"><summary>Composições</summary><div id="studio-presets" class="studio-presets"></div></details>
+   </section>
+   <section id="studio-panel-scene" role="tabpanel" aria-labelledby="studio-tab-scene" hidden>
+    <h2>Ambiente</h2><div class="studio-environments" id="studio-environments"></div>
+    <div class="studio-rule"></div><h2>Montagem</h2>
+    <label>Objetos<select id="studio-dressing"><option value="none">Só altar</option><option value="ready" selected>Antes da Missa</option><option value="gifts">Vasos sobre o corporal</option></select></label>
+    <div id="studio-ritual-fields">
+     <label>Velas<select id="studio-candlePlacement"><option value="floor">No chão</option><option value="mensa">Sobre a mesa</option></select></label>
+     <label>Castiçais<select id="studio-furnishing"><option value="gold">Dourados com redoma</option><option value="wood">Madeira</option></select></label>
+     <label>Quantidade<select id="studio-candles"><option value="2">2 velas</option><option value="4">4 velas</option><option value="6" selected>6 velas</option><option value="7">7 · bispo diocesano</option></select></label>
+     <label>Ornamentação<select id="studio-season"><option value="ordinary">Habitual</option><option value="advent">Advento</option><option value="lent">Quaresma</option><option value="festive">Festiva</option></select></label>
+    </div><p class="studio-note" id="studio-dressing-note" hidden></p>
+    <div class="studio-rule"></div><h2>Luz</h2>
+    <label>Aparência<select id="studio-lighting"><option value="classic">Clássica</option><option value="shadows">Com sombras</option></select></label>
+    <label class="studio-range-label" for="studio-exposure">Exposição <output id="studio-exposure-value">1,00</output></label><input id="studio-exposure" type="range" min="0.4" max="1.8" value="1" step="0.05">
+    <div id="studio-direction-field"><label class="studio-range-label" for="studio-light">Direção <output id="studio-light-value">0°</output></label><input id="studio-light" type="range" min="-90" max="90" step="5" value="0"></div>
+   </section>
+   <section id="studio-panel-image" role="tabpanel" aria-labelledby="studio-tab-image" hidden>
+    <h2>Enquadramento</h2>
+    <label>Projeção<select id="studio-projection"><option value="perspective">Perspectiva</option><option value="orthographic">Ortográfica</option></select></label>
+    <fieldset><legend>Formato</legend><div id="studio-ratios" class="studio-segments" aria-label="Proporção"></div></fieldset>
+    <div class="studio-rule"></div><h2>Exportação</h2>
+    <label>Resolução<select id="studio-resolution"><option value="1920">1920 px</option><option value="2560">2560 px</option><option value="3840" selected>3840 px · 4K</option></select></label>
+    <label>Qualidade<select id="studio-quality"><option value="high">Final</option><option value="draft">Rápida</option></select></label><p class="studio-note" id="studio-output-size">3840 × 2160 · PNG</p>
+   </section>
+   <div class="studio-scene-files"><button id="studio-save">Salvar cena</button><button id="studio-open">Abrir cena</button><input type="file" id="studio-file" accept=".json,application/json" hidden></div>
+  </aside>
+  <section class="studio-viewport" aria-label="Prévia tridimensional">
+   <div class="studio-view-top"><div><span class="studio-kicker" id="studio-environment-label">PRESBITÉRIO</span><h2 id="studio-selection-label">Guadalupe</h2></div><button id="studio-fit" title="Reenquadrar altar">Enquadrar ⌖</button></div>
+   <div id="studio-frame-wrap"><div id="studio-frame"><canvas id="studio-canvas" aria-label="Altar em 3D. Arraste para girar, use a roda para aproximar." tabindex="0"></canvas><output id="studio-cutaway" hidden></output></div></div>
+   <div id="studio-loading" role="status"><span>Preparando a cena</span></div>
+   <div class="studio-view-bottom"><div id="studio-views" class="studio-segments" aria-label="Câmera"></div></div>
+   <p id="studio-error" role="alert" hidden></p>
+  </section>
+ </div>
+ <footer class="studio-footer"><span id="studio-dimensions">7 × 2 × 1</span><span>Prévia externa ao Minecraft</span></footer>
+</main><span class="studio-runtime">Render Studio</span><script type="module" src="/src/render-studio/main.js"></script></body></html>

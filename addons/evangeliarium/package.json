@@ -1,0 +1,37 @@
+{
+  "name": "evangeliarium-bedrock-addon",
+  "version": "0.2.5",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "description": "Evangeliário com leitura offline, calendário brasileiro e porte cerimonial.",
+  "addonManager": {
+    "schemaVersion": 1,
+    "id": "evangeliarium",
+    "displayName": "Evangeliário",
+    "artifactPrefix": "Evangeliarium",
+    "sharedDirectory": "pack.evangeliarium",
+    "worldDirectory": "evangeliarium.managed",
+    "publicIdentity": {
+      "behaviorUuid": "363c1fb0-517e-4d3e-9423-fb29d7694612",
+      "resourceUuid": "f30aeaf1-af34-436c-9037-e43b6a89ff76"
+    }
+  },
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test tests/*.node.ts",
+    "check": "npm run build && npm run typecheck && npm test && node tools/validate.mjs",
+    "package": "npm run check && node tools/package.mjs",
+    "calendar:import": "python tools/import_calendar.py",
+    "render": "node tools/render.mjs",
+    "capture:pose": "node tools/capture-pose.mjs"
+  },
+  "devDependencies": {
+    "@minecraft/server": "2.10.0",
+    "@minecraft/server-ui": "2.2.0",
+    "@minecraft/common": "1.3.0"
+  }
+}

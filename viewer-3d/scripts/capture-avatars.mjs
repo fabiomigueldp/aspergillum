@@ -1,3 +1,4 @@
+import {launchRenderBrowser} from './lib/render-browser.mjs';
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -305,7 +306,7 @@ async function main() {
     await server.listen();
     const address = server.httpServer.address();
     if (!address || typeof address === 'string') throw new Error('Servidor de captura sem porta TCP.');
-    browser = await chromium.launch({ headless: true });
+    browser = await launchRenderBrowser(chromium);
     const context = await browser.newContext({ deviceScaleFactor: 1 });
     const page = await context.newPage();
     await page.setViewportSize({ width: options.width, height: options.height });
@@ -410,6 +411,7 @@ async function main() {
     };
     const manifest = {
       schemaVersion: 1,
+      backend: browser.renderDiagnostics,
       generatedAt: new Date().toISOString(),
       tool: {
         name: viewerPackage.name,
