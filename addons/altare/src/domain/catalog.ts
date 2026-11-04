@@ -1,3 +1,4 @@
+import {atelierLayout,MENSA_STATES} from './pose-layout.ts';
 import {PALETTE_STATES} from './palette-layout.ts';
 import {CLASSIC_TEXTILE_STATES} from './classic-textile-layout.ts';
 // Public recipe keys are persistent world identity. Append; never reorder meanings.
@@ -11,8 +12,8 @@ export type SharedTextile=typeof SHARED_TEXTILES[number];
 export const FRONTALS=['none','cross','agnus'] as const;
 export const LITURGICAL_COLORS=['white','red','green','purple','rose','black','gold','silver'] as const;
 export type LiturgicalColor=typeof LITURGICAL_COLORS[number];
-export interface Design {id:string;structure:typeof STRUCTURES[number]|typeof JOINERY_STRUCTURES[number]|'colonnade'|'classic';surface:typeof SURFACES[number];textile:typeof TEXTILE_VALUES[number];frontal:typeof FRONTALS[number];palette?:LiturgicalColor;codec?:'compact'|'edges'|'symmetric'|'classic_textile';universal?:boolean}
-export const ATELIER_DESIGNS:readonly Design[]=Object.freeze(STRUCTURES.flatMap(structure=>SURFACES.flatMap(surface=>TEXTILES.flatMap(textile=>FRONTALS.map(frontal=>Object.freeze({id:`altare:a_${structure}_${surface}_${textile}_${frontal}`,structure,surface,textile,frontal}))))));
+export interface Design {id:string;structure:typeof STRUCTURES[number]|typeof JOINERY_STRUCTURES[number]|'colonnade'|'classic';surface:typeof SURFACES[number];textile:typeof TEXTILE_VALUES[number];frontal:typeof FRONTALS[number];palette?:LiturgicalColor;codec?:'pose'|'compact'|'edges'|'symmetric'|'classic_textile';universal?:boolean}
+export const ATELIER_DESIGNS:readonly Design[]=Object.freeze(STRUCTURES.flatMap(structure=>SURFACES.flatMap(surface=>TEXTILES.flatMap(textile=>FRONTALS.map(frontal=>Object.freeze({id:`altare:a_${structure}_${surface}_${textile}_${frontal}`,structure,surface,textile,frontal,codec:'pose' as const}))))));
 export const PALETTE_DESIGNS:readonly Design[]=Object.freeze(STRUCTURES.flatMap(structure=>SURFACES.flatMap(surface=>LITURGICAL_COLORS.filter(c=>c!=='red').map(palette=>Object.freeze({id:`altare:l_${structure}_${surface}_${palette}`,structure,surface,textile:'ruby' as const,frontal:'none' as const,palette})))));
 export const JOINERY_DESIGNS:readonly Design[]=Object.freeze(JOINERY_STRUCTURES.flatMap(structure=>[
  ...TEXTILES.map(textile=>Object.freeze({id:`altare:j_${structure}_${textile}`,structure,surface:'walnut' as const,textile,frontal:'none' as const,codec:textile==='none'?'edges' as const:'compact' as const})),
@@ -59,10 +60,10 @@ export function liturgicalDesign(structure:string,surface:string,color:string):D
  const d=byId.get(`altare:l_${structure}_${surface}_${color}`);if(!d)throw Error('configuration');return d;
 }
 export function colorOf(d:Design|undefined):LiturgicalColor|undefined {return d?.palette??(d?.textile==='ruby'&&d.frontal==='none'?'red':undefined);}
-export const LEGACY_ID='altare:mensa';
-export const isAltarId=(id:string):boolean=>id===LEGACY_ID||byId.has(id);
+export const MENSA_ID='altare:mensa';
+export const isAltarId=(id:string):boolean=>id===MENSA_ID||byId.has(id);
 export const ROLE_STATES=[0,1,2,3] as const;
-export const CATALOG_PERMUTATIONS=11520+ATELIER_DESIGNS.length*256+PALETTE_DESIGNS.length*PALETTE_STATES+JOINERY_DESIGNS.reduce((n,d)=>n+(d.codec==='edges'?64:PALETTE_STATES),0)+ORNATE_DESIGNS.length*16+UNIVERSAL_DESIGNS.reduce((n,d)=>n+(d.codec==='classic_textile'?CLASSIC_TEXTILE_STATES:d.codec==='symmetric'?16:d.codec==='edges'?64:PALETTE_STATES),0);
+export const CATALOG_PERMUTATIONS=MENSA_STATES+ATELIER_DESIGNS.reduce((n,d)=>n+atelierLayout(d).size,0)+PALETTE_DESIGNS.length*PALETTE_STATES+JOINERY_DESIGNS.reduce((n,d)=>n+(d.codec==='edges'?64:PALETTE_STATES),0)+ORNATE_DESIGNS.length*16+UNIVERSAL_DESIGNS.reduce((n,d)=>n+(d.codec==='classic_textile'?CLASSIC_TEXTILE_STATES:d.codec==='symmetric'?16:d.codec==='edges'?64:PALETTE_STATES),0);
 export function centerRole(width:number,index:number):number {
  if(!Number.isInteger(width)||width<1||width>16||!Number.isInteger(index)||index<0||index>=width)throw Error('configuration');
  if(width%2)return index===Math.floor(width/2)?1:0;

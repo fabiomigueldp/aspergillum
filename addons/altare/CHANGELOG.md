@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.12.0 — Poses visuais compactas
+
+- Atelier e Mensa usam 54.528 estados no catálogo total, contra 78.432. Mantidos materiais, modelos, colisões e escolhas do editor.
+- Quebras laterais dessas famílias conservam os motivos; uma frente coberta passa a neutra. Os Cavaletes conservam as quatro orientações.
+- Removidos CLI, hashes e documentação de auditoria de migração. Testes normais cobrem codecs, contornos e interface.
+- Desenvolvimento direto, sem suporte ao schema anterior nem conversor de mundos.
+
+
 ## Em desenvolvimento — 2026-11-04 — fluxo de edição
 
 - Remove escrita/reconciliação da abertura, antes do lock; Aplicar mantém a transação e a revalidação existentes.

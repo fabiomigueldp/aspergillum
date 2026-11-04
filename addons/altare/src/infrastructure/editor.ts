@@ -25,7 +25,7 @@ export async function edit(player:Player,dimension:Dimension,position:Position,f
     timer=system.runTimeout(()=>sessions.release(active),1200);
     const selectedSlot=player.selectedSlotIndex;
     let interrupted=false;
-    const finish=await chooseFinish(player,before,face??before[0]!.facing,()=>sessions.isCurrent(active,system.currentTick),callback=>sessions.onRelease(active,callback),()=>{interrupted=true;});
+    const finish=await chooseFinish(player,before,face??before.find(t=>t.frontal>0)?.facing??before[0]!.facing,()=>sessions.isCurrent(active,system.currentTick),callback=>sessions.onRelease(active,callback),()=>{interrupted=true;});
     if(!finish){
       if(interrupted && player.isValid)tell(player,'error.expired');
       return;

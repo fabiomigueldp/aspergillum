@@ -7,9 +7,11 @@ import {authorGeometry,visibility,geometryName} from '../assets-src/model.mjs';
 import {definitions} from '../assets-src/textures.mjs';
 import {locales} from '../assets-src/locales.mjs';
 import {FRONTAL_STATES} from '../src/domain/frontal-layout.ts';
+import {MENSA_LAYOUT} from '../src/domain/pose-layout.ts';
 import {DESIGNS,CATALOG_PERMUTATIONS} from '../src/domain/catalog.ts';
 import {atelierDefinitions} from '../assets-src/atelier/materials.mjs';
 import {ogiveDefinitions} from '../assets-src/atelier/ogive-art.mjs';
+import {posePermutations} from './pose-permutations.mjs';
 import {compileCollection} from './catalog-pack.mjs';
 export const root=path.resolve(import.meta.dirname,'..');
 const metadata=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
@@ -55,19 +57,32 @@ export function materials(stone=0,cloth=1,frontal=0){
  return {'*':material(`stone_${stone}`),stone:material(`stone_${stone}`),linen:material('linen'),top:material('linen'),seam:material(cloth>=3?'seam_white_gold':'linen'),
   hem:material(`hem_${[2,4].includes(cloth)?'long':'short'}_${cloth>=3?'gold':'plain'}`),frontal:material(`frontal_${Math.max(1,frontal)}`),frame:material('frontal_frame')};
 }
-const geom=(long,facing=0)=>({identifier:`geometry.altare.${geometryName(long,facing)}`,bone_visibility:visibility(facing)});
+const defaultPose=MENSA_LAYOUT.decode(MENSA_LAYOUT.stateAt(0));
+// Topology is fixed by the compact pose. Keep only the bare/clothed query in
+// visibility, instead of carrying inaccessible edges/frontal/facing states.
+const math={floor:Math.floor,mod:(a,b)=>a%b};
+const geom=(long,pose=defaultPose)=>({identifier:`geometry.altare.${geometryName(long,pose.facing)}`,
+ bone_visibility:Object.fromEntries(Object.entries(visibility(pose.facing)).map(([bone,expr])=>{
+  const evaluate=Function('q','math',`return ${expr}`);
+  const values=Array.from({length:5},(_,cloth)=>Boolean(evaluate({block_state:key=>({'altare:cloth':cloth,'altare:edges':pose.edges,'altare:frontal':pose.frontal,'altare:facing':pose.facing})[key]},math)));
+  if(!values.slice(1).every(value=>value===values[1]))throw Error(`Unexpected Mensa cloth visibility: ${bone}`);
+  return [bone,values[0]===values[1]?values[0]:`q.block_state('altare:cloth') ${values[0]?'==':'!='} 0`];
+ }))});
 const permutations=[];
-// One complete material mapping per style combination avoids component overwrite ambiguity.
+const poseIndex="(q.block_state('altare:pose') + q.block_state('altare:part') * 16 + q.block_state('altare:layer') * 128)";
+const frontalIndex=`(${poseIndex} >= 16 && ${poseIndex} < ${MENSA_LAYOUT.poses.length} ? math.floor((${poseIndex} - 16) / 32) + 1 : 0)`;
+// Materials and geometry remain separate: 180 style rules plus shared pose/length
+// rules cover all 5,760 states without repeating complete component mappings.
 for(let stone=0;stone<3;stone++)for(let cloth=0;cloth<5;cloth++)for(const frontal of FRONTAL_STATES){
- permutations.push({condition:`q.block_state('altare:stone') == ${stone} && q.block_state('altare:cloth') == ${cloth} && q.block_state('altare:frontal') == ${frontal}`,
+ permutations.push({condition:`q.block_state('altare:stone') == ${stone} && q.block_state('altare:cloth') == ${cloth} && ${frontalIndex} == ${frontal}`,
   components:{'minecraft:material_instances':materials(stone,cloth,frontal)}});
 }
-for(const long of [false,true])for(let facing=0;facing<4;facing++){
+for(const long of [false,true]){
  const cloth=long?"q.block_state('altare:cloth') == 2 || q.block_state('altare:cloth') == 4":"q.block_state('altare:cloth') != 2 && q.block_state('altare:cloth') != 4";
- permutations.push({condition:`q.block_state('altare:facing') == ${facing} && (${cloth})`,components:{'minecraft:geometry':geom(long,facing)}});
+ permutations.push(...posePermutations(MENSA_LAYOUT,pose=>({'minecraft:geometry':geom(long,pose)}),cloth));
 }
 json('packs/behavior/blocks/mensa.block.json',{format_version:'1.26.30','minecraft:block':{
- description:{identifier:'altare:mensa',menu_category:{category:'construction'},states:{'altare:edges':[15,...Array.from({length:15},(_,i)=>i)],'altare:stone':[0,1,2],'altare:cloth':[1,0,2,3,4],'altare:frontal':FRONTAL_STATES,'altare:facing':[0,1,2,3]}},
+ description:{identifier:'altare:mensa',menu_category:{category:'construction'},states:{...MENSA_LAYOUT.states,'altare:stone':[0,1,2],'altare:cloth':[1,0,2,3,4]}},
  components:{'minecraft:geometry':geom(false),'minecraft:material_instances':materials(),'minecraft:collision_box':true,'minecraft:selection_box':true,
   'minecraft:destructible_by_mining':{seconds_to_destroy:1.5},'minecraft:destructible_by_explosion':{explosion_resistance:6},
   'minecraft:movable':{movement_type:'immovable'},'minecraft:map_color':'#d1c9b5','minecraft:light_dampening':15,

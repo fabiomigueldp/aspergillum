@@ -1,5 +1,7 @@
+import {posePermutations} from './pose-permutations.mjs';
 import {compileUniversal,clothTexture,seamTexture} from './universal-pack.mjs';
 import {ATELIER_DESIGNS,PALETTE_DESIGNS,JOINERY_DESIGNS,JOINERY_STRUCTURES,ORNATE_DESIGNS,ROLE_STATES,STRUCTURES,TEXTILES,FRONTALS,designFor} from '../src/domain/catalog.ts';
+import {atelierLayout} from '../src/domain/pose-layout.ts';
 import {decodePalette} from '../src/domain/palette-layout.ts';
 import {atelierGeometry,atelierGeometryName,structureCollision} from '../assets-src/atelier/geometry.mjs';
 import {ornateGeometry,ornateGeometryName} from '../assets-src/atelier/ornate.mjs';
@@ -8,9 +10,9 @@ const detailed=structure=>['pilaster','ogive'].includes(structure);
 export function collectionMaterials(d,role=0,facing=0){
  const body={marble:'stone_0',limestone:'stone_1',walnut:'atelier_walnut'}[d.surface];
  const cloth=clothTexture(d,role);
- const carved=detailed(d.structure),rail=material(d.surface==='walnut'?'joinery_walnut_horizontal':body);
+ const authoredCodec=d.codec&&d.codec!=='pose',carved=detailed(d.structure),rail=material(d.surface==='walnut'?'joinery_walnut_horizontal':body);
  const cards=carved?Object.fromEntries(Array.from({length:4},(_,i)=>[`cloth_${i}`,material(clothTexture(d,i===facing?role:0))])):{};
- return {'*':material(body),stone:material(body),top:material(d.textile==='none'?((d.codec||carved&&d.surface==='walnut')?'joinery_walnut_horizontal':body):'linen'),linen:material('linen'),seam:material(seamTexture(d)),drape:material(cloth),repeat:material(clothTexture(d,0)),metal:material('frontal_frame'),plaque:material('atelier_agnus'),...(d.codec?{wood_cross:material('joinery_walnut_horizontal')}:{}),...(carved?{rail,...cards}:{}),...(d.structure==='ogive'?{arcade:material(`ogive_${body}`)}:{})};
+ return {'*':material(body),stone:material(body),top:material(d.textile==='none'?((authoredCodec||carved&&d.surface==='walnut')?'joinery_walnut_horizontal':body):'linen'),linen:material('linen'),seam:material(seamTexture(d)),drape:material(cloth),repeat:material(clothTexture(d,0)),metal:material('frontal_frame'),plaque:material('atelier_agnus'),...(authoredCodec?{wood_cross:material('joinery_walnut_horizontal')}:{}),...(carved?{rail,...cards}:{}),...(d.structure==='ogive'?{arcade:material(`ogive_${body}`)}:{})};
 }
 export function compileCollection(){
  const models={},blocks={},sounds={};
@@ -20,14 +22,18 @@ export function compileCollection(){
  }
  for(const d of ATELIER_DESIGNS){
   const geom=(facing,edges)=>{const name=atelierGeometryName(d.structure,d.textile,d.frontal,detailed(d.structure)&&d.frontal==='none'&&edges!==undefined?0:facing,edges);return {identifier:`geometry.altare.${name}`,bone_visibility:models[name].visibility};};
-  const permutations=[];
-  for(let facing=0;facing<4;facing++)for(const role of ROLE_STATES)permutations.push({condition:`q.block_state('altare:facing') == ${facing} && q.block_state('altare:role') == ${role}`,components:{...(detailed(d.structure)?{}:{'minecraft:geometry':geom(facing)}),'minecraft:material_instances':collectionMaterials(d,role,facing)}});
-  if(detailed(d.structure))for(let facing=0;facing<4;facing++)for(let edges=0;edges<16;edges++)permutations.push({condition:`q.block_state('altare:facing') == ${facing} && q.block_state('altare:edges') == ${edges}`,components:{'minecraft:geometry':geom(facing,edges)}});
-  if(d.structure==='trestle')for(let facing=0;facing<4;facing++)for(let edges=0;edges<16;edges++)permutations.push({condition:`q.block_state('altare:facing') == ${facing} && q.block_state('altare:edges') == ${edges}`,components:{'minecraft:collision_box':structureCollision(d.structure,edges,facing)}});
+  const layout=atelierLayout(d);
+  const componentsForPose=pose=>{
+   const geometry=geom(pose.facing,detailed(d.structure)?pose.edges:undefined);
+   const q={block_state:k=>({'altare:edges':pose.edges,'altare:role':pose.frontal,'altare:facing':pose.facing})[k]},math={floor:Math.floor,mod:(a,b)=>a%b};
+   const visible=Object.fromEntries(Object.entries(geometry.bone_visibility).map(([name,expr])=>[name,Boolean(Function('q','math',`return ${expr}`)(q,math))]));
+   return {'minecraft:geometry':{...geometry,bone_visibility:visible},'minecraft:material_instances':collectionMaterials(d,pose.frontal,pose.facing),'minecraft:collision_box':structureCollision(d.structure,pose.edges,pose.facing)};
+  };
+  const permutations=posePermutations(layout,componentsForPose);
   blocks[d.id]={format_version:'1.26.30','minecraft:block':{
-   description:{identifier:d.id,states:{'altare:edges':[15,...Array.from({length:15},(_,i)=>i)],'altare:facing':[0,1,2,3],'altare:role':ROLE_STATES}},
+   description:{identifier:d.id,states:layout.states},
    components:{'minecraft:geometry':geom(0,detailed(d.structure)?15:undefined),'minecraft:material_instances':collectionMaterials(d),'minecraft:collision_box':structureCollision(d.structure,15,0),'minecraft:selection_box':true,
-    'minecraft:destructible_by_mining':{seconds_to_destroy:1.5},'minecraft:destructible_by_explosion':{explosion_resistance:6},'minecraft:movable':{movement_type:'immovable'},'minecraft:map_color':'#c6b59b','minecraft:light_dampening':d.structure==='trestle'?0:15,'minecraft:tick':{interval_range:[80,120],looping:true},'altare:surface':{}},permutations}};
+    'minecraft:destructible_by_mining':{seconds_to_destroy:1.5},'minecraft:destructible_by_explosion':{explosion_resistance:6},'minecraft:movable':{movement_type:'immovable'},'minecraft:map_color':'#c6b59b','minecraft:light_dampening':d.structure==='trestle'?0:15,'minecraft:tick':{interval_range:[80,120],looping:true},'altare:surface':{},...componentsForPose(layout.decode(layout.stateAt(0)))},permutations}};
   sounds[d.id]={sound:d.surface==='walnut'?'wood':'stone'};
  }
  // Palette blocks publish only reachable rectangular roles; resolve the same

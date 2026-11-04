@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import {DESIGNS,CATALOG_PERMUTATIONS} from '../src/domain/catalog.ts';
+import {MENSA_STATES} from '../src/domain/pose-layout.ts';
 import {decodeTile} from '../src/domain/block-codec.ts';
 import {colonnadeBudget} from '../assets-src/atelier/colonnade-model.mjs';
 import {pilasterBudget} from '../assets-src/atelier/pilaster-model.mjs';
@@ -9,7 +10,7 @@ import {ogiveBudget} from '../assets-src/atelier/ogive-model.mjs';
 const root=path.resolve(import.meta.dirname,'..');
 const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
 const geometries=new Map(fs.readdirSync(path.join(root,'packs/resource/models/blocks')).filter(f=>f.startsWith('atelier_')||f.startsWith('ornate_')||f.startsWith('universal_')).map(f=>{const doc=read('packs/resource/models/blocks/'+f);assert.equal(doc.format_version,'1.16.0');const g=doc['minecraft:geometry'][0];return [g.description.identifier,g];}));
-let total=11520,maxCubes=0;
+let total=MENSA_STATES,maxCubes=0;
 const atlas=read('packs/resource/textures/terrain_texture.json').texture_data;
 function combinations(states){
  return Object.entries(states).reduce((rows,[key,values])=>rows.flatMap(row=>values.map(value=>({...row,[key]:value}))),[{}]);
@@ -65,17 +66,17 @@ for(const design of DESIGNS){
    assert.ok(collision.some(b=>b.origin.join(',')==='-8,14.2,-8'&&b.size.join(',')==='16,1.8,16'));
    assert.ok(!collision.some(b=>[0,7,0].every((v,i)=>v>b.origin[i]&&v<b.origin[i]+b.size[i])));
    const visibleFrames=Object.entries(component.bone_visibility).filter(([name,expr])=>name.startsWith('frame_')&&Function('q','math',`return ${expr}`)(q,math)).length;
-   const facing=states['altare:facing'];
+   const facing=decoded.facing;
    const expected=[(facing+3)%4,(facing+1)%4].filter(i=>edges&(1<<i)).length;assert.equal(visibleFrames,expected);
   }
  }
 }
-assert.equal(total,CATALOG_PERMUTATIONS);assert.ok(total<=80000);
+assert.equal(total,CATALOG_PERMUTATIONS);assert.ok(total<=65536);
 const siblingFolder=path.resolve(root,'../../packs/behavior/blocks');let aspergillumStates=0;
 for(const file of fs.readdirSync(siblingFolder).filter(f=>f.endsWith('.json'))){
  const b=JSON.parse(fs.readFileSync(path.join(siblingFolder,file),'utf8'))['minecraft:block'];
  if(b)aspergillumStates+=Object.values(b.description.states??{}).reduce((n,v)=>n*(Array.isArray(v)?v.length:v.values.max-v.values.min+1),1);
 }
-assert.ok(total+aspergillumStates<=90000,'bounded diagnostic scope for Altare/Aspergillum');
-fs.writeFileSync(path.join(root,'out/permutation-budget.json'),JSON.stringify({altare:total,aspergillum:aspergillumStates,combined:total+aspergillumStates,reference:65536,exceedsReference:total+aspergillumStates>65536,remaining:65536-total-aspergillumStates,diagnosticLimits:{altare:80000,combined:90000},scope:'Only these two local packs; other add-ons must be counted separately'},null,2)+'\n');
+assert.ok(total+aspergillumStates<=65536,'Altare and Aspergillum state budget');
+fs.writeFileSync(path.join(root,'out/permutation-budget.json'),JSON.stringify({altare:total,aspergillum:aspergillumStates,combined:total+aspergillumStates,reference:65536,exceedsReference:total+aspergillumStates>65536,remaining:65536-total-aspergillumStates,limits:{combined:65536},scope:'Only these two local packs; other add-ons must be counted separately'},null,2)+'\n');
 console.log(`Collection validated: ${DESIGNS.length} designs, ${geometries.size} geometries, max ${maxCubes} cubes; ${total} total state combinations; multipart support and binary cutout contract.`);

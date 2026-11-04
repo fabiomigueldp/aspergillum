@@ -38,7 +38,8 @@ test('busy opening does not mutate another editor surface',async()=>{
  assert.equal(reconciles,0);assert.equal(writes.length,0);assert.deepEqual(messages,['altare.error.busy']);assert.ok(sessions.isCurrent(lease,1));sessions.release(lease);
 });
 test('Apply repairs contours only inside commit and keeps clicked front',async()=>{
- reset();const result=edit(player,dimension,position,1);click('apply');await result;
+ reset();const result=edit(player,dimension,position,1);
+ current.controls.find((c:any)=>c.kind==='toggle').value.setData(true);click('apply');await result;
  assert.equal(reconciles,0);assert.equal(writes.length,1);assert.equal(writes[0]!.edges,15);assert.equal(writes[0]!.facing,1);assert.deepEqual(messages,['altare.success']);
 });
 test('timeout closes once, reports interruption and allows a fresh lease',async()=>{

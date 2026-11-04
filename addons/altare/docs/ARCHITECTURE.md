@@ -1,5 +1,9 @@
 # Arquitetura e pesquisa
 
+## Desenvolvimento atual — 0.12.0
+
+A arquitetura atual é descrita em [Poses compactas](COMPACT_POSES_0.12.0.md). Atelier e Mensa usam schema novo diretamente; verificadores históricos de igualdade com pacotes anteriores não fazem parte dos checks atuais. As seções versionadas abaixo registram o histórico, não requisitos de migração.
+
 ## Perfis biselados — 0.10.1
 
 Pilastras liga o campo recuado às pilastras, embasamento e friso por quatro planos chanfrados, sem extremidades de filetes expostas. Encontros diagonais e transporte de rotação X/Z são verificados por normais e raios contra volumes orientados. Bases/capitéis são contíguos e invariantes ao tecido; a revisão conserva cubos e reduz faces. Contratos persistidos permanecem. [Contrato e reteste](PILASTER_DETAIL_0.10.1.md).

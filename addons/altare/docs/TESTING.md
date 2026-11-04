@@ -1,5 +1,9 @@
 # QA do Altare 0.11.2
 
+## Desenvolvimento atual — 0.12.0
+
+A arquitetura atual é descrita em [Poses compactas](COMPACT_POSES_0.12.0.md). Atelier e Mensa usam schema novo diretamente; verificadores históricos de igualdade com pacotes anteriores não fazem parte dos checks atuais. As seções versionadas abaixo registram o histórico, não requisitos de migração.
+
 ## Editor nativo em desenvolvimento
 
 Conferir controles, dimensões, Guadalupe e fechamento conforme o [roteiro do editor](NATIVE_EDITOR_UX.md). Os testes executam a apresentação real com host simulado, sem comprovar layout/input no Bedrock.

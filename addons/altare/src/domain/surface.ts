@@ -1,3 +1,4 @@
+import {normalizeTile} from './block-codec.ts';
 import {frontalRole} from './frontal-layout.ts';
 import {designById,centerRole,SURFACES,TEXTILE_VALUES,compactLayout} from './catalog.ts';
 import {repairClassicTextile} from './classic-textile-layout.ts';
@@ -12,12 +13,12 @@ export const neighbor = (p:Position,i:number):Position => ({x:p.x+DIRECTIONS[i]!
 export const sameTile = (a:Tile|null|undefined,b:Tile):boolean => !!a && positionKey(a.position)===positionKey(b.position)
   && a.stone===b.stone && a.cloth===b.cloth && a.frontal===b.frontal && a.facing===b.facing && a.edges===b.edges && a.design===b.design&&(a.textileRole??0)===(b.textileRole??0);
 export function withEdges(tile:Tile,edges:number):Tile {
- const next={...tile,edges},d=designById(tile.design);if(d?.codec==='classic_textile')return {...next,...repairClassicTextile(next)};return compactLayout(d)?{...next,frontal:paletteRoleAfterContour(next)}:next;
+ const next={...tile,edges},d=designById(tile.design);if(!d||d.codec==='pose')return normalizeTile(next);if(d?.codec==='classic_textile')return {...next,...repairClassicTextile(next)};return compactLayout(d)?{...next,frontal:paletteRoleAfterContour(next)}:next;
 }
 
 /** A placed extension inherits the finish, never a neighbour's centre role. */
 export function isolatedTile(tile:Tile,position:Position):Tile {
- return {...tile,position:{...position},edges:15,frontal:0,...(tile.textileRole!==undefined?{textileRole:0}:{})};
+ return normalizeTile({...tile,position:{...position},edges:15,frontal:0,...(tile.textileRole!==undefined?{textileRole:0}:{})});
 }
 
 /** undefined means unloaded/unknown, never air. Preserve the last known edge in that case. */
@@ -66,6 +67,6 @@ export function planFinish(tiles:readonly Tile[],finish:Finish):Tile[] {
     }
     const {design:previousDesign,textileRole:previousRole,...base}=t;
     const sharedClassic=design?.codec==='classic_textile';
-    return {...base,...(design?{design:design.id}:{}),stone:design&&!sharedClassic?SURFACES.indexOf(design.surface):finish.stone,cloth:design?TEXTILE_VALUES.indexOf(design.textile):finish.cloth,facing:design?.codec==='symmetric'?0:finish.facing,edges,frontal:sharedClassic?(finish.ornamental&&(edges&(1<<finish.facing))?frontalRole(width,index):0):frontal,...(sharedClassic?{textileRole:edges&(1<<finish.facing)?centerRole(width,index):0}:{})};
+    return normalizeTile({...base,...(design?{design:design.id}:{}),stone:design&&!sharedClassic?SURFACES.indexOf(design.surface):finish.stone,cloth:design?TEXTILE_VALUES.indexOf(design.textile):finish.cloth,facing:design?.codec==='symmetric'?0:finish.facing,edges,frontal:sharedClassic?(finish.ornamental&&(edges&(1<<finish.facing))?frontalRole(width,index):0):frontal,...(sharedClassic?{textileRole:edges&(1<<finish.facing)?centerRole(width,index):0}:{})});
   });
 }

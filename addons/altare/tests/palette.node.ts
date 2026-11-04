@@ -40,7 +40,7 @@ test('breaking a neighbour never produces an unencodable palette pose or changes
    const p=encodeTile(next);assert.deepEqual(decodeTile(p.id,next.position,p.states),next);
   }
  }
- const old=grid(1,1)[0]!;assert.deepEqual(withEdges({...old,frontal:9},0),{...old,frontal:9,edges:0});
+ const old=grid(1,1)[0]!;assert.deepEqual(withEdges({...old,frontal:9},0),{...old,frontal:0,edges:0});
 });
 test('palette changes participate in late identity checks and rollback without writing above the altar',()=>{
  const before=planFinish(grid(8,2),{stone:0,cloth:0,ornamental:false,facing:1,design:liturgicalDesign('pilaster','marble','rose').id});

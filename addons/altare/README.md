@@ -1,6 +1,6 @@
 # Altare
 
-**0.11.2 — Ogivas com chanfros contínuos e mitras refinadas.** Relevos ajustados ao campo do fundo, preservando toalhas, apoios e o editor corrigido da 0.11.1. [Construção e compatibilidade](docs/OGIVE_DETAIL_0.11.2.md).
+**0.12.0 — Poses visuais compactas.** Atelier e Mensa registram somente combinações visuais necessárias, preservando os centros em quebras laterais. O catálogo cai de 78.432 para **54.528 estados**, sem retirar escolhas do editor. [Arquitetura e testes](docs/COMPACT_POSES_0.12.0.md).
 
 A [marcenaria 0.6.1](docs/JOINERY_0.6.1.md) acrescenta Arca e Balaústres ao [contrato de personalização](docs/CUSTOMIZATION_0.5.0.md). Os dois modelos usam nogueira, todos os tecidos e as oito cores do Floral IHS, sem aplique adicional.
 
@@ -30,13 +30,13 @@ A 0.4.1 corrige as frestas entre facetas e a sobreposição de desenhos nas jun�
 
 O Content Log da 0.4.1 confirmou a rejeição das caixas de colisão dos 66 blocos de cavaletes: os IDs não eram registrados e a aplicação terminava em rollback. A 0.4.2 usa caixas estáveis `origin/size`, resolve todas as permutações antes da primeira escrita e registra a cadeia de causas. Refina também a estrutura dos cavaletes, pilastras e ogivas, preservando integralmente as texturas. [Diagnóstico](docs/STRUCTURES_0.4.2.md) · [comparação antes/depois](out/structure-comparison-0.4.2/index.html).
 
-## Testar a 0.11.2
+## Testar a 0.12.0
 
-[Baixar Altare-0.11.2.mcaddon](dist/releases/Altare-0.11.2.mcaddon) · [Relatório oficial](dist/validation/0.11.2/release-summary.json) · [Correção do editor](docs/EDITOR_FIX_0.11.1.md) · [Reteste visual](docs/OGIVE_DETAIL_0.11.2.md).
+[Baixar Altare-0.12.0.mcaddon](dist/releases/Altare-0.12.0.mcaddon) · [Relatório oficial](dist/validation/0.12.0/release-summary.json) · [Correção do editor](docs/EDITOR_FIX_0.11.1.md) · [Reteste visual](docs/OGIVE_DETAIL_0.11.2.md).
 
 [Ogivas: comparar antes e depois](out/ogive-comparison-0.11.2/index.html).
 
-1. Importar em uma cópia do mundo e ativar BP/RP **`[0,11,2]`**, sem outra revisão Altare concorrente. Alvo mínimo 1.26.40; Script API 2.9.0/UI 2.1.0 estáveis; sem experimentos. A ferramenta deve abrir a tela sem `InvalidObservableError`, inclusive ao alternar materiais fixos e aplique indisponível.
+1. Importar em um mundo de teste e ativar BP/RP **`[0,12,0]`**, sem outra revisão Altare concorrente. Alvo mínimo 1.26.40; Script API 2.9.0/UI 2.1.0 estáveis; sem experimentos. A ferramenta deve abrir a tela sem `InvalidObservableError`, inclusive ao alternar materiais fixos e aplique indisponível.
 2. Executar `/function altare/dev_kit`; montar 7 × 2 módulos, com um bloco de altura. Usar **Acabamento do altar**, escolher Ogivas e Sem toalha; conferir pontas, recessos, impostas, apoios e retorno dos cantos em movimento. Alternar tecidos, materiais e relevo; repetir em 8 × 2 e conferir o centro dividido.
 3. Usar **Acabamento do altar** na lateral frontal. Na mesma tela, escolher Cavaletes, Nogueira e Sem toalha; usar Aplicar. Reabrir, escolher Cordeiro e aplicar. Cancelar não altera blocos; Restaurar escolhas recupera a configuração aberta. Conferir dois cavaletes nas extremidades, escoras conectadas e vão central aberto.
 4. Colocar pedra vanilla e caldeirinha sobre o tampo; alternar cavaletes, pilastras e ogivas. Testar também **Floral IHS**, branco/roxo/róseo; salvar e reabrir. Objetos superiores devem permanecer na mesma posição.
@@ -44,13 +44,13 @@ O Content Log da 0.4.1 confirmou a rejeição das caixas de colisão dos 66 bloc
 
 Os testes do pacote importado e de multiplayer são feitos pelo usuário. As capturas são diagnósticos com os modelos/texturas distribuídos, produzidos fora do Minecraft; não confirmam suporte, iluminação ou paridade do renderizador real.
 
-**Altares existentes:** só mudam de família ao aplicar a ferramenta. Os IDs/estados clássicos e os recursos visuais de Guadalupe foram preservados. Acrescentar um módulo padrão herda o acabamento vizinho, mas é necessário reaplicar para recentralizar os motivos. Dois altares encostados no mesmo nível são um único conjunto. [Atualização e downgrade](docs/MIGRATION_0.4.0.md).
+**Construção:** acrescentar um módulo padrão herda o acabamento vizinho, sem copiar seu motivo central. Reaplicar o acabamento recentraliza a composição. Quebrar uma lateral conserva os motivos dos módulos restantes; cobrir a própria frente remove o motivo que ficou interno. Dois altares encostados no mesmo nível formam um único conjunto. Altare está em desenvolvimento e seu schema pode evoluir diretamente; esta revisão não inclui migração de versões anteriores.
 
 ## Limites
 
 Ainda é uma revisão diagnóstica, sem receitas/economia de Sobrevivência, edição em Aventura, formas em L/curvas, altura fracionária, vários itens por célula ou física dinâmica do tecido. A mesa aberta usa dois cavaletes de extremidade, com um montante por célula de profundidade em cada um; não acrescenta apoios intermediários conforme o comprimento. O recorte ornamental não é uma malha de renda fio a fio. Seleção mantém o cubo completo; colisão da mesa segue tampo/apoios/travessas, com caixas conservadoras nas escoras diagonais e sem corpo sólido central.
 
-Quebrar um módulo descarta seus estados locais de contorno e papel central. Nas receitas novas, o ID do item conserva a família/aparência; no bloco clássico, o acabamento volta aos defaults. Reaplicar a ferramenta após reconstruir. O catálogo usa 78.432 combinações de estados e 88.176 com Aspergillum local. Excede a referência de desempenho 65.536; a exceção é diagnóstica e exige profiling, não limita crafts. Custos, avisos e condições de promoção estão no [contrato 0.9.0](docs/UNIVERSAL_TEXTILES_0.9.0.md).
+Quebrar um módulo descarta seus estados locais de contorno e papel central. Nas receitas novas, o ID do item conserva a família/aparência; no bloco clássico, o acabamento volta aos defaults. Reaplicar a ferramenta após reconstruir. O catálogo usa 54.528 estados e 64.272 com Aspergillum local, abaixo da referência de 65.536. Outros packs devem ser somados separadamente. A compactação desta revisão cobre Atelier e Mensa; famílias já compactas mantêm o comportamento anterior, conforme o [escopo atual](docs/COMPACT_POSES_0.12.0.md).
 
 ## Desenvolvimento
 
@@ -61,9 +61,6 @@ Executar nesta pasta, com as dependências fixadas da raiz:
 ```powershell
 npm run check
 npm run package
-node tools/verify-baseline.mjs
-node tools/verify-world-compatibility.mjs
-node tools/verify-world-compatibility.mjs dist/releases/Altare-0.4.2.mcaddon
 npm run capture -- --matrix structures --views front,oblique --width 2000 --height 1000 --output out/structures-0.5.0
 npm run capture -- --matrix structures --presets trestle-bare-7,trestle-white-7 --views back --width 2000 --height 1000 --output out/trestle-back-0.5.0
 npm run capture -- --presets guadalupe-7x2,guadalupe-8x2 --views front,oblique --width 2000 --height 1000 --output out/legacy-0.5.0

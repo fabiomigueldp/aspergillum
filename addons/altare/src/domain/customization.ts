@@ -35,7 +35,11 @@ export function changeCustomization(draft:Customization,patch:Partial<Customizat
 /** Centre/contour roles vary within one finish and must not imply mixed choices. */
 export function hasMixedFinishes(tiles:readonly Tile[]):boolean {
  const ornamental=tiles.some(t=>t.frontal>0&&(!t.design||designById(t.design)?.structure==='classic'));
- const key=(tile:Tile)=>JSON.stringify(customizationFinish(customizationFromFinish({stone:tile.stone,cloth:tile.cloth,ornamental,facing:tile.facing,...(tile.design?{design:tile.design}:{})})));
+ const key=(tile:Tile)=>JSON.stringify(customizationFinish(customizationFromFinish({stone:tile.stone,cloth:tile.cloth,ornamental,facing:0,...(tile.design?{design:tile.design}:{})})));
  const first=tiles[0];if(!first)return false;
- const initial=key(first);return tiles.some(tile=>key(tile)!==initial);
+ const initial=key(first);if(tiles.some(tile=>key(tile)!==initial))return true;
+ // Blank compact faces have no ornamental direction. Compare direction only
+ // where it affects a motif, the trestle structure, or an existing layout.
+ const directed=tiles.filter(tile=>{const d=designById(tile.design);return tile.frontal>0||d?.structure==='trestle'||!!d&&d.codec!=='pose';});
+ return directed.some(tile=>tile.facing!==directed[0]?.facing);
 }

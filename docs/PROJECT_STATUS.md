@@ -1,5 +1,9 @@
 # Estado do projeto
 
+## Altare compacto — 04/11/2026
+
+Altare 0.12.0 evolui diretamente o schema de Atelier e Mensa: 54.528 estados, 64.272 junto com Aspergillum. O add-on não foi distribuído; não há requisito de migração ou preservação do schema anterior. Foram retirados o CLI e as barreiras de auditoria de compatibilidade acrescentados na revisão anterior. Modelos, materiais, colisão e escolhas do editor permanecem; quebras laterais dessas famílias preservam motivos. [Arquitetura e escopo](../addons/altare/docs/COMPACT_POSES_0.12.0.md). Aspergillum e Studio não mudam de versão.
+
 ## Curadoria do arquivo de trabalho — 04/11/2026
 
 Fontes, modelos 3D, add-on Nossa Senhora da Paz e estudos selecionados estão no [arquivo curado de desenvolvimento](../experiments/2026-11-preservation/README.md), com hashes, insumos e restauração independente. A curadoria retira 1.348.195.558 bytes de outputs históricos exclusivos do checkout, conserva V75/P85 e toda a cadeia Blender, e mantém os outros 12 snapshots intactos. A limpeza posterior removeu do histórico alcançável da main os 1.917 blobs exclusivos descartados; o arquivo integral anterior não está disponível em clones novos. Os 79 commits anteriores à inclusão desses objetos, a branch experimental e as oito tags permaneceram idênticos. A main mantém Aspergillum 1.2.5, Altare 0.11.2 e Studio 2.2.1; somente as correções de fechamento das interfaces foram incorporadas ao runtime. Schemas compactos 2.0.0/0.13.0 continuam NO-GO para atualização de saves/release. Nenhuma instalação ou publicação de pacote foi realizada.

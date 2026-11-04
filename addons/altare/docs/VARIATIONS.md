@@ -6,9 +6,11 @@ Um **estado** é um dado guardado no bloco. `altare:edges`, por exemplo, informa
 
 Uma **permutação** é uma combinação possível desses valores. Num formato com 16 contornos, quatro direções e quatro posições do motivo, o produto é 16×4×4 = 256 combinações por acabamento. Essa quantidade vem da declaração do bloco: colocar cem cópias não cria cem variantes novas, e mudar para Criativo não elimina as variantes registradas.
 
-“**Orçamento**” é nosso controle de desenvolvimento dessa quantidade. A Microsoft usa 65.536 como referência compartilhada pelo mundo e documenta aviso de possível degradação de desempenho acima dela. Isso não significa que a engine pare imediatamente na próxima combinação. Até 0.8.3, o projeto usava a referência como gate conservador dos packs locais conhecidos. A 0.9.0 adota uma exceção diagnóstica explícita, limitada e com profiling pendente. [Fonte oficial](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/blockreference/examples/blockstatesandpermutations?view=minecraft-bedrock-stable).
+“**Orçamento**” é nosso controle de desenvolvimento dessa quantidade. A Microsoft usa 65.536 como referência compartilhada pelo mundo e documenta aviso de possível degradação de desempenho acima dela. Isso não significa que a engine pare imediatamente na próxima combinação. A revisão 0.12.0 volta a ficar abaixo dessa referência com os dois packs locais, sem retirar modelos ou escolhas. [Fonte oficial](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/blockreference/examples/blockstatesandpermutations?view=minecraft-bedrock-stable).
 
-Na 0.9.0, são 397 blocos/78.432 combinações; com Aspergillum, 88.176. O seletor único reúne dez escolhas de toalha nos sete modelos. [Matriz atual, limites e migração](UNIVERSAL_TEXTILES_0.9.0.md).
+Na 0.12.0, são **397 blocos e 54.528 combinações**; com Aspergillum, **64.272**. O seletor único reúne dez escolhas de toalha nos sete modelos. Atelier e Mensa guardam poses visuais compactas. [Representação atual e testes](COMPACT_POSES_0.12.0.md).
+
+Altare não foi distribuído: seu schema evolui diretamente durante o desenvolvimento. A discussão de migração nas revisões históricas abaixo não é requisito do desenvolvimento atual.
 
 Histórico 0.7.0:
 

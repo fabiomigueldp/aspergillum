@@ -1,6 +1,6 @@
 import { Direction, system, world } from '@minecraft/server';
 import { neighbor,positionKey,isolatedTile } from '../domain/surface.ts';
-import { ALTAR,TOOL,BedrockSurfacePort,tileFromBlock,tilePermutation } from '../infrastructure/surface-port.ts';
+import { ALTAR,TOOL,BedrockSurfacePort,tilePermutation } from '../infrastructure/surface-port.ts';
 import {isAltarId} from '../domain/catalog.ts';
 import { edit,sessions } from '../infrastructure/editor.ts';
 
@@ -34,8 +34,8 @@ world.beforeEvents.playerInteractWithBlock.subscribe(event=>{
   if(event.cancel||!isAltarId(event.block.typeId)||event.itemStack?.typeId!==TOOL)return;
   event.cancel=true;if(!event.isFirstEvent)return;
   const player=event.player,dimension=event.block.dimension,position={...event.block.location};
-  const i=faces.indexOf(event.blockFace),tile=tileFromBlock(event.block);
-  const face=i>=0?i:tile?.facing;
+  const i=faces.indexOf(event.blockFace);
+  const face=i>=0?i:undefined;
   system.run(()=>{void edit(player,dimension,position,face);});
 });
 world.afterEvents.playerLeave.subscribe(e=>sessions.releasePlayer(e.playerId));
