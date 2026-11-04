@@ -1,5 +1,9 @@
 # QA do Altare 0.11.2
 
+## Editor nativo em desenvolvimento
+
+Conferir controles, dimensões, Guadalupe e fechamento conforme o [roteiro do editor](NATIVE_EDITOR_UX.md). Os testes executam a apresentação real com host simulado, sem comprovar layout/input no Bedrock.
+
 ## Chanfros de Ogivas — 0.11.2
 
 103 testes; vértices de frente/fundo, mitras e normais nas quatro orientações. Oráculo independente de raios exige envoltória contínua e sem pontas expostas. Relevos ímpares cabem no campo do fundo. `verify-ogive-detail.mjs` protege todos os 397 blocos, 174 mapas, runtime/editor e recursos de outras famílias, além de corpo/toalhas/relevos pares do próprio Ogivas. [Capturas e reteste](OGIVE_DETAIL_0.11.2.md).

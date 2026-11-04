@@ -1,5 +1,11 @@
 # Changelog
 
+## Em desenvolvimento — 2026-11-04 — editor Altare
+
+- Personalização mais clara, materiais fixos como texto e ações que respeitam o fechamento da tela.
+- Corrige dimensões reativas e a identificação de Guadalupe sem modificar catálogo, estados ou codecs da main.
+- Aspergillum 1.2.5 e Altare 0.11.2 permanecem como referências de pacote; nenhum estudo de schema/migração foi promovido. [Contrato e reteste](addons/altare/docs/NATIVE_EDITOR_UX.md).
+
 ## Ferramenta local — 2026-10-31 — Render Studio 2.2.1
 
 - Integra Altare 0.11.2: chanfros e mitras de Ogivas, com o mesmo custo geométrico e relevos ajustados ao campo do fundo.

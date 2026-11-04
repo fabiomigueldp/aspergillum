@@ -1,5 +1,9 @@
 # Estado do projeto
 
+## Editor Altare — código em desenvolvimento — 04/11/2026
+
+Clareza dos controles, dimensões reativas, identificação de Guadalupe e proteção contra callbacks após fechar. Mudança isolada de apresentação sobre o catálogo existente; sem novos modelos, codecs ou estados. [Contrato e reteste](../addons/altare/docs/NATIVE_EDITOR_UX.md). Não há novo pacote ou validação Minecraft, nem promoção dos estudos separados de compactação/migração.
+
 ## Chanfros de Ogivas Altare — 31/10/2026
 
 Altare 0.11.2 / Estúdio 2.2.1 refina os recessos de Ogivas com planos inclinados e mitras fechadas, incluindo a ponta. Relevos ímpares cabem no campo do fundo; corpo, apoios, toalhas, mapas, definições de bloco e runtime/editor são preservados. Não aumenta registros/faces, arquivos ou estados. [Construção e reteste](../addons/altare/docs/OGIVE_DETAIL_0.11.2.md). Aspergillum permanece 1.2.5; importação e profiling pendentes.

@@ -1,5 +1,11 @@
 # Changelog
 
+## Em desenvolvimento — 2026-11-04 — editor nativo
+
+- Organiza escolhas, materiais fixos, ações e mensagens em pt_BR/en_US.
+- Corrige dimensões congeladas, Guadalupe inferida de papéis arquitetônicos e callbacks após fechar/cancelar.
+- Preserva os sete modelos, codecs, estados e transação da main; sem nova release de pacote ou validação Minecraft. [Contrato e reteste](docs/NATIVE_EDITOR_UX.md).
+
 ## 0.11.2 — 2026-10-31 — chanfros de Ogivas
 
 - Intradorso com chanfro contínuo e mitras fechadas na ponta e entre facetas; transporte correto das rotações compostas para os quatro lados.
