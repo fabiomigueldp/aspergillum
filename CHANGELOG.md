@@ -1,5 +1,11 @@
 # Changelog
 
+## Em desenvolvimento — 2026-11-04 — clareza do Estúdio
+
+- Materiais fixos como texto, relevo contextual e labels coerentes com o editor Altare, sem alterar escolhas suspensas.
+- Foco do canvas dentro da área visível, instruções de teclado e status acessível também em telas estreitas.
+- Matriz de controles e smoke de componente independente de assets. Sem mudanças no editor nativo, renderer, cenas ou pacotes. [Verificação e limites](docs/RENDER_STUDIO.md).
+
 ## Limpeza do histórico de pesquisa — 04/11/2026
 
 - Remove somente os 1.917 blobs exclusivos descartados da ancestralidade da main, preservando os 82 commits lógicos, metadata, branch experimental, tags e conteúdos úteis. A reescrita muda três IDs; este registro é um commit posterior de documentação/testes.

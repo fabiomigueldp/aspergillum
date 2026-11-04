@@ -2,6 +2,23 @@
 
 Ferramenta local do 3D Workbench para compor e fotografar os altares reais do Altare. Renderer 2.2.1, construções revisão 4, montagem litúrgica revisão 3. Não modifica os packs, instalações ou mundos. Conteúdo atual: Altare 0.11.2 e Aspergillum 1.2.5. Ogivas tem chanfros contínuos, mitras e apoios compartilhados; [construção e QA](../addons/altare/docs/OGIVE_DETAIL_0.11.2.md).
 
+## Clareza e acesso por teclado — em desenvolvimento
+
+O painel usa **Largura** para a dimensão horizontal, **Imagem de Guadalupe** para a imagem opcional e **Detalhes** para o grupo de ornamentos. Materiais fixos aparecem como texto. Relevos indisponíveis ficam ocultos, com uma indicação curta de compatibilidade; a escolha permanece no rascunho e volta quando a combinação permite. A função de apresentação não altera a composição nem as escolhas suspensas.
+
+O canvas mantém o contorno de foco dentro da área visível e descreve os comandos de teclado: setas, `+`, `−` e Home. Em telas estreitas, o status sai apenas da apresentação visual, permanecendo disponível à árvore de acessibilidade. Essas mudanças não alteram o renderer, assets, câmera, formato de cenas ou versões dos packs.
+
+Cinco testes de interface cobrem textos, descrição da câmera, CSS de foco/status e a matriz de sete modelos × dez toalhas × oito cores. Três testes de contrato falhavam antes do patch. O smoke abaixo usa o HTML/CSS e a apresentação reais sem carregar assets ou inicializar uma cena 3D:
+
+```text
+node --test viewer-3d/tests/studio-interface.node.mjs
+node viewer-3d/scripts/smoke-studio-interface.mjs
+```
+
+O smoke usa o launcher gráfico compartilhado. `PLAYWRIGHT_CHROMIUM_EXECUTABLE` pode selecionar um Chromium já instalado; a verificação de GPU e o fallback limitado permanecem obrigatórios. Resultados e capturas ficam em `out/studio-interface/`. Nesta revisão, a execução do browser ficou bloqueada pelo ambiente antes de carregar a página; não há declaração de validação visual ou com leitor de tela.
+
+Reteste: conferir o foco ao navegar até o canvas por Tab, os avisos com leitor de tela em 390/768/1440 px e a alternância entre pedra/madeira/Colunata. Escolher Cruz no Floral IHS vermelho, trocar para roxo e voltar deve manter o relevo. O teste de componente não substitui o smoke completo da aplicação nem a validação assistiva real.
+
 ## Abrir e usar
 
 Na raiz: `npm run studio:altare`. Também é possível abrir `viewer-3d/abrir-estudio.cmd`. A preparação registra o Altare no catálogo local quando necessário, sincroniza os assets, atualiza miniaturas ausentes ou de outra versão do renderer e abre a aba Render Studio. Usa as dependências já existentes da raiz e do viewer; requer Node.js 20.19+.

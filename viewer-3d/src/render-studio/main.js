@@ -5,6 +5,7 @@ import {planLiturgy} from './liturgical-plan.js';
 import {composeLiturgy,disposeDressing} from './liturgical-scene.js';
 import {STUDIO_VERSION,STUDIO_PRESETS,STUDIO_ENVIRONMENTS,STUDIO_VIEWS,DEFAULT_STUDIO_CONFIG,normalizeStudioConfig,migrateStudioConfig,studioDimensions,studioFilename,validateStudioCamera} from '../shared/studio-contract.js';
 import {studioCustomization,studioAppearance,changeCustomization,customizationCapabilities,createStudioHistory} from '../shared/altar-customization.js';
+import {syncAppearanceControls} from './control-presentation.js';
 const elements=new Map([...document.querySelectorAll('[id^="studio-"]')].map(element=>[element.id,element]));
 const $=id=>elements.get('studio-'+id),root=$('main');
 const fields=['family','surface','textile','frontal','stone','ornamental','width','depth','lighting','exposure','light','projection','quality','dressing','candles','season','furnishing','candlePlacement'];
@@ -29,12 +30,7 @@ for(const [id,label,value]of colors){const button=document.createElement('button
 for(const preset of STUDIO_PRESETS){const button=document.createElement('button');button.type='button';button.dataset.preset=preset.id;button.title=preset.description;button.setAttribute('aria-pressed','false');const image=document.createElement('img');image.alt='';image.src=new URL(`studio-gallery/${preset.id}.png`,document.baseURI).href;image.addEventListener('error',()=>{image.hidden=true;},{once:true});const label=document.createElement('strong');label.textContent=preset.name;button.append(image,label);button.addEventListener('click',()=>{if(exporting)return;selection=preset.id;request({...DEFAULT_STUDIO_CONFIG,...preset,ratio:config.ratio,quality:config.quality},true).catch(failure);});$('presets').append(button);}
 function syncUI(){
  for(const key of fields){if(key==='ornamental')$(key).checked=config[key];else $(key).value=config[key];}
- const capabilities=customizationCapabilities(editorDraft),classic=!capabilities.architectural;
- $('classic').hidden=!classic;$('architectural').hidden=classic;$('colors').hidden=!capabilities.color;
- $('textile').value=editorDraft.textile;$('frontal').value=capabilities.relief?editorDraft.relief:'none';$('frontal').disabled=!capabilities.relief;
- $('relief-limit').hidden=!capabilities.architectural||capabilities.relief||capabilities.joinery||capabilities.ornate;
- $('surface').disabled=capabilities.joinery||capabilities.ornate;$('frontal').closest('label').hidden=capabilities.joinery||capabilities.ornate;
- $('frontal-title').hidden=capabilities.ornate||capabilities.joinery;$('frontal-field').hidden=!capabilities.architectural||capabilities.ornate||capabilities.joinery;$('guadalupe-field').hidden=!classic;
+ syncAppearanceControls($,editorDraft,customizationCapabilities(editorDraft));
  for(const button of root.querySelectorAll('[data-model]'))button.setAttribute('aria-pressed',String(button.dataset.model===config.family));
  $('undo').disabled=!history.canUndo||Boolean(drain);$('redo').disabled=!history.canRedo||Boolean(drain);
  $('ritual-fields').hidden=config.dressing==='none';$('direction-field').hidden=config.lighting==='classic';
