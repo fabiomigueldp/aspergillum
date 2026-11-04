@@ -3,11 +3,13 @@ import {createAltareProvider} from './altare-provider.js';
 import {createPropsProvider} from './props-provider.js';
 import {planLiturgy} from './liturgical-plan.js';
 import {composeLiturgy,disposeDressing} from './liturgical-scene.js';
-import {STUDIO_VERSION,STUDIO_PRESETS,STUDIO_ENVIRONMENTS,STUDIO_VIEWS,DEFAULT_STUDIO_CONFIG,normalizeStudioConfig,migrateStudioConfig,studioDimensions,studioFilename,validateStudioCamera} from '../shared/studio-contract.js';
+import {STUDIO_VERSION,STUDIO_PRESETS,STUDIO_ENVIRONMENTS,STUDIO_VIEWS,DEFAULT_STUDIO_CONFIG,normalizeStudioConfig,studioDimensions,studioFilename} from '../shared/studio-contract.js';
 import {studioCustomization,studioAppearance,changeCustomization,customizationCapabilities,createStudioHistory} from '../shared/altar-customization.js';
 import {syncAppearanceControls} from './control-presentation.js';
+import {createStudioSceneState,restoreStudioSceneState,readStudioSceneFile} from '../shared/studio-persistence.js';
 const elements=new Map([...document.querySelectorAll('[id^="studio-"]')].map(element=>[element.id,element]));
 const $=id=>elements.get('studio-'+id),root=$('main');
+$('save').disabled=$('open').disabled=true;
 const fields=['family','surface','textile','frontal','stone','ornamental','width','depth','lighting','exposure','light','projection','quality','dressing','candles','season','furnishing','candlePlacement'];
 const colors=[['white','Branco','#e9e4d8'],['red','Vermelho','#8b2334'],['green','Verde','#234c39'],['purple','Roxo','#593859'],['rose','Róseo','#c98a99'],['black','Preto','#282c2b'],['gold','Dourado','#b79951'],['silver','Prateado','#a9b2af']];
 let config={...DEFAULT_STUDIO_CONFIG},provider,props,stage,selection='guadalupe',pending=null,drain=null,lastModelKey='',lastDressingKey='',exporting=false,saveTimer;
@@ -15,7 +17,7 @@ let editorDraft=studioCustomization(config),intent=null;const history=createStud
 const api={version:STUDIO_VERSION,ready:false,error:null};window.__BEDROCK_STUDIO__=api;
 function status(message){$('status').textContent=message;}
 function failure(error){const message=error instanceof Error?error.message:String(error);$('error').textContent=message;$('error').hidden=false;status('Não foi possível concluir');return message;}
-function remember(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>{try{localStorage.setItem('bedrock-studio.altare',JSON.stringify({schema:2,renderer:STUDIO_VERSION,config,camera:stage.cameraState()}));}catch{}},250);}
+function remember(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>{try{localStorage.setItem('bedrock-studio.altare',JSON.stringify({...createStudioSceneState(config,editorDraft),renderer:STUDIO_VERSION,camera:stage.cameraState()}));}catch{}},250);}
 function panel(id,focus=false){for(const button of root.querySelectorAll('[data-panel]')){const active=button.dataset.panel===id;button.setAttribute('aria-selected',String(active));button.tabIndex=active?0:-1;$('panel-'+button.dataset.panel).hidden=!active;if(active&&focus)button.focus();}}
 for(const button of root.querySelectorAll('[data-panel]')){button.addEventListener('click',()=>panel(button.dataset.panel));button.addEventListener('keydown',event=>{const ids=['altar','scene','image'],i=ids.indexOf(button.dataset.panel);if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();panel(ids[event.key==='Home'?0:event.key==='End'?2:(i+(event.key==='ArrowRight'?1:2))%3],true);}});}
 function appearance(patch){if(exporting)return;selection=null;const next=changeCustomization(intent?.draft??editorDraft,patch);return request({...(intent?.config??config),...studioAppearance(next)},false,{draft:next}).catch(error=>{syncUI();failure(error);});}
@@ -68,9 +70,9 @@ for(const key of fields){const element=$(key);element.addEventListener('change',
 for(const key of ['exposure','light'])$(key).addEventListener('input',()=>{$(key+'-value').textContent=key==='light'?$(key).value+'°':Number($(key).value).toFixed(2).replace('.',',');});
 $('resolution').addEventListener('change',syncUI);$('fit').addEventListener('click',()=>{stage.setView(config.view);remember();});
 function download(blob,name){const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}
-function sceneFile(){return {schema:2,renderer:STUDIO_VERSION,addon:'altare',addonVersion:provider.catalog.version,sourceHash:provider.catalog.sourceHash,environment:{sourceHash:stage.vanilla.manifest.sourceHash,revision:stage.vanilla.manifest.revision,sceneryRevision:stage.stage.revision,blockCount:stage.stage.blockCount,blockUnit:1,floors:stage.stage.layout.floor,cutaway:[...(stage.stage.cutaway??[])]},objects:{sourceHash:props.catalog.sourceHash,arrangement:stage.arrangement},config:{...config},camera:stage.cameraState()};}
-$('save').addEventListener('click',()=>download(new Blob([JSON.stringify(sceneFile(),null,2)],{type:'application/json'}),studioFilename(config)+'.json'));
-$('open').addEventListener('click',()=>$('file').click());$('file').addEventListener('change',async()=>{try{const file=$('file').files[0];if(!file)return;if(file.size>32768)throw Error('A cena excede o limite de 32 KB.');const saved=JSON.parse(await file.text());if(![1,2].includes(saved.schema)||saved.addon!=='altare')throw Error('Arquivo de cena incompatível.');const next=migrateStudioConfig(saved.config,saved.schema);validateStudioCamera(saved.camera);if(saved.camera.projection!==next.projection)throw Error('Projeção da cena incompatível com a câmera.');selection=null;await request(next,true);stage.restoreCamera(saved.camera);remember();status(saved.sourceHash!==provider.catalog.sourceHash?'Cena aberta com a versão atual dos modelos':'Cena aberta');}catch(error){failure(error);}finally{$('file').value='';}});
+function sceneFile(){return {...createStudioSceneState(config,editorDraft),renderer:STUDIO_VERSION,addon:'altare',addonVersion:provider.catalog.version,sourceHash:provider.catalog.sourceHash,environment:{sourceHash:stage.vanilla.manifest.sourceHash,revision:stage.vanilla.manifest.revision,sceneryRevision:stage.stage.revision,blockCount:stage.stage.blockCount,blockUnit:1,floors:stage.stage.layout.floor,cutaway:[...(stage.stage.cutaway??[])]},objects:{sourceHash:props.catalog.sourceHash,arrangement:stage.arrangement},camera:stage.cameraState()};}
+$('save').addEventListener('click',()=>{if(!api.ready||drain||exporting)return;try{download(new Blob([JSON.stringify(sceneFile(),null,2)],{type:'application/json'}),studioFilename(config)+'.json');}catch(error){failure(error);}});
+$('open').addEventListener('click',()=>$('file').click());$('file').addEventListener('change',async()=>{try{const file=$('file').files[0];if(!file)return;if(file.size>32768)throw Error('A cena excede o limite de 32 KB.');const saved=JSON.parse(await file.text());const next=readStudioSceneFile(saved);selection=null;await request(next.config,true,{draft:next.draft});stage.restoreCamera(next.camera);remember();status(saved.sourceHash!==provider.catalog.sourceHash?'Cena aberta com a versão atual dos modelos':'Cena aberta');}catch(error){failure(error);}finally{$('file').value='';}});
 async function capture(longEdge){await drain;exporting=true;status('Renderizando imagem');const controls=[...root.querySelectorAll('input,select,button')],previous=controls.map(e=>e.disabled);controls.forEach(e=>e.disabled=true);
  try{await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));const result=await stage.capture(longEdge);status(`Imagem pronta · ${result.width} × ${result.height}`);return {...result,...sceneFile()};}
  finally{exporting=false;controls.forEach((e,i)=>e.disabled=previous[i]);}}
@@ -82,9 +84,9 @@ $('canvas').addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','Ar
 try{
  stage=new StudioStage($('canvas'),remember);[,provider,props]=await Promise.all([stage.prepare(),createAltareProvider(stage.renderer),createPropsProvider(stage.renderer)]);$('pack-version').textContent='v'+provider.catalog.version;
  let saved;try{saved=JSON.parse(localStorage.getItem('bedrock-studio.altare')??'null');}catch{}
- try{if(saved)config=migrateStudioConfig(saved.config,saved.schema??1);}catch{saved=null;}
- if(saved)selection=null;await request(config,true);if(saved?.camera&&saved.renderer===STUDIO_VERSION){try{stage.restoreCamera(saved.camera);}catch{}}
+ try{if(saved){const restored=restoreStudioSceneState(saved,{allowLegacySchema:true});config=restored.config;editorDraft=restored.draft;}}catch{saved=null;}
+ if(saved)selection=null;await request(config,true,{draft:editorDraft});if(saved?.camera&&saved.renderer===STUDIO_VERSION){try{stage.restoreCamera(saved.camera);}catch{}}
  api.configure=async options=>{selection=null;await request(normalizeStudioConfig(options),true);return sceneFile();};
  api.preset=async id=>{const preset=STUDIO_PRESETS.find(p=>p.id===id);if(!preset)throw Error('Composição desconhecida.');selection=id;await request({...DEFAULT_STUDIO_CONFIG,...preset},true);return sceneFile();};
- api.capture=capture;api.scene=sceneFile;api.setView=id=>{if(!STUDIO_VIEWS.some(v=>v.id===id))throw Error('Vista desconhecida.');stage.setView(id);config={...config,view:id};syncUI();};api.ready=true;
+ api.capture=capture;api.scene=sceneFile;api.setView=id=>{if(!STUDIO_VIEWS.some(v=>v.id===id))throw Error('Vista desconhecida.');stage.setView(id);config={...config,view:id};syncUI();};api.ready=true;$('open').disabled=false;
 }catch(error){api.error=failure(error);$('loading').hidden=true;}

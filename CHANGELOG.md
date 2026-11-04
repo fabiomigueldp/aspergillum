@@ -6,6 +6,12 @@
 - Foco do canvas dentro da área visível, instruções de teclado e status acessível também em telas estreitas.
 - Matriz de controles e smoke de componente independente de assets. Sem mudanças no editor nativo, renderer, cenas ou pacotes. [Verificação e limites](docs/RENDER_STUDIO.md).
 
+## Em desenvolvimento — 2026-11-04 — cenas do Render Studio
+
+- Salva as escolhas suspensas do editor junto da configuração normalizada, tanto no JSON quanto no armazenamento local. Cor/modelo temporariamente incompatível não apaga material ou relevo ao reabrir.
+- Introduz schema 3 exclusivo das cenas do Studio, com validação do rascunho e leitura compatível dos schemas 1/2. Não altera schemas de mundo, versões de packs, modelos ou áudio. [Contrato e limites](docs/RENDER_STUDIO.md#persistência-das-escolhas--desenvolvimento-04112026).
+- Regressões do contrato e do controlador cobrem reinício, importação, histórico e dados inválidos. Smoke de navegador ampliado; execução visual real permanece pendente.
+
 ## Limpeza do histórico de pesquisa — 04/11/2026
 
 - Remove somente os 1.917 blobs exclusivos descartados da ancestralidade da main, preservando os 82 commits lógicos, metadata, branch experimental, tags e conteúdos úteis. A reescrita muda três IDs; este registro é um commit posterior de documentação/testes.

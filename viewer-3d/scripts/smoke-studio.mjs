@@ -66,6 +66,29 @@ try{
  }
  await page.click('[data-model="ogive"]');await ready();
  assert.equal(await page.locator('#studio-surface').inputValue(),'limestone');assert.equal(await page.locator('#studio-frontal').inputValue(),'cross');
+ // Suspended choices must survive both the exported file and browser restart.
+ for(const suspension of ['color','model']){
+  await page.evaluate(()=>window.__BEDROCK_STUDIO__.configure({family:'ogive',surface:'limestone',textile:'floral',color:'red',frontal:'cross'}));
+  await page.click(suspension==='color'?'[data-color="purple"]':'[data-model="coffer"]');await ready();
+  const suspended=await page.evaluate(()=>window.__BEDROCK_STUDIO__.scene());
+  assert.equal(suspended.config.frontal,'none');assert.equal(suspended.draft.relief,'cross');assert.equal(suspended.draft.surface,'limestone');
+  const download=page.waitForEvent('download');await page.click('#studio-save');
+  const file=path.join(output,`suspended-${suspension}.json`);await (await download).saveAs(file);
+  assert.deepEqual(JSON.parse(await fs.readFile(file,'utf8')),suspended);
+  await page.evaluate(()=>window.__BEDROCK_STUDIO__.preset('green'));
+  await page.locator('#studio-file').setInputFiles(file);
+  await page.waitForFunction(expected=>JSON.stringify(window.__BEDROCK_STUDIO__.scene().draft)===JSON.stringify(expected),suspended.draft);await ready();
+  assert.deepEqual(await page.evaluate(()=>window.__BEDROCK_STUDIO__.scene()),suspended);
+  await page.waitForFunction(expected=>{const saved=JSON.parse(localStorage.getItem('bedrock-studio.altare'));return saved?.schema===3&&JSON.stringify(saved.draft)===JSON.stringify(expected);},suspended.draft);
+  await page.reload({waitUntil:'commit'});
+  await page.waitForFunction(()=>window.__BEDROCK_STUDIO__?.ready||window.__BEDROCK_STUDIO__?.error,null,{timeout:120000});
+  assert.equal(await page.evaluate(()=>window.__BEDROCK_STUDIO__.error),null);await ready();
+  const reopened=await page.evaluate(()=>window.__BEDROCK_STUDIO__.scene());
+  assert.deepEqual(reopened.draft,suspended.draft);assert.deepEqual(reopened.config,suspended.config);
+  await page.click('#studio-tab-altar');
+  await page.click(suspension==='color'?'[data-color="red"]':'[data-model="ogive"]');await ready();
+  assert.equal(await page.locator('#studio-surface').inputValue(),'limestone');assert.equal(await page.locator('#studio-frontal').inputValue(),'cross');
+ }
  const environmentSamples=[];
  await page.click('[data-model="colonnade"]');await ready();
  assert.equal(await page.locator('#studio-surface').inputValue(),'marble');assert.equal(await page.locator('#studio-pattern-field').isVisible(),true);
@@ -101,7 +124,7 @@ try{
  const legacyClassic={...saved,schema:1,renderer:'1.8.3',config:{...saved.config,family:'classic',cloth:4,textile:'agnus'}};
  await page.locator('#studio-file').setInputFiles({name:'legacy-classic.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(legacyClassic))});
  await page.waitForFunction(()=>window.__BEDROCK_STUDIO__.scene().config.family==='classic'&&window.__BEDROCK_STUDIO__.scene().config.textile==='gold_long');await ready();
- assert.equal(await page.evaluate(()=>window.__BEDROCK_STUDIO__.scene().schema),2);
+ assert.equal(await page.evaluate(()=>window.__BEDROCK_STUDIO__.scene().schema),3);
  const legacyColonnade={...saved,schema:1,renderer:'1.8.3',config:{...saved.config,family:'colonnade',textile:'agnus'}};
  await page.locator('#studio-file').setInputFiles({name:'legacy-colonnade.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(legacyColonnade))});
  await page.waitForFunction(()=>window.__BEDROCK_STUDIO__.scene().config.family==='colonnade'&&window.__BEDROCK_STUDIO__.scene().config.textile==='lace');await ready();

@@ -29,11 +29,19 @@ Na raiz: `npm run studio:altare`. Também é possível abrir `viewer-3d/abrir-es
 4. Na aba Imagem, escolher proporção e resolução, depois **Exportar PNG**. A opção 3840 gera 3840 × 2160 em 16:9; formatos verticais usam 3840 na maior dimensão. A interface não aparece na imagem.
 5. **Salvar cena** guarda composição e câmera em JSON. **Abrir cena** permite repetir o enquadramento. A última cena também permanece no armazenamento local do navegador.
 
-Um único seletor Desenho oferece as dez escolhas em qualquer modelo. O tecido acompanha a troca de estrutura; cor aparece para Floral IHS e Guadalupe continua independente no Clássico. Cenas novas usam schema 2; a importação de schema 1 preserva a antiga aparência de Clássico/Colunata. [Contrato universal](../addons/altare/docs/UNIVERSAL_TEXTILES_0.9.0.md).
+Um único seletor Desenho oferece as dez escolhas em qualquer modelo. O tecido acompanha a troca de estrutura; cor aparece para Floral IHS e Guadalupe continua independente no Clássico. Cenas novas usam schema 3, com a configuração renderizada e as escolhas do editor separadas; a importação de schemas 1/2 preserva a aparência anterior, incluindo Clássico/Colunata. [Contrato universal](../addons/altare/docs/UNIVERSAL_TEXTILES_0.9.0.md).
 
 Desfazer/Refazer guardam até 40 configurações na sessão. As regras e escolhas temporariamente indisponíveis seguem o [domínio compartilhado do Altare](../addons/altare/docs/CUSTOMIZATION_0.5.0.md). As miniaturas de modelos são geradas por `scripts/capture-studio-models.mjs` e verificadas pelo hash das fontes.
 
 As onze composições são pontos de partida, não o limite do catálogo. A família Floral IHS disponibiliza as oito cores existentes no add-on. Na aba, o projeto fica fixo em Altare; os outros laboratórios continuam disponíveis. Alt+4 abre o estúdio.
+
+## Persistência das escolhas — desenvolvimento 04/11/2026
+
+Os botões de arquivo aguardam a preparação inicial dos modelos. Salvar cena e o armazenamento local usam o mesmo contrato de schema 3. `config` continua normalizado para renderizar; `draft` conserva material e relevo temporariamente suspensos. Assim, Cruz → roxo → salvar/reabrir → vermelho recupera a cruz, e Calcário/Cruz → Arca → salvar/reabrir → Ogivas recupera as duas escolhas. O histórico reaberto começa nessa cena, sem restaurar a pilha de desfazer da sessão anterior.
+
+A leitura valida os campos do domínio, descarta propriedades extras e rejeita um rascunho cuja aparência efetiva diverge da cena. Câmera, projeção, add-on e limite de 32 KB continuam validados antes de alterar a cena importada. Schemas 1/2 continuam abrindo e são salvos no formato atual; não é possível recuperar escolhas que os arquivos antigos nunca gravaram. Versões antigas do Studio não abrem o schema 3: preserve uma cópia antiga se precisar usá-las.
+
+A suíte Node cobre o contrato e o controlador real com DOM/renderizador simulados: arquivo JSON, armazenamento local, reinício, Desfazer/Refazer e rejeição sem alteração do estado. O smoke Playwright foi ampliado para download/importação/reload reais, mas a validação visual dessa correção permanece pendente. Nenhum schema de mundo, catálogo, geometria, pack ou instalação Bedrock foi alterado.
 
 ## Ambientes Minecraft
 
