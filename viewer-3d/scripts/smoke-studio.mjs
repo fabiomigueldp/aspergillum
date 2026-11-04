@@ -79,7 +79,7 @@ try{
   await page.locator('#studio-file').setInputFiles(file);
   await page.waitForFunction(expected=>JSON.stringify(window.__BEDROCK_STUDIO__.scene().draft)===JSON.stringify(expected),suspended.draft);await ready();
   assert.deepEqual(await page.evaluate(()=>window.__BEDROCK_STUDIO__.scene()),suspended);
-  await page.waitForFunction(expected=>{const saved=JSON.parse(localStorage.getItem('bedrock-studio.altare'));return saved?.schema===3&&JSON.stringify(saved.draft)===JSON.stringify(expected);},suspended.draft);
+  await page.waitForFunction(expected=>{const saved=JSON.parse(localStorage.getItem('bedrock-studio.altare.v3'));return saved?.schema===3&&JSON.stringify(saved.draft)===JSON.stringify(expected);},suspended.draft);
   await page.reload({waitUntil:'commit'});
   await page.waitForFunction(()=>window.__BEDROCK_STUDIO__?.ready||window.__BEDROCK_STUDIO__?.error,null,{timeout:120000});
   assert.equal(await page.evaluate(()=>window.__BEDROCK_STUDIO__.error),null);await ready();

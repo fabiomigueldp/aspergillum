@@ -39,9 +39,11 @@ As onze composições são pontos de partida, não o limite do catálogo. A fam�
 
 Os botões de arquivo aguardam a preparação inicial dos modelos. Salvar cena e o armazenamento local usam o mesmo contrato de schema 3. `config` continua normalizado para renderizar; `draft` conserva material e relevo temporariamente suspensos. Assim, Cruz → roxo → salvar/reabrir → vermelho recupera a cruz, e Calcário/Cruz → Arca → salvar/reabrir → Ogivas recupera as duas escolhas. O histórico reaberto começa nessa cena, sem restaurar a pilha de desfazer da sessão anterior.
 
+O armazenamento local grava somente `bedrock-studio.altare.v3`. Na primeira abertura, lê a chave legada `bedrock-studio.altare` se a nova ainda não existe, sem alterar ou remover o registro antigo. Um rollback continua usando sua cena legada; ao atualizar novamente, a cena v3 tem prioridade e conserva as escolhas suspensas, mesmo que a versão anterior tenha sido editada nesse intervalo. As duas versões mantêm suas cenas separadas.
+
 A leitura valida os campos do domínio, descarta propriedades extras e rejeita um rascunho cuja aparência efetiva diverge da cena. Câmera, projeção, add-on e limite de 32 KB continuam validados antes de alterar a cena importada. Schemas 1/2 continuam abrindo e são salvos no formato atual; não é possível recuperar escolhas que os arquivos antigos nunca gravaram. Versões antigas do Studio não abrem o schema 3: preserve uma cópia antiga se precisar usá-las.
 
-A suíte Node cobre o contrato e o controlador real com DOM/renderizador simulados: arquivo JSON, armazenamento local, reinício, Desfazer/Refazer e rejeição sem alteração do estado. O smoke Playwright foi ampliado para download/importação/reload reais, mas a validação visual dessa correção permanece pendente. Nenhum schema de mundo, catálogo, geometria, pack ou instalação Bedrock foi alterado.
+A suíte Node cobre ida/volta entre o controlador schema 2 preservado em fixture e o atual sobre o mesmo armazenamento, além do contrato e do controlador real com DOM/renderizador simulados: arquivo JSON, armazenamento local, reinício, Desfazer/Refazer e rejeição sem alteração do estado. O smoke Playwright foi ampliado para download/importação/reload reais, mas a validação visual dessa correção permanece pendente. Nenhum schema de mundo, catálogo, geometria, pack ou instalação Bedrock foi alterado.
 
 ## Ambientes Minecraft
 

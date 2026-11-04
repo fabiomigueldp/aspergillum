@@ -9,6 +9,7 @@
 ## Em desenvolvimento — 2026-11-04 — cenas do Render Studio
 
 - Salva as escolhas suspensas do editor junto da configuração normalizada, tanto no JSON quanto no armazenamento local. Cor/modelo temporariamente incompatível não apaga material ou relevo ao reabrir.
+- Isola a cena v3 em chave própria de armazenamento, lendo a chave antiga sem sobrescrevê-la; voltar à versão anterior e atualizar novamente conserva ambas as cenas.
 - Introduz schema 3 exclusivo das cenas do Studio, com validação do rascunho e leitura compatível dos schemas 1/2. Não altera schemas de mundo, versões de packs, modelos ou áudio. [Contrato e limites](docs/RENDER_STUDIO.md#persistência-das-escolhas--desenvolvimento-04112026).
 - Regressões do contrato e do controlador cobrem reinício, importação, histórico e dados inválidos. Smoke de navegador ampliado; execução visual real permanece pendente.
 

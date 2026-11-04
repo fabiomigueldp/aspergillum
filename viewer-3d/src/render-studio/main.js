@@ -6,7 +6,7 @@ import {composeLiturgy,disposeDressing} from './liturgical-scene.js';
 import {STUDIO_VERSION,STUDIO_PRESETS,STUDIO_ENVIRONMENTS,STUDIO_VIEWS,DEFAULT_STUDIO_CONFIG,normalizeStudioConfig,studioDimensions,studioFilename} from '../shared/studio-contract.js';
 import {studioCustomization,studioAppearance,changeCustomization,customizationCapabilities,createStudioHistory} from '../shared/altar-customization.js';
 import {syncAppearanceControls} from './control-presentation.js';
-import {createStudioSceneState,restoreStudioSceneState,readStudioSceneFile} from '../shared/studio-persistence.js';
+import {STUDIO_STORAGE_KEY,LEGACY_STUDIO_STORAGE_KEY,createStudioSceneState,restoreStudioSceneState,readStudioSceneFile} from '../shared/studio-persistence.js';
 const elements=new Map([...document.querySelectorAll('[id^="studio-"]')].map(element=>[element.id,element]));
 const $=id=>elements.get('studio-'+id),root=$('main');
 $('save').disabled=$('open').disabled=true;
@@ -17,7 +17,7 @@ let editorDraft=studioCustomization(config),intent=null;const history=createStud
 const api={version:STUDIO_VERSION,ready:false,error:null};window.__BEDROCK_STUDIO__=api;
 function status(message){$('status').textContent=message;}
 function failure(error){const message=error instanceof Error?error.message:String(error);$('error').textContent=message;$('error').hidden=false;status('Não foi possível concluir');return message;}
-function remember(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>{try{localStorage.setItem('bedrock-studio.altare',JSON.stringify({...createStudioSceneState(config,editorDraft),renderer:STUDIO_VERSION,camera:stage.cameraState()}));}catch{}},250);}
+function remember(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>{try{localStorage.setItem(STUDIO_STORAGE_KEY,JSON.stringify({...createStudioSceneState(config,editorDraft),renderer:STUDIO_VERSION,camera:stage.cameraState()}));}catch{}},250);}
 function panel(id,focus=false){for(const button of root.querySelectorAll('[data-panel]')){const active=button.dataset.panel===id;button.setAttribute('aria-selected',String(active));button.tabIndex=active?0:-1;$('panel-'+button.dataset.panel).hidden=!active;if(active&&focus)button.focus();}}
 for(const button of root.querySelectorAll('[data-panel]')){button.addEventListener('click',()=>panel(button.dataset.panel));button.addEventListener('keydown',event=>{const ids=['altar','scene','image'],i=ids.indexOf(button.dataset.panel);if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();panel(ids[event.key==='Home'?0:event.key==='End'?2:(i+(event.key==='ArrowRight'?1:2))%3],true);}});}
 function appearance(patch){if(exporting)return;selection=null;const next=changeCustomization(intent?.draft??editorDraft,patch);return request({...(intent?.config??config),...studioAppearance(next)},false,{draft:next}).catch(error=>{syncUI();failure(error);});}
@@ -83,7 +83,7 @@ new ResizeObserver(resize).observe($('frame-wrap'));
 $('canvas').addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','-','Home'].includes(event.key)||exporting)return;event.preventDefault();if(event.key==='Home'){stage.setView(config.view);return;}const offset=stage.camera.position.clone().sub(stage.controls.target);if(event.key==='+'||event.key==='-')offset.multiplyScalar(event.key==='+'?.9:1.1);else{const a=.1*(event.key==='ArrowLeft'||event.key==='ArrowDown'?-1:1);if(event.key==='ArrowLeft'||event.key==='ArrowRight'){const x=offset.x;offset.x=x*Math.cos(a)+offset.z*Math.sin(a);offset.z=-x*Math.sin(a)+offset.z*Math.cos(a);}else offset.y=Math.max(.15,offset.y+a*offset.length());}stage.camera.position.copy(stage.controls.target).add(offset);stage.controls.update();});
 try{
  stage=new StudioStage($('canvas'),remember);[,provider,props]=await Promise.all([stage.prepare(),createAltareProvider(stage.renderer),createPropsProvider(stage.renderer)]);$('pack-version').textContent='v'+provider.catalog.version;
- let saved;try{saved=JSON.parse(localStorage.getItem('bedrock-studio.altare')??'null');}catch{}
+ let saved;try{saved=JSON.parse(localStorage.getItem(STUDIO_STORAGE_KEY)??localStorage.getItem(LEGACY_STUDIO_STORAGE_KEY)??'null');}catch{}
  try{if(saved){const restored=restoreStudioSceneState(saved,{allowLegacySchema:true});config=restored.config;editorDraft=restored.draft;}}catch{saved=null;}
  if(saved)selection=null;await request(config,true,{draft:editorDraft});if(saved?.camera&&saved.renderer===STUDIO_VERSION){try{stage.restoreCamera(saved.camera);}catch{}}
  api.configure=async options=>{selection=null;await request(normalizeStudioConfig(options),true);return sceneFile();};

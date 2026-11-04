@@ -3,6 +3,10 @@ import {studioCustomization,studioAppearance} from './altar-customization.js';
 
 // This schema belongs only to Studio files/browser storage, never to Bedrock saves.
 export const STUDIO_SCENE_SCHEMA=3;
+// Older controllers autosave defaults when they encounter an unknown scene schema.
+// Keep their storage key intact so rollback cannot overwrite the newer scene.
+export const STUDIO_STORAGE_KEY='bedrock-studio.altare.v3';
+export const LEGACY_STUDIO_STORAGE_KEY='bedrock-studio.altare';
 const draftFields=['model','surface','textile','color','relief','stone','cloth','ornamental','facing','ornateLace'];
 const isRecord=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 
