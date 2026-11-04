@@ -27,17 +27,15 @@ A poda remove **1.917 blobs exclusivos**, sem tocar em objetos ainda usados por 
 - Economia nos payloads do checkout: **1.348.195.558 bytes**, aproximadamente 1,26 GiB.
 - Com o arquivo Blender inalterado: **498.776.809 bytes** de payloads, mais os manifestos, scripts e documentos.
 
-Esta redução é do checkout atual. O histórico Git completo continua contendo os objetos antigos; não houve reescrita, expurgo de histórico ou force push. Não se promete a mesma redução no download de um clone completo.
+A limpeza posterior do histórico também retirou esses **1.917 blobs** da ancestralidade alcançável da main. Somente três IDs de commit mudaram; os 79 commits anteriores, a branch experimental e as oito tags permaneceram idênticos. A árvore do checkout curado foi preservada exatamente durante a reescrita; um commit posterior atualiza apenas estas referências, documentos e testes. O [registro da limpeza](HISTORY_REWRITE.json) contém o mapa de commits e os limites da verificação.
 
-## Recuperar o arquivo integral anterior
+O repositório independente verificado antes deste ajuste de documentação ocupa **331.137.991 bytes em pack e índice** (aproximadamente 316 MiB). Esse é um resultado local, não uma promessa de tamanho no GitHub. Reflogs, caches, refs internas ou clones antigos podem conservar objetos; a coleta física no servidor não foi solicitada nem confirmada.
 
-O commit **`ca59e222b086e76e6065fe1a884ab852e682dcc6`** guarda o arquivo anterior completo. Os documentos congelados dentro dos snapshots descrevem o estado daquele momento; onde citarem outputs ausentes na seleção atual, consulte `CURATION.json` ou use esse commit em outra pasta:
+## Limite de recuperação após a limpeza
 
-```sh
-git worktree add --detach ../aspergillum-preservation-full ca59e222b086e76e6065fe1a884ab852e682dcc6
-```
+Os 2.169 caminhos retirados continuam inventariados em `CURATION.json`, mas seus 1.917 blobs exclusivos não estão disponíveis em um clone novo. O campo `previous_complete_commit` registra apenas a proveniência do arquivo anterior; não é um link de recuperação. Backups e clones antigos existentes não foram apagados ou alterados.
 
-Não restaurar esse commit sobre o runtime ou sobre uma pasta com trabalho do usuário. Fontes históricas podem conter tentativas abandonadas, inclusive reencodificações de áudio; elas não substituem o áudio aprovado do runtime.
+Os testes usam `comparison_commit` (`3c9820e8223a8be0d9849f98fb84089b8cb19462`), que preserva os manifestos anteriores para conferir a seleção, mas já não contém os payloads descartados. Documentos congelados dentro dos snapshots podem citar ensaios ausentes: essas referências históricas não prometem sua recuperação nem reprodução. Fontes históricas não substituem o runtime ou o áudio aprovado.
 
 ## Verificar e restaurar a seleção atual
 
@@ -66,4 +64,4 @@ O verificador recusa um relatório já existente e remove as cópias temporária
 
 `source-exclusions.json` conserva a seleção original da consolidada. Dependências, caches, packs gerados, bundles e ZIPs redundantes não são fontes autoritativas. Fotos/publicações externas baixadas e snapshots de terceiros sem licença não foram revendorizados; suas notas e URLs são preservadas.
 
-Os testes de curadoria verificam omissões exatas, conservação dos registros e insumos, ausência de blobs órfãos, integridade dos manifestos e cadeia Blender. A [verificação da curadoria](VERIFICATION.json) registra o que foi realmente executado. Aprovação visual, Minecraft, migração de saves e publicação continuam pendentes. Um teste automatizado não transforma esses estudos em release.
+Os testes de curadoria verificam omissões exatas, conservação dos registros e insumos, ausência de blobs órfãos, integridade dos manifestos e cadeia Blender. A [verificação da curadoria](VERIFICATION.json) registra a execução anterior à limpeza, incluindo os hashes originais daquele momento. A [verificação da limpeza](HISTORY_REWRITE.json) registra a etapa posterior e o novo commit de comparação. Aprovação visual, Minecraft, migração de saves e publicação continuam pendentes. Um teste automatizado não transforma esses estudos em release.

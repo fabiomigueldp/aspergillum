@@ -18,7 +18,7 @@
     "All other 12 snapshot manifests remain byte-identical.",
     "The sculpture-lossless archive, payloads, aliases and restoration chain remain byte-identical.",
     "This is a curated development checkout, not a complete replay of every historical attempt.",
-    "Removed paths remain in previous Git history; no force push or history rewrite is part of this curation."
+    "The 1917 exclusive discarded payloads were subsequently removed from reachable main history; see HISTORY_REWRITE.json. Previous commit IDs are provenance, not recovery links."
   ],
   "counts": {
     "paz_paths_before": 4397,
@@ -13117,5 +13117,7 @@
       "bytes": 30307,
       "storage": "archive"
     }
-  ]
+  ],
+  "comparison_commit": "3c9820e8223a8be0d9849f98fb84089b8cb19462",
+  "comparison_commit_scope": "Rewritten ancestor retaining the previous manifests, with the 1917 discarded payloads removed. The previous_complete_commit is provenance only and is not guaranteed to be available."
 }

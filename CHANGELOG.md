@@ -1,8 +1,13 @@
 # Changelog
 
+## Limpeza do histórico de pesquisa — 04/11/2026
+
+- Remove somente os 1.917 blobs exclusivos descartados da ancestralidade da main, preservando os 82 commits lógicos, metadata, branch experimental, tags e conteúdos úteis. A reescrita muda três IDs; este registro é um commit posterior de documentação/testes.
+- Mantém o checkout curado byte-idêntico na etapa de reescrita e atualiza as referências de comparação para funcionar em clones novos. A coleta física de objetos antigos no GitHub e em outros clones não é garantida.
+
 ## Curadoria do arquivo — 2026-11-04
 
-- Seleciona fontes, insumos e melhores candidatos de pesquisa Paz; retira outputs históricos exclusivos do checkout com inventário e recuperação pelo commit anterior. Preserva os 12 outros snapshots e toda a cadeia Blender.
+- Seleciona fontes, insumos e melhores candidatos de pesquisa Paz; retira outputs históricos exclusivos do checkout com inventário. A limpeza posterior do histórico removeu também os 1.917 blobs exclusivos, sem recuperação pelo commit anterior em clones novos. Preserva os 12 outros snapshots e toda a cadeia Blender.
 - Verifica restauração, insumos e reconstrução das geometrias retidas. Não muda runtime, saves, áudio aprovado ou elegibilidade de release.
 
 ## Preservação — 2026-11-04

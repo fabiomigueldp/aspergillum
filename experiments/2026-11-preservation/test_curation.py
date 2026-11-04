@@ -23,12 +23,25 @@ class CurationTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.curation = read_json(HERE / 'CURATION.json')
-        cls.commit = cls.curation['previous_complete_commit']
+        cls.commit = cls.curation['comparison_commit']
         cls.manifests = {p.stem: read_json(p) for p in (HERE / 'snapshots').glob('*.json')}
         cls.paz = {f['path']: f for f in cls.manifests['nossa-senhora-da-paz']['files']}
         raw = prior_bytes(cls.commit, 'snapshots/nossa-senhora-da-paz.json')
         cls.previous_raw = raw
         cls.previous = {f['path']: f for f in json.loads(raw)['files']}
+
+    def test_comparison_survives_history_cleanup(self):
+        # The old complete commit is provenance only; never require its objects.
+        subprocess.run(['git', '-C', str(REPO), 'merge-base', '--is-ancestor', self.commit, 'HEAD'], check=True)
+        retained = {p.stem for p in (HERE / 'objects').glob('*/*.blob')}
+        discarded = {entry['sha256'] for entry in self.curation['removed_entries']} - retained
+        self.assertEqual(len(discarded), self.curation['counts']['common_objects_removed'])
+        removal = read_json(HERE / 'HISTORY_REWRITE.json')
+        forbidden = set(removal['discarded_git_blob_ids'])
+        self.assertEqual(len(forbidden), self.curation['counts']['common_objects_removed'])
+        history = subprocess.check_output(['git', '-C', str(REPO), 'rev-list', '--objects', 'HEAD']).decode().splitlines()
+        historical_objects = {line.split(' ', 1)[0] for line in history}
+        self.assertFalse(forbidden & historical_objects, 'Discarded payload remains reachable in main history')
 
     def test_omissions_are_exactly_documented(self):
         self.assertEqual(hashlib.sha256(self.previous_raw).hexdigest(), self.curation['previous_paz_manifest_sha256'])
