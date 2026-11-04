@@ -140,3 +140,108 @@ test('CLI reads one supplied file, preserves its bytes and directory, and uses d
   assert.equal(unknown.status,1);assert.equal(unknown.stdout,'');
  }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
+
+test('snapshot reports allowlisted fields only, including invalid IDs and nested metadata sentinels',()=>{
+ const sentinel='PRIVATE_SNAPSHOT_SENTINEL_4d39';
+ const entries=[
+  {...located(raw()),position:{x:1,y:64,z:0,private:{nested:sentinel}},metadata:sentinel},
+  {...located(raw()),position:{x:2,y:64,z:0},id:{private:sentinel}},
+  {...located(raw()),position:{x:3,y:64,z:0},id:[sentinel]},
+  {...located(raw()),position:{x:4,y:64,z:0},id:sentinel},
+  {...located(raw()),position:{x:5,y:64,z:0},states:{...raw().states,private:sentinel}},
+  {...located(raw()),dimension:'minecraft:nether',position:{x:6,y:64,z:0}},
+  {...located(raw()),dimension:'minecraft:the_end',position:{x:7,y:64,z:0}},
+ ];
+ const document={...envelope(entries),private:sentinel},saved=structuredClone(document);
+ const report=auditSnapshotDocument(document);
+ assert.deepEqual(document,saved);assert.ok(!JSON.stringify(report).includes(sentinel));
+ assert.deepEqual(report.findings.map(f=>f.id),[id,null,null,null,id,id,id]);
+ assert.deepEqual(report.findings.map(f=>f.status),['representable','invalid','invalid','unassessed','invalid','representable','representable']);
+ for(const finding of report.findings)assert.deepEqual(Object.keys(finding.position).sort(),['x','y','z']);
+ assert.throws(()=>auditSnapshotDocument(envelope([{...located(raw()),dimension:sentinel}])),/^Error: Invalid location at entry 0$/);
+});
+
+test('CLI does not echo input sentinels in reports, parser errors, locations or filesystem failures',()=>{
+ const temp=fs.mkdtempSync(path.join(os.tmpdir(),'altare-sanitized-'));
+ const sentinel='PRIVATE_INPUT_SENTINEL_7f82';
+ try {
+  const input=path.join(temp,'snapshot.json');
+  const run=()=>spawnSync(process.execPath,['--experimental-strip-types',cli,'--snapshot',input],{cwd:temp,encoding:'utf8',timeout:10_000});
+  const cases=[
+   {bytes:JSON.stringify(envelope([{...located(raw()),position:{x:1,y:64,z:0,nested:{private:sentinel}},id:{private:sentinel}}])),code:2,stderr:''},
+   {bytes:`${sentinel} { not JSON`,code:1,stderr:'Diagnostic refused: Snapshot is not valid JSON\n'},
+   {bytes:JSON.stringify(envelope([{...located(raw()),dimension:sentinel}])),code:1,stderr:'Diagnostic refused: Snapshot envelope or location is invalid\n'},
+   {bytes:JSON.stringify(envelope([{...located(raw()),position:{x:sentinel,y:64,z:0}}])),code:1,stderr:'Diagnostic refused: Snapshot envelope or location is invalid\n'},
+  ];
+  for(const example of cases){
+   fs.writeFileSync(input,example.bytes);const before=fs.readdirSync(temp),result=run();
+   assert.equal(result.status,example.code,result.stderr);assert.equal(result.stderr,example.stderr);
+   assert.ok(!result.stdout.includes(sentinel));assert.ok(!result.stderr.includes(sentinel));
+   if(example.code===1)assert.equal(result.stdout,'');
+   assert.equal(fs.readFileSync(input,'utf8'),example.bytes);assert.deepEqual(fs.readdirSync(temp),before);
+  }
+  const missing=spawnSync(process.execPath,['--experimental-strip-types',cli,'--snapshot',path.join(temp,sentinel)],{encoding:'utf8',timeout:10_000});
+  assert.equal(missing.status,1);assert.equal(missing.stdout,'');
+  assert.equal(missing.stderr,'Diagnostic refused: Snapshot must be a readable regular file <=16 MiB\n');
+  assert.ok(!missing.stderr.includes(sentinel));assert.ok(!missing.stderr.includes(temp));
+ }finally{fs.rmSync(temp,{recursive:true,force:true});}
+});
+
+test('CLI verifies the complete baseline before executing any local module, even when tampered code has side effects',()=>{
+ const temp=fs.mkdtempSync(path.join(os.tmpdir(),'altare-preimport-'));
+ const sentinel='MUST_NOT_EXECUTE_SENTINEL_933a';
+ try {
+  const fixture='tools/fixtures/compact-diagnostic-baseline.json';
+  const baseline=JSON.parse(fs.readFileSync(path.join(altarRoot,fixture),'utf8'));
+  const files=[...Object.keys(baseline.files),fixture,'tools/audit-compact-compatibility.mjs','tools/lib/compact-compatibility-diagnostic.ts'];
+  for(const file of files){const target=path.join(temp,file);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(path.join(altarRoot,file),target);}
+  fs.writeFileSync(path.join(temp,'package.json'),' {"type":"module"} ');
+  const marker=path.join(temp,'sentinel-executed');
+  const effect=`\nprocess.stderr.write(${JSON.stringify(sentinel)}); (await import('node:fs')).writeFileSync(${JSON.stringify(marker)},'executed');\n`;
+  // A marker in the diagnostic module also detects premature imports when the
+  // changed source is the adapter, which the pure library never imports.
+  fs.appendFileSync(path.join(temp,'tools/lib/compact-compatibility-diagnostic.ts'),effect);
+  const run=()=>spawnSync(process.execPath,['--experimental-strip-types',path.join(temp,'tools/audit-compact-compatibility.mjs'),'--snapshot',path.join(temp,'unused.json')],{cwd:temp,encoding:'utf8',timeout:10_000});
+  const refused=()=>{
+   const result=run();assert.equal(result.status,1);assert.equal(result.stdout,'');
+   assert.equal(result.stderr,'Diagnostic refused: Baseline source mismatch or unreadable; review the diagnostic before using changed sources\n');
+   assert.ok(!result.stderr.includes(sentinel));assert.ok(!fs.existsSync(marker),'unverified module was executed');
+  };
+  for(const file of Object.keys(baseline.files)){
+   const target=path.join(temp,file),original=fs.readFileSync(target);
+   fs.appendFileSync(target,effect);refused();assert.equal(fs.readFileSync(target,'utf8'),original.toString()+effect);
+   fs.writeFileSync(target,original);
+  }
+  fs.rmSync(path.join(temp,'src/domain/catalog.ts'));refused();
+ }finally{fs.rmSync(temp,{recursive:true,force:true});}
+});
+
+test('CLI rejects partial, malformed or expanded baseline manifests without imports or raw error leakage',()=>{
+ const temp=fs.mkdtempSync(path.join(os.tmpdir(),'altare-manifest-'));
+ const sentinel='PRIVATE_MANIFEST_SENTINEL_b1c0';
+ try {
+  const baseline=JSON.parse(fs.readFileSync(path.join(altarRoot,'tools/fixtures/compact-diagnostic-baseline.json'),'utf8'));
+  fs.mkdirSync(path.join(temp,'tools/fixtures'),{recursive:true});fs.mkdirSync(path.join(temp,'tools/lib'),{recursive:true});
+  fs.copyFileSync(cli,path.join(temp,'tools/audit-compact-compatibility.mjs'));
+  fs.writeFileSync(path.join(temp,'package.json'),' {"type":"module"} ');
+  const marker=path.join(temp,'sentinel-executed');
+  fs.writeFileSync(path.join(temp,'tools/lib/compact-compatibility-diagnostic.ts'),`process.stderr.write(${JSON.stringify(sentinel)}); (await import('node:fs')).writeFileSync(${JSON.stringify(marker)},'executed');`);
+  const partial=structuredClone(baseline);delete partial.files['src/domain/catalog.ts'];
+  const corrupt=structuredClone(baseline);corrupt.files['src/domain/catalog.ts']=sentinel;
+  const expanded=structuredClone(baseline);expanded.files[sentinel]='0'.repeat(64);
+  for(const bytes of [sentinel,JSON.stringify(null),JSON.stringify({}),JSON.stringify({...baseline,baselineCommit:sentinel}),JSON.stringify({...baseline,files:{}}),JSON.stringify(partial),JSON.stringify(corrupt),JSON.stringify(expanded)]){
+   const input=path.join(temp,'tools/fixtures/compact-diagnostic-baseline.json');fs.writeFileSync(input,bytes);
+   const result=spawnSync(process.execPath,['--experimental-strip-types',path.join(temp,'tools/audit-compact-compatibility.mjs'),'--synthetic'],{encoding:'utf8',timeout:10_000});
+   assert.equal(result.status,1);assert.equal(result.stdout,'');assert.equal(result.stderr,'Diagnostic refused: Baseline manifest is unreadable or invalid\n');
+   assert.ok(!result.stderr.includes(sentinel));assert.ok(!fs.existsSync(marker));assert.equal(fs.readFileSync(input,'utf8'),bytes);
+  }
+  // Even after a valid baseline, a loader exception must not expose its source
+  // snippet, full path or raw stack. The corrupted module cannot be evaluated.
+  for(const file of Object.keys(baseline.files)){const target=path.join(temp,file);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(path.join(altarRoot,file),target);}
+  fs.writeFileSync(path.join(temp,'tools/fixtures/compact-diagnostic-baseline.json'),JSON.stringify(baseline));
+  fs.writeFileSync(path.join(temp,'tools/lib/compact-compatibility-diagnostic.ts'),`export const ${sentinel} = ;`);
+  const loadFailure=spawnSync(process.execPath,['--experimental-strip-types',path.join(temp,'tools/audit-compact-compatibility.mjs'),'--synthetic'],{encoding:'utf8',timeout:10_000});
+  assert.equal(loadFailure.status,1);assert.equal(loadFailure.stdout,'');assert.equal(loadFailure.stderr,'Diagnostic refused: Diagnostic module could not be loaded\n');
+  assert.ok(!loadFailure.stderr.includes(sentinel));assert.ok(!loadFailure.stderr.includes(temp));assert.ok(!fs.existsSync(marker));
+ }finally{fs.rmSync(temp,{recursive:true,force:true});}
+});

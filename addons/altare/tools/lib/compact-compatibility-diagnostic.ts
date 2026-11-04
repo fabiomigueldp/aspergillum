@@ -21,6 +21,8 @@ export type Verdict = 'representable' | 'normalization-required' | 'incompatible
 export interface Diagnosis {status: Verdict; reason: string; localEdges?: number; role?: number}
 const object = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 const integer = (v: unknown, max: number): v is number => typeof v === 'number' && Number.isInteger(v) && v >= 0 && v <= max;
+const dimensions = new Set(['minecraft:overworld','minecraft:nether','minecraft:the_end']);
+const assessedId = (id: unknown): id is string => typeof id==='string' && (id===LEGACY_ID || atelier.has(id));
 
 /** Reports compatibility only: never produces a converted snapshot or a repair. */
 export function diagnoseSnapshot(input: unknown): Diagnosis {
@@ -54,13 +56,15 @@ export function auditSnapshotDocument(document: unknown) {
      !Array.isArray(document.entries) || document.entries.length>100_000) throw Error('Expected schemaVersion 1, exact baselineCommit and <=100000 entries');
  const counts=emptyCounts(), seen=new Set<string>();
  const findings=document.entries.map((entry:unknown,index:number) => {
-  if (!object(entry) || typeof entry.dimension!=='string' || !entry.dimension.length || !object(entry.position)) throw Error(`Invalid location at entry ${index}`);
+  if (!object(entry) || typeof entry.dimension!=='string' || !dimensions.has(entry.dimension) || !object(entry.position)) throw Error(`Invalid location at entry ${index}`);
   const position=entry.position;
   if(!['x','y','z'].every(k=>Number.isSafeInteger(position[k])))throw Error(`Invalid location at entry ${index}`);
   const key=JSON.stringify([entry.dimension,position.x,position.y,position.z]);
   if(seen.has(key)) throw Error(`Duplicate location at entry ${index}`); seen.add(key);
   const diagnosis=diagnoseSnapshot(entry);counts[diagnosis.status]++;
-  return {index,dimension:entry.dimension,position:{...position},id:entry.id,...diagnosis};
+  // Never copy arbitrary metadata, state values, IDs or nested input objects.
+  // Null retains the finding's index/location without reflecting unknown data.
+  return {index,dimension:entry.dimension,position:{x:position.x as number,y:position.y as number,z:position.z as number},id:assessedId(entry.id)?entry.id:null,...diagnosis};
  });
  return {baselineCommit:BASELINE_COMMIT,candidate:CANDIDATE_ID,migrationApproved:false,worldCoverageVerified:false,counts,findings,caveats};
 }

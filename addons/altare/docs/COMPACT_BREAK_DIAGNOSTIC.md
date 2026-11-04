@@ -44,6 +44,10 @@ O arquivo fornecido deve ter até 16 MiB e até 100.000 entradas:
 
 Esse envelope é um formato de **entrada de diagnóstico**, não um exportador de mundo implementado. Dimensão e coordenadas localizam o achado; a ferramenta não verifica a origem nem a cobertura da exportação. Entradas duplicadas no mesmo local são recusadas. States precisam ter exatamente as chaves do schema legado, sem strings numéricas, valores não finitos, campos ausentes ou mistura de índices compactos.
 
+O relatório usa uma lista explícita de dados permitidos: índice, dimensão suportada, coordenadas numéricas `x/y/z`, ID conhecido do conjunto avaliado e diagnóstico. Metadados extras, chaves adicionais de `position`, states brutos e objetos de ID não são copiados. IDs fora do conjunto avaliado são emitidos como `null`, preservando a classificação `unassessed` ou `invalid` e o índice/local para investigação no arquivo original. Somente `minecraft:overworld`, `minecraft:nether` e `minecraft:the_end` são aceitas como dimensões; dimensões customizadas exigem revisão explícita do contrato antes de usar esta ferramenta.
+
+Erros do CLI usam somente mensagens fixas da etapa que recusou a entrada. Trechos de JSON inválido, caminhos fornecidos pelo chamador, mensagens brutas de filesystem/loader e stack traces não são impressos. Isso minimiza reflexão acidental de dados, mas o relatório ainda contém as coordenadas e IDs conhecidos solicitados, além do hash da entrada; não é uma ferramenta de anonimização.
+
 Resultados:
 
 - `representable`: a pose consta da tabela de referência. Não prova equivalência visual ou segurança da migração.
@@ -55,6 +59,8 @@ Resultados:
 Exit codes: **0** para execução sintética concluída ou snapshot composto somente de poses representáveis; **2** quando um snapshot contém qualquer outra classificação; **1** para envelope, arquivo, argumentos ou baseline inválidos. Exit 0 não aprova migração, inclusive para envelope vazio. Todo relatório declara `migrationApproved: false`; snapshots também declaram `worldCoverageVerified: false`.
 
 Os hashes de sete fontes da baseline são fixados em `tools/fixtures/compact-diagnostic-baseline.json`. O CLI recusa execução se elas divergirem. A referência Mensa de 50 poses está isolada em `tools/lib/compact-compatibility-diagnostic.ts`, com ordem protegida por teste e hash do estudo: `f66361d205f1805def0943dbb0a510e0b1808bafb53fa4cb99bb2c0764dccfbd` (serialização de objetos `edges`/`frontal`). Não é um codec publicado nem é importada pelo runtime. Mudar essas referências exige reavaliar o diagnóstico, não apenas atualizar números esperados.
+
+O CLI valida o commit, a lista completa e exata das sete fontes e todos os hashes **antes do import dinâmico de qualquer módulo local**. Manifest vazio, parcial, ampliado, malformado ou fonte ausente impede o import. Somente módulos internos do Node são importados antes dessa barreira. Testes alteram cópias temporárias com efeitos sentinela para provar que a recusa acontece antes de executá-las; nunca alteram os arquivos de produção. Esse gate detecta divergência em um checkout confiável, não substitui um sandbox contra alteração concorrente de arquivos ou adulteração conjunta do CLI e seus hashes.
 
 ## Cobertura e resultado da matriz
 
@@ -99,3 +105,10 @@ Rollback verificável exige backup integral do mundo e packs correspondentes. Es
 - `npm run check` da raiz passou: 123 testes Aspergillum, 101 testes viewer, documentação, geração e validadores. A primeira tentativa não encontrou a dependência `three` no worktree novo; foi repetida com as dependências locais existentes do viewer.
 - O check da raiz reemitiria áudio com bytes diferentes no ambiente. Esses outputs de áudio e respectivos relatórios foram restaurados da baseline, fora do commit; a validação final foi repetida. Fontes/runtime/packs/arte/versões permanecem sem diferenças em relação à baseline.
 - Nenhum `.mcaddon` novo, instalação, publicação, migração ou execução Minecraft foi realizado. Os testes automatizados não promovem os schemas compactos.
+
+### Correção da revisão de segurança
+
+- Quatorze testes de diagnóstico passaram após corrigir a ordem do import, a lista de dados permitidos no relatório e a sanitização dos erros. Os quatro testes novos cobrem sentinelas em metadados/IDs/JSON/caminhos, todas as sete fontes adulteradas, fonte ausente e manifests parciais/malformados/ampliados.
+- A verificação observa ausência de arquivos sentinela, stdout vazio nas recusas, mensagens fixas, bytes de entrada preservados e ausência de dados privados sentinela nos relatórios e erros.
+- Typecheck estrito separado da biblioteca e dos testes passou. Os checks gerais já concluídos acima não foram repetidos nesta correção restrita à ferramenta, seus testes e esta documentação.
+- Nenhum save real foi acessado, e nenhuma mudança de runtime, pack, baseline ou mundo foi feita.
