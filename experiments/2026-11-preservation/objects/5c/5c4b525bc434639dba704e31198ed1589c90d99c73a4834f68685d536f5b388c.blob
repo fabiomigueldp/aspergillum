@@ -1,0 +1,81 @@
+# Snapshot offline de block states — diagnóstico 2.0.0
+
+Esta ferramenta prepara e verifica **JSON fornecido explicitamente pelo operador**. Não lê LevelDB, mundos, inventários, instalações ou Minecraft. Não exporta nem importa um mundo. Não torna seguro abrir um save antigo com o novo schema. Não repara o registry. Somente a cópia isolada de desenvolvimento é alvo deste trabalho.
+
+## Entrada explícita e cobertura
+
+`tools/block-snapshot.mjs` aceita somente o contrato legado Aspergillum 1.2.5. Um arquivo contém as células selecionadas e os valores brutos das propriedades selecionadas. A origem e a completude declaradas não são autenticadas. Não use este arquivo como substituto de backups independentes do mundo e dos packs.
+
+```json
+{
+  "format": "aspergillum-block-snapshot",
+  "schemaVersion": 1,
+  "stateSchema": "aspergillum-1.2.5",
+  "source": {
+    "addonVersion": "1.2.5",
+    "exportedAt": "2026-11-03T00:00:00.000Z",
+    "coverage": "selected-cells",
+    "registryCoverage": "selected-properties"
+  },
+  "cells": [{
+    "dimension": "minecraft:overworld",
+    "position": {"x": 0, "y": 64, "z": 0},
+    "id": "aspergillum:aspersorium",
+    "states": {
+      "aspergillum:water_base": 9,
+      "aspergillum:water_offset": 7,
+      "aspergillum:has_aspergillum": false,
+      "aspergillum:cosmetic": 0,
+      "aspergillum:rotation": 0
+    }
+  }],
+  "registry": [{
+    "propertyId": "aspergillum:docked_minecraft_overworld_p0_p0",
+    "rawValue": null
+  }]
+}
+```
+
+`rawValue` é a string exata da propriedade, sem parse/re-serialização intermediários, ou `null` quando sua ausência foi observada explicitamente. Omitir uma propriedade significa **cobertura desconhecida**, não ausência. Arrays de registry vazios são permitidos, mas cada célula sem cobertura recebe aviso. Strings futuras, desconhecidas, malformadas, com números não canônicos ou campos desconhecidos permanecem intocadas. A ferramenta não usa o parser sanitizador do runtime. A cópia `backup.json` preserva inclusive espaços e bytes do JSON de entrada; `converted.json` preserva os valores das strings brutas, mas pode representar escapes JSON de outra forma.
+
+As células suportadas são `aspergillum:aspersorium` e `aspergillum:sacristan_table`. Na mesa, os únicos states legados são `aspergillum:table_has_aspergillum` booleano, `aspergillum:table_cosmetic` 0..15 e `aspergillum:table_rotation` 0..15. Na caldeirinha, `water_base` é 0 ou 9, `water_offset` é 0..8, ocupação é booleana e cosmético/rotação são 0..15. Outros IDs, chaves extras, schemas misturados e campos ausentes são recusados.
+
+Dimensões são identificadores namespaced; posições são inteiros assinados de 32 bits. Não são aceitos valores arredondados pelo parser, números fora dos inteiros seguros, frações, expoentes ou zero negativo. Chaves JSON duplicadas, células duplicadas na mesma dimensão/posição e IDs de propriedade repetidos são recusados. Limites: 16 MiB de entrada, profundidade JSON 16, 65.536 células e 65.536 propriedades.
+
+## Comandos
+
+Execute a partir da raiz com Node e dependências já disponíveis. O codec TypeScript puro é compilado em memória com esbuild; não há build de pack nem escrita de JavaScript compilado.
+
+```sh
+node tools/block-snapshot.mjs audit --input /caminho/canonico/selecionados.json
+node tools/block-snapshot.mjs audit --input /caminho/canonico/selecionados.json --report /caminho/canonico/auditoria-nova.json
+node tools/block-snapshot.mjs convert --input /caminho/canonico/selecionados.json --out-dir /caminho/canonico/bundle-novo
+node tools/block-snapshot.mjs verify --bundle /caminho/canonico/bundle-novo --expect-manifest-sha256 HASH_CONFIAVEL --expect-source-sha256 HASH_CONFIAVEL
+node tools/block-snapshot.mjs rollback --bundle /caminho/canonico/bundle-novo --output /caminho/canonico/original-restaurado.json --expect-source-sha256 HASH_CONFIAVEL
+```
+
+Quando a auditoria identifica aliases, revisão explícita é necessária. Acrescente `--allow-normalization` a `audit` ou `convert` somente depois de conferir as ocorrências. Água `(9,8)` passa a 16, como já fazia a interpretação legada. Cosmético não zero de um bloco vazio passa a zero. Cada ocorrência registra posição e valores anteriores/novos; o backup bruto permite restaurar os bytes anteriores. Sem a opção, a conversão inteira é recusada e não cria bundle parcial.
+
+Água 0..16 e ocupação 0..16 são codificadas por `water*17+occupancy`, com ocupação vazia 0 ou cosmético+1. A caldeirinha usa `contents_a/b/c/d`, radices 2×3×7×7, menor dígito primeiro. A mesa usa `table_contents_a/b`, radices 2×9. As rotações não mudam. O contrato é comparado exaustivamente ao codec runtime antes de cada auditoria. Slots de padding não são gerados. Item schema 3 e dados do registry não são migrados.
+
+Avisos `occupied-without-snapshot` e `empty-with-snapshot` são apenas diagnósticos. Presença de uma entrada no registry não comprova que seu conteúdo seja um snapshot válido. Schema futuro/malformado gera `registry-presence-unknown`, não uma falsa declaração de ausência. Nada é sintetizado ou apagado. Avisos não impedem a conversão do JSON, pois esta não é uma autorização nem um mecanismo de importação de mundo.
+
+## Bundle, verificação e rollback
+
+O diretório de saída deve ser novo e seu pai já deve existir. São escritos `backup.json`, `converted.json`, `audit.json` e, **por último**, `manifest.json`. Nenhum arquivo existente é sobrescrito. O manifest registra schema, contrato, opções, tamanho e SHA-256 dos três arquivos. Escritas são sincronizadas e o resultado é lido e verificado novamente antes de informar sucesso. Falha pode deixar um diretório incompleto: sem verificação bem-sucedida, trate-o como **não confirmado**, preserve para inspeção e use outro destino novo. Não retome escrevendo por cima.
+
+`verify` exige exatamente os quatro arquivos, verifica bytes/hashes e contrato, reexecuta a auditoria e a conversão sobre o backup e compara os dois resultados byte a byte. Pode conferir hashes externos confiáveis. Sem hashes externos, detecta inconsistências mas não a substituição coordenada de todo o conjunto por outro bundle válido.
+
+`rollback` verifica primeiro o bundle e exporta somente o arquivo original, byte a byte, para um caminho novo fora do bundle. Não altera o JSON original, o bundle nem qualquer mundo. Não substitui um rollback de packs, chunks, entidades ou inventários.
+
+Operações estritas exigem host POSIX com `O_NOFOLLOW`, `O_NONBLOCK` e suporte a sincronização. Symlinks em arquivos, diretórios de bundle ou ancestrais são recusados; arquivos precisam ser regulares. Diretórios devem ser confiáveis e não ter escritores concorrentes: trocas hostis de diretórios entre syscalls não estão cobertas. Use caminhos canônicos, não atalhos por symlink.
+
+Códigos de saída: 0 sucesso; 2 auditoria/conversão inelegível; 1 erro de entrada/operação em audit/convert; 3 falha em verify/rollback. Os relatórios nunca declaram validação Minecraft.
+
+## Evidência automatizada
+
+```sh
+npx vitest run tests/block-snapshot.test.mjs
+```
+
+A suíte contém 30 testes e enumera todos os 9.728 estados legados (9.216 da caldeirinha e 512 da mesa). Casos incluem conversão de ambos os blocos, normalizações explícitas, limites numéricos acima de 2^53, chaves/células duplicadas, schema misto, registry futuro/malformado, divergências de ocupação, symlinks, tentativa de sobrescrita, falha de escrita antes do manifest, adulteração com hash recalculado, contrato alterado e rollback byte-idêntico. Somente fixtures sintéticas e diretórios temporários são usados. A validação nativa e qualquer migração de mundo continuam fora deste trabalho.

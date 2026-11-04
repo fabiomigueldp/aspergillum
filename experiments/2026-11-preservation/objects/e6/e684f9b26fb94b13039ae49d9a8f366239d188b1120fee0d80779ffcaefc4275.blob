@@ -1,0 +1,28 @@
+import type { Block, ExplosionBeforeEvent } from "@minecraft/server";
+import { blockDestructionRisk } from "./block-destruction-safety";
+
+/** Selectively prevent destruction; do not attempt delivery or registry repair. */
+export function preventUnsafeExplosionBlockDamage(event: ExplosionBeforeEvent): void {
+  if (event.cancel) return;
+  let impacted: Block[];
+  try {
+    impacted = event.getImpactedBlocks();
+  } catch (error) {
+    // With no known affected block, there is no basis to cancel other projects'
+    // explosions. Report this unprotected path rather than claiming success.
+    console.warn(`[Aspergillum] Explosion impact list unavailable: ${String(error)}`);
+    return;
+  }
+  const remaining = impacted.filter((block) => blockDestructionRisk(block) === undefined);
+  if (remaining.length === impacted.length) return;
+
+  try {
+    // Synchronous, one call, retaining other blocks' order and object identities.
+    event.setImpactedBlocks(remaining);
+  } catch (error) {
+    // The call may have changed the list before throwing. Never retry or assume
+    // no effect. Known at-risk blocks justify cancelling this whole explosion.
+    event.cancel = true;
+    console.warn(`[Aspergillum] Cancelled explosion after block exclusion failed: ${String(error)}`);
+  }
+}

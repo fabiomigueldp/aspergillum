@@ -1,0 +1,41 @@
+"""Construction-side audit. Independent review remains separate.
+blender -b -t 4 --python audit_rebuild.py -- CANDIDATE_TAG
+"""
+from pathlib import Path
+import sys,json,time,hashlib,importlib.util
+import numpy as np
+from mathutils.bvhtree import BVHTree
+from mathutils import Vector
+from scipy.spatial import cKDTree
+sys.dont_write_bytecode=True
+O=Path(__file__).resolve().parent;B=O.parents[1];tag=sys.argv[sys.argv.index('--')+1];path=O/(tag+'.npz')
+sys.path.insert(0,str(B/'body_interface_v9/independent_diagnosis'));from contact_limits import contacts
+spec=importlib.util.spec_from_file_location('gate',B/'shell_band_v3/tools/independent_gate.py');gate=importlib.util.module_from_spec(spec);spec.loader.exec_module(gate)
+s=np.load(path);base=np.load(B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz');a=np.load(B/'body_interface_v9/constrained_fit/retained-anatomy.npz');band=np.load(B/'shell_band_v5/retained_candidate/evidence/band-paired.npz');p=s['points'];f=s['triangles'];parts=s['face_parts'];role=s['face_roles'];vmap=s['baseline_vertex_indices'];new=vmap<0;out={};rep={'candidate':str(path),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'self_gate':gate.review(path),'contacts':{},'limitations':['Contact pair counts are tessellation dependent. Baseline and candidate pair identities are not directly comparable after retopology.','Normal-ray lengths are sampled chord thickness, not a certified global wall-thickness minimum. Rays near rims are angle dependent.','Inherited paired wall distances describe retained source pairs only, not new rim thickness.','No view/game/beauty validation.']};print('gate',rep['self_gate']['strict_crossings'],rep['self_gate']['passes_screen'],flush=True)
+for label,other in [('anatomy',a),('band',band)]:
+ cc=contacts(p,f,other['points'],other['triangles']);out[label+'_pairs']=cc
+ rep['contacts'][label]={'pairs':len(cc),'by_face_part':{str(x):int((parts[cc[:,0]]==x).sum()) for x in range(4)},'by_face_role':{str(x):int((role[cc[:,0]]==x).sum()) for x in range(3)}}
+ if label=='anatomy':rep['contacts'][label]['ear_incident_pairs']=int(np.any(a['protected_ears'][a['triangles'][cc[:,1]]],axis=1).sum());rep['contacts'][label]['ear_only_pairs']=int(np.all(a['protected_ears'][a['triangles'][cc[:,1]]],axis=1).sum())
+ print('contacts',label,rep['contacts'][label],flush=True)
+# Original exact face preservation, outside local cutters by original face ID.
+unchanged=s['baseline_face_indices'][role==0];rep['preservation']={'unchanged_original_faces':len(unchanged),'original_face_fraction':len(unchanged)/len(base['triangles']),'surviving_original_points_bit_identical':bool(np.array_equal(p[~new],base['points'][vmap[~new]])),'mantle_faces_unchanged':bool(set(np.flatnonzero(base['face_parts']==2)).issubset(set(unchanged.tolist()))),'anatomy_sha256':hashlib.sha256((B/'body_interface_v9/constrained_fit/retained-anatomy.npz').read_bytes()).hexdigest(),'band_sha256':hashlib.sha256((B/'shell_band_v5/retained_candidate/evidence/band-paired.npz').read_bytes()).hexdigest()}
+# Surviving paired vertices, preserving exact Euclidean separation by construction.
+where={int(sid):int(i) for i,sid in enumerate(s['source_indices']) if sid>=0};bw={int(sid):int(i) for i,sid in enumerate(base['source_indices'])};paircap=np.load(B/'shell_band_v4/evidence/cap-source-pairing.npz');mid=np.load(B/'lateral_v7/evidence/director-cone-midfield.npz');pairrows=[]
+for group,xs,ys in [('cap',paircap['outer'],paircap['inner']),('bridge',mid['outer_source_ids'],mid['inner_source_ids'])]:
+ ids=[(where[int(x)],where[int(y)],bw[int(x)],bw[int(y)]) for x,y in zip(xs,ys) if int(x) in where and int(y) in where and int(x) in bw and int(y) in bw]
+ ids=np.array(ids,int);th=np.linalg.norm(p[ids[:,0]]-p[ids[:,1]],axis=1);old=np.linalg.norm(base['points'][ids[:,2]]-base['points'][ids[:,3]],axis=1)
+ pairrows.append({'group':group,'surviving_pairs':len(ids),'baseline_pairs_available':sum(int(x) in bw and int(y) in bw for x,y in zip(xs,ys)),'global_source_correspondence_entries':len(xs),'full_thickness_mm_min_max':(np.array([th.min(),th.max()])*1000).tolist(),'max_change_mm':float(abs(th-old).max()*1000)})
+rep['paired_survivor_thickness']=pairrows
+raw=np.cross(p[f[:,1]]-p[f[:,0]],p[f[:,2]]-p[f[:,0]]);area=np.linalg.norm(raw,axis=1)/2;norm=raw/np.maximum(2*area[:,None],1e-30);tri=p[f];edge=np.linalg.norm(tri-np.roll(tri,1,axis=1),axis=2);alt=2*area/np.maximum(edge.max(1),1e-30);rep['triangles']={'minimum_area_m2':float(area.min()),'new_rim_area_mm2_percentiles':np.percentile(area[parts==3]*1e6,[0,1,5,50,95,100]).tolist(),'new_rim_min_altitude_mm_percentiles':np.percentile(alt[parts==3]*1000,[0,1,5,50,95,100]).tolist(),'signed_volume_m3':float(np.einsum('ij,ij->i',tri[:,0],np.cross(tri[:,1],tri[:,2])).sum()/6)}
+tree=BVHTree.FromPolygons(p.tolist(),f.tolist(),all_triangles=True,epsilon=0);cent=tri.mean(1);length=np.full(len(f),np.nan);hitface=np.full(len(f),-1,int)
+# Blender float coords need epsilon below surface thickness but above coordinate
+# rounding. Use 0.001 mm origin inset and remove immediate self/backside hits.
+eps=1e-6
+for i in range(len(f)):
+ direction=-norm[i];q=cent[i]+direction*eps;hit=tree.ray_cast(Vector(q),Vector(direction),1.)
+ if hit[0] is not None and hit[2]!=i:length[i]=hit[3]+eps;hitface[i]=hit[2]
+out.update(normal_ray_chord_m=length,normal_ray_hit_face=hitface,triangle_area_m2=area,triangle_min_altitude_m=alt)
+rep['normal_ray_chords']={}
+for key,mask in [('all_inherited_surfaces',parts<3),('trimmed_inherited_surfaces',role==1),('new_rim',parts==3)]:
+ x=length[mask];x=x[np.isfinite(x)];rep['normal_ray_chords'][key]={'tested_faces':int(mask.sum()),'valid_rays':len(x),'length_mm_percentiles':np.percentile(x*1000,[0,.1,1,5,50,95,99,100]).tolist() if len(x) else [],'below_0_1mm':int((x<.0001).sum()),'below_0_3mm':int((x<.0003).sum())}
+np.savez_compressed(O/(tag+'-audit-arrays.npz'),**out);(O/(tag+'-audit.json')).write_text(json.dumps(rep,indent=2));print(json.dumps({k:v for k,v in rep.items() if k!='self_gate'},indent=2),flush=True)

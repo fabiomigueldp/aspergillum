@@ -1,0 +1,7 @@
+import bpy,json,hashlib
+from pathlib import Path
+R=Path(__file__).resolve().parents[1];p=R/'evidence/fit-json-diagnostic.blend';bpy.ops.wm.open_mainfile(filepath=str(p),use_scripts=False)
+for o in bpy.data.objects:
+ if o.name.startswith('Unchanged legacy'):o.name='Diagnostic JSON body with reexported part15; not game'
+ if o.type=='MESH' and o.data.name.startswith('Unchanged 18'):o.data.name='Diagnostic body JSON; part15 geometry adjusted'
+s=bpy.context.scene;s['research_scope']='V7 shell + V5 band NATIVE; legacy body JSON reimport with part15 reexport. NOT Minecraft or complete Bedrock export.';s['retained_anatomy_sha256']=hashlib.sha256((R/'anatomy_fit/retained-anatomy.npz').read_bytes()).hexdigest();s['published']=False;s['minecraft_tested']=False;bpy.ops.wm.save_as_mainfile(filepath=str(R/'evidence/retained-structural-diagnostic.blend'))

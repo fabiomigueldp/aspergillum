@@ -1,0 +1,71 @@
+{
+  "anatomy": {
+    "baseline": {
+      "pair_count": 797,
+      "segment_count": 797,
+      "length_mm_sum": 883.2555575879521,
+      "by_side_length_mm": {
+        "1": 596.2424790435384,
+        "-1": 287.01307854441376
+      },
+      "by_band_part_length_mm": {
+        "0": 391.90028916099163,
+        "1": 465.0948707112479,
+        "2": 26.26039771571261
+      },
+      "ear_incident_length_mm": 856.4460851332094,
+      "zero_length_pairs": 0
+    },
+    "candidate": {
+      "pair_count": 189,
+      "segment_count": 189,
+      "length_mm_sum": 318.149265354373,
+      "by_side_length_mm": {
+        "-1": 13.67291718639589,
+        "1": 304.4763481679771
+      },
+      "by_band_part_length_mm": {
+        "3": 3.2932247674732444,
+        "1": 164.52764494146754,
+        "0": 143.31412101932978,
+        "2": 7.0142746261025
+      },
+      "ear_incident_length_mm": 318.149265354373,
+      "zero_length_pairs": 0
+    }
+  },
+  "shell": {
+    "baseline": {
+      "pair_count": 1339,
+      "segment_count": 1339,
+      "length_mm_sum": 3782.7148806947866,
+      "by_side_length_mm": {
+        "1": 1885.406447919032,
+        "-1": 1897.3084327757538
+      },
+      "by_band_part_length_mm": {
+        "0": 1462.8709837484596,
+        "1": 2319.8438969463273
+      },
+      "ear_incident_length_mm": null,
+      "zero_length_pairs": 0
+    },
+    "candidate": {
+      "pair_count": 1360,
+      "segment_count": 1360,
+      "length_mm_sum": 3778.6934395225517,
+      "by_side_length_mm": {
+        "-1": 1894.6664935952592,
+        "1": 1884.0269459272918
+      },
+      "by_band_part_length_mm": {
+        "0": 1458.4964913919891,
+        "3": 5.861337563399871,
+        "1": 2314.33561056716
+      },
+      "ear_incident_length_mm": null,
+      "zero_length_pairs": 0
+    }
+  },
+  "method": "Uses previously validated source-pair lists for exactly hashed inputs. Recompute witness segment lengths on those pairs; candidate witness points come from new geometry test. Sum all triangle-triangle segment lengths without spatial union/deduplication. Counts are never subtracted by pair IDs after retessellation."
+}

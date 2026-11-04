@@ -1,0 +1,13 @@
+"""Compare generated bridge against intended triangles of the unchanged legacy head/body part15."""
+from pathlib import Path
+import numpy as np,json,sys,importlib.util,hashlib
+from mathutils.bvhtree import BVHTree
+R=Path(__file__).resolve().parents[1];B=R.parent;spec=importlib.util.spec_from_file_location('gate',B/'shell_band_v3/tools/independent_gate.py');mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
+maps=json.loads((B/'pbr_normals_v2/evidence/alpha-triangle-map.json').read_text());t=np.array([[m[k] for k in ['a','b','c']] for m in maps if m['part']==15]);t=t[:,:,[0,2,1]]/16;t[:,:,1]*=-1;v=t.reshape(-1,3);f=np.arange(len(v)).reshape(-1,3);tree=BVHTree.FromPolygons(v.tolist(),f.tolist(),all_triangles=True,epsilon=0);args=sys.argv[sys.argv.index('--')+1:];out=Path(args[-1]);rows={}
+for item in args[:-1]:
+ name,path=item.split('=',1);path=Path(path);d=np.load(path);p=d['points'];ff=d['triangles'][d['face_parts']==1];bt=BVHTree.FromPolygons(p.tolist(),ff.tolist(),all_triangles=True,epsilon=0);pairs=bt.overlap(tree);hits=[]
+ for i,j in pairs:
+  w=mod.strict_hits(p[ff[i]],t[j])+mod.strict_hits(t[j],p[ff[i]])
+  if w:hits.append({'bridge_triangle':i,'legacy_part15_triangle':j,'witnesses':w})
+ rows[name]={'input':str(path),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'strict_bridge_legacy_part15_crossing_pairs':len(hits),'crossings':hits}
+rep={'method':'Same BVH broadphase and strict double-precision segment-triangle test as shell gate; separate bridge versus legacy part15 intended source triangles reconstructed from exporter maps.','legacy_triangles':len(t),'limitations':'Not alpha-expanded pixel geometry, tangent/coplanar/clearance certificate, or all-body test. Legacy overlaps may preexist; changes require visual judgment. No Minecraft validation.','rows':rows};out.write_text(json.dumps(rep,indent=2));print({k:v['strict_bridge_legacy_part15_crossing_pairs'] for k,v in rows.items()})

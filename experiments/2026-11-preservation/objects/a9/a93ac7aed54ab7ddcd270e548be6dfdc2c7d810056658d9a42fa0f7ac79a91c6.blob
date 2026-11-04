@@ -1,0 +1,106 @@
+{
+  "hypothesis": "Cavity constrained local inward normal offset, graph-Laplacian displacement smoothing, hard feature masks. No shell edits, no deleted faces or alpha masking.",
+  "shell_sha256": "712a550fbbb56090ae700e30e4e21153d04c16139062ebcd2a72e818f3e34f7b",
+  "scope": {
+    "units": "world XYZ; one unit1000mm",
+    "intended_export_triangles": 1376,
+    "welded_vertices": 692,
+    "active_vertices": 282,
+    "protected_vertices": 280,
+    "protected_face": 153,
+    "protected_ears": 88,
+    "protected_lowneck": 39,
+    "protection_definition": {
+      "face": "y < -0.270 and z < 3.50",
+      "ears": "(x < -0.080 or x > 0.160) and -0.260 < y < -0.145 and 3.405 < z < 3.55",
+      "lowneck": "z < 3.20"
+    },
+    "active_definition": "Outward/inward normal ray has facing interior surface within80mm OR nearest interior within25mm and opposite normal; minus protected.",
+    "inner_surfaces": "Cap source_side0, bridge outer_source_ids (pairing name, physically inward), restored mantle class1.",
+    "world_frame_source_indices_connectivity_preserved": true
+  },
+  "parameters": {
+    "cavity_clearance_mm": 0.5,
+    "maximum_inward_displacement_mm": 20.0,
+    "smoothing": 0.25
+  },
+  "baseline": {
+    "crossings": 4169,
+    "by_shell_part": {
+      "0": 2917,
+      "1": 916,
+      "2": 336
+    },
+    "body_crossed_faces": 498,
+    "fixed_only_crossings": 465,
+    "protected_only_crossings": 462,
+    "self_crossings": 0,
+    "face_normal_dot_min": 1.0,
+    "face_flips": 0,
+    "min_double_area": 1.013652469562605e-14,
+    "changed_vertices": 0,
+    "displacement_mm": {
+      "max": 0.0,
+      "p95_changed": 0,
+      "median_changed": 0
+    },
+    "protected_exact": true
+  },
+  "iterations": [
+    {
+      "crossings": 670,
+      "by_shell_part": {
+        "0": 260,
+        "1": 410,
+        "2": 0
+      },
+      "body_crossed_faces": 96,
+      "fixed_only_crossings": 465,
+      "protected_only_crossings": 462,
+      "self_crossings": 0,
+      "face_normal_dot_min": 0.7414495409148861,
+      "face_flips": 0,
+      "min_double_area": 1.013652469562605e-14,
+      "changed_vertices": 274,
+      "displacement_mm": {
+        "max": 9.75558717352379,
+        "p95_changed": 2.884627778280219,
+        "median_changed": 0.9709776978053246
+      },
+      "protected_exact": true,
+      "iteration": 0,
+      "solver_success": true,
+      "lower_bounds_at_max": 0,
+      "min_main_component_area_ratio": 0.13665750630719703,
+      "protected_bitwise_exact": true
+    },
+    {
+      "crossings": 568,
+      "by_shell_part": {
+        "0": 209,
+        "1": 359,
+        "2": 0
+      },
+      "body_crossed_faces": 71,
+      "fixed_only_crossings": 465,
+      "protected_only_crossings": 462,
+      "self_crossings": 0,
+      "face_normal_dot_min": 0.5445551058515823,
+      "face_flips": 0,
+      "min_double_area": 1.013652469562605e-14,
+      "changed_vertices": 274,
+      "displacement_mm": {
+        "max": 14.982711225120418,
+        "p95_changed": 6.417155259890814,
+        "median_changed": 1.1342573406367342
+      },
+      "protected_exact": true,
+      "iteration": 1,
+      "solver_success": true,
+      "lower_bounds_at_max": 0,
+      "min_main_component_area_ratio": 0.01654163768415045,
+      "protected_bitwise_exact": true
+    }
+  ],
+  "limits": "Strict noncoplanar crossings only; projection support-plane bounds are local, not a certified global clearance. Protected face/ear residuals are not approval. Normals recomputed from geometry. Native research candidate, not Bedrock/game validation."
+}

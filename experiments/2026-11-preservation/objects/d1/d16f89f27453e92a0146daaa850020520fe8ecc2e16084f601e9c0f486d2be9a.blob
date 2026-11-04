@@ -1,0 +1,41 @@
+# V16 transparent-only card trimming, LAB diagnostic
+
+Three targeted combined Bedrock geometry variants are ready: `roi68-depth1.geo.json`, `roi68-depth2.geo.json`, and `roi68-depth3.geo.json`. Every variant uses the byte-identical `shared_mask_2048.png` copied from V15. This is not a release or runtime/PBR claim.
+
+## Selection
+
+The ray investigator selected the union of 68 original band cards with alpha-zero intersections within one Float32 ray-distance ULP of the ideal first opaque hit, at pixel centers in the inclusive rectangle x=490..570, y=440..480. This contains all 49 cards from pixels classified dark. The source is `../independent_rays/trim-candidate-original-cubes.json`; selection, pixel witnesses, original cube IDs, and source hash are retained in `selection-roi68.json`. Selected cards cover 52 native faces. Camera witnesses select cards only. They never authorize deletion of opaque geometry or texels.
+
+## Construction and proof
+
+Starting from each selected original quad, subdivide its UV rectangle into four equal dyadic rectangles. Keep fully opaque leaves without further splitting; recurse only mixed leaves until the requested depth. Drop a leaf only after checking that every covered original atlas texel has alpha zero. All surviving leaves remain zero-depth south faces with exactly the original pivot and rotation, exact integer cropped atlas UVs, and the inherited local planar mapping. The atlas, alpha, RGB, bone metadata, description, and all unaffected cubes are unchanged. No alpha resampling, mask edits, dilation, displacement, source-face deletion, or camera-invisibility removal is performed.
+
+Depths 1/2/3 retain 3/7/15 children per selected parent and remove 25%/37.5%/43.75% of its original square area, all transparent. Exhaustively checking all 4,194,304 canonical mask texels proves that all 2,098,176 original opaque texels remain in their original affine locations. The original nearest/mip0 quantization excess is preserved too. Every dropped rectangle is outside the analytic source-triangle interior; any shared diagonal corner is retained by its neighbor. This proof is for ideal nearest/mip0 sampling, not filtering or mipmaps.
+
+The local positions are dyadic affine subdivisions. Serialized floating-point additions can round: the largest measured Float64 corner deviation from the original parent mapping is below 9.61e-16 blocks. Exact ideal support is therefore distinct from a claim of bit-identical imported vertices. A simple cast of independently calculated world corners to Float32 finds no degenerate selected child quads. It is not a Blender, Embree, Minecraft, or general runtime precision certificate.
+
+## Costs
+
+Baseline: 41,565 cubes, 41,582 face quads, 83,164 triangles if each quad is triangulated in two, and 12,519,264 geometry JSON bytes.
+
+- Depth 1: 41,701 cubes, 41,718 quads, 83,436 triangles; 12,562,098 bytes.
+- Depth 2: 41,973 cubes, 41,990 quads, 83,980 triangles; 12,646,980 bytes.
+- Depth 3: 42,517 cubes, 42,534 quads, 85,068 triangles; 12,817,667 bytes.
+
+## Reproducibility and provenance
+
+Run `python lit_surface_v16/transparent_trim/build_trim.py --selection lit_surface_v16/transparent_trim/selection-roi68.json --depths 1,2,3 --prefix roi68` from the prototype root. Outputs remain in this directory.
+
+Each variant has a `-report.json` with source/output hashes, support proof, unchanged values, costs, and precision limits; `-rectangles.jsonl.gz` maps all retained and dropped selected-parent leaves to the original cube/native face/half and classifies their alpha; `-cube-map.npz` maps every output cube to its original parent and rectangle. Unchanged rows in that NPZ have `is_subdivided_child=false`; their `[0,0,2048,2048]` rectangle is a parent-normalized placeholder, not a claim that unchanged legacy cubes use that atlas tile.
+
+Independent verification, matched-camera/light rendering, and the observed scar outcome belong to separate reports. An optional all-band depth-1 build never returned a terminal exit status before an execution transport loss. After reconnection, no process or output remained; the exact exit cause is unknown. It was not retried after the targeted set was prioritized.
+
+## Restored-transparent causal control
+
+`roi68-depth3-restored-transparent.geo.json` preserves every one of the 42,517 existing depth-3 cubes exactly, at the same per-bone indices. It then appends all 476 previously removed alpha-zero rectangles to `part_00`, at indices 9840..10315. These use their original parent frames and cropped source atlas UVs, with no texture edits. Each selected parent is now partitioned completely into 22 adaptive leaves, with every one of the 4,194,304 source texels covered exactly once. The control keeps the trimmed candidate's child geometry/UVs fixed while restoring transparent intersections, allowing matched renders to distinguish pruning from subdivision or rounding effects.
+
+The complete control has 42,993 cubes, 43,010 quads, and 86,020 triangles if every quad is split in two; geometry JSON is 12,966,416 bytes. The additional NPZ field `is_restored_transparent` identifies appended quads. `-restored-quads.json` lists the extra mapping records, while `-rectangles.jsonl.gz` contains all selected-parent leaves. Maximum restored-corner affine error is 9.61e-16 blocks. All previous geometry, texture, mapping and report files remain unchanged. Actual renderer outcomes are separate from these construction certificates.
+
+### Correction to optional all-band execution status
+
+The original all-band depth-1 process completed after the transport loss, and its outputs were discovered during the restored-control final hash audit. It was not retried. This supersedes the earlier observation that no output was then present. `all-band-depth1.geo.json` is available as optional, unused data: 59,341 cubes, 59,358 quads, 118,716 triangles; 18,118,247 JSON bytes. It is not part of the targeted causal comparison.

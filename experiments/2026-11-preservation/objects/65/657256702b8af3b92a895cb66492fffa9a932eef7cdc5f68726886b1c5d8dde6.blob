@@ -1,0 +1,14 @@
+from audit_common import *
+import gzip
+W=B/'opaque_transport_v15/shared_mask';N=2048;s=json_faces(W/f'shared_mask_{N}.geo.json',texture=W/f'shared_mask_{N}.png');records=[json.loads(l)for l in gzip.open(W/'transport_faces.jsonl.gz','rt')];expected=[]
+for pi in [0,1,15]:
+ tri=source_tri(pi);edges=np.linalg.norm(np.roll(tri,-1,axis=1)-tri,axis=2);roll=edges.argmax(1);idx=np.arange(len(tri));a=tri[idx,roll];b=tri[idx,(roll+1)%3];c=tri[idx,(roll+2)%3];ab=b-a;t=np.einsum('ij,ij->i',c-a,ab)/np.einsum('ij,ij->i',ab,ab);foot=a+t[:,None]*ab;halves=np.stack([np.stack([foot,c,a],axis=1),np.stack([foot,b,c],axis=1)],axis=1).reshape(-1,3,3);expected.extend(halves)
+expected=np.array(expected);aa=np.linalg.norm(expected[:,1]-expected[:,0],axis=1);bb=np.linalg.norm(expected[:,2]-expected[:,0],axis=1);height=aa*bb/np.hypot(aa,bb);results=[];uv=s['uv'];tex=s['texture']
+for inset in [0,1e-12,1e-10,1e-8,1e-7,1e-6]:
+ fails=[];maxdelta=0;maxworlddelta=0
+ for k in [1,N//4,N//2,3*N//4,N-1]:
+  frac=k/N;x=frac*(1-inset);y=(1-frac)*(1-inset);p=expected[:,0]+x*(expected[:,1]-expected[:,0])+y*(expected[:,2]-expected[:,0]);dp=p-s['q'][:,0];u=np.einsum('ij,ij->i',dp,s['U'])/s['lU'];v=np.einsum('ij,ij->i',dp,s['V'])/s['lV'];xx=np.floor(uv[:,0]+u*uv[:,2]).astype(int);yy=np.floor(uv[:,1]+v*uv[:,3]).astype(int);bad=tex[yy,xx,3]==0;maxdelta=max(maxdelta,float(np.max(abs(u-v-(x-(1-y))))));reproj=s['q'][:,0]+u[:,None]*s['U']+v[:,None]*s['V'];maxworlddelta=max(maxworlddelta,float(np.max(np.linalg.norm(reproj-p,axis=1))))
+  for i in np.flatnonzero(bad):
+   r=records[i];fails.append({'part':r['part'],'face':r['native_triangle_index'],'half':r['half'],'lattice_k':k,'normalized_inset':inset,'ideal_perpendicular_inset_mm':float(inset*height[i]*1000),'computed_signed_outside_plane_of_hypotenuse_mm':float((u[i]-v[i])*height[i]*1000),'uv_texels':[float(u[i]*N),float(v[i]*N)]})
+ results.append({'normalized_inset':inset,'sample_count':5*len(expected),'transparent_count':len(fails),'maximum_normalized_u_minus_v_error':maxdelta,'maximum_world_projection_residual_mm':maxworlddelta*1000,'maximum_ideal_inset_among_failed_mm':max((r['ideal_perpendicular_inset_mm']for r in fails),default=0),'maximum_computed_outside_among_failed_mm':max((r['computed_signed_outside_plane_of_hypotenuse_mm']for r in fails),default=0),'first_failure_rows':fails[:12]})
+save(O/'shared-2048-boundary-scale.json',{'method':'All source half-triangles independently rederived vectorwise from frozen sources, tested at five diagonal lattice locations. Actual full atlas pixel addresses are used, including U origin2048, unlike prior local-tile diagnostic.','rows':results,'limitations':'Float64 CPU arithmetic only; failures exactly at a texel-grid/hypotenuse crossing can be roundoff-sensitive measure-zero boundary points. Positive insets quantify scale but do not certify shader precision or crack-free rendering.'});print(json.dumps(results,indent=2))

@@ -1,0 +1,92 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {SnapshotError,LIMITS,CONTRACT,SOURCE_SCHEMA,TARGET_SCHEMA,sha256,jsonBytes,parseSnapshotJson,auditSnapshot} from './snapshot-audit.mjs';
+const fail=(code,message)=>{throw new SnapshotError(code,message);};
+const names=['backup.json','converted.json','audit.json'];
+const exact=(v,keys)=>v!==null&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).length===keys.length&&keys.every(k=>Object.hasOwn(v,k));
+const digest=value=>typeof value==='string'&&/^[a-f0-9]{64}$/.test(value);
+const bundleLimit=64*1024*1024;
+const regularFlags=()=>{
+ if(typeof fs.constants.O_NOFOLLOW!=='number'||typeof fs.constants.O_NONBLOCK!=='number')fail('unsupported-platform','Strict file operations require O_NOFOLLOW and O_NONBLOCK. Use a supported POSIX host.');
+ return fs.constants.O_RDONLY|fs.constants.O_NOFOLLOW|fs.constants.O_NONBLOCK;
+};
+/** Bounded read of a single regular file. No traversal or scanning of worlds. */
+export function readRegular(file,limit=LIMITS.bytes){
+ const absolute=path.resolve(file),initial=fs.lstatSync(absolute,{bigint:true});
+ if(!initial.isFile()||initial.isSymbolicLink())fail('not-regular-file','Input must be a regular file, not a link, directory, FIFO or device.');
+ if(fs.realpathSync(absolute)!==absolute)fail('linked-input-parent','Use the canonical input path without linked ancestors.');
+ const fd=fs.openSync(absolute,regularFlags());
+ try{
+  const before=fs.fstatSync(fd,{bigint:true});
+  if(!before.isFile()||before.dev!==initial.dev||before.ino!==initial.ino)fail('input-changed','Input changed while it was opened.');
+  if(before.size>BigInt(limit))fail('input-too-large',`File exceeds ${limit} bytes.`);
+  const buffer=Buffer.alloc(Number(before.size)+1);let length=0;
+  while(length<buffer.length){const n=fs.readSync(fd,buffer,length,buffer.length-length,null);if(!n)break;length+=n;}
+  const after=fs.fstatSync(fd,{bigint:true}),last=fs.lstatSync(absolute,{bigint:true});
+  if(length!==Number(before.size)||after.size!==before.size||after.mtimeNs!==before.mtimeNs||after.ctimeNs!==before.ctimeNs||last.dev!==before.dev||last.ino!==before.ino||!last.isFile()||last.isSymbolicLink())fail('input-changed','Input changed during reading; retry only with a stable snapshot file.');
+  return buffer.subarray(0,length);
+ }finally{fs.closeSync(fd);}
+}
+export function writeNewFile(file,bytes){
+ regularFlags();
+ const absolute=path.resolve(file);
+ if(fs.realpathSync(path.dirname(absolute))!==path.dirname(absolute))fail('linked-output-parent','Use a canonical output parent without linked ancestors.');
+ const fd=fs.openSync(absolute,fs.constants.O_WRONLY|fs.constants.O_CREAT|fs.constants.O_EXCL|fs.constants.O_NOFOLLOW,0o600);
+ try{let offset=0;while(offset<bytes.length){const n=fs.writeSync(fd,bytes,offset,bytes.length-offset);if(!n)fail('write-failed','Output write made no progress.');offset+=n;}fs.fsyncSync(fd);}finally{fs.closeSync(fd);}
+}
+const describe=bytes=>({bytes:bytes.length,sha256:sha256(bytes)});
+const reportFor=(report,raw)=>({...report,input:describe(raw)});
+export function auditFile(input,options={}){
+ const raw=readRegular(input),result=auditSnapshot(parseSnapshotJson(raw),options);
+ return {...result,report:reportFor(result.report,raw),raw};
+}
+/** A complete manifest is written last. Any interrupted/failed bundle remains
+ * incomplete and verification refuses it; no existing path is overwritten. */
+export function convertFile(input,outDirectory,options={}){
+ const result=auditFile(input,options);
+ if(!result.report.eligible)return {created:false,report:result.report};
+ const out=path.resolve(outDirectory),parent=fs.realpathSync(path.dirname(out));
+ if(parent!==path.dirname(out))fail('linked-output-parent','Use an output parent with its real canonical path.');
+ fs.mkdirSync(out,{mode:0o700});
+ const files={'backup.json':result.raw,'converted.json':jsonBytes(result.converted),'audit.json':jsonBytes(result.report)};
+ for(const [name,bytes] of Object.entries(files)){if(bytes.length>bundleLimit)fail('output-too-large','Output bundle exceeds its per-file size limit.');writeNewFile(path.join(out,name),bytes);}
+ const manifest={format:'altare-snapshot-conversion',schemaVersion:1,toolVersion:1,sourceStateSchema:SOURCE_SCHEMA,targetStateSchema:TARGET_SCHEMA,contract:CONTRACT,allowUnusedRoleNormalization:options.allowUnusedRoleNormalization??false,files:Object.fromEntries(names.map(name=>[name,describe(files[name])]))};
+ const manifestBytes=jsonBytes(manifest);writeNewFile(path.join(out,'manifest.json'),manifestBytes);
+ const dir=fs.openSync(out,fs.constants.O_RDONLY|fs.constants.O_DIRECTORY|fs.constants.O_NOFOLLOW);try{fs.fsyncSync(dir);}finally{fs.closeSync(dir);}
+ // Read back and independently reconstruct before reporting success.
+ const verified=verifyBundle(out,{expectedManifestSha256:sha256(manifestBytes),expectedSourceSha256:sha256(result.raw)});
+ return {created:true,directory:out,sourceSha256:verified.sourceSha256,manifestSha256:verified.manifestSha256,totalCells:result.report.totalCells,normalizationCount:result.report.normalizationCount};
+}
+export function verifyBundle(directory,{expectedManifestSha256,expectedSourceSha256}={}){
+ for(const value of [expectedManifestSha256,expectedSourceSha256])if(value!==undefined&&!digest(value))fail('invalid-digest','Expected digest must be a lowercase SHA-256 hex string.');
+ const dir=path.resolve(directory),stat=fs.lstatSync(dir);
+ if(!stat.isDirectory()||stat.isSymbolicLink()||fs.realpathSync(dir)!==dir)fail('not-bundle-directory','Bundle must be a real directory at its canonical path, not a link.');
+ const listing=fs.readdirSync(dir).sort();
+ if(JSON.stringify(listing)!==JSON.stringify([...names,'manifest.json'].sort()))fail('incomplete-bundle','Bundle must contain exactly backup.json, converted.json, audit.json and manifest.json.');
+ const manifestBytes=readRegular(path.join(dir,'manifest.json'),65536),manifestSha256=sha256(manifestBytes);
+ if(expectedManifestSha256!==undefined&&manifestSha256!==expectedManifestSha256)fail('manifest-digest-mismatch','Manifest does not match the separately trusted digest.');
+ const manifest=parseSnapshotJson(manifestBytes);
+ if(!exact(manifest,['format','schemaVersion','toolVersion','sourceStateSchema','targetStateSchema','contract','allowUnusedRoleNormalization','files'])||manifest.format!=='altare-snapshot-conversion'||manifest.schemaVersion!==1||manifest.toolVersion!==1||manifest.sourceStateSchema!==SOURCE_SCHEMA||manifest.targetStateSchema!==TARGET_SCHEMA||typeof manifest.allowUnusedRoleNormalization!=='boolean'||!exact(manifest.contract,Object.keys(CONTRACT))||Object.keys(CONTRACT).some(k=>manifest.contract[k]!==CONTRACT[k])||!exact(manifest.files,names))fail('invalid-manifest','Manifest fields, schema or pinned contract do not match this tool.');
+ const files={};
+ for(const name of names){
+  const item=manifest.files[name];
+  if(!exact(item,['bytes','sha256'])||!Number.isSafeInteger(item.bytes)||item.bytes<1||item.bytes>bundleLimit||!digest(item.sha256))fail('invalid-manifest','Invalid file descriptor.');
+  const bytes=readRegular(path.join(dir,name),name==='backup.json'?LIMITS.bytes:bundleLimit);
+  if(bytes.length!==item.bytes||sha256(bytes)!==item.sha256)fail('file-digest-mismatch',`${name} does not match its recorded size and digest.`);files[name]=bytes;
+ }
+ const sourceSha256=sha256(files['backup.json']);
+ if(expectedSourceSha256!==undefined&&sourceSha256!==expectedSourceSha256)fail('source-digest-mismatch','Backup does not match the separately trusted source digest.');
+ const result=auditSnapshot(parseSnapshotJson(files['backup.json']),{allowUnusedRoleNormalization:manifest.allowUnusedRoleNormalization});
+ if(!result.report.eligible)fail('ineligible-backup','Backup does not permit complete conversion under recorded options.');
+ if(!files['converted.json'].equals(jsonBytes(result.converted)))fail('conversion-mismatch','Converted cells differ from deterministic conversion of the backup.');
+ if(!files['audit.json'].equals(jsonBytes(reportFor(result.report,files['backup.json']))))fail('audit-mismatch','Audit differs from a fresh complete audit of the backup.');
+ return {verified:true,directory:dir,sourceSha256,manifestSha256,externalDigestChecked:expectedManifestSha256!==undefined||expectedSourceSha256!==undefined,totalCells:result.report.totalCells,backupBytes:files['backup.json']};
+}
+export function exportRollback(directory,output,options={}){
+ const verified=verifyBundle(directory,options),destination=path.resolve(output);
+ if(destination===verified.directory||destination.startsWith(verified.directory+path.sep))fail('rollback-inside-bundle','Export rollback outside the verified bundle.');
+ writeNewFile(destination,verified.backupBytes);
+ const actual=readRegular(destination);
+ if(!actual.equals(verified.backupBytes))fail('rollback-mismatch','Rollback read-back differs from the source backup.');
+ return {exported:true,path:destination,bytes:actual.length,sha256:sha256(actual),worldModified:false};
+}

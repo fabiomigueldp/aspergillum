@@ -1,0 +1,36 @@
+from pathlib import Path
+import json,hashlib,zipfile,py_compile,numpy as np
+R=Path(__file__).resolve().parents[1];B=R.parent
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+p=R/'structural_rebuild/retained-band.npz';candidate=R/'structural_rebuild/polygonal-pinna-0.6mm-clean.npz'
+assert p.read_bytes()==candidate.read_bytes();assert sha(p)=='1c293d8c5b35cca07cfc0e73d2b2e360cbbc3bea27688bb6e6373537ecf54c76'
+d=np.load(p);base=np.load(B/'shell_band_v5/retained_candidate/evidence/band-paired.npz');m=d['baseline_vertex_indices']>=0;assert np.array_equal(d['points'][m],base['points'][d['baseline_vertex_indices'][m]])
+inputs=json.loads((R/'evidence/input-hashes.json').read_text())
+for r in inputs:r['current_sha256']=sha(Path(r['path']));r['unchanged']=r['current_sha256']==r['sha256'];assert r['unchanged']
+scene=json.loads((R/'evidence/frozen-scene-check.json').read_text())
+for r in scene.values():
+ if isinstance(r,dict):assert r['points_equal_expected_float32'] and r['triangles_exact'] and r['hash_metadata_matches']
+compiled=[]
+for f in R.rglob('*.py'):py_compile.compile(str(f),doraise=True);compiled.append(str(f.relative_to(R)))
+images=[R/f'evidence/band06-{name}.png' for name in ['full-front','head-front','junction-profile','junction-back','left-ear','right-ear']]+[R/f'evidence/band06-nohalo-{name}.png' for name in ['left-ear-oblique','right-ear-oblique','rear-open']];assert all(f.exists() for f in images)
+def areas(v,f):
+ t=v[f];return np.linalg.norm(np.cross(t[:,1]-t[:,0],t[:,2]-t[:,0]),axis=1)/2
+old=areas(base['points'],base['triangles']);new=areas(d['points'],d['triangles']);area={'original_surface_area_mm2':float(old.sum()*1e6),'original_area_removed_fraction':float((old.sum()-new[d['face_roles']!=2].sum())/old.sum()),'original_area_in_affected_parent_faces_fraction':float(old[d['removed_or_trimmed_baseline_faces']].sum()/old.sum()),'new_closure_area_mm2':float(new[d['face_roles']==2].sum()*1e6)}
+status={'status':'RETAINED_LOCAL_TECHNICAL_RESEARCH','retained_band':str(p.relative_to(R)),'sha256':sha(p),'source_files_unchanged':True,'complete_anatomy_frozen':True,'v11_shell_frozen':True,'native_closed_band_screen_passed':True,'independent_visual_retention':'local_only_nine_views','two_crest_curves_continuous':True,'guarded_front_faces_exact':488,'terminations_shortened':True,'global_interface_clean':False,'final_art_approved':False,'bedrock_exported':False,'minecraft_runtime_tested':False,'published':False,'vertices':len(d['points']),'triangles':len(d['triangles']),'source_surviving_vertices_exact':int(m.sum()),'native_self_crossings_confirmed':0,'coplanar_overlap_detected_above_test_threshold':0,'remaining_band_anatomy_pairs':189,'remaining_band_shell_pairs':1360,'silhouette_exact_in_every_tested_view':False,'limits':['Terminations intentionally shortened, especially right.','Residual band/anatomy and band/shell crossings.','Inherited blue frontal interruptions, temporal red and small dark ear edges.','Small frontal raster silhouette difference.','No global clearance/thickness, final art or engine certificate.','New band still needs Bedrock transport and bake validation.']}
+(R/'STATUS.json').write_text(json.dumps(status,indent=2))
+validation={'status':status,'inputs':inputs,'retained_identical_to_reviewed':True,'source_area_check':area,'frozen_scene':scene,'syntax_check':{'passed':True,'files':compiled},'final_images':[{'path':str(f.relative_to(R)),'sha256':sha(f),'bytes':f.stat().st_size} for f in images],'independent_geometry_review':'independent_diagnosis/REVIEW_FINAL_V12.md','independent_visual_review':'evidence/review-visual-v12.md','outline':json.loads((R/'evidence/band06-outline.json').read_text())}
+(R/'evidence/final-validation.json').write_text(json.dumps(validation,indent=2))
+files=[];excluded=[]
+for f in sorted(R.rglob('*')):
+ if not f.is_file() or '__pycache__' in f.parts or f.suffix in ['.zip','.blend1'] or f.name in ['file-manifest.json','package-validation.json']:continue
+ keep=not (f.suffix=='.blend' and f.name!='retained-structural-diagnostic.blend');(files if keep else excluded).append(f)
+manifest={'included':[{'path':str(f.relative_to(R)),'bytes':f.stat().st_size,'sha256':sha(f)} for f in files],'omitted_intermediate_scenes_still_preserved_in_workspace':[str(f.relative_to(R)) for f in excluded]}
+(R/'file-manifest.json').write_text(json.dumps(manifest,indent=2));files.append(R/'file-manifest.json')
+out=R/'V75-V12-BAND-EAR-RESEARCH-NOT-ADDON.zip';assert not out.exists()
+with zipfile.ZipFile(out,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+ for f in files:z.write(f,'band_ear_v12/'+str(f.relative_to(R)))
+with zipfile.ZipFile(out) as z:
+ assert z.testzip() is None
+ for f in files:assert z.read('band_ear_v12/'+str(f.relative_to(R)))==f.read_bytes()
+report={'file':out.name,'bytes':out.stat().st_size,'sha256':sha(out),'member_count':len(files),'crc_valid':True,'all_archived_bytes_match_workspace':True,'all_candidate_npz_files_included':True,'original_sources_not_duplicated':True}
+(R/'package-validation.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))

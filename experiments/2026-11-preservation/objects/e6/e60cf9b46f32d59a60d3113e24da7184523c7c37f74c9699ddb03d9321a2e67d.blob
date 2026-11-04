@@ -1,0 +1,9 @@
+# Gate de transferência e correspondência
+
+Transferência das fontes avaliada, sem alterar a cena salva: calota160386 vértices coincide exatamente com V75. Manto25570 vértices, reavaliado com modifiers/chaves originais e fórmulaV74 aplicada **depois** da espessura/subdivisão, apresenta desvio máximo5,939e−8m antes da conversão float32. A conversão ao armazenamento Blender é registrada separadamente no JSON. Isso conserva o estágio deformador da bainha, evitando pressupor que deformar cage antes de subdividir daria o mesmo resultado.
+
+V75 da túnica é objeto separado e não foi alterado. No futuro redesenho, a fórmulaV74 deve continuar downstream e a área inferior deverá ser confrontada vértice a vértice com o alvo. Gate de reconstituição das fontes atuais passou em precisão de armazenamento; não significa que nova topologia já seja equivalente.
+
+Correspondência espacial candidata: a linha superior80 do manto segue monotonicamente o arco posterior da calota, índices28..84, orientação +X→−X. Proximidade diagnóstica usa57 vértices distintos,56 passos positivos e zero regressões; distâncias6,662–14,520mm. A correspondência escolhida usa arclength normalizado em80 estações, não nearest-neighbor com vértices repetidos. Curvas e ligações vistas frontal/perfil em `cap-mantle-oriented-correspondence.png`.
+
+Ambos contornos têm irregularidades herdadas e não são curvas desenhadas a partir da foto. O gráfico prova organização/orientação, não fidelidade artística ou separação de um futuro loft. Ainda é necessário tratar tangentes e obstáculos com a superfície média completa. Nenhum loft nem .blend candidato foi construído neste gate.

@@ -1,0 +1,16 @@
+import json,numpy as np
+from scipy.optimize import least_squares
+from scipy.spatial.transform import Rotation
+root='/workspace/scratch/212c580ada5b/paz-directed-v21/'
+d=json.load(open(root+'landmarks.json'));names=list(d['points']);P=np.array([d['points'][k]['point'] for k in names]);T=np.array([d['points'][k]['target_pixel'] for k in names]);M=np.array(d['camera_matrix']);R0=M[:3,:3];center=P.mean(0)
+# Orthographic least-squares; mild prior prevents pose from absorbing all anatomical error.
+def pred(v):
+ R=Rotation.from_rotvec(v[:3]).as_matrix()@R0
+ Q=(P-center)@R
+ return Q[:,:2]*np.array([1,-1])*np.exp(v[3])+v[4:6]
+v0=np.r_[np.zeros(3),np.log(678/.75),T.mean(0)]
+def fun(v):return np.r_[(pred(v)-T).ravel(),v[:3]*8]
+r=least_squares(fun,v0,bounds=(np.r_[[-.6]*3,np.log(450),[0,0]],np.r_[[.6]*3,np.log(1600),[463,678]]),max_nfev=500)
+R=Rotation.from_rotvec(r.x[:3]).as_matrix()@R0
+res={'names':names,'points':P.tolist(),'target':T.tolist(),'projected':pred(r.x).tolist(),'camera_rotation':R.tolist(),'scale_px':float(np.exp(r.x[3])),'center':center.tolist(),'pixel_center':r.x[4:6].tolist(),'rmse_px':float(np.sqrt(np.mean((pred(r.x)-T)**2))),'pose_delta':r.x[:3].tolist()}
+json.dump(res,open(root+'camera_fit.json','w'),indent=2);print(json.dumps(res,indent=2))

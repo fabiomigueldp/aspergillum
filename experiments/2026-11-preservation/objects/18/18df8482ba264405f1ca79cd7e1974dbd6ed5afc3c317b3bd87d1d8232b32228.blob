@@ -1,0 +1,38 @@
+"""Independent audit of OUTPUT JSON UV and transforms. Does not import trim builder."""
+from pathlib import Path
+import json,gzip,hashlib,sys
+import numpy as np
+from PIL import Image
+O=Path(__file__).resolve().parent;B=O.parents[1];D=B/'lit_surface_v16/transparent_trim';sys.path.insert(0,str(B/'opaque_transport_v15/independent_validation'));from audit_common import cube_quad
+sourcepath=B/'opaque_transport_v15/shared_mask/shared_mask_2048.geo.json';source=json.load(open(sourcepath));sg=source['minecraft:geometry'][0];src={int(b['name'].split('_')[1]):b for b in sg['bones']};alpha=np.array(Image.open(B/'opaque_transport_v15/shared_mask/shared_mask_2048.png'))[:,:,3]>0;sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
+res=[]
+for tag in sys.argv[1:]or ['roi68-depth1','roi68-depth2','roi68-depth3']:
+ geo=D/(tag+'.geo.json');g=json.load(open(geo))['minecraft:geometry'][0];out={int(b['name'].split('_')[1]):b for b in g['bones']};m=dict(np.load(D/(tag+'-cube-map.npz')));assert g['description']==sg['description'];assert list(out)==list(src);groups={};seen=set();unchanged=0;children=0;max_error=0.;max_coplanar=0.;rectpatterns={};nissues=[]
+ for part,pci,nci,rect,sub in zip(m['part'],m['original_cube_index'],m['new_cube_index'],m['parent_rect_texels'],m['is_subdivided_child']):
+  part=int(part);pci=int(pci);nci=int(nci);key=(part,nci);assert key not in seen;seen.add(key);a=src[part]['cubes'][pci];b=out[part]['cubes'][nci];groups.setdefault((part,pci),[]).append((nci,sub))
+  if not sub:assert a==b;unchanged+=1;continue
+  children+=1;assert set(a['uv'])==set(b['uv'])=={'south'};assert {k:v for k,v in a.items()if k not in ['origin','size','uv']}=={k:v for k,v in b.items()if k not in ['origin','size','uv']};au=np.array(a['uv']['south']['uv']);ad=np.array(a['uv']['south']['uv_size']);bu=np.array(b['uv']['south']['uv']);bd=np.array(b['uv']['south']['uv_size']);lo=(bu-au)/ad;hi=(bu+bd-au)/ad;assert np.all(lo>=0)&np.all(hi<=1)&np.all(hi>lo);actualrect=np.r_[bu-au,bu+bd-au];assert np.all(actualrect==np.rint(actualrect));assert np.array_equal(actualrect,rect);p=cube_quad(a,'south');q=cube_quad(b,'south');uv=np.array([[lo[0],lo[1]],[lo[0],hi[1]],[hi[0],hi[1]],[hi[0],lo[1]]]);expected=p[0]+uv[:,0,None]*(p[3]-p[0])+uv[:,1,None]*(p[1]-p[0]);err=np.linalg.norm(q-expected,axis=1).max();max_error=max(max_error,float(err));assert err<1e-12
+ for part,b in out.items():
+  assert {k:v for k,v in b.items()if k!='cubes'}=={k:v for k,v in src[part].items()if k!='cubes'};assert sum(1 for k in seen if k[0]==part)==len(b['cubes']);assert len([k for k in groups if k[0]==part])==len(src[part]['cubes'])
+ for (part,pci),leaves in groups.items():
+  if not any(sub for _,sub in leaves):assert len(leaves)==1;continue
+  a=src[part]['cubes'][pci];u,v=a['uv']['south']['uv'];w,h=a['uv']['south']['uv_size'];rects=[]
+  for nci,sub in leaves:
+   assert sub;b=out[part]['cubes'][nci];x,y=b['uv']['south']['uv'];ww,hh=b['uv']['south']['uv_size'];rects.append((x-u,y-v,x+ww-u,y+hh-v))
+  pattern=(u,v,w,h,tuple(sorted(rects)));rectpatterns[pattern]=rectpatterns.get(pattern,0)+1
+ supports=[]
+ for pat,parents in rectpatterns.items():
+  u,v,w,h,rects=pat;u,v,w,h=map(int,[u,v,w,h]);count=np.zeros((h,w),dtype=np.uint8)
+  for x0,y0,x1,y1 in rects:count[int(y0):int(y1),int(x0):int(x1)]+=1
+  mask=alpha[v:v+h,u:u+w];assert np.max(count)==1;assert not np.any(mask&(count==0));assert np.array_equal(mask&(count>0),mask)
+  supports.append({'parents':parents,'retained_children_per_parent':len(rects),'all_texels_checked':int(w*h),'opaque_texels':int(mask.sum()),'removed_texels':int((count==0).sum()),'removed_opaque_texels':int((mask&(count==0)).sum()),'overlapped_texels':int((count>1).sum())})
+ # Independently recheck each declared dropped rectangle against ORIGINAL source alpha.
+ certrows=0;dropped=0;claimed_kept=0
+ with gzip.open(D/(tag+'-rectangles.jsonl.gz'),'rt')as f:
+  for line in f:
+   r=json.loads(line);certrows+=1;part=r['part'];pci=r['original_cube_index'];a=src[part]['cubes'][pci];u,v=a['uv']['south']['uv'];x0,y0,x1,y1=r['rect_texels'];opaque=int(alpha[v+y0:v+y1,u+x0:u+x1].sum());assert opaque==r['opaque_texels']
+   if r['retained']:claimed_kept+=1;assert (r['new_cube_index'],True)in groups[part,pci]
+   else:assert opaque==0;dropped+=1
+ assert claimed_kept==children
+ rr={'tag':tag,'passed':True,'original_cubes':sum(len(b['cubes'])for b in src.values()),'output_cubes':len(seen),'unchanged_cubes_value_identical':unchanged,'selected_parents':sum(v for v in rectpatterns.values()),'retained_children':children,'max_float64_child_corner_error_blocks':max_error,'support_patterns':supports,'certificate_rows_independently_checked':certrows,'dropped_rectangles_all_alpha0':dropped,'atlas_bytes_unchanged':sha(D/'shared_mask_2048.png')==sha(B/'opaque_transport_v15/shared_mask/shared_mask_2048.png'),'description_bones_non_geometry_fields_preserved':True,'input_sha256':sha(geo),'qualification':'Ideal nearest/mip0 UV-support equality and float64 transform reconstruction. Does not prove float32 import/ray behavior or filtered runtime support.'};res.append(rr);print(json.dumps(rr),flush=True)
+dest=O/'trim-geometry-independent.json';old=json.load(open(dest))if dest.exists()else[];newtags={r['tag']for r in res};dest.write_text(json.dumps([r for r in old if r['tag']not in newtags]+res,indent=2))

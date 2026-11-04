@@ -1,0 +1,52 @@
+import bpy,numpy as np,json,time,sys
+from pathlib import Path
+from mathutils.bvhtree import BVHTree
+from mathutils import Vector
+R=Path(__file__).resolve().parents[1];V=R.parent/'shell_band_v3';S=R.parent.parent/'paz-refinement/gui-test/checkpoint-V75-20261102/V75-tunic-lower-trial.blend'
+sys.path.insert(0,str(V/'tools'));from independent_gate import strict_hits
+bpy.ops.wm.open_mainfile(filepath=str(S),use_scripts=False)
+o=bpy.data.objects['Maria — anatomia feminina adaptada CC0'];mods=[]
+for m in o.modifiers:
+ mods.append({'type':m.type,'levels':getattr(m,'levels',None),'render_levels':getattr(m,'render_levels',None)})
+ if m.type=='SUBSURF':m.levels=m.render_levels
+bpy.context.view_layer.update();e=o.evaluated_get(bpy.context.evaluated_depsgraph_get());me=e.to_mesh();me.calc_loop_triangles();hp=np.array([o.matrix_world@v.co for v in me.vertices]);hf=np.array([list(t.vertices) for t in me.loop_triangles]);e.to_mesh_clear();head=BVHTree.FromPolygons(hp.tolist(),hf.tolist(),all_triangles=True)
+a=np.load(V/'constrained_source/evidence/cap-paired.npz');p=a['points'];f=a['triangles'];n=len(p)//2;s=np.load(V/'evidence/cap-source.npz');sp=s['points'];sf=s['triangles'];wc=np.load(V/'evidence/cap-source-wall-classes.npz')['wall_class'];trees={i:BVHTree.FromPolygons(sp.tolist(),sf[wc==i].tolist(),all_triangles=True) for i in range(3)}
+def sd(q):
+ pos,no,fi,dist=head.find_nearest(Vector(q));return float((Vector(q)-pos).dot(no)),float(dist)
+# Same wall closest source is a comparison proxy, not a parameter-exact correspondence.
+records=[]
+weights=[(1/3,1/3,1/3),(.5,.5,0),(0,.5,.5),(.5,0,.5)]
+for ti,t in enumerate(f):
+ side=0 if np.all(t<n) else 1 if np.all(t>=n) else 2
+ for wi,w in enumerate(weights):
+  q=np.array(w)@p[t];h,d=sd(q);near,_,_,err=trees[side].find_nearest(Vector(q));hs,ds=sd(near)
+  records.append({'triangle':ti,'sample':wi,'side':side,'point':q.tolist(),'head_signed_nearest_plane':h,'source_head_signed_nearest_plane':hs,'source_projection_distance':float(err),'source_projection':list(near),'delta':h-hs})
+lowtree=BVHTree.FromPolygons(p.tolist(),f.tolist(),all_triangles=True);pairs=lowtree.overlap(head);cross=[]
+for i,j in pairs:
+ h=strict_hits(p[f[i]],hp[hf[j]])+strict_hits(hp[hf[j]],p[f[i]])
+ if h:cross.append({'cap_triangle':i,'head_triangle':j,'witnesses':h})
+# Source intersections quantify inherited contact, not directly comparable triangle counts.
+sourcetree=BVHTree.FromPolygons(sp.tolist(),sf.tolist(),all_triangles=True);sourcepairs=sourcetree.overlap(head);sourcecross=[]
+for i,j in sourcepairs:
+ if strict_hits(sp[sf[i]],hp[hf[j]]) or strict_hits(hp[hf[j]],sp[sf[i]]):sourcecross.append([i,j])
+def stats(values):
+ x=np.array(values);return {'min':float(x.min()),'median':float(np.median(x)),'max':float(x.max()),'p01':float(np.quantile(x,.01)),'p99':float(np.quantile(x,.99))}
+report={'head_object':o.name,'head_vertices':len(hp),'head_triangles':len(hf),'head_modifiers':mods,'limitations':'Nearest-head-face signed plane is local sign proxy, not a closed-volume signed distance. Closest same-wall source is not exact parametric correspondence. Four samples per reduced triangle; collision counts depend on tessellation. No game validation.','samples':len(records),'sample_signed_low':stats([x['head_signed_nearest_plane'] for x in records]),'sample_signed_source_projection':stats([x['source_head_signed_nearest_plane'] for x in records]),'delta_low_minus_source':stats([x['delta'] for x in records]),'source_projection_distance':stats([x['source_projection_distance'] for x in records]),'low_head_candidate_pairs':len(pairs),'low_head_crossing_pairs':len(cross),'low_head_crossing_unique_cap_triangles':len(set(x['cap_triangle'] for x in cross)),'source_head_candidate_pairs':len(sourcepairs),'source_head_crossing_pairs':len(sourcecross),'source_head_crossing_unique_cap_triangles':len(set(x[0] for x in sourcecross)),'new_negative_samples_at_0_1mm':[x for x in records if x['head_signed_nearest_plane']<-.0001 and x['source_head_signed_nearest_plane']>=0],'worst_delta_samples':sorted(records,key=lambda x:x['delta'])[:40],'low_crossings':cross,'source_crossings':sourcecross}
+(R/'evidence/review-contact-comparison.json').write_text(json.dumps(report,indent=2));print(json.dumps({k:v for k,v in report.items() if k not in ['low_crossings','source_crossings','new_negative_samples_at_0_1mm','worst_delta_samples']},indent=2),flush=True);print('new_negative_samples',len(report['new_negative_samples_at_0_1mm']),flush=True)
+
+ids=a['source_indices'];rows=(ids[f]%5040)//112
+sample_regions=[]
+for x in records:
+ rr=rows[x['triangle']]
+ sample_regions.append('border_rows40_44' if rr.min()>=40 else 'crown_rows0_39' if rr.max()<40 else 'transition_crosses40')
+np.savez_compressed(R/'evidence/review-contact-samples.npz',triangle=np.array([x['triangle'] for x in records]),sample=np.array([x['sample'] for x in records]),side=np.array([x['side'] for x in records]),region=np.array(sample_regions),point=np.array([x['point'] for x in records]),source_projection=np.array([x['source_projection'] for x in records]),signed_low=np.array([x['head_signed_nearest_plane'] for x in records]),signed_high_projection=np.array([x['source_head_signed_nearest_plane'] for x in records]),projection_distance=np.array([x['source_projection_distance'] for x in records]),triangle_source_rows=rows)
+summary={'region_definition':'Explicit parameter split: crown max row<40; border min row>=40; transition straddles row40. This is a reproducible partition, not anatomical segmentation.','sign_and_correspondence_limit':'Local nearest-head-face signed plane; closest same-wall high projection, NOT exact source-UV correspondence. Edge samples can duplicate coordinates.','groups':{}}
+for side,label in [(0,'outer'),(1,'inner'),(2,'rim')]:
+ for region in ['all','crown_rows0_39','transition_crosses40','border_rows40_44']:
+  subset=[x for x,reg in zip(records,sample_regions) if x['side']==side and (region=='all' or reg==region)]
+  if not subset:continue
+  regress=[x for x in subset if x['head_signed_nearest_plane']<-.0001 and x['source_head_signed_nearest_plane']>=0]
+  robust=[x for x in subset if x['head_signed_nearest_plane']<-.0001 and x['source_head_signed_nearest_plane']>.0001]
+  summary['groups'][label+'/'+region]={'samples':len(subset),'new_negative_samples_0_1mm':len(regress),'high_clearance_above_0_1mm_and_low_below_minus_0_1mm':len(robust),'unique_regression_points_rounded_9decimals':len(set(tuple(round(v,9) for v in x['point']) for x in regress)),'low_signed':stats([x['head_signed_nearest_plane'] for x in subset]),'high_projection_signed':stats([x['source_head_signed_nearest_plane'] for x in subset]),'delta':stats([x['delta'] for x in subset]),'worst_regressions':sorted(regress,key=lambda x:x['delta'])[:8]}
+(R/'evidence/review-contact-by-wall-region.json').write_text(json.dumps(summary,indent=2))
+print('WALL_REGION',json.dumps({k:{a:b for a,b in v.items() if a not in ['worst_regressions','low_signed','high_projection_signed','delta']} for k,v in summary['groups'].items()}),flush=True)

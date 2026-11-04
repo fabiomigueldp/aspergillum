@@ -1,0 +1,18 @@
+# Punho P85: melhoria técnica retida em revisão independente
+
+O disco terminal do proxy foi substituído por uma abertura anular, parede interna e fechamento recuado de 40 mm. A espessura radial é 10% do raio e o vinco da borda 0,65. São parâmetros técnicos provisórios, não medidas da escultura original.
+
+## Ganho verificado
+Os renders pareados de perfil e três quartos mostram eliminação da pinçagem radial do cap e borda contínua. Revisor independente confirmou que não aparece ruptura nova. A faixa escura em três quartos é a cavidade; não comprova encaixe fiel à obra real.
+
+## Auditoria
+- Zero auto-interseções e arestas não-manifold na superfície avaliada.
+- Zero pares manga–mão, frente a 81 no P85 anterior.
+- Todos os vértices originais da cage, mão e torso: deslocamento máximo zero.
+- Teste de articulação de 0,1 radiano: zero interseções manga–mão e zero auto-interseções. Pose de teste não salva.
+- V75 original mantém SHA-256 2c14fbc7566217ad350ef926abc1dc4a1bc41f457eaab8f10351e90b1f4777d9.
+
+## Uso
+`P85-CUFF-TECHNICAL-RETAINED.blend` é cópia com proxy técnico retido. A manga ainda é hipótese separada e sobreposta à original; não há integração ombro/torso. Não melhora o gesto nem a fidelidade global. Ocultar a coleção PROXY85 remove o estudo e mantém o contexto V75. Nenhum addon alterado.
+
+`before-*.png` e `after-*.png` usam câmera, luz e resolução idênticas, sem retoque. `audit.json` e `scope-and-rig.json` registram verificação. Scripts não precisam ser executados para abrir o arquivo; manter execução automática desativada.

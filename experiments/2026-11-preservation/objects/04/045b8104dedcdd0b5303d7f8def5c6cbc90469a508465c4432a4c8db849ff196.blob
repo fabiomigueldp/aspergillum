@@ -1,0 +1,26 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-cloth-obstacle-surface-trial.py').read().split('counts=collections.Counter')[0])
+d=json.load(open(r+'neck-boundary-integral-growth.json'));removed=set(d['removed_faces']);counts=collections.Counter(tuple(sorted((a,b))) for i in removed for a,b in zip(fs[i],fs[i][1:]+fs[i][:1]));adj=collections.defaultdict(list)
+for (a,b),n in counts.items():
+ if n==1:adj[a].append(b);adj[b].append(a)
+loops=[]
+for comp in d['loops']:
+ start=comp[0];loop=[start];prev=None;cur=start
+ while True:
+  nxt=next(v for v in adj[cur] if v!=prev)
+  if nxt==start:break
+  loop.append(nxt);prev,cur=cur,nxt
+ loops.append(loop)
+def cross(a,b):return a[0]*b[1]-a[1]*b[0]
+reports=[]
+for loop in loops:
+ pts=p[loop,1:];n=len(pts);crossings=[]
+ for i in range(n):
+  a,b=pts[i],pts[(i+1)%n]
+  for j in range(i+2,n):
+   if (j+1)%n==i:continue
+   c,d=pts[j],pts[(j+1)%n];ab=b-a;cd=d-c;det=cross(ab,cd)
+   if abs(det)<1e-15:continue
+   t=cross(c-a,cd)/det;u=cross(c-a,ab)/det
+   if 1e-7<t<1-1e-7 and 1e-7<u<1-1e-7:crossings.append([i,j])
+ reports.append({'vertices':n,'yz_crossings':len(crossings),'crossings':crossings,'mean_x':float(p[loop,0].mean()),'edge_length_min':float(np.linalg.norm(np.roll(p[loop],1,axis=0)-p[loop],axis=1).min()),'edge_length_max':float(np.linalg.norm(np.roll(p[loop],1,axis=0)-p[loop],axis=1).max())})
+json.dump({'reports':reports,'ordered_loops':loops},open(r+'neck-contour-projection-audit.json','w'),indent=2);print(reports)

@@ -1,0 +1,36 @@
+{
+  "body_pairs": 133,
+  "body_parts": {
+    "0": 98,
+    "1": 35,
+    "2": 0
+  },
+  "new_body_pairs": 106,
+  "removed_body_pairs": 580,
+  "self_pairs": 0,
+  "band_pairs": 850,
+  "moved_vertices": 1452,
+  "displacement_max_mm": 31.30784674128469,
+  "displacement_p95_moved_mm": 30.050208696034595,
+  "area_ratio_min": 0.6015411175590534,
+  "normal_rotation_max_deg": 75.10002003549668,
+  "original_sources_exact": false,
+  "tag": "relax065-t2-iteration00",
+  "parameters": {
+    "method": "Local pair-center translations with fixed offsets, thin-plate displacement graph, intrinsic metric and area and normal penalties, finite non-ear skin support planes",
+    "stretch_floor_target": 0.65,
+    "target_weight": 2.0,
+    "target_posterior_mm": 30,
+    "skin_target_mm": 0.3,
+    "seed": "boundary-posterior-30mm",
+    "active_pair_groups": 708,
+    "soft_constraints": true
+  },
+  "solver_success": false,
+  "solver_message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+  "solver_iterations": 900,
+  "objective": 1065.2368910969137,
+  "seconds": 17.941181659698486,
+  "skin_constraints": 7992,
+  "sha256": "04519b4458f770c5e64efdfbdd4ae84bedf7ae6bbaef82568c4ca065e1af73f1"
+}

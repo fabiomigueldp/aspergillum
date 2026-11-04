@@ -1,0 +1,62 @@
+# Independent review: Aspergillum state-budget candidates
+
+Date: 2026-11-03. Workspace reviewed: `/workspace/scratch/212c580ada5b/altare-two-pillars-integration-20261103`.
+
+## Verdict
+
+Both candidates are coherent mathematical studies, not implementation or migration approval. The simple occupancy codec has the smaller integration surface. The coupled water/occupancy codec earns another 480 states of headroom but requires coordinated replacement of every water and occupancy accessor/mutator. No hidden in-repository gameplay or presentation meaning was found for water pair `(9,8)` beyond its existing decoded value 16. All sixteen rotations remain represented independently.
+
+Production source, generated packs, registry and worlds were not modified. I inspected the scripts and current implementation, performed an independent count of existing block states and checked generated rotation geometry UV bounds. I did not rerun the already-approved normal tests, run Minecraft, invoke handlers or modify any world.
+
+## Counts and comparative risk
+
+- Existing Aspergillum independently counted from its 18 block definitions: 9,744 states.
+- Occupancy-only candidate: aspersorium 18 water representations × 18 occupancy slots × 16 rotations = 5,184; table 288; proxies 16; total 5,488. With supplied Altare 59,840: 65,328, margin 208.
+- Coupled candidate: 17 semantic water quantities × 17 semantic occupancy cases = 289. Mixed radices 2×3×7×7 declare 294 slots; ×16 rotations = 4,704. Table 288 plus proxies 16 gives 5,008; combined 64,848, margin 688.
+- Altare's 59,840 is an input to this review, not independently rederived here. Neither margin establishes engine compatibility, performance, or compatibility with other add-ons.
+- Coupled packing is only 480 states smaller than occupancy-only. It removes the independent-water-field boundary, creates five padding codes, and increases the number of paths requiring a full-tuple write. This is a deliberate complexity/headroom tradeoff, not an unqualified improvement.
+
+## Hidden cosmetics and registry authority
+
+`src/application/aspersorium.ts` docks using the incoming item's cosmetic and resets the block cosmetic to zero when undocking. `src/application/sacristan-table.ts` does the same through `tablePermutation`; recoloring requires occupancy. No gameplay consumer of an empty block's cosmetic value was found. “Noncanonical under normal gameplay” is justified; “impossible at runtime” is not, because commands, structures, imported saves, rollback or other tooling can produce these values.
+
+The block encodes occupancy/display only. `restoreDockedAspergillum` in `src/infrastructure/item-state.ts` restores identity, charges, name, cosmetic, spray profile and custom properties from the registry snapshot. It does not reconstruct them from the block's cosmetic. An occupied block without a snapshot currently falls back to a default zero-charge item during undock/break. An empty block with a snapshot refuses docking. Migration must inventory these mismatches, preserve records, and avoid silently fabricating/deleting/reconciling them.
+
+## Water alias and rotation findings
+
+`src/infrastructure/aspersorium-water-state.ts` decodes base 9 plus offset 8 through `normalizeWaterUnits`, producing 16. Its canonical encoder emits `(9,7)` for 16. `src/domain/aspersorium-water.ts` clamps to capacity 16; no seventeenth usable unit exists.
+
+Runtime water references found in `src` are centralized in this codec. Filling, docking and loading read its decoded quantity. `commitLoading` in `src/application/aspersorium.ts` compares that quantity with `session.expectedWaterLevel`, not the raw base/offset representation. `src/presentation/aspersorium-water-visual.ts` also reads via this codec, then derives visual level 0–4. Thus `(9,8)` and `(9,7)` have identical gameplay quantities and water-entity levels in current source. Neither resource content nor other runtime code examined directly consumes the raw water pair. Developer tooling/validation and diagnostic documentation do refer to its published schema and would need updating.
+
+The coupled script's `semantic` helper manually reproduces the decoder for the declared states, rather than executing the actual decoder. For these exact valid domains `[0,9]×[0..8]`, its `min(16, base+offset)` matches current code. It should not be described as verification of malformed-state handling or as execution of the production block-state decoder. Hashing the real codec, constants and water-visual consumer would strengthen provenance; the current coupled report hashes only the domain dependencies and block JSON.
+
+Rotation remains the original independent `aspergillum:rotation` field 0–15. The script asserts `decode(encode(tuple))` including rotation across every old state, and evaluates all candidate state products against original components. This supports preservation of the declared rotation/geometry selection. It does not execute placement orientation, native rendering or persistence.
+
+My additional independent geometry inspection checked all 16 entries in each generated `*.rotations.geo.json`, not just the base model: all non-item cubes remain in the unchanged atlas half, maximum U=67 for aspersorium and U=126 for the table. Both rotation files are byte-identical to the prior artwork copy. This closes the original base-only UV provenance gap; it remains a static asset check rather than a renderer test.
+
+## What the coupled proof establishes
+
+- 9,216 old-state semantic normalization checks, including unchanged rotation.
+- 9,600 component comparisons: 4,896 old states with canonical empty cosmetics or occupied cosmetics, plus all 4,704 candidate states. Empty nonzero cosmetics rely on the separate atlas-equivalence proof.
+- 512 old states use the water alias; 4,320 use an empty nonzero cosmetic. These counts overlap in 240 states and must not be added as distinct affected states. Their union is 4,592 old states. Mapping all old states preserves semantics but is not an invertible raw-state roundtrip.
+- The script actually bundles and executes current pure `resolveDocking` and `loadFromAspersorium` functions. Across valid quantities and charges it checks results and conservation after the codec boundary. The reported 21,760 docking / 43,520 loading cases include rotation/cosmetic combinations whose effect is intentionally orthogonal to the pure water logic; they are not that many distinct transactional scenarios.
+- Loading uses synthetic cosmetic IDs to prove field retention, not catalog resolution. Recolor and undock are projected tuple operations, not actual recolor/undock handler tests.
+- Both the JavaScript decoder and component expressions map the five padding codes 289–293 to empty, water zero, while retaining rotation. All these declared slots are covered by component comparison. This is a specified fallback, not proof that malformed or future state codes can be recovered without data loss.
+- Component expressions are evaluated by a JavaScript approximation of the used Molang operations. This is strong local equivalence evidence, not native Molang acceptance or engine-state registration proof.
+
+## Integration and save risks
+
+1. Every water write in the coupled scheme must decode the current complete tuple, update only the intended field, encode the complete tuple and commit one final permutation. Do not build replacements from defaults or stale pre-session snapshots. Filling an occupied block must retain its item display; undocking must retain water; docking must apply `resolveDocking`'s actual water increase and remaining item charges. Rotation must survive all such paths.
+2. Preserve the current loading commit guards for occupancy and expected decoded water. Codec correctness does not prove cancellation, contention, transaction rollback, or protection against state changes during asynchronous sessions. Existing withState calls manipulate permutation values before one setPermutation; a replacement must not commit intermediate radix digits to the world.
+3. Occupancy reads also occur in broken-block snapshots, interaction routing and loading guards. Updating only normal dock/undock writes is insufficient. Water-visual reconciliation must use the new decoder; old state getters on the new schema can otherwise silently return default/false/zero.
+4. The registry cannot be backed up byte-for-byte through current parsed helpers. `src/domain/docking.ts` sanitizes snapshots/entries, drops unknown top-level fields, normalizes charges and upgrades old snapshot versions. `src/infrastructure/docked-item-registry.ts` rewrites normalized shards when setting/deleting entries. Preserve original dynamic-property bytes directly, including malformed/future records, before conversion or use of mutation helpers.
+5. Keep the behavior-pack identity and verify access to its existing dynamic properties in any migration plan. Back up world, player/inventory state, registry, pack versions and original block-state metadata consistently. Snapshot registry mappings use dimension/location, so relocation and structure duplication cannot be assumed to move item authority correctly.
+6. Empty-cosmetic normalization and water-alias normalization are lossy at the raw-schema level. Restoring original raw values requires the original snapshot or explicit side metadata. A new codec's decoder is not an inverse migration.
+7. Existing registry/inventory/block rollback is best-effort, not atomic. Break recovery spawns before deleting the registry; undock delivers an item after changing block/registry; cleanup failures or ambiguous outcomes require tests. Neither codec addresses these pre-existing risks.
+8. Five padding codes discard water as well as occupancy on decode. Intended writes never emit them, but migration should detect/report unexpected padding rather than treating a fallback as evidence that a corrupted block legitimately contained no water or item.
+
+## Required gate before any implementation/deployment
+
+Design an explicit old-schema export and new-schema import before swapping published block definitions. Cover unloaded chunks, structures and command references, and preserve discrepancy reports. Verify raw registry hashes, complete tuple migration, save/reopen and rollback from the paired original world/pack snapshot. On an isolated authorized copy, test actual adapters for place, fill, dock, load, undock, recolor, break and water-entity reconciliation, including all rotations, relevant cosmetics, water boundaries 0/8/9/15/16, alias input, registry mismatches and injected partial failures. Native Content Log and in-game smoke remain necessary.
+
+Recommendation: retain both candidates as options. Occupancy-only is the simpler integration choice but leaves just 208 states. Coupled packing has a plausible semantic basis and 688-state reserve, but adoption should be conditional on full-tuple adapter/migration tests, not on the larger pure-domain test count alone.

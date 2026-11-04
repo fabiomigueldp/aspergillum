@@ -1,0 +1,16 @@
+import bpy,json
+from mathutils import Vector
+ROOT='/workspace/scratch/212c580ada5b/paz-refinement/'
+bpy.ops.wm.open_mainfile(filepath=ROOT+'Nossa_Senhora_da_Paz_v16_estudo.blend')
+s=bpy.context.scene;c=s.camera;s.cycles.samples=48
+for name,loc,target,scale in [('v16-profile',(-5,-.05,3.6),(0,0,3.4),1.0),('v16-overview',(-4,-8,3.5),(0,0,2.05),4.25)]:
+ c.location=loc;c.rotation_euler=(Vector(target)-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=scale
+ s.render.resolution_x=720;s.render.resolution_y=960;s.render.filepath=ROOT+name+'.png';bpy.ops.render.render(write_still=True)
+# leave source ready with portrait and overview cameras
+c.name='Vista geral';d=c.copy();d.data=c.data.copy();d.name='Retrato para comparação';s.collection.objects.link(d);d.location=(-1.6,-5,3.7);d.rotation_euler=(Vector((0,-.08,3.43))-d.location).to_track_quat('-Z','Y').to_euler();d.data.ortho_scale=.88
+bpy.ops.wm.save_as_mainfile(filepath=ROOT+'Nossa_Senhora_da_Paz_v16_estudo.blend')
+import bmesh
+report={}
+for name in ['Maria — anatomia feminina adaptada CC0','Maria — véu reconstruído de perfil']:
+ o=bpy.data.objects[name];bm=bmesh.new();bm.from_mesh(o.data);report[name]={'vertices':len(bm.verts),'open_edges':sum(e.is_boundary for e in bm.edges),'nonmanifold_edges':sum(not e.is_manifold for e in bm.edges),'shape_keys':list(o.data.shape_keys.key_blocks.keys()) if o.data.shape_keys else []};bm.free()
+json.dump(report,open(ROOT+'v16-check.json','w'),indent=2)

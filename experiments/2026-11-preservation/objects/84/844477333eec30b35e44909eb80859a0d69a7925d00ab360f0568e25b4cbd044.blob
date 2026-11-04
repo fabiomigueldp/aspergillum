@@ -1,0 +1,69 @@
+"""Local V13 construction checks, source inputs read-only. Not independent review.
+python audit_local_patch.py TAG. No unchanged anatomy/casca internal gates rerun.
+"""
+from pathlib import Path
+import sys,json,ast,itertools,collections,hashlib
+import numpy as np,mpmath as mp
+sys.dont_write_bytecode=True
+O=Path(__file__).resolve().parent;B=O.parents[1];tag=sys.argv[1];path=O/(tag+'.npz');d=dict(np.load(path));base=dict(np.load(B/'band_ear_v12/structural_rebuild/retained-band.npz'));p=d['points'];f=d['triangles'];tr=p[f];par=d['v13_parent_face_indices'];role=d['v13_face_roles'];part=d['face_parts'];p0=base['points'];f0=base['triangles'];modified=role==2
+T=B/'band_ear_v12/independent_diagnosis'
+for name,funcs in [('review_candidate.py',['hits']),('strict_longdouble.py',['strict_longdouble']),('resolve_predicates.py',['vec','sub','add','mul','dot','cross']),('check_coplanar_contacts.py',['raw','ar','clip','overlap'])]:
+ tree=ast.parse((T/name).read_text());sel=[x for x in tree.body if isinstance(x,ast.FunctionDef) and x.name in funcs];exec(compile(ast.Module(body=sel,type_ignores=[]),name,'exec'))
+
+def aabb(t,u,selftest=False):
+ lo=u.min(1);hi=u.max(1);out=[]
+ for i,x in enumerate(t):
+  ids=np.flatnonzero(np.all(x.max(0)>=lo,1)&np.all(hi>=x.min(0),1));ids=ids[ids>i] if selftest else ids;out.extend((i,int(j)) for j in ids)
+ return np.array(out,int).reshape(-1,2)
+
+adj=set();vf=collections.defaultdict(list)
+for j,t in enumerate(f):
+ for i in t:vf[int(i)].append(j)
+for fs in vf.values():adj.update(itertools.combinations(fs,2))
+pairs=aabb(tr,tr,True);cands=np.array(sorted(set(map(tuple,pairs))|adj),int);cc,_,_=hits(p,f,p,f,cands);long=strict_longdouble(p,f,cands);flags=np.array(sorted(set(map(tuple,cc))|set(map(tuple,long))),int).reshape(-1,2);print('Self flags',len(flags),'all pairs',len(cands),'adj',len(adj),flush=True)
+mp.mp.dps=80;rows=[]
+for i,j in flags:
+ hh=[]
+ for oi,tj in [(i,j),(j,i)]:
+  orig=[vec(q) for q in p[f[oi]]];tar=[vec(q) for q in p[f[tj]]];e1=sub(tar[1],tar[0]);e2=sub(tar[2],tar[0])
+  for k in range(3):
+   dr=sub(orig[(k+1)%3],orig[k]);h=cross(dr,e2);det=dot(e1,h)
+   if not det:continue
+   ss=sub(orig[k],tar[0]);u=dot(ss,h)/det;q=cross(ss,e1);v=dot(dr,q)/det;t=dot(e2,q)/det
+   if mp.mpf('1e-60')<t<1-mp.mpf('1e-60') and u>mp.mpf('1e-60') and v>mp.mpf('1e-60') and u+v<1-mp.mpf('1e-60'):hh.append({'origin_face':int(oi),'target_face':int(tj),'edge':k,'t':str(t),'barycentric':[str(1-u-v),str(u),str(v)],'point':[float(x) for x in add(orig[k],mul(dr,t))]})
+ rows.append({'pair':[int(i),int(j)],'shared_vertices':len(set(f[i])&set(f[j])),'strict_hits':hh,'parent_faces':par[[i,j]].tolist(),'roles':role[[i,j]].tolist()})
+report={'candidate':path.name,'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'self_test':{'float64_aabb_pairs':len(pairs),'adjacent_pairs_explicitly_included':len(adj),'union_pairs':len(cands),'floating_flags':len(flags),'floating_flags_shared_vertex_histogram':{str(k):v for k,v in collections.Counter(x['shared_vertices'] for x in rows).items()},'confirmed_strict_crossings':sum(bool(x['strict_hits']) for x in rows),'predicate_precision_digits':80,'rows':rows},'contacts':{},'coplanar':{},'preservation':{},'wall_pairing':{}}
+# Compare against unchanged source obstacles, not their internal topology.
+arrays={'raw_self_flags':flags}
+for label,ob in [('self',d),('shell',dict(np.load(B/'ear_rim_v11/structural_rebuild/retained-shell.npz'))),('anatomy',dict(np.load(B/'body_interface_v9/constrained_fit/retained-anatomy.npz')))]:
+ op=ob['points'];of=ob['triangles'];ot=op[of];ap=pairs if label=='self' else aabb(tr,ot);on=np.cross(ot[:,1]-ot[:,0],ot[:,2]-ot[:,0]);on/=np.linalg.norm(on,axis=1)[:,None];nn=np.cross(tr[:,1]-tr[:,0],tr[:,2]-tr[:,0]);nn/=np.linalg.norm(nn,axis=1)[:,None];dots=(nn[ap[:,0]]*on[ap[:,1]]).sum(1);plane=np.max(np.abs(((ot[ap[:,1]]-tr[ap[:,0],0,None,:])*nn[ap[:,0],None,:]).sum(2)),axis=1);near=(abs(dots)>=1-1e-10)&(plane<=1e-12);cop=[]
+ for (i,j),dd in zip(ap[near],dots[near]):
+  area,poly=overlap(tr[i],ot[j] if dd>=0 else ot[j][::-1])
+  if area>1e-17:cop.append({'faces':[int(i),int(j)],'area_mm2':float(area*1e6)})
+ report['coplanar'][label]={'tested_aabb_pairs':len(ap),'near_coplanar_pairs':int(near.sum()),'positive_area_pairs':len(cop),'area_mm2_sum_not_union':sum(x['area_mm2'] for x in cop),'rows':cop}
+ if label!='self':
+  cc,pts,idx=hits(p,f,op,of,ap);arrays[label+'_pairs']=cc;arrays[label+'_witness_points']=pts;arrays[label+'_witness_pair_indices']=ap[idx];report['contacts'][label]={'pairs':len(cc),'modified_patch_pairs':int(modified[cc[:,0]].sum()),'planar_neighbor_pairs':int((role[cc[:,0]]==1).sum()),'by_part':{str(i):int((part[cc[:,0]]==i).sum()) for i in range(4)}}
+  if label=='anatomy':
+   old=np.load(T/'polygonal-pinna-0.6mm-clean-review-arrays.npz')['anatomy_pairs'];oldset=set(map(tuple,old));mapped=set((int(par[i]),int(j)) for i,j in cc);report['contacts'][label]['mapped_parent_pairs_not_in_v12']=sorted(mapped-oldset);report['contacts'][label]['warning']='Parent pair mapping alone is not spatial depth or area comparison after retessellation.'
+ print(label,'coplanar',len(cop),report['contacts'].get(label),flush=True)
+# Geometric preservation checks, independent of provenance claims.
+oldn=len(p0);exactfaces=role==0;report['preservation']['all_584_old_vertices_bit_exact']=bool(np.array_equal(p[:oldn],p0));report['preservation']['unchanged_triangles_index_exact']=bool(np.array_equal(f[exactfaces],f0[par[exactfaces]]));report['preservation']['count_unchanged_triangles']=int(exactfaces.sum());outside=role!=2;maxplane=0.;areafail=[]
+for j in np.unique(par[role==1]):
+ tri=p0[f0[j]];n=np.cross(tri[1]-tri[0],tri[2]-tri[0]);area=np.linalg.norm(n)/2;n/=np.linalg.norm(n);ids=np.flatnonzero(par==j);maxplane=max(maxplane,float(np.max(abs((tr[ids]-tri[0])@n))));outarea=np.linalg.norm(np.cross(tr[ids,1]-tr[ids,0],tr[ids,2]-tr[ids,0]),axis=1).sum()/2
+ if abs(outarea-area)>1e-13:areafail.append([int(j),outarea-area])
+report['preservation']['planar_neighbor_max_plane_distance_mm']=maxplane*1000;report['preservation']['planar_neighbor_area_failures']=areafail
+edges=set(tuple(sorted((int(t[k]),int(t[(k+1)%3])))) for t in f for k in range(3));bedges=set(tuple(sorted((int(t[k]),int(t[(k+1)%3])))) for t in f0 for k in range(3));ridge={}
+for ss in [0,1]:
+ for v in [3,13]:
+  rr=[e for e in bedges if np.all(base['source_side'][list(e)]==ss) and np.all(abs(base['source_uv'][list(e),1]-v)<1e-8)];missing=[e for e in rr if e not in edges];er=np.array(sorted(edges),int);ep=p[er];checks=[]
+  for a,b in rr:
+   x=p0[a];ab=p0[b]-x;length=np.linalg.norm(ab);t=((ep-x)*ab).sum(2)/(ab@ab);dist=np.linalg.norm(ep-(x+t[:,:,None]*ab),axis=2);valid=(dist.max(1)<1e-12)&(t.min(1)>-1e-10)&(t.max(1)<1+1e-10);intervals=sorted((max(0.,float(z.min())),min(1.,float(z.max()))) for z in t[valid]);cursor=0.;gap=0.;dup=0.
+   for lo,hi in intervals:
+    gap+=max(0.,lo-cursor);dup+=max(0.,min(cursor,hi)-lo);cursor=max(cursor,hi)
+   gap+=max(0.,1-cursor);checks.append({'old_edge':[a,b],'segments':len(intervals),'gap_mm':gap*length*1000,'duplicate_coverage_mm':dup*length*1000,'max_line_distance_mm':float(dist[valid].max()*1000) if valid.any() else None})
+  ridge[f'{ss}_{v}']={'original_edges':len(rr),'original_index_edges_subdivided':len(missing),'vertices_bit_exact':bool(np.array_equal(p[np.unique(rr)],p0[np.unique(rr)])),'max_gap_mm':max(z['gap_mm'] for z in checks),'max_duplicate_coverage_mm':max(z['duplicate_coverage_mm'] for z in checks),'domain_checks':checks}
+report['preservation']['ridge_edges']=ridge;uv=d['source_uv'];central=np.all((uv[f,:,0]>=80-1e-8)&(uv[f,:,0]<=96+1e-8),axis=1) if False else np.all((uv[f,0]>=80-1e-8)&(uv[f,0]<=96+1e-8),axis=1);report['preservation']['center_source_restored_faces']=int((central&modified).sum())
+# Pair mapping by UV only within the restored domain; no assumptions at ear caps.
+key=lambda x:tuple(np.round(x,10));inner={key(uv[i]):int(i) for i in np.flatnonzero(d['source_side']==1)};outer=np.unique(f[modified&(part==0)]);pairsuv=np.array([[i,inner[key(uv[i])]] for i in outer],int);vecs=p[pairsuv[:,0]]-p[pairsuv[:,1]];span=np.linalg.norm(vecs,axis=1);report['wall_pairing']={'outer_patch_vertices':len(outer),'paired_at_same_uv':len(pairsuv),'pair_distance_mm_quantiles':np.quantile(span*1000,[0,.01,.5,.99,1]).tolist(),'all_source_projection_weights_match':bool(np.array_equal(d['v13_source_projection_weight'][pairsuv[:,0]],d['v13_source_projection_weight'][pairsuv[:,1]])),'not_global_minimum_thickness_certificate':True}
+report['limitations']=['Self tests include all AABB and adjacent pairs, with 80-digit refinement; arbitrary tangencies not globally certified.','Coplanarity uses distance 1e-12m, normal tolerance1e-10 and area1e-17m².','Paired distances are not ray-normal thickness certificates.','Native Blender render and independent diagnosis/review remain separate.']
+np.savez_compressed(O/(tag+'-local-audit-arrays.npz'),**arrays);(O/(tag+'-local-audit.json')).write_text(json.dumps(report,indent=2));print(json.dumps({k:v for k,v in report.items() if k!='self_test'},indent=2));print('Confirmed self crossings',report['self_test']['confirmed_strict_crossings'])

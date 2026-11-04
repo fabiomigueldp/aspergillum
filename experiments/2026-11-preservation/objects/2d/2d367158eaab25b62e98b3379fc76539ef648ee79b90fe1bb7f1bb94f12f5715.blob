@@ -1,0 +1,14 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-source-shell-correspondence-audit.py').read().split('bpy.context.view_layer.update();dg=')[0])
+for md in o.modifiers:
+ if md.type=='SUBSURF':md.show_viewport=False
+bpy.context.view_layer.update();dg=bpy.context.evaluated_depsgraph_get();mesh=bpy.data.meshes.new_from_object(o.evaluated_get(dg),preserve_all_data_layers=True,depsgraph=dg);count=len(mesh.vertices);assert count==1600
+attr=mesh.attributes.new('source_shell_layer','FLOAT','POINT')
+for i,a in enumerate(attr.data):a.value=0 if i<800 else 1
+n=bpy.data.objects.new('TEMP shell provenance audit',mesh);bpy.context.collection.objects.link(n);md=n.modifiers.new('Same source subdivision','SUBSURF');md.levels=2;md.render_levels=2;bpy.context.view_layer.update();dg=bpy.context.evaluated_depsgraph_get();em=n.evaluated_get(dg).to_mesh();pts=np.array([v.co[:] for v in em.vertices]);d=np.load(r+'neck-source-shell-correspondence.npz');old=d['points'];layer=np.array([v.value for v in em.attributes['source_shell_layer'].data]);params=np.array([[em.attributes[name].data[i].value for name in ['source_row','source_col_sin','source_col_cos']] for i in range(len(pts))]);groups={}
+for i,a in enumerate(params):groups.setdefault(tuple(np.round(a,6)),[]).append(i)
+pairs=[];ambiguity=0
+for g in groups.values():
+ a=[i for i in g if layer[i]<1e-7];b=[i for i in g if layer[i]>1-1e-7]
+ if len(a)==1 and len(b)==1:pairs.append([a[0],b[0]])
+ elif a or b:ambiguity+=1
+report={'source_solidified_vertices':count,'subdivided_vertices':len(pts),'source_coordinate_max_delta':float(np.linalg.norm(pts-old,axis=1).max()),'layer_zero_vertices':int((layer<1e-7).sum()),'layer_one_vertices':int((layer>1-1e-7).sum()),'rim_vertices':int(((layer>1e-7)&(layer<1-1e-7)).sum()),'unambiguous_pairs':len(pairs),'ambiguous_groups':ambiguity};json.dump(report,open(r+'neck-layer-provenance-audit.json','w'),indent=2);np.savez(r+'neck-layer-provenance.npz',points=pts,params=params,layer=layer,pairs=np.array(pairs));print(report)

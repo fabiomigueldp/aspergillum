@@ -1,0 +1,53 @@
+from pathlib import Path
+import numpy as np,json,sys
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+O=Path(__file__).resolve().parent;B=O.parents[1]
+paths={'band':B/'band_ear_v12/structural_rebuild/retained-band.npz','shell':B/'ear_rim_v11/structural_rebuild/retained-shell.npz','anatomy':B/'body_interface_v9/constrained_fit/retained-anatomy.npz'}
+meshes={k:{a:v[a] for a in v.files} for k,p in paths.items() for v in [np.load(p)]}
+z=np.load(B/'evidence/source_meshes.npz');meta=json.loads((B/'evidence/source-export.json').read_text());offset=0
+for i,part in enumerate(meta['parts']):
+ n=part['high_triangles']
+ if i in [0,1,15]:
+  name={0:'source_band',1:'source_shell',15:'source_anatomy'}[i];f=z['high_f'][offset:offset+n];ind,f=np.unique(f,return_inverse=True);meshes[name]={'points':z['high_v'][ind],'triangles':f.reshape(-1,3)}
+ offset+=n
+bvh={k:BVHTree.FromPolygons(v['points'].tolist(),v['triangles'].tolist(),all_triangles=True) for k,v in meshes.items()}
+def hits(name,origin,direction,limit=10,nmax=12):
+ direction=np.asarray(direction,dtype=float);direction/=np.linalg.norm(direction);start=np.asarray(origin,dtype=float);now=start.copy();out=[]
+ for _ in range(nmax):
+  loc,no,fi,dd=bvh[name].ray_cast(Vector(now),Vector(direction),limit)
+  if loc is None:break
+  pt=np.array(loc);d=float(np.dot(pt-start,direction));out.append({'point':pt.tolist(),'normal':list(no),'face':int(fi),'distance_mm':d*1000,'front_facing':bool(np.dot(no,direction)<0),'normal_dot_ray':float(np.dot(no,direction))});now=pt+direction*2e-6
+ return out
+views={'left-ear':((-3,-.16,3.50),(-.085,-.205,3.485),.5,[(783,337),(831,314),(872,300),(896,284)]),'right-ear':((3,-.16,3.48),(.17,-.205,3.46),.5,[(204,347),(154,318),(123,292),(98,258),(255,374)]),'left-ear-oblique':((-2,-1.5,3.82),(-.085,-.205,3.485),.5,[(756,358),(815,336),(870,319),(920,299)]),'right-ear-oblique':((2,-1.5,3.82),(.17,-.205,3.46),.5,[(240,372),(181,343),(138,319),(90,280)])}
+rows=[]
+for name,(pos,target,scale,pix) in views.items():
+ d=(Vector(target)-Vector(pos)).normalized();q=d.to_track_quat('-Z','Y');right=q@Vector((1,0,0));up=q@Vector((0,1,0))
+ for px,py in pix:
+  origin=Vector(pos)+right*((px+.5)/1000-.5)*scale+up*(.5-(py+.5)/1000)*scale;row={'view':name,'pixel':[px,py],'origin':list(origin),'direction':list(d),'hits':{k:hits(k,origin,d) for k in meshes}}
+  for version,names in [('current',['band','shell','anatomy']),('source',['source_band','source_shell','source_anatomy'])]:
+   first={k:next((v for v in row['hits'][k] if v['front_facing']),None) for k in names};first={k:v for k,v in first.items() if v};ordered=sorted(first,key=lambda k:first[k]['distance_mm']);row[version+'_first_visible_order']=ordered
+   if names[0] in first and names[1] in first:row[version+'_shell_ahead_of_band_mm']=first[names[0]]['distance_mm']-first[names[1]]['distance_mm']
+  rows.append(row)
+(O/'visible-blue-ray-witnesses.json').write_text(json.dumps({'method':'Orthographic pixel centers from V12 cameras, BVHTree float32 ray intersections, 2 micrometer advancement. Sorted front-facing surface crossings; culling matches renders. These are point witnesses, not full visibility classification. Source high triangles segmented by source-export part counts. No intent inferred.','rows':rows},indent=2))
+print('PIXEL WITNESSES')
+for r in rows:print(r['view'],r['pixel'],r['current_first_visible_order'],r.get('current_shell_ahead_of_band_mm'),r['source_first_visible_order'],r.get('source_shell_ahead_of_band_mm'))
+# Stratified deterministic samples on external band facets: 7 points per face.
+base=meshes['band'];ids=np.flatnonzero(base['face_parts']==0);tri=base['points'][base['triangles'][ids]];nn=np.cross(tri[:,1]-tri[:,0],tri[:,2]-tri[:,0]);nn/=np.linalg.norm(nn,axis=1)[:,None];bc=np.array([[1/3]*3,[.8,.1,.1],[.1,.8,.1],[.1,.1,.8],[.45,.45,.1],[.45,.1,.45],[.1,.45,.45]])
+samples=[]
+for face,t,n in zip(ids,tri,nn):
+ for bary in bc:
+  p=bary@t;uv=bary@base['source_uv'][base['triangles'][face]];row={'band_face':int(face),'barycentric':bary.tolist(),'point':p.tolist(),'outward_normal':n.tolist(),'uv':uv.tolist()}
+  for key,ob,d in [('shell_out','shell',n),('shell_in','shell',-n),('band_in','band',-n),('anatomy_in','anatomy',-n),('anatomy_out','anatomy',n)]:
+   rr=hits(ob,p+np.asarray(d)*2e-6,d,.03,4);row[key]=rr
+  samples.append(row)
+(O/'band-normal-ray-samples.json').write_text(json.dumps(samples,indent=2))
+# Positive outer shell hit within 8 mm along outward band normal means shell exterior ahead of this band point.
+active=[]
+for r in samples:
+ hs=r['shell_out'];sel=next((h for h in hs if h['normal_dot_ray']>.1 and h['distance_mm']<8),None)
+ if sel:
+  # Any shell wall ahead, even an inside face, establishes masking possibility but occlusion also depends on view.
+  x={'band_face':r['band_face'],'uv':r['uv'],'point':r['point'],'outward_normal':r['outward_normal'],'shell_outer_hit':sel,'band_inner_hit':r['band_in'][0] if r['band_in'] else None,'anatomy_in_hit':r['anatomy_in'][0] if r['anatomy_in'] else None,'shell_in_hits':r['shell_in']};active.append(x)
+summary={'samples':len(samples),'samples_with_shell_outer_surface_ahead_within_8mm':len(active),'by_front_guard':sum(r['point'][1]<-.28 for r in active),'outward_shell_distance_mm_percentiles':np.percentile([r['shell_outer_hit']['distance_mm'] for r in active],[0,25,50,75,95,100]).tolist(),'uv_v_percentiles':np.percentile([r['uv'][1] for r in active],[0,25,50,75,100]).tolist(),'warning':'Local face-normal rays are approximate direction-dependent distances, not true penetration depth, global clearance, or a visible-area measure. Must check normal orientation/order and geometry witnesses before shifting anything.'}
+(O/'band-normal-ray-summary.json').write_text(json.dumps(summary,indent=2));(O/'shell-ahead-local-witnesses.json').write_text(json.dumps(active,indent=2));print(json.dumps(summary,indent=2))

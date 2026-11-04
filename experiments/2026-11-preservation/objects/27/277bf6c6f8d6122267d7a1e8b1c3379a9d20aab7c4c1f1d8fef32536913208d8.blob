@@ -1,0 +1,12 @@
+import bpy,numpy as np,json,math
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False);o=bpy.data.objects['TESTE 34 — conexão de superfícies avaliadas'];bv=BVHTree.FromObject(o,bpy.context.evaluated_depsgraph_get());rows=[]
+for z in [1.0,1.5,2.0,2.5]:
+ rowsamples=[]
+ for a in np.linspace(.05,math.pi-.05,121):
+  d=Vector((.348*math.cos(a),.273*math.sin(a),0));h,n,ix,dist=bv.ray_cast(Vector((0,.020,z)),d.normalized(),1);rowsamples.append([float(a),float(dist/d.length) if h else None])
+ rows.append({'z':z,'angle_radius':rowsamples})
+json.dump(rows,open(r+'mantle-lateral-section-diagnosis.json','w'),indent=2)
+m=bpy.data.materials.new('Diagnostic attribution only');m.diffuse_color=(.02,.45,.38,1);m.use_nodes=True;m.node_tree.nodes['Principled BSDF'].inputs['Base Color'].default_value=(.02,.45,.38,1);o.data.materials.clear();o.data.materials.append(m)
+s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=600;s.render.resolution_y=900;s.render.resolution_percentage=100;c=s.camera;c.data.type='ORTHO';c.location=(-5,0,2);c.rotation_euler=(Vector((0,0,1.7))-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=2.6;s.render.filepath=r+'V75-mantle-attribution-profile.png';bpy.ops.render.render(write_still=True)

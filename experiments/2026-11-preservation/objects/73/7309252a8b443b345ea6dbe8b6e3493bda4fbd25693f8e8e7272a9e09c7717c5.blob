@@ -1,0 +1,133 @@
+{
+  "decision": "NO-GO for release, installation or world migration; isolated source integration completed",
+  "source": "/workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103",
+  "integratedTree": "/workspace/scratch/212c580ada5b/aspergillum-altare-ui-consolidated-20261104",
+  "scope": "Integrate validated native Altare UI onto the latest snapshot-authority consolidated tree without overwriting later changes",
+  "checks": {
+    "aspergillumTypecheck": "passed",
+    "altareTypecheck": "passed",
+    "snapshotRuntimeTests": {
+      "passed": 207,
+      "failed": 0,
+      "files": 6,
+      "log": "runtime-tests.log"
+    },
+    "nativeUiTests": {
+      "passed": 23,
+      "failed": 0,
+      "log": "ui-tests.log"
+    },
+    "altareStructuralValidation": "passed",
+    "documentationValidation": "passed (57 root Markdown files)",
+    "productionInputMatch": "All Altare src/assets-src/tools/package/tsconfig inputs match the validated UI revision; its three generated outputs were copied byte-for-byte.",
+    "nativeUiDiagram": "Regenerated offline from integrated code; documentary only, not native screenshot."
+  },
+  "preservation": {
+    "sourceChangedDuringIntegration": [],
+    "snapshotAuthorityFilesChanged": [],
+    "changed": [
+      "addons/altare/assets-src/locales.mjs",
+      "addons/altare/docs/TESTING.md",
+      "addons/altare/packs/behavior/scripts/main.js",
+      "addons/altare/packs/resource/texts/en_US.lang",
+      "addons/altare/packs/resource/texts/pt_BR.lang",
+      "addons/altare/src/presentation/menu.ts",
+      "addons/altare/tests/menu.node.ts"
+    ],
+    "added": [
+      "addons/altare/docs/NATIVE_EDITOR_UX.md",
+      "addons/altare/tests/helpers/native-ui.ts",
+      "addons/altare/tools/capture-native-ui.mjs",
+      "addons/altare/tools/render-native-ui.py"
+    ],
+    "removed": [],
+    "unexpectedDifferences": [],
+    "preservedEntries": 26805,
+    "expectedUiFiles": [
+      "addons/altare/src/presentation/menu.ts",
+      "addons/altare/assets-src/locales.mjs",
+      "addons/altare/tests/menu.node.ts",
+      "addons/altare/tests/helpers/native-ui.ts",
+      "addons/altare/tools/capture-native-ui.mjs",
+      "addons/altare/tools/render-native-ui.py",
+      "addons/altare/docs/NATIVE_EDITOR_UX.md",
+      "addons/altare/docs/TESTING.md",
+      "addons/altare/packs/behavior/scripts/main.js",
+      "addons/altare/packs/resource/texts/en_US.lang",
+      "addons/altare/packs/resource/texts/pt_BR.lang"
+    ]
+  },
+  "combinedStates": {
+    "altare": 59840,
+    "aspergillum": 5008,
+    "combined": 64848,
+    "headroom": 688
+  },
+  "sourceFiles": [
+    "CHANGELOG.md",
+    "docs/BREAK_RECOVERY_LOCATION_GUARD.md",
+    "docs/COMPACT_BLOCK_STATES_2.0.0.md",
+    "docs/PROJECT_STATUS.md",
+    "docs/RECOVERY_PROTOCOL_DIAGNOSTIC.md",
+    "docs/TESTING.md",
+    "src/application/aspersorium.ts",
+    "src/application/sacristan-table.ts",
+    "src/infrastructure/break-recovery.ts",
+    "tests/application/compact-event-routing.test.ts",
+    "tests/infrastructure/break-recovery-location.test.ts",
+    "tests/application/recovery-snapshot-authority.test.ts",
+    "docs/RECOVERY_SNAPSHOT_AUTHORITY.md",
+    "addons/altare/src/presentation/menu.ts",
+    "addons/altare/assets-src/locales.mjs",
+    "addons/altare/tests/menu.node.ts",
+    "addons/altare/tests/helpers/native-ui.ts",
+    "addons/altare/tools/capture-native-ui.mjs",
+    "addons/altare/tools/render-native-ui.py",
+    "addons/altare/docs/NATIVE_EDITOR_UX.md",
+    "addons/altare/docs/TESTING.md"
+  ],
+  "sourceSha256": {
+    "CHANGELOG.md": "2829e1dec06016373f2d90ee67019857fe817880d0befebd105a9f3a6f55f6a8",
+    "docs/BREAK_RECOVERY_LOCATION_GUARD.md": "bda62e2e05fec87c9f3bdc5a9bfa40cba9a04b4106b7c7f4f78b04e8ac403a65",
+    "docs/COMPACT_BLOCK_STATES_2.0.0.md": "80d77f95103589c926f995465bd1c34d0e56066cd8598ff685f7d4c7dafee2b7",
+    "docs/PROJECT_STATUS.md": "b174750747983b6ec57a6fdd5b62e4f36ad7aff90cc4b3ec14737a9426d2ac9e",
+    "docs/RECOVERY_PROTOCOL_DIAGNOSTIC.md": "f6c3e2f29771a8d397552e1c6be63bec59b7c400d0e79a463d52d3d637597887",
+    "docs/TESTING.md": "c92f41dced3d14260a86a69e08223b9e1fa77dca0643964dd6d9954f0001665d",
+    "src/application/aspersorium.ts": "32bd6b7cfc677ecdabf7a6b62a2b718d0837859e77e20524b8718f8d8c055266",
+    "src/application/sacristan-table.ts": "ed7d6c4046fc4194c366f04e424159e47c6ebc26bd92457db8e3d5a18e70d155",
+    "src/infrastructure/break-recovery.ts": "e60cef8b7eb89b21af1247fc57abc456b06b91b4f456bfafc016ff9857e032f6",
+    "tests/application/compact-event-routing.test.ts": "325dbba752ab9c37b12d605a5c1c06147f4fb4e6a68a4d7f1fa9b1702f9fee07",
+    "tests/infrastructure/break-recovery-location.test.ts": "69c0ae8707048a11935537827b1966a9a41d566acf24de518c3e4f481efb298d",
+    "tests/application/recovery-snapshot-authority.test.ts": "683b52c12db8660999904668f2decaaa071194f98fdc8f5e9f34f5f9e5393f65",
+    "docs/RECOVERY_SNAPSHOT_AUTHORITY.md": "cc849b4d305d4124253910e65b73f29f92ab9adec5be1f65f58780f67f154d7a",
+    "addons/altare/src/presentation/menu.ts": "2e44c601abc44ce8d1682a8bed65663f1de08069ef3b3850d01e77933ad3a7ac",
+    "addons/altare/assets-src/locales.mjs": "769842007aa67f20f09859079470f4e85c67c5368dfad989829e4c4702642d89",
+    "addons/altare/tests/menu.node.ts": "c52b47de4b981c986830c158269f6463b2f77f16c719ed91c905722374635d8f",
+    "addons/altare/tests/helpers/native-ui.ts": "d46f594c7843283b42693e81a2de73385c509556bc5b3f469d7020d0af652882",
+    "addons/altare/tools/capture-native-ui.mjs": "13412fbfc3df6ea8c0cb09c42ddc6ea049ef8b60d0cca8966e4591de90c713be",
+    "addons/altare/tools/render-native-ui.py": "9365406aa02408025bd5b1f6bf8b931405068d0be522b96f0025cfaf61b7ac2e",
+    "addons/altare/docs/NATIVE_EDITOR_UX.md": "0de1747f7232f8fc0f544aa054c0857488de2902dec0795d50b84bddfac64bbf",
+    "addons/altare/docs/TESTING.md": "77af2636fbf68ef94dabcaba38fd5919c248f8f40d28aa0fd58c44a327122dab"
+  },
+  "notRun": [
+    "Minecraft",
+    "World or LevelDB access",
+    "Installation or publication",
+    "Chromium",
+    "Creator Tools",
+    "Package generation",
+    "Full aggregate test suite in this consolidated tree"
+  ],
+  "remaining": [
+    "Native input/layout/host lifecycle gate remains pending.",
+    "Snapshot mitigation still does not establish atomicity, unique delivery, crash durability or replacement-snapshot replay safety.",
+    "Compact block schemas retain separate save-compatibility and migration restrictions."
+  ],
+  "independentReview": {
+    "status": "approved",
+    "sourceEntriesRechecked": 26812,
+    "expectedUiFilesMatched": 11,
+    "snapshotAuthorityHashesPreserved": 14,
+    "blockingFindings": 0
+  }
+}

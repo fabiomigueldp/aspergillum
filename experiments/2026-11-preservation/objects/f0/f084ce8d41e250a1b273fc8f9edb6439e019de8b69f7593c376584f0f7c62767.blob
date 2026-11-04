@@ -1,0 +1,1587 @@
+{
+  "region_definition": "Explicit parameter split: crown max row<40; border min row>=40; transition straddles row40. This is a reproducible partition, not anatomical segmentation.",
+  "sign_and_correspondence_limit": "Local nearest-head-face signed plane; closest same-wall high projection, NOT exact source-UV correspondence. Edge samples can duplicate coordinates.",
+  "groups": {
+    "outer/all": {
+      "samples": 3032,
+      "new_negative_samples_0_1mm": 1011,
+      "high_clearance_above_0_1mm_and_low_below_minus_0_1mm": 997,
+      "unique_regression_points_rounded_9decimals": 654,
+      "low_signed": {
+        "min": -0.004804431111551821,
+        "median": 0.00016140616128268448,
+        "max": 0.0038178748834525322,
+        "p01": -0.003988328223131248,
+        "p99": 0.0025933898432413116
+      },
+      "high_projection_signed": {
+        "min": -0.004086135668330826,
+        "median": 0.00040598519717605086,
+        "max": 0.0038597559068875853,
+        "p01": -0.0022189703824551537,
+        "p99": 0.002244399335049821
+      },
+      "delta": {
+        "min": -0.005099025334857288,
+        "median": -0.00022603584147873335,
+        "max": 0.003264746008653674,
+        "p01": -0.0041948346869048695,
+        "p99": 0.0012227499901200645
+      },
+      "worst_regressions": [
+        {
+          "triangle": 120,
+          "sample": 2,
+          "side": 0,
+          "point": [
+            0.08240953460335732,
+            -0.09449686482548714,
+            3.632744312286377
+          ],
+          "head_signed_nearest_plane": -0.004804431111551821,
+          "source_head_signed_nearest_plane": 0.0002945942233054666,
+          "source_projection_distance": 0.00509929284453392,
+          "source_projection": [
+            0.08374306559562683,
+            -0.09035423398017883,
+            3.635401964187622
+          ],
+          "delta": -0.005099025334857288
+        },
+        {
+          "triangle": 121,
+          "sample": 3,
+          "side": 0,
+          "point": [
+            0.08240953460335732,
+            -0.09449686482548714,
+            3.632744312286377
+          ],
+          "head_signed_nearest_plane": -0.004804431111551821,
+          "source_head_signed_nearest_plane": 0.0002945942233054666,
+          "source_projection_distance": 0.00509929284453392,
+          "source_projection": [
+            0.08374306559562683,
+            -0.09035423398017883,
+            3.635401964187622
+          ],
+          "delta": -0.005099025334857288
+        },
+        {
+          "triangle": 184,
+          "sample": 2,
+          "side": 0,
+          "point": [
+            0.06810376793146133,
+            -0.06532158330082893,
+            3.5687884092330933
+          ],
+          "head_signed_nearest_plane": -0.004547026052023284,
+          "source_head_signed_nearest_plane": 0.0002663187297002878,
+          "source_projection_distance": 0.004813746549189091,
+          "source_projection": [
+            0.06890997290611267,
+            -0.060652993619441986,
+            3.569640874862671
+          ],
+          "delta": -0.004813344781723572
+        },
+        {
+          "triangle": 185,
+          "sample": 3,
+          "side": 0,
+          "point": [
+            0.06810376793146133,
+            -0.06532158330082893,
+            3.5687884092330933
+          ],
+          "head_signed_nearest_plane": -0.004547026052023284,
+          "source_head_signed_nearest_plane": 0.0002663187297002878,
+          "source_projection_distance": 0.004813746549189091,
+          "source_projection": [
+            0.06890997290611267,
+            -0.060652993619441986,
+            3.569640874862671
+          ],
+          "delta": -0.004813344781723572
+        },
+        {
+          "triangle": 184,
+          "sample": 0,
+          "side": 0,
+          "point": [
+            0.07839358101288477,
+            -0.06992976864178975,
+            3.5794193744659424
+          ],
+          "head_signed_nearest_plane": -0.004522677103523165,
+          "source_head_signed_nearest_plane": 0.00020688197673734976,
+          "source_projection_distance": 0.004729943349957466,
+          "source_projection": [
+            0.07965689897537231,
+            -0.06551209092140198,
+            3.5805420875549316
+          ],
+          "delta": -0.004729559080260515
+        },
+        {
+          "triangle": 120,
+          "sample": 0,
+          "side": 0,
+          "point": [
+            0.09210098534822464,
+            -0.10287145028511682,
+            3.640414635340372
+          ],
+          "head_signed_nearest_plane": -0.00443826534319669,
+          "source_head_signed_nearest_plane": 0.0002828266497090226,
+          "source_projection_distance": 0.004721717443317175,
+          "source_projection": [
+            0.09365040063858032,
+            -0.09927956759929657,
+            3.643059015274048
+          ],
+          "delta": -0.004721091992905713
+        },
+        {
+          "triangle": 77,
+          "sample": 2,
+          "side": 0,
+          "point": [
+            -0.01765910442918539,
+            -0.1688426211476326,
+            3.6810284852981567
+          ],
+          "head_signed_nearest_plane": -0.004395154945086688,
+          "source_head_signed_nearest_plane": 0.0002762933654594235,
+          "source_projection_distance": 0.004671854432672262,
+          "source_projection": [
+            -0.019989967346191406,
+            -0.16723822057247162,
+            3.6847457885742188
+          ],
+          "delta": -0.004671448310546111
+        },
+        {
+          "triangle": 78,
+          "sample": 3,
+          "side": 0,
+          "point": [
+            -0.01765910442918539,
+            -0.1688426211476326,
+            3.6810284852981567
+          ],
+          "head_signed_nearest_plane": -0.004395154945086688,
+          "source_head_signed_nearest_plane": 0.0002762933654594235,
+          "source_projection_distance": 0.004671854432672262,
+          "source_projection": [
+            -0.019989967346191406,
+            -0.16723822057247162,
+            3.6847457885742188
+          ],
+          "delta": -0.004671448310546111
+        }
+      ]
+    },
+    "outer/crown_rows0_39": {
+      "samples": 1240,
+      "new_negative_samples_0_1mm": 944,
+      "high_clearance_above_0_1mm_and_low_below_minus_0_1mm": 934,
+      "unique_regression_points_rounded_9decimals": 617,
+      "low_signed": {
+        "min": -0.004804431111551821,
+        "median": -0.0005462527017290331,
+        "max": 0.0004281226661078108,
+        "p01": -0.00420497509316192,
+        "p99": 0.00030996113411221714
+      },
+      "high_projection_signed": {
+        "min": -0.003092882707278477,
+        "median": 0.0003729538821062306,
+        "max": 0.0005677962558365834,
+        "p01": -0.0022896220834809355,
+        "p99": 0.00047201058044961993
+      },
+      "delta": {
+        "min": -0.005099025334857288,
+        "median": -0.0009008599513435911,
+        "max": 6.074076384265936e-05,
+        "p01": -0.0044907826607118295,
+        "p99": -9.982614612909295e-05
+      },
+      "worst_regressions": [
+        {
+          "triangle": 120,
+          "sample": 2,
+          "side": 0,
+          "point": [
+            0.08240953460335732,
+            -0.09449686482548714,
+            3.632744312286377
+          ],
+          "head_signed_nearest_plane": -0.004804431111551821,
+          "source_head_signed_nearest_plane": 0.0002945942233054666,
+          "source_projection_distance": 0.00509929284453392,
+          "source_projection": [
+            0.08374306559562683,
+            -0.09035423398017883,
+            3.635401964187622
+          ],
+          "delta": -0.005099025334857288
+        },
+        {
+          "triangle": 121,
+          "sample": 3,
+          "side": 0,
+          "point": [
+            0.08240953460335732,
+            -0.09449686482548714,
+            3.632744312286377
+          ],
+          "head_signed_nearest_plane": -0.004804431111551821,
+          "source_head_signed_nearest_plane": 0.0002945942233054666,
+          "source_projection_distance": 0.00509929284453392,
+          "source_projection": [
+            0.08374306559562683,
+            -0.09035423398017883,
+            3.635401964187622
+          ],
+          "delta": -0.005099025334857288
+        },
+        {
+          "triangle": 184,
+          "sample": 2,
+          "side": 0,
+          "point": [
+            0.06810376793146133,
+            -0.06532158330082893,
+            3.5687884092330933
+          ],
+          "head_signed_nearest_plane": -0.004547026052023284,
+          "source_head_signed_nearest_plane": 0.0002663187297002878,
+          "source_projection_distance": 0.004813746549189091,
+          "source_projection": [
+            0.06890997290611267,
+            -0.060652993619441986,
+            3.569640874862671
+          ],
+          "delta": -0.004813344781723572
+        },
+        {
+          "triangle": 185,
+          "sample": 3,
+          "side": 0,
+          "point": [
+            0.06810376793146133,
+            -0.06532158330082893,
+            3.5687884092330933
+          ],
+          "head_signed_nearest_plane": -0.004547026052023284,
+          "source_head_signed_nearest_plane": 0.0002663187297002878,
+          "source_projection_distance": 0.004813746549189091,
+          "source_projection": [
+            0.06890997290611267,
+            -0.060652993619441986,
+            3.569640874862671
+          ],
+          "delta": -0.004813344781723572
+        },
+        {
+          "triangle": 184,
+          "sample": 0,
+          "side": 0,
+          "point": [
+            0.07839358101288477,
+            -0.06992976864178975,
+            3.5794193744659424
+          ],
+          "head_signed_nearest_plane": -0.004522677103523165,
+          "source_head_signed_nearest_plane": 0.00020688197673734976,
+          "source_projection_distance": 0.004729943349957466,
+          "source_projection": [
+            0.07965689897537231,
+            -0.06551209092140198,
+            3.5805420875549316
+          ],
+          "delta": -0.004729559080260515
+        },
+        {
+          "triangle": 120,
+          "sample": 0,
+          "side": 0,
+          "point": [
+            0.09210098534822464,
+            -0.10287145028511682,
+            3.640414635340372
+          ],
+          "head_signed_nearest_plane": -0.00443826534319669,
+          "source_head_signed_nearest_plane": 0.0002828266497090226,
+          "source_projection_distance": 0.004721717443317175,
+          "source_projection": [
+            0.09365040063858032,
+            -0.09927956759929657,
+            3.643059015274048
+          ],
+          "delta": -0.004721091992905713
+        },
+        {
+          "triangle": 77,
+          "sample": 2,
+          "side": 0,
+          "point": [
+            -0.01765910442918539,
+            -0.1688426211476326,
+            3.6810284852981567
+          ],
+          "head_signed_nearest_plane": -0.004395154945086688,
+          "source_head_signed_nearest_plane": 0.0002762933654594235,
+          "source_projection_distance": 0.004671854432672262,
+          "source_projection": [
+            -0.019989967346191406,
+            -0.16723822057247162,
+            3.6847457885742188
+          ],
+          "delta": -0.004671448310546111
+        },
+        {
+          "triangle": 78,
+          "sample": 3,
+          "side": 0,
+          "point": [
+            -0.01765910442918539,
+            -0.1688426211476326,
+            3.6810284852981567
+          ],
+          "head_signed_nearest_plane": -0.004395154945086688,
+          "source_head_signed_nearest_plane": 0.0002762933654594235,
+          "source_projection_distance": 0.004671854432672262,
+          "source_projection": [
+            -0.019989967346191406,
+            -0.16723822057247162,
+            3.6847457885742188
+          ],
+          "delta": -0.004671448310546111
+        }
+      ]
+    },
+    "outer/transition_crosses40": {
+      "samples": 416,
+      "new_negative_samples_0_1mm": 44,
+      "high_clearance_above_0_1mm_and_low_below_minus_0_1mm": 44,
+      "unique_regression_points_rounded_9decimals": 34,
+      "low_signed": {
+        "min": -0.0005311337299644947,
+        "median": 0.00025631533208070323,
+        "max": 0.0037891336469328962,
+        "p01": -0.0004018726236779457,
+        "p99": 0.002858376041422169
+      },
+      "high_projection_signed": {
+        "min": 0.00029694051427497925,
+        "median": 0.00041764969131108387,
+        "max": 0.002436637078062631,
+        "p01": 0.00031472256545441726,
+        "p99": 0.0015146887500122935
+      },
+      "delta": {
+        "min": -0.0017841473727457924,
+        "median": -0.0001818418518269027,
+        "max": 0.003264746008653674,
+        "p01": -0.000793291565059917,
+        "p99": 0.0018984285199419352
+      },
+      "worst_regressions": [
+        {
+          "triangle": 406,
+          "sample": 1,
+          "side": 0,
+          "point": [
+            -0.015290215727873147,
+            -0.3951503038406372,
+            3.597063899040222
+          ],
+          "head_signed_nearest_plane": -0.0005311337299644947,
+          "source_head_signed_nearest_plane": 0.00031719681282993406,
+          "source_projection_distance": 0.0008482810808345675,
+          "source_projection": [
+            -0.015736667439341545,
+            -0.3957335352897644,
+            3.5974884033203125
+          ],
+          "delta": -0.0008483305427944288
+        },
+        {
+          "triangle": 367,
+          "sample": 1,
+          "side": 0,
+          "point": [
+            -0.0036988004576414824,
+            -0.0728142224252224,
+            3.4565582275390625
+          ],
+          "head_signed_nearest_plane": -0.0003956150541171155,
+          "source_head_signed_nearest_plane": 0.00045197913425454317,
+          "source_projection_distance": 0.0008477087249048054,
+          "source_projection": [
+            -0.004000015556812286,
+            -0.07202302664518356,
+            3.456514835357666
+          ],
+          "delta": -0.0008475941883716587
+        },
+        {
+          "triangle": 386,
+          "sample": 1,
+          "side": 0,
+          "point": [
+            -0.08660420030355453,
+            -0.2313079759478569,
+            3.5629512071609497
+          ],
+          "head_signed_nearest_plane": -0.00045331918059332565,
+          "source_head_signed_nearest_plane": 0.0003402738424966856,
+          "source_projection_distance": 0.000793745624832809,
+          "source_projection": [
+            -0.08739520609378815,
+            -0.23134148120880127,
+            3.5630078315734863
+          ],
+          "delta": -0.0007935930230900112
+        },
+        {
+          "triangle": 344,
+          "sample": 1,
+          "side": 0,
+          "point": [
+            0.14612409472465515,
+            -0.14828433096408844,
+            3.447757124900818
+          ],
+          "head_signed_nearest_plane": -0.00047897475815261714,
+          "source_head_signed_nearest_plane": 0.0003143168069072999,
+          "source_projection_distance": 0.0007934366585686803,
+          "source_projection": [
+            0.14682836830615997,
+            -0.14802765846252441,
+            3.4474971294403076
+          ],
+          "delta": -0.000793291565059917
+        },
+        {
+          "triangle": 345,
+          "sample": 3,
+          "side": 0,
+          "point": [
+            0.14612409472465515,
+            -0.14828433096408844,
+            3.447757124900818
+          ],
+          "head_signed_nearest_plane": -0.00047897475815261714,
+          "source_head_signed_nearest_plane": 0.0003143168069072999,
+          "source_projection_distance": 0.0007934366585686803,
+          "source_projection": [
+            0.14682836830615997,
+            -0.14802765846252441,
+            3.4474971294403076
+          ],
+          "delta": -0.000793291565059917
+        },
+        {
+          "triangle": 380,
+          "sample": 1,
+          "side": 0,
+          "point": [
+            -0.07862119376659393,
+            -0.15534237027168274,
+            3.502038836479187
+          ],
+          "head_signed_nearest_plane": -0.0004029769006592687,
+          "source_head_signed_nearest_plane": 0.00037006741300160684,
+          "source_projection_distance": 0.000773051637224853,
+          "source_projection": [
+            -0.07936403155326843,
+            -0.1551288217306137,
+            3.5020248889923096
+          ],
+          "delta": -0.0007730443136608756
+        },
+        {
+          "triangle": 380,
+          "sample": 0,
+          "side": 0,
+          "point": [
+            -0.07816404104232788,
+            -0.15432804822921753,
+            3.492913405100504
+          ],
+          "head_signed_nearest_plane": -0.0003724707403307548,
+          "source_head_signed_nearest_plane": 0.0003490840548181495,
+          "source_projection_distance": 0.0007215593359433115,
+          "source_projection": [
+            -0.07885261625051498,
+            -0.15411324799060822,
+            3.492894172668457
+          ],
+          "delta": -0.0007215547951489043
+        },
+        {
+          "triangle": 347,
+          "sample": 0,
+          "side": 0,
+          "point": [
+            0.1333747978011767,
+            -0.1272945354382197,
+            3.4413444995880127
+          ],
+          "head_signed_nearest_plane": -0.0003601224525482394,
+          "source_head_signed_nearest_plane": 0.0003492866271699313,
+          "source_projection_distance": 0.000709417334292084,
+          "source_projection": [
+            0.1339426189661026,
+            -0.1269376575946808,
+            3.441113233566284
+          ],
+          "delta": -0.0007094090797181707
+        }
+      ]
+    },
+    "outer/border_rows40_44": {
+      "samples": 1376,
+      "new_negative_samples_0_1mm": 23,
+      "high_clearance_above_0_1mm_and_low_below_minus_0_1mm": 19,
+      "unique_regression_points_rounded_9decimals": 15,
+      "low_signed": {
+        "min": -0.0034182273757323856,
+        "median": 0.00042493017281231005,
+        "max": 0.0038178748834525322,
+        "p01": -0.0027981716366412,
+        "p99": 0.002843792217365859
+      },
+      "high_projection_signed": {
+        "min": -0.004086135668330826,
+        "median": 0.0004495176460750372,
+        "max": 0.0038597559068875853,
+        "p01": -0.0024649413680890575,
+        "p99": 0.0031929032847983763
+      },
+      "delta": {
+        "min": -0.00252517503213312,
+        "median": -2.0363029761938378e-05,
+        "max": 0.0018759476706691203,
+        "p01": -0.0012401787023748057,
+        "p99": 0.0008831901213852689
+      },
+      "worst_regressions": [
+        {
+          "triangle": 602,
+          "sample": 0,
+          "side": 0,
+          "point": [
+            0.17747752865155536,
+            -0.20019519825776416,
+            3.470423460006714
+          ],
+          "head_signed_nearest_plane": -0.0006290381024882663,
+          "source_head_signed_nearest_plane": 0.0010912003999692388,
+          "source_projection_distance": 0.0017984037986025214,
+          "source_projection": [
+            0.17920850217342377,
+            -0.2005617618560791,
+            3.4701015949249268
+          ],
+          "delta": -0.001720238502457505
+        },
+        {
+          "triangle": 452,
+          "sample": 2,
+          "side": 0,
+          "point": [
+            0.1775277778506279,
+            -0.2060384303331375,
+            3.4780492782592773
+          ],
+          "head_signed_nearest_plane": -0.0005299800031934865,
+          "source_head_signed_nearest_plane": 0.001153655379312113,
+          "source_projection_distance": 0.001810216810554266,
+          "source_projection": [
+            0.17915241420269012,
+            -0.20667269825935364,
+            3.4775643348693848
+          ],
+          "delta": -0.0016836353825055994
+        },
+        {
+          "triangle": 602,
+          "sample": 1,
+          "side": 0,
+          "point": [
+            0.1775277778506279,
+            -0.2060384303331375,
+            3.4780492782592773
+          ],
+          "head_signed_nearest_plane": -0.0005299800031934865,
+          "source_head_signed_nearest_plane": 0.001153655379312113,
+          "source_projection_distance": 0.001810216810554266,
+          "source_projection": [
+            0.17915241420269012,
+            -0.20667269825935364,
+            3.4775643348693848
+          ],
+          "delta": -0.0016836353825055994
+        },
+        {
+          "triangle": 743,
+          "sample": 1,
+          "side": 0,
+          "point": [
+            -0.10149233788251877,
+            -0.18998780101537704,
+            3.5027605295181274
+          ],
+          "head_signed_nearest_plane": -0.0011268694461250561,
+          "source_head_signed_nearest_plane": 0.00012935838947214506,
+          "source_projection_distance": 0.0012911242665722966,
+          "source_projection": [
+            -0.10275400429964066,
+            -0.19016438722610474,
+            3.5029702186584473
+          ],
+          "delta": -0.0012562278355972012
+        },
+        {
+          "triangle": 744,
+          "sample": 1,
+          "side": 0,
+          "point": [
+            -0.10149233788251877,
+            -0.18998780101537704,
+            3.5027605295181274
+          ],
+          "head_signed_nearest_plane": -0.0011268694461250561,
+          "source_head_signed_nearest_plane": 0.00012935838947214506,
+          "source_projection_distance": 0.0012911242665722966,
+          "source_projection": [
+            -0.10275400429964066,
+            -0.19016438722610474,
+            3.5029702186584473
+          ],
+          "delta": -0.0012562278355972012
+        },
+        {
+          "triangle": 743,
+          "sample": 2,
+          "side": 0,
+          "point": [
+            -0.10203547403216362,
+            -0.18898558616638184,
+            3.500411629676819
+          ],
+          "head_signed_nearest_plane": -0.0011631659763224889,
+          "source_head_signed_nearest_plane": 7.166301497818495e-05,
+          "source_projection_distance": 0.001374809886328876,
+          "source_projection": [
+            -0.10331708192825317,
+            -0.1889699399471283,
+            3.500908851623535
+          ],
+          "delta": -0.0012348289913006738
+        },
+        {
+          "triangle": 730,
+          "sample": 1,
+          "side": 0,
+          "point": [
+            -0.10050314664840698,
+            -0.19296078383922577,
+            3.5106314420700073
+          ],
+          "head_signed_nearest_plane": -0.00040463649612920705,
+          "source_head_signed_nearest_plane": 0.0006916011458328875,
+          "source_projection_distance": 0.001121372333727777,
+          "source_projection": [
+            -0.10150375962257385,
+            -0.1934102177619934,
+            3.5103986263275146
+          ],
+          "delta": -0.0010962376419620945
+        },
+        {
+          "triangle": 748,
+          "sample": 3,
+          "side": 0,
+          "point": [
+            -0.10050314664840698,
+            -0.19296078383922577,
+            3.5106314420700073
+          ],
+          "head_signed_nearest_plane": -0.00040463649612920705,
+          "source_head_signed_nearest_plane": 0.0006916011458328875,
+          "source_projection_distance": 0.001121372333727777,
+          "source_projection": [
+            -0.10150375962257385,
+            -0.1934102177619934,
+            3.5103986263275146
+          ],
+          "delta": -0.0010962376419620945
+        }
+      ]
+    },
+    "inner/all": {
+      "samples": 3032,
+      "new_negative_samples_0_1mm": 530,
+      "high_clearance_above_0_1mm_and_low_below_minus_0_1mm": 528,
+      "unique_regression_points_rounded_9decimals": 343,
+      "low_signed": {
+        "min": -0.004224787233397365,
+        "median": 0.0007221337377814052,
+        "max": 0.004383030429153223,
+        "p01": -0.003405006657303602,
+        "p99": 0.003075833051261727
+      },
+      "high_projection_signed": {
+        "min": -0.00397776575118769,
+        "median": 0.0009990919807023602,
+        "max": 0.00433095922380744,
+        "p01": -0.00175046927857728,
+        "p99": 0.0026648479906725697
+      },
+      "delta": {
+        "min": -0.005118522876728093,
+        "median": -0.00023244215208251262,
+        "max": 0.0031769435408932623,
+        "p01": -0.004210571655421518,
+        "p99": 0.001206538981932681
+      },
+      "worst_regressions": [
+        {
+          "triangle": 878,
+          "sample": 1,
+          "side": 1,
+          "point": [
+            0.08256947249174118,
+            -0.09403060376644135,
+            3.633049726486206
+          ],
+          "head_signed_nearest_plane": -0.004224787233397365,
+          "source_head_signed_nearest_plane": 0.0008937356433307286,
+          "source_projection_distance": 0.005118777044117451,
+          "source_projection": [
+            0.08390822261571884,
+            -0.08987194299697876,
+            3.6357171535491943
+          ],
+          "delta": -0.005118522876728093
+        },
+        {
+          "triangle": 879,
+          "sample": 3,
+          "side": 1,
+          "point": [
+            0.08256947249174118,
+            -0.09403060376644135,
+            3.633049726486206
+          ],
+          "head_signed_nearest_plane": -0.004224787233397365,
+          "source_head_signed_nearest_plane": 0.0008937356433307286,
+          "source_projection_distance": 0.005118777044117451,
+          "source_projection": [
+            0.08390822261571884,
+            -0.08987194299697876,
+            3.6357171535491943
+          ],
+          "delta": -0.005118522876728093
+        },
+        {
+          "triangle": 942,
+          "sample": 1,
+          "side": 1,
+          "point": [
+            0.06820942088961601,
+            -0.06475814990699291,
+            3.568894624710083
+          ],
+          "head_signed_nearest_plane": -0.003964042494772002,
+          "source_head_signed_nearest_plane": 0.0008654193625261541,
+          "source_projection_distance": 0.004829886369407177,
+          "source_projection": [
+            0.06901852041482925,
+            -0.06007394567131996,
+            3.5697498321533203
+          ],
+          "delta": -0.004829461857298156
+        },
+        {
+          "triangle": 943,
+          "sample": 3,
+          "side": 1,
+          "point": [
+            0.06820942088961601,
+            -0.06475814990699291,
+            3.568894624710083
+          ],
+          "head_signed_nearest_plane": -0.003964042494772002,
+          "source_head_signed_nearest_plane": 0.0008654193625261541,
+          "source_projection_distance": 0.004829886369407177,
+          "source_projection": [
+            0.06901852041482925,
+            -0.06007394567131996,
+            3.5697498321533203
+          ],
+          "delta": -0.004829461857298156
+        },
+        {
+          "triangle": 942,
+          "sample": 0,
+          "side": 1,
+          "point": [
+            0.07854619870583215,
+            -0.0693835454682509,
+            3.5795536041259766
+          ],
+          "head_signed_nearest_plane": -0.003939877191442065,
+          "source_head_signed_nearest_plane": 0.0008056587430473883,
+          "source_projection_distance": 0.00474592437967658,
+          "source_projection": [
+            0.07981383055448532,
+            -0.06495089828968048,
+            3.5806798934936523
+          ],
+          "delta": -0.004745535934489453
+        },
+        {
+          "triangle": 878,
+          "sample": 0,
+          "side": 1,
+          "point": [
+            0.09229457875092822,
+            -0.10243184367815653,
+            3.640743732452392
+          ],
+          "head_signed_nearest_plane": -0.003856230730889365,
+          "source_head_signed_nearest_plane": 0.0008819279391900636,
+          "source_projection_distance": 0.004738772287964821,
+          "source_projection": [
+            0.09384987503290176,
+            -0.09882692247629166,
+            3.643397331237793
+          ],
+          "delta": -0.004738158670079429
+        },
+        {
+          "triangle": 835,
+          "sample": 1,
+          "side": 1,
+          "point": [
+            -0.017957110889256,
+            -0.16865015029907227,
+            3.6814883947372437
+          ],
+          "head_signed_nearest_plane": -0.0038140822725836188,
+          "source_head_signed_nearest_plane": 0.0008756645911489613,
+          "source_projection_distance": 0.004690008703619242,
+          "source_projection": [
+            -0.020297164097428322,
+            -0.1670393943786621,
+            3.685220241546631
+          ],
+          "delta": -0.00468974686373258
+        },
+        {
+          "triangle": 836,
+          "sample": 3,
+          "side": 1,
+          "point": [
+            -0.017957110889256,
+            -0.16865015029907227,
+            3.6814883947372437
+          ],
+          "head_signed_nearest_plane": -0.0038140822725836188,
+          "source_head_signed_nearest_plane": 0.0008756645911489613,
+          "source_projection_distance": 0.004690008703619242,
+          "source_projection": [
+            -0.020297164097428322,
+            -0.1670393943786621,
+            3.685220241546631
+          ],
+          "delta": -0.00468974686373258
+        }
+      ]
+    },
+    "inner/crown_rows0_39": {
+      "samples": 1240,
+      "new_negative_samples_0_1mm": 512,
+      "high_clearance_above_0_1mm_and_low_below_minus_0_1mm": 512,
+      "unique_regression_points_rounded_9decimals": 331,
+      "low_signed": {
+        "min": -0.004224787233397365,
+        "median": 5.0689862073127756e-05,
+        "max": 0.0010280219175911043,
+        "p01": -0.0036229870076931545,
+        "p99": 0.0009093841894856774
+      },
+      "high_projection_signed": {
+        "min": -0.0025020478969963733,
+        "median": 0.0009725963271964844,
+        "max": 0.001167036793049192,
+        "p01": -0.0016947228941717185,
+        "p99": 0.0010718663082883496
+      },
+      "delta": {
+        "min": -0.005118522876728093,
+        "median": -0.0009042346434853243,
+        "max": 6.0740930607039445e-05,
+        "p01": -0.004508246772111306,
+        "p99": -0.00010022518254118399
+      },
+      "worst_regressions": [
+        {
+          "triangle": 878,
+          "sample": 1,
+          "side": 1,
+          "point": [
+            0.08256947249174118,
+            -0.09403060376644135,
+            3.633049726486206
+          ],
+          "head_signed_nearest_plane": -0.004224787233397365,
+          "source_head_signed_nearest_plane": 0.0008937356433307286,
+          "source_projection_distance": 0.005118777044117451,
+          "source_projection": [
+            0.08390822261571884,
+            -0.08987194299697876,
+            3.6357171535491943
+          ],
+          "delta": -0.005118522876728093
+        },
+        {
+          "triangle": 879,
+          "sample": 3,
+          "side": 1,
+          "point": [
+            0.08256947249174118,
+            -0.09403060376644135,
+            3.633049726486206
+          ],
+          "head_signed_nearest_plane": -0.004224787233397365,
+          "source_head_signed_nearest_plane": 0.0008937356433307286,
+          "source_projection_distance": 0.005118777044117451,
+          "source_projection": [
+            0.08390822261571884,
+            -0.08987194299697876,
+            3.6357171535491943
+          ],
+          "delta": -0.005118522876728093
+        },
+        {
+          "triangle": 942,
+          "sample": 1,
+          "side": 1,
+          "point": [
+            0.06820942088961601,
+            -0.06475814990699291,
+            3.568894624710083
+          ],
+          "head_signed_nearest_plane": -0.003964042494772002,
+          "source_head_signed_nearest_plane": 0.0008654193625261541,
+          "source_projection_distance": 0.004829886369407177,
+          "source_projection": [
+            0.06901852041482925,
+            -0.06007394567131996,
+            3.5697498321533203
+          ],
+          "delta": -0.004829461857298156
+        },
+        {
+          "triangle": 943,
+          "sample": 3,
+          "side": 1,
+          "point": [
+            0.06820942088961601,
+            -0.06475814990699291,
+            3.568894624710083
+          ],
+          "head_signed_nearest_plane": -0.003964042494772002,
+          "source_head_signed_nearest_plane": 0.0008654193625261541,
+          "source_projection_distance": 0.004829886369407177,
+          "source_projection": [
+            0.06901852041482925,
+            -0.06007394567131996,
+            3.5697498321533203
+          ],
+          "delta": -0.004829461857298156
+        },
+        {
+          "triangle": 942,
+          "sample": 0,
+          "side": 1,
+          "point": [
+            0.07854619870583215,
+            -0.0693835454682509,
+            3.5795536041259766
+          ],
+          "head_signed_nearest_plane": -0.003939877191442065,
+          "source_head_signed_nearest_plane": 0.0008056587430473883,
+          "source_projection_distance": 0.00474592437967658,
+          "source_projection": [
+            0.07981383055448532,
+            -0.06495089828968048,
+            3.5806798934936523
+          ],
+          "delta": -0.004745535934489453
+        },
+        {
+          "triangle": 878,
+          "sample": 0,
+          "side": 1,
+          "point": [
+            0.09229457875092822,
+            -0.10243184367815653,
+            3.640743732452392
+          ],
+          "head_signed_nearest_plane": -0.003856230730889365,
+          "source_head_signed_nearest_plane": 0.0008819279391900636,
+          "source_projection_distance": 0.004738772287964821,
+          "source_projection": [
+            0.09384987503290176,
+            -0.09882692247629166,
+            3.643397331237793
+          ],
+          "delta": -0.004738158670079429
+        },
+        {
+          "triangle": 835,
+          "sample": 1,
+          "side": 1,
+          "point": [
+            -0.017957110889256,
+            -0.16865015029907227,
+            3.6814883947372437
+          ],
+          "head_signed_nearest_plane": -0.0038140822725836188,
+          "source_head_signed_nearest_plane": 0.0008756645911489613,
+          "source_projection_distance": 0.004690008703619242,
+          "source_projection": [
+            -0.020297164097428322,
+            -0.1670393943786621,
+            3.685220241546631
+          ],
+          "delta": -0.00468974686373258
+        },
+        {
+          "triangle": 836,
+          "sample": 3,
+          "side": 1,
+          "point": [
+            -0.017957110889256,
+            -0.16865015029907227,
+            3.6814883947372437
+          ],
+          "head_signed_nearest_plane": -0.0038140822725836188,
+          "source_head_signed_nearest_plane": 0.0008756645911489613,
+          "source_projection_distance": 0.004690008703619242,
+          "source_projection": [
+            -0.020297164097428322,
+            -0.1670393943786621,
+            3.685220241546631
+          ],
+          "delta": -0.00468974686373258
+        }
+      ]
+    },
+    "inner/transition_crosses40": {
+      "samples": 416,
+      "new_negative_samples_0_1mm": 0,
+      "high_clearance_above_0_1mm_and_low_below_minus_0_1mm": 0,
+      "unique_regression_points_rounded_9decimals": 0,
+      "low_signed": {
+        "min": 6.369523725879844e-05,
+        "median": 0.0008545795317331795,
+        "max": 0.004283264001060161,
+        "p01": 0.00019439806918519764,
+        "p99": 0.0033636818270679283
+      },
+      "high_projection_signed": {
+        "min": 0.000896360073966207,
+        "median": 0.0010159330331589445,
+        "max": 0.0031441118626389652,
+        "p01": 0.0009139615220192354,
+        "p99": 0.0021259392311890335
+      },
+      "delta": {
+        "min": -0.0018280940043950977,
+        "median": -0.0001821339710659231,
+        "max": 0.0031769435408932623,
+        "p01": -0.0007947922713356093,
+        "p99": 0.001825282055945458
+      },
+      "worst_regressions": []
+    },
+    "inner/border_rows40_44": {
+      "samples": 1376,
+      "new_negative_samples_0_1mm": 18,
+      "high_clearance_above_0_1mm_and_low_below_minus_0_1mm": 16,
+      "unique_regression_points_rounded_9decimals": 12,
+      "low_signed": {
+        "min": -0.0034019438026007265,
+        "median": 0.0009637133853175328,
+        "max": 0.004383030429153223,
+        "p01": -0.0026463341806106655,
+        "p99": 0.003370098856066761
+      },
+      "high_projection_signed": {
+        "min": -0.00397776575118769,
+        "median": 0.0010281534305249806,
+        "max": 0.00433095922380744,
+        "p01": -0.0024656536470502033,
+        "p99": 0.003603486952826529
+      },
+      "delta": {
+        "min": -0.00258309875289342,
+        "median": -6.220838258741423e-05,
+        "max": 0.0018698310872196089,
+        "p01": -0.0013098178512791492,
+        "p99": 0.0008474668466078583
+      },
+      "worst_regressions": [
+        {
+          "triangle": 1360,
+          "sample": 0,
+          "side": 1,
+          "point": [
+            0.177927166223526,
+            -0.20006529986858365,
+            3.4704524676005044
+          ],
+          "head_signed_nearest_plane": -0.0003162074281135574,
+          "source_head_signed_nearest_plane": 0.0015363111087935977,
+          "source_projection_distance": 0.0019256965024396777,
+          "source_projection": [
+            0.17977842688560486,
+            -0.20045588910579681,
+            3.4700939655303955
+          ],
+          "delta": -0.001852518536907155
+        },
+        {
+          "triangle": 1210,
+          "sample": 1,
+          "side": 1,
+          "point": [
+            0.17807596921920776,
+            -0.20594894140958786,
+            3.478073000907898
+          ],
+          "head_signed_nearest_plane": -0.000194542582903523,
+          "source_head_signed_nearest_plane": 0.0015664101374568418,
+          "source_projection_distance": 0.0019047390669584274,
+          "source_projection": [
+            0.17970871925354004,
+            -0.2067224532365799,
+            3.4774699211120605
+          ],
+          "delta": -0.0017609527203603648
+        },
+        {
+          "triangle": 1360,
+          "sample": 2,
+          "side": 1,
+          "point": [
+            0.17807596921920776,
+            -0.20594894140958786,
+            3.478073000907898
+          ],
+          "head_signed_nearest_plane": -0.000194542582903523,
+          "source_head_signed_nearest_plane": 0.0015664101374568418,
+          "source_projection_distance": 0.0019047390669584274,
+          "source_projection": [
+            0.17970871925354004,
+            -0.2067224532365799,
+            3.4774699211120605
+          ],
+          "delta": -0.0017609527203603648
+        },
+        {
+          "triangle": 1501,
+          "sample": 2,
+          "side": 1,
+          "point": [
+            -0.10187307372689247,
+            -0.18991123139858246,
+            3.5028254985809326
+          ],
+          "head_signed_nearest_plane": -0.0007935295170682366,
+          "source_head_signed_nearest_plane": 0.0005162883342109126,
+          "source_projection_distance": 0.0013311355141922832,
+          "source_projection": [
+            -0.10317560285329819,
+            -0.190144881606102,
+            3.50296950340271
+          ],
+          "delta": -0.0013098178512791492
+        },
+        {
+          "triangle": 1502,
+          "sample": 2,
+          "side": 1,
+          "point": [
+            -0.10187307372689247,
+            -0.18991123139858246,
+            3.5028254985809326
+          ],
+          "head_signed_nearest_plane": -0.0007935295170682366,
+          "source_head_signed_nearest_plane": 0.0005162883342109126,
+          "source_projection_distance": 0.0013311355141922832,
+          "source_projection": [
+            -0.10317560285329819,
+            -0.190144881606102,
+            3.50296950340271
+          ],
+          "delta": -0.0013098178512791492
+        },
+        {
+          "triangle": 1501,
+          "sample": 1,
+          "side": 1,
+          "point": [
+            -0.10230546444654465,
+            -0.18892046809196472,
+            3.5004581212997437
+          ],
+          "head_signed_nearest_plane": -0.0009291987043980043,
+          "source_head_signed_nearest_plane": 0.00030470603769572335,
+          "source_projection_distance": 0.0013809247175231576,
+          "source_projection": [
+            -0.10359321534633636,
+            -0.18890167772769928,
+            3.5009565353393555
+          ],
+          "delta": -0.0012339047420937277
+        },
+        {
+          "triangle": 1359,
+          "sample": 1,
+          "side": 1,
+          "point": [
+            0.17801092565059662,
+            -0.19520732760429382,
+            3.4612118005752563
+          ],
+          "head_signed_nearest_plane": -0.0010970127441396471,
+          "source_head_signed_nearest_plane": 0.0001299504372127558,
+          "source_projection_distance": 0.001398734049871564,
+          "source_projection": [
+            0.17940078675746918,
+            -0.19526110589504242,
+            3.4613595008850098
+          ],
+          "delta": -0.001226963181352403
+        },
+        {
+          "triangle": 1502,
+          "sample": 3,
+          "side": 1,
+          "point": [
+            -0.10153936594724655,
+            -0.19101470708847046,
+            3.5056859254837036
+          ],
+          "head_signed_nearest_plane": -0.0004426411347822068,
+          "source_head_signed_nearest_plane": 0.0006653208736224769,
+          "source_projection_distance": 0.0011575762182474136,
+          "source_projection": [
+            -0.10267944633960724,
+            -0.19113034009933472,
+            3.505849599838257
+          ],
+          "delta": -0.0011079620084046837
+        }
+      ]
+    },
+    "rim/all": {
+      "samples": 896,
+      "new_negative_samples_0_1mm": 6,
+      "high_clearance_above_0_1mm_and_low_below_minus_0_1mm": 5,
+      "unique_regression_points_rounded_9decimals": 5,
+      "low_signed": {
+        "min": -0.0037624263241013978,
+        "median": 0.0007033827059785835,
+        "max": 0.0034209564910270274,
+        "p01": -0.001809488609069376,
+        "p99": 0.0030070746695855612
+      },
+      "high_projection_signed": {
+        "min": -0.003810727495874744,
+        "median": 0.0006505499845843588,
+        "max": 0.003591135027818382,
+        "p01": -0.0007555809882887841,
+        "p99": 0.002934197966533237
+      },
+      "delta": {
+        "min": -0.001309915376808135,
+        "median": -4.713204134532134e-06,
+        "max": 0.0008402417151955888,
+        "p01": -0.0010173566722244231,
+        "p99": 0.0004733569056782012
+      },
+      "worst_regressions": [
+        {
+          "triangle": 1734,
+          "sample": 1,
+          "side": 2,
+          "point": [
+            -0.10203547403216362,
+            -0.18898558616638184,
+            3.500411629676819
+          ],
+          "head_signed_nearest_plane": -0.0011631659763224889,
+          "source_head_signed_nearest_plane": 0.0001073073051998108,
+          "source_projection_distance": 0.0013662170385941863,
+          "source_projection": [
+            -0.1033320277929306,
+            -0.18905030190944672,
+            3.5008373260498047
+          ],
+          "delta": -0.0012704732815222997
+        },
+        {
+          "triangle": 1734,
+          "sample": 3,
+          "side": 2,
+          "point": [
+            -0.10219327360391617,
+            -0.1890317127108574,
+            3.500405430793762
+          ],
+          "head_signed_nearest_plane": -0.0010002358176279813,
+          "source_head_signed_nearest_plane": 0.00012998980787415348,
+          "source_projection_distance": 0.0012162167113274336,
+          "source_projection": [
+            -0.10334746539592743,
+            -0.1890893280506134,
+            3.500784397125244
+          ],
+          "delta": -0.0011302256255021348
+        },
+        {
+          "triangle": 1735,
+          "sample": 1,
+          "side": 2,
+          "point": [
+            -0.10219327360391617,
+            -0.1890317127108574,
+            3.500405430793762
+          ],
+          "head_signed_nearest_plane": -0.0010002358176279813,
+          "source_head_signed_nearest_plane": 0.00012998980787415348,
+          "source_projection_distance": 0.0012162167113274336,
+          "source_projection": [
+            -0.10334746539592743,
+            -0.1890893280506134,
+            3.500784397125244
+          ],
+          "delta": -0.0011302256255021348
+        },
+        {
+          "triangle": 1735,
+          "sample": 2,
+          "side": 2,
+          "point": [
+            -0.10230546444654465,
+            -0.18892046809196472,
+            3.5004581212997437
+          ],
+          "head_signed_nearest_plane": -0.0009291987043980043,
+          "source_head_signed_nearest_plane": 8.797065993348951e-05,
+          "source_projection_distance": 0.0010985066182911396,
+          "source_projection": [
+            -0.10334795713424683,
+            -0.18897251784801483,
+            3.500800609588623
+          ],
+          "delta": -0.0010171693643314939
+        },
+        {
+          "triangle": 1734,
+          "sample": 0,
+          "side": 2,
+          "point": [
+            -0.10183944304784139,
+            -0.19126910467942554,
+            3.5024053255716954
+          ],
+          "head_signed_nearest_plane": -0.0003240824206613979,
+          "source_head_signed_nearest_plane": 0.0004630371420262236,
+          "source_projection_distance": 0.000829515338409692,
+          "source_projection": [
+            -0.10264363884925842,
+            -0.191372349858284,
+            3.5025806427001953
+          ],
+          "delta": -0.0007871195626876215
+        },
+        {
+          "triangle": 1579,
+          "sample": 0,
+          "side": 2,
+          "point": [
+            0.17804017663002014,
+            -0.19747391839822132,
+            3.4632444381713867
+          ],
+          "head_signed_nearest_plane": -0.0002507068538761814,
+          "source_head_signed_nearest_plane": 0.0004932983756589238,
+          "source_projection_distance": 0.0007736458792351186,
+          "source_projection": [
+            0.17879103124141693,
+            -0.1976466327905655,
+            3.463174343109131
+          ],
+          "delta": -0.0007440052295351052
+        }
+      ]
+    },
+    "rim/border_rows40_44": {
+      "samples": 896,
+      "new_negative_samples_0_1mm": 6,
+      "high_clearance_above_0_1mm_and_low_below_minus_0_1mm": 5,
+      "unique_regression_points_rounded_9decimals": 5,
+      "low_signed": {
+        "min": -0.0037624263241013978,
+        "median": 0.0007033827059785835,
+        "max": 0.0034209564910270274,
+        "p01": -0.001809488609069376,
+        "p99": 0.0030070746695855612
+      },
+      "high_projection_signed": {
+        "min": -0.003810727495874744,
+        "median": 0.0006505499845843588,
+        "max": 0.003591135027818382,
+        "p01": -0.0007555809882887841,
+        "p99": 0.002934197966533237
+      },
+      "delta": {
+        "min": -0.001309915376808135,
+        "median": -4.713204134532134e-06,
+        "max": 0.0008402417151955888,
+        "p01": -0.0010173566722244231,
+        "p99": 0.0004733569056782012
+      },
+      "worst_regressions": [
+        {
+          "triangle": 1734,
+          "sample": 1,
+          "side": 2,
+          "point": [
+            -0.10203547403216362,
+            -0.18898558616638184,
+            3.500411629676819
+          ],
+          "head_signed_nearest_plane": -0.0011631659763224889,
+          "source_head_signed_nearest_plane": 0.0001073073051998108,
+          "source_projection_distance": 0.0013662170385941863,
+          "source_projection": [
+            -0.1033320277929306,
+            -0.18905030190944672,
+            3.5008373260498047
+          ],
+          "delta": -0.0012704732815222997
+        },
+        {
+          "triangle": 1734,
+          "sample": 3,
+          "side": 2,
+          "point": [
+            -0.10219327360391617,
+            -0.1890317127108574,
+            3.500405430793762
+          ],
+          "head_signed_nearest_plane": -0.0010002358176279813,
+          "source_head_signed_nearest_plane": 0.00012998980787415348,
+          "source_projection_distance": 0.0012162167113274336,
+          "source_projection": [
+            -0.10334746539592743,
+            -0.1890893280506134,
+            3.500784397125244
+          ],
+          "delta": -0.0011302256255021348
+        },
+        {
+          "triangle": 1735,
+          "sample": 1,
+          "side": 2,
+          "point": [
+            -0.10219327360391617,
+            -0.1890317127108574,
+            3.500405430793762
+          ],
+          "head_signed_nearest_plane": -0.0010002358176279813,
+          "source_head_signed_nearest_plane": 0.00012998980787415348,
+          "source_projection_distance": 0.0012162167113274336,
+          "source_projection": [
+            -0.10334746539592743,
+            -0.1890893280506134,
+            3.500784397125244
+          ],
+          "delta": -0.0011302256255021348
+        },
+        {
+          "triangle": 1735,
+          "sample": 2,
+          "side": 2,
+          "point": [
+            -0.10230546444654465,
+            -0.18892046809196472,
+            3.5004581212997437
+          ],
+          "head_signed_nearest_plane": -0.0009291987043980043,
+          "source_head_signed_nearest_plane": 8.797065993348951e-05,
+          "source_projection_distance": 0.0010985066182911396,
+          "source_projection": [
+            -0.10334795713424683,
+            -0.18897251784801483,
+            3.500800609588623
+          ],
+          "delta": -0.0010171693643314939
+        },
+        {
+          "triangle": 1734,
+          "sample": 0,
+          "side": 2,
+          "point": [
+            -0.10183944304784139,
+            -0.19126910467942554,
+            3.5024053255716954
+          ],
+          "head_signed_nearest_plane": -0.0003240824206613979,
+          "source_head_signed_nearest_plane": 0.0004630371420262236,
+          "source_projection_distance": 0.000829515338409692,
+          "source_projection": [
+            -0.10264363884925842,
+            -0.191372349858284,
+            3.5025806427001953
+          ],
+          "delta": -0.0007871195626876215
+        },
+        {
+          "triangle": 1579,
+          "sample": 0,
+          "side": 2,
+          "point": [
+            0.17804017663002014,
+            -0.19747391839822132,
+            3.4632444381713867
+          ],
+          "head_signed_nearest_plane": -0.0002507068538761814,
+          "source_head_signed_nearest_plane": 0.0004932983756589238,
+          "source_projection_distance": 0.0007736458792351186,
+          "source_projection": [
+            0.17879103124141693,
+            -0.1976466327905655,
+            3.463174343109131
+          ],
+          "delta": -0.0007440052295351052
+        }
+      ]
+    }
+  }
+}

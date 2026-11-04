@@ -1,0 +1,48 @@
+from pathlib import Path
+import bpy,numpy as np,json,sys,hashlib,math,time
+from mathutils import Vector
+R=Path(__file__).resolve().parents[1];V=R.parent/'opaque_transport_v15';SRC=V/'evidence/shared-2048-diagnostic.blend'
+case=sys.argv[sys.argv.index('--')+1];assert case in ['normal-emission','direct-only','direct-no-shadow','direct-no-shadow-no-diffuse','recentered']
+variant=sys.argv[sys.argv.index('--')+2] if len(sys.argv)>sys.argv.index('--')+2 else 'masked'
+if variant=='clip':SRC=V/'evidence/shared-2048-analytic-clip-control-diagnostic.blend'
+prefix=case if variant=='masked' else 'clip-'+case
+bpy.ops.wm.open_mainfile(filepath=str(SRC));s=bpy.context.scene;s.render.threads_mode='FIXED';s.render.threads=8;s.cycles.samples=48;s.cycles.use_denoising=False
+cam=s.camera;cam.location=(.035,-3.5,3.58);target=Vector((.035,-.30,3.58));cam.rotation_euler=(target-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.ortho_scale=.52;s.render.resolution_x=s.render.resolution_y=1000;s.render.resolution_percentage=100
+before={o.name:np.array([v.co[:] for v in o.data.vertices],float) for o in s.objects if o.type=='MESH'}
+notes=[]
+if case.startswith('direct-'):
+ s.cycles.diffuse_bounces=0;s.cycles.glossy_bounces=0;s.cycles.transmission_bounces=0;s.cycles.volume_bounces=0;s.cycles.max_bounces=0;s.cycles.transparent_max_bounces=512;notes.append('All nontransparent light-path bounces set0; direct lighting retained, transparent_max_bounces512.')
+if case.startswith('direct-no-shadow'):
+ for o in s.objects:
+  if o.type=='MESH' and o.name.startswith(('part_00','part_01','part_15')):o.visible_shadow=False
+ notes.append('Shadow visibility disabled only for three new parts; diagnostic, never a candidate correction.')
+if case=='direct-no-shadow-no-diffuse':
+ for o in s.objects:
+  if o.type=='MESH' and o.name.startswith(('part_00','part_01','part_15')):o.visible_diffuse=False
+ notes.append('Diffuse-ray visibility ALSO disabled for three new parts, camera visibility retained. Diagnostic only, not a valid correction.')
+if case=='normal-emission':
+ for m in bpy.data.materials:
+  if not m.use_nodes:continue
+  n=m.node_tree.nodes;l=m.node_tree.links
+  for bs in list(n):
+   if bs.type!='BSDF_DIFFUSE':continue
+   em=n.new('ShaderNodeEmission');geom=n.new('ShaderNodeNewGeometry');scale=n.new('ShaderNodeVectorMath');scale.operation='SCALE';scale.inputs[3].default_value=.5;add=n.new('ShaderNodeVectorMath');add.operation='ADD';add.inputs[1].default_value=(.5,.5,.5);l.new(geom.outputs['Normal'],scale.inputs[0]);l.new(scale.outputs[0],add.inputs[0]);l.new(add.outputs[0],em.inputs['Color'])
+   for link in list(bs.outputs[0].links):l.new(em.outputs[0],link.to_socket)
+   n.remove(bs)
+ notes.append('Diffuse replaced by emission of0.5*world shading normal+0.5; alpha/backface shader graph unchanged, no lighting influence.')
+if case=='recentered':
+ shift=np.array([.035,-.30,3.58]);err=[]
+ for o in s.objects:
+  if o.type=='MESH':
+   for v,p in zip(o.data.vertices,before[o.name]):v.co=p-shift
+   o.data.update();after=np.array([v.co[:] for v in o.data.vertices]);err.extend(np.linalg.norm(after+shift-before[o.name],axis=1).tolist())
+  elif o.type=='CAMERA':o.location=Vector(np.array(o.location)-shift)
+ notes.append('All mesh vertex coordinates and camera translated together by negative head target; same physical geometry up to float32 rounding; SUN direction/world unchanged. Numerical diagnostic only.')
+ notes.append({'rebase_max_additional_rounding_mm':max(err)*1000,'shift':shift.tolist()})
+checks=[]
+for o in s.objects:
+ if o.type=='MESH':
+  after=np.array([v.co[:] for v in o.data.vertices]);checks.append({'object':o.name,'positions_byte_equal':bool(np.array_equal(before[o.name],after)),'vertices':len(after)})
+start=time.perf_counter();path=R/f'evidence/{prefix}-band-front.png';s.render.filepath=str(path);bpy.ops.render.render(write_still=True);elapsed=time.perf_counter()-start
+s['experiment']=case;s['diagnostic_only']=True;s['minecraft_tested']=False;bpy.ops.wm.save_as_mainfile(filepath=str(R/f'evidence/{prefix}.blend'))
+report={'case':case,'variant':variant,'source_scene':str(SRC),'source_scene_sha256':hashlib.sha256(SRC.read_bytes()).hexdigest(),'notes':notes,'position_checks':checks,'render_seconds_observed_not_benchmark':elapsed,'lighting':{'max_bounces':s.cycles.max_bounces,'diffuse_bounces':s.cycles.diffuse_bounces,'transparent_max_bounces':s.cycles.transparent_max_bounces},'image_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'external_Blender_only':True};(R/f'evidence/{prefix}.json').write_text(json.dumps(report,indent=2)+'\n')

@@ -1,0 +1,13 @@
+# V50 — candidato de superfície contínua do cabelo
+Base V49 preservada; nenhuma promoção automática.
+
+## Alteração
+Apenas visibilidade do objeto antigo `Menino — cabelo rente` (oculto em viewport/render) e adição de `Menino — cabelo contínuo V50 reversível`. Geometria de todos os objetos preexistentes, transformações e chaves idênticas a V49 (V50-scope-verification.json).
+Novo revestimento segue raycasts à superfície craniana, com contorno contínuo e cobertura temporal mais baixa. Espessura3mm no topo decresce até borda embutida0.45mm. Não há camada interna duplicada coincidente, Solidify, cachos inventados ou material novo.
+6145v/6144faces,128arestas na borda única,zero arestas não-manifold internas,zero auto-interseções entre faces não-adjacentes.
+
+## Revisão visual própria
+Frente e perfil mantêm câmeras, enquadramento e iluminação do close V49. A serrilha preta e degrau de6mm desapareceram; a transição temporal segue cobertura mais contínua. Ainda parece calota lisa: isto é uma base estrutural de cabelo, não fidelidade final. A aparência juvenil do rosto e o fluxo fino de mechas ainda não foram trabalhados. Requer revisão independente; não alegar ganho global só pela limpeza técnica.
+
+Rollback: ocultar novo objeto e reexibir objeto antigo (viewport e render). Não sobrescrever V49.
+Fonte real: https://arquivo.arq.br/projetos/paroquia-nossa-senhora-da-paz, perfil reference-8.jpg local, não redistribuído.

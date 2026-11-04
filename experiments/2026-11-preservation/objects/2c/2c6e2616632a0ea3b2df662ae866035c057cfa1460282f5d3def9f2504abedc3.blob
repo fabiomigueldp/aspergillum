@@ -1,0 +1,42 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import * as THREE from './repo/viewer-3d/node_modules/three/build/three.module.js';
+import {buildBedrockGeometry as before} from '../paz-workbench-validation-20261103/source/viewer-3d/src/shared/bedrock-geometry.js';
+import {buildBedrockGeometry as after} from './repo/viewer-3d/src/shared/bedrock-geometry.js';
+let cases=0,legacy=0,mirroredCases=0,normalUpdates=0,uvUpdates=0;
+const faces=['east','west','up','down','south','north'];
+for(const basis of ['bedrock','legacy-viewer'])for(const mirror of [undefined,false,true])for(const size of [[5,4,0],[0,4,3],[5,0,3],[5,4,3],[5,4,1]])for(const inflate of [0,0.5,-0.5])for(const rotation of [[0,0,0],[17,-29,41]])for(const uvKind of ['per-face','signed-per-face','box']){
+ if(size.some(v=>v+2*inflate<0))continue;
+ const uv=uvKind==='box'?[4,7]:Object.fromEntries(faces.map((f,i)=>[f,{uv:[11+i*2,13+i],uv_size:[uvKind==='signed-per-face'?-7:7,9]}]));
+ const cube={origin:[-7,2,3],size,pivot:[-2,2,3],rotation,inflate,uv};if(mirror!==undefined)cube.mirror=mirror;
+ const data={bones:[{name:'parent',pivot:[1,2,3],rotation:[8,19,-13]},{name:'root',parent:'parent',pivot:[-3,4,2],rotation:[-21,6,9],cubes:[cube]}]};
+ const summary={identifier:'geometry.nonregression',formatVersion:'1.14.0',textureWidth:64,textureHeight:64};
+ const opts={scale:1/16,includePivots:false,includeLocators:false,coordinateBasis:basis};
+ const a=before(data,summary,{default:new THREE.MeshBasicMaterial()},opts),b=after(data,summary,{default:new THREE.MeshBasicMaterial()},opts);
+ a.root.updateMatrixWorld(true);b.root.updateMatrixWorld(true);const ma=a.meshRecords[0].mesh,mb=b.meshRecords[0].mesh;
+ assert.deepEqual(ma.geometry.attributes.position.array,mb.geometry.attributes.position.array,'positions');
+ assert.deepEqual(ma.geometry.index.array,mb.geometry.index.array,'indices/winding');
+ assert.deepEqual(ma.geometry.groups,mb.geometry.groups,'groups/masks');
+ assert.deepEqual(ma.matrixWorld.elements,mb.matrixWorld.elements,'hierarchy/pivot/rotation');
+ const expectedNormal=ma.geometry.attributes.normal.array.slice();
+ const expectedUv=ma.geometry.attributes.uv.array.slice();
+ if(basis==='bedrock'&&!mirror){
+  for(let axis=0;axis<3;axis++)if(size[axis]+2*inflate===0)for(let v=axis*8;v<axis*8+4;v++){
+    for(let dim=0;dim<3;dim++)expectedNormal[v*3+dim]=Number(dim===axis);
+    normalUpdates++;
+  }
+  if(uvKind!=='box'){
+   for(const [dest,src]of [[16,17],[17,16],[18,19],[19,18]]){
+    expectedUv[dest*2]=ma.geometry.attributes.uv.getX(src);
+    expectedUv[dest*2+1]=ma.geometry.attributes.uv.getY(src);
+   }
+   uvUpdates++;
+  }
+ }
+ assert.deepEqual(mb.geometry.attributes.normal.array,expectedNormal,'only approved normal changes');
+ assert.deepEqual(mb.geometry.attributes.uv.array,expectedUv,'only approved UV changes');
+ if(basis==='legacy-viewer')legacy++;if(mirror)mirroredCases++;cases++;
+ a.meshRecords.forEach(({mesh})=>mesh.geometry.dispose());b.meshRecords.forEach(({mesh})=>mesh.geometry.dispose());
+}
+const report={cases,legacyCasesByteIdentical:legacy,mirroredCasesByteIdentical:mirroredCases,southUvUpdates:uvUpdates,positiveFaceNormalVertexUpdates:normalUpdates,positionsIndicesGroupsWorldTransformsUnchanged:true,onlyExpectedAttributeChanges:true,limitations:'Array-level verification, not visual or native Minecraft validation. Legacy and mirrored cases are unchanged. Box-UV coordinates are unchanged; zero-extent normals are repaired in canonical non-mirrored Box-UV cases too.'};
+fs.writeFileSync(import.meta.dirname+'/nonregression.json',JSON.stringify(report,null,2));console.log(report);

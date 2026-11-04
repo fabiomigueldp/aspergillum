@@ -1,0 +1,92 @@
+"""Draw an implementation-derived UI contact sheet, not a Bedrock screenshot."""
+import json
+from pathlib import Path
+import sys
+from PIL import Image, ImageDraw, ImageFont
+
+root = Path(sys.argv[1])
+data = json.loads((root / 'native-ui.json').read_text())
+font_root = Path('/usr/share/fonts/truetype/dejavu')
+font = lambda size, bold=False: ImageFont.truetype(str(font_root / ('DejaVuSans-Bold.ttf' if bold else 'DejaVuSans.ttf')), size)
+regular, small, bold, title_font = font(18), font(16), font(19, True), font(23, True)
+ink, muted, border = '#253121', '#586650', '#bcc6b5'
+width, margin, gap, col = 1880, 40, 20, 435
+canvas = Image.new('RGB', (width, 1600), '#e9ece5')
+draw = ImageDraw.Draw(canvas)
+
+def lines(text, f, maximum):
+    out, row = [], ''
+    for word in str(text).split():
+        trial = (row + ' ' + word).strip()
+        if row and draw.textlength(trial, font=f) > maximum:
+            out.append(row)
+            row = word
+        else:
+            row = trial
+    if row:
+        out.append(row)
+    return out
+
+def paragraph(text, x, y, maximum, f=regular, color=ink, leading=26):
+    for row in lines(text, f, maximum):
+        draw.text((x, y), row, font=f, fill=color)
+        y += leading
+    return y
+
+draw.text((margin, 30), 'SIMULAÇÃO DOCUMENTAL · SEM MINECRAFT', font=font(16, True), fill='#527548')
+draw.text((margin, 65), 'Altare · personalização mais clara', font=font(34, True), fill=ink)
+paragraph('Textos, valores, ordem, visibilidade e botões extraídos do editor implementado.', margin, 122, width - 2 * margin, regular)
+paragraph('A aparência final depende do Bedrock. Esta prancha não comprova tipografia, cores, espaçamento ou foco no jogo.', margin, 155, width - 2 * margin, regular, muted)
+bottom = 0
+for i, scenario in enumerate(data['scenarios']):
+    x = margin + i * (col + gap)
+    draw.text((x, 214), scenario['name'], font=small, fill=muted)
+    # Render each panel to a temporary sheet, so its background is sized to content.
+    top = 247
+    draw.rectangle((x, top, x + col, 1550), fill='#fcfdf9')
+    content_x, available = x + 22, col - 44
+    y = paragraph(scenario['title'], content_x, top + 21, available, title_font, leading=31) + 12
+    for control in scenario['controls']:
+        kind, text = control['kind'], control.get('text', '')
+        if kind == 'header':
+            y += 11
+            y = paragraph(text, content_x, y, available, bold, leading=27) + 10
+        elif kind == 'label':
+            y = paragraph(text, content_x, y, available, small, muted, 23) + 10
+        elif kind == 'spacer':
+            y += 8
+        elif kind == 'divider':
+            y += 8
+            draw.line((content_x, y, content_x + available, y), fill=border, width=1)
+            y += 16
+        elif kind == 'dropdown':
+            y = paragraph(text, content_x, y, available, small, leading=23) + 4
+            value_lines = lines(control['value'], regular, available - 48)
+            box_height = max(44, len(value_lines) * 26 + 16)
+            draw.rectangle((content_x, y, content_x + available, y + box_height), fill='white', outline=border, width=1)
+            paragraph(control['value'], content_x + 12, y + 8, available - 48)
+            arrow_x, arrow_y = content_x + available - 22, y + box_height // 2
+            draw.line((arrow_x - 5, arrow_y - 2, arrow_x, arrow_y + 3, arrow_x + 5, arrow_y - 2), fill=muted, width=2)
+            y += box_height + 7
+            if control.get('description'):
+                y = paragraph(control['description'], content_x, y, available, small, muted, 23) + 3
+            y += 9
+        elif kind == 'toggle':
+            y = paragraph(text, content_x, y + 4, available - 70, regular, leading=26)
+            draw.rectangle((content_x + available - 55, y - 30, content_x + available, y), fill='#d4e3c9', outline=border)
+            draw.text((content_x + available - 41, y - 29), '✓' if control['value'] else '○', font=font(22, True), fill='#45633a')
+            y += 15
+        elif kind == 'button':
+            color = '#8a9382' if control.get('disabled') else ink
+            fill = '#f0f3ec' if control.get('disabled') else '#e7eddf'
+            draw.rectangle((content_x, y, content_x + available, y + 44), fill=fill, outline=border)
+            draw.text((content_x + available / 2, y + 11), text, font=regular, fill=color, anchor='mt')
+            y += 54
+    y += 11
+    draw.rectangle((x, y, x + col, 1550), fill='#e9ece5')
+    draw.rectangle((x, top, x + col, y), outline=border, width=1)
+    bottom = max(bottom, y)
+footer = 'Aplicar confirma o rascunho. Desfazer alterações recupera as escolhas de abertura. Cancelar descarta a edição.'
+bottom = paragraph(footer, margin, bottom + 28, width - margin * 2, small, muted, 24) + 28
+canvas.crop((0, 0, width, bottom)).save(root / 'native-ui.png')
+print(root / 'native-ui.png')

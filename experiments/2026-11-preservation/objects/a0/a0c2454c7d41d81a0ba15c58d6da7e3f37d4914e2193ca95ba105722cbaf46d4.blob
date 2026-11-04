@@ -1,0 +1,21 @@
+ALTARE 0.12.3 — ESCOLHAS E PRAZO DO EDITOR
+
+PACOTE DIAGNÓSTICO; TESTE MINECRAFT PENDENTE.
+
+Correções:
+1. Trocar Pilastras ou outro modelo arquitetônico para Clássico não liga Guadalupe por engano. Ícones clássicos genuínos, decisões manuais e Restaurar são preservados.
+2. O encerramento após o prazo existente mostra o aviso localizado de edição encerrada. Sem prolongar a sessão ou aplicar o rascunho.
+
+Verificação desta rodada: 8 testes novos aprovados, incluindo 401 designs arquitetônicos e 416 casos clássicos com round-trip de save. Tipos, build, validação estrutural e documentos aprovados. As suítes antigas não foram repetidas. Creator oficial: zero erros, 2.084 avisos geométricos conhecidos e nenhum inesperado; alvo offline 1.26.40.
+
+Preservação: todos os 414 blocos, 4.700 arquivos de geometria e 265 arquivos de textura idênticos à 0.12.2. Todas as fontes de domínio idênticas. O pacote só muda runtime e seis arquivos de versão. 5.393 entradas, CRC e correspondência com os packs conferidos.
+
+A revisão foi feita em cópia isolada. A versão 0.12.2 anterior está intacta. Sem commits, publicação, instalação ou alterações de mundos. Aspergillum 1.2.5 e Estúdio 2.3.0 permanecem.
+
+Reteste mínimo: em cópia de mundo com BP/RP [0,12,3], trocar Pilastras sem toalha/relevo para Clássico e verificar Guadalupe desligada; ligar manualmente e alternar modelos; reabrir clássico com ícone salvo; testar Restaurar/Cancelar. Aguardar o prazo e conferir fechamento sem aplicação com aviso. Cancelar antes do prazo não deve avisar. Salvar/recarregar e revisar Content Log.
+
+Ressalva: o aviso de prazo usa o momento de retorno do formulário. Um cancelamento iniciado antes do limite cujo retorno atrasasse além dele também poderia receber o aviso genérico. Isso não permite escrita ou mantém locks.
+
+Conteúdo: mcaddon exato, hash, metadados; fontes completas e patch incremental sobre 0.12.2; documentação; evidências antes/depois, preservação e relatórios oficiais.
+
+SHA-256 do mcaddon: 47ea472ff249e46926d4b8f6572a3e0c7c53db6df51dc05ef6a287e3df19c1f4

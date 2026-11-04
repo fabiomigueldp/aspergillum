@@ -1,0 +1,29 @@
+// Extract and execute original primary-source functions in a minimal harness.
+// This is not a Blockbench app launch and not a Minecraft engine test.
+import fs from 'node:fs';import vm from 'node:vm';import crypto from 'node:crypto';
+import * as THREE from '../../../paz-workbench-validation-20261103/source/viewer-3d/node_modules/three/build/three.module.js';
+const out=import.meta.dirname;
+const read=n=>fs.readFileSync(out+'/'+n,'utf8');
+const bs=read('blockbench-bedrock.js'),cs=read('blockbench-cube.js'),ts=read('blockbench-three-custom.js');
+const parse=bs.slice(bs.indexOf('\tfunction parseCube('),bs.indexOf('\tfunction parseBone('));
+const upd=cs.slice(cs.indexOf('\tupdateUV(element,'),cs.indexOf('\tupdateHighlight(element,'));
+const shape=ts.slice(ts.indexOf('THREE.BufferGeometry.prototype.setShape'),ts.indexOf('Object.assign( THREE.Euler.prototype'));
+class Face{
+ constructor(){this.uv=[0,0,0,0];this.rotation=0;this.texture=false;}
+ extend(x){if(x.uv){this.uv[0]=x.uv[0];this.uv[1]=x.uv[1];}this.rotation=x.rotation??0;}
+ get uv_size(){return [this.uv[2]-this.uv[0],this.uv[3]-this.uv[1]];}
+ set uv_size(x){this.uv[2]=this.uv[0]+x[0];this.uv[3]=this.uv[1]+x[1];}
+ getTexture(){return false;}
+}
+class Cube{
+ constructor(x){this.rotation=[...(x.rotation??[0,0,0])];this.origin=[...(x.origin??[0,0,0])];this.from=[0,0,0];this.from.V3_set=x=>this.from.splice(0,3,...x);this.to=[0,0,0];this.faces=Object.fromEntries(['east','west','up','down','south','north'].map(x=>[x,new Face()]));}
+ addTo(){return this;}init(){return this;}
+}
+const ctx={THREE,Cube,Texture:class Texture{},Canvas:{face_order:['east','west','up','down','south','north']},Project:{texture_width:64,texture_height:64},Format:{}};vm.createContext(ctx);
+vm.runInContext(shape+'\n'+parse+'\nvar controller={'+upd+'dispatchEvent(){},updatePixelGrid(){}};',ctx);
+const input={origin:[-7,2,3],size:[5,4,0],pivot:[-2,2,3],rotation:[0,0,0],uv:{south:{uv:[11,13],uv_size:[7,9]}}};ctx.input=input;
+vm.runInContext('var parsed=parseCube(input,{name:"fixture",color:0},{}); parsed.mesh=new THREE.Mesh(new THREE.BoxGeometry(1,1,1)); parsed.mesh.geometry.setShape(parsed.from,parsed.to); controller.updateUV(parsed);',ctx);
+const mesh=ctx.parsed.mesh,p=mesh.geometry.getAttribute('position'),uv=mesh.geometry.getAttribute('uv');const vertices=[];
+for(let i=16;i<20;i++)vertices.push({bb:[p.getX(i),p.getY(i),p.getZ(i)],uvTexels:[uv.getX(i)*64,(1-uv.getY(i))*64]});
+const report={method:'Original parseCube, setShape and updateUV functions extracted unchanged from official Blockbench source and executed with minimal data/UI stubs; actual Three BoxGeometry attribute arrays. No full application or engine.',sourceFiles:[['blockbench-bedrock.js','f27d89e774003486b1161b0578971f686fece0a8','js/formats/bedrock/bedrock.js'],['blockbench-cube.js','70cb939ab827f999f9178fac05839a2ecb005d5b','js/outliner/types/cube.js'],['blockbench-three-custom.js','c700631f613689344764b210af7d4fc56c1eba33','js/util/three_custom.js']].map(([name,expected,path])=>{const b=fs.readFileSync(out+'/'+name),actual=crypto.createHash('sha1').update(`blob ${b.length}\0`).update(b).digest('hex');if(expected!==actual)throw Error('Hash mismatch');return {name,gitBlob:actual,url:'https://github.com/JannisX11/blockbench/blob/ec0b2827104d0799c153bfb5f867579c0c44652f/'+path};}),input,parsed:{from:ctx.parsed.from.slice(0,3),to:ctx.parsed.to,rotation:ctx.parsed.rotation,pivot:ctx.parsed.origin},southVertices:vertices,conclusion:'South U increases with Blockbench +X. After converting Blockbench to the Aspergillum world basis by X reflection, U must decrease with viewer X. Existing Aspergillum direct-geometry module instead increases U with viewer X.'};
+fs.writeFileSync(out+'/blockbench-uv-oracle.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));

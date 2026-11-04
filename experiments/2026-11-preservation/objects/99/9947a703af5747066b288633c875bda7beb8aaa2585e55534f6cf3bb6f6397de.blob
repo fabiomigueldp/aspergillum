@@ -1,0 +1,22 @@
+{
+  "assembly_crossings": 1772,
+  "crossings_by_part_pair": {
+    "(np.int64(0), np.int64(1))": 34,
+    "(np.int64(0), np.int64(2))": 10,
+    "(np.int64(1), np.int64(1))": 1112,
+    "(np.int64(1), np.int64(2))": 365,
+    "(np.int64(2), np.int64(2))": 251
+  },
+  "bridge_only_crossings": 1112,
+  "cap_bridge_crossings": 1146,
+  "thickness_direction_cosine_min_median_max": [
+    -0.9799921166190153,
+    -0.8613370726583672,
+    0.15747376807915536
+  ],
+  "thickness_direction_negative_samples": 55,
+  "thickness_direction_samples": 57,
+  "conclusion": "Phase synchronization alone is insufficient. Corresponding indexed wall thickness directions oppose over most of this seam; straight ruled paired bridge still intersects. Side0/1 labels are source-index sides, not verified globally physical outer/inner equivalence across objects.",
+  "all_endpoints_unchanged": true,
+  "geometry_changes": "Bridge faces replaced in new candidate only; source and original bridge preserved."
+}

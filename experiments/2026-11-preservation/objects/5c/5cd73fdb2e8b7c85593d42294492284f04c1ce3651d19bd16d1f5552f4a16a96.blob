@@ -1,0 +1,203 @@
+/** OFFLINE PROPOSAL ONLY. No Minecraft import, world lookup, delivery, deletion or release. */
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+
+export const FINGERPRINT_ALGORITHM = 'sha256-canonical-snapshot-v1';
+export const CONTRACT = 'aspergillum-2.0.0-diagnostic-recovery-draft1';
+const PHASES = new Set(['prepared', 'effects-may-have-occurred', 'completed']);
+const CORE = new Set(['charges', 'schema_version', 'instance_id', 'cosmetic_id', 'spray_profile_id'].map(k => `aspergillum:${k}`));
+const MAX_BYTES = 30_000;
+export const hash = value => createHash('sha256').update(value, 'utf8').digest('hex');
+export function canonical(value) {
+  if (value === null || typeof value === 'string' || typeof value === 'boolean') return JSON.stringify(value);
+  if (typeof value === 'number' && Number.isFinite(value)) return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(canonical).join(',')}]`;
+  if (typeof value === 'object' && Object.getPrototypeOf(value) === Object.prototype) {
+    return `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${canonical(value[key])}`).join(',')}}`;
+  }
+  throw new Error('Unsupported JSON value');
+}
+const object = value => typeof value === 'object' && value !== null && !Array.isArray(value);
+const string = value => typeof value === 'string' && value.length > 0;
+const integer = value => Number.isSafeInteger(value) && value >= 0;
+function exactKeys(value, required, optional = []) {
+  return object(value) && required.every(k => Object.hasOwn(value, k))
+    && Object.keys(value).every(k => required.includes(k) || optional.includes(k));
+}
+export function fingerprint(snapshot) {
+  if (!exactKeys(snapshot, ['schemaVersion', 'instanceId', 'charges', 'cosmeticId', 'sprayProfileId', 'customProperties'], ['nameTag'])
+    || snapshot.schemaVersion !== 2 || !string(snapshot.instanceId) || snapshot.instanceId.length > 128
+    || !Number.isInteger(snapshot.charges) || snapshot.charges < 0 || snapshot.charges > 4
+    || !string(snapshot.cosmeticId) || !string(snapshot.sprayProfileId) || !object(snapshot.customProperties)
+    || (snapshot.nameTag !== undefined && (typeof snapshot.nameTag !== 'string' || snapshot.nameTag.length > 255))) {
+    throw new Error('Unsupported snapshot shape; retain the original export');
+  }
+  for (const [key, value] of Object.entries(snapshot.customProperties)) {
+    if (!/^[a-z0-9_.:-]{1,96}$/i.test(key) || CORE.has(key)) throw new Error('Unsupported property identifier');
+    if (typeof value === 'string' || typeof value === 'boolean' || (typeof value === 'number' && Number.isFinite(value))) continue;
+    if (exactKeys(value, ['kind', 'x', 'y', 'z']) && value.kind === 'vector3' && [value.x, value.y, value.z].every(Number.isFinite)) continue;
+    throw new Error('Unsupported property value');
+  }
+  return hash(canonical(snapshot));
+}
+function validateBody(body) {
+  if (!exactKeys(body, ['schemaVersion', 'contract', 'fingerprintAlgorithm', 'worldId', 'operationId', 'kind', 'address', 'createdAt', 'phase', 'occupancyGeneration', 'snapshot', 'snapshotFingerprint', 'rawRegistry', 'originalHand', 'originalBlock'])
+    || body.schemaVersion !== 1 || body.contract !== CONTRACT || body.fingerprintAlgorithm !== FINGERPRINT_ALGORITHM || !string(body.worldId)
+    || typeof body.operationId !== 'string' || !/^[a-zA-Z0-9_-]{8,128}$/.test(body.operationId)
+    || !['dock', 'undock', 'break'].includes(body.kind) || !PHASES.has(body.phase)
+    || !integer(body.createdAt) || !(body.occupancyGeneration === null || string(body.occupancyGeneration))
+    || !(body.rawRegistry === null || typeof body.rawRegistry === 'string')
+    || !exactKeys(body.address, ['dimension', 'x', 'y', 'z']) || !string(body.address.dimension)
+    || ![body.address.x, body.address.y, body.address.z].every(Number.isSafeInteger)) throw new Error('Unsupported journal body');
+  if (fingerprint(body.snapshot) !== body.snapshotFingerprint) throw new Error('Snapshot fingerprint mismatch');
+  canonical(body.originalHand); canonical(body.originalBlock);
+  return body;
+}
+/** Draft a hypothetical envelope from explicit caller data; does not persist it. */
+export function draftJournal(input) {
+  const body = validateBody({ ...input, schemaVersion: 1, contract: CONTRACT, fingerprintAlgorithm: FINGERPRINT_ALGORITHM, snapshotFingerprint: fingerprint(input.snapshot) });
+  const raw = JSON.stringify({ body, checksum: hash(canonical(body)) });
+  // Reserve every phase before proposing a first effect; escaping overhead counts.
+  for (const phase of PHASES) {
+    const next = { ...body, phase };
+    if (Buffer.byteLength(JSON.stringify({ body: next, checksum: hash(canonical(next)) }), 'utf8') > MAX_BYTES) throw new Error('Journal exceeds byte budget');
+  }
+  return raw;
+}
+export function readJournal(raw) {
+  if (typeof raw !== 'string' || Buffer.byteLength(raw, 'utf8') > MAX_BYTES) throw new Error('Invalid journal bytes');
+  const envelope = JSON.parse(raw);
+  if (JSON.stringify(envelope) !== raw || !exactKeys(envelope, ['body', 'checksum'])) throw new Error('Noncanonical or unsupported journal envelope');
+  const body = validateBody(envelope.body);
+  if (envelope.checksum !== hash(canonical(body))) throw new Error('Journal checksum mismatch');
+  return body;
+}
+function safetyBase(input) {
+  // All output, including apparently favorable observations, retains quarantine.
+  return { schemaVersion: 1, scope: 'OFFLINE PROPOSAL ONLY', decision: 'retain-quarantine',
+    quarantineRetained: true, tombstonesRetained: true, releaseAllowed: false, executionAllowed: false, automaticRetryAllowed: false, allowedEffects: [],
+    inputFingerprint: hash(canonical(input)), inputCanonical: canonical(input), journalRaw: typeof input?.journalRaw === 'string' ? input.journalRaw : null, reasons: [],
+    fingerprintAlgorithm: FINGERPRINT_ALGORITHM,
+    evidencePattern: 'unclassified', proposal: 'collect-or-correct-evidence', matchingObservations: [],
+    limits: ['Checksums detect changed content, not authenticity or native durability.',
+      'Matching IDs/fingerprints are evidence of content, not proof of one physical item or delivery.',
+      'Empty or partial observations never establish absence; items may be in unavailable inventories.',
+      'Timestamps and world/epoch labels are supplied claims, not an engine-enforced snapshot.',
+      'No native event-generation binding, downgrade protection, exactly-once delivery or automatic repair.'] };
+}
+function finish(report) {
+  return { ...report, proposalFingerprint: hash(canonical(report)) };
+}
+export function reconcile(input) {
+  const report = safetyBase(input);
+  if (!exactKeys(input, ['schemaVersion', 'journalRaw', 'context', 'observations', 'relatedJournalRaws']) || input.schemaVersion !== 1) {
+    report.reasons.push('unsupported-input-envelope'); return finish(report);
+  }
+  let journal;
+  try { journal = readJournal(input.journalRaw); }
+  catch (error) { report.reasons.push(`unreadable-or-unsupported-journal: ${error.message}`); return finish(report); }
+  report.operationId = journal.operationId;
+  report.operationKind = journal.kind;
+  report.observationInterpretation = 'Locations are supplied observations, not proof of causal delivery or simultaneous physical copies.';
+  report.snapshotFingerprint = journal.snapshotFingerprint;
+  report.journalFingerprint = hash(input.journalRaw);
+  const context = input.context;
+  if (!exactKeys(context, ['worldId', 'contract', 'epoch', 'asOf', 'maxObservationAge'])
+    || context.worldId !== journal.worldId || context.contract !== CONTRACT || !string(context.epoch)
+    || !integer(context.asOf) || !integer(context.maxObservationAge) || context.asOf < journal.createdAt) {
+    report.reasons.push('world-contract-or-time-context-mismatch'); return finish(report);
+  }
+  if (!Array.isArray(input.observations) || !Array.isArray(input.relatedJournalRaws)) {
+    report.reasons.push('missing-explicit-observation-or-journal-list'); return finish(report);
+  }
+  for (const raw of input.relatedJournalRaws) {
+    if (raw === input.journalRaw) continue; // Identical export duplication is not a second operation.
+    let other;
+    try { other = readJournal(raw); }
+    catch { report.reasons.push('unreadable-related-journal'); continue; }
+    if (other.worldId !== journal.worldId) { report.reasons.push('mixed-world-journal-export'); continue; }
+    if (canonical(other) === canonical(journal)) continue;
+    if (other.operationId === journal.operationId) report.reasons.push('operation-id-has-distinct-records');
+    if (canonical(other.address) === canonical(journal.address)) report.reasons.push('address-has-another-retained-journal');
+    if (other.snapshot.instanceId === journal.snapshot.instanceId) report.reasons.push('item-id-has-another-retained-journal');
+  }
+  const observationIds = new Set();
+  const locations = new Map();
+  let invalidEvidence = report.reasons.length > 0;
+  for (const observation of input.observations) {
+    if (!exactKeys(observation, ['observationId', 'worldId', 'contract', 'epoch', 'capturedAt', 'location', 'snapshot', 'occupancyGeneration'])
+      || !string(observation.observationId) || observationIds.has(observation.observationId)
+      || !exactKeys(observation.location, ['kind', 'ref'])
+      || !['registry', 'hand', 'inventory', 'drop'].includes(observation.location.kind) || !string(observation.location.ref)
+      || !(observation.occupancyGeneration === null || string(observation.occupancyGeneration))) {
+      report.reasons.push('invalid-or-reused-observation-id'); invalidEvidence = true; continue;
+    }
+    observationIds.add(observation.observationId);
+    if (observation.worldId !== journal.worldId || observation.contract !== CONTRACT || observation.epoch !== context.epoch
+      || !integer(observation.capturedAt) || observation.capturedAt < journal.createdAt || observation.capturedAt > context.asOf
+      || context.asOf - observation.capturedAt > context.maxObservationAge) {
+      report.reasons.push('stale-or-mixed-context-observation'); invalidEvidence = true; continue;
+    }
+    let digest;
+    try { digest = fingerprint(observation.snapshot); }
+    catch { report.reasons.push('unsupported-observed-snapshot'); invalidEvidence = true; continue; }
+    const place = canonical(observation.location);
+    const previous = locations.get(place);
+    // Conflicting reports of one slot are not two independently observed items.
+    if (previous && (previous.digest !== digest || previous.generation !== observation.occupancyGeneration)) {
+      report.reasons.push('conflicting-observations-of-one-location'); invalidEvidence = true; continue;
+    }
+    locations.set(place, { digest, generation: observation.occupancyGeneration });
+    if (observation.snapshot.instanceId !== journal.snapshot.instanceId) continue;
+    if (digest !== journal.snapshotFingerprint) { report.reasons.push('item-id-matches-but-content-differs'); invalidEvidence = true; continue; }
+    if (journal.occupancyGeneration !== null && observation.occupancyGeneration !== null
+      && journal.occupancyGeneration !== observation.occupancyGeneration) {
+      report.reasons.push('reported-generation-mismatch'); invalidEvidence = true; continue;
+    }
+    if (!previous) report.matchingObservations.push({ observationId: observation.observationId, location: observation.location,
+      fingerprint: digest, capturedAt: observation.capturedAt });
+  }
+  if (invalidEvidence) return finish(report);
+  const sources = report.matchingObservations.filter(o => o.location.kind === 'registry');
+  const recipients = report.matchingObservations.filter(o => o.location.kind !== 'registry');
+  report.evidencePattern = sources.length > 1 ? 'multiple-registry-observations' : recipients.length > 1 ? 'multiple-observed-item-locations' : sources.length > 0 && recipients.length > 0
+    ? 'registry-and-item-observations' : recipients.length === 1 ? 'one-observed-item-location' : sources.length > 0 ? 'registry-only-observations' : 'no-current-match';
+  report.proposal = sources.length > 1 ? 'review-multiple-source-occurrences' : recipients.length > 1 ? 'review-multiple-copies' : sources.length > 0 && recipients.length > 0
+    ? 'review-coexisting-representations' : recipients.length === 1 ? 'review-designating-existing-copy' : sources.length > 0
+      ? 'review-retained-source-with-duplicate-risk' : 'collect-more-evidence-no-automatic-reissue';
+  report.reasons.push('native-durability-and-downgrade-not-verified', 'event-generation-not-bound-by-native-contract');
+  if (journal.phase === 'completed') report.reasons.push('completed-phase-is-not-permission-to-remove-tombstone');
+  return finish(report);
+}
+/** A bounded human review proposal, not an approval to change any world. */
+export function recordReviewProposal(report, choice) {
+  const { proposalFingerprint, ...body } = report;
+  if (hash(canonical(body)) !== proposalFingerprint || choice.proposalFingerprint !== proposalFingerprint) throw new Error('Stale or altered proposal');
+  if (!['retain-quarantine', 'designate-observed-copy', 'request-assisted-restoration'].includes(choice.decision)) throw new Error('Unsupported decision');
+  if (choice.decision !== 'retain-quarantine' && choice.acknowledgesDuplicateOrLossRisk !== true) throw new Error('Explicit risk acknowledgment missing');
+  if (choice.decision === 'request-assisted-restoration' && !['no-current-match', 'registry-only-observations'].includes(report.evidencePattern)) throw new Error('Observed copies or insufficient evidence prevent a restoration proposal');
+  if (choice.decision === 'designate-observed-copy'
+    && (report.evidencePattern !== 'one-observed-item-location' || !report.matchingObservations.some(o => o.observationId === choice.observationId && o.location.kind !== 'registry'))) throw new Error('No unconflicted observed copy to designate');
+  return { schemaVersion: 1, scope: 'HUMAN REVIEW PROPOSAL ONLY', proposalFingerprint,
+    decision: choice.decision, observationId: choice.observationId ?? null,
+    acknowledgedRisk: choice.acknowledgesDuplicateOrLossRisk === true,
+    quarantineRetained: true, tombstonesRetained: true, releaseAllowed: false, executionAllowed: false, automaticRetryAllowed: false, allowedEffects: [],
+    warning: 'No current-world revalidation is performed. This record neither authorizes nor executes delivery, deletion, repair, release, or downgrade.' };
+}
+export function reconcileRawInput(raw) {
+  // Refuse rather than collapse duplicate keys or alternate numeric spellings.
+  let input;
+  try { input = JSON.parse(raw); }
+  catch { return finish({ ...safetyBase({ invalidRawInput: raw }), originalInputRaw: raw, reasons: ['invalid-input-json'] }); }
+  if (JSON.stringify(input) !== raw) return finish({ ...safetyBase({ noncanonicalRawInput: raw }), originalInputRaw: raw, reasons: ['noncanonical-input-json'] });
+  const { proposalFingerprint: _previous, ...report } = reconcile(input);
+  return finish({ ...report, originalInputRaw: raw, rawInputFingerprint: hash(raw) });
+}
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+  const args = process.argv.slice(2);
+  if (args.length !== 2 || args[0] !== '--input') throw new Error('Usage: node tools/recovery-quarantine.mjs --input explicitly-supplied.json');
+  // Reads only this explicit local file. The caller decides whether to save stdout.
+  console.log(JSON.stringify(reconcileRawInput(readFileSync(args[1], 'utf8')), null, 2));
+}

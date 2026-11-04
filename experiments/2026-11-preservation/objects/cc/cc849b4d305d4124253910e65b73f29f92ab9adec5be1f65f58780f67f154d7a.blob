@@ -1,0 +1,31 @@
+# Recuperação exige snapshot existente
+
+Diagnóstico 2.0.0, 04/11/2026. Mudança somente na cópia de desenvolvimento. **NO-GO para release, instalação e migração permanece.** Não há journal novo nem garantia de atomicidade ou entrega única.
+
+## Defeito reproduzido e recusa conservadora
+
+As duas retiradas e a recuperação de quebra aceitavam ocupação sem snapshot e criavam um aspersório vazio com identidade nova. Isso não recuperava identidade, cargas ou metadados perdidos. Um replay atrasado de quebra depois da exclusão do registro também fabricava outro item vazio.
+
+Agora, registro ausente não autoriza entrega:
+
+- Caldeirinha e mesa recusam retirada antes de alterar a permutação, escrever o registro ou entregar. O bloco permanece ocupado, água/rotação permanecem iguais e o jogador recebe a mensagem existente de inspeção do registro.
+- A quebra recusa já no despacho, antes de agendar a entrega. Snapshot inserido posteriormente não autoriza retroativamente aquela tentativa. Não há retry automático.
+- Com snapshot presente, permanecem a comparação no callback e a exigência de ar carregado. Snapshot removido ou substituído entre despacho e callback continua recusado.
+- Snapshots canônicos V1 e V2 continuam aceitos, inclusive itens reais com zero cargas. Ausência de snapshot não se confunde com `charges: 0`.
+- O formulário da mesa mantém a conferência da instância esperada. Registro desaparecido continua retornando `false`; não se utiliza o item capturado pela UI como fallback.
+
+A recusa não apaga bytes, não corrige ocupação e não fabrica identidade. Ocupações antigas sem snapshot deixam de fornecer o fallback vazio e exigem inspeção assistida. Na quebra, o bloco já foi destruído: recusar não restaura esse bloco nem recupera dados ausentes. Os handlers continuam encerrando suas sessões antes da recuperação.
+
+## Limites preservados
+
+A existência de snapshot não prova que não houve entrega anterior. `spawn → delete` e `esvaziar bloco → excluir snapshot → entregar` continuam operações separadas. Entrega que modifica e depois lança, rollback duplamente falho, interrupção e durabilidade permanecem riscos. Não se mudou a ordem dessas operações nem instalou quarentena automática.
+
+Um evento antigo despachado depois de surgir outro snapshot ainda pode consumi-lo se o endereço estiver em ar. A checagem não estabelece geração única. A caracterização desse replay com substituição e os testes de duplicação pós-efeito/perda foram preservados. A fabricação sem snapshot é o único resultado anterior que mudou de contrato nesta revisão.
+
+## Evidência focada
+
+`tests/application/recovery-snapshot-authority.test.ts` cobre 23 casos com handlers reais e host simulado: armazenamento ausente/vazio/somente vizinho, recusa repetida, bytes/estado sem escrita, retirada e quebra, inserção/remoção durante a espera, replay após consumo, snapshot real de zero cargas V1/V2 e formulário obsoleto. A execução inicial dos primeiros 21 casos apresentou 14 falhas e sete controles aprovados antes da correção.
+
+O antigo teste que exigia fallback em ar agora exige recusa. O caso de replay com snapshot substituto continua exigindo a caracterização insegura anterior, não uma falsa aprovação. A verificação usa apenas suítes de recuperação/handlers/rotas afetadas, tipos, compilação de script e documentação. Não repete provas de geometria/codec, modelo de journal, build geral ou Creator Tools; nenhum mundo foi aberto.
+
+Uma validação futura em Minecraft exigiria cópia descartável autorizada e estado de inconsistência preparado de forma controlada: retirada deve preservar a ocupação e indicar inspeção; quebra sem registro não deve gerar aspersório. Snapshot válido, inclusive zero cargas, deve preservar nome, identidade e metadados. Isso ainda não foi executado e não autoriza instalar o esquema compacto sobre saves antigos.

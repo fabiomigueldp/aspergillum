@@ -1,0 +1,8 @@
+import bpy,json
+bpy.ops.wm.open_mainfile(filepath='/workspace/scratch/212c580ada5b/paz-directed-v21/input/Nossa-Senhora-da-Paz-V20-estudo-intermediario-nao-aprovado.blend')
+for o in bpy.data.objects:
+ if o.type in ['CAMERA','LIGHT'] or 'anatomia' in o.name or 'véu' in o.name:
+  print(o.name,o.type,'loc',list(o.location),'rot',list(o.rotation_euler),'scale',list(o.scale))
+  if o.type=='CAMERA': print('CAM',o.data.type,o.data.ortho_scale)
+  if o.type=='MESH':print('BOUNDS',list(o.dimensions),'verts',len(o.data.vertices),'keys',[(k.name,k.value) for k in o.data.shape_keys.key_blocks] if o.data.shape_keys else [])
+print('SCENE',bpy.context.scene.render.resolution_x,bpy.context.scene.render.resolution_y)

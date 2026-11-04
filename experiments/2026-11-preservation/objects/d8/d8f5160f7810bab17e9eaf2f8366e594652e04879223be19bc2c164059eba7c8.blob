@@ -1,0 +1,49 @@
+import bpy,math,bmesh,json
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/'
+bpy.ops.wm.open_mainfile(filepath=r+'V29-double-band-trial.blend',use_scripts=False)
+cap=bpy.data.objects['Maria — véu reconstruído de perfil'];mantle=bpy.data.objects['Maria — plano contínuo do manto'];head=bpy.data.objects['Maria — anatomia feminina adaptada CC0']
+def mixed(o):
+ out=[];ks=o.data.shape_keys.key_blocks if o.data.shape_keys else []
+ for v in o.data.vertices:
+  p=v.co.copy()
+  for k in list(ks)[1:]:p+=(k.data[v.index].co-k.relative_key.data[v.index].co)*k.value
+  out.append(p)
+ return out
+verts=mixed(cap);faces=[tuple(p.vertices) for p in cap.data.polygons];mp=mixed(mantle)
+bvh=BVHTree.FromObject(head,bpy.context.evaluated_depsgraph_get())
+def path_point(arr,t):
+ lengths=[0.0]
+ for i in range(1,len(arr)):lengths.append(lengths[-1]+(arr[i]-arr[i-1]).length)
+ x=t*lengths[-1];k=0
+ while k<len(arr)-2 and lengths[k+1]<x:k+=1
+ h=lengths[k+1]-lengths[k];u=(x-lengths[k])/h
+ def tangent(j):
+  lo=max(0,j-1);hi=min(len(arr)-1,j+1)
+  return (arr[hi]-arr[lo])/(lengths[hi]-lengths[lo])
+ return (2*u**3-3*u*u+1)*arr[k]+(u**3-2*u*u+u)*h*tangent(k)+(-2*u**3+3*u*u)*arr[k+1]+(u**3-u*u)*h*tangent(k+1)
+start=28;end=84;W=end-start;N=180;topids=[44*112+i for i in range(start,end+1)]
+paths=[]
+for i in range(W+1):
+ q=i/W*79;ix=min(78,int(q));f=q-ix
+ paths.append([verts[topids[i]]]+[mp[rr*80+ix].lerp(mp[rr*80+ix+1],f) for rr in range(8,-1,-1)])
+prev=topids;adjust=0
+for row in range(1,N+1):
+ ids=[]
+ for i in range(W+1):
+  p=path_point(paths[i],row/N);ids.append(len(verts));verts.append(p)
+ for i in range(W):faces.append((prev[i],prev[i+1],ids[i+1],ids[i]))
+ prev=ids
+m=bpy.data.meshes.new('Véu e manto contínuos — estudo substitutivo');m.from_pydata(verts,[],faces);m.update();bm=bmesh.new();bm.from_mesh(m);bmesh.ops.recalc_face_normals(bm,faces=bm.faces);bm.to_mesh(m);bm.free()
+o=bpy.data.objects.new('TESTE 33 — véu e manto superfície contínua',m);bpy.context.scene.collection.objects.link(o);o.data.materials.append(cap.data.materials[0])
+for p in m.polygons:p.use_smooth=True
+s=o.modifiers.new('Espessura','SOLIDIFY');s.thickness=.001;s.offset=0
+s=o.modifiers.new('Suavidade','SUBSURF');s.levels=1
+cap.hide_render=True;cap.hide_viewport=True;mantle.hide_render=True;mantle.hide_viewport=True
+o['rollback']='Hide this replacement and unhide original veil and mantle. V29 file unchanged.'
+json.dump({'vertices':len(verts),'faces':len(faces),'clearance_adjustments':adjust,'shared_top_boundary_vertices':len(topids)},open(r+'V33-change-report.json','w'),indent=2)
+bpy.ops.wm.save_as_mainfile(filepath=r+'V33-continuous-veil-trial.blend')
+s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=600;s.render.resolution_y=800;s.render.resolution_percentage=100;c=s.camera
+for view,loc,targ,scale in [('face',(-1.6,-5,3.7),(0,-.08,3.43),.88),('profile',(-5,-.05,3.6),(0,-.15,3.4),1.05)]:
+ c.location=loc;c.rotation_euler=(Vector(targ)-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=scale;s.render.filepath=r+'V33-compare-'+view+'.png';bpy.ops.render.render(write_still=True)

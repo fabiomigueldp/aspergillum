@@ -1,0 +1,69 @@
+import bpy,math,json
+from mathutils import Matrix,Vector
+from math import exp,sin,cos,pi,sqrt
+ROOT='/workspace/scratch/212c580ada5b/paz-refinement/'
+bpy.ops.wm.open_mainfile(filepath=ROOT+'work.blend')
+head=bpy.data.objects['Maria — anatomia feminina adaptada CC0']
+R=bpy.data.objects['Maria — auréola lisa'].rotation_euler.to_matrix()@Matrix.Rotation(-pi/2,3,'X');Ri=R.transposed()
+head.shape_key_add(name='Base V13 preservada');key=head.shape_key_add(name='Escultura localizada: pálpebras e boca');key.value=1
+for i,v in enumerate(head.data.vertices):
+ p=Ri@v.co;x=p.x+.44;y=p.y;z=p.z
+ # Front-only, no change to neck or skull.
+ gate=max(0,min(1,(.98-y)/.08))
+ dy=0
+ for sx in (-1,1):
+  t=(sx*x-.064)/.035
+  if abs(t)<1.4:
+   width=exp(-(t/1.03)**6)
+   line=3.306+.008*t*t+.002*t
+   # Broad convex upper lid and fine closed edge cut into it.
+   dy-=.0085*width*exp(-((z-(line+.011))/.012)**2)
+   dy+=.002*width*exp(-((z-line)/.0028)**2)
+   dy-=.0015*width*exp(-((z-(line-.006))/.006)**2)
+ # Local lip planes; neutral asymmetrical curve not a smile.
+ t=x/.041;w=exp(-(t/1.05)**6)
+ line=3.199-.002*t-.003*t*t
+ dy-=.0025*w*exp(-((z-(line+.006))/.006)**2)
+ dy-=.003*w*exp(-((z-(line-.007))/.0075)**2)
+ dy+=.002*w*exp(-((z-line)/.0024)**2)
+ # soften squared nasal wings, keep bridge continuous
+ dy+=.003*exp(-((abs(x)-.022)/.009)**2-((z-3.25)/.018)**2)
+ p.y+=dy*gate
+ key.data[i].co=R@p
+# Replace overlarge cap with thin fitted shell and attached posterior fall.
+old=bpy.data.objects['Maria — véu sobre couro cabeludo anatômico'];old.hide_render=True;old.hide_viewport=True
+mat=old.data.materials[0]
+import numpy as np
+from scipy.spatial import cKDTree
+from math import atan2
+cloud=np.array([list(Ri@v.co) for v in head.data.vertices]);cx=-.44;cy=1.012
+angles=np.arctan2(cloud[:,0]-cx,-(cloud[:,1]-cy));radii=np.sqrt((cloud[:,0]-cx)**2+(cloud[:,1]-cy)**2)
+coords=np.column_stack([np.sin(angles)*.18,np.cos(angles)*.18,cloud[:,2]])
+tree=cKDTree(coords)
+def radius(a,z):
+ dd,ii=tree.query([sin(a)*.18,cos(a)*.18,z],k=12)
+ ww=1/(dd+.0005)**3
+ return float(np.sum(radii[ii]*ww)/np.sum(ww))+.0018
+verts=[];faces=[];N=112;M=44
+for j in range(M+1):
+ t=j/M
+ for i in range(N):
+  a=2*pi*i/N
+  edge=3.50-.14*sin(a)**2-.35*max(0,-cos(a))
+  z=3.564*(1-t)+edge*t
+  rad=radius(a,z)
+  p=Vector((cx+rad*sin(a),cy-rad*cos(a),z+.001));verts.append(tuple(R@p))
+for j in range(M):
+ for i in range(N):
+  a=j*N+i;b=j*N+(i+1)%N;faces.append((a,b,b+N,a+N))
+faces.append(tuple(reversed(range(N))))
+mesh=bpy.data.meshes.new('Véu fino aderente');mesh.from_pydata(verts,[],faces);mesh.update();o=bpy.data.objects.new('Maria — véu reconstruído de perfil',mesh);bpy.context.scene.collection.objects.link(o);o.data.materials.append(mat)
+for f in mesh.polygons:f.use_smooth=True
+sol=o.modifiers.new('Espessura de pedra','SOLIDIFY');sol.thickness=.0015
+sub=o.modifiers.new('Suavidade localizada','SUBSURF');sub.levels=1
+# preserve baseline in hidden collection, explicitly document interpretation.
+head['method']='Local reversible relief sculpt from observed eyelids/lips; no global remesh.'
+o['method']='Fitted shell from frontal/profile reference; rear remains interpretive.'
+s=bpy.context.scene;s.cycles.samples=48;s.render.filepath=ROOT+'v16-face.png'
+bpy.ops.wm.save_as_mainfile(filepath=ROOT+'Nossa_Senhora_da_Paz_v16_estudo.blend')
+bpy.ops.render.render(write_still=True)

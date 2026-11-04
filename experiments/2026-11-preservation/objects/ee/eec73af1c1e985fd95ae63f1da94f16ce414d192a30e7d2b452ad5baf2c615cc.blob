@@ -1,0 +1,12 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-fold-continuity-audit.py').read().split('records=[]')[0])
+results=[]
+for threshold in [30,45,60]:
+ seen={180881,180886};todo=list(seen)
+ while todo:
+  a=todo.pop()
+  for b in adj[a]:
+   if b not in normals or b in seen:continue
+   angle=float(np.degrees(np.arccos(np.clip(normals[a]@normals[b],-1,1))))
+   if angle>=threshold:seen.add(b);todo.append(b)
+ ids={v for fi in seen for v in fs[fi]};pts=p[list(ids)];areas=sum(describe(fi)['area'] for fi in seen);results.append({'dihedral_threshold_degrees':threshold,'faces':len(seen),'area_m2':areas,'bounds':[pts.min(0).tolist(),pts.max(0).tolist()],'leaves_neck_bounds':bool(pts[:,2].min()<3.22 or pts[:,2].max()>3.42 or pts[:,0].max()>.025),'face_indices':sorted(seen)})
+json.dump(results,open(r+'neck-fold-feature-component-audit.json','w'),indent=2);print([{k:v for k,v in x.items() if k!='face_indices'} for x in results])

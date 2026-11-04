@@ -1,0 +1,15 @@
+# Studio 2.4.0: native twin pedestals
+
+The Studio offers the ninth model, two starting presets (bare and lace), fixed walnut and the shared textiles/colors. Existing model indices and recipes remain unchanged. Missing generated thumbnails retain the readable model/preset label; no placeholder photo is presented as a verified render.
+
+Scene schema 2 gains an additive `facing` field. Older scenes default to north (0). JSON import/export, customization drafts and undo/redo preserve this value even for bare twin pedestals. Front/depth are logical dimensions; both may reach 16 with one at most 8. Domain composition creates the correctly oriented physical rectangle and persists the exact native recipe/pose. The provider centers physical bounds, staging uses those same bounds, and camera directions/detail targets follow the selected front. Changing direction reframes the selected view.
+
+The synced Studio domain is bundled from the production domain. Source hashing now includes classic, classic-textile and native-pedestal layout/data dependencies. The asset adapter reads generated packs only and writes viewer output only.
+
+## Verification and limits
+
+- Viewer Node suite: 87 tests passed, including native textile/color/front JSON roundtrips, 8×16/16×8 dimensions, suspended selections, camera vectors and model presets.
+- Synced snapshot: Altare 0.13.0, 430 recipes. Native dependency hashes match source; 8,704 native cells resolve actual geometry files and atlas texture PNGs.
+- Vite production compilation is separate from browser/visual testing.
+- No browser, Chromium, thumbnail capture or native-game test was run. The isolated viewer lacks prepared vanilla/prop libraries, so a full interactive smoke test also needs those separately verified assets. New thumbnail captures remain pending the approved render environment.
+- This Studio change does not publish, install, alter packs, bypass the aggregate release budget, or change the legacy codec.

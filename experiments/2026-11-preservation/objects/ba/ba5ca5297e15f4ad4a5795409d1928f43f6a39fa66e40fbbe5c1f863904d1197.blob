@@ -1,0 +1,52 @@
+import bpy,numpy as np,json,math
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+from scipy.sparse import coo_matrix,diags
+from scipy.sparse.linalg import spsolve
+from scipy.sparse.csgraph import connected_components
+r='/workspace/scratch/212c580ada5b/';out=r+'paz-arm-chain/'
+bpy.ops.wm.open_mainfile(filepath=r+'paz-refinement/gui-test/V75-tunic-lower-trial.blend',use_scripts=False)
+o=bpy.data.objects['Maria — túnica e mangas integradas'];h=bpy.data.objects['Maria — mão protetora anatômica'];dg=bpy.context.evaluated_depsgraph_get();p=np.array([v.co[:] for v in o.evaluated_get(dg).data.vertices]);e=np.array([a.vertices[:] for a in o.data.edges]);fs=[tuple(f.vertices) for f in o.data.polygons]
+# Distal cuff isolated by connectivity; whole sleeve influenced above that.
+mask=p[:,2]<2.11;inds=np.where(mask)[0];idx=np.full(len(p),-1);idx[inds]=np.arange(len(inds));ee=e[mask[e].all(1)];a=idx[ee];g=coo_matrix((np.ones(len(a)*2),(np.r_[a[:,0],a[:,1]],np.r_[a[:,1],a[:,0]])),shape=(len(inds),len(inds)));_,labs=connected_components(g);seed=np.argmin(np.linalg.norm(p-[-.226,-.206,2.0],axis=1));cuff=inds[labs==labs[idx[seed]]]
+if p[cuff,2].min()<1.9:raise RuntimeError('Cuff not isolated')
+# Harmonic transition from sleeve exterior/cuff into fixed torso; no new topology.
+candidate=(p[:,0]<-.145)&(p[:,2]>2.10)&(p[:,2]<3.12);candidate[cuff]=True
+fixed1=((p[:,0]<-.31)&(p[:,2]>2.12)&(p[:,2]<2.86));fixed1[cuff]=True
+free=candidate&~fixed1;fi=np.where(free)[0];mapping=np.full(len(p),-1);mapping[fi]=np.arange(len(fi));w=np.zeros(len(p));w[fixed1]=1
+A=coo_matrix((np.ones(len(e)*2),(np.r_[e[:,0],e[:,1]],np.r_[e[:,1],e[:,0]])),shape=(len(p),len(p))).tocsr();L=diags(np.array(A.sum(1)).ravel())-A
+w[fi]=spsolve(L[fi][:,fi],-L[fi]@w);w=np.clip(w,0,1)
+# Long continuous chain: shoulder 3.12 -> elbow 2.55 -> cuff 2.02.
+z=p[:,2];d=np.zeros_like(p)
+controls=[(2.02,np.array([-.03,.08,-.10])),(2.55,np.array([-.015,.035,-.04])),(3.12,np.zeros(3))]
+for lo,hi in zip(controls[:-1],controls[1:]):
+ sel=(z>=lo[0])&(z<=hi[0]);t=np.clip((z[sel]-lo[0])/(hi[0]-lo[0]),0,1);t=t*t*(3-2*t);d[sel]=(1-t[:,None])*lo[1]+t[:,None]*hi[1]
+d[z<2.02]=controls[0][1];q=p+w[:,None]*d
+key=o.shape_key_add(name='CADEIA84 — ombro cotovelo punho reversível',from_mix=True);key.value=1
+# Relative to Basis so turn off old keys and preserve evaluated V75 in new key.
+for k in o.data.shape_keys.key_blocks:k.value=0
+key.value=1
+for v,co in zip(key.data,q):v.co=co
+h.shape_key_add(name='Basis');hk=h.shape_key_add(name='CADEIA84 — mão rígida acoplada');hk.value=1
+for v,b in zip(hk.data,h.data.vertices):v.co=b.co+Vector(controls[0][1])
+# Structural report: exact mesh connectivity preserved, local normals and area changes.
+changed=np.linalg.norm(q-p,axis=1)>1e-8;fchanged=np.array([any(changed[i] for i in f) for f in fs]);rat=[];flip=0
+for f in np.array(fs)[fchanged] if len(set(map(len,fs)))==1 else [f for i,f in enumerate(fs) if fchanged[i]]:
+ a0=np.cross(p[f[1]]-p[f[0]],p[f[2]]-p[f[0]]);a1=np.cross(q[f[1]]-q[f[0]],q[f[2]]-q[f[0]]);norm=np.linalg.norm(a0)
+ if norm>1e-12:rat.append(np.linalg.norm(a1)/norm);flip+=int(np.dot(a0,a1)<0)
+def selfpairs(points):
+ b=BVHTree.FromPolygons([Vector(x) for x in points],fs);return set((a,b) for a,b in b.overlap(b) if a<b and (fchanged[a] or fchanged[b]) and not set(fs[a])&set(fs[b]))
+before=selfpairs(p);after=selfpairs(q)
+report={'method':'Harmonic sleeve-to-torso influence; continuous shoulder/elbow/cuff displacement; unchanged topology; rigid hand','cuff_vertices':len(cuff),'changed_vertices':int(changed.sum()),'changed_bounds':[p[changed].min(0).tolist(),p[changed].max(0).tolist()],'max_displacement_m':float(np.linalg.norm(q-p,axis=1).max()),'negative_normal_dot':flip,'area_ratio_min_max':[float(min(rat)),float(max(rat))],'self_intersections_in_changed_region_before':len(before),'after':len(after),'new_pairs':len(after-before),'hand_translation_m':controls[0][1].tolist(),'note':'Torso lateral transition is influenced; center/other arm/lower garment unchanged. Coordinates are study controls, not measurements of original.'}
+json.dump(report,open(out+'chain-audit.json','w'),indent=2);np.savez(out+'chain-arrays.npz',before=p,after=q,weight=w)
+bpy.ops.wm.save_as_mainfile(filepath=out+'V84-whole-arm-chain-TRIAL.blend')
+s=bpy.context.scene;s.render.engine='CYCLES';s.cycles.samples=32;s.render.resolution_x=600;s.render.resolution_y=900;s.render.resolution_percentage=100;s.view_settings.view_transform='AgX';s.view_settings.exposure=0;s.view_settings.gamma=1
+# Existing lighting preserved identically across before/after.
+c=s.camera;c.data.type='ORTHO';c.data.ortho_scale=2.0;target=Vector((-.13,-.08,2.28))
+for version in ['V75','V84']:
+ key.value=int(version=='V84');hk.value=int(version=='V84')
+ for k in o.data.shape_keys.key_blocks:
+  if 'TESTE75' in k.name:k.value=int(version=='V75')
+ for view,offset in [('profile',(-8,0,0)),('front',(0,-8,0)),('threequarter',(-5,-8,0))]:
+  c.location=target+Vector(offset);c.rotation_euler=(target-c.location).to_track_quat('-Z','Y').to_euler();s.render.filepath=out+version+'-'+view+'.png';bpy.ops.render.render(write_still=True)
+print(report)

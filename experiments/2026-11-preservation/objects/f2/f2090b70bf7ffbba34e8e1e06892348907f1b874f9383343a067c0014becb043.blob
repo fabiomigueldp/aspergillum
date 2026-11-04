@@ -1,0 +1,112 @@
+{
+  "status": "geometry_alpha_complete_pbr_pending",
+  "engine_tested": false,
+  "published": false,
+  "source_parts": [
+    {
+      "part": 0,
+      "label": "band",
+      "source": "band_shell_v13/constrained_fit/retained-band.npz",
+      "source_sha256": "aa27567ac125b12a298c283b0e9c99130fe222bf2ce3bdf9f22edf2908f4404b",
+      "vertices": 2224,
+      "faces": 4444,
+      "covered_texels": 871177,
+      "min_triangle_height_blocks": 1.0665105618701585e-05,
+      "max_aspect_ratio": 736.7524755179377,
+      "normal_method": "neutral tangent placeholder (pending detail); original quadrant unchanged",
+      "near_degenerate_faces": []
+    },
+    {
+      "part": 1,
+      "label": "shell",
+      "source": "ear_rim_v11/structural_rebuild/retained-shell.npz",
+      "source_sha256": "c79f296415d566db5f9c109389375e0d3ae112fbccbbc89c8628200939fbf81f",
+      "vertices": 6334,
+      "faces": 12664,
+      "covered_texels": 2491441,
+      "min_triangle_height_blocks": 5.023518400011944e-06,
+      "max_aspect_ratio": 697.3132580279392,
+      "normal_method": "neutral tangent placeholder (pending detail); original quadrant unchanged",
+      "near_degenerate_faces": []
+    },
+    {
+      "part": 15,
+      "label": "anatomy",
+      "source": "body_interface_v9/constrained_fit/retained-anatomy.npz",
+      "source_sha256": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+      "vertices": 692,
+      "faces": 1376,
+      "covered_texels": 276834,
+      "min_triangle_height_blocks": 4.1787465696034106e-08,
+      "max_aspect_ratio": 69.80928729228238,
+      "normal_method": "neutral tangent placeholder (pending detail); original quadrant unchanged",
+      "near_degenerate_faces": [
+        424,
+        1131
+      ]
+    }
+  ],
+  "original_cubes": 7793,
+  "new_cubes": 23081,
+  "new_faces_transported": 18484,
+  "unchanged_bones": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    16,
+    17,
+    18,
+    19
+  ],
+  "unchanged_bone_hashes": {
+    "part_02": "f1b5fbf777cbb90d6526477a17081ea124c0b1fa51986f13658eb5da92c72346",
+    "part_03": "c9f817ef6ac925a3f2b013d94f5649ce5ad2b4f0178296609532b058e9d97b84",
+    "part_04": "fcd3ff18331f4e24e5b3ff1c637674848307572276560a4a697d33837e222bcf",
+    "part_05": "9f22b7d3ae950120b7dc97ab52a75850fd19d5bac5a801df748d750a318e99c3",
+    "part_06": "433508c936a6bf72f8c222964ffc4aacef6d4fd0094ef184c9423f2b6c5d5931",
+    "part_07": "b6df1df85b36f9e6cb57d0342ce73d8b4f88a66acaad13bee2d34be460ace2ed",
+    "part_08": "9238b2671cae77a692daba39702cafb5742b80d22aa14de4a4fa964ed2e75c2f",
+    "part_09": "61bec927da27e1e60fe0448f9c0d3a3b86f658fe5426971ffc26a87ef8153cc0",
+    "part_10": "d62405037029dfcadb9cdeda7e866eb8bbeab641abfc31eb4e80495ec006e687",
+    "part_11": "7c86d2ec95f26ed5fadc093edca2bcdf894943a129b04d872f6416a60046978d",
+    "part_12": "ae6f51f05f89734d5131180dd06e8195722b7b308ae3c43d6a97d955940d5114",
+    "part_13": "a11f5ecda143382f54e8ff72b0909e4544d2ff7cbb5f4d365a3f1a418c2ef4db",
+    "part_14": "9704155e1030a3c854b1daa43a867b122ed2d5334934ecc3b41cae5acd4eb7c6",
+    "part_16": "b013df9755306f9861bb20efbd9de661a5091dece977d7619a9c0f80641f50bf",
+    "part_17": "9b48b8be3485822c86ca17f86176511f2512ac44ba78908a41b3fdb3083c9a74",
+    "part_18": "69e3a820a8b2a383b2c648ce271287ae9adf6d516a1cc9634a3c75f8b4e8447c",
+    "part_19": "41d61ab4046e7817d2a7a7976f8aaa0379e435cc723646f8b1025f44fdb567b7"
+  },
+  "exact_legacy_rgba_region": true,
+  "exact_legacy_normal_region": true,
+  "max_float64_roundtrip_residual_blocks": 7.473417450352271e-15,
+  "atlas_available_tiles": 31212,
+  "atlas_used_tiles": 18484,
+  "gimbal_warnings": [],
+  "inputs_sha256": {
+    "pbr_normals_v2/resource_pack/models/entity/paz_v75_pbr_sculpture.geo.json": "160d00c5489e618bdb093eb48a388b17f606ca9970f00de88b164758fa1c46cf",
+    "pbr_normals_v2/resource_pack/textures/entity/paz_v75_pbr_sculpture.png": "9547dffd84fdc399535c97f88cf8694ade2af98e82de0ec71ec7117473eb7856",
+    "pbr_normals_v2/resource_pack/textures/entity/paz_v75_pbr_sculpture_normal_dx.png": "b09802ad642c4d3cbc88f0a7b734a9a3c45336f38fb09716bfd585627e2a1e17",
+    "pbr_normals_v2/evidence/repaired_meshes.npz": "27dd26d77077d1482993e33fd1d78d0eaa18929b724e3368988a298fd0ef5f65",
+    "band_shell_v13/constrained_fit/retained-band.npz": "aa27567ac125b12a298c283b0e9c99130fe222bf2ce3bdf9f22edf2908f4404b",
+    "ear_rim_v11/structural_rebuild/retained-shell.npz": "c79f296415d566db5f9c109389375e0d3ae112fbccbbc89c8628200939fbf81f",
+    "body_interface_v9/constrained_fit/retained-anatomy.npz": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db"
+  },
+  "outputs_sha256": {
+    "resource_pack/models/entity/paz_v75_v14_lab_sculpture.geo.json": "60ca91b76eb9f8d4a1cb2bf4f69f6e7e5c97d17abc63db26883cee9d3fead00b",
+    "resource_pack/textures/entity/paz_v75_v14_lab_sculpture.png": "4793c77398d1e0301ccd8dfaef53a83ded9befbbcbb88571a9d1479b2a972ac7",
+    "resource_pack/textures/entity/paz_v75_v14_lab_sculpture_normal_dx.png": "eb689b64bc5da5720e66c77d2273ac94fede1326584e0842d9510f49e64a882b",
+    "export_work/transport_faces.jsonl.gz": "f45aec19ca76193ea9177a4c5f50d9ceea11c2a9af659930094f7282be1d8562",
+    "export_work/transport_arrays.npz": "e6a476dd30895ee3e61e6bb91fc635a0c62caa425b8a33710851362b04999316"
+  }
+}

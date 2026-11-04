@@ -1,0 +1,24 @@
+--- 0.12.2/scripts/main.js
++++ 0.12.3/scripts/main.js
+@@ -509,7 +509,8 @@
+ async function chooseFinish(player, tiles, facing, isCurrent = () => true, onRelease = () => () => {
+ }) {
+   const tile = tiles[0], b = bounds(tiles);
+-  const initial = customizationFromFinish({ stone: tile.stone, cloth: tile.cloth, ornamental: tiles.some((t) => t.frontal > 0), facing, ...tile.design ? { design: tile.design } : {} });
++  const ornamentalOnOpen = tiles.some((t) => t.frontal > 0 && (!t.design || designById(t.design)?.structure === "classic"));
++  const initial = customizationFromFinish({ stone: tile.stone, cloth: tile.cloth, ornamental: ornamentalOnOpen, facing, ...tile.design ? { design: tile.design } : {} });
+   let draft = initial, selected, updating = false, alive = true;
+   const labels = (items, prefix) => items.map((id, value) => ({ label: tr(`${prefix}.${id}`), value }));
+   const fields2 = { model: MODELS, surface: SURFACES, textile: CLOTHS, color: LITURGICAL_COLORS, relief: FRONTALS, stone: [0, 1, 2], facing: [0, 1, 2, 3] };
+@@ -638,7 +639,10 @@
+     timer = system.runTimeout(() => sessions.release(active), 1200);
+     const selectedSlot = player.selectedSlotIndex;
+     const finish = await chooseFinish(player, before, face ?? before[0].facing, () => sessions.isCurrent(active, system.currentTick), (callback) => sessions.onRelease(active, callback));
+-    if (!finish) return;
++    if (!finish) {
++      if (system.currentTick >= active.expires) tell(player, "error.expired");
++      return;
++    }
+     const item = player.getComponent("minecraft:inventory")?.container?.getItem(selectedSlot);
+     if (!sessions.isCurrent(session, system.currentTick) || !allowed(player) || player.dimension.id !== dimension.id || player.selectedSlotIndex !== selectedSlot || item?.typeId !== TOOL || Math.hypot(player.location.x - position.x - 0.5, player.location.y - position.y, player.location.z - position.z - 0.5) > 8) throw Error("expired");
+     const now = collectSurface(position, (p) => port.read(p));

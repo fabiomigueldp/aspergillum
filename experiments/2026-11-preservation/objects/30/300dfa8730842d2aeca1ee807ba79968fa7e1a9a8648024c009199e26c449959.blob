@@ -1,0 +1,26 @@
+import bpy,math,json,numpy as np
+from mathutils import Vector,Matrix
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V63-opposite-ankle-trial.blend',use_scripts=False);o=bpy.data.objects['Maria — anatomia feminina adaptada CC0'];R=bpy.data.objects['Maria — auréola lisa'].rotation_euler.to_matrix()@Matrix.Rotation(-math.pi/2,3,'X');Ri=R.transposed();dg=bpy.context.evaluated_depsgraph_get();old=[v.co.copy() for v in o.evaluated_get(dg).data.vertices];new=[];weights=[];protected=[]
+def sm(t):t=max(0,min(1,t));return t*t*(3-2*t)
+for i,p in enumerate(old):
+ q=Ri@p;x=q.x+.44;z=q.z;y=q.y;ax=abs(x)
+ gate=sm((ax-.035)/.025)*(1-sm((ax-.12)/.035))*sm((z-3.125)/.025)*(1-sm((z-3.27)/.025))*(1-sm((y-.91)/.055))
+ mouthguard=sm((math.sqrt((x/.065)**2+((z-3.18)/.027)**2)-1)/.5);gate*=mouthguard
+ cheek=math.exp(-((ax-.082)/.040)**2-((z-3.235)/.048)**2);jaw=math.exp(-((ax-.080)/.034)**2-((z-3.155)/.030)**2)
+ d=Vector((math.copysign(.004*jaw*gate,x),-.008*cheek*gate,0));new.append(p+R@d);weights.append(d.length)
+ if ax<=.035 or z>=3.295 or z<=3.125 or (x/.065)**2+((z-3.18)/.027)**2<=1:protected.append(i)
+k=o.shape_key_add(name='TESTE72 — continuidade bochecha mandíbula');k.value=1
+for i,v in enumerate(k.data):v.co=o.data.vertices[i].co+new[i]-old[i]
+fs=[tuple(f.vertices) for f in o.data.polygons]
+def overlaps(p):
+ b=BVHTree.FromPolygons(p,fs);return set((a,c) for a,c in b.overlap(b) if a<c and not set(fs[a])&set(fs[c]))
+before=overlaps(old);after=overlaps(new)
+def av(p,f):return sum(((p[f[j]]-p[f[0]]).cross(p[f[j+1]]-p[f[0]])*.5 for j in range(1,len(f)-1)),Vector())
+rat=[];flips=0
+for f in fs:
+ if not any(weights[i]>1e-8 for i in f):continue
+ a,b=av(old,f),av(new,f)
+ if a.length>1e-12:rat.append(b.length/a.length);flips+=a.dot(b)<0
+report={'source':'V63 unchanged baseline, no nasal or veil experiments','scope':'Broad cheek hollow fill and slight mandibular side volume, head-aligned coordinates; mouth/central nose/eyes protected by compact support','changed_vertices':sum(w>1e-8 for w in weights),'max_delta_m':max(weights),'area_ratios':[min(rat),max(rat)],'flipped_faces':flips,'baseline_self_pairs':len(before),'new_self_pairs':len(after-before),'protected_region_max_delta_m':max((old[i]-new[i]).length for i in protected),'rollback':'TESTE72=0 restores V63'};json.dump(report,open(r+'V72-cheek-verification.json','w'),indent=2);assert not flips and not(after-before)
+bpy.ops.wm.save_as_mainfile(filepath=r+'V72-cheek-jaw-trial.blend');print(report)

@@ -1,0 +1,73 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> aspergillum-bedrock-addon@2.0.0 verify:quarantine-proposal
+> node --test tools/recovery-quarantine.node-test.mjs && node tools/recovery-quarantine-scenarios.mjs
+
+✔ draft preserves opaque registry bytes and declares the fingerprint algorithm; never converts raw contents (5.836317ms)
+✔ fingerprint is independent of property order but includes all declared content (0.841623ms)
+✔ fingerprint refuses rather than silently normalizing {"schemaVersion":1} (0.318369ms)
+✔ fingerprint refuses rather than silently normalizing {"extra":"opaque"} (0.189012ms)
+✔ fingerprint refuses rather than silently normalizing {"charges":99} (0.170701ms)
+✔ fingerprint refuses rather than silently normalizing {"customProperties":{"aspergillum:instance_id":"B"}} (0.147207ms)
+✔ fingerprint refuses rather than silently normalizing {"customProperties":{"vector":{"kind":"vector3","x":1,"y":2,"z":3,"extra":true}}} (0.160709ms)
+✔ full UTF-8 and escaped envelope budget is checked before creating a draft (4.705362ms)
+✔ phase prepared never authorizes retry, delivery, cleanup or release (1.901164ms)
+✔ phase effects-may-have-occurred never authorizes retry, delivery, cleanup or release (1.232886ms)
+✔ phase completed never authorizes retry, delivery, cleanup or release (0.927749ms)
+✔ no observation is indistinguishable from delivery collected outside coverage (1.059647ms)
+✔ observations yield only provisional pattern registry-only-observations (1.217939ms)
+✔ observations yield only provisional pattern one-observed-item-location (0.927099ms)
+✔ observations yield only provisional pattern registry-and-item-observations (0.922261ms)
+✔ observations yield only provisional pattern multiple-observed-item-locations (1.483477ms)
+✔ observations yield only provisional pattern multiple-registry-observations (1.504147ms)
+✔ same location reported twice is not counted as two independent occurrences (1.877076ms)
+✔ different contents reported in one location block classification even with a favorable match (1.181666ms)
+✔ reusing an observation ID is refused even if location changes (0.823885ms)
+✔ same item ID with divergent contents cannot be rescued by a second favorable record (2.457473ms)
+✔ equal contents with a different instance ID do not count as receipt (0.688694ms)
+✔ stale or mixed evidence is not matched: {"capturedAt":99} (0.906484ms)
+✔ stale or mixed evidence is not matched: {"capturedAt":140} (0.461938ms)
+✔ stale or mixed evidence is not matched: {"capturedAt":201} (0.471824ms)
+✔ stale or mixed evidence is not matched: {"worldId":"other-world"} (0.443307ms)
+✔ stale or mixed evidence is not matched: {"contract":"old-pack"} (1.013805ms)
+✔ stale or mixed evidence is not matched: {"epoch":"old-inspection"} (1.939187ms)
+✔ absent generation stays unknown; matching claimed generation never creates native binding (2.937084ms)
+✔ new occupation with different generation is not assigned to the old operation (1.8978ms)
+✔ unsupported journal body is preserved without interpretation: b => { b.schemaVersion = 99; } (1.466632ms)
+✔ unsupported journal body is preserved without interpretation: b => { b.phase = 'future'; } (1.232672ms)
+✔ unsupported journal body is preserved without interpretation: b => { b.extra = 'preserve'; } (3.454507ms)
+✔ unsupported journal body is preserved without interpretation: b => { b.snapshotFingerprint = 'wrong'; } (2.890789ms)
+✔ unsupported journal body is preserved without interpretation: b => { b.fingerprintAlgorithm = 'unknown'; } (2.472151ms)
+✔ corrupt, noncanonical, duplicate-key and malformed journal bytes are retained exactly (1.565717ms)
+✔ another retained operation/version prevents automatic reconciliation: {"operationId":"operation-0001","address":{"dimension":"overworld","x":8,"y":64,"z":-2}} (1.235599ms)
+✔ another retained operation/version prevents automatic reconciliation: {"operationId":"operation-0002"} (1.083036ms)
+✔ another retained operation/version prevents automatic reconciliation: {"operationId":"operation-0003","phase":"completed"} (0.781152ms)
+✔ corrupt/future related journal cannot be silently skipped (1.951787ms)
+✔ duplicate exports of the identical journal do not create another operation (1.403661ms)
+✔ downgrade/context mismatch is blocked before associating evidence (1.422284ms)
+✔ review choices bind the full proposal and remain non-executing (1.646376ms)
+✔ stale or modified proposals, unacknowledged risk and ambiguous selection are refused (2.345485ms)
+✔ repeated reports and repeated human proposals have no accumulating effects or cleanup (6.09036ms)
+✔ raw input ambiguity is refused and retained rather than parsed lossily (2.267051ms)
+✔ unknown input schema/fields and null are rejected without effects (1.279484ms)
+✔ tool remains offline: no Minecraft dependency or mutation API (0.84235ms)
+✔ dock/undock/break observations never become a causal delivery claim (1.721907ms)
+✔ instructions inside raw evidence remain inert data (0.523589ms)
+✔ assisted restoration is not proposed when physical items or multiple sources are already observed (1.91028ms)
+✔ canonical input reports retain every raw related journal and conflicting observation (0.958771ms)
+✔ assisted restoration can only be recorded as a non-executing request with acknowledged ambiguity (1.385914ms)
+✔ cloned marker data never proves a unique delivery receipt (2.345554ms)
+ℹ tests 54
+ℹ suites 0
+ℹ pass 54
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 313.036087
+{
+  "output": "/workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103/out/state-compaction/quarantine-proposal",
+  "cases": 12,
+  "cliReadOnlySmoke": "passed",
+  "allQuarantinesRetained": true
+}

@@ -1,0 +1,76 @@
+{
+  "status": "feasibility only; no geometry candidate",
+  "inputs_sha256": {
+    "shell_band_v3/evidence/band-source.npz": "17c8af8120aca2b0e9336ab8e1866cbbc9c82915b0996d6bed3b25ceb0b7efb8",
+    "shell_band_v3/evidence/band-source-parameters.npz": "0a22c357678b8370f4c338d42cf3059133480ae19bc9e5d784102404bb6c2128",
+    "shell_band_v3/evidence/band-source-wall-classes.npz": "5523f8d38a4a5d001b527812ee84238d8cfbfe8c6897f68c2c3042d39d3b8841",
+    "band_ear_v12/structural_rebuild/retained-band.npz": "1c293d8c5b35cca07cfc0e73d2b2e360cbbc3bea27688bb6e6373537ecf54c76",
+    "ear_rim_v11/structural_rebuild/retained-shell.npz": "c79f296415d566db5f9c109389375e0d3ae112fbccbbc89c8628200939fbf81f",
+    "body_interface_v9/constrained_fit/retained-anatomy.npz": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db"
+  },
+  "evaluated_band_source_triangles": 192512,
+  "method": "Source UV grid cells (0.25 spacing), exact source triangle barycentric evaluation. Original V12 walls only; no projection assumed for returns or new termination caps.",
+  "centroid_by_side": {
+    "0": {
+      "count": 453,
+      "delta_norm_quantiles_mm": [
+        0.011677079566212977,
+        0.5206137505806225,
+        1.0314939801441632,
+        3.1224451700689184,
+        4.123718298154543
+      ],
+      "signed_own_normal_quantiles_mm": [
+        -2.8124013213316013,
+        0.13901784973593728,
+        0.7191822863712017,
+        1.0765713948616698,
+        1.2053841929427267
+      ]
+    },
+    "1": {
+      "count": 453,
+      "delta_norm_quantiles_mm": [
+        0.009270615244053171,
+        0.5125285885674495,
+        1.0296107188351795,
+        3.098432604314591,
+        4.119427807219466
+      ],
+      "signed_own_normal_quantiles_mm": [
+        -1.134749347155901,
+        -0.09352816318529122,
+        0.3035178856818978,
+        1.5508327873430048,
+        2.7761142832602523
+      ]
+    }
+  },
+  "witness_by_side": {
+    "0": {
+      "count": 477,
+      "delta_norm_quantiles_mm": [
+        0.015676013319752602,
+        0.5730279689025666,
+        1.5242697778149166,
+        2.2815401865478857,
+        3.0072691723443308
+      ]
+    },
+    "1": {
+      "count": 839,
+      "delta_norm_quantiles_mm": [
+        0.017545535519402227,
+        0.5467679017151187,
+        1.0261002576702973,
+        2.4669531719073525,
+        2.656583933098011
+      ]
+    }
+  },
+  "limitations": [
+    "Delta from source is not proof of defect, clearance, thickness or artistic intent.",
+    "Source curve restoration may alter original reduced edges unless those edges are explicitly constrained.",
+    "Geometry remains unchanged pending independent visibility/source diagnosis."
+  ]
+}

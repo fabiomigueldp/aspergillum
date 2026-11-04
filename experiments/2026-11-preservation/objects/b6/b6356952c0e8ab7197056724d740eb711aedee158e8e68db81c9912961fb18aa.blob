@@ -1,0 +1,80 @@
+# V75 • V5 • redução de custo da calota e faixa
+
+**Candidata técnica isolada. Não é addon, release ou captura de Minecraft.**
+
+A comparação entre seis orçamentos encontrou uma redução conservadora: **7.548 faces/cubos**, contra **8.132 na V4** (−7,18%). A calota passou de 6.220 para 5.636 faces (−9,39%); a faixa dupla continua com 1.912 faces e é byte-idêntica em malha, cubos JSON e tiles de cor/normal. A revisão visual independente não identificou regressão relevante nas três vistas JSON e nos três controles geométricos nativos. O pequeno risco escuro superior do perfil V4 não aparece na V5. Persistem defeitos anteriores junto à orelha e linha posterior. Não se atribui a melhoria a uma causa específica sem isolamento adicional.
+
+**Decisão:** conservar V5 como alternativa técnica de custo, sem substituir V4 nem promover a arte para versão final. Há duas regressões locais pequenas no proxy geométrico de contato, além de uma classificação sensível à precisão numérica. A redução de faces não demonstra ganho de FPS, estabilidade ou compatibilidade no jogo.
+
+## Método e controles
+
+- Remoção somente de amostras já existentes na V4, sem mover vértices. Coordenadas e normais continuam exatamente da escultura V75 avaliada.
+- Erro de interpolação de ambas as paredes, com penalidade para contato previsto com a cabeça, orienta remoções locais não adjacentes.
+- Triangulação Delaunay no domínio paramétrico da fonte, recuperando arestas protegidas. Preservados todos os pontos e faces da região de parâmetro row ≥ 40, os 112 pontos/arestas de contorno e extremos de silhueta em direções amostradas. Isso não é prova de silhueta para todas as direções.
+- O primeiro candidato de 5.600 faces passou os agregados, mas criou 32 eventos locais de contato no conjunto de ajuste. Foram restaurados nove pontos da V4 e as faces/arestas correspondentes. O resultado de 5.636 faces removeu os 32 eventos nesse conjunto.
+- Um holdout independente, semente 20261104, foi gerado posteriormente e não foi usado para nova adaptação.
+- Normalmap usa o MESMO baker limitado por parede da V4, sem mudança de algoritmo, luz pintada ou emissão. A malha reduzida requer novo bake, mas isso não é nova técnica de normais.
+- Mesmos tiles: 14 px na coroa e 32 px na faixa/borda. Atlas permanece 2048×2048, cor+normal RGBA continuam 32 MiB sem mips. Não há redução de memória de textura. Nas faces maiores que resultam da simplificação, igual tamanho de tile não significa igual densidade espacial; o efeito visual foi examinado, não presumido.
+
+## Comparação dos seis orçamentos
+
+Os valores abaixo usam os mesmos 20.000 pontos por área da V4 e o proxy local do plano da face mais próxima da cabeça. “Contato” exige fonte fora e candidato abaixo de −0,0001 unidade. Unidades Blender, interpretadas como metros pelo projeto.
+
+| Calota | Total com faixa | Economia total | p95 de distância | Contato | Decisão quantitativa |
+|---:|---:|---:|---:|---:|---|
+| V4 6.220 | 8.132 | 0% | 0,000464094 | 6,380% | Referência |
+| 6.000 | 7.912 | 2,71% | 0,000464480 | 6,420% | Rejeitar: p95 e contato piores |
+| 5.600 | 7.512 | 7,62% | 0,000463132 | 6,360% | Agregados passam, restaurar regressões locais |
+| 5.200 | 7.112 | 12,54% | 0,000465633 | 6,450% | Rejeitar: p95 e contato piores |
+| 4.800 | 6.712 | 17,46% | 0,000477149 | 7,320% | Rejeitar |
+| 4.400 | 6.312 | 22,38% | 0,000497258 | 8,900% | Rejeitar |
+| 4.000 | 5.912 | 27,30% | 0,000555966 | 12,300% | Rejeitar |
+
+Esses orçamentos são escolhas de pesquisa, não limites oficiais do Bedrock. Todos passaram os mesmos testes topológicos/cruzamento; isso não bastou para aprovação de qualidade.
+
+## Holdout: candidata restaurada de 5.636 faces
+
+20.000 novos pontos, por área, semente 20261104:
+
+| Métrica | V4 | V5 restaurada |
+|---|---:|---:|
+| p95 da distância à fonte | 0,000462955434 | 0,000461404258 |
+| p99 | 0,000911945179 | 0,000911945179 |
+| Contato abaixo de −0,0001 | 1.313/20.000 (6,565%) | 1.287/20.000 (6,435%) |
+| Pior profundidade proxy | 0,000778186962 | 0,000778186962 |
+
+Foram 29 amostras recuperadas e 3 que cruzaram o limiar no sentido negativo. Não são três novos atravessamentos certificados: todas já tinham sinal negativo na V4, acima do limiar escolhido.
+
+- Amostra 319: −0,099884 → −0,100149 mm, no mesmo triângulo fonte com ordem cíclica diferente. Classificação sensível à precisão BVH; sem alteração geométrica dessa face.
+- Amostra 804: −0,092623 → −0,123262 mm. Regressão local mensurável no proxy.
+- Amostra 17457: −0,099982 → −0,111947 mm. Mesmo remendo alterado da 804.
+
+As duas regressões mensuráveis não são escondidas pelo agregado melhor. O holdout foi preservado sem ajustar esses pontos. A candidata não é perda-zero. Consulte evidence/holdout-local-limitations.json.
+
+## Validação
+
+- Coordenadas/normais exatas, pareamento de paredes, região protegida e contorno preservados.
+- Gate independente: malha fechada, orientada, sem bordas indevidas, sem links de vértice inválidos, sem triângulos degenerados e zero cruzamentos estritos detectados. Esse gate não certifica tangência, coplanaridade geral ou clearance contra a cabeça/faixa/manto.
+- JSON somente cubos, cada qual com uma face south e profundidade zero; alfa binário; UVs no atlas; valores finitos; nenhum poly_mesh.
+- Erro máximo de ida e volta da serialização: 2,021×10⁻⁷ unidades de modelo, ou 1,263×10⁻⁸ bloco. Isso confirma transformação matemática, não shader ou funcionamento no Minecraft.
+- Fonte V75, primeiro addon LAB, V2 LAB e assets V4 preservados por SHA-256. Nenhuma publicação ou substituição.
+- evidence/review-visual-independent.md registra a revisão separada; retained_candidate/evidence/ contém PNGs e metadados dos renders.
+
+## Escopo visual e limitações
+
+As imagens são Blender 4.3.2 Cycles, 48 amostras, 900×900, luz/câmera idênticas, reimportando JSON e PNG com faces de um lado e cutout. Cabeça e halo são a mesma referência highpoly, não arte convertida. O manto inferior e sua junção não foram integrados. O arquivo de geometria exporta só calota+faixa.
+
+Ainda não houve teste em Bedrock: shaders, suporte à combinação de faces planas/cutout, tangentes, convenção DirectX, mipmaps, distância, desempenho e Vibrant Visuals continuam pendentes. A textura PBR aponta para o normalmap per-wall. O normalmap simplificado sem per-wall é somente diagnóstico e não é referenciado pelo texture_set. Não é arte aprovada nem substituição dos protótipos anteriores.
+
+## Arquivos principais
+
+- retained_candidate/resource_pack/models/entity/paired_cap_band.geo.json
+- retained_candidate/resource_pack/textures/entity/paired_cap_band.png
+- retained_candidate/resource_pack/textures/entity/paired_cap_band_normal_per_wall_dx.png
+- retained_candidate/resource_pack/textures/entity/paired_cap_band.texture_set.json
+- evidence/review-six-budgets.json, review-ranking.json, review-holdout-results.json
+- evidence/preservation-and-cost.json, holdout-local-limitations.json
+- retained_candidate/evidence/asset-validation.json
+- tools/: redução, restauração, avaliação e verificações reproduzíveis
+
+Scripts usam as fontes/arrays preservados dos diretórios irmãos shell_band_v3 e shell_band_v4. O ZIP de pesquisa contém esta etapa e comparações, mas não duplica o Blender V75 e todos os dados highpoly. Não é pacote autossuficiente para importação no Minecraft.

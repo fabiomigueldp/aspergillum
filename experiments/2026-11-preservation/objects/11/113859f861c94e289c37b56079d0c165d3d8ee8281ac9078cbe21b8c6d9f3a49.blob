@@ -1,0 +1,30 @@
+{
+  "name": "altare-bedrock-addon",
+  "version": "0.12.2",
+  "private": true,
+  "type": "module",
+  "description": "Altares modulares para o Criativo. Cruzeta em nogueira e dimensões do editor atualizadas ao trocar a frente. Diagnóstico 0.12.2.",
+  "engines": {
+    "node": ">=24"
+  },
+  "addonManager": {
+    "schemaVersion": 1,
+    "id": "altare",
+    "displayName": "Altare",
+    "artifactPrefix": "Altare",
+    "sharedDirectory": "pack.altare",
+    "worldDirectory": "altare.managed",
+    "publicIdentity": {
+      "behaviorUuid": "c139b210-8db8-4385-8541-4ee47a381796",
+      "resourceUuid": "41384022-51a6-4f55-a4c6-88d06544f212"
+    }
+  },
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test tests/*.node.ts",
+    "check": "npm run typecheck && npm test && npm run build && node tools/validate.mjs",
+    "package": "npm run check && node tools/package.mjs",
+    "capture": "node tools/capture.mjs"
+  }
+}

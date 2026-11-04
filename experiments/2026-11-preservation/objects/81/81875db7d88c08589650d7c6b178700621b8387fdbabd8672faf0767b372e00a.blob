@@ -1,0 +1,33 @@
+# Reconciliação final, 3 de novembro de 2026
+
+## Resultado
+
+O patch aplica sem conflito ao estado remoto verificado e é compatível com as mudanças locais atuais do altar. Não houve commit, push, publicação nem integração no workspace ativo. A autorização disponível limita esta etapa à reconciliação e validação em cópia local.
+
+## Remoto
+
+- `main` do GitHub foi consultada pelo conector às 14:36 UTC e permanece em `3eaf97b172a38dac794461b156b70864737875d6`.
+- URL: https://github.com/fabiomigueldp/aspergillum/commit/3eaf97b172a38dac794461b156b70864737875d6
+- O HEAD local do workspace Altare é o mesmo commit.
+- O módulo geométrico remoto foi lido separadamente; seu Git blob `0c1512f77cdeb5436dc78b1870e2064708425ba0` coincide com o arquivo ativo não modificado.
+
+## Preservação local
+
+- Foram comparados 1.533 caminhos rastreados e os sete arquivos locais não rastreados do trabalho Altare.
+- Os arquivos e o status Git do workspace ativo permaneceram inalterados.
+- A cópia de testes continha deriva de áudio/relatórios gerados pelo `npm run check` anterior. Esses resultados foram restaurados **somente na cópia isolada** a partir dos originais, para não contaminar a aplicação do patch.
+- Depois da reconciliação, o único arquivo rastreado diferente entre a cópia e o workspace ativo é `viewer-3d/src/shared/bedrock-geometry.js`.
+- As duas únicas adições do patch são `viewer-3d/tests/bedrock-south-reference.node.mjs` e `viewer-3d/tests/fixtures/blockbench-south.json`.
+- `git apply --check` passou no workspace ativo, sem escrevê-lo. A aplicação efetiva ocorreu apenas numa segunda cópia de prova, e os três resultados são byte-idênticos à candidata revisada.
+
+## Validação após reconciliação
+
+- TypeScript: passou.
+- Domínio: 107 testes em 25 arquivos passaram.
+- Viewer: 95 testes passaram, sem falhas ou skips.
+- O check agregado e o build do viewer já tinham passado na candidata antes da revisão visual. A reconciliação não alterou o módulo do patch nem as fontes do altar; somente retirou deriva de arquivos gerados da cópia isolada.
+- A revisão visual offline e independente continua válida. Não foi repetido Chromium.
+
+Provas: `remote-head-verification.json`, `reconciliation-final.json`, `reconciliation-tests.log` e `visual/REVIEW.md`.
+
+SHA-256 do patch, inalterado: `189a3f842b8b456f82234831c1880da113a0faea43c0dc6f62a4fc9119cb3623`.

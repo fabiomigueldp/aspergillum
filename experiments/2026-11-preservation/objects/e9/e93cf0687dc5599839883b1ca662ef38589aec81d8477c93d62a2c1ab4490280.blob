@@ -1,0 +1,13 @@
+# Fechamento de interfaces no snapshot preservado
+
+Esta cópia preserva o diagnóstico Aspergillum 2.0.0 / Altare 0.13.0. Não é release ou atualização de saves.
+
+Em 04/11/2026 foram portados apenas os ajustes de fechamento recuperável e a atribuição de acabamento após fechar com sucesso. O menu Altare conserva `editorSeed(tiles)` e seu catálogo de dois pedestais. Os quatro novos testes cobrem erro antes/depois de ocultar, nova tentativa, Cancelar e sessão inválida.
+
+A Mesa do Sacristão recebeu limpeza de inscrições e recusa de callbacks atrasados, sem repetir retirada já concluída. A lógica de transação e os schemas do snapshot original foram preservados.
+
+Verificação da fonte restaurada: typechecks raiz/Altare, 16 testes da Mesa e 22 do menu Altare. Isso não é um novo check agregado do diagnóstico nem validação Minecraft. Permanecem os gates NO-GO de migração, persistência e distribuição descritos nos documentos existentes.
+
+O orçamento 69.584 em documentos anteriores refere-se à composição com Aspergillum legado; a revisão compacta posterior registra 64.848. Ambos são preservados como etapas históricas, sem reescrever a evidência anterior.
+
+`dist/README.md`, ausente da cópia de trabalho, foi recuperado da main-base como documentação, não como artefato de release.

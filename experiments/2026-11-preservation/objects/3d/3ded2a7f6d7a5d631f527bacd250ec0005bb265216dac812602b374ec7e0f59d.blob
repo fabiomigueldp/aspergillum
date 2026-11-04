@@ -1,0 +1,11 @@
+# V73 — escultura GUI de planos, não promovida
+
+Base V63 preservada. Foi preparada cópia com mistura anterior em chave separada TESTE73, e usados pincéis nativos Flatten/Contrast (70 px, 0,18 e 0,60) e Clay (70 px, 0,20) pela GUI da nuvem, com reference-9 ao lado. Não foi aplicado campo gaussiano.
+
+A resposta foi pequena: 2.155 vértices alterados, máximo 0,304 mm; áreas 0,99596–1,00489; zero flips e zero novos pares de auto-interseção (um par degenerado anterior continua). Outros objetos idênticos por hash.
+
+**Rejeitar:** comparação oblíqua não apresenta ganho convincente de continuidade bochecha–mandíbula. Além disso, o controle interativo não ficou perfeitamente localizado: 262 vértices acima de Z3,42 m ultrapassam 10 µm, máximo 0,198 mm. Possível traço residual ao fechar/ativar pincel, não comprovado; não atribuir estes deslocamentos à intenção artística.
+
+Limite observado: os comandos GUI executam traços reais, mas a resposta curta e a ativação/popup assíncrona não forneceram precisão suficiente para uma alteração anatômica convincente e restrita. Não aumentar intensidade cegamente, nem tratar métricas válidas como fidelidade.
+
+Comparações V73-whole-face-* usam mesma câmera, resolução, luz e amostras de V63-whole-face-*; não são calibração fotogramétrica. Manter V63. V73 é estudo descartado local, não publicação nem novo checkpoint aprovado.

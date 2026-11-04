@@ -1,0 +1,31 @@
+{
+  "candidate": "Restored cap5636, band1912 unchanged",
+  "faces_before": 8132,
+  "faces_after": 7548,
+  "reduction_percent": 7.18150516478111,
+  "normal_bake_method_changed": false,
+  "crown_tile_pixels_before_after": [
+    14,
+    14
+  ],
+  "protected_band_and_border_tile_pixels_before_after": [
+    32,
+    32
+  ],
+  "atlas_before_after": [
+    [
+      2048,
+      2048
+    ],
+    [
+      2048,
+      2048
+    ]
+  ],
+  "known_limit": "Three newly negative holdout probes remain,29 recover. Aggregate metrics and collision screen passed; visual review pending.",
+  "status": "Retain as isolated cost research alternative; V4 not replaced; not lossless or release-approved",
+  "visual_review": "No relevant regression identified in 3 JSON and 3 native fixed views; small upper lateral profile scratch from V4 no longer visible",
+  "holdout_limit": "2 small measurable local contact-plane proxy regressions, 1 numerically sensitive threshold event; all 3 already negative in V4 above selected -0.0001 threshold",
+  "runtime_tested": false,
+  "publication_approved": false
+}

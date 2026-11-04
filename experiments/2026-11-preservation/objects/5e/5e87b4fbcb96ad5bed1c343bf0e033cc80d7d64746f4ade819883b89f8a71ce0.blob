@@ -1,0 +1,9 @@
+import bpy,json,math
+from mathutils import Vector
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False);s=bpy.context.scene;dg=bpy.context.evaluated_depsgraph_get();bounds={}
+for n in ['Maria — anatomia feminina adaptada CC0','TESTE 34 — conexão de superfícies avaliadas','Maria — túnica e mangas integradas','Maria — auréola lisa']:
+ o=bpy.data.objects[n];m=o.evaluated_get(dg).to_mesh();p=[o.matrix_world@v.co for v in m.vertices];bounds[n]=[[min(v[i] for v in p),max(v[i] for v in p)] for i in range(3)];o.evaluated_get(dg).to_mesh_clear()
+s.cycles.samples=48;s.render.resolution_x=560;s.render.resolution_y=763;s.render.resolution_percentage=100;c=s.camera;c.data.type='ORTHO';records=[]
+for view,az,el in [('profile-0deg',0,0),('profile-7deg',7,3)]:
+ target=Vector((0,-.045,2.20));v=Vector((-8*math.cos(math.radians(az)),-8*math.sin(math.radians(az)),8*math.tan(math.radians(el))));c.location=target+v;c.rotation_euler=(-v).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=3.7;records.append({'view':view,'azimuth_from_left_deg':az,'elevation_deg':el,'target':list(target),'location':list(c.location),'ortho_height':3.7});s.render.filepath=r+'V75-global-'+view+'.png';bpy.ops.render.render(write_still=True)
+json.dump({'bounds':bounds,'cameras':records,'resolution':[560,763],'note':'Diagnostic camera bracket, not measured photographic calibration; no geometry changed or blend saved.'},open(r+'global-head-shoulder-settings.json','w'),indent=2)

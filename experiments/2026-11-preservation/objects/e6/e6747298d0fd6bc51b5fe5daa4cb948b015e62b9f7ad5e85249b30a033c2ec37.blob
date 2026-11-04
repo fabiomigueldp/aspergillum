@@ -1,0 +1,5 @@
+from audit_primary_rays import *
+g=np.load(O/'primary-ray-grid.npz');r=json.load(open(O/'primary-ray-report.json'));scenes={t:scene(t)for t in ['quads','clipped','native']};results={t:{k:g[f'{t}_{k}']for k in ['hit','distance','bary']}for t in scenes};p=g['pixels'];diff=g['clip_minus_quad_mean_rgb'];roi=(p[:,0]>=490)&(p[:,0]<=570)&(p[:,1]>=440)&(p[:,1]<=480);rois={'central_strip':np.ones(len(p),bool),'actual_scar_window':roi,'scar_dark_10':roi&(diff>=10),'nearby_clean_abs3':roi&(np.abs(diff)<=3)}
+for name,sel in rois.items():r['comparisons'][name]={'quads_vs_clip':compare(scenes['quads'],results['quads'],scenes['clipped'],results['clipped'],sel),'quads_vs_native':compare(scenes['quads'],results['quads'],scenes['native'],results['native'],sel)}
+r['normal_qualification']='MeshPolygon normal, interpolated saved corner normal and actual geometric loop-triangle normal are separately recorded; none is assumed to be the final Cycles shading normal.'
+(O/'primary-ray-report.json').write_text(json.dumps(r,indent=2));print(json.dumps(r['comparisons']['scar_dark_10'],indent=2))

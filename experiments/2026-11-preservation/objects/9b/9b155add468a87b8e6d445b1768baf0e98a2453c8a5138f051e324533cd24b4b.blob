@@ -1,0 +1,68 @@
+import {describe,it,expect,afterEach,vi} from 'vitest';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {auditSnapshot,parseSnapshotJson,jsonBytes,sha256} from '../tools/lib/block-snapshot-audit.mjs';
+import {runSnapshotCli} from '../tools/block-snapshot.mjs';
+import {convertFile,verifyBundle,exportRollback,readRegular,writeNewFile} from '../tools/lib/block-snapshot-bundle.mjs';
+const roots=[];
+function temp(){const d=fs.mkdtempSync(path.join(os.tmpdir(),'asper-snapshot-'));roots.push(d);return d;}
+afterEach(()=>{vi.restoreAllMocks();for(const d of roots.splice(0))fs.rmSync(d,{recursive:true,force:true});});
+const fixture=()=>({format:'aspergillum-block-snapshot',schemaVersion:1,stateSchema:'aspergillum-1.2.5',source:{addonVersion:'1.2.5',exportedAt:'2026-11-03T00:00:00.000Z',coverage:'selected-cells',registryCoverage:'selected-properties'},cells:[{dimension:'minecraft:overworld',position:{x:0,y:64,z:0},id:'aspergillum:aspersorium',states:{'aspergillum:water_base':9,'aspergillum:water_offset':7,'aspergillum:has_aspergillum':true,'aspergillum:cosmetic':15,'aspergillum:rotation':13}}],registry:[{propertyId:'aspergillum:docked_minecraft_overworld_p0_p0',rawValue:'{"schemaVersion":1,"entries":{"0,64,0":{"schemaVersion":999,"future":"preserve"}}}'}]});
+function bundle(doc=fixture()){const dir=temp(),input=path.join(dir,'input.json'),out=path.join(dir,'bundle');const raw=Buffer.from(' \n'+JSON.stringify(doc,null,1)+'\n\t');fs.writeFileSync(input,raw);const result=convertFile(input,out,{allowNormalization:true});return {dir,input,out,raw,result};}
+describe('offline compact snapshot safety',()=>{
+ it('converts exact semantics with unchanged source, rotation and raw registry',()=>{const {input,out,raw,result}=bundle();expect(result.created).toBe(true);expect(fs.readFileSync(input)).toEqual(raw);const c=JSON.parse(fs.readFileSync(path.join(out,'converted.json'),'utf8'));expect(c.cells[0].states).toEqual({'aspergillum:contents_a':0,'aspergillum:contents_b':0,'aspergillum:contents_c':6,'aspergillum:contents_d':6,'aspergillum:rotation':13});expect(c.registry).toEqual(fixture().registry);expect(verifyBundle(out,{expectedManifestSha256:result.manifestSha256,expectedSourceSha256:sha256(raw)}).verified).toBe(true);});
+ it('exports inverse rollback byte-identically to new files only',()=>{const {dir,out,raw}=bundle();const rollback=path.join(dir,'rollback.json');exportRollback(out,rollback);expect(fs.readFileSync(rollback)).toEqual(raw);expect(()=>exportRollback(out,rollback)).toThrow();expect(()=>exportRollback(out,path.join(out,'restored.json'))).toThrow();});
+ it('requires explicit normalization and audits both aliases',()=>{const d=fixture();d.cells[0].states['aspergillum:water_offset']=8;d.cells[0].states['aspergillum:has_aspergillum']=false;const a=auditSnapshot(d);expect(a.report.eligible).toBe(false);expect(a.report.normalizationCount).toBe(2);expect(a.converted).toBeNull();expect(auditSnapshot(d,{allowNormalization:true}).report.eligible).toBe(true);});
+ it('converts tables without water states',()=>{const d=fixture();d.cells[0].id='aspergillum:sacristan_table';d.cells[0].states={'aspergillum:table_has_aspergillum':true,'aspergillum:table_cosmetic':15,'aspergillum:table_rotation':9};expect(auditSnapshot(d).converted.cells[0].states).toEqual({'aspergillum:table_contents_a':0,'aspergillum:table_contents_b':8,'aspergillum:table_rotation':9});});
+ it.each(['9007199254740993','9007199254740992','1.00000000000000001','1e0','-0','1e999'])('rejects numeric token %s before rounding',token=>{expect(()=>parseSnapshotJson(Buffer.from('{"value":'+token+'}'))).toThrow(/canonical/);});
+ it('rejects duplicate keys, malformed UTF-8 and deep input',()=>{expect(()=>parseSnapshotJson(Buffer.from('{"a":0,"a":1}'))).toThrow(/Repeated/);expect(()=>parseSnapshotJson(Buffer.from([0xff]))).toThrow(/UTF/);expect(()=>parseSnapshotJson(Buffer.from('['.repeat(18)+'0'+']'.repeat(18)))).toThrow(/depth/);});
+ it('rejects duplicate positions and incompatible/mixed schemas atomically',()=>{const d=fixture();d.cells.push(structuredClone(d.cells[0]));expect(auditSnapshot(d).report.eligible).toBe(false);d.cells.pop();d.cells[0].states['aspergillum:contents_a']=0;expect(auditSnapshot(d).converted).toBeNull();d.stateSchema='future';expect(()=>auditSnapshot(d)).toThrow(/schema/);});
+ it.each([true,1.5,9007199254740992,-2147483649])('rejects invalid position %s',x=>{const d=fixture();d.cells[0].position.x=x;expect(auditSnapshot(d).report.eligible).toBe(false);});
+ it.each(['{"schemaVersion":99,"entries":{},"future":9007199254740993}','{malformed','{"schemaVersion":1,"entries":{},"fraction":1.5}'])('preserves opaque registry verbatim: %s',rawValue=>{const d=fixture();d.registry[0].rawValue=rawValue;const {out}=bundle(d);expect(JSON.parse(fs.readFileSync(path.join(out,'converted.json'),'utf8')).registry[0].rawValue).toBe(rawValue);expect(auditSnapshot(d).report.registryWarnings.some(w=>w.code==='registry-presence-unknown')).toBe(true);});
+ it('reports mismatches without deleting or synthesizing snapshots',()=>{const d=fixture();d.registry[0].rawValue=null;expect(auditSnapshot(d).report.registryWarnings[0].code).toBe('occupied-without-snapshot');d.cells[0].states['aspergillum:has_aspergillum']=false;d.cells[0].states['aspergillum:cosmetic']=0;d.registry=fixture().registry;const a=auditSnapshot(d);expect(a.report.registryWarnings[0].code).toBe('empty-with-snapshot');expect(a.converted.registry).toEqual(d.registry);});
+ it('rejects duplicate raw registry properties',()=>{const d=fixture();d.registry.push(d.registry[0]);expect(()=>auditSnapshot(d)).toThrow(/Repeated registry/);});
+ it('rejects source and output symlinks, including linked ancestors',()=>{const {dir,input}=bundle();const link=path.join(dir,'link');fs.symlinkSync(input,link);expect(()=>readRegular(link)).toThrow();const linked=path.join(dir,'linked');fs.symlinkSync(dir,linked,'dir');expect(()=>readRegular(path.join(linked,'input.json'))).toThrow();expect(()=>convertFile(input,path.join(linked,'new'))).toThrow();expect(()=>writeNewFile(link,Buffer.from('no'))).toThrow();});
+ it('rejects bundle symlinks and never overwrites existing directories',()=>{const {dir,input,out}=bundle();expect(()=>convertFile(input,out)).toThrow();const link=path.join(dir,'linked');fs.symlinkSync(out,link,'dir');expect(()=>verifyBundle(link)).toThrow();fs.unlinkSync(path.join(out,'converted.json'));fs.symlinkSync(input,path.join(out,'converted.json'));expect(()=>verifyBundle(out)).toThrow();});
+ it('leaves failed bundle uncommitted without manifest',()=>{const dir=temp(),input=path.join(dir,'input.json'),out=path.join(dir,'bundle');fs.writeFileSync(input,jsonBytes(fixture()));const original=fs.writeSync;let count=0;vi.spyOn(fs,'writeSync').mockImplementation((...args)=>{if(++count===2)throw new Error('simulated disk full');return original(...args);});expect(()=>convertFile(input,out)).toThrow(/disk full/);vi.restoreAllMocks();expect(fs.existsSync(path.join(out,'manifest.json'))).toBe(false);expect(()=>verifyBundle(out)).toThrow(/exactly/);expect(fs.readFileSync(input)).toEqual(jsonBytes(fixture()));});
+ it('detects tampering even if converted file digest is rewritten',()=>{const {out}=bundle();const file=path.join(out,'converted.json'),mfile=path.join(out,'manifest.json'),m=JSON.parse(fs.readFileSync(mfile));const c=JSON.parse(fs.readFileSync(file));c.cells[0].states['aspergillum:rotation']=0;const bytes=jsonBytes(c);fs.writeFileSync(file,bytes);expect(()=>verifyBundle(out)).toThrow(/digest/);m.files['converted.json']={bytes:bytes.length,sha256:sha256(bytes)};fs.writeFileSync(mfile,jsonBytes(m));expect(()=>verifyBundle(out)).toThrow(/deterministic/);});
+ it('rejects manifest contract drift and wrong trusted digests',()=>{const {out}=bundle();expect(()=>verifyBundle(out,{expectedSourceSha256:'0'.repeat(64)})).toThrow(/trusted/);const file=path.join(out,'manifest.json'),m=JSON.parse(fs.readFileSync(file));m.contract.rotation='changed';fs.writeFileSync(file,jsonBytes(m));expect(()=>verifyBundle(out)).toThrow(/contract/);});
+});
+
+describe('complete legacy schema and CLI',()=>{
+ it('enumerates every legacy aspersorium/table state without losing semantic tuple or rotation',()=>{
+  const d=fixture();d.cells=[];d.registry=[];
+  for(const base of [0,9])for(let offset=0;offset<9;offset++)for(const occupied of [false,true])for(let cosmetic=0;cosmetic<16;cosmetic++)for(let rotation=0;rotation<16;rotation++)d.cells.push({dimension:'minecraft:overworld',position:{x:d.cells.length,y:64,z:0},id:'aspergillum:aspersorium',states:{'aspergillum:water_base':base,'aspergillum:water_offset':offset,'aspergillum:has_aspergillum':occupied,'aspergillum:cosmetic':cosmetic,'aspergillum:rotation':rotation}});
+  for(const occupied of [false,true])for(let cosmetic=0;cosmetic<16;cosmetic++)for(let rotation=0;rotation<16;rotation++)d.cells.push({dimension:'minecraft:overworld',position:{x:d.cells.length,y:64,z:0},id:'aspergillum:sacristan_table',states:{'aspergillum:table_has_aspergillum':occupied,'aspergillum:table_cosmetic':cosmetic,'aspergillum:table_rotation':rotation}});
+  const a=auditSnapshot(d,{allowNormalization:true});expect(a.report.eligible).toBe(true);expect(a.converted.cells).toHaveLength(9728);
+  for(let i=0;i<d.cells.length;i++){
+   const old=d.cells[i],s=a.converted.cells[i].states,table=old.id.endsWith('sacristan_table'),prefix=table?'table_':'';
+   const n=table?s['aspergillum:table_contents_a']+2*s['aspergillum:table_contents_b']:s['aspergillum:contents_a']+2*s['aspergillum:contents_b']+6*s['aspergillum:contents_c']+42*s['aspergillum:contents_d'];
+   const occupancy=old.states['aspergillum:'+prefix+'has_aspergillum']?old.states['aspergillum:'+prefix+'cosmetic']+1:0;
+   expect(n).toBe(table?occupancy:Math.min(16,old.states['aspergillum:water_base']+old.states['aspergillum:water_offset'])*17+occupancy);
+   expect(s['aspergillum:'+prefix+'rotation']).toBe(old.states['aspergillum:'+prefix+'rotation']);
+  }
+ });
+ it('runs CLI audit, convert, verify and rollback and rejects ambiguous options',()=>{
+  const dir=temp(),input=path.join(dir,'input.json'),out=path.join(dir,'bundle');fs.writeFileSync(input,jsonBytes(fixture()));
+  const stream={write:()=>true},io={stdout:stream,stderr:stream};
+  expect(runSnapshotCli(['audit','--input',input],io)).toBe(0);
+  expect(runSnapshotCli(['convert','--input',input,'--out-dir',out],io)).toBe(0);
+  expect(runSnapshotCli(['verify','--bundle',out],io)).toBe(0);
+  expect(runSnapshotCli(['rollback','--bundle',out,'--output',path.join(dir,'rollback.json')],io)).toBe(0);
+  expect(runSnapshotCli(['audit','--input',input,'--input',input],io)).toBe(1);
+  expect(runSnapshotCli(['verify','--bundle',out,'--allow-normalization'],io)).toBe(3);
+ });
+ it('creates no output for normalization refused by default',()=>{
+  const d=fixture();d.cells[0].states['aspergillum:water_offset']=8;
+  const dir=temp(),input=path.join(dir,'input.json'),out=path.join(dir,'bundle');fs.writeFileSync(input,jsonBytes(d));
+  expect(convertFile(input,out).created).toBe(false);expect(fs.existsSync(out)).toBe(false);
+ });
+ it('handles short writes and rejects zero-progress writes',()=>{
+  const dir=temp(),file=path.join(dir,'new'),original=fs.writeSync;
+  vi.spyOn(fs,'writeSync').mockImplementation((fd,bytes,offset,length,...rest)=>original(fd,bytes,offset,Math.min(2,length),...rest));
+  writeNewFile(file,Buffer.from('complete bytes'));expect(fs.readFileSync(file,'utf8')).toBe('complete bytes');
+  vi.restoreAllMocks();vi.spyOn(fs,'writeSync').mockImplementation(()=>0);
+  expect(()=>writeNewFile(path.join(dir,'failed'),Buffer.from('x'))).toThrow(/progress/);
+ });
+});

@@ -1,0 +1,53 @@
+import bpy,bmesh,math,json
+from mathutils import Vector,Matrix
+from mathutils.bvhtree import BVHTree
+from math import sin,cos,atan2,pi
+ROOT='/workspace/scratch/212c580ada5b/'
+bpy.ops.wm.open_mainfile(filepath=ROOT+'paz-refinement/Nossa_Senhora_da_Paz_v20_estudo.blend')
+head=bpy.data.objects['Maria — anatomia feminina adaptada CC0'];R=bpy.data.objects['Maria — auréola lisa'].rotation_euler.to_matrix()@Matrix.Rotation(-pi/2,3,'X');Ri=R.transposed()
+bpy.context.view_layer.update();mesh=bpy.data.meshes.new_from_object(head.evaluated_get(bpy.context.evaluated_depsgraph_get()));o=bpy.data.objects.new('V23 — malha orbital integrada experimental',mesh);bpy.context.collection.objects.link(o);head.hide_render=True;head.hide_viewport=True
+bm=bmesh.new();bm.from_mesh(mesh);stats=[]
+for side in [-1,1]:
+ cx=side*.064;cz=3.315;rx=.047;rz=.038
+ def pos(v):
+  p=Ri@v.co;return Vector((p.x+.44,p.y,p.z))
+ fs=[]
+ for f in bm.faces:
+  p=Ri@f.calc_center_median();x=p.x+.44
+  if p.y<.98 and ((x-cx)/rx)**2+((p.z-cz)/rz)**2<1:fs.append(f)
+ selected=set(fs);edges=[e for e in bm.edges if sum(f in selected for f in e.link_faces)==1 and len(e.link_faces)==2]
+ adj={}
+ for e in edges:
+  a,b=e.verts;adj.setdefault(a,[]).append(b);adj.setdefault(b,[]).append(a)
+ if not adj or any(len(v)!=2 for v in adj.values()):raise RuntimeError('Boundary not single simple loop')
+ start=next(iter(adj));boundary=[start];prev=None;cur=start
+ while True:
+  nxt=next(v for v in adj[cur] if v!=prev)
+  if nxt==start:break
+  boundary.append(nxt);prev,cur=cur,nxt
+ if len(boundary)!=len(adj):raise RuntimeError('Multiple boundary loops')
+ # preserve cyclic boundary winding; create radial loops to a narrow eye fissure.
+ params=[atan2((pos(v).z-cz)/rz,(pos(v).x-cx)/rx) for v in boundary]
+ bp=[pos(v) for v in boundary];N=len(boundary)
+ bmesh.ops.delete(bm,geom=fs,context='FACES_ONLY')
+ last=boundary
+ for ring in range(1,9):
+  t=ring/8;new=[]
+  for p,a in zip(bp,params):
+   targetx=cx+.035*cos(a);targetz=3.304+.006*cos(a)**2+.00035*sin(a)
+   x=(1-t)*p.x+t*targetx;z=(1-t)*p.z+t*targetz
+   # linear skin bed from original outer ring + designed upper eyelid shelf.
+   y=p.y;lift=.006*sin(pi*t)*max(0,sin(a))+.0015*sin(pi*t)*max(0,-sin(a))
+   y-=lift
+   new.append(bm.verts.new(R@Vector((x-.44,y,z))))
+  for i in range(N):
+   j=(i+1)%N;bm.faces.new((last[i],last[j],new[j],new[i]))
+  last=new
+ bm.faces.new(tuple(reversed(last)))
+ stats.append({'side':side,'boundary_vertices':N,'deleted_faces':len(fs),'quad_loops':8})
+# Remove unused source interior verts and recalculate consistent normals.
+loose=[v for v in bm.verts if not v.link_faces]
+bmesh.ops.delete(bm,geom=loose,context='VERTS');bmesh.ops.recalc_face_normals(bm,faces=list(bm.faces));bm.to_mesh(mesh);bm.free();mesh.update()
+for p in mesh.polygons:p.use_smooth=True
+o['status']='Integrated topology experiment, not likeness approved';json.dump(stats,open(ROOT+'paz-sculpt-v22/v23-topology.json','w'),indent=2)
+s=bpy.context.scene;s.camera=bpy.data.objects['Retrato comparativo'];s.render.resolution_x=600;s.render.resolution_y=800;s.render.resolution_percentage=100;s.cycles.samples=32;s.render.filepath=ROOT+'paz-sculpt-v22/v23-face.png';bpy.ops.wm.save_as_mainfile(filepath=ROOT+'paz-sculpt-v22/V23-loops-integrados-experimental.blend');bpy.ops.render.render(write_still=True)

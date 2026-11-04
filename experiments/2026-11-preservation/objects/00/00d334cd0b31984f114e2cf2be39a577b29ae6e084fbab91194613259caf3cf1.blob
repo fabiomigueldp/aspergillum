@@ -1,0 +1,31 @@
+"""Generate frozen-ear convex support envelopes with explicit cavity inclusion.
+Only writes its own directory. The ear point convex hull includes the concha void;
+margin is a finite Minkowski envelope, not a scalp/ear deformation or global mask.
+Run with ordinary Python; outputs immutable cutter files for build_boolean_rim.py.
+"""
+from pathlib import Path
+import numpy as np
+from scipy.spatial import ConvexHull
+import json,hashlib
+O=Path(__file__).resolve().parent;B=O.parents[1]
+a=np.load(B/'body_interface_v9/constrained_fit/retained-anatomy.npz');ap=a['points'];af=a['triangles']
+# Twenty-six directions give a faceted sphere support; every direction's radius
+# equals stated margin. This is a specified discretized offset, not exact spherical offset.
+dirs=np.array([[x,y,z] for x in (-1,0,1) for y in (-1,0,1) for z in (-1,0,1) if (x,y,z)!=(0,0,0)],float);dirs/=np.linalg.norm(dirs,axis=1)[:,None]
+rows=[]
+for scope in ['protected','incident']:
+ for margin in [0.5,1.5,3.0,5.0]:
+  vs=[];fs=[];sides=[];planes=[];infos=[]
+  for side in [-1,1]:
+   mask=a['protected_ears']&((ap[:,0]-.04)*side>0);ids=np.flatnonzero(mask)
+   if scope=='incident':ids=np.unique(af[np.any(mask[af],axis=1)])
+   points=ap[ids];q=(points[:,None,:]+dirs[None,:,:]*(margin/1000)).reshape(-1,3)
+   hull=ConvexHull(q);used=np.unique(hull.simplices);idx=np.full(len(q),-1);idx[used]=np.arange(len(used));f=idx[hull.simplices];v=q[used]
+   raw=np.cross(v[f[:,1]]-v[f[:,0]],v[f[:,2]]-v[f[:,0]]);flip=np.einsum('ij,ij->i',raw,hull.equations[:,:3])<0;f[flip]=f[flip][:,[0,2,1]]
+   infos.append({'side':side,'anatomy_vertex_indices':ids.tolist(),'input_points_min':points.min(0).tolist(),'input_points_max':points.max(0).tolist(),'cutter_vertices':len(v),'cutter_triangles':len(f),'volume_m3':float(hull.volume)})
+   fs.append(f+sum(map(len,vs)));vs.append(v);sides.extend([side]*len(f));planes.append(hull.equations)
+  tag=f'convex-{scope}-{margin:g}mm';dst=O/(tag+'-cutter.npz')
+  if dst.exists():raise FileExistsError(dst)
+  np.savez_compressed(dst,points=np.concatenate(vs),triangles=np.concatenate(fs),face_sides=np.array(sides),planes=np.concatenate(planes),metadata=np.array(json.dumps({'scope':scope,'margin_mm':margin,'ears':infos,'offset_description':'Convex hull of frozen ear samples plus 26-direction radius samples. Includes all concha cavity within ear hull.'})))
+  rows.append({'tag':tag,'file':dst.name,'sha256':hashlib.sha256(dst.read_bytes()).hexdigest(),'scope':scope,'margin_mm':margin,'ears':infos})
+(O/'envelopes-manifest.json').write_text(json.dumps(rows,indent=2));print(json.dumps([{k:r[k] for k in ['tag','scope','margin_mm']} for r in rows],indent=2))

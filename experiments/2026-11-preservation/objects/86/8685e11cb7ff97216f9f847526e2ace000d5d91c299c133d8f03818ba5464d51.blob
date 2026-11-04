@@ -1,0 +1,35 @@
+{
+  "baseline": {
+    "noncoplanar_intersection_polyline_length_mm_sum": 1199.1360223769157,
+    "pair_segments": 607,
+    "by_side_mm": {
+      "positive_x": 680.0906695553437,
+      "negative_x": 519.045352821572
+    },
+    "by_shell_part_mm": {
+      "1": 572.6043692333478,
+      "0": 626.5316531435686
+    },
+    "protected_mask_incident_trace_length_mm": 1141.578652769829,
+    "protected_mask_incident_pairs": 572,
+    "zero_length_pairs": 0
+  },
+  "candidate": {
+    "noncoplanar_intersection_polyline_length_mm_sum": 288.3658366344368,
+    "pair_segments": 98,
+    "by_side_mm": {
+      "positive_x": 263.96424023736614,
+      "negative_x": 24.401596397070577
+    },
+    "by_shell_part_mm": {
+      "1": 57.557369607085235,
+      "0": 216.35096598587918,
+      "3": 14.457501041472323
+    },
+    "protected_mask_incident_trace_length_mm": 230.80846702735153,
+    "protected_mask_incident_pairs": 63,
+    "zero_length_pairs": 0
+  },
+  "method": "For each strictly crossing triangle pair, maximum separation of its recomputed segment-triangle witness points gives noncoplanar intersection segment length; sum across pairs. Unlike pair count this sum is stable under regular subdivision when trace is not duplicated. No coplanar/tangent certificate; exact boundaries not strict can be missed. No global spatial union or deduplication is performed.",
+  "spatial_union_or_deduplication": false
+}

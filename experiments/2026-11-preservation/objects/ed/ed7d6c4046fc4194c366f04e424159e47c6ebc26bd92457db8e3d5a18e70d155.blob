@@ -1,0 +1,326 @@
+import { scheduleDockedBreakRecovery } from "../infrastructure/break-recovery";
+import {
+  Block,
+  BlockComponentBlockBreakEvent,
+  BlockComponentPlayerInteractEvent,
+  Player,
+  system,
+} from "@minecraft/server";
+import {
+  resolveCosmetic,
+  resolveCosmeticSelection,
+} from "../domain/customization";
+import { resolveSprayProfile } from "../domain/spray-profile";
+import { getActionLease } from "../infrastructure/action-lease";
+import { hasValidCompactContents, readTableContents, withTableOccupancy } from "../infrastructure/compact-block-state";
+import {
+  SACRISTAN_TABLE_BLOCK,
+} from "../infrastructure/constants";
+import {
+  acquireCustomizationSession,
+  isCurrentCustomizationSession,
+  releaseCustomizationAtBlock,
+  releaseCustomizationSession,
+  type CustomizationSession,
+} from "../infrastructure/customization-session";
+import {
+  deleteDockedSnapshot,
+  getDockedSnapshot,
+  setDockedSnapshot,
+} from "../infrastructure/docked-item-registry";
+import { resolvePlayerPolicies } from "../infrastructure/game-mode-policy";
+import {
+  captureDockedAspergillum,
+  getMainhand,
+  giveOrDrop,
+  initializeAspergillum,
+  isAspergillum,
+  isAspergillumSchemaSupported,
+  readAspergillumState,
+  restoreDockedAspergillum,
+  setMainhand,
+} from "../infrastructure/item-state";
+import { showCustomizationMenu } from "../presentation/customization-menu";
+import { ACTION_MESSAGES, action } from "../presentation/messaging";
+
+const INTERACTION_DEDUPE_TICKS = 2;
+const interactionClaims = new Map<string, number>();
+
+function tableKey(block: Block): string {
+  const { x, y, z } = block.location;
+  return `${block.dimension.id}|${x},${y},${z}`;
+}
+
+function claimInteraction(player: Player, block: Block): boolean {
+  const key = `${player.id}|${tableKey(block)}`;
+  const tick = system.currentTick;
+  const previous = interactionClaims.get(key);
+  if (previous !== undefined && tick - previous <= INTERACTION_DEDUPE_TICKS) return false;
+  interactionClaims.set(key, tick);
+  system.runTimeout(() => {
+    if (interactionClaims.get(key) === tick) interactionClaims.delete(key);
+  }, INTERACTION_DEDUPE_TICKS + 1);
+  return true;
+}
+
+function isOccupied(block: Block): boolean {
+  return readTableContents(block.permutation).cosmeticIndex !== null;
+}
+
+function isWithinRange(player: Player, block: Block): boolean {
+  const dx = player.location.x - (block.location.x + 0.5);
+  const dy = player.location.y - (block.location.y + 0.5);
+  const dz = player.location.z - (block.location.z + 0.5);
+  return dx * dx + dy * dy + dz * dz <= 36;
+}
+
+function tablePermutation(block: Block, occupied: boolean, cosmeticId: unknown) {
+  const cosmetic = resolveCosmetic(cosmeticId);
+  return withTableOccupancy(block.permutation, occupied ? cosmetic.index : null);
+}
+
+function dockOnTable(player: Player, block: Block): boolean {
+  const originalItem = getMainhand(player);
+  if (!isAspergillum(originalItem) || isOccupied(block)) return false;
+  if (!isAspergillumSchemaSupported(originalItem)) {
+    action(player, ACTION_MESSAGES.futureSchema);
+    return false;
+  }
+  const item = initializeAspergillum(originalItem);
+  const state = readAspergillumState(item);
+  const dimensionId = block.dimension.id;
+  let previousSnapshot;
+  try {
+    previousSnapshot = getDockedSnapshot(dimensionId, block.location);
+  } catch (error) {
+    console.error(`[Aspergillum] Sacristan table registry could not be read: ${String(error)}`);
+    action(player, ACTION_MESSAGES.registryRepairRequired);
+    return false;
+  }
+  if (previousSnapshot !== undefined) {
+    action(player, ACTION_MESSAGES.registryRecoveryRequired);
+    return false;
+  }
+  const snapshot = captureDockedAspergillum(item, state.charges);
+  const originalPermutation = block.permutation;
+  const updatedPermutation = tablePermutation(block, true, state.cosmeticId);
+  try {
+    setDockedSnapshot(dimensionId, block.location, snapshot);
+    setMainhand(player, undefined);
+    block.setPermutation(updatedPermutation);
+  } catch (error) {
+    try { setMainhand(player, originalItem); } catch { /* defensive rollback */ }
+    try { block.setPermutation(originalPermutation); } catch { /* defensive rollback */ }
+    try { deleteDockedSnapshot(dimensionId, block.location); } catch { /* defensive rollback */ }
+    console.error(`[Aspergillum] Sacristan table docking failed: ${String(error)}`);
+    action(player, ACTION_MESSAGES.dockingCancelled);
+    return false;
+  }
+  action(player, ACTION_MESSAGES.tableDocked);
+  return true;
+}
+
+function undockFromTable(player: Player, block: Block, expectedInstanceId?: string): boolean {
+  if (!player.isValid || !block.isValid || block.typeId !== SACRISTAN_TABLE_BLOCK
+    || player.dimension.id !== block.dimension.id || !isWithinRange(player, block)
+    || resolvePlayerPolicies(player).denied) return false;
+  if (!hasValidCompactContents(block.permutation, "table") || !isOccupied(block)) return false;
+  const dimensionId = block.dimension.id;
+  let snapshot;
+  try {
+    snapshot = getDockedSnapshot(dimensionId, block.location);
+  } catch (error) {
+    console.error(`[Aspergillum] Sacristan table registry could not be read: ${String(error)}`);
+    action(player, ACTION_MESSAGES.registryRepairRequired);
+    return false;
+  }
+  // A delayed form owns the item it opened for, never a later replacement at
+  // the same address. The direct empty-hand recovery route has no form lease.
+  if (expectedInstanceId !== undefined && snapshot?.instanceId !== expectedInstanceId) {
+    action(player, ACTION_MESSAGES.tableUpdateFailed);
+    return false;
+  }
+  if (snapshot === undefined) {
+    action(player, ACTION_MESSAGES.registryRecoveryRequired);
+    return false;
+  }
+  const restoredItem = restoreDockedAspergillum(snapshot);
+  const originalPermutation = block.permutation;
+  const updatedPermutation = tablePermutation(block, false, "classic");
+  try {
+    block.setPermutation(updatedPermutation);
+    if (snapshot !== undefined) deleteDockedSnapshot(dimensionId, block.location);
+    giveOrDrop(player, restoredItem);
+  } catch (error) {
+    try { block.setPermutation(originalPermutation); } catch { /* defensive rollback */ }
+    if (snapshot !== undefined) {
+      try { setDockedSnapshot(dimensionId, block.location, snapshot); } catch { /* defensive rollback */ }
+    }
+    console.error(`[Aspergillum] Sacristan table retrieval failed: ${String(error)}`);
+    action(player, ACTION_MESSAGES.undockingCancelled);
+    return false;
+  }
+  action(player, ACTION_MESSAGES.tableUndocked);
+  return true;
+}
+
+function updateStoredCustomization(
+  player: Player,
+  block: Block,
+  session: CustomizationSession,
+  expectedInstanceId: string,
+  cosmeticId?: string,
+  sprayProfileId?: string,
+): boolean {
+  if (!isCurrentCustomizationSession(session)
+    || !player.isValid
+    || player.dimension.id !== block.dimension.id
+    || !block.isValid
+    || block.typeId !== SACRISTAN_TABLE_BLOCK
+    || !isWithinRange(player, block)
+    || !hasValidCompactContents(block.permutation, "table")
+    || !isOccupied(block)) return false;
+
+  const dimensionId = block.dimension.id;
+  let snapshot;
+  try {
+    snapshot = getDockedSnapshot(dimensionId, block.location);
+  } catch {
+    return false;
+  }
+  if (snapshot === undefined || snapshot.instanceId !== expectedInstanceId) return false;
+  const nextCosmeticId = cosmeticId === undefined ? snapshot.cosmeticId : resolveCosmetic(cosmeticId).id;
+  const nextProfileId = sprayProfileId === undefined
+    ? snapshot.sprayProfileId
+    : resolveSprayProfile(sprayProfileId).id;
+  const updatedSnapshot = {
+    ...snapshot,
+    cosmeticId: nextCosmeticId,
+    sprayProfileId: nextProfileId,
+  };
+  const originalPermutation = block.permutation;
+  const updatedPermutation = tablePermutation(block, true, nextCosmeticId);
+  try {
+    setDockedSnapshot(dimensionId, block.location, updatedSnapshot);
+    block.setPermutation(updatedPermutation);
+    return true;
+  } catch (error) {
+    try { setDockedSnapshot(dimensionId, block.location, snapshot); } catch { /* defensive rollback */ }
+    try { block.setPermutation(originalPermutation); } catch { /* defensive rollback */ }
+    console.error(`[Aspergillum] Customization update failed: ${String(error)}`);
+    return false;
+  }
+}
+
+function openTableMenu(player: Player, block: Block): void {
+  const dimensionId = block.dimension.id;
+  let snapshot;
+  try {
+    snapshot = getDockedSnapshot(dimensionId, block.location);
+  } catch (error) {
+    console.error(`[Aspergillum] Sacristan table registry could not be read: ${String(error)}`);
+    action(player, ACTION_MESSAGES.registryRepairRequired);
+    return;
+  }
+  if (snapshot === undefined) {
+    action(player, ACTION_MESSAGES.registryRecoveryRequired);
+    return;
+  }
+  const acquired = acquireCustomizationSession(player.id, dimensionId, block.location, system.currentTick);
+  if (acquired.status !== "acquired") {
+    action(player, ACTION_MESSAGES.tableBusy);
+    return;
+  }
+  const session = acquired.session;
+  const itemInstanceId = snapshot.instanceId;
+  const closeSession = (): void => {
+    if (isCurrentCustomizationSession(session)) releaseCustomizationSession(player.id);
+  };
+  try {
+    showCustomizationMenu(player, {
+      cosmeticId: snapshot.cosmeticId,
+      sprayProfileId: snapshot.sprayProfileId,
+    }, {
+      applyCosmetic(cosmeticId) {
+        const applied = updateStoredCustomization(player, block, session, itemInstanceId, cosmeticId, undefined);
+        if (!applied) action(player, ACTION_MESSAGES.tableUpdateFailed);
+        return applied;
+      },
+      applySprayProfile(profileId) {
+        const applied = updateStoredCustomization(player, block, session, itemInstanceId, undefined, profileId);
+        if (!applied) action(player, ACTION_MESSAGES.tableUpdateFailed);
+        return applied;
+      },
+      restoreClassic() {
+        const classic = resolveCosmeticSelection("silver", "chestnut");
+        const applied = updateStoredCustomization(player, block, session, itemInstanceId, classic.id, "standard");
+        if (!applied) action(player, ACTION_MESSAGES.tableUpdateFailed);
+        return applied;
+      },
+      finishAndRetrieve() {
+        if (!isCurrentCustomizationSession(session)) return false;
+        closeSession();
+        return undockFromTable(player, block, itemInstanceId);
+      },
+      close: closeSession,
+    });
+  } catch (error) {
+    closeSession();
+    console.error(`[Aspergillum] Could not construct customization menu: ${String(error)}`);
+  }
+}
+
+function scheduleInteraction(player: Player, block: Block, isSneaking: boolean): void {
+  if (!claimInteraction(player, block)) return;
+  system.run(() => {
+    if (!player.isValid || !block.isValid || block.typeId !== SACRISTAN_TABLE_BLOCK) return;
+    if (!hasValidCompactContents(block.permutation, "table")) return;
+    if (resolvePlayerPolicies(player).denied) return;
+    if (getActionLease(player.id) !== undefined) {
+      action(player, ACTION_MESSAGES.actionBusy);
+      return;
+    }
+    const item = getMainhand(player);
+    if (!isOccupied(block)) {
+      if (!isAspergillum(item)) {
+        action(player, ACTION_MESSAGES.tableHint);
+        return;
+      }
+      if (dockOnTable(player, block)) openTableMenu(player, block);
+      return;
+    }
+    if (isSneaking && item === undefined) {
+      releaseCustomizationAtBlock(block.dimension.id, block.location);
+      undockFromTable(player, block);
+      return;
+    }
+    openTableMenu(player, block);
+  });
+}
+
+export function handleSacristanTableUseOn(player: Player, block: Block, isSneaking: boolean): void {
+  if (block.typeId === SACRISTAN_TABLE_BLOCK) scheduleInteraction(player, block, isSneaking);
+}
+
+export function handleSacristanTableInteraction(event: BlockComponentPlayerInteractEvent): void {
+  const player = event.player;
+  if (player === undefined || event.block.typeId !== SACRISTAN_TABLE_BLOCK) return;
+  let isSneaking: boolean;
+  try { isSneaking = player.isSneaking; } catch { return; }
+  scheduleInteraction(player, event.block, isSneaking);
+}
+
+export function handleSacristanTableBreak(event: BlockComponentBlockBreakEvent): void {
+  if (event.brokenBlockPermutation.type.id !== SACRISTAN_TABLE_BLOCK) return;
+  const location = { ...event.block.location };
+  const dimension = event.dimension;
+  const dimensionId = dimension.id;
+  releaseCustomizationAtBlock(dimensionId, location);
+  if (!hasValidCompactContents(event.brokenBlockPermutation, "table")) return;
+  if (readTableContents(event.brokenBlockPermutation).cosmeticIndex === null) return;
+  scheduleDockedBreakRecovery(dimension, location, 0.8);
+}
+
+export function clearCustomizationPlayerState(playerId: string): void {
+  releaseCustomizationSession(playerId);
+}

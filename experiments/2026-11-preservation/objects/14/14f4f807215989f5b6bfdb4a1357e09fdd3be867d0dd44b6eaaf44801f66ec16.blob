@@ -1,0 +1,33 @@
+{
+  "candidate": "retained-anatomy.npz",
+  "byte_identical_source": "intrinsic097-c30-iteration00.npz",
+  "sha256": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+  "selection": "Preferred technical candidate after independent geometry audit and seven-view visual review. Local improvement only, not resolved interface, not literal no-compression.",
+  "status": "retained_for_research_not_exported",
+  "independent_geometry": "../independent_diagnosis/intrinsic097-c30-iteration00-review.json",
+  "visual_review": "../evidence/review-visual-v9.md",
+  "alternative_not_selected": "accumulated097-c30-iteration03.npz",
+  "selection_reason": "No visible improvement in accumulated03 justified its greater intrinsic deformation and displacement.",
+  "remaining_limits": [
+    "Small real compression: minimum principal stretch0.9681918; minimum original area ratio0.9693669.",
+    "607 shell pairs and797 band pairs remain, including29 and12 new versusV8.",
+    "More continuous shadow below the band declared by visual review.",
+    "Ear shell/band intrusions remain visible; all88 ear vertices fixed.",
+    "Inherited microscopic3v2f component remains.",
+    "No global-clearance, alpha-footprint, Bedrock or runtime validation."
+  ],
+  "metrics": {
+    "shell_pairs": 607,
+    "band_pairs": 797,
+    "minimum_area_ratio": 0.969366912578897,
+    "minimum_principal_stretch": 0.9681917999673679,
+    "maximum_principal_stretch": 1.0326483402552162,
+    "nape_source_face6360_area_ratio": 0.9987696058072548
+  },
+  "input_hashes": {
+    "body_interface_v8/anatomy_fit/baseline-welded.npz": "495ccfd3beb46a61e1f0846471f8f8be61c511606dcf20c2c72d0d6d5a36be15",
+    "body_interface_v8/anatomy_fit/retained-anatomy.npz": "c1971f80ca5bd99a8d51461823a42e03ed6400282e31a18586602cd0216b4519",
+    "lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz": "712a550fbbb56090ae700e30e4e21153d04c16139062ebcd2a72e818f3e34f7b",
+    "shell_band_v5/retained_candidate/evidence/band-paired.npz": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647"
+  }
+}

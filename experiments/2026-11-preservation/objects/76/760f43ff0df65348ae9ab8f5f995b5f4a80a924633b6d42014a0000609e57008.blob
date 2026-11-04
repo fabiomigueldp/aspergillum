@@ -1,0 +1,27 @@
+from pathlib import Path
+O=Path(__file__).resolve().parent
+exec(compile((O/'ray_diagnosis.py').read_text().split("views={'left-ear'")[0],str(O/'ray_diagnosis.py'),'exec'))
+tag=sys.argv[sys.argv.index('--')+1] if '--' in sys.argv else 'valley-source-mask-n8';path=B/f'band_shell_v13/constrained_fit/{tag}.npz';c=np.load(path);cp=c['points'];cf=c['triangles'];bvh['candidate']=BVHTree.FromPolygons(cp.tolist(),cf.tolist(),all_triangles=True)
+rows=json.loads((O/'visible-blue-ray-witnesses.json').read_text())['rows'];vrows=[]
+for r in rows:
+ hs=hits('candidate',r['origin'],r['direction']);first=next((h for h in hs if h['front_facing']),None);sh=next(h for h in r['hits']['shell'] if h['front_facing']);vrows.append({'view':r['view'],'pixel':r['pixel'],'hits':hs,'old_shell_ahead_mm':r['current_shell_ahead_of_band_mm'],'candidate_shell_ahead_mm':first['distance_mm']-sh['distance_mm'] if first else None})
+z=np.load(O/'valley-dense-map.npz');a=z['samples'];d=[]
+for r in a:
+ p=r[3:6];n=r[6:9];h=bvh['candidate'].ray_cast(Vector(p+n*.015),Vector(-n),.04)
+ if h[0] is None or np.dot(h[1],-n)>=0:d.append([np.nan,-1,np.nan])
+ else:
+  adv=float((np.array(h[0])-p)@n)*1000;d.append([adv,h[2],r[9]-adv])
+d=np.array(d);valid=np.isfinite(d[:,2]);newinv=valid&(d[:,2]>.01)&(a[:,11]-a[:,13]>.01);oldinv=z['inversion'];regress=newinv&~oldinv
+np.savez_compressed(O/f'{tag}-dense-review.npz',candidate_values=d,candidate_inversion=newinv,baseline_inversion=oldinv,new_regression=regress)
+# Patch outer-face wall chords, 7 inset barycentrics, physical face normals.
+ids=np.flatnonzero((c['face_parts']==0)&(c['v13_face_roles']==2));bc=np.array([[1/3]*3,[.8,.1,.1],[.1,.8,.1],[.1,.1,.8],[.45,.45,.1],[.45,.1,.45],[.1,.45,.45]]);chords=[]
+for fi in ids:
+ t=cp[cf[fi]];n=np.cross(t[1]-t[0],t[2]-t[0]);n/=np.linalg.norm(n)
+ for bary in bc:
+  p=bary@t;h=bvh['candidate'].ray_cast(Vector(p-n*2e-6),Vector(-n),.005)
+  if h[0] is None:chords.append([fi,*bary,np.nan,-1,-1])
+  else:chords.append([fi,*bary,float((np.array(h[0])-p)@(-n))*1000,h[2],int(c['face_parts'][h[2]])])
+ch=np.array(chords);np.savez_compressed(O/f'{tag}-wall-chords.npz',chords=ch,columns=np.array(['outer_face','b0','b1','b2','chord_mm','hit_face','hit_part']))
+import hashlib
+rep={'candidate':str(path),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'pixel_rays':vrows,'dense':{'samples':len(a),'valid':int(valid.sum()),'baseline_inversions':int(oldinv.sum()),'candidate_inversions':int(newinv.sum()),'baseline_inversions_resolved':int((oldinv&~newinv).sum()),'new_inversions':int(regress.sum()),'max_shell_ahead_mm_all_samples':float(np.nanmax(d[:,2])),'min_candidate_surface_advance_mm':float(np.nanmin(d[:,0])),'max_candidate_surface_advance_mm':float(np.nanmax(d[:,0])),'remaining_old_band_faces':np.unique(a[newinv,0]).astype(int).tolist(),'remaining_uv_bounds':[a[newinv,1:3].min(0).tolist(),a[newinv,1:3].max(0).tolist()] if newinv.any() else None},'patch_wall_chords':{'samples':len(ch),'missing':int(np.isnan(ch[:,4]).sum()),'first_hit_part_histogram':{str(i):int((ch[:,6]==i).sum()) for i in np.unique(ch[:,6]).astype(int)},'chord_mm_quantiles':np.nanpercentile(ch[:,4],[0,1,5,50,95,99,100]).tolist(),'warning':'Directional exterior-normal chords, not a global min-thickness certificate. No revised frozen anatomy/shell gates.'}}
+(O/f'{tag}-independent-review.json').write_text(json.dumps(rep,indent=2));print(json.dumps({k:v for k,v in rep.items() if k!='pixel_rays'},indent=2));print('PIXEL_RAYS',[(r['view'],r['pixel'],r['candidate_shell_ahead_mm']) for r in vrows])

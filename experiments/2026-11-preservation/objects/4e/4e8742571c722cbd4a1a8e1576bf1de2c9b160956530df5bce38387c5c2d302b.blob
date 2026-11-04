@@ -1,0 +1,9 @@
+from pathlib import Path
+from PIL import Image,ImageDraw,ImageFont
+R=Path(__file__).resolve().parents[1];E=R/'evidence';im=Image.new('RGB',(1800,750),'#20252b');d=ImageDraw.Draw(im);font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',24);sm=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',17)
+d.text((24,10),'V6 | controle de orientação e tentativas REPROVADAS | NÃO É MINECRAFT',font=font,fill='white')
+d.text((24,43),'Cinza: corpo JSON antigo. Cores: malhas estruturais nativas. Nenhuma ligação foi aprovada.',font=sm,fill='#dddddd')
+labels=[('orientation-control','Controle: manto invertido | 640 arestas incoerentes'),('restored-orientation','Mesmo formato, orientação corrigida | 90 pares'),('physical-hermite','Outra ponte: Hermite física | 172 pares')]
+for i,(tag,label) in enumerate(labels):
+ d.text((i*600+12,75),label,font=sm,fill='white');img=Image.open(E/f'{tag}-junction-profile.png').convert('RGB').resize((600,600));im.paste(img,(i*600,105))
+d.text((24,716),'Pares de interseção não são contagens de furos. Corrigir orientação não prova uma ligação limpa.',font=sm,fill='#dddddd');im.save(E/'V6_ORIENTATION_AND_REJECTED_JOINTS_NOT_MINECRAFT.png')

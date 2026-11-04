@@ -1,0 +1,13 @@
+# Cobertura da calota após avaliação — prova sistemática reprovada
+
+Método distinto da edição de uma fileira: na cópia da gaiola, subdivisão primeiro, projeção externa sobre anatomia fixa (Shrinkwrap Nearest Surface/Above Surface, folga4mm no grupo da calota), depois espessura positiva0,6..6mm. Testes realizados na malha final triangulada, não apenas nos pontos projetados. Originais não foram alterados; nenhum .blend candidato salvo.
+
+Resultado14754v:1470pares com pele no conjunto, dos quais401 envolvendo48triângulos inteiramente da calota.417auto-interseções,112tocando a calota pura. Zero triângulos degenerados. A projeção externa de vértices não garante faces externas nem espessura válida.
+
+Falhas da calota concentram-se nas laterais junto às orelhas: X[-0,10731,0,17973],Y[-0,22571,-0,17311],Z[3,46363,3,53475]. A coroa superior não é a região desses hits, mas isso não certifica cobertura anatômica/fidelidade. Nearest-surface pode projetar pontos em lados diferentes de uma concavidade; triângulos e casca atravessam o obstáculo entre eles. Aumentar offset ou adicionar suavização não constitui correção demonstrada.
+
+Por isso interrompi essa rota de projeção antes de render de melhoria. Não há sucesso geométrico a apresentar. O problema restante exige reconstrução explícita das regiões temporais/auriculares com fluxo de faces desenhado, não uma projeção genérica de toda a calota.
+
+Frentes independentes já verificadas (auréola, boca/nariz, cabelo, panturrilha) não oferecem nova intervenção bem sustentada pelas fotos sem repetir estudos rejeitados. Não inventei uma tarefa para preencher capacidade. Uma alternativa real é preparar esse estado e referências para escultura especializada/manual das laterais com validação contínua, preservandoV75; a capacidade GUI demonstrada não equivale a domínio artístico suficiente dessa reconstrução.
+
+Evidências `interactive-cap-clearance-proof.json`, `interactive-cap-clearance-localization.json` e scripts correspondentes. V75 permanece baseline.

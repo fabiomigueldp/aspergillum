@@ -1,0 +1,31 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-cloth-obstacle-surface-trial.py').read().split('counts=collections.Counter')[0])
+vf=collections.defaultdict(set)
+for i,f in enumerate(fs):
+ for v in f:vf[v].add(i)
+steps=[]
+for it in range(200):
+ counts=collections.Counter(tuple(sorted((a,b))) for i in removed for a,b in zip(fs[i],fs[i][1:]+fs[i][:1]));edges=[e for e,n in counts.items() if n==1];adj=collections.defaultdict(set);bad=set();hits=[]
+ for a,b in edges:
+  adj[a].add(b);adj[b].add(a);u=Vector(p[a]);v=Vector(p[b]);e=v-u
+  h,_,_,_=hb.ray_cast(u,e.normalized(),e.length)
+  invalid=h is not None
+  for t in [0,.25,.5,.75,1]:
+   pt=u.lerp(v,t);near,nor,_,_=hb.find_nearest(pt)
+   if (pt-near).dot(nor)<.0001:invalid=True
+  if invalid:bad.update((a,b));hits.append((a,b))
+ seen=set();loops=[]
+ for v in adj:
+  if v in seen:continue
+  todo=[v];seen.add(v);comp=[]
+  while todo:
+   a=todo.pop();comp.append(a)
+   for b in adj[a]:
+    if b not in seen:seen.add(b);todo.append(b)
+  loops.append(comp)
+ row={'iteration':it,'removed_faces':len(removed),'bad_edges':len(hits),'loop_lengths':[len(c) for c in loops],'bad_degrees':sum(len(n)!=2 for n in adj.values())};steps.append(row)
+ if not bad:break
+ extra=set().union(*(vf[v] for v in bad))-removed;pts=p[list({v for f in extra for v in fs[f]})]
+ if np.any(pts[:,2]<3.22) or np.any(pts[:,2]>3.42) or np.any(pts[:,0]>.025):row['blocked']='Required contour exits preserved posterior neck bounds';break
+ if not extra:row['blocked']='No adjacent faces';break
+ removed|=extra
+json.dump({'steps':steps,'removed_faces':sorted(removed),'loops':loops,'boundary_bounds':[p[list(adj)].min(axis=0).tolist(),p[list(adj)].max(axis=0).tolist()]},open(r+'neck-boundary-integral-growth.json','w'),indent=2);print(steps)

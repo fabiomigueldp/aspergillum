@@ -1,0 +1,40 @@
+{
+  "candidate": "bridge_ear_v10/structural_fit/relax075-continuation-iteration05.npz",
+  "mask": "bridge_ear_v10/evidence/seven-view-contour-mask.npz",
+  "mask_vertices": 1027,
+  "mask_base_points_equal_v7": true,
+  "mask_source_ids_equal_candidate": true,
+  "all_masked_vertices_bit_exact": true,
+  "masked_max_displacement_mm": 0.0,
+  "per_view": {
+    "front": {
+      "vertices": 313,
+      "bit_exact": true
+    },
+    "profile": {
+      "vertices": 264,
+      "bit_exact": true
+    },
+    "back": {
+      "vertices": 251,
+      "bit_exact": true
+    },
+    "left-ear": {
+      "vertices": 128,
+      "bit_exact": true
+    },
+    "right-ear": {
+      "vertices": 140,
+      "bit_exact": true
+    },
+    "left-oblique": {
+      "vertices": 137,
+      "bit_exact": true
+    },
+    "right-oblique": {
+      "vertices": 147,
+      "bit_exact": true
+    }
+  },
+  "limit": "Exact frozen sampled-mask vertices do not by themselves certify silhouette preservation at all directions or even prevent other moving vertices from crossing a sampled contour. Actual projected coverage/visual checks are separate."
+}

@@ -1,0 +1,119 @@
+{
+  "status": "LAB causal control, awaiting matched render and independent audit",
+  "purpose": "Separate deletion of transparent intersections from changes caused by subdivision, Float32 rounding, or triangulation. Every retained depth3 cube remains bit-value identical at its original index; the 476 removed alpha-zero leaf rectangles are appended to part00.",
+  "inputs": {
+    "lit_surface_v16/transparent_trim/roi68-depth3.geo.json": "0836f7efac70df97dc57ea32a9ecfbc347521a8a699164ef209fb82fd5e3a37b",
+    "opaque_transport_v15/shared_mask/shared_mask_2048.geo.json": "7d316ce8c92b346095a73e9f1f540167146a4f4aad707491d53f20b7d427de72",
+    "lit_surface_v16/transparent_trim/shared_mask_2048.png": "71dae6b4e599fc6aa3505974d9be95d4b9f78bc64e528e8ca32ddb33539eb620",
+    "lit_surface_v16/transparent_trim/roi68-depth3-cube-map.npz": "53a868806841841af6f9c258e7778ff1959227f12e9c94d3609152a4ddfd192b",
+    "lit_surface_v16/transparent_trim/roi68-depth3-rectangles.jsonl.gz": "91e7fe2109bf3246ed131ac48f8f9b13b6c2ec9b711b8d658c253d599272b3a7"
+  },
+  "prior_retained_cubes_exact": true,
+  "prior_retained_cube_order_exact": true,
+  "prior_retained_cube_count": 42517,
+  "prior_band_cube_count": 9840,
+  "restored_part": 0,
+  "restored_cubes": 476,
+  "restored_quad_new_index_range_inclusive": [
+    9840,
+    10315
+  ],
+  "all_restored_rectangles_actual_source_alpha_zero": true,
+  "source_alpha_modified": false,
+  "texture_sha256": "71dae6b4e599fc6aa3505974d9be95d4b9f78bc64e528e8ca32ddb33539eb620",
+  "unchanged_other_bones": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "selected_parent_count": 68,
+  "integer_texel_partition_certificates": [
+    {
+      "leaves_per_parent": 22,
+      "covered_texels": 4194304,
+      "overlap_texels": 0,
+      "missing_texels": 0
+    }
+  ],
+  "max_float64_restored_corner_error_from_parent_affine_blocks": 9.602787394150765e-16,
+  "original_depth3_counts": {
+    "cubes": 42517,
+    "quads": 42534,
+    "triangles_if_each_quad_split_in_two": 85068
+  },
+  "control_counts": {
+    "cubes": 42993,
+    "quads": 43010,
+    "triangles_if_each_quad_split_in_two": 86020
+  },
+  "geometry_bytes": 12966416,
+  "geometry_sha256": "510b3666805386a8652be83e1c515b411b6b0d7dd10b1f47da94895d4b9c7fb7",
+  "cube_map_schema": {
+    "part": {
+      "shape": [
+        42993
+      ],
+      "dtype": "int64"
+    },
+    "original_cube_index": {
+      "shape": [
+        42993
+      ],
+      "dtype": "int64"
+    },
+    "new_cube_index": {
+      "shape": [
+        42993
+      ],
+      "dtype": "int64"
+    },
+    "parent_rect_texels": {
+      "shape": [
+        42993,
+        4
+      ],
+      "dtype": "int64"
+    },
+    "is_subdivided_child": {
+      "shape": [
+        42993
+      ],
+      "dtype": "bool"
+    },
+    "is_restored_transparent": {
+      "shape": [
+        42993
+      ],
+      "dtype": "bool"
+    }
+  },
+  "limitations": [
+    "Ideal full original square partition; floating-point child corner rounding is reported, not claimed absent.",
+    "No atlas, alpha, PBR, native source surface, material, light, or camera edits.",
+    "No Minecraft/runtime/performance claim.",
+    "Actual ray results remain a separate test."
+  ],
+  "outputs": {
+    "geometry": "lit_surface_v16/transparent_trim/roi68-depth3-restored-transparent.geo.json",
+    "texture": "lit_surface_v16/transparent_trim/shared_mask_2048.png",
+    "cube_map": "lit_surface_v16/transparent_trim/roi68-depth3-restored-transparent-cube-map.npz",
+    "rectangles": "lit_surface_v16/transparent_trim/roi68-depth3-restored-transparent-rectangles.jsonl.gz",
+    "restored_quads": "lit_surface_v16/transparent_trim/roi68-depth3-restored-transparent-restored-quads.json"
+  }
+}

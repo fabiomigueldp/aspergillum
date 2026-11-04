@@ -1,0 +1,225 @@
+✖ matches official Blockbench South positions and signed UVs: south-depth0-u7-v9 (6.103655ms)
+✖ matches official Blockbench South positions and signed UVs: south-depth0-u7-v-9 (0.860655ms)
+✖ matches official Blockbench South positions and signed UVs: south-depth0-u-7-v9 (0.826969ms)
+✖ matches official Blockbench South positions and signed UVs: south-depth0-u-7-v-9 (1.943936ms)
+✖ matches official Blockbench South positions and signed UVs: south-depth2-u7-v9 (2.2903ms)
+✖ matches official Blockbench South positions and signed UVs: south-depth2-u7-v-9 (0.704965ms)
+✖ matches official Blockbench South positions and signed UVs: south-depth2-u-7-v9 (3.178085ms)
+✖ matches official Blockbench South positions and signed UVs: south-depth2-u-7-v-9 (1.159468ms)
+✖ zero dimension 0 preserves positive-face normal and winding (1.623586ms)
+✖ zero dimension 1 preserves positive-face normal and winding (0.992227ms)
+✖ zero dimension 2 preserves positive-face normal and winding (0.343751ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 0
+ℹ fail 11
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 276.717823
+
+✖ failing tests:
+
+test at viewer-3d/tests/bedrock-south-reference.node.mjs:13:2
+✖ matches official Blockbench South positions and signed UVs: south-depth0-u7-v9 (6.103655ms)
+  AssertionError [ERR_ASSERTION]: UV at -7,6,3: 0.171875,0.796875 != 0.28125,0.796875
+      at close (file:///workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/repo/viewer-3d/tests/bedrock-south-reference.node.mjs:11:124)
+      at TestContext.<anonymous> (file:///workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/repo/viewer-3d/tests/bedrock-south-reference.node.mjs:19:51)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at viewer-3d/tests/bedrock-south-reference.node.mjs:13:2
+✖ matches official Blockbench South positions and signed UVs: south-depth0-u7-v-9 (0.860655ms)
+  AssertionError [ERR_ASSERTION]: UV at -7,6,3: 0.171875,0.796875 != 0.28125,0.796875
+      at close (file:///workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/repo/viewer-3d/tests/bedrock-south-reference.node.mjs:11:124)
+      at TestContext.<anonymous> (file:///workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/repo/viewer-3d/tests/bedrock-south-reference.node.mjs:19:51)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at viewer-3d/tests/bedrock-south-reference.node.mjs:13:2
+✖ matches official Blockbench South positions and signed UVs: south-depth0-u-7-v9 (0.826969ms)
+  AssertionError [ERR_ASSERTION]: UV at -7,6,3: 0.171875,0.796875 != 0.0625,0.796875
+      at close (file:///workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/repo/viewer-3d/tests/bedrock-south-reference.node.mjs:11:124)
+      at TestContext.<anonymous> (file:///workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/repo/viewer-3d/tests/bedrock-south-reference.node.mjs:19:51)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at viewer-3d/tests/bedrock-south-reference.node.mjs:13:2
+✖ matches official Blockbench South positions and signed UVs: south-depth0-u-7-v-9 (1.943936ms)
+  AssertionError [ERR_ASSERTION]: UV at -7,6,3: 0.171875,0.796875 != 0.0625,0.796875
+      at close (file:///workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/repo/viewer-3d/tests/bedrock-south-reference.node.mjs:11:124)
+      at TestContext.<anonymous> (file:///workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/repo/viewer-3d/tests/bedrock-south-reference.node.mjs:19:51)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at viewer-3d/tests/bedrock-south-reference.node.mjs:13:2
+✖ matches official Blockbench South positions and signed UVs: south-depth2-u7-v9 (2.2903ms)
+  AssertionError [ERR_ASSERTION]: UV at -7,6,5: 0.171875,0.796875 != 0.28125,0.796875
+      at close (file:///workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/repo/viewer-3d/tests/bedrock-south-reference.node.mjs:11:124)
+      at TestContext.<anonymous> (file:///workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/repo/viewer-3d/tests/bedrock-south-reference.node.mjs:19:51)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at viewer-3d/tests/bedrock-south-reference.node.mjs:13:2
+✖ matches official Blockbench South positions and signed UVs: south-depth2-u7-v-9 (0.704965ms)
+  AssertionError [ERR_ASSERTION]: UV at -7,6,5: 0.171875,0.796875 != 0.28125,0.796875
+      at close (file:///workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/repo/viewer-3d/tests/bedrock-south-reference.node.mjs:11:124)
+      at TestContext.<anonymous> (file:///workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/repo/viewer-3d/tests/bedrock-south-reference.node.mjs:19:51)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at viewer-3d/tests/bedrock-south-reference.node.mjs:13:2
+✖ matches official Blockbench South positions and signed UVs: south-depth2-u-7-v9 (3.178085ms)
+  AssertionError [ERR_ASSERTION]: UV at -7,6,5: 0.171875,0.796875 != 0.0625,0.796875
+      at close (file:///workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/repo/viewer-3d/tests/bedrock-south-reference.node.mjs:11:124)
+      at TestContext.<anonymous> (file:///workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/repo/viewer-3d/tests/bedrock-south-reference.node.mjs:19:51)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at viewer-3d/tests/bedrock-south-reference.node.mjs:13:2
+✖ matches official Blockbench South positions and signed UVs: south-depth2-u-7-v-9 (1.159468ms)
+  AssertionError [ERR_ASSERTION]: UV at -7,6,5: 0.171875,0.796875 != 0.0625,0.796875
+      at close (file:///workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/repo/viewer-3d/tests/bedrock-south-reference.node.mjs:11:124)
+      at TestContext.<anonymous> (file:///workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/repo/viewer-3d/tests/bedrock-south-reference.node.mjs:19:51)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at viewer-3d/tests/bedrock-south-reference.node.mjs:24:27
+✖ zero dimension 0 preserves positive-face normal and winding (1.623586ms)
+  AssertionError [ERR_ASSERTION]: normal -0.6600838720297373,0.5738021558018337,-0.484809620246337 opposes triangle 0.6600838720297372,-0.5738021558018339,0.4848096202463368
+      at TestContext.<anonymous> (file:///workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/repo/viewer-3d/tests/bedrock-south-reference.node.mjs:32:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at viewer-3d/tests/bedrock-south-reference.node.mjs:24:27
+✖ zero dimension 1 preserves positive-face normal and winding (0.992227ms)
+  AssertionError [ERR_ASSERTION]: normal -0.7343683886053017,-0.6287395263662245,0.255714054760446 opposes triangle 0.7343683886053016,0.6287395263662245,-0.2557140547604458
+      at TestContext.<anonymous> (file:///workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/repo/viewer-3d/tests/bedrock-south-reference.node.mjs:32:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at viewer-3d/tests/bedrock-south-reference.node.mjs:24:27
+✖ zero dimension 2 preserves positive-face normal and winding (0.343751ms)
+  AssertionError [ERR_ASSERTION]: normal 0.15808969512109902,-0.5248215829993502,-0.8364029855964015 opposes triangle -0.15808969512109894,0.5248215829993502,0.8364029855964015
+      at TestContext.<anonymous> (file:///workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/repo/viewer-3d/tests/bedrock-south-reference.node.mjs:32:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

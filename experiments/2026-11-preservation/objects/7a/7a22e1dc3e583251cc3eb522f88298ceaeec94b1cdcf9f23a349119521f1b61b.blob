@@ -1,0 +1,89 @@
+"""Reproducible conservative V9 visibility and band anatomy diagnosis. Blender Python.
+Writes ONLY this script's directory. Finite rays do not prove universal invisibility.
+"""
+from pathlib import Path
+import numpy as np, json, time, hashlib
+from mathutils.bvhtree import BVHTree
+O=Path(__file__).resolve().parent; B=O.parent.parent
+base=np.load(B/'body_interface_v8/anatomy_fit/baseline-welded.npz')
+v8=np.load(B/'body_interface_v8/anatomy_fit/retained-anatomy.npz')
+sh=np.load(B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz')
+ba=np.load(B/'shell_band_v5/retained_candidate/evidence/band-paired.npz')
+v=base['points']; f=base['triangles']; p=v[f]; raw=np.cross(p[:,1]-p[:,0],p[:,2]-p[:,0]); fn=raw/np.maximum(np.linalg.norm(raw,axis=1)[:,None],1e-30)
+sv=sh['points'];sf=sh['triangles']; bv=ba['points'];bf=ba['triangles'];bp=bv[bf];bc=bp.mean(1);br=np.cross(bp[:,1]-bp[:,0],bp[:,2]-bp[:,0]);bn=br/np.linalg.norm(br,axis=1)[:,None]
+body=BVHTree.FromPolygons(v.tolist(),f.tolist(),all_triangles=True,epsilon=0)
+shell=BVHTree.FromPolygons(sv.tolist(),sf.tolist(),all_triangles=True,epsilon=0)
+band=BVHTree.FromPolygons(bv.tolist(),bf.tolist(),all_triangles=True,epsilon=0)
+ov=np.r_[sv,bv];of=np.r_[sf,bf+len(sv)];obstacle=BVHTree.FromPolygons(ov.tolist(),of.tolist(),all_triangles=True,epsilon=0)
+# Approximately 4 degree azimuth sampling around the complete sculpture; added
+# Fibonacci sphere avoids a regular-grid blind spot. Includes below and directly above.
+dirs=[]; labels=[]
+for el in range(-75,76,15):
+ for az in range(0,360,10):
+  a=np.radians(az);e=np.radians(el);dirs.append([np.cos(e)*np.sin(a),-np.cos(e)*np.cos(a),np.sin(e)]);labels.append([az,el])
+for z in [-1,1]:dirs.append([0,0,z]);labels.append([-1,90*z])
+for i in range(512):
+ z=1-2*(i+.5)/512; phi=i*np.pi*(3-np.sqrt(5));rr=np.sqrt(1-z*z);dirs.append([rr*np.cos(phi),rr*np.sin(phi),z]);labels.append([-2,i])
+dirs=np.array(dirs);labels=np.array(labels);eps=2e-7;limit=2.0
+# All closed-hemisphere rays are checked, including tangency and slight backfaces.
+# Obstacle-only visibility is conservative: self-occlusion cannot justify freeing a vertex.
+def scan_points(samples,normal,full=False):
+ ids=np.flatnonzero(dirs@normal>-.03); visible=[];sample_vis=[];min_block=np.inf; unblocked=0
+ for q in samples:
+  anyv=False
+  for di in ids:
+   dr=dirs[di];hit=obstacle.ray_cast(tuple(q+eps*dr),tuple(dr),limit)
+   if hit[0] is None:
+    unblocked+=1;anyv=True;visible.append(int(di))
+    if not full:break
+   else:min_block=min(min_block,float(hit[3]))
+  sample_vis.append(anyv)
+ return bool(any(sample_vis)),sorted(set(visible)),int(sum(sample_vis)),float(min_block),unblocked
+# Twenty-one barycentric samples incl all vertices/edges; exact points plus interior probes.
+bary=np.array([[i/5,j/5,1-(i+j)/5] for i in range(6) for j in range(6-i)])
+ear=v8['protected_ears'].astype(bool);ear_faces=np.flatnonzero(np.any(ear[f],axis=1));potential=np.zeros(len(f),bool);visdirs={};sample_counts=np.zeros(len(f),int);blocked_min=np.full(len(f),np.nan)
+print('directions',len(dirs),'ear vertices',ear.sum(),'incident faces',len(ear_faces),flush=True)
+for k,fi in enumerate(ear_faces):
+ hit,di,n,m,u=scan_points(bary@p[fi],fn[fi]);potential[fi]=hit;visdirs[str(int(fi))]=di;sample_counts[fi]=n;blocked_min[fi]=m
+ if k%50==0:print('ear faces checked',k,'visible',int(potential.sum()),flush=True)
+visible_vertex=np.zeros(len(v),bool);visible_vertex[np.unique(f[potential])]=True
+# A full one-ring buffer keeps faces touching visible ear faces fixed: even if sample
+# tests miss a narrow sliver on a hidden neighbor, no shared boundary point can move.
+one_ring=np.zeros(len(v),bool);one_ring[np.unique(f[np.any(visible_vertex[f],axis=1)])]=True
+hidden=ear&~visible_vertex;hidden_buffered=ear&~one_ring
+# For useful less-conservative option retain visible-face vertices only; solver may use
+# unbuffered hidden only with dense displaced-path re-test and visual/contour gates.
+np.savez_compressed(O/'ear-visibility-mask.npz',source_indices=base['source_indices'],source_face_indices=base['source_face_indices'],ear_broad=ear,ear_incident_face_indices=ear_faces,face_potentially_exposed=potential,ear_visible_protect=ear&visible_vertex,ear_hidden_sampled=hidden,ear_hidden_buffered=hidden_buffered,visible_face_vertex_mask=visible_vertex,visible_plus_one_ring_mask=one_ring,face_visible_sample_count=sample_counts,directions=dirs,direction_labels=labels,barycentric_samples=bary)
+# Band inside side is established by radial normals and paired offsets, not labels.
+side=ba['source_side'];pure0=np.all(side[bf]==0,axis=1);pure1=np.all(side[bf]==1,axis=1);mixed=~(pure0|pure1)
+center=np.array([.04,-.23,3.46]);rad=np.einsum('ij,ij->i',bn,bc-center)
+# For each face, nearest anatomical surface and signed distance along that surface's
+# outward geometric normal; negative = band on interior side of nearest body plane.
+near=[body.find_nearest(tuple(q)) for q in bc];q=np.array([x[0] for x in near]);ni=np.array([x[2] for x in near]);dist=np.linalg.norm(q-bc,axis=1);sd=np.einsum('ij,ij->i',bc-q,fn[ni]);normalalign=np.einsum('ij,ij->i',bn,fn[ni])
+# Independent parity classifications at two jittered directions; disagreement is uncertain.
+parity=np.zeros((len(bc),3),bool);testdirs=np.array([[1,.371,.193],[.217,1,.419],[.291,.137,1.0]]);testdirs/=np.linalg.norm(testdirs,axis=1)[:,None]
+for i,c in enumerate(bc):
+ for j,dr in enumerate(testdirs):
+  pos=c.copy();count=0
+  for _ in range(128):
+   h=body.ray_cast(tuple(pos),tuple(dr),2.)
+   if h[0] is None:break
+   count+=1;pos=np.array(h[0])+dr*1e-6
+  parity[i,j]=bool(count%2)
+inside=parity.all(1);outside=~parity.any(1);uncertain=~(inside|outside)
+# Gold face actually seen from the outside: shell/body can occlude it, self band is
+# checked too. Mixed borders are kept separate. This class is sampled, not proof.
+fullv=np.r_[sv,v,bv];fullf=np.r_[sf,f+len(sv),bf+len(sv)+len(v)];fulltree=BVHTree.FromPolygons(fullv.tolist(),fullf.tolist(),all_triangles=True,epsilon=0)
+band_visible=np.zeros(len(bf),bool);band_visible_dirs=np.full(len(bf),-1,int)
+for i,c in enumerate(bc):
+ for di in np.flatnonzero(dirs@bn[i]>.015):
+  dr=dirs[di];h=fulltree.ray_cast(tuple(c+eps*dr),tuple(dr),limit)
+  if h[0] is None:band_visible[i]=True;band_visible_dirs[i]=di;break
+np.savez_compressed(O/'band-physical-diagnosis.npz',inner_face_indices=np.flatnonzero(pure1),outer_face_indices=np.flatnonzero(pure0),rim_face_indices=np.flatnonzero(mixed),face_centroids=bc,face_normals=bn,radial_normal_dot=rad,nearest_body_points=q,nearest_body_faces=ni,unsigned_distance=dist,signed_nearest_body_plane_distance=sd,body_normal_alignment=normalalign,inside_body_by_3ray_parity=inside,outside_body_by_3ray_parity=outside,uncertain_parity=uncertain,band_sample_visible=band_visible,band_visible_direction=band_visible_dirs)
+rep={'method':{'directions':len(dirs),'barycentric_samples_per_ear_face':len(bary),'ear_incident_faces':len(ear_faces),'epsilon_mm':eps*1000,'occluders':'V7 native shell and V5 native band only; anatomy self-occlusion not used to free ear vertices','conservatism':'Any incident face sample with any unobstructed ray in its outward hemisphere protects all 3 face vertices. One-ring variant protects neighbors as well.','limits':['Finite directions and barycentric samples cannot prove never visible.','Nearest signed-plane distances are local, not global certified clearance.','Parity near open/degenerate geometry is uncertainty flagged; 3 agreeing rays are evidence, not a proof.','Views sample full sphere incl below; this is broader than a finite gallery of 4 cameras.','Main fixed-face mask and low-neck mask still required in addition to ear classification.']},'ear':{'broad_vertices':int(ear.sum()),'incident_faces':len(ear_faces),'potentially_exposed_faces':int(potential.sum()),'visible_protected_vertices':int((ear&visible_vertex).sum()),'sample_hidden_vertices':np.flatnonzero(hidden).tolist(),'buffered_hidden_vertices':np.flatnonzero(hidden_buffered).tolist(),'sample_hidden_source_indices':base['source_indices'][hidden].tolist(),'buffered_hidden_source_indices':base['source_indices'][hidden_buffered].tolist()},'band':{}}
+for name,m in [('outer_side0',pure0),('inner_side1',pure1),('mixed_rim',mixed)]:
+ rep['band'][name]={'faces':int(m.sum()),'radial_dot_min_max':[float(rad[m].min()),float(rad[m].max())],'distance_mm_percentiles':np.percentile(dist[m]*1000,[0,10,25,50,75,90,100]).tolist(),'signed_nearest_body_plane_distance_mm_percentiles':np.percentile(sd[m]*1000,[0,10,25,50,75,90,100]).tolist(),'inside_body_3ray_agreement_faces':int((inside&m).sum()),'outside_body_3ray_agreement_faces':int((outside&m).sum()),'parity_uncertain_faces':int((uncertain&m).sum()),'sample_visible_faces':int((band_visible&m).sum()),'visible_and_inside_faces':int((band_visible&inside&m).sum())}
+rep['band']['paired_thickness_mm_percentiles']=np.percentile(np.linalg.norm(bv[side==0]-bv[side==1],axis=1)*1000,[0,25,50,75,100]).tolist()
+rep['band']['orientation']='Side1 is physically cavity-facing: all 856 pure faces have inward radial normal. Side0 all 856 face outward. 200 mixed faces close rims and must be treated separately; do not include their planes as unbounded cavity halfspaces.'
+rep['hashes']={str(path.relative_to(B)):hashlib.sha256(path.read_bytes()).hexdigest() for path in [B/'body_interface_v8/anatomy_fit/baseline-welded.npz',B/'body_interface_v8/anatomy_fit/retained-anatomy.npz',B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz',B/'shell_band_v5/retained_candidate/evidence/band-paired.npz']}
+(O/'visibility-band-summary.json').write_text(json.dumps(rep,indent=2));(O/'ear-face-visible-directions.json').write_text(json.dumps(visdirs,indent=2));print(json.dumps(rep,indent=2),flush=True)

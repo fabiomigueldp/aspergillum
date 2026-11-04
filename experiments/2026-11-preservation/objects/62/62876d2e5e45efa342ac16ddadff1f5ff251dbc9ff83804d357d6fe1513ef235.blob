@@ -1,0 +1,34 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import test from 'node:test';
+import * as THREE from 'three';
+import {buildBedrockGeometry} from '../src/shared/bedrock-geometry.js';
+
+// Expected data comes from executable, hash-verified Blockbench functions,
+// not from this renderer's UV writer or a copy of its transformation logic.
+const reference=JSON.parse(fs.readFileSync(new URL('./fixtures/blockbench-south.json',import.meta.url)));
+function build(cube){return buildBedrockGeometry({bones:[{name:'root',pivot:[0,0,0],cubes:[cube]}]},{identifier:'geometry.reference',formatVersion:'1.14.0',textureWidth:64,textureHeight:64},{default:new THREE.MeshBasicMaterial()},{scale:1,includePivots:false,includeLocators:false});}
+function close(actual,expected,message){assert.equal(actual.length,expected.length);for(let i=0;i<actual.length;i++)assert.ok(Math.abs(actual[i]-expected[i])<1e-6,`${message}: ${actual} != ${expected}`);}
+for(const fixture of reference.fixtures){
+ test(`matches official Blockbench South positions and signed UVs: ${fixture.name}`,()=>{
+  const built=build(fixture.input);built.root.updateMatrixWorld(true);const mesh=built.meshRecords[0].mesh;
+  const p=mesh.geometry.attributes.position,uv=mesh.geometry.attributes.uv;
+  for(let i=16;i<20;i++){
+   const world=new THREE.Vector3().fromBufferAttribute(p,i).applyMatrix4(mesh.matrixWorld).toArray();
+   const expected=fixture.expected.find(e=>e.position.every((v,k)=>Math.abs(v-world[k])<1e-6));
+   assert.ok(expected,'matching official corner');close([uv.getX(i),uv.getY(i)],expected.uv,'UV at '+world);
+  }
+ });
+}
+
+for(const axis of [0,1,2])test(`zero dimension ${axis} preserves positive-face normal and winding`,()=>{
+ const size=[5,4,3];size[axis]=0;const face=['east','up','south'][axis];
+ const cube={origin:[-7,2,3],size,pivot:[-2,2,3],rotation:[17,-29,41],uv:{[face]:{uv:[11,13],uv_size:[7,9]}}};
+ const built=build(cube);built.root.updateMatrixWorld(true);const mesh=built.meshRecords[0].mesh,g=mesh.geometry;
+ const group=g.groups[0],indices=Array.from(g.index.array.slice(group.start,group.start+3));
+ const vertices=indices.map(i=>new THREE.Vector3().fromBufferAttribute(g.attributes.position,i).applyMatrix4(mesh.matrixWorld));
+ const winding=vertices[1].clone().sub(vertices[0]).cross(vertices[2].clone().sub(vertices[0])).normalize();
+ const normal=new THREE.Vector3().fromBufferAttribute(g.attributes.normal,indices[0]).applyNormalMatrix(new THREE.Matrix3().getNormalMatrix(mesh.matrixWorld));
+ assert.ok(winding.dot(normal)>0.999999,`normal ${normal.toArray()} opposes triangle ${winding.toArray()}`);
+ assert.equal(g.attributes.position.count,24,'no added thickness or geometry');
+});

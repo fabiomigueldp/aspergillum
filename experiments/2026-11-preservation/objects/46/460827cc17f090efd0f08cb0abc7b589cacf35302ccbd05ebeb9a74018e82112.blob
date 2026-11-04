@@ -1,0 +1,16 @@
+import bpy
+from mathutils import Vector
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/'
+bpy.ops.wm.open_mainfile(filepath=r+'V63-opposite-ankle-trial.blend',use_scripts=False)
+if bpy.context.object and bpy.context.object.mode!='OBJECT':bpy.ops.object.mode_set(mode='OBJECT')
+bpy.ops.object.select_all(action='DESELECT');o=bpy.data.objects['Maria — anatomia feminina adaptada CC0'];o.hide_set(False);o.select_set(True);bpy.context.view_layer.objects.active=o
+# Copy evaluated existing mixture into new relative key, cancel prior values to avoid doubling.
+k=o.shape_key_add(name='TESTE73 — planos GUI reversíveis',from_mix=True)
+for a in o.data.shape_keys.key_blocks:
+ if a!=k:a.value=0
+k.value=1;o.active_shape_key_index=len(o.data.shape_keys.key_blocks)-1
+for sc in bpy.data.screens:
+ for a in sc.areas:
+  if a.type=='VIEW_3D':
+   v=a.spaces.active;v.region_3d.view_location=Vector((0,-.19,3.38));v.region_3d.view_distance=.88;v.region_3d.view_rotation=(Vector((-.65,-4,3.6))-Vector((0,-.19,3.38))).to_track_quat('Z','Y');v.region_3d.view_perspective='ORTHO';v.shading.type='SOLID'
+bpy.ops.wm.save_as_mainfile(filepath=r+'V73-gui-planes-trial.blend')

@@ -1,0 +1,12 @@
+import bpy
+from mathutils import Vector
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V68-nasal-trial.blend',use_scripts=False);s=bpy.context.scene
+for o in bpy.data.objects:
+ if o.type=='LIGHT':o.hide_render=True
+s.world.node_tree.nodes['Background'].inputs['Strength'].default_value=.025
+ld=bpy.data.lights.new('Nasal diagnostic key','AREA');ld.energy=12;ld.shape='DISK';ld.size=.35;lo=bpy.data.objects.new('Nasal diagnostic key',ld);bpy.context.collection.objects.link(lo);lo.location=(-.7,-1,4.3);target=Vector((.015,-.32,3.40));lo.rotation_euler=(target-lo.location).to_track_quat('-Z','Y').to_euler()
+s.cycles.samples=64;s.render.resolution_x=700;s.render.resolution_y=900;s.render.resolution_percentage=100;c=s.camera;k=bpy.data.objects['Maria — anatomia feminina adaptada CC0'].data.shape_keys.key_blocks['TESTE68 — plano ponta nasal Maria']
+for view,loc,targ,scale in [('oblique',(-1.6,-5,3.7),(0,-.25,3.44),.62),('profile',(-5,-.05,3.6),(0,-.25,3.42),.70)]:
+ c.location=loc;c.rotation_euler=(Vector(targ)-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=scale
+ for version,value in [('V63',0),('V68',1)]:
+  k.value=value;s.render.filepath=r+version+'-nasal-balanced-'+view+'.png';bpy.ops.render.render(write_still=True)

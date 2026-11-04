@@ -1,0 +1,24 @@
+import numpy as np,json
+from pathlib import Path
+from mathutils.bvhtree import BVHTree
+R=Path(__file__).resolve().parents[1];d=np.load(R/'evidence/cap-midsurface-first.npz');v=d['points'];f=d['triangles'];tree=BVHTree.FromPolygons(v.tolist(),f.tolist(),all_triangles=True);pairs=[(a,b) for a,b in set(tree.overlap(tree)) if a<b and not set(f[a])&set(f[b])]
+def inside(p,t,n,eps=1e-10):
+ return all(np.dot(np.cross(t[(i+1)%3]-t[i],p-t[i]),n)>=-eps for i in range(3))
+def cross_edges(a,b):
+ n=np.cross(b[1]-b[0],b[2]-b[0]);length=np.linalg.norm(n)
+ if length<1e-15:return False
+ n/=length
+ for i in range(3):
+  p=a[i];q=a[(i+1)%3];dp=np.dot(p-b[0],n);dq=np.dot(q-b[0],n)
+  if dp*dq < -1e-18:
+   hit=p+(q-p)*(dp/(dp-dq))
+   if inside(hit,b,n):return True
+ return False
+proper=[];coplanar=[]
+for a,b in pairs:
+ ta=v[f[a]];tb=v[f[b]]
+ if cross_edges(ta,tb) or cross_edges(tb,ta):proper.append([a,b])
+ na=np.cross(ta[1]-ta[0],ta[2]-ta[0]);nb=np.cross(tb[1]-tb[0],tb[2]-tb[0]);na/=max(np.linalg.norm(na),1e-15);nb/=max(np.linalg.norm(nb),1e-15)
+ if abs(np.dot(na,nb))>.999999 and max(abs((tb-ta[0])@na))<1e-7:coplanar.append([a,b])
+report={'closed_cap_triangles':len(f),'nonadjacent_bvh_candidate_pairs':len(pairs),'proper_triangle_crossings':len(proper),'coplanar_candidate_pairs_needing_separate_review':len(coplanar),'proper_crossing_pairs':proper[:50],'coplanar_pairs':coplanar[:50],'scope':'Local cap after reducing midsurface before solidification, not full statue or seam','test':'BVH candidates, exclude shared vertices, test edge-plane crossing inside opposing triangle; no proof against arbitrary tangential contact'}
+(R/'evidence/cap-intersection-check.json').write_text(json.dumps(report,indent=2));print(report)

@@ -1,0 +1,55 @@
+# Encaixe local V13: restauração da faixa em direção à fonte
+
+**Retida como pesquisa técnica local:** `retained-band.npz`, cópia byte a byte de `valley-source-c1-n4.npz`.
+
+SHA-256: `aa27567ac125b12a298c283b0e9c99130fe222bf2ce3bdf9f22edf2908f4404b`.
+
+A decisão final veio após auditoria geométrica local, revisão independente da ordem das superfícies e aprovação visual nas vistas principais e adicionais. A cena nativa congelada foi reaberta e conferida na revisão final quanto às coordenadas float32 e triângulos. Isso não é aprovação artística global, interface livre de contatos, exportação Bedrock, integração ou teste Minecraft.
+
+Quatro geometrias de pesquisa permanecem preservadas. A máscara triangular inicial remove as ilhas azuis, mas cria quebras diagonais de relevo e não foi retida. As transições C1 e sin² receberam parecer visual favorável sem vencedor visual robusto; escolheu-se C1 por maior fidelidade à fonte no vale. A versão C1 n4 conserva esse resultado nas vistas examinadas com 4.444 faces, contra 13.980 da C1 n8.
+
+## Evidência e escopo
+
+O diagnóstico independente encontrou 14 raios inicialmente azuis com casca externa à frente da faixa íntegra, onde a fonte mostra faixa primeiro. O fatorial com fontes de alta resolução corroborou que o problema é sobretudo a aproximação da faixa por cordas, não uma casca inflada. O mapa denso identifica 1.376 inversões em 35 faces externas do vale, sem inversões centrais u80–96. Isso não classifica os 1.360 contatos globais originais como defeitos e não demonstra intenção dos contatos internos.
+
+Todos os 78 vértices V12 nas 35 faces externas e suas correspondentes internas já coincidem bit a bit com a fonte no mesmo UV; os 108 pontos dos vizinhos conformes também coincidem. Entretanto, as cordas da borda da máscara desviam até 1,002 mm da superfície fonte entre esses pontos. Preservar os pontos não obriga a conservar essas cordas interiores artificiais. As duas cristas v3/v13, larguras/margens, todos os pontos antigos, o centro u80–96 e as terminações V12 continuam restrições explícitas.
+
+## Método
+
+`build_local_source_patch.py` subdivide triângulos com n8, compartilhando cada ponto de aresta. Faces vizinhas têm apenas triangulação conforme no plano original. Só vértices novos recebem uma fração entre zero e um do vetor até a superfície fonte avaliada no mesmo UV. O amostrador usa os triângulos reais do grid fonte de 0,25, não uma superfície suavizada inventada. As paredes externa e interna recebem a mesma função de peso em UV.
+
+- `valley-source-mask-n8.npz`: 35 faces externas comprovadas +35 internas; transição à fronteira da máscara triangular em 1UV. 3.122 vértices/6.240 faces. Máximo deslocamento 1,108mm; rotação contra ancestral 50,29°. Visualmente reprovada como acabamento por quebras diagonais repetidas.
+- `valley-source-corridor-n8.npz`: suporte contínuo v3–13 nos dois corredores u32–80 e u96–144. Peso transversal sin² e fade longitudinal smoothstep de 8UV. 6.992 vértices/13.980 faces. Deslocamento máximo 0,929mm; rotação 14,85°.
+- `valley-source-c1-n8.npz`: mesma triangulação/suporte da anterior, peso transversal pleno em v5–11 com transição C1 de 2UV até cristas. Mesmo fade longitudinal. Deslocamento máximo 1,108mm; rotação 35,87°.
+
+O apoio ampliado não significa que toda essa região era defeituosa: é a transição necessária para abandonar a borda triangular serrilhada e retornar às cristas congeladas. As 192 faces no apoio ampliado representam 31,876% da área V12, contra 13,871% nas 70 faces iniciais. Não se afirma frente inteira intocada: seus vértices/largura/cristas permanecem, mas parte do interior das faces frontais é reconstruída.
+
+- `valley-source-c1-n4.npz`: campo e suporte idênticos à C1 n8, apenas densidade reduzida para n4. 2.224 vértices/4.444 faces, menos 68,21% de triângulos. Máximo deslocamento 1,108mm; rotação contra ancestral 33,33°. Nos mesmos 15.818 UVs do mapa independente, a superfície n4 difere da n8 em mediana 0,00979mm e máximo 0,074mm. Isso não é limite global de Hausdorff/silhueta.
+
+## Testes da retenção local
+
+A primeira candidata passou o audit local: malha fechada Euler2, zero auto-interseções estritas após AABBs+adjacências e refinamento80d dos flags, zero sobreposição coplanar positiva e nenhuma mudança na relação com anatomia. Todos os 1.590 flags brutos foram preservados: 1.121 pares compartilham um vértice e 469 compartilham uma aresta, sem confirmação estrita. Os predicados foram reutilizados da revisão V12.
+
+A revisão independente confirma que as quatro candidatas corrigem todos os 1.376 alvos do mapa denso sem novas inversões nesse mapa e colocam faixa primeiro nos17 raios. Esse resultado não substitui testes próprios/espessura nem a avaliação visual. A C1 n4 recebeu também auditoria completa local e revisão visual final; as alternativas n8 não receberam todos esses gates. A primeira tem883 pares residuais com a casca no patch interno e zero no patch externo; não existe certificado de folga global.
+
+C1 n4 tem uma componente fechada, Euler2, volume positivo, zero links de vértice defeituosos, duplicatas, vértices sem uso, degenerados ou orientação de aresta inconsistente. Foram testados 97.764 pares AABB, incluindo todos os 27.581 adjacentes; os 739 flags (535 com um vértice comum e 204 com uma aresta comum) foram refinados em 80 dígitos, sem cruzamento estrito confirmado. Nenhuma sobreposição coplanar positiva foi detectada contra ela mesma, casca ou anatomia.
+
+A relação com anatomia permanece em 189 pares, sem nenhum no patch ou vizinhos e sem novo ancestral. A relação faixa/casca tem 1.672 pares, que não podem ser comparados como piora pelo número isolado após tesselação. As 108 arestas originais de crista mantêm domínio geométrico completo e sem duplicação; 48 delas são apenas subdivididas. Todos os 584 pontos V12 ficam bit a bit exatos, 892 triângulos intactos, 80 faces vizinhas com plano e área preservados. Os 192 ancestrais restaurados passam contenção, orientação e soma de área em UV.
+
+Os 850 pares de parede no patch medem 0,4793–0,5002mm; a projeção na normal das faces externas mede 0,4029–0,4999mm, com zero diretores mistos. São medidas locais, não espessura mínima global. O teste direto float32 não funde vértices, degenera ou inverte faces; maior rotação de normal do patch 0,00896°, enquanto máximo global 0,42893° é herdado de face intacta. Todos os 84 triângulos abaixo de 1° já pertenciam à região intacta; não surgiu nenhum no patch ou vizinhos.
+
+`transition-field-comparison.json` compara erro de posição e normal em centroides no mesmo UV; `old-points-source-compatibility.json` separa a compatibilidade dos pontos do desvio das cordas. A decisão e estado atual de cada geometria ficam em `trials-manifest.json`.
+
+## Reprodução
+
+Executar nesta pasta, com NumPy/SciPy/mpmath já disponíveis. Os scripts não sobrescrevem NPZs candidatos. Para repetir, use novos nomes de tag. Todos os arquivos anteriores são entradas somente leitura.
+
+```
+PYTHONDONTWRITEBYTECODE=1 python map_source_restore.py
+PYTHONDONTWRITEBYTECODE=1 python build_local_source_patch.py NOVO_TAG_MASK --evidence-mask ../independent_diagnosis/valley-dense-summary.json --n 8
+PYTHONDONTWRITEBYTECODE=1 python build_local_source_patch.py NOVO_TAG_SIN --n 8 --intervals 32:80,96:144 --vlow 3 --vhigh 13 --u-taper 8 --transition profile --evidence-context ../independent_diagnosis/valley-dense-summary.json
+PYTHONDONTWRITEBYTECODE=1 python build_local_source_patch.py NOVO_TAG_C1 --n 8 --intervals 32:80,96:144 --vlow 3 --vhigh 13 --u-taper 8 --transition plateau --evidence-context ../independent_diagnosis/valley-dense-summary.json
+PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 python audit_local_patch.py TAG_A_REVISAR
+```
+
+As imagens são responsabilidade do renderer/revisor separado, em `../evidence`. Nenhuma exportação Bedrock, Minecraft, integração, publicação, nova geometria de rosto ou halo foi usada para declarar estes resultados.

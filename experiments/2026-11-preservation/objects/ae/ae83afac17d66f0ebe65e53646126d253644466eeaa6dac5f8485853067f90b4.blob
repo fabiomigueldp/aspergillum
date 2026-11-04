@@ -1,0 +1,23 @@
+import json,pathlib,numpy as np
+from scipy.spatial.transform import Rotation
+R=pathlib.Path('/workspace/scratch/212c580ada5b/paz-workbench-validation-20261103')
+G=R/'source/viewer-3d/public/asset-library/projects/paz-v75-pbr/models/entity/paz_v75_pbr_sculpture.geo.json'
+g=json.loads(G.read_text())['minecraft:geometry'][0]
+actual=np.fromfile(R/'threejs-surface-corners.f64',dtype=np.float64).reshape(-1,4,3)
+faces={'north':[(0,1,0),(0,0,0),(1,0,0),(1,1,0)],'south':[(1,1,1),(1,0,1),(0,0,1),(0,1,1)],'east':[(1,1,0),(1,0,0),(1,0,1),(1,1,1)],'west':[(0,1,1),(0,0,1),(0,0,0),(0,1,0)],'up':[(0,1,1),(0,1,0),(1,1,0),(1,1,1)],'down':[(0,0,0),(0,0,1),(1,0,1),(1,0,0)]}
+errs=[];i=0
+for bone in g['bones']:
+ assert not bone.get('parent') and not any(bone.get('rotation',[0,0,0]))
+ for c in bone['cubes']:
+  o=np.array(c['origin']);s=np.array(c['size']);p=np.array(c.get('pivot',o+s/2));a=c.get('rotation',[0,0,0]); rot=Rotation.from_euler('xyz',[-a[0],-a[1],a[2]],degrees=True)
+  for name in ['east','west','up','down','south','north']:
+   if name not in c['uv']:continue
+   q=o+np.array(faces[name])*s
+   # Independent expression used by the existing Blender asset importer:
+   # inverse Blockbench export, then express its result in viewer coordinates.
+   mirror=np.array([-1,1,1]);bb=rot.apply(q*mirror-p*mirror)+p*mirror;expected=bb*mirror/16
+   distances=np.linalg.norm(expected[:,None,:]-actual[i][None,:,:],axis=2)
+   errs.append(float(max(distances.min(axis=0).max(),distances.min(axis=1).max())));i+=1
+assert i==len(actual)
+report={'method':'Compare actual canonical Three.js mesh world-space face corners against an independent inverse-export formula used by the Blender importer; unordered corners per corresponding cube face. No images or shaders evaluated.','comparedQuads':i,'maxCornerDistanceBlocks':max(errs),'meanFaceMaxDistanceBlocks':float(np.mean(errs)),'allFacesWithin1e-6Block':bool(max(errs)<1e-6),'limitation':'Agreement of two external transforms, not proof that either matches the proprietary Minecraft renderer; no highpoly surface fidelity claim.'}
+(R/'transform-comparison.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))

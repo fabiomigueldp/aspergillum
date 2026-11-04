@@ -1,0 +1,111 @@
+import crypto from 'node:crypto';
+import {DESIGNS,ATELIER_DESIGNS,compactLayout} from '../../src/domain/catalog.ts';
+import {CLASSIC_POSES,migrateLegacyClassicSnapshot} from '../../src/domain/classic-layout.ts';
+import {CLASSIC_TEXTILE_POSES} from '../../src/domain/classic-textile-layout.ts';
+import {PALETTE_SHAPES} from '../../src/domain/palette-layout.ts';
+import {migrateLegacyAtelierSnapshot} from '../../src/domain/catalog-migration.ts';
+export const SOURCE_SCHEMA='altare-0.12.3';
+export const TARGET_SCHEMA='altare-compact-v1';
+export const LIMITS=Object.freeze({bytes:16*1024*1024,cells:65536,depth:16});
+export const sha256=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
+export const jsonBytes=value=>Buffer.from(JSON.stringify(value,null,2)+'\n','utf8');
+export class SnapshotError extends Error {constructor(code,message){super(message);this.code=code;}}
+const reject=(code,message)=>{throw new SnapshotError(code,message);};
+const object=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
+const exact=(v,keys)=>object(v)&&Object.keys(v).length===keys.length&&keys.every(k=>Object.hasOwn(v,k));
+const integer=(v,min,max)=>typeof v==='number'&&Number.isSafeInteger(v)&&!Object.is(v,-0)&&v>=min&&v<=max;
+const schemaStates=(states,fields)=>exact(states,Object.keys(fields))&&Object.entries(fields).every(([key,max])=>integer(states[key],0,max));
+const codecSignature=designs=>designs.map(({id,codec,palette})=>({id,codec:codec??null,palette:palette??null})).sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0);
+const knownStructures=new Set(['pilaster','ogive','trestle','coffer','baluster','crossbrace','colonnade','classic']);
+const baselineDesigns=DESIGNS.filter(d=>knownStructures.has(d.structure));
+const byId=new Map(baselineDesigns.map(d=>[d.id,d]));
+const atelierIds=new Set(ATELIER_DESIGNS.map(d=>d.id));
+export const CONTRACT=Object.freeze({
+ classic:'f66361d205f1805def0943dbb0a510e0b1808bafb53fa4cb99bb2c0764dccfbd',
+ classicTextile:'a63d26e61a6165c4b3ce711b4a59f66a133625cc6e043d1b4337362ff7164c6c',
+ palette:'5aa446af5fad1c5541f03c588e011b6405883ad56fb05eee4253e376233cc341',
+ ids:'89b3a06b6ba4ffc5e681b77c06a06b7aafbd2338dfd3c910843fc1d781b8689d',
+ catalogSchema:'1bf09fee908092db42c81e875f5ebb31e2b28e53f58dddf2f8a6fcb3fa4a269e',
+});
+export function requireContract(){
+ const actual={classic:CLASSIC_POSES,classicTextile:CLASSIC_TEXTILE_POSES,palette:PALETTE_SHAPES,ids:baselineDesigns.map(d=>d.id).sort(),catalogSchema:codecSignature(baselineDesigns)};
+ for(const [key,value] of Object.entries(actual))if(sha256(JSON.stringify(value))!==CONTRACT[key])reject('contract-changed',`The pinned ${key} contract changed. Review the migration target before using this tool.`);
+ if(ATELIER_DESIGNS.length!==135||ATELIER_DESIGNS.some(d=>d.codec!==(d.textile==='none'&&d.frontal==='none'?'edges':'compact')))reject('contract-changed','The Atelier codec contract changed.');
+}
+/** Native JSON parsing plus an independent bounded token walk to retain evidence
+ * of duplicate object keys before JSON.parse would silently discard it. */
+export function parseSnapshotJson(bytes){
+ if(bytes.length>LIMITS.bytes)reject('input-too-large',`Input exceeds ${LIMITS.bytes} bytes.`);
+ let text;try{text=new TextDecoder('utf-8',{fatal:true}).decode(bytes);}catch{reject('invalid-utf8','Input is not valid UTF-8.');}
+ let i=0;const space=()=>{while(/[\t\n\r ]/.test(text[i]??'x'))i++;};
+ function string(){
+  const start=i;if(text[i++]!=='"')reject('invalid-json','Expected an object key.');
+  while(i<text.length){const c=text[i++];if(c==='"'){try{return JSON.parse(text.slice(start,i));}catch{reject('invalid-json','Invalid JSON string.');}}if(c==='\\')i++;}
+  reject('invalid-json','Unterminated JSON string.');
+ }
+ function value(depth){
+  if(depth>LIMITS.depth)reject('too-deep',`JSON exceeds nesting depth ${LIMITS.depth}.`);
+  space();const c=text[i];
+  if(c==='{'){
+   i++;space();const keys=new Set();if(text[i]==='}'){i++;return;}
+   while(true){space();const key=string();if(keys.has(key))reject('duplicate-json-key',`Repeated JSON object key: ${JSON.stringify(key.slice(0,128))}.`);keys.add(key);space();if(text[i++]!==':')reject('invalid-json','Expected colon.');value(depth+1);space();const next=text[i++];if(next==='}')return;if(next!==',')reject('invalid-json','Expected comma or closing object.');}
+  }
+  if(c==='['){i++;space();if(text[i]===']'){i++;return;}while(true){value(depth+1);space();const next=text[i++];if(next===']')return;if(next!==',')reject('invalid-json','Expected comma or closing array.');}}
+  if(c==='"'){string();return;}
+  const match=/^(?:true|false|null|-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?)/.exec(text.slice(i));
+  if(!match)reject('invalid-json','Invalid JSON value.');
+  const token=match[0];
+  if(!['true','false','null'].includes(token)&&(!/^-?(?:0|[1-9]\d*)$/.test(token)||!Number.isSafeInteger(Number(token))||String(Number(token))!==token))reject('noncanonical-number','Only canonical safe-integer JSON number tokens are accepted; no fractions, exponents or negative zero.');
+  i+=token.length;
+ }
+ value(0);space();if(i!==text.length)reject('invalid-json','Unexpected trailing input.');
+ try{return JSON.parse(text);}catch{reject('invalid-json','Invalid JSON document.');}
+}
+function existingSchema(d){
+ if(d.codec==='classic_textile')return {'altare:shape':8,'altare:detail':5,'altare:facing':3,'altare:stone':2};
+ if(d.codec==='symmetric')return {'altare:edges':15};
+ if(d.codec==='edges')return {'altare:edges':15,'altare:facing':3};
+ if(compactLayout(d))return {'altare:shape':6,'altare:detail':3,'altare:facing':3};
+ return null;
+}
+function cellConversion(cell){
+ if(cell.id==='altare:mensa'){
+  if(!schemaStates(cell.states,{'altare:edges':15,'altare:frontal':11,'altare:facing':3,'altare:stone':2,'altare:cloth':4}))return {ok:false,reason:'invalid-states'};
+  return migrateLegacyClassicSnapshot(cell);
+ }
+ if(atelierIds.has(cell.id)){
+  if(!schemaStates(cell.states,{'altare:edges':15,'altare:facing':3,'altare:role':3}))return {ok:false,reason:'invalid-states'};
+  return migrateLegacyAtelierSnapshot(cell);
+ }
+ const d=byId.get(cell.id),schema=d&&existingSchema(d);
+ if(!d||!schema)return {ok:false,reason:'unsupported-id'};
+ if(!schemaStates(cell.states,schema))return {ok:false,reason:'invalid-states'};
+ return {ok:true,snapshot:{id:cell.id,states:{...cell.states}},unchanged:true};
+}
+/** Pure whole-document audit. No partial converted snapshot is ever returned. */
+export function auditSnapshot(document,{allowUnusedRoleNormalization=false}={}){
+ requireContract();
+ if(typeof allowUnusedRoleNormalization!=='boolean')reject('invalid-options','Normalization option must be boolean.');
+ if(!exact(document,['format','schemaVersion','stateSchema','source','cells'])||document.format!=='altare-block-snapshot'||document.schemaVersion!==1||document.stateSchema!==SOURCE_SCHEMA)reject('invalid-envelope','Expected altare-block-snapshot schema 1 with source stateSchema altare-0.12.3 and exact fields.');
+ const source=document.source;
+ if(!exact(source,['addonVersion','exportedAt','coverage'])||source.addonVersion!=='0.12.3'||source.coverage!=='selected-cells'||typeof source.exportedAt!=='string'||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(source.exportedAt)||!Number.isFinite(Date.parse(source.exportedAt))||new Date(source.exportedAt).toISOString()!==source.exportedAt)reject('invalid-source','Source must declare addonVersion 0.12.3, a canonical UTC exportedAt and coverage selected-cells.');
+ if(!Array.isArray(document.cells)||document.cells.length<1||document.cells.length>LIMITS.cells)reject('invalid-cell-count',`Expected 1 to ${LIMITS.cells} selected cells.`);
+ const issues=[],normalizations=[],converted=[],seen=new Set();let convertedCells=0,unchangedCells=0;
+ for(const [index,cell] of document.cells.entries()){
+  const issue=(code,message)=>issues.push({index,code,message,...(object(cell)&&typeof cell.id==='string'?{id:cell.id.slice(0,160)}:{}),...(object(cell)&&typeof cell.dimension==='string'?{dimension:cell.dimension.slice(0,128)}:{}),...(object(cell)&&exact(cell.position,['x','y','z'])&&Object.values(cell.position).every(n=>integer(n,-2147483648,2147483647))?{position:{...cell.position}}:{}),...(code==='unrepresentable-pose'?{states:{...cell.states}}:{})});
+  if(!exact(cell,['dimension','position','id','states'])){issue('invalid-cell','Cell must contain exactly dimension, position, id and states.');continue;}
+  if(typeof cell.dimension!=='string'||cell.dimension.length>128||!/^[a-z0-9_.-]+:[a-z0-9_./-]+$/.test(cell.dimension)){issue('invalid-dimension','Dimension must be a bounded namespaced identifier.');continue;}
+  if(!exact(cell.position,['x','y','z'])||!Object.values(cell.position).every(n=>integer(n,-2147483648,2147483647))){issue('invalid-position','Position must contain signed 32-bit integer x/y/z; negative zero is rejected.');continue;}
+  const key=JSON.stringify([cell.dimension,cell.position.x,cell.position.y,cell.position.z]);
+  if(seen.has(key)){issue('duplicate-position','Another cell uses the same dimension and coordinates.');continue;}seen.add(key);
+  if(typeof cell.id!=='string'||cell.id.length>160){issue('unsupported-id','Block ID is not a supported precompact Altare ID.');continue;}
+  const result=cellConversion(cell);
+  if(!result.ok){issue(result.reason,result.reason==='unrepresentable-pose'?'This valid legacy pose has no lossless compact equivalent. No repair was applied.':'ID or state fields are not part of the exact source schema.');continue;}
+  if(result.unchanged)unchangedCells++;else convertedCells++;
+  for(const code of result.normalizations??[])normalizations.push({index,id:cell.id,dimension:cell.dimension,position:{...cell.position},code,previousRole:cell.states['altare:role'],targetLogicalRole:0});
+  converted.push({dimension:cell.dimension,position:{...cell.position},id:result.snapshot.id,states:{...result.snapshot.states}});
+ }
+ const eligible=issues.length===0&&(normalizations.length===0||allowUnusedRoleNormalization);
+ const report={format:'altare-snapshot-audit',schemaVersion:1,sourceStateSchema:SOURCE_SCHEMA,targetStateSchema:TARGET_SCHEMA,coverage:'selected-cells',totalCells:document.cells.length,convertedCells,unchangedCells,rejectedCells:issues.length,normalizationCount:normalizations.length,normalizationsAllowed:allowUnusedRoleNormalization,eligible,issues,normalizations,limitations:['Selected-cell snapshot only, not a full world backup.','Export origin and world completeness cannot be authenticated by this tool.','No game, world, entity, inventory, chunk, or installed pack is read or modified.','Hashes require a separately trusted digest to resist coordinated tampering.','Use trusted canonical directories with no concurrent writers; hostile directory replacement is outside this tool guarantee.','This does not make loading an old world with a new state schema safe.']};
+ return {report,converted:eligible?{format:document.format,schemaVersion:1,stateSchema:TARGET_SCHEMA,source:{...source},cells:converted}:null};
+}

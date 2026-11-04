@@ -1,0 +1,28 @@
+import bpy,numpy as np,json,sys,math
+from pathlib import Path
+from mathutils import Vector
+O=Path(__file__).resolve().parent;B=O.parent.parent
+args=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
+anat=Path(args[0]) if args else B/'body_interface_v8/anatomy_fit/baseline-welded.npz';tag=args[1] if len(args)>1 else 'baseline';isolate=len(args)>2 and args[2]=='isolate'
+bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False);s=bpy.context.scene;s.render.engine='CYCLES';s.cycles.samples=20;s.cycles.use_denoising=False;s.render.threads_mode='FIXED';s.render.threads=2;s.view_settings.view_transform='Standard';s.view_settings.look='None';s.world.use_nodes=True;bg=s.world.node_tree.nodes.get('Background');bg.inputs['Color'].default_value=(.7,.73,.8,1);bg.inputs['Strength'].default_value=.7
+ld=bpy.data.lights.new('Neutral sun','SUN');lo=bpy.data.objects.new('Neutral sun',ld);s.collection.objects.link(lo);lo.rotation_euler=(.35,-.5,-.35);ld.energy=1.5;ld.angle=.1
+colors=[(.69,.72,.75,1),(.78,.56,.15,1),(.52,.46,.40,1),(.15,.55,.85,1),(.9,.10,.65,1),(.60,.16,.07,1)]
+def material(name,c):
+ m=bpy.data.materials.new(name);m.use_nodes=True;n=m.node_tree.nodes;n.clear();bs=n.new('ShaderNodeBsdfDiffuse');bs.inputs['Color'].default_value=c;tr=n.new('ShaderNodeBsdfTransparent');gn=n.new('ShaderNodeNewGeometry');mix=n.new('ShaderNodeMixShader');out=n.new('ShaderNodeOutputMaterial');l=m.node_tree.links;l.new(gn.outputs['Backfacing'],mix.inputs[0]);l.new(bs.outputs[0],mix.inputs[1]);l.new(tr.outputs[0],mix.inputs[2]);l.new(mix.outputs[0],out.inputs[0]);return m
+mats=[material(n,c) for n,c in zip(['V7 shell','V5 band outside','Anatomy','Ear visible protected','Ear sample-hidden','V5 embedded band'],colors)]
+def obj(name,d,matinds):
+ me=bpy.data.meshes.new(name);me.from_pydata(d['points'].tolist(),[],d['triangles'].tolist());me.update();ob=bpy.data.objects.new(name,me);s.collection.objects.link(ob)
+ for ma in mats:me.materials.append(ma)
+ if np.isscalar(matinds):matinds=np.full(len(me.polygons),matinds)
+ for p,mi in zip(me.polygons,matinds):p.material_index=int(mi);p.use_smooth=False
+ return ob
+sh=np.load(B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz');ba=np.load(B/'shell_band_v5/retained_candidate/evidence/band-paired.npz');a=np.load(anat);m=np.load(O/'ear-visibility-real-mask.npz');diag=np.load(O/'band-physical-diagnosis.npz')
+if not isolate:
+ obj('Fixed V7 shell',sh,0);bmat=np.where(diag['inside_body_by_3ray_parity'],5,1);obj('Fixed V5 band',ba,bmat)
+af=a['triangles'];ami=np.full(len(af),2);ef=np.any(m['ear_broad'][af],axis=1);ami[ef]=3;ami[np.all(m['ear_hidden_sampled'][af],axis=1)]=4;obj('Part15 native anatomy',a,ami)
+camdata=bpy.data.cameras.new('Broad diagnostic camera');cam=bpy.data.objects.new('Broad diagnostic camera',camdata);s.collection.objects.link(cam);s.camera=cam;camdata.type='ORTHO';camdata.ortho_scale=.82;s.render.resolution_x=700;s.render.resolution_y=780;s.render.resolution_percentage=100
+views=[('front',0,0),('right-front',55,0),('right',90,0),('left-front',-55,0),('left',-90,0),('back-right',135,15),('back-left',-135,15),('front-below',0,-35),('above',0,65)]
+target=Vector((.04,-.15,3.43))
+for name,az,el in views:
+ az=math.radians(az);el=math.radians(el);dr=Vector((math.sin(az)*math.cos(el),-math.cos(az)*math.cos(el),math.sin(el)));cam.location=target+3*dr;cam.rotation_euler=(target-cam.location).to_track_quat('-Z','Y').to_euler();s.render.filepath=str(O/f'{tag}-{name}.png');bpy.ops.render.render(write_still=True)
+(O/f'{tag}-gallery.json').write_text(json.dumps({'geometry':str(anat),'views':views,'native_diagnostic_only':True,'colors':{'gray':'unchanged V7 shell','gold':'V5 band outside by 3-ray anatomy parity','brick':'V5 band inside by 3-ray anatomy parity','blue':'ear incident faces','magenta':'all-3 vertices sample-hidden ear faces','brown':'other anatomy'},'isolate':isolate},indent=2))

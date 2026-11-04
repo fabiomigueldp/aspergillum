@@ -1,0 +1,10 @@
+import bpy,json,numpy as np,collections
+bpy.ops.wm.open_mainfile(filepath='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/V75-tunic-lower-trial.blend',use_scripts=False)
+for n in ['Maria — túnica e mangas integradas','Maria — mão protetora anatômica']:
+ o=bpy.data.objects[n];print(n,len(o.data.vertices));print('attributes',[(a.name,a.domain) for a in o.data.attributes]);print('keys',[(k.name,k.value) for k in o.data.shape_keys.key_blocks] if o.data.shape_keys else [])
+ a=o.data.attributes.get('.sculpt_face_set')
+ if a:
+  counts=collections.defaultdict(list)
+  for f in o.data.polygons:counts[a.data[f.index].value].extend(f.vertices)
+  for k,vs in counts.items():
+   ps=np.array([o.data.vertices[i].co[:] for i in set(vs)]);print(k,len(set(vs)),ps.min(0).tolist(),ps.max(0).tolist())

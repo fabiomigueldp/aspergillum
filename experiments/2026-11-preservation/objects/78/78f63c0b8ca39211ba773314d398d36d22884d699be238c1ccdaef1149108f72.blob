@@ -1,0 +1,28 @@
+import bpy,math,json
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V50-child-hair-trial.blend',use_scripts=False)
+o=bpy.data.objects['Menino — base infantil anatômica CC0'];m=o.data;dg=bpy.context.evaluated_depsgraph_get();old=[v.co.copy() for v in o.evaluated_get(dg).data.vertices]
+def sm(t):t=max(0,min(1,t));return t*t*(3-2*t)
+if not m.shape_keys:o.shape_key_add(name='Basis')
+k=o.shape_key_add(name='TESTE52 — proporção infantil nariz boca queixo');k.value=1
+new=[];protected=[]
+for i,p in enumerate(old):
+ x=p.x-.025;y=p.y;z=p.z
+ front=sm((-y-.275)/.05);side=1-sm((abs(x)-.065)/.025);upper=1-sm((z-1.775)/.03);w=front*side*upper
+ nose=math.exp(-(x/.035)**2-((z-1.748)/.023)**2)
+ lower=sm((1.738-z)/.085)
+ shift=Vector((0,w*(.010*nose+.0045*lower),w*(.013*lower+.0015*nose)))
+ q=p+shift;new.append(q);k.data[i].co=m.vertices[i].co+shift
+ if y>=-.275 or z>=1.805 or abs(x)>=.09:protected.append(i)
+faces=[tuple(f.vertices) for f in m.polygons];bb=BVHTree.FromPolygons(new,faces);pairs=[(i,j) for i,j in bb.overlap(bb) if i<j and not set(faces[i])&set(faces[j])];before=BVHTree.FromPolygons(old,faces);prior=[(i,j) for i,j in before.overlap(before) if i<j and not set(faces[i])&set(faces[j])]
+ratios=[]
+for e in m.edges:
+ a,b=e.vertices;l=(old[a]-old[b]).length
+ if l>1e-8:ratios.append((new[a]-new[b]).length/l)
+report={'source':'V50','scope':'Only child head nose-mouth-chin shape key; cranium/ear/back-neck protected','changed_vertices':sum((a-b).length>1e-8 for a,b in zip(old,new)),'max_delta_m':max((a-b).length for a,b in zip(old,new)),'protected_vertices':len(protected),'protected_max_delta':max((old[i]-new[i]).length for i in protected),'self_intersections_before':len(prior),'self_intersections_after':len(pairs),'new_self_intersections':len(set(pairs)-set(prior)),'edge_ratio_min':min(ratios),'edge_ratio_max':max(ratios),'rollback':'TESTE52=0 restores V50'}
+json.dump(report,open(r+'V52-child-face-verification.json','w'),indent=2);bpy.ops.wm.save_as_mainfile(filepath=r+'V52-child-face-trial.blend')
+s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=700;s.render.resolution_y=700;s.render.resolution_percentage=100;c=s.camera;ct=Vector((.025,-.265,1.82));c.data.ortho_scale=.43
+for label,off in [('profile',(-3,0,0)),('front',(0,-3,0)),('threequarter',(-2,-3,0))]:
+ c.location=ct+Vector(off);c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler();s.render.filepath=r+'V52-child-face-'+label+'.png';bpy.ops.render.render(write_still=True)
+print(report)

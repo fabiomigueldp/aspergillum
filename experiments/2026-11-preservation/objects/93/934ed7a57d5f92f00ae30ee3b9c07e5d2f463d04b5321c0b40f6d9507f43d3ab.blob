@@ -1,0 +1,30 @@
+import numpy as np,json,subprocess,shutil
+from pathlib import Path
+from scipy.spatial import Delaunay
+R=Path(__file__).resolve().parents[1];V4=R.parent;B=V4.parent/'shell_band_v3';src=np.load(B/'evidence/cap-source.npz');hv=src['points'];hn=src['normals'];params=np.load(V4/'evidence/cap-source-parameters.npz')['params'];pairs=np.load(V4/'evidence/cap-source-pairing.npz');pairmap=dict(zip(pairs['outer'].tolist(),pairs['inner'].tolist()));base=np.load(B/'constrained_source/evidence/cap-paired.npz');selected=set(base['source_indices'][:len(base['points'])//2].tolist());history=[];disk=np.column_stack([(params[:,0]+1)*params[:,2],(params[:,0]+1)*params[:,1]])
+def build():
+ ids=np.array(sorted(selected));inner=np.array([pairmap[int(i)] for i in ids]);n=len(ids);v=np.concatenate([hv[ids],hv[inner]]);norm=np.concatenate([hn[ids],hn[inner]]);tri=Delaunay(disk[ids]).simplices.copy();raw=np.cross(v[tri[:,1]]-v[tri[:,0]],v[tri[:,2]]-v[tri[:,0]]);expected=hn[ids[tri]].mean(1)
+ if np.median(np.einsum('ij,ij->i',raw,expected))<0:tri=tri[:,::-1]
+ edge={}
+ for t in tri:
+  for a,b in zip(t,np.roll(t,-1)):edge.setdefault(tuple(sorted([int(a),int(b)])),[]).append((int(a),int(b)))
+ boundary=[e[0] for e in edge.values() if len(e)==1];f=tri.tolist()+(tri[:,::-1]+n).tolist()
+ for a,b in boundary:f.extend([[b,a,a+n],[b,a+n,b+n]])
+ return ids,inner,v,norm,np.array(f),boundary
+best=None
+for it in range(14):
+ ids,inner,v,norm,f,boundary=build();p=R/f'evidence/iteration-{it:02d}.npz';np.savez_compressed(p,points=v,triangles=f,normals=norm,source_indices=np.concatenate([ids,inner]),source_side=np.array([0]*len(ids)+[1]*len(ids)));ev=R/f'evidence/iteration-{it:02d}-evaluation.json';cmd=['/usr/bin/blender','-b','-t','2','--python',str(V4/'tools/evaluate_cap_candidate.py'),'--',str(p),str(ev)];r=subprocess.run(cmd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True);(R/f'evidence/iteration-{it:02d}.log').write_text(r.stdout)
+ if not ev.exists():print(r.stdout);raise RuntimeError('Missing evaluator output')
+ e=json.loads(ev.read_text());h={k:e[k] for k in ['triangles','crown_error_max','crown_error_p95','crown_regression_gt_0_1mm','crown_regression_gt_0_3mm','crown_max_regression_depth']};h.update({'iteration':it,'vertices':len(v),'crossings':e['gate']['strict_crossings'],'boundary_edges_per_wall':len(boundary)});history.append(h);print(h,flush=True);(R/'evidence/adaptive-progress.json').write_text(json.dumps(history,indent=2))
+ if e['gate']['passes_screen']:best=(p,ev)
+ if e['gate']['passes_screen'] and e['crown_error_max']<=.0005 and e['crown_max_regression_depth']<=.0003:break
+ requests=e['refinement_requests'];new=[]
+ for req in requests:
+  candidate=next((int(i) for i in req['insert_source_ids'] if int(i) not in selected and int(i) not in new),None)
+  if candidate is not None:new.append(candidate)
+  if len(new)>=140:break
+ if not new:break
+ if len(selected)+len(new)>1600:break
+ selected.update(new)
+if best is None:raise RuntimeError('No gate-passing candidate; do not export')
+p,ev=best;shutil.copyfile(p,R/'evidence/cap-paired.npz');shutil.copyfile(ev,R/'evidence/final-evaluation.json');shutil.copyfile(B/'constrained_source/evidence/band-paired.npz',R/'evidence/band-paired.npz');cap=np.load(R/'evidence/cap-paired.npz');band=np.load(R/'evidence/band-paired.npz');np.savez_compressed(R/'evidence/paired-shells.npz',points=np.concatenate([cap['points'],band['points']]),triangles=np.concatenate([cap['triangles'],band['triangles']+len(cap['points'])]),normals=np.concatenate([cap['normals'],band['normals']]),parts=np.array([0]*len(cap['triangles'])+[1]*len(band['triangles'])));(R/'evidence/adaptive-history.json').write_text(json.dumps({'history':history,'retained_candidate':p.name,'method':'Curvature/contact-error-guided refinement. Exact source positions and source-paired inner wall. Disk parameter triangulation. No outward displacement or thickness inflation.','all_previous_cap_vertices_retained':True,'band_unchanged':True,'goals_met':e['crown_error_max']<=.0005 and e['crown_max_regression_depth']<=.0003,'stop_limit':'1600 outer vertices /14 iterations, not an official engine limit','not_release':True},indent=2))

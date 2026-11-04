@@ -1,0 +1,2327 @@
+{
+  "scope": "All actual scar-window pixel centers. Exact float64 geometric depths from saved float32 inputs. Single-nextafter model exploratory, pending source-code contract; not actual Cycles hits.",
+  "summary": {
+    "all": {
+      "count": 3321,
+      "with_preceding_transparent": 1623,
+      "gap_below_one_ulp": 406,
+      "gap_below_two_ulp": 415,
+      "one_nextafter_model_skips_ideal_first": 405
+    },
+    "dark": {
+      "count": 301,
+      "with_preceding_transparent": 202,
+      "gap_below_one_ulp": 136,
+      "gap_below_two_ulp": 136,
+      "one_nextafter_model_skips_ideal_first": 133
+    },
+    "clean": {
+      "count": 2737,
+      "with_preceding_transparent": 1203,
+      "gap_below_one_ulp": 185,
+      "gap_below_two_ulp": 191,
+      "one_nextafter_model_skips_ideal_first": 186
+    }
+  },
+  "witnesses": [
+    {
+      "kind": "scar",
+      "clip_minus_quad_mean_rgb": 86.00000000000001,
+      "pixel": [
+        493,
+        471
+      ],
+      "dark": true,
+      "clean": false,
+      "first_opaque_triangle": 538,
+      "preceding_transparent_count": 2,
+      "nearest_preceding_gap_um": 550.2874197738095,
+      "gap_in_float32_ulp": 2308.072725906968,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": false,
+      "one_nextafter_model_first": {
+        "triangle": 538,
+        "part": 0,
+        "native_face": 134,
+        "half": 1,
+        "distance": 3.0825087869688725,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.8438312137033476,
+          0.2791957135190538
+        ]
+      },
+      "first_skipped_opaque": null,
+      "nearest_transparent": {
+        "triangle": 8803,
+        "part": 0,
+        "native_face": 2200,
+        "half": 1,
+        "distance": 3.0819584995490987,
+        "front": false,
+        "alpha_opaque": false,
+        "accepted": false,
+        "uv": [
+          0.8913075941586415,
+          0.6760334217892869
+        ]
+      },
+      "ideal_first": {
+        "triangle": 538,
+        "part": 0,
+        "native_face": 134,
+        "half": 1,
+        "distance": 3.0825087869688725,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.8438312137033476,
+          0.2791957135190538
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 538,
+          "part": 0,
+          "native_face": 134,
+          "half": 1,
+          "distance": 3.0825087869688725,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.8438312137033476,
+            0.2791957135190538
+          ]
+        },
+        {
+          "triangle": 555,
+          "part": 0,
+          "native_face": 138,
+          "half": 1,
+          "distance": 3.0825088218101864,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.6603954855024916,
+            0.9461440901957254
+          ]
+        },
+        {
+          "triangle": 543,
+          "part": 0,
+          "native_face": 135,
+          "half": 1,
+          "distance": 3.0825088496274304,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.8522791872835094,
+            0.5904235026333216
+          ]
+        },
+        {
+          "triangle": 547,
+          "part": 0,
+          "native_face": 136,
+          "half": 1,
+          "distance": 3.082508934128096,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.8642022842765013,
+            0.901671827805184
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "scar",
+      "clip_minus_quad_mean_rgb": 81.00000000000001,
+      "pixel": [
+        559,
+        449
+      ],
+      "dark": true,
+      "clean": false,
+      "first_opaque_triangle": 444,
+      "preceding_transparent_count": 1,
+      "nearest_preceding_gap_um": 380.6951806160086,
+      "gap_in_float32_ulp": 1596.7513188384473,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": false,
+      "one_nextafter_model_first": {
+        "triangle": 444,
+        "part": 0,
+        "native_face": 111,
+        "half": 0,
+        "distance": 3.0912064030715363,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.7516134517021896,
+          0.11578465579476704
+        ]
+      },
+      "first_skipped_opaque": null,
+      "nearest_transparent": {
+        "triangle": 475,
+        "part": 0,
+        "native_face": 118,
+        "half": 1,
+        "distance": 3.0908257078909203,
+        "front": true,
+        "alpha_opaque": false,
+        "accepted": false,
+        "uv": [
+          0.8688757826236244,
+          0.8391820353422537
+        ]
+      },
+      "ideal_first": {
+        "triangle": 444,
+        "part": 0,
+        "native_face": 111,
+        "half": 0,
+        "distance": 3.0912064030715363,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.7516134517021896,
+          0.11578465579476704
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 444,
+          "part": 0,
+          "native_face": 111,
+          "half": 0,
+          "distance": 3.0912064030715363,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.7516134517021896,
+            0.11578465579476704
+          ]
+        },
+        {
+          "triangle": 461,
+          "part": 0,
+          "native_face": 115,
+          "half": 0,
+          "distance": 3.09120648771229,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.8765405129932835,
+            0.9001992247118262
+          ]
+        },
+        {
+          "triangle": 465,
+          "part": 0,
+          "native_face": 116,
+          "half": 0,
+          "distance": 3.0912065114497733,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.8086188052152701,
+            0.8793256724102168
+          ]
+        },
+        {
+          "triangle": 457,
+          "part": 0,
+          "native_face": 114,
+          "half": 0,
+          "distance": 3.091206536339384,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.944536143713158,
+            0.9229295724489877
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "scar",
+      "clip_minus_quad_mean_rgb": 53.33333333333333,
+      "pixel": [
+        510,
+        468
+      ],
+      "dark": true,
+      "clean": false,
+      "first_opaque_triangle": 3578,
+      "preceding_transparent_count": 1,
+      "nearest_preceding_gap_um": 0.008260155226480492,
+      "gap_in_float32_ulp": 0.034645602107048035,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": true,
+      "one_nextafter_model_first": {
+        "triangle": 29754,
+        "part": 1,
+        "native_face": 2994,
+        "half": 1,
+        "distance": 3.083744660881075,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.695748597214717,
+          0.038711015146177696
+        ]
+      },
+      "first_skipped_opaque": {
+        "triangle": 3578,
+        "part": 0,
+        "native_face": 894,
+        "half": 1,
+        "distance": 3.08301520921895,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.6928593281842476,
+          0.35243880643077796
+        ]
+      },
+      "nearest_transparent": {
+        "triangle": 3581,
+        "part": 0,
+        "native_face": 895,
+        "half": 0,
+        "distance": 3.0830152009587946,
+        "front": true,
+        "alpha_opaque": false,
+        "accepted": false,
+        "uv": [
+          0.9305298840291989,
+          0.3962790036142234
+        ]
+      },
+      "ideal_first": {
+        "triangle": 3578,
+        "part": 0,
+        "native_face": 894,
+        "half": 1,
+        "distance": 3.08301520921895,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.6928593281842476,
+          0.35243880643077796
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 3581,
+          "part": 0,
+          "native_face": 895,
+          "half": 0,
+          "distance": 3.0830152009587946,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.9305298840291989,
+            0.3962790036142234
+          ]
+        },
+        {
+          "triangle": 3578,
+          "part": 0,
+          "native_face": 894,
+          "half": 1,
+          "distance": 3.08301520921895,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.6928593281842476,
+            0.35243880643077796
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "scar",
+      "clip_minus_quad_mean_rgb": 48.33333333333333,
+      "pixel": [
+        544,
+        444
+      ],
+      "dark": true,
+      "clean": false,
+      "first_opaque_triangle": 446,
+      "preceding_transparent_count": 1,
+      "nearest_preceding_gap_um": 0.03915611657134832,
+      "gap_in_float32_ulp": 0.16423265635967255,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": true,
+      "one_nextafter_model_first": {
+        "triangle": 32644,
+        "part": 1,
+        "native_face": 3717,
+        "half": 0,
+        "distance": 3.093465654375269,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.5198355063894655,
+          0.3016208729111708
+        ]
+      },
+      "first_skipped_opaque": {
+        "triangle": 446,
+        "part": 0,
+        "native_face": 111,
+        "half": 1,
+        "distance": 3.091509445758731,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.7640799340494384,
+          0.23927026316937716
+        ]
+      },
+      "nearest_transparent": {
+        "triangle": 449,
+        "part": 0,
+        "native_face": 112,
+        "half": 0,
+        "distance": 3.0915094066026145,
+        "front": true,
+        "alpha_opaque": false,
+        "accepted": false,
+        "uv": [
+          0.8583102094128479,
+          0.5332776329092128
+        ]
+      },
+      "ideal_first": {
+        "triangle": 446,
+        "part": 0,
+        "native_face": 111,
+        "half": 1,
+        "distance": 3.091509445758731,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.7640799340494384,
+          0.23927026316937716
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 449,
+          "part": 0,
+          "native_face": 112,
+          "half": 0,
+          "distance": 3.0915094066026145,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.8583102094128479,
+            0.5332776329092128
+          ]
+        },
+        {
+          "triangle": 446,
+          "part": 0,
+          "native_face": 111,
+          "half": 1,
+          "distance": 3.091509445758731,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.7640799340494384,
+            0.23927026316937716
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "scar",
+      "clip_minus_quad_mean_rgb": 47.66666666666666,
+      "pixel": [
+        500,
+        444
+      ],
+      "dark": true,
+      "clean": false,
+      "first_opaque_triangle": 3562,
+      "preceding_transparent_count": 2,
+      "nearest_preceding_gap_um": 0.021995998356061364,
+      "gap_in_float32_ulp": 0.0922579038888216,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": true,
+      "one_nextafter_model_first": {
+        "triangle": 31190,
+        "part": 1,
+        "native_face": 3353,
+        "half": 1,
+        "distance": 3.0918143246100525,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.5599169167741204,
+          0.2748267567762593
+        ]
+      },
+      "first_skipped_opaque": {
+        "triangle": 3562,
+        "part": 0,
+        "native_face": 890,
+        "half": 1,
+        "distance": 3.0908670155840157,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.8323884875578013,
+          0.3148065724593171
+        ]
+      },
+      "nearest_transparent": {
+        "triangle": 3555,
+        "part": 0,
+        "native_face": 888,
+        "half": 1,
+        "distance": 3.0908669935880173,
+        "front": true,
+        "alpha_opaque": false,
+        "accepted": false,
+        "uv": [
+          0.6672579816607622,
+          0.9313414321373732
+        ]
+      },
+      "ideal_first": {
+        "triangle": 3562,
+        "part": 0,
+        "native_face": 890,
+        "half": 1,
+        "distance": 3.0908670155840157,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.8323884875578013,
+          0.3148065724593171
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 3571,
+          "part": 0,
+          "native_face": 892,
+          "half": 1,
+          "distance": 3.0908669542432565,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.8548575923851827,
+            0.9843680269235923
+          ]
+        },
+        {
+          "triangle": 3555,
+          "part": 0,
+          "native_face": 888,
+          "half": 1,
+          "distance": 3.0908669935880173,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.6672579816607622,
+            0.9313414321373732
+          ]
+        },
+        {
+          "triangle": 3562,
+          "part": 0,
+          "native_face": 890,
+          "half": 1,
+          "distance": 3.0908670155840157,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.8323884875578013,
+            0.3148065724593171
+          ]
+        },
+        {
+          "triangle": 3557,
+          "part": 0,
+          "native_face": 889,
+          "half": 0,
+          "distance": 3.0908670162025667,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.677430095894707,
+            0.6659511391645402
+          ]
+        },
+        {
+          "triangle": 3567,
+          "part": 0,
+          "native_face": 891,
+          "half": 1,
+          "distance": 3.0908671396199168,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.8398999894728748,
+            0.6498055488185315
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "scar",
+      "clip_minus_quad_mean_rgb": 46.33333333333333,
+      "pixel": [
+        495,
+        451
+      ],
+      "dark": true,
+      "clean": false,
+      "first_opaque_triangle": 3618,
+      "preceding_transparent_count": 0,
+      "nearest_preceding_gap_um": null,
+      "gap_in_float32_ulp": null,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": false,
+      "one_nextafter_model_first": {
+        "triangle": 3618,
+        "part": 0,
+        "native_face": 904,
+        "half": 1,
+        "distance": 3.0888428379124395,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.7177333930843128,
+          0.4351709485674387
+        ]
+      },
+      "first_skipped_opaque": null,
+      "nearest_transparent": null,
+      "ideal_first": {
+        "triangle": 3618,
+        "part": 0,
+        "native_face": 904,
+        "half": 1,
+        "distance": 3.0888428379124395,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.7177333930843128,
+          0.4351709485674387
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 3618,
+          "part": 0,
+          "native_face": 904,
+          "half": 1,
+          "distance": 3.0888428379124395,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.7177333930843128,
+            0.4351709485674387
+          ]
+        },
+        {
+          "triangle": 3611,
+          "part": 0,
+          "native_face": 902,
+          "half": 1,
+          "distance": 3.0888428408709863,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.7960250583194035,
+            0.9505035909449512
+          ]
+        },
+        {
+          "triangle": 3623,
+          "part": 0,
+          "native_face": 905,
+          "half": 1,
+          "distance": 3.0888428843043547,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.7500163474777465,
+            0.9890191620131047
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "scar",
+      "clip_minus_quad_mean_rgb": 41.33333333333334,
+      "pixel": [
+        569,
+        456
+      ],
+      "dark": true,
+      "clean": false,
+      "first_opaque_triangle": 456,
+      "preceding_transparent_count": 2,
+      "nearest_preceding_gap_um": 0.025510588752553076,
+      "gap_in_float32_ulp": 0.10699916444718838,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": true,
+      "one_nextafter_model_first": {
+        "triangle": 31128,
+        "part": 1,
+        "native_face": 3338,
+        "half": 0,
+        "distance": 3.091070921377746,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.7329774189262298,
+          0.3527133950780899
+        ]
+      },
+      "first_skipped_opaque": {
+        "triangle": 456,
+        "part": 0,
+        "native_face": 114,
+        "half": 0,
+        "distance": 3.0898341637824314,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.5320905498517059,
+          0.00716312635507875
+        ]
+      },
+      "nearest_transparent": {
+        "triangle": 451,
+        "part": 0,
+        "native_face": 112,
+        "half": 1,
+        "distance": 3.0898341382718426,
+        "front": true,
+        "alpha_opaque": false,
+        "accepted": false,
+        "uv": [
+          0.9320902727679781,
+          0.816677899633222
+        ]
+      },
+      "ideal_first": {
+        "triangle": 456,
+        "part": 0,
+        "native_face": 114,
+        "half": 0,
+        "distance": 3.0898341637824314,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.5320905498517059,
+          0.00716312635507875
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 451,
+          "part": 0,
+          "native_face": 112,
+          "half": 1,
+          "distance": 3.0898341382718426,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.9320902727679781,
+            0.816677899633222
+          ]
+        },
+        {
+          "triangle": 456,
+          "part": 0,
+          "native_face": 114,
+          "half": 0,
+          "distance": 3.0898341637824314,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.5320905498517059,
+            0.00716312635507875
+          ]
+        },
+        {
+          "triangle": 453,
+          "part": 0,
+          "native_face": 113,
+          "half": 0,
+          "distance": 3.089834234013883,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.9949279669614293,
+            0.08023218849908265
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "scar",
+      "clip_minus_quad_mean_rgb": 40.66666666666667,
+      "pixel": [
+        565,
+        462
+      ],
+      "dark": true,
+      "clean": false,
+      "first_opaque_triangle": 490,
+      "preceding_transparent_count": 1,
+      "nearest_preceding_gap_um": 400.6047197542273,
+      "gap_in_float32_ulp": 1680.2579784840345,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": false,
+      "one_nextafter_model_first": {
+        "triangle": 490,
+        "part": 0,
+        "native_face": 122,
+        "half": 1,
+        "distance": 3.0878591130197375,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.6632046781434928,
+          0.05040299581748092
+        ]
+      },
+      "first_skipped_opaque": null,
+      "nearest_transparent": {
+        "triangle": 469,
+        "part": 0,
+        "native_face": 117,
+        "half": 0,
+        "distance": 3.0874585082999833,
+        "front": true,
+        "alpha_opaque": false,
+        "accepted": false,
+        "uv": [
+          0.8531579411459641,
+          0.9371004987777842
+        ]
+      },
+      "ideal_first": {
+        "triangle": 490,
+        "part": 0,
+        "native_face": 122,
+        "half": 1,
+        "distance": 3.0878591130197375,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.6632046781434928,
+          0.05040299581748092
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 490,
+          "part": 0,
+          "native_face": 122,
+          "half": 1,
+          "distance": 3.0878591130197375,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.6632046781434928,
+            0.05040299581748092
+          ]
+        },
+        {
+          "triangle": 497,
+          "part": 0,
+          "native_face": 124,
+          "half": 0,
+          "distance": 3.0878591336885655,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.9379764149657336,
+            0.6303910951716538
+          ]
+        },
+        {
+          "triangle": 495,
+          "part": 0,
+          "native_face": 123,
+          "half": 1,
+          "distance": 3.08785917793157,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.6786097831203789,
+            0.6977447274659481
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "scar",
+      "clip_minus_quad_mean_rgb": 38.33333333333334,
+      "pixel": [
+        561,
+        480
+      ],
+      "dark": true,
+      "clean": false,
+      "first_opaque_triangle": 7236,
+      "preceding_transparent_count": 4,
+      "nearest_preceding_gap_um": 0.020156486701949916,
+      "gap_in_float32_ulp": 0.08454243279993534,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": true,
+      "one_nextafter_model_first": {
+        "triangle": 29716,
+        "part": 1,
+        "native_face": 2985,
+        "half": 0,
+        "distance": 3.082851990618542,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.5012650215035078,
+          0.8706590506411656
+        ]
+      },
+      "first_skipped_opaque": {
+        "triangle": 7236,
+        "part": 0,
+        "native_face": 1809,
+        "half": 0,
+        "distance": 3.0820420323229007,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.6205097716455985,
+          0.6074594904091112
+        ]
+      },
+      "nearest_transparent": {
+        "triangle": 7241,
+        "part": 0,
+        "native_face": 1810,
+        "half": 0,
+        "distance": 3.082042012166414,
+        "front": true,
+        "alpha_opaque": false,
+        "accepted": false,
+        "uv": [
+          0.8609234494151119,
+          0.3935680110966001
+        ]
+      },
+      "ideal_first": {
+        "triangle": 7236,
+        "part": 0,
+        "native_face": 1809,
+        "half": 0,
+        "distance": 3.0820420323229007,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.6205097716455985,
+          0.6074594904091112
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 7241,
+          "part": 0,
+          "native_face": 1810,
+          "half": 0,
+          "distance": 3.082042012166414,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.8609234494151119,
+            0.3935680110966001
+          ]
+        },
+        {
+          "triangle": 7236,
+          "part": 0,
+          "native_face": 1809,
+          "half": 0,
+          "distance": 3.0820420323229007,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.6205097716455985,
+            0.6074594904091112
+          ]
+        },
+        {
+          "triangle": 7233,
+          "part": 0,
+          "native_face": 1808,
+          "half": 0,
+          "distance": 3.0820420954274454,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.8153656751292985,
+            0.6199314871125696
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "scar",
+      "clip_minus_quad_mean_rgb": 36.0,
+      "pixel": [
+        520,
+        469
+      ],
+      "dark": true,
+      "clean": false,
+      "first_opaque_triangle": 3578,
+      "preceding_transparent_count": 2,
+      "nearest_preceding_gap_um": 0.016567159644154117,
+      "gap_in_float32_ulp": 0.06948770396411419,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": true,
+      "one_nextafter_model_first": {
+        "triangle": 28922,
+        "part": 1,
+        "native_face": 2786,
+        "half": 1,
+        "distance": 3.0833491663877237,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.6049040698223518,
+          0.3490883009599023
+        ]
+      },
+      "first_skipped_opaque": {
+        "triangle": 3578,
+        "part": 0,
+        "native_face": 894,
+        "half": 1,
+        "distance": 3.0824098565102025,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.8704631511834625,
+          0.12489351896780532
+        ]
+      },
+      "nearest_transparent": {
+        "triangle": 3581,
+        "part": 0,
+        "native_face": 895,
+        "half": 0,
+        "distance": 3.082409839943043,
+        "front": true,
+        "alpha_opaque": false,
+        "accepted": false,
+        "uv": [
+          0.6927705537183175,
+          0.7463348929037189
+        ]
+      },
+      "ideal_first": {
+        "triangle": 3578,
+        "part": 0,
+        "native_face": 894,
+        "half": 1,
+        "distance": 3.0824098565102025,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.8704631511834625,
+          0.12489351896780532
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 3581,
+          "part": 0,
+          "native_face": 895,
+          "half": 0,
+          "distance": 3.082409839943043,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.6927705537183175,
+            0.7463348929037189
+          ]
+        },
+        {
+          "triangle": 3578,
+          "part": 0,
+          "native_face": 894,
+          "half": 1,
+          "distance": 3.0824098565102025,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.8704631511834625,
+            0.12489351896780532
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "scar",
+      "clip_minus_quad_mean_rgb": 36.0,
+      "pixel": [
+        516,
+        446
+      ],
+      "dark": true,
+      "clean": false,
+      "first_opaque_triangle": 3552,
+      "preceding_transparent_count": 0,
+      "nearest_preceding_gap_um": null,
+      "gap_in_float32_ulp": null,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": false,
+      "one_nextafter_model_first": {
+        "triangle": 3552,
+        "part": 0,
+        "native_face": 888,
+        "half": 0,
+        "distance": 3.0898762804073434,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.7455188997805637,
+          0.44288167322878963
+        ]
+      },
+      "first_skipped_opaque": null,
+      "nearest_transparent": null,
+      "ideal_first": {
+        "triangle": 3552,
+        "part": 0,
+        "native_face": 888,
+        "half": 0,
+        "distance": 3.0898762804073434,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.7455188997805637,
+          0.44288167322878963
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 3552,
+          "part": 0,
+          "native_face": 888,
+          "half": 0,
+          "distance": 3.0898762804073434,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.7455188997805637,
+            0.44288167322878963
+          ]
+        },
+        {
+          "triangle": 3575,
+          "part": 0,
+          "native_face": 893,
+          "half": 1,
+          "distance": 3.0898763392866284,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.7222801944590655,
+            0.6231995051640329
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "scar",
+      "clip_minus_quad_mean_rgb": 32.666666666666686,
+      "pixel": [
+        540,
+        475
+      ],
+      "dark": true,
+      "clean": false,
+      "first_opaque_triangle": 7220,
+      "preceding_transparent_count": 2,
+      "nearest_preceding_gap_um": 0.021406437067383877,
+      "gap_in_float32_ulp": 0.08978510461747646,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": true,
+      "one_nextafter_model_first": {
+        "triangle": 29748,
+        "part": 1,
+        "native_face": 2993,
+        "half": 0,
+        "distance": 3.0822053762060535,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.8753838304936764,
+          0.11799913591328215
+        ]
+      },
+      "first_skipped_opaque": {
+        "triangle": 7220,
+        "part": 0,
+        "native_face": 1805,
+        "half": 0,
+        "distance": 3.081623438968259,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.5126281813004178,
+          0.5344158133938637
+        ]
+      },
+      "nearest_transparent": {
+        "triangle": 7243,
+        "part": 0,
+        "native_face": 1810,
+        "half": 1,
+        "distance": 3.081623417561822,
+        "front": true,
+        "alpha_opaque": false,
+        "accepted": false,
+        "uv": [
+          0.7705780892732703,
+          0.8779386468634581
+        ]
+      },
+      "ideal_first": {
+        "triangle": 7220,
+        "part": 0,
+        "native_face": 1805,
+        "half": 0,
+        "distance": 3.081623438968259,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.5126281813004178,
+          0.5344158133938637
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 7243,
+          "part": 0,
+          "native_face": 1810,
+          "half": 1,
+          "distance": 3.081623417561822,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.7705780892732703,
+            0.8779386468634581
+          ]
+        },
+        {
+          "triangle": 7220,
+          "part": 0,
+          "native_face": 1805,
+          "half": 0,
+          "distance": 3.081623438968259,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.5126281813004178,
+            0.5344158133938637
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "nearby_clean",
+      "clip_minus_quad_mean_rgb": 0.0,
+      "pixel": [
+        492,
+        469
+      ],
+      "dark": false,
+      "clean": true,
+      "first_opaque_triangle": 554,
+      "preceding_transparent_count": 2,
+      "nearest_preceding_gap_um": 968.0405080962906,
+      "gap_in_float32_ulp": 4060.256175270304,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": false,
+      "one_nextafter_model_first": {
+        "triangle": 554,
+        "part": 0,
+        "native_face": 138,
+        "half": 1,
+        "distance": 3.083112409751942,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.7001916677989327,
+          0.11041325650835776
+        ]
+      },
+      "first_skipped_opaque": null,
+      "nearest_transparent": {
+        "triangle": 8803,
+        "part": 0,
+        "native_face": 2200,
+        "half": 1,
+        "distance": 3.0821443692438457,
+        "front": false,
+        "alpha_opaque": false,
+        "accepted": false,
+        "uv": [
+          0.9095115423114716,
+          0.8147189636797721
+        ]
+      },
+      "ideal_first": {
+        "triangle": 554,
+        "part": 0,
+        "native_face": 138,
+        "half": 1,
+        "distance": 3.083112409751942,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.7001916677989327,
+          0.11041325650835776
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 554,
+          "part": 0,
+          "native_face": 138,
+          "half": 1,
+          "distance": 3.083112409751942,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.7001916677989327,
+            0.11041325650835776
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "nearby_clean",
+      "clip_minus_quad_mean_rgb": -0.3333333333333428,
+      "pixel": [
+        560,
+        448
+      ],
+      "dark": false,
+      "clean": true,
+      "first_opaque_triangle": 444,
+      "preceding_transparent_count": 1,
+      "nearest_preceding_gap_um": 442.4346314362282,
+      "gap_in_float32_ulp": 1855.7053443714976,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": false,
+      "one_nextafter_model_first": {
+        "triangle": 444,
+        "part": 0,
+        "native_face": 111,
+        "half": 0,
+        "distance": 3.091611810798531,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.5004422881118041,
+          0.1696647663531837
+        ]
+      },
+      "first_skipped_opaque": null,
+      "nearest_transparent": {
+        "triangle": 475,
+        "part": 0,
+        "native_face": 118,
+        "half": 1,
+        "distance": 3.0911693761670946,
+        "front": true,
+        "alpha_opaque": false,
+        "accepted": false,
+        "uv": [
+          0.8831878373684282,
+          0.923968474405393
+        ]
+      },
+      "ideal_first": {
+        "triangle": 444,
+        "part": 0,
+        "native_face": 111,
+        "half": 0,
+        "distance": 3.091611810798531,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.5004422881118041,
+          0.1696647663531837
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 444,
+          "part": 0,
+          "native_face": 111,
+          "half": 0,
+          "distance": 3.091611810798531,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.5004422881118041,
+            0.1696647663531837
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "nearby_clean",
+      "clip_minus_quad_mean_rgb": 0.0,
+      "pixel": [
+        509,
+        469
+      ],
+      "dark": false,
+      "clean": true,
+      "first_opaque_triangle": 3578,
+      "preceding_transparent_count": 0,
+      "nearest_preceding_gap_um": null,
+      "gap_in_float32_ulp": null,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": false,
+      "one_nextafter_model_first": {
+        "triangle": 3578,
+        "part": 0,
+        "native_face": 894,
+        "half": 1,
+        "distance": 3.082678473383668,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.6764233426045897,
+          0.045095475246333505
+        ]
+      },
+      "first_skipped_opaque": null,
+      "nearest_transparent": null,
+      "ideal_first": {
+        "triangle": 3578,
+        "part": 0,
+        "native_face": 894,
+        "half": 1,
+        "distance": 3.082678473383668,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.6764233426045897,
+          0.045095475246333505
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 3578,
+          "part": 0,
+          "native_face": 894,
+          "half": 1,
+          "distance": 3.082678473383668,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.6764233426045897,
+            0.045095475246333505
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "nearby_clean",
+      "clip_minus_quad_mean_rgb": 1.6666666666666572,
+      "pixel": [
+        545,
+        443
+      ],
+      "dark": false,
+      "clean": true,
+      "first_opaque_triangle": 156,
+      "preceding_transparent_count": 0,
+      "nearest_preceding_gap_um": null,
+      "gap_in_float32_ulp": null,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": false,
+      "one_nextafter_model_first": {
+        "triangle": 156,
+        "part": 0,
+        "native_face": 39,
+        "half": 0,
+        "distance": 3.092154074496965,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.5409968913262889,
+          0.6278290358565752
+        ]
+      },
+      "first_skipped_opaque": null,
+      "nearest_transparent": null,
+      "ideal_first": {
+        "triangle": 156,
+        "part": 0,
+        "native_face": 39,
+        "half": 0,
+        "distance": 3.092154074496965,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.5409968913262889,
+          0.6278290358565752
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 156,
+          "part": 0,
+          "native_face": 39,
+          "half": 0,
+          "distance": 3.092154074496965,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.5409968913262889,
+            0.6278290358565752
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "nearby_clean",
+      "clip_minus_quad_mean_rgb": 0.0,
+      "pixel": [
+        500,
+        442
+      ],
+      "dark": false,
+      "clean": true,
+      "first_opaque_triangle": 3554,
+      "preceding_transparent_count": 0,
+      "nearest_preceding_gap_um": null,
+      "gap_in_float32_ulp": null,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": false,
+      "one_nextafter_model_first": {
+        "triangle": 3554,
+        "part": 0,
+        "native_face": 888,
+        "half": 1,
+        "distance": 3.0915470670477916,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.6895474265050126,
+          0.16669559608374102
+        ]
+      },
+      "first_skipped_opaque": null,
+      "nearest_transparent": null,
+      "ideal_first": {
+        "triangle": 3554,
+        "part": 0,
+        "native_face": 888,
+        "half": 1,
+        "distance": 3.0915470670477916,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.6895474265050126,
+          0.16669559608374102
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 3554,
+          "part": 0,
+          "native_face": 888,
+          "half": 1,
+          "distance": 3.0915470670477916,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.6895474265050126,
+            0.16669559608374102
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "nearby_clean",
+      "clip_minus_quad_mean_rgb": -1.0,
+      "pixel": [
+        494,
+        450
+      ],
+      "dark": false,
+      "clean": true,
+      "first_opaque_triangle": 3614,
+      "preceding_transparent_count": 2,
+      "nearest_preceding_gap_um": 0.006090214554888007,
+      "gap_in_float32_ulp": 0.025544211268424988,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": true,
+      "one_nextafter_model_first": {
+        "triangle": 35716,
+        "part": 1,
+        "native_face": 4485,
+        "half": 0,
+        "distance": 3.0899634967027114,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.6714430271446039,
+          0.3964055571696279
+        ]
+      },
+      "first_skipped_opaque": {
+        "triangle": 3614,
+        "part": 0,
+        "native_face": 903,
+        "half": 1,
+        "distance": 3.0891296540463853,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.6679181902620508,
+          0.2055136214040555
+        ]
+      },
+      "nearest_transparent": {
+        "triangle": 3611,
+        "part": 0,
+        "native_face": 902,
+        "half": 1,
+        "distance": 3.0891296479561707,
+        "front": true,
+        "alpha_opaque": false,
+        "accepted": false,
+        "uv": [
+          0.8366246896031027,
+          0.6838153713747158
+        ]
+      },
+      "ideal_first": {
+        "triangle": 3614,
+        "part": 0,
+        "native_face": 903,
+        "half": 1,
+        "distance": 3.0891296540463853,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.6679181902620508,
+          0.2055136214040555
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 3619,
+          "part": 0,
+          "native_face": 904,
+          "half": 1,
+          "distance": 3.089129619223445,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.6851858998188836,
+            0.8535651273215081
+          ]
+        },
+        {
+          "triangle": 3611,
+          "part": 0,
+          "native_face": 902,
+          "half": 1,
+          "distance": 3.0891296479561707,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.8366246896031027,
+            0.6838153713747158
+          ]
+        },
+        {
+          "triangle": 3614,
+          "part": 0,
+          "native_face": 903,
+          "half": 1,
+          "distance": 3.0891296540463853,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.6679181902620508,
+            0.2055136214040555
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "nearby_clean",
+      "clip_minus_quad_mean_rgb": 0.6666666666666856,
+      "pixel": [
+        570,
+        455
+      ],
+      "dark": false,
+      "clean": true,
+      "first_opaque_triangle": 234,
+      "preceding_transparent_count": 1,
+      "nearest_preceding_gap_um": 4.704232875241132,
+      "gap_in_float32_ulp": 19.73098276555538,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": false,
+      "one_nextafter_model_first": {
+        "triangle": 234,
+        "part": 0,
+        "native_face": 58,
+        "half": 1,
+        "distance": 3.090244250892002,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.9026415980598388,
+          0.13727970365274322
+        ]
+      },
+      "first_skipped_opaque": null,
+      "nearest_transparent": {
+        "triangle": 459,
+        "part": 0,
+        "native_face": 114,
+        "half": 1,
+        "distance": 3.090239546659127,
+        "front": true,
+        "alpha_opaque": false,
+        "accepted": false,
+        "uv": [
+          0.5898840723510167,
+          0.8631928178459785
+        ]
+      },
+      "ideal_first": {
+        "triangle": 234,
+        "part": 0,
+        "native_face": 58,
+        "half": 1,
+        "distance": 3.090244250892002,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.9026415980598388,
+          0.13727970365274322
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 459,
+          "part": 0,
+          "native_face": 114,
+          "half": 1,
+          "distance": 3.090239546659127,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.5898840723510167,
+            0.8631928178459785
+          ]
+        },
+        {
+          "triangle": 234,
+          "part": 0,
+          "native_face": 58,
+          "half": 1,
+          "distance": 3.090244250892002,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.9026415980598388,
+            0.13727970365274322
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "nearby_clean",
+      "clip_minus_quad_mean_rgb": 1.3333333333333144,
+      "pixel": [
+        566,
+        461
+      ],
+      "dark": false,
+      "clean": true,
+      "first_opaque_triangle": 494,
+      "preceding_transparent_count": 2,
+      "nearest_preceding_gap_um": 0.04178580903513307,
+      "gap_in_float32_ulp": 0.17526238597929478,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": true,
+      "one_nextafter_model_first": {
+        "triangle": 31128,
+        "part": 1,
+        "native_face": 3338,
+        "half": 0,
+        "distance": 3.089123728675626,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.5243555493795496,
+          0.45606135274085435
+        ]
+      },
+      "first_skipped_opaque": {
+        "triangle": 494,
+        "part": 0,
+        "native_face": 123,
+        "half": 1,
+        "distance": 3.08818619152528,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.6287035239851605,
+          0.45119252932123655
+        ]
+      },
+      "nearest_transparent": {
+        "triangle": 497,
+        "part": 0,
+        "native_face": 124,
+        "half": 0,
+        "distance": 3.088186149739471,
+        "front": true,
+        "alpha_opaque": false,
+        "accepted": false,
+        "uv": [
+          0.8100414430576843,
+          0.7073574891598989
+        ]
+      },
+      "ideal_first": {
+        "triangle": 494,
+        "part": 0,
+        "native_face": 123,
+        "half": 1,
+        "distance": 3.08818619152528,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.6287035239851605,
+          0.45119252932123655
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 497,
+          "part": 0,
+          "native_face": 124,
+          "half": 0,
+          "distance": 3.088186149739471,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.8100414430576843,
+            0.7073574891598989
+          ]
+        },
+        {
+          "triangle": 494,
+          "part": 0,
+          "native_face": 123,
+          "half": 1,
+          "distance": 3.08818619152528,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.6287035239851605,
+            0.45119252932123655
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "nearby_clean",
+      "clip_minus_quad_mean_rgb": 0.0,
+      "pixel": [
+        561,
+        479
+      ],
+      "dark": false,
+      "clean": true,
+      "first_opaque_triangle": 7240,
+      "preceding_transparent_count": 3,
+      "nearest_preceding_gap_um": 59.585400594475146,
+      "gap_in_float32_ulp": 249.91928405500948,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": false,
+      "one_nextafter_model_first": {
+        "triangle": 7240,
+        "part": 0,
+        "native_face": 1810,
+        "half": 0,
+        "distance": 3.0823134655322733,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.6570177533994355,
+          0.37696900946397227
+        ]
+      },
+      "first_skipped_opaque": null,
+      "nearest_transparent": {
+        "triangle": 4029,
+        "part": 0,
+        "native_face": 1007,
+        "half": 0,
+        "distance": 3.082253880131679,
+        "front": true,
+        "alpha_opaque": false,
+        "accepted": false,
+        "uv": [
+          0.6366700695020595,
+          0.8054210935114694
+        ]
+      },
+      "ideal_first": {
+        "triangle": 7240,
+        "part": 0,
+        "native_face": 1810,
+        "half": 0,
+        "distance": 3.0823134655322733,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.6570177533994355,
+          0.37696900946397227
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 7240,
+          "part": 0,
+          "native_face": 1810,
+          "half": 0,
+          "distance": 3.0823134655322733,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.6570177533994355,
+            0.37696900946397227
+          ]
+        },
+        {
+          "triangle": 7237,
+          "part": 0,
+          "native_face": 1809,
+          "half": 0,
+          "distance": 3.0823134859574357,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.8926953992164374,
+            0.6202739997960303
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "nearby_clean",
+      "clip_minus_quad_mean_rgb": 1.0,
+      "pixel": [
+        520,
+        468
+      ],
+      "dark": false,
+      "clean": true,
+      "first_opaque_triangle": 3580,
+      "preceding_transparent_count": 0,
+      "nearest_preceding_gap_um": null,
+      "gap_in_float32_ulp": null,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": false,
+      "one_nextafter_model_first": {
+        "triangle": 3580,
+        "part": 0,
+        "native_face": 895,
+        "half": 0,
+        "distance": 3.082770972635808,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.5536995548327055,
+          0.731918911770643
+        ]
+      },
+      "first_skipped_opaque": null,
+      "nearest_transparent": null,
+      "ideal_first": {
+        "triangle": 3580,
+        "part": 0,
+        "native_face": 895,
+        "half": 0,
+        "distance": 3.082770972635808,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.5536995548327055,
+          0.731918911770643
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 3580,
+          "part": 0,
+          "native_face": 895,
+          "half": 0,
+          "distance": 3.082770972635808,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.5536995548327055,
+            0.731918911770643
+          ]
+        },
+        {
+          "triangle": 3579,
+          "part": 0,
+          "native_face": 894,
+          "half": 1,
+          "distance": 3.082771007188551,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.8692591541650428,
+            0.4249824825407488
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "nearby_clean",
+      "clip_minus_quad_mean_rgb": -0.6666666666666856,
+      "pixel": [
+        516,
+        447
+      ],
+      "dark": false,
+      "clean": true,
+      "first_opaque_triangle": 3574,
+      "preceding_transparent_count": 1,
+      "nearest_preceding_gap_um": 0.04996294800108103,
+      "gap_in_float32_ulp": 0.20955979265272617,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": true,
+      "one_nextafter_model_first": {
+        "triangle": 31148,
+        "part": 1,
+        "native_face": 3343,
+        "half": 0,
+        "distance": 3.0903314961985155,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.6446086206323807,
+          0.24427598575085113
+        ]
+      },
+      "first_skipped_opaque": {
+        "triangle": 3574,
+        "part": 0,
+        "native_face": 893,
+        "half": 1,
+        "distance": 3.0895363152087136,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.7228564695294304,
+          0.21905753058722904
+        ]
+      },
+      "nearest_transparent": {
+        "triangle": 3553,
+        "part": 0,
+        "native_face": 888,
+        "half": 0,
+        "distance": 3.0895362652457656,
+        "front": true,
+        "alpha_opaque": false,
+        "accepted": false,
+        "uv": [
+          0.9366683864477943,
+          0.45404624149920303
+        ]
+      },
+      "ideal_first": {
+        "triangle": 3574,
+        "part": 0,
+        "native_face": 893,
+        "half": 1,
+        "distance": 3.0895363152087136,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.7228564695294304,
+          0.21905753058722904
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 3553,
+          "part": 0,
+          "native_face": 888,
+          "half": 0,
+          "distance": 3.0895362652457656,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.9366683864477943,
+            0.45404624149920303
+          ]
+        },
+        {
+          "triangle": 3574,
+          "part": 0,
+          "native_face": 893,
+          "half": 1,
+          "distance": 3.0895363152087136,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.7228564695294304,
+            0.21905753058722904
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "nearby_clean",
+      "clip_minus_quad_mean_rgb": 2.0,
+      "pixel": [
+        541,
+        475
+      ],
+      "dark": false,
+      "clean": true,
+      "first_opaque_triangle": 7220,
+      "preceding_transparent_count": 2,
+      "nearest_preceding_gap_um": 0.031166323744002966,
+      "gap_in_float32_ulp": 0.13072103634476662,
+      "float32_t_ulp_um": 0.2384185791015625,
+      "one_nextafter_model_skips_ideal_first": true,
+      "one_nextafter_model_first": {
+        "triangle": 29748,
+        "part": 1,
+        "native_face": 2993,
+        "half": 0,
+        "distance": 3.0822515024232136,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.9227324232482017,
+          0.05956948069098178
+        ]
+      },
+      "first_skipped_opaque": {
+        "triangle": 7220,
+        "part": 0,
+        "native_face": 1805,
+        "half": 0,
+        "distance": 3.08170800903384,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.6000686766024528,
+          0.5038408768904895
+        ]
+      },
+      "nearest_transparent": {
+        "triangle": 7243,
+        "part": 0,
+        "native_face": 1810,
+        "half": 1,
+        "distance": 3.081707977867516,
+        "front": true,
+        "alpha_opaque": false,
+        "accepted": false,
+        "uv": [
+          0.75418569165147,
+          0.7734086302335859
+        ]
+      },
+      "ideal_first": {
+        "triangle": 7220,
+        "part": 0,
+        "native_face": 1805,
+        "half": 0,
+        "distance": 3.08170800903384,
+        "front": true,
+        "alpha_opaque": true,
+        "accepted": true,
+        "uv": [
+          0.6000686766024528,
+          0.5038408768904895
+        ]
+      },
+      "stack_within_10_um_of_ideal_first": [
+        {
+          "triangle": 7243,
+          "part": 0,
+          "native_face": 1810,
+          "half": 1,
+          "distance": 3.081707977867516,
+          "front": true,
+          "alpha_opaque": false,
+          "accepted": false,
+          "uv": [
+            0.75418569165147,
+            0.7734086302335859
+          ]
+        },
+        {
+          "triangle": 7220,
+          "part": 0,
+          "native_face": 1805,
+          "half": 0,
+          "distance": 3.08170800903384,
+          "front": true,
+          "alpha_opaque": true,
+          "accepted": true,
+          "uv": [
+            0.6000686766024528,
+            0.5038408768904895
+          ]
+        }
+      ]
+    }
+  ]
+}

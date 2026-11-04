@@ -1,0 +1,107 @@
+"""Isolated V15 feasibility: adaptive UV-clipped positive-depth OBB band.
+All source files read-only. Outputs stay beside this script. No runtime/package/publication.
+"""
+from pathlib import Path
+import numpy as np,json,hashlib,heapq,time
+from scipy.spatial.transform import Rotation
+from PIL import Image
+W=Path(__file__).resolve().parent;B=W.parents[1]
+SRC=B/'band_shell_v13/constrained_fit/retained-band.npz'
+z=np.load(SRC);P=z['points'];F=z['triangles'];UV=z['source_uv'];parts=z['face_parts'];T=P[F];TU=UV[F]
+A=np.array([[1,0,0],[0,0,1],[0,-1,0.]])
+FACE_CORNERS={'north':[(0,1,0),(0,0,0),(1,0,0),(1,1,0)],'south':[(1,1,1),(1,0,1),(0,0,1),(0,1,1)],'east':[(1,1,0),(1,0,0),(1,0,1),(1,1,1)],'west':[(0,1,1),(0,0,1),(0,0,0),(0,1,0)],'up':[(0,1,1),(0,1,0),(1,1,0),(1,1,1)],'down':[(0,0,0),(0,0,1),(1,0,1),(1,0,0)]}
+AREA=np.linalg.norm(np.cross(T[:,1]-T[:,0],T[:,2]-T[:,0]),axis=1)/2
+NORMAL=np.cross(T[:,1]-T[:,0],T[:,2]-T[:,0]); NORMAL/=np.linalg.norm(NORMAL,axis=1)[:,None]
+UMIN=TU.min(1);UMAX=TU.max(1)
+serial=0
+
+def clip(poly,axis,value,keep_above):
+ out=[]
+ for a,b in zip(poly,np.roll(poly,-1,axis=0)):
+  da=(a[axis]-value)*(1 if keep_above else -1);db=(b[axis]-value)*(1 if keep_above else -1)
+  ina=da>=-1e-11;inb=db>=-1e-11
+  if ina:out.append(a)
+  if ina!=inb:
+   k=da/(da-db);out.append(a+k*(b-a))
+ return np.asarray(out)
+
+def fit(bounds,ids=None):
+ global serial
+ lo=np.array(bounds[::2]);hi=np.array(bounds[1::2])
+ if ids is None: ids=np.arange(len(F))
+ ids=ids[np.all(UMIN[ids]<=hi+1e-10,axis=1)&np.all(UMAX[ids]>=lo-1e-10,axis=1)]
+ pol=[];outer=[];actual_ids=[];nw=np.zeros(3);area=0.
+ for fi in ids:
+  p=np.concatenate((TU[fi],T[fi]),axis=1)
+  for ax,val,ab in [(0,lo[0],1),(0,hi[0],0),(1,lo[1],1),(1,hi[1],0)]:
+   if len(p)<3:break
+   p=clip(p,ax,val,ab)
+  if len(p)<3:continue
+  ar=sum(np.linalg.norm(np.cross(p[j,2:]-p[0,2:],p[j+1,2:]-p[0,2:]))/2 for j in range(1,len(p)-1))
+  if ar<1e-16:continue
+  pol.extend(p);actual_ids.append(fi)
+  if parts[fi]==0:outer.extend(p);nw+=NORMAL[fi]*ar;area+=ar
+ if not pol:return None
+ pol=np.asarray(pol);o=np.asarray(outer);pts=pol[:,2:];origin=pts.mean(0)
+ if len(o)>=3 and np.linalg.norm(nw)>1e-12:
+  n=nw/np.linalg.norm(nw);uvc=o[:,:2]-o[:,:2].mean(0);J=np.linalg.lstsq(uvc,o[:,2:]-o[:,2:].mean(0),rcond=None)[0];u=J[0];u-=n*np.dot(u,n)
+ else:
+  _,_,V=np.linalg.svd(pts-origin,full_matrices=False);u=V[0];n=V[-1]
+ u/=np.linalg.norm(u);v=np.cross(n,u);v/=np.linalg.norm(v);n=np.cross(u,v)
+ M=np.column_stack([u,v,n]);loc=(pts-origin)@M;mn=loc.min(0);mx=loc.max(0);size=np.maximum(mx-mn,1e-8);center=origin+M@((mn+mx)/2)
+ volume=np.prod(size);excess=max(volume-area*.00049,1e-18)
+ # The volume-excess proxy guides allocation only. Actual metrics are separate.
+ serial+=1
+ return {'id':serial,'bounds':list(map(float,bounds)),'ids':np.asarray(actual_ids),'center':center,'basis':M,'size':size,'outer_area':area,'volume':volume,'loss':excess,'points':pts,'parent':None}
+
+def split_best(p):
+ b=p['bounds'];best=None
+ for ax in [0,1]:
+  k=ax*2;mid=(b[k]+b[k+1])/2
+  if b[k+1]-b[k]<.03:continue
+  b0=b.copy();b1=b.copy();b0[k+1]=mid;b1[k]=mid
+  l=fit(b0,p['ids']);r=fit(b1,p['ids'])
+  if l is None or r is None:continue
+  gain=p['loss']-l['loss']-r['loss']
+  if best is None or gain>best[0]:best=(gain,l,r,ax)
+ return best
+
+def save(tag,patches):
+ D=W/tag;D.mkdir(exist_ok=True);rows=[];cubes=[];vv=[];ff=[];maxerr=0.
+ for ci,p in enumerate(sorted(patches,key=lambda a:a['bounds'])):
+  c=p['center'];m=p['basis'];size=p['size'];cb=c@A.T*16;mb=A@m;sz=size*16
+  e=Rotation.from_matrix(mb).as_euler('xyz',degrees=True)
+  # Same established Bedrock reflection convention as V14, but six solid faces.
+  low=cb-sz/2
+  cube={'origin':[-float(low[0]+sz[0]),float(low[1]),float(low[2])],'size':sz.tolist(),'pivot':[-float(cb[0]),float(cb[1]),float(cb[2])],'rotation':[-float(e[0]),-float(e[1]),float(e[2])],'uv':{k:{'uv':[0,0],'uv_size':[1,1]} for k in FACE_CORNERS}}
+  cubes.append(cube)
+  # Decode delivered JSON, not original native cuboid, into candidate triangles.
+  jrot=Rotation.from_euler('xyz',[-cube['rotation'][0],-cube['rotation'][1],cube['rotation'][2]],degrees=True).as_matrix();jp=np.array(cube['pivot'])*[-1,1,1]
+  for name,corners in FACE_CORNERS.items():
+   q=np.array(cube['origin'])+np.array(corners)*np.array(cube['size']);q*=np.array([-1,1,1]);q=(q-jp)@jrot.T+jp;q=(q/16)@A
+   st=len(vv);vv.extend(q);ff.extend([[st,st+1,st+2],[st,st+2,st+3]])
+   # Compare against OBB expected corners after nearest absolute local magnitudes.
+   resid=np.abs((q-c)@m)-size/2;maxerr=max(maxerr,float(np.max(np.abs(resid))))
+  rows.append({'cube_index':ci,'hierarchy_id':p['id'],'parent_hierarchy_id':p['parent'],'uv_bounds':p['bounds'],'native_triangle_indices':p['ids'].tolist(),'center_native':c.tolist(),'basis_native_columns':m.tolist(),'size_native':size.tolist(),'outer_area_m2':p['outer_area'],'box_volume_m3':p['volume'],'allocation_proxy_excess_volume_m3':p['loss']})
+ geo={'format_version':'1.12.0','minecraft:geometry':[{'description':{'identifier':f'geometry.paz.v15.lab.opaque.band.{tag}','texture_width':1,'texture_height':1,'visible_bounds_width':1,'visible_bounds_height':4,'visible_bounds_offset':[0,2,0]},'bones':[{'name':'part_00','pivot':[0,0,0],'cubes':cubes}]}]}
+ (D/'band.geo.json').write_text(json.dumps(geo,separators=(',',':'))+'\n');np.savez_compressed(D/'band.npz',points=np.array(vv),triangles=np.array(ff),cube_centers=np.array([r['center_native']for r in rows]),cube_bases=np.array([r['basis_native_columns']for r in rows]),cube_sizes=np.array([r['size_native']for r in rows]),triangle_cube_index=np.repeat(np.arange(len(rows)),12))
+ (D/'lineage.json').write_text(json.dumps({'native_source':str(SRC.relative_to(B)),'native_source_sha256':hashlib.sha256(SRC.read_bytes()).hexdigest(),'method':'All native triangle polygons clipped against adaptive UV rectangles; area-weighted outer normals and UV tangent orientation; OBB enclosing exact polygon vertices from both walls/returns/closures. Thin-volume filled, six opaque faces, no alpha masking. All source planes remain frozen; candidate is approximate and may overfill and overlap.','mandatory_v_breaks':[0,3,13,16],'mandatory_u_breaks':[0,16,32,80,96,144,160,176],'solid_texture':'../opaque-white.png','cube_count':len(rows),'triangles':len(ff),'json_decode_corner_error_mm':maxerr*1000,'cube_records':rows},separators=(',',':'))+'\n')
+ print('SAVED',tag,len(rows),'decode mm',maxerr*1000,flush=True)
+
+if __name__=='__main__':
+ Image.new('RGB',(1,1),(185,181,170)).save(W/'opaque-white.png')
+ leaves={};queue=[]
+ for u0,u1 in zip([0,16,32,80,96,144,160],[16,32,80,96,144,160,176]):
+  for v0,v1 in zip([0,3,13],[3,13,16]):
+   p=fit([u0,u1,v0,v1])
+   if p is not None:leaves[p['id']]=p
+ def push(p):
+  spl=split_best(p)
+  if spl is not None:heapq.heappush(queue,(-spl[0],p['id'],spl))
+ for p in leaves.values():push(p)
+ for budget in [300,700,1400]:
+  while len(leaves)<budget:
+   _,pid,spl=heapq.heappop(queue);old=leaves.pop(pid);gain,l,r,ax=spl
+   for p in [l,r]:p['parent']=pid;leaves[p['id']]=p;push(p)
+   if len(leaves)%100==0:print('patches',len(leaves),'proxy loss mm3',sum(p['loss']for p in leaves.values())*1e9,flush=True)
+  save(f'budget-{budget:04d}',list(leaves.values()))

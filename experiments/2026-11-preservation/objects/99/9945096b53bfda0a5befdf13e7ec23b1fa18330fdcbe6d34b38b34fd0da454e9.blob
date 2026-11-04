@@ -1,0 +1,22 @@
+import bpy,numpy as np,json
+from scipy.spatial import ConvexHull
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False);dg=bpy.context.evaluated_depsgraph_get();h=bpy.data.objects['Maria — anatomia feminina adaptada CC0'];em=h.evaluated_get(dg).to_mesh();P=np.array([h.matrix_world@v.co for v in em.vertices]);h.evaluated_get(dg).to_mesh_clear();hull=ConvexHull(P);E=hull.equations;N=E[:,:3];B=E[:,3];margin=.0001
+C=np.load(r+'cap-mantle-source-cap.npz')['points'][-112:][28:85];M=np.load(r+'cap-mantle-source-mantle.npz')['points'][-80:];d=np.load(r+'cap-mantle-oriented-correspondence.npz');A=d['cap'];Z=d['mantle']
+def point_stats(X,radius):
+ signed=np.max(X@N.T+B-radius,axis=1);return {'count':len(X),'outside_inflated_envelope':int((signed>1e-9).sum()),'inside_or_on_inflated_envelope':int((signed<=1e-9).sum()),'max_support_violation_range_m':[float(signed.min()),float(signed.max())],'blocked_indices':np.where(signed<=1e-9)[0].tolist()}
+def segment(a,b,ra,rb):
+ # Interval in all halfspaces; linear radius transition explicitly included.
+ f=N@a+B-ra;g=N@(b-a)-(rb-ra);lo=0.;hi=1.
+ for x,y in zip(f,g):
+  if abs(y)<1e-14:
+   if x>0:return None
+  elif y>0:hi=min(hi,-x/y)
+  else:lo=max(lo,-x/y)
+  if lo>hi:return None
+ return [float(lo),float(hi)] if lo<=hi else None
+rc=.0003+margin;rm=.003+margin
+curves={}
+for label,X,rad in [('cap_posterior_arc',C,rc),('mantle_top',M,rm)]:
+ intervals=[{'edge':[i,i+1],'inside_interval':q} for i in range(len(X)-1) if (q:=segment(X[i],X[i+1],rad,rad)) is not None];curves[label]={'points':point_stats(X,rad),'blocked_segments':intervals}
+trans=[{'station':i,'inside_interval':q} for i in range(len(A)) if (q:=segment(A[i],Z[i],rc,rm)) is not None]
+rp={'anatomy_vertices':len(P),'convex_hull_vertices':len(hull.vertices),'convex_hull_triangles':len(hull.simplices),'margin_m':margin,'support_halfthickness_m':{'cap':.0003,'mantle':.003},'curves':curves,'blocked_linear_transitions':trans,'transition_count':len(A),'geometry_changed':False,'status':'gate only; envelope conservative; failure is not general geometric impossibility'};json.dump(rp,open(r+'cap-mantle-convex-anchor-gate.json','w'),indent=2);np.savez(r+'cap-mantle-convex-anchor-envelope.npz',planes=E,cap=C,mantle=M);print({k:v for k,v in rp.items() if k not in ['curves','blocked_linear_transitions']});print({k:{'points':v['points'],'blocked_segments':len(v['blocked_segments'])} for k,v in curves.items()});print('blocked transitions',len(trans))

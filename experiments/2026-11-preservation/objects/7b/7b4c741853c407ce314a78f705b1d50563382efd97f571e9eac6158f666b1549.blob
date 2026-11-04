@@ -1,0 +1,16 @@
+import bpy,numpy as np,json
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False);dg=bpy.context.evaluated_depsgraph_get();o=bpy.data.objects['TESTE 34 — conexão de superfícies avaliadas'];em=o.evaluated_get(dg).to_mesh();p=np.array([v.co[:] for v in em.vertices]);fs=[tuple(f.vertices) for f in em.polygons];o.evaluated_get(dg).to_mesh_clear();q=p.copy()
+def ss(v):
+ t=np.clip(v,0,1);return t*t*(3-2*t)
+for i in range(len(p)):
+ x,y,z=p[i];w=ss((-.03-x)/.025)*ss((y+.22)/.08)*ss((.10-y)/.08)*ss((z-3.17)/.08)*ss((3.46-z)/.08)
+ q[i,0]-=.014*w
+tri=np.array([f[:3] for f in fs]);A=p[tri];B=q[tri];na=np.cross(A[:,1]-A[:,0],A[:,2]-A[:,0]);nb=np.cross(B[:,1]-B[:,0],B[:,2]-B[:,0]);area=np.linalg.norm(na,axis=1);ratio=np.linalg.norm(nb,axis=1)[area>1e-12]/area[area>1e-12]
+def pairs(v):
+ t=BVHTree.FromPolygons(v.tolist(),fs);return set((a,b) for a,b in t.overlap(t) if a<b and not set(fs[a])&set(fs[b]))
+base=pairs(p);now=pairs(q);d=np.linalg.norm(q-p,axis=1);report={'method':'Common X clearance displacement across both mantle shell layers; 14mm from measured 3.394mm penetration +8.51mm shell projection +margin; compact support only','changed_vertices':int((d>1e-7).sum()),'max_delta_m':float(d.max()),'area_range':list(map(float,[ratio.min(),ratio.max()])),'flips':int(((na*nb).sum(axis=1)<-1e-15).sum()),'new_self_pairs':len(now-base),'removed_self_pairs':len(base-now),'baseline_self_pairs':len(base),'cap_lower_neck_delta':float(d[:160386].max()),'above_z_3_46_delta':float(d[p[:,2]>=3.46].max()),'z_delta':float(abs(q[:,2]-p[:,2]).max()),'y_delta':float(abs(q[:,1]-p[:,1]).max())};json.dump(report,open(r+'V80-cloth-clearance-verification.json','w'),indent=2);assert report['flips']==0 and report['new_self_pairs']==0
+k=o.shape_key_add(name='TESTE80 — afastamento local do tecido');k.value=1
+for i,v in enumerate(k.data):v.co=o.data.vertices[i].co+Vector(q[i]-p[i])
+bpy.ops.wm.save_as_mainfile(filepath=r+'V80-neck-cloth-clearance-trial.blend')

@@ -1,0 +1,20 @@
+✔ all modeled single-fault boundaries preserve raw evidence and never replay delivery on reload (21.14323ms)
+✔ raw evidence survives unparsed: null (7.936038ms)
+✔ raw evidence survives unparsed: "" (5.425361ms)
+✔ raw evidence survives unparsed: "not JSON" (6.238398ms)
+✔ raw evidence survives unparsed: "{\"future\":999,\"bad-entry\":null}" (1.437906ms)
+✔ raw evidence survives unparsed: "  {\"emoji\":\"🕊\",\"quotes\":\"\\\"\"}\n" (2.796079ms)
+✔ raw evidence survives unparsed: "{\"entries\":{\"a\":{\"futureSecretShape\":[1,2]}}}" (1.753705ms)
+✔ UTF-8 encoding and JSON escape overhead refuse before any mutation (4.172523ms)
+✔ full envelope, including longer intermediate phase, is budgeted before prepare (0.699413ms)
+✔ any preexisting journal including corrupt/future shape blocks all operations (0.437246ms)
+✔ repeated reload does not retry and retains the exact journal (0.325717ms)
+✔ counterexamples defeat stronger claims rather than asserting exactly-once (0.270303ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 213.785394

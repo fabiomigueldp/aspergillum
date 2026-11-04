@@ -1,0 +1,69 @@
+# V75 V4: curvatura e contato da calota
+
+**Pesquisa reversível, não lançamento. Não é uma captura nem um teste do Minecraft.** A V3f e a escultura fonte permanecem intactas. A faixa é uma cópia byte-idêntica da V3f.
+
+## Melhoria concreta
+
+A V3f não tinha cruzamentos próprios da casca no gate, mas suas faces planas entravam na cabeça em regiões nas quais a superfície high ficava fora. A V4 refinou a curvatura somente onde o erro e essa regressão de contato pediam mais amostras. Todos os vértices novos são posições reais da fonte; não houve afastamento artificial, inflação da espessura ou edição da anatomia.
+
+Candidata retida: `curvature_candidate/`, iteração 08.
+
+- Calota: 6.220 triângulos, contra 1.740 da V3f.
+- Faixa:1.912 triângulos, inalterada.
+- Exportação:8.132 faces de cubos, somente para calota e faixa. O custo aumentou e **não foi validado no motor**.
+- Gate independente: zero candidatos BVH/cruzamentos estritos, topologia e adjacência limpas.
+- Borda:112 pontos e 112 arestas preservados. Todas as posições/normais são da fonte. Pareamento paramétrico entre paredes confirmado, com diferença numérica máxima 8,43×10⁻⁸.
+
+## Comparação independente com referência fixa
+
+Foram usados os mesmos 20.000 pontos high da parede externa da coroa, sorteados por área com semente 20261103. Em cada candidata, mede-se a projeção mais próxima na parede externa reduzida e o sinal local da face mais próxima da cabeça.
+
+- V3f: regressão estimada em 77,115% da área amostrada; erro p 95=0,003948 unidade.
+- Iteração 07:10,345%; p 95=0,000507;5.660 triângulos na calota.
+- Iteração 08:6,38%; p 95=0,000464;6.220 triângulos.
+
+08 custa 9,9% mais triângulos que 07 e reduz 38% das regressões restantes nessa amostragem, por isso foi escolhida para a prova visual.
+
+**Ainda há resíduos:** nessa referência fixa, erro máximo 0,003548 e pior profundidade local nova 0,001251 unidade. A estimativa é Monte Carlo; o sinal local não é SDF certificado e a projeção não é correspondência paramétrica exata. Contatos já existentes na fonte foram distinguidos dos novos.
+
+Metas máximas declaradas não foram atingidas (`goals_met:false`). A execução parou ao atingir 1.556 vértices externos, pois o próximo lote ultrapassaria o orçamento experimental de 1.600. Não é um limite oficial do Bedrock e não significa contato totalmente corrigido.
+
+## Ablações que orientaram a correção
+
+- `evidence/headless_alpha-*`: mesma V3f, cabeça ocultada, resto mantido. Não resolve todos os sinais visuais.
+- `evidence/context_exact-*`: suporte triangular nativo exato, usando UV/normal map exportados e sem máscara alfa rasterizada. **Somente diagnóstico, não geometria Bedrock entregue.** Facetas e irregularidades persistem mesmo sem a máscara.
+- `evidence/context_strict-*`: apenas o alfa mudou de tolerância conservativa para teste estrito no centro do pixel. Foram removidos 188.769 pixels alfa. As emendas/riscos ficaram piores; variante rejeitada.
+
+Esses controles não autorizam atribuir cada risco a uma causa única. A análise quantitativa de contato, separada por parede, sustenta a correção de curvatura da coroa.
+
+## Texturas e custo
+
+O atlas continua 2048² (aproximadamente 32 MiB RGBA para cor+normal antes de mipmaps). Faixa e borda protegida mantêm tiles 32 px. As faces menores da coroa refinada usam 14 px, com tolerância alfa 0,6 texel em vez de 0,75; isso é uma troca deliberada de resolução para não ampliar o atlas. A candidata não deve ser descrita como uma comparação em que somente o normalmap mudou.
+
+O maior número de cubos ainda é uma restrição séria. A eficiência do modelo completo, mips, transparência, sombras, materiais, tangentes e comportamento real de Vibrant Visuals não foram medidos.
+
+## Provas e reprodução
+
+- `evidence/review-v 4-fixed-reference.json`, `review-fixed-points.npz`, `tools/review_fixed_reference.py`: comparação fixa reproduzível.
+- `evidence/review-contact-by-wall-region.json`: diagnóstico inicial de contatos.
+- `curvature_candidate/evidence/review-v 4-final-gate.json`: gate final independente.
+- `curvature_candidate/evidence/atlas-budget.json`: resolução e alocação do atlas.
+- `curvature_candidate/evidence/asset-validation.json`: UV, serialização, hashes e preservação dos LAB anteriores.
+- `curvature_candidate/evidence/bedrock-perwall-*`: reimportação final de JSON/PNG no Blender, sem suavização geométrica extra.
+- `curvature_candidate/evidence/paired-*`: mesma geometria reduzida como triângulos nativos planos, sem máscara alfa.
+
+A cabeça e a auréola highpoly são idênticas nos renders e apenas contexto. Nenhuma melhoria facial pode ser atribuída à conversão da calota/faixa. Manto, costura, corpo e teste Bedrock continuam pendentes. Não há autorização artística ou técnica para publicar como versão final.
+
+## Decisão visual da V4
+
+Revisão independente reconheceu melhora em relação à V3f: coroa mais homogênea, menos riscos e pontas, sobretudo na vista de três quartos. A faixa dupla foi preservada. O controle nativo continua facetado, mas perdeu os grandes planos/pontas anteriores; portanto, o ganho não vem apenas do normalmap.
+
+Permanecem um pequeno risco escuro no alto lateral do perfil, irregularidade/ruído superficial e o término temporal escuro herdado. Reter como candidata técnica isolada. Não há aprovação global do acabamento nem eficiência demonstrada; o custo aumentou de 3.652 para 8.132 faces de cubo.
+
+## Ablação final do normalmap
+
+`bedrock-parametric-*` usa a mesma geometria, cor, luz e câmera, substituindo apenas 893.682 texels das normais nas paredes da calota por correspondência nos parâmetros originais. Faixa e rim permaneceram byte-idênticos. Essa variante não elimina o risco lateral na inspeção e não foi promovida à candidata principal.
+
+Os vetores codificados com Z tangente negativo nessa região mudaram de 200 para 500. Esse número não certifica aparência por si só, mas foi registrado em `parametric-normal-control.json`, sem inverter normais para esconder o sinal. O método e as imagens permanecem como diagnóstico reversível.
+
+A candidata principal continua usando `paired_cap_band_normal_per_wall_dx.png`; a variante paramétrica é experimental. Este resultado melhora a V3f, mas não resolve todos os resíduos, a costura com o manto ou a ausência de teste no Minecraft Bedrock.

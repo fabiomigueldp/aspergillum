@@ -1,0 +1,26 @@
+from audit_common import *
+from scipy.ndimage import distance_transform_edt
+import sys
+name,geo,tex=sys.argv[1:];geo=Path(geo);tex=Path(tex);sc=json_faces(geo,parts=(0,),texture=tex);native=source_tri(0);N=1024
+views={'front':[0,-1,0],'back':[0,1,0],'left':[-1,0,0],'right':[1,0,0],'front-right':[1,-1,.2],'front-left':[-1,-1,.2]}
+rows=[];masks={}
+def raster(kind,pts,depth,base,U,V,n,uv,tex,clip_triangle):
+ mask=np.zeros((N,N),bool)
+ for i,p in enumerate(pts):
+  if n[i]>=-1e-12:continue
+  lo=np.maximum(np.floor(p.min(0)-.5).astype(int),0);hi=np.minimum(np.ceil(p.max(0)-.5).astype(int)+1,N)
+  if np.any(lo>=hi):continue
+  y,x=np.mgrid[lo[1]:hi[1],lo[0]:hi[0]];delta=np.stack([x+.5-base[i,0],y+.5-base[i,1]],-1);mat=np.array([U[i],V[i]]).T;det=np.linalg.det(mat)
+  if abs(det)<1e-16:continue
+  inv=np.linalg.inv(mat);ab=delta@inv.T;a=ab[:,:,0];b=ab[:,:,1];inside=(a>=0)&(b>=0)&((a+b<=1)if clip_triangle else((a<1)&(b<1)))
+  if tex is not None:
+   xx=np.floor(uv[i,0]+a*uv[i,2]).astype(int);yy=np.floor(uv[i,1]+b*uv[i,3]).astype(int);bounds=(xx>=0)&(yy>=0)&(xx<tex.shape[1])&(yy<tex.shape[0]);alpha=np.zeros_like(inside);alpha[bounds]=tex[yy[bounds],xx[bounds],3]>0;inside&=alpha
+  mask[lo[1]:hi[1],lo[0]:hi[0]]|=inside
+ return mask
+for label,cam in views.items():
+ cam=np.array(cam,float);cam/=np.linalg.norm(cam);direction=-cam;right=np.cross(direction,[0,0,1.]);right/=np.linalg.norm(right);up=np.cross(right,direction);P=np.array([right,up]).T;native2=native@P;lo=native2.min((0,1));hi=native2.max((0,1));center=(lo+hi)/2;span=max(hi-lo)+.04;origin=center-span/2;step=span/N
+ t2=(native2-origin)/step;q2=(sc['q']@P-origin)/step;nn=np.cross(native[:,1]-native[:,0],native[:,2]-native[:,0]);nn/=np.linalg.norm(nn,axis=1)[:,None]
+ nm=raster('native',t2,None,t2[:,0],t2[:,1]-t2[:,0],t2[:,2]-t2[:,0],nn@direction,None,None,True);cm=raster('candidate',q2,None,q2[:,0],q2[:,3]-q2[:,0],q2[:,1]-q2[:,0],sc['n']@direction,sc['uv'],sc['texture'],False);extra=cm&~nm;lost=nm&~cm;de=distance_transform_edt(~nm)[extra]*step*1000;dl=distance_transform_edt(~cm)[lost]*step*1000
+ row={'view':label,'resolution':[N,N],'pixel_step_mm':step*1000,'native_pixels':int(nm.sum()),'candidate_pixels':int(cm.sum()),'extra_pixels':int(extra.sum()),'lost_pixels':int(lost.sum()),'extra_fraction_native':float(extra.sum()/nm.sum()),'lost_fraction_native':float(lost.sum()/nm.sum()),'extra_projected_area_mm2':float(extra.sum()*(step*1000)**2),'lost_projected_area_mm2':float(lost.sum()*(step*1000)**2),'extra_distance_to_native_mask_center_max_mm':float(de.max(initial=0)),'lost_distance_to_candidate_mask_center_max_mm':float(dl.max(initial=0)),'candidate_corners_outside_viewport':int(((q2<0)|(q2>N)).any(-1).sum())};rows.append(row);masks[label+'_native']=nm;masks[label+'_candidate']=cm
+ img=np.full((N,N,3),248,np.uint8);img[nm&cm]=[145,145,145];img[extra]=[220,55,40];img[lost]=[45,90,225];Image.fromarray(img).save(O/(name+'-silhouette-'+label+'.png'));print(label,row,flush=True)
+np.savez_compressed(O/(name+'-silhouette-masks.npz'),**masks);save(O/(name+'-silhouette.json'),{'candidate':name,'geometry_sha256':sha(geo),'texture_sha256':sha(tex),'method':'Full band only, six fixed orthographic directions. Front-facing exact actual JSON quads with actual nearest mip0 alpha vs native triangles. Sample pixel centers at 1024 square and native bbox plus40mm; binary projected support, no lighting/shadows, not union area in 3D. Red=extra support, blue=lost support, gray=both.','views':rows,'limitations':'Finite raster sampling may miss narrow or subpixel changes. Distances are between mask pixel centers, not exact continuous Hausdorff. This is silhouette-support diagnosis, not Minecraft or a view of the complete sculpture.'})

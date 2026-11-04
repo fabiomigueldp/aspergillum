@@ -1,0 +1,10 @@
+import numpy as np,json
+from pathlib import Path
+from PIL import Image
+R=Path(__file__).resolve().parents[1];V3=R.parent/'shell_band_v3/constrained_source';g=json.loads((V3/'resource_pack/models/entity/paired_cap_band.geo.json').read_text())['minecraft:geometry'][0];maps=json.loads((V3/'evidence/alpha-triangle-map.json').read_text());A=np.array(Image.open(V3/'resource_pack/textures/entity/paired_cap_band.png').convert('RGBA'));old=A[:,:,3].copy();counters={}
+for m in maps:
+ pi=m['part'];ci=counters.get(pi,0);counters[pi]=ci+1;c=g['bones'][pi]['cubes'][ci];tx,ty=c['uv']['south']['uv'];W,H=c['uv']['south']['uv_size'];ww,hh=c['size'][:2];pts=np.array(m['mask_local']);yy,xx=np.mgrid[0:H,0:W];px=(xx+.5)/W*ww;py=(1-(yy+.5)/H)*hh;covered=np.ones((H,W),bool)
+ for q,z in zip(pts,np.roll(pts,-1,axis=0)):
+  e=z-q;covered &= e[0]*(py-q[1])-e[1]*(px-q[0])>=0
+ A[ty:ty+H,tx:tx+W,3]=covered*255
+Image.fromarray(A).save(R/'assets/paired_cap_band_strict.png');(R/'evidence/strict-alpha.json').write_text(json.dumps({'pixels_removed':int(((old>0)&(A[:,:,3]==0)).sum()),'pixels_added':int(((old==0)&(A[:,:,3]>0)).sum()),'all_color_pixels_preserved':True,'method':'Only change: remove conservative0.75-texel outward tolerance. Pixel-center triangle inclusion, no invented geometry.'},indent=2))

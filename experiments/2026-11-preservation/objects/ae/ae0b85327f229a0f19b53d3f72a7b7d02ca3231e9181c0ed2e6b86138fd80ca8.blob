@@ -1,0 +1,42 @@
+from pathlib import Path
+import json,hashlib,zipfile,py_compile
+R=Path(__file__).resolve().parents[1];B=R.parent
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest();read=lambda p:json.loads((R/p).read_text())
+inputs=read('evidence/input-hashes.json');seen={r['path'] for r in inputs}
+for path,h in read('export_work/build-report.json')['inputs_sha256'].items():
+ p=(B/path).resolve()
+ if str(p) not in seen:inputs.append({'path':str(p),'sha256':h});seen.add(str(p))
+for r in inputs:r['current_sha256']=sha(Path(r['path']));r['unchanged']=r['sha256']==r['current_sha256'];assert r['unchanged'],r['path']
+summary=read('independent_validation/validation-summary.json');assert summary['geometry_coordinates_and_lineage_pass'] and summary['legacy_pixels_and_17_bones_preserved'];assert not summary['complete_sculpture_PBR_equivalence'] and not summary['center_only_promoted']
+for path,h in summary['validated_current_artifact_sha256'].items():assert sha(R/path)==h,path
+for path,h in read('export_work/delivery-sha256.json').items():assert sha(R/path)==h,path
+check=read('evidence/frozen-reimport-check.json');assert check['all_twenty_bones_reconstructed_only_from_json'];assert not check['original_native_or_highpoly_sculpture_meshes_in_scene']
+assert check['scene_sha256']==sha(R/check['scene'])
+for name,row in check['bones'].items():assert row['positions_match_expected_float32'] and row['indices_exact'] and row['uvs_match_expected_float32']
+assert len(check['bones'])==20
+contract=read('evidence/native-normal-contract-render.json');assert contract['native_uv_source']=='exact per-vertex transport contract'
+assert (R/'evidence/review-visual-v14.md').exists() and (R/'independent_validation/REVIEW_INDEPENDENT_V14.md').exists()
+compiled=[]
+for p in R.rglob('*.py'):py_compile.compile(str(p),doraise=True);compiled.append(str(p.relative_to(R)))
+images=[p for p in sorted((R/'evidence').glob('*.png'))]
+status={'status':'EXPERIMENTAL_INTEGRATION_DIAGNOSED_NOT_RELEASE','geometry_transport_and_lineage_passed':True,'only_three_bones_replaced':[0,1,15],'unchanged_bones':17,'native_faces_transported':18484,'cubes':23081,'quad_faces':23098,'raster_triangles':46196,'source_files_unchanged':True,'legacy_atlas_quadrants_bit_exact':True,'atlas_size':[4096,4096],'scene_reopened_and_checked':True,'reimported_scene_has_only_json_geometry':True,'visual_fidelity_approved':False,'alpha_fidelity_failed_under_nearest_mip0':True,'alpha_center_only_trial_promoted':False,'known_450_ray_regressions':{'conservative':1,'center_only':26},'partial_normal_experiment':True,'full_sculpture_pbr_equivalence':False,'shell_highpoly_normal_bake_proven':False,'anatomy_identity_tiles':736,'source_protected_anatomy_triangles_with_identity_tiles':463,'anatomy_same_tile_fallbacks':307,'blockbench_primary_source_uv_oracle_passed':True,'aspergillum_uv_and_normal_equivalence_failed':True,'runtime_minecraft_tested':False,'performance_tested':False,'published':False,'behavior_pack_created':False,'mcaddon_created':False,'visual_review_pngs':40,'final_scene':check['scene'],'limits':['Alpha cells extend outside triangles and leave holes, with visible seams against native control.','Normal-map experiment improves facial detail but does not remove alpha defects; dark ear shading is shared with the native control and legacy.','All shell faces and 258 band return/closure faces remain flat normal, not full source PBR.','The 23,081 cubes and 4096 atlases are unprofiled cost; not an engine hard-limit finding.','Old native-normal-experiment controls are superseded by exact-contract UV controls; native flat diagnostics are unaffected.']}
+(R/'STATUS.json').write_text(json.dumps(status,indent=2))
+validation={'status':status,'inputs':inputs,'independent_validation':summary,'frozen_reimport':check,'cost_accounting':read('evidence/cost-accounting.json'),'syntax_check':{'passed':True,'files':compiled},'evidence_pngs':[{'path':str(p.relative_to(R)),'bytes':p.stat().st_size,'sha256':sha(p)} for p in images],'primary_visual_review':'evidence/review-visual-v14.md','primary_numeric_review':'independent_validation/REVIEW_INDEPENDENT_V14.md','native_uv_control_source':contract['native_uv_source'],'superseded_native_uv_control_error_texels':contract['native_projected_uv_vs_contract_max_texels']}
+(R/'evidence/final-validation.json').write_text(json.dumps(validation,indent=2))
+files=[];omitted=[];upstream={'blockbench-bedrock.js','blockbench-cube.js','blockbench-three-custom.js'}
+for p in sorted(R.rglob('*')):
+ if not p.is_file() or '__pycache__' in p.parts or p.suffix in ['.zip','.blend1'] or p.name in ['file-manifest.json','package-validation.json']:continue
+ reason=None
+ if p.suffix=='.blend' and p.name!='v14-experimental-reimport.blend':reason='Intermediate diagnostic scene preserved in workspace; PNG/metadata included.'
+ if p.name in upstream:reason='Upstream source not redistributed; exact public URLs and Git hashes are in blockbench-uv-oracle.json. File remains preserved locally.'
+ if reason:omitted.append({'path':str(p.relative_to(R)),'reason':reason,'sha256':sha(p)})
+ else:files.append(p)
+manifest={'included':[{'path':str(p.relative_to(R)),'bytes':p.stat().st_size,'sha256':sha(p)} for p in files],'omitted_but_preserved_in_workspace':omitted}
+(R/'file-manifest.json').write_text(json.dumps(manifest,indent=2));files.append(R/'file-manifest.json')
+out=R/'V75-V14-INTEGRATION-LAB-NOT-RELEASE.zip';assert not out.exists()
+with zipfile.ZipFile(out,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+ for p in files:z.write(p,'assembly_transport_v14/'+str(p.relative_to(R)))
+with zipfile.ZipFile(out) as z:
+ assert z.testzip() is None
+ for p in files:assert z.read('assembly_transport_v14/'+str(p.relative_to(R)))==p.read_bytes()
+rep={'file':out.name,'bytes':out.stat().st_size,'sha256':sha(out),'member_count':len(files),'crc_valid':True,'all_archived_bytes_match_workspace':True,'all_experimental_assets_and_trial_preserved':True,'not_a_mcaddon_or_release':True,'upstream_source_and_intermediate_scenes_omitted_as_documented':True};(R/'package-validation.json').write_text(json.dumps(rep,indent=2));print(json.dumps(rep,indent=2))

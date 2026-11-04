@@ -1,0 +1,40 @@
+from pathlib import Path
+import numpy as np,json
+from scipy.optimize import minimize,LinearConstraint
+R=Path(__file__).resolve().parents[2];E=R/'lateral_v7/evidence';O=Path(__file__).resolve().parent
+field=np.load(E/'offset-reach-field.npz');mid=np.load(E/'director-cone-midfield.npz');a=np.load(E/'director-cone-assembly.npz');base=np.load(R/'integration_v6/evidence/seam-hermite-physical-7p5-assembly.npz')
+c0=field['center'];c=c0.copy(); active=np.zeros((7,57),bool);active[1:6,:12]=True;active[1:6,45:]=True;idx=np.flatnonzero(active.ravel());fixed=np.flatnonzero(~active.ravel());rows=[]
+def row(vals):
+ r=np.zeros(399)
+ for s,t,w in vals:r[s*57+t]+=w
+ rows.append(r)
+# Physically scaled thin-plate energy: along-s step approximately three along-t steps.
+for s in range(1,6):
+ for t in range(57):row([(s-1,t,1/9),(s,t,-2/9),(s+1,t,1/9)])
+for s in range(7):
+ for t in range(1,56):row([(s,t-1,1),(s,t,-2),(s,t+1,1)])
+for s in range(6):
+ for t in range(56):row([(s,t,2**.5/3),(s+1,t,-2**.5/3),(s,t+1,-2**.5/3),(s+1,t+1,2**.5/3)])
+A=np.array(rows);B=A[:,idx];rhs=-A[:,fixed]@c0.reshape(-1,3)[fixed]
+# Fidelity term is 1% of one longitudinal second-difference stencil.
+fidelity=.01
+sol=np.linalg.lstsq(np.vstack([B,np.eye(len(idx))*fidelity]),np.vstack([rhs,c0.reshape(-1,3)[idx]*fidelity]),rcond=None)[0];c.reshape(-1,3)[idx]=sol
+center=mid['center'].copy();gen=mid['generated_pair_indices'];uv=mid['uv'];center[gen]=c[1:6].reshape(-1,3);tris=mid['triangles'];original=mid['original_director'];newd=mid['new_director'].copy();p=center[tris];raw=np.cross(p[:,1]-p[:,0],p[:,2]-p[:,0]);fn=raw/np.linalg.norm(raw,axis=1)[:,None];sign=1 if np.median(np.einsum('fi,fvi->fv',fn,original[tris]))>0 else -1;fn*=sign;incident=[[] for _ in center]
+for j,tr in enumerate(tris):
+ for i in tr:incident[i].append(j)
+fails=[];margins=[]
+for i in gen:
+ if .2<=uv[i,1]<=.8:continue
+ normals=fn[incident[i]];d=np.sum(raw[incident[i]],axis=0)*sign;d/=np.linalg.norm(d)
+ res=minimize(lambda x:.5*np.sum((x-d)**2),d,jac=lambda x:x-d,constraints=[LinearConstraint(normals,.1,np.inf)],method='SLSQP',options={'ftol':1e-12,'maxiter':300})
+ if not res.success:fails.append({'index':int(i),'message':res.message})
+ x=res.x/np.linalg.norm(res.x);newd[i]=x;margins.append(float(np.min(normals@x)))
+points=a['points'].copy();ids=a['source_indices'];where={int(s):i for i,s in enumerate(ids)};outer=mid['outer_source_ids'];inner=mid['inner_source_ids'];half=mid['half_thickness'];norm=a['normals'].copy()
+for i in gen:
+ oi=where[int(outer[i])];ii=where[int(inner[i])];points[oi]=center[i]-newd[i]*half[i];points[ii]=center[i]+newd[i]*half[i];norm[oi]=-newd[i];norm[ii]=newd[i]
+for sid,si,ti,side,fraction in field['generated_vertex_map']:
+ if int(side)!=2:continue
+ i=gen[(int(si)-1)*57+int(ti)];points[where[int(sid)]]=center[i]+newd[i]*half[i]*(2*fraction-1)
+res={k:a[k] for k in a.files};res.update(points=points,normals=norm);np.savez_compressed(O/'relaxed-assembly.npz',**res);np.savez_compressed(O/'relaxed-midfield.npz',points=center,triangles=tris,center=center,director=newd,uv=uv,outer_source_ids=outer,inner_source_ids=inner,generated_pair_indices=gen)
+cos=np.einsum('fi,fvi->fv',fn,newd[tris]);disp=np.linalg.norm(points-base['points'],axis=1);cd=np.linalg.norm(center-mid['center'],axis=1);rep={'hypothesis':'Constrained thin-plate minimization removes near-antiparallel lateral center folds before offsetting. Fixed source interfaces and unaffected central strip; preserve original paired wall thickness.','method':'Linear least squares anisotropic thin-plate, physical step ratio3, displacement regularizer0.01; area-weighted directors projected into incident normal cone with requested margin0.1.','center_moved_vertices':int((cd>1e-12).sum()),'center_displacement_max_mm':float(cd.max()*1000),'center_displacement_p95_mm':float(np.percentile(cd[gen],95)*1000),'shell_displacement_max_mm':float(disp.max()*1000),'mixed_director_faces':int(((cos.min(1)<0)&(cos.max(1)>0)).sum()),'nonpositive_director_products':int((cos<=0).sum()),'cone_failures':fails,'cone_margin_min':min(margins),'source_vertices_exact':bool(np.array_equal(points[~a['generated_vertices']],base['points'][~a['generated_vertices']])),'central_center_exact':bool(np.array_equal(c[1:6,12:45],c0[1:6,12:45])),'thickness_min_mm':float(half[gen].min()*2000),'thickness_max_mm':float(half[gen].max()*2000),'triangles':len(a['triangles']),'provenance':{'input':'lateral_v7/evidence/director-cone-assembly.npz','source_geometry':'integration_v6/evidence/seam-hermite-physical-7p5-assembly.npz','only_generated_vertices_moved':True,'connectivity_preserved':True,'source_orientation_preserved':True,'face_parts':'0 cap;1 bridge;2 restored mantle','source_indices_preserved':True}}
+(O/'relaxed-build.json').write_text(json.dumps(rep,indent=2));print(json.dumps(rep,indent=2))

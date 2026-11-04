@@ -1,0 +1,168 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
+import {spawnSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+import {DESIGNS,ATELIER_DESIGNS,compactLayout} from '../src/domain/catalog.ts';
+// @ts-ignore offline tooling is intentionally not bundled into Minecraft
+import {LIMITS,auditSnapshot,parseSnapshotJson,jsonBytes,sha256,requireContract} from '../tools/lib/snapshot-audit.mjs';
+// @ts-ignore offline tooling
+import {auditFile,convertFile,verifyBundle,exportRollback,readRegular,writeNewFile} from '../tools/lib/snapshot-bundle.mjs';
+const bare=ATELIER_DESIGNS.find(d=>d.codec==='edges')!;
+const decorated=ATELIER_DESIGNS.find(d=>d.codec==='compact')!;
+const cell=(i=0)=>({dimension:'minecraft:overworld',position:{x:i,y:64,z:0},id:bare.id,states:{'altare:edges':15,'altare:facing':3,'altare:role':0} as Record<string,number>});
+const snapshot=(cells:any[]=[cell()])=>({format:'altare-block-snapshot',schemaVersion:1,stateSchema:'altare-0.12.3',source:{addonVersion:'0.12.3',exportedAt:'2026-11-03T19:00:00.000Z',coverage:'selected-cells'},cells});
+const reason=(fn:()=>unknown,code:string)=>assert.throws(fn,(e:any)=>e.code===code);
+function workspace(t:any){const dir=fs.mkdtempSync(path.join(os.tmpdir(),'altare-snapshot-test-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));return dir;}
+function sourceFile(dir:string,value=snapshot()){const file=path.join(dir,'source.json');fs.writeFileSync(file,jsonBytes(value));return file;}
+function bundle(t:any){const dir=workspace(t),source=sourceFile(dir),out=path.join(dir,'bundle');assert.equal(convertFile(source,out).created,true);return {dir,source,out};}
+const cli=fileURLToPath(new URL('../tools/snapshot.mjs',import.meta.url));
+const combinations=(fields:Record<string,number[]>)=>Object.entries(fields).reduce<Record<string,number>[]>((rows,[key,values])=>rows.flatMap(row=>values.map(value=>({...row,[key]:value}))),[{}]);
+const range=(max:number)=>Array.from({length:max+1},(_,i)=>i);
+
+test('strict parser refuses duplicate keys, escaped duplicates, malformed UTF-8 and excessive nesting',()=>{
+ requireContract();assert.deepEqual(parseSnapshotJson(jsonBytes(snapshot())),snapshot());
+ for(const text of ['{"a":1,"a":2}','{"a":1,"\\u0061":2}','{"x":{"id":1,"id":2}}'])reason(()=>parseSnapshotJson(Buffer.from(text)),'duplicate-json-key');
+ for(const text of ['','{','[1,]','{"x":1,}','01','true false','{"a":"\\q"}','{"x":1e}'])reason(()=>parseSnapshotJson(Buffer.from(text)),'invalid-json');
+ reason(()=>parseSnapshotJson(Buffer.from([0xc3,0x28])),'invalid-utf8');
+ reason(()=>parseSnapshotJson(Buffer.from('['.repeat(18)+'0'+']'.repeat(18))),'too-deep');
+ reason(()=>parseSnapshotJson(Buffer.alloc(LIMITS.bytes+1)),'input-too-large');
+ const many='{"cells":[{"id":"one"},{"id":"two"}]}';assert.equal(parseSnapshotJson(Buffer.from(many)).cells.length,2);
+});
+
+test('whole snapshot validates exact envelope, provenance and cell boundaries',()=>{
+ for(const value of [null,[],{}, {...snapshot(),extra:true},{...snapshot(),stateSchema:'altare-compact-v1'},{...snapshot(),schemaVersion:2}])reason(()=>auditSnapshot(value),'invalid-envelope');
+ for(const source of [null,{}, {...snapshot().source,coverage:'whole-world'},{...snapshot().source,addonVersion:'0.12.2'},{...snapshot().source,exportedAt:'2026-02-30T19:00:00.000Z'},{...snapshot().source,secret:'unexpected'}])reason(()=>auditSnapshot({...snapshot(),source}),'invalid-source');
+ reason(()=>auditSnapshot(snapshot([])),'invalid-cell-count');reason(()=>auditSnapshot(snapshot(Array(LIMITS.cells+1).fill(cell()))),'invalid-cell-count');
+ const invalid=[null,[],{...cell(),extra:1},{...cell(),dimension:'overworld'},...[-0,.5,2**31,NaN,Infinity,'0',null].map(x=>({...cell(),position:{x,y:0,z:0}})),{...cell(),position:{x:0,y:0,z:0,extra:1}},{...cell(),id:'minecraft:stone'},{...cell(),states:{'altare:edges':15,'altare:facing':0,'altare:role':-0}},{...cell(),states:{'altare:edges':15,'altare:facing':0,'altare:role':0,'altare:shape':0}}];
+ for(const value of invalid){const before=structuredClone(value);const result=auditSnapshot(snapshot([value]));assert.equal(result.report.eligible,false);assert.equal(result.report.rejectedCells,1);assert.equal(result.converted,null);assert.deepEqual(value,before);}
+ const same=auditSnapshot(snapshot([cell(),cell()]));assert.equal(same.report.issues[0].code,'duplicate-position');
+ const separate=auditSnapshot(snapshot([cell(),{...cell(),dimension:'minecraft:nether'}]));assert.equal(separate.report.eligible,true);
+});
+
+test('normalization is individually reported and needs explicit consent; last rejection prevents all conversion',()=>{
+ const source=snapshot([{...cell(),states:{...cell().states,'altare:role':3}}]);
+ const before=structuredClone(source),denied=auditSnapshot(source);
+ assert.equal(denied.report.rejectedCells,0);assert.equal(denied.report.normalizationCount,1);assert.equal(denied.report.normalizations[0].code,'unused-role-cleared');assert.equal(denied.converted,null);
+ const accepted=auditSnapshot(source,{allowUnusedRoleNormalization:true});assert.equal(accepted.report.eligible,true);assert.equal(accepted.converted.cells[0].states['altare:facing'],3);assert.deepEqual(source,before);
+ const cells=Array.from({length:3000},(_,i)=>cell(i));cells.push({...cell(3000),id:decorated.id,states:{'altare:edges':0,'altare:facing':0,'altare:role':1}});
+ const rejected=auditSnapshot(snapshot(cells),{allowUnusedRoleNormalization:true});assert.equal(rejected.report.convertedCells,3000);assert.equal(rejected.report.issues[0].index,3000);assert.equal(rejected.report.issues[0].code,'unrepresentable-pose');assert.equal(rejected.converted,null);
+});
+
+test('file audit defaults to no writes; conversion creates a new self-verifying bundle and exact rollback',t=>{
+ const dir=workspace(t),input=path.join(dir,'source.json');
+ const original=Buffer.concat([Buffer.from([0xef,0xbb,0xbf]),Buffer.from(' \n'+JSON.stringify(snapshot(),null,1)+'\r\n')]);fs.writeFileSync(input,original);
+ assert.equal(auditFile(input).report.eligible,true);assert.deepEqual(fs.readdirSync(dir),['source.json']);
+ const out=path.join(dir,'bundle'),result=convertFile(input,out);assert.equal(result.created,true);
+ assert.deepEqual(fs.readFileSync(input),original);assert.deepEqual(fs.readFileSync(path.join(out,'backup.json')),original);
+ const verified=verifyBundle(out,{expectedManifestSha256:result.manifestSha256,expectedSourceSha256:sha256(original)});assert.equal(verified.externalDigestChecked,true);
+ assert.equal(verifyBundle(out).externalDigestChecked,false);
+ const rollback=path.join(dir,'rollback.json');assert.equal(exportRollback(out,rollback).worldModified,false);assert.deepEqual(fs.readFileSync(rollback),original);
+ assert.throws(()=>convertFile(input,out));assert.throws(()=>exportRollback(out,input));assert.deepEqual(fs.readFileSync(input),original);
+ reason(()=>exportRollback(out,path.join(out,'another.json')),'rollback-inside-bundle');
+});
+
+test('rejected source leaves no output directory and existing reports are never overwritten',t=>{
+ const dir=workspace(t),input=sourceFile(dir,snapshot([{...cell(),states:{...cell().states,'altare:role':2}}])),out=path.join(dir,'rejected');
+ assert.equal(convertFile(input,out).created,false);assert.equal(fs.existsSync(out),false);
+ assert.equal(convertFile(input,out,{allowUnusedRoleNormalization:true}).created,true);
+ const bytes=fs.readFileSync(input);assert.throws(()=>writeNewFile(input,Buffer.from('overwrite')));assert.deepEqual(fs.readFileSync(input),bytes);
+});
+
+test('regular-file guards reject links, directories, devices, FIFOs and existing linked destinations',t=>{
+ const {dir,source,out}=bundle(t),link=path.join(dir,'link.json');fs.symlinkSync(source,link);
+ reason(()=>readRegular(link),'not-regular-file');reason(()=>readRegular(dir),'not-regular-file');reason(()=>readRegular('/dev/null'),'not-regular-file');
+ const fifo=path.join(dir,'pipe');assert.equal(spawnSync('mkfifo',[fifo]).status,0);reason(()=>readRegular(fifo),'not-regular-file');
+ const linkedDir=path.join(dir,'linked-bundle');fs.symlinkSync(out,linkedDir);reason(()=>verifyBundle(linkedDir),'not-bundle-directory');
+ assert.throws(()=>exportRollback(out,link));assert.deepEqual(fs.readFileSync(source),jsonBytes(snapshot()));
+});
+
+test('interrupted writes cannot create a verifiable bundle or permit overwrite on retry',t=>{
+ const dir=workspace(t),input=sourceFile(dir),out=path.join(dir,'partial'),original=fs.readFileSync(input),write=fs.writeSync;let calls=0;
+ // Fault injection is confined to this isolated test process.
+ (fs as any).writeSync=(...args:any[])=>{if(++calls===3)throw Object.assign(Error('simulated disk full'),{code:'ENOSPC'});return (write as any)(...args);};
+ try{assert.throws(()=>convertFile(input,out),/simulated disk full/);}finally{fs.writeSync=write;}
+ assert.equal(fs.existsSync(path.join(out,'manifest.json')),false);reason(()=>verifyBundle(out),'incomplete-bundle');assert.deepEqual(fs.readFileSync(input),original);assert.throws(()=>convertFile(input,out));
+});
+
+test('verify rejects corruption of every component, missing/extra files, links and path traversal manifests',t=>{
+ const {out,dir}=bundle(t);
+ for(const name of ['backup.json','converted.json','audit.json']){
+  const file=path.join(out,name),original=fs.readFileSync(file);fs.appendFileSync(file,' ');reason(()=>verifyBundle(out),'file-digest-mismatch');fs.writeFileSync(file,original);
+ }
+ const manifestPath=path.join(out,'manifest.json'),manifestRaw=fs.readFileSync(manifestPath),manifest=JSON.parse(manifestRaw.toString());
+ for(const bad of [{...manifest,schemaVersion:2},{...manifest,files:{...manifest.files,'../outside.json':manifest.files['backup.json']}},{...manifest,allowUnusedRoleNormalization:'true'},{...manifest,extra:1}]){fs.writeFileSync(manifestPath,jsonBytes(bad));reason(()=>verifyBundle(out),'invalid-manifest');}fs.writeFileSync(manifestPath,manifestRaw);
+ fs.writeFileSync(path.join(out,'extra'),'x');reason(()=>verifyBundle(out),'incomplete-bundle');fs.unlinkSync(path.join(out,'extra'));
+ const backup=path.join(out,'backup.json'),saved=path.join(dir,'saved-backup');fs.renameSync(backup,saved);reason(()=>verifyBundle(out),'incomplete-bundle');fs.symlinkSync(saved,backup);reason(()=>verifyBundle(out),'not-regular-file');fs.unlinkSync(backup);fs.renameSync(saved,backup);
+});
+
+test('rehashed converted data and audit cannot bypass deterministic verification',t=>{
+ const {out}=bundle(t),manifestPath=path.join(out,'manifest.json'),manifestOriginal=fs.readFileSync(manifestPath);
+ for(const name of ['converted.json','audit.json']){
+  const file=path.join(out,name),original=fs.readFileSync(file),changed=JSON.parse(original.toString());
+  if(name==='converted.json')changed.cells[0].states['altare:facing']=0;else changed.totalCells=999;
+  const bytes=jsonBytes(changed);fs.writeFileSync(file,bytes);const manifest=JSON.parse(manifestOriginal.toString());manifest.files[name]={bytes:bytes.length,sha256:sha256(bytes)};fs.writeFileSync(manifestPath,jsonBytes(manifest));
+  reason(()=>verifyBundle(out),name==='converted.json'?'conversion-mismatch':'audit-mismatch');fs.writeFileSync(file,original);fs.writeFileSync(manifestPath,manifestOriginal);
+ }
+});
+
+test('separately trusted digests detect a wholly replaced otherwise valid bundle',t=>{
+ const {dir,out}=bundle(t),first=verifyBundle(out);const second=path.join(dir,'second');fs.mkdirSync(second);const input=sourceFile(second,snapshot([cell(42)]));
+ const other=path.join(dir,'other');convertFile(input,other);
+ for(const name of fs.readdirSync(other))fs.copyFileSync(path.join(other,name),path.join(out,name));
+ assert.equal(verifyBundle(out).verified,true);
+ reason(()=>verifyBundle(out,{expectedSourceSha256:first.sourceSha256}),'source-digest-mismatch');reason(()=>verifyBundle(out,{expectedManifestSha256:first.manifestSha256}),'manifest-digest-mismatch');
+});
+
+test('CLI defaults to audit, refuses duplicate options, and uses nonzero statuses without partial output',t=>{
+ const dir=workspace(t),input=sourceFile(dir),out=path.join(dir,'bundle');
+ let run=spawnSync(process.execPath,[cli,'--input',input],{encoding:'utf8'});assert.equal(run.status,0,run.stderr);assert.equal(JSON.parse(run.stdout).eligible,true);assert.deepEqual(fs.readdirSync(dir),['source.json']);
+ run=spawnSync(process.execPath,[cli,'audit','--input',input,'--input',input],{encoding:'utf8'});assert.equal(run.status,1);assert.equal(JSON.parse(run.stderr).code,'usage');
+ run=spawnSync(process.execPath,[cli,'convert','--input',input,'--out-dir',out],{encoding:'utf8'});assert.equal(run.status,0,run.stderr);
+ run=spawnSync(process.execPath,[cli,'verify','--bundle',out],{encoding:'utf8'});assert.equal(run.status,0,run.stderr);
+ fs.appendFileSync(path.join(out,'backup.json'),'x');run=spawnSync(process.execPath,[cli,'rollback','--bundle',out,'--output',path.join(dir,'restore.json')],{encoding:'utf8'});assert.equal(run.status,3);assert.equal(fs.existsSync(path.join(dir,'restore.json')),false);
+});
+
+test('all 80000 legacy state combinations receive exact accept/reject accounting, including 278 unchanged IDs',()=>{
+ const entries:any[]=[];let index=0;
+ const add=(id:string,fields:Record<string,number[]>)=>{for(const states of combinations(fields))entries.push({...cell(index++),id,states});};
+ add('altare:mensa',{'altare:edges':range(15),'altare:frontal':range(11),'altare:facing':range(3),'altare:stone':range(2),'altare:cloth':range(4)});
+ for(const d of DESIGNS.filter(d=>d.codec!=='native')){
+  let fields:Record<string,number[]>;
+  if(ATELIER_DESIGNS.some(a=>a.id===d.id))fields={'altare:edges':range(15),'altare:facing':range(3),'altare:role':range(3)};
+  else if(d.codec==='classic_textile')fields={'altare:shape':range(8),'altare:detail':range(5),'altare:facing':range(3),'altare:stone':range(2)};
+  else if(d.codec==='symmetric')fields={'altare:edges':range(15)};
+  else if(d.codec==='edges')fields={'altare:edges':range(15),'altare:facing':range(3)};
+  else if(compactLayout(d))fields={'altare:shape':range(6),'altare:detail':range(3),'altare:facing':range(3)};
+  else throw Error('Unexpected original family');add(d.id,fields);
+ }
+ assert.equal(entries.length,80000);
+ const totals={converted:0,unchanged:0,rejected:0,normalized:0},rejectedIndices=new Set<number>();
+ for(let start=0;start<entries.length;start+=10000){const result=auditSnapshot(snapshot(entries.slice(start,start+10000)),{allowUnusedRoleNormalization:true});totals.converted+=result.report.convertedCells;totals.unchanged+=result.report.unchangedCells;totals.rejected+=result.report.rejectedCells;totals.normalized+=result.report.normalizationCount;for(const issue of result.report.issues)rejectedIndices.add(start+issue.index);if(result.report.rejectedCells)assert.equal(result.converted,null);}
+ assert.deepEqual(totals,{converted:19416,unchanged:33920,rejected:26664,normalized:1728});
+ const accepted=entries.filter((_,i)=>!rejectedIndices.has(i)),complete=auditSnapshot(snapshot(accepted),{allowUnusedRoleNormalization:true});assert.equal(complete.report.eligible,true);assert.equal(complete.converted.cells.length,53336);
+ const affected=new Set(['altare:mensa',...ATELIER_DESIGNS.map(d=>d.id)]);
+ for(const [i,source] of accepted.entries()){const target=complete.converted.cells[i];assert.equal(target.id,source.id);assert.equal(target.dimension,source.dimension);assert.deepEqual(target.position,source.position);if(!affected.has(source.id))assert.deepEqual(target.states,source.states);}
+});
+
+
+test('numeric lexical validation rejects rounded fractions, underflow, exponents and unsafe integers before JSON.parse',()=>{
+ for(const token of ['1.00000000000000001','15.00000000000000001','1e-999','1e2','9007199254740993','-0'])reason(()=>parseSnapshotJson(Buffer.from('{"number":'+token+'}')),'noncanonical-number');
+ const raw=JSON.stringify(snapshot()).replace('"x":0','"x":1.00000000000000001');reason(()=>parseSnapshotJson(Buffer.from(raw)),'noncanonical-number');
+});
+
+test('all writers reject symlinked parent aliases, including rollback into its own bundle',t=>{
+ const {out,dir}=bundle(t),alias=path.join(dir,'alias');fs.symlinkSync(out,alias);
+ reason(()=>exportRollback(out,path.join(alias,'restored.json')),'linked-output-parent');
+ reason(()=>writeNewFile(path.join(alias,'report.json'),Buffer.from('report')),'linked-output-parent');
+ assert.equal(fs.existsSync(path.join(out,'restored.json')),false);assert.equal(fs.existsSync(path.join(out,'report.json')),false);assert.equal(verifyBundle(out).verified,true);
+ reason(()=>readRegular(path.join(alias,'backup.json')),'linked-input-parent');
+});
+
+
+test('native pedestal IDs are not accepted as legacy snapshot recipes',()=>{
+ const native=DESIGNS.filter(d=>d.codec==='native');assert.equal(native.length,17);
+ for(const d of native){const result=auditSnapshot(snapshot([{...cell(0),id:d.id,states:{}}]));assert.equal(result.report.eligible,false);assert.equal(result.report.rejectedCells,1);assert.equal(result.converted,null);}
+});

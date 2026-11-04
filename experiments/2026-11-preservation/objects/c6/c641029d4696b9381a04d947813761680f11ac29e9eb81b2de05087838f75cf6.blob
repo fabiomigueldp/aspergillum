@@ -1,0 +1,13 @@
+import numpy as np,json,matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';C=np.load(r+'cap-mantle-source-cap.npz')['points'][-112:];M=np.load(r+'cap-mantle-source-mantle.npz')['points'][-80:];A=C[28:85]
+def sample(p,t):
+ s=np.r_[0,np.cumsum(np.linalg.norm(np.diff(p,axis=0),axis=1))];s/=s[-1];return np.column_stack([np.interp(t,s,p[:,i]) for i in range(3)])
+t=np.linspace(0,1,80);a=sample(A,t);b=sample(M,t);np.savez(r+'cap-mantle-oriented-correspondence.npz',cap=a,mantle=b,parameter=t);d=np.linalg.norm(a-b,axis=1);json.dump({'cap_arc':[28,84],'mantle_top':[720,799],'orientation':'both from anatomical right (+X) toward left (-X), monotone posterior arc','paired_stations':80,'gap_range_m':[float(d.min()),float(d.max())],'geometry_changed':False},open(r+'cap-mantle-oriented-correspondence.json','w'),indent=2)
+fig,axes=plt.subplots(1,2,figsize=(12,6))
+for ax,ix,title in [(axes[0],0,'Front projection: X/Z'),(axes[1],1,'Observed-side projection: Y/Z')]:
+ ax.plot(C[:,ix],C[:,2],color='.7',label='Complete cap opening');ax.plot(A[:,ix],A[:,2],color='blue',label='Posterior cap arc28..84');ax.plot(M[:,ix],M[:,2],color='orange',label='Mantle upper row');
+ for j in range(0,80,8):ax.plot([a[j,ix],b[j,ix]],[a[j,2],b[j,2]],color='green',lw=.8)
+ ax.set_aspect('equal');ax.set_title(title);ax.legend(fontsize=8);ax.grid()
+fig.suptitle('Source midsurface correspondence only — not a new model');fig.tight_layout();fig.savefig(r+'cap-mantle-oriented-correspondence.png',dpi=140)

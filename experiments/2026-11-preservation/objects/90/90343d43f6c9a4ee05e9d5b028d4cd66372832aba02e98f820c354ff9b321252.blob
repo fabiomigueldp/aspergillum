@@ -1,0 +1,11 @@
+import bpy,json
+from pathlib import Path
+s=bpy.context.scene
+report={"version":bpy.app.version_string,"scene": {"engine":s.render.engine,"cycles":{p.identifier:getattr(s.cycles,p.identifier) for p in s.cycles.bl_rna.properties if p.type in ["BOOLEAN","INT","FLOAT","ENUM","STRING"] and not getattr(p,"is_array",False) and p.identifier != "rna_type"}},"materials":[],"objects":[]}
+for m in bpy.data.materials:
+ if not m.use_nodes: continue
+ report["materials"].append({"name":m.name,"nodes":[{"name":n.name,"type":n.type,"properties": {a:str(getattr(n,a)) for a in ["interpolation","extension"] if hasattr(n,a)},"inputs":{i.name:list(i.default_value) if hasattr(i.default_value,"__len__") and not isinstance(i.default_value,str) else i.default_value for i in n.inputs if hasattr(i,"default_value")}} for n in m.node_tree.nodes],"links":[[l.from_node.name,l.from_socket.name,l.to_node.name,l.to_socket.name] for l in m.node_tree.links]})
+for o in s.objects:
+ report["objects"].append({"name":o.name,"type":o.type,"visibility":{p:getattr(o,p) for p in ["visible_camera","visible_shadow","visible_diffuse","visible_glossy","visible_transmission"]},"location":list(o.location),"scale":list(o.scale)})
+Path("lit_surface_v16/lighting_research/saved-scene-settings.json").write_text(json.dumps(report,indent=2))
+print("SCENE_INSPECT_DONE")

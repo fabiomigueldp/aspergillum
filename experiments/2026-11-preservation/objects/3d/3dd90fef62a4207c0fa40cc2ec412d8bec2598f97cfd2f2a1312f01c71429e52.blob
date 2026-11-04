@@ -1,0 +1,32 @@
+import bpy,math,json
+from mathutils import Matrix,Vector
+RDIR='/workspace/scratch/212c580ada5b/paz-refinement/'
+bpy.ops.wm.open_mainfile(filepath=RDIR+'gui-test/V20-interactive-restored.blend',use_scripts=False)
+R=bpy.data.objects['Maria — auréola lisa'].rotation_euler.to_matrix()@Matrix.Rotation(-math.pi/2,3,'X');Ri=R.transposed()
+report={}
+for name in ['Maria — anatomia feminina adaptada CC0','Maria — véu reconstruído de perfil','Maria — plano contínuo do manto']:
+ o=bpy.data.objects[name]
+ if not o.data.shape_keys:o.shape_key_add(name='Base V20 preservada')
+ basis=o.data.shape_keys.key_blocks[0]
+ existing=list(o.data.shape_keys.key_blocks)[1:]
+ mixed=[]
+ for i,v in enumerate(basis.data):
+  p=v.co.copy()
+  for k in existing:
+   if not k.mute:p+=(k.data[i].co-k.relative_key.data[i].co)*k.value
+  mixed.append(p)
+ key=o.shape_key_add(name='TESTE 26 — redução coordenada calota 25mm');key.value=1
+ count=0;maximum=0
+ for i,p in enumerate(mixed):
+  local=Ri@(o.matrix_world@p)
+  t=max(0,min(1,(local.z-3.38)/.185));w=t*t*(3-2*t)
+  delta=R@Vector((0,0,-.025*w))
+  key.data[i].co=basis.data[i].co+o.matrix_world.inverted().to_3x3()@delta
+  if delta.length>1e-7:count+=1;maximum=max(maximum,delta.length)
+ report[name]={'changed':count,'max_delta':maximum}
+ o['trial_note']='Experimental coordinated upper skull reduction, not approved; key value 0 restores V20. Face below local z3.38 preserved.'
+bpy.ops.wm.save_as_mainfile(filepath=RDIR+'gui-test/V26-coordinated-crown-trial.blend')
+json.dump(report,open(RDIR+'gui-test/V26-change-report.json','w'),indent=2)
+s=bpy.context.scene;s.cycles.samples=24;s.render.resolution_x=450;s.render.resolution_y=600;s.render.resolution_percentage=100;c=s.camera
+for view,loc,targ,scale in [('face',(-1.6,-5,3.7),(0,-.08,3.43),.88),('profile',(-5,-.05,3.6),(0,-.15,3.4),1.05)]:
+ c.location=loc;c.rotation_euler=(Vector(targ)-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=scale;s.render.filepath=RDIR+'gui-test/V26-compare-'+view+'.png';bpy.ops.render.render(write_still=True)

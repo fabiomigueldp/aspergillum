@@ -1,0 +1,109 @@
+# Revisão visual independente V15
+
+Data: 2026-11-03. Estado: **concluída para os 27 renders V15 disponibilizados**.
+
+**Parecer:** nenhuma alternativa examinada recebe aprovação de acabamento integral. Os cuboides opacos limpam as cicatrizes da faixa, mas introduzem degraus e pequenas transições retangulares; 1.400 peças oferece o melhor acabamento local dessa série, e 700 já melhora bastante sobre 300. A máscara compartilhada melhora nitidamente as costuras da face e a linha horizontal inferior do manto, mas conserva riscos na faixa, calota, encontros auriculares e ombros. Aumentar o tier de 512 para 2048 não elimina essas marcas nas vistas examinadas. Os controles adicionais ajudam a localizar o problema, mas não identificam seu mecanismo exato nem constituem candidatas Bedrock.
+
+## 1. Evidência e controle da comparação
+
+Inspecionei diretamente os seguintes PNGs em `opaque_transport_v15/evidence/`:
+
+- `opaque-{0300,0700,1400}-{threequarter,band-front,left-ear,right-ear}.png`: 12 imagens.
+- `shared-0128-band-front.png`: uma imagem.
+- `shared-{0512,2048}-{threequarter,head-front,band-front,left-ear,right-ear,mantle-back}.png`: 12 imagens.
+- `shared-2048-analytic-clip-control-band-front.png` e `shared-2048-no-shadow-control-band-front.png`: dois controles diagnósticos.
+
+Reexaminei diretamente 12 controles V14: os pares `json-flat-whole-threequarter` / `native-flat-whole-threequarter` e `json-flat-focus-*` / `native-flat-focus-*` para `head-front`, `band-front`, `left-ear`, `right-ear` e `mantle-back`. Li o README e o parecer visual V14. Também examinei as montagens `comparison-band.png` e `comparison-causal-controls.png`, sem contá-las como vistas independentes.
+
+Li os manifests de render e os scripts dos controles. O script principal `tools/render_assembly_v15.py` é idêntico ao `assembly_transport_v14/tools/render_assembly.py` comparado nesta revisão. Câmeras, enquadramentos, luz, exposição, material difuso uniforme, culling unilateral e amostragem permanecem os mesmos nas candidatas e controles correspondentes. Nenhuma destas imagens utiliza normalmap, cabeça highpoly ou ocultação do halo. A textura fornece alfa no shader flat; não há avaliação de reprodução do material artístico original.
+
+As séries têm escopos diferentes:
+
+- **Opacos:** substituem somente a faixa `part_00`; casca, anatomia e demais peças conservam o transporte V14.
+- **Máscara compartilhada:** substitui o transporte de faixa, casca e anatomia (`part_00`, `part_01`, `part_15`); as outras 17 peças permanecem no contexto legado.
+- **Nativo V14:** usa os triângulos nativos desses três componentes, com o restante do contexto JSON. É referência visual, não exportação Bedrock.
+
+Esta revisão descreve aparência observada. Contagens, distâncias, raios, preservação exata e custos pertencem às auditorias numéricas; não são inferidos dos renders.
+
+## 2. Faixa opaca: melhora local com aproximação visível
+
+### 300 peças
+
+A faixa conserva o arco, a extensão aparente e cobertura ampla. Não observo um grande trecho desaparecido nem a substituição do arco por uma barra reta. Entretanto, o close frontal mostra uma sequência clara de plaquetas, com degraus nas bordas e cantos retangulares salientes, especialmente na metade esquerda e margem superior. O close da orelha esquerda confirma que a segmentação continua pela lateral até a terminação temporal.
+
+As duas elevações longitudinais ainda sugerem a estrutura da faixa, mas sua leitura contínua é prejudicada pelas plaquetas e patamares. Isso é perda de acabamento em relação às cristas do controle nativo, não desaparecimento demonstrado de uma crista inteira. As cicatrizes centrais escuras do transporte V14 deixam de dominar a superfície da faixa, mas são trocadas por uma aproximação geométrica visível. **Não recomendo 300 peças como substituição de fidelidade próxima.**
+
+### 700 peças
+
+Os degraus ficam menores e a faixa se lê de modo mais contínuo que em 300. O arco e os dois relevos longitudinais são reconhecíveis, sem a mesma intensidade de plaquetas largas. Ainda há pequenos saltos e transições retangulares no close frontal e, mais claramente, no trecho lateral iluminado da vista `left-ear`.
+
+O resultado é uma melhora local real sobre 300 e mais limpo que a faixa alfa V14 quanto às cicatrizes centrais. Não equivale ao acabamento nativo. A melhoria não autoriza concluir que todos os cantos estão dentro da superfície fonte ou que não há excesso de volume: isso exige as medidas correspondentes.
+
+### 1.400 peças
+
+É a faixa opaca mais limpa das três nas vistas examinadas. Os passos e juntas ficam mais discretos, o arco é contínuo em leitura geral e as duas cristas/relevos longitudinais permanecem legíveis. Pequenas transições de placas ainda são discerníveis no close, sobretudo à esquerda e ao longo do encontro lateral. O ganho sobre 700 existe, mas é menos marcante que o ganho de 300 para 700.
+
+Não observo uma aba larga nova, ponte atravessando a cavidade auricular ou grande alteração da silhueta da cabeça nessas câmeras. Isso não é certificado de ausência de interseções, excesso nos cantos ou defeitos escondidos. **1.400 é a melhor opção visual local entre os opacos examinados, não uma aprovação automática do conjunto nem uma decisão de custo.**
+
+### O que os opacos não corrigem
+
+As três vistas inteiras de três quartos mantêm a composição da figura maior, figura menor, halos e base. Nessa escala, a diferença entre 700 e 1.400 é discreta; o corpo inteiro não substitui a inspeção fechada da faixa.
+
+A diagonal escura da testa, a rede serrilhada nos planos da face/pescoço, riscos da calota e marcas próximas aos polos superiores das orelhas continuam visíveis. Esses defeitos já existem no JSON V14 e aparecem nas peças que não foram substituídas. **Não são evidência de regressão causada pelos cuboides da faixa.** Pinna, cavidade e lóbulo permanecem reconhecíveis nas duas laterais. O lado direito é menos contrastado; não uso essa menor visibilidade como prova de limpeza.
+
+Não foi fornecido close posterior do manto para a série opaca. Portanto, esta revisão não declara uma melhora visual do manto dessa série; o fato de a peça permanecer V14 é informação de escopo, não uma nova observação de costas.
+
+## 3. Máscara compartilhada: ganhos e perdas residuais
+
+### Face e cobertura
+
+Nos tiers 512 e 2048, a face frontal e a lateral esquerda passam a mostrar limites poligonais muito mais limpos que o JSON V14. A rede de serrilhado que contorna testa, maçã do rosto, nariz e pescoço perde sua presença dominante. A diagonal da testa deixa de ser a cicatriz escura isolada do V14, aproximando-se da transição de planos vista no nativo. Isso é melhora de apresentação do transporte, não nova anatomia nem recuperação de detalhe PBR.
+
+O close 128 também mostra essa limpeza na porção facial incluída no enquadramento da faixa, mas não há outras vistas 128 nesta série para estender o parecer a orelhas, manto ou figura inteira.
+
+A cobertura ampla da calota e a composição da figura inteira são mantidas em 512/2048. Não observo retorno das grandes descontinuidades do legado nem grande alteração de silhueta na vista inteira fornecida. Não foram examinadas aqui vistas inteiras V15 de frente, perfil e costas.
+
+### Faixa e orelhas
+
+O arco e as duas cristas/relevos da faixa continuam reconhecíveis, sem os degraus retangulares da alternativa opaca. Contudo, **as cicatrizes centrais da faixa e riscos ao longo das margens permanecem nos três tiers**, claramente diferentes do nativo limpo. Em `band-front`, a região aproximadamente x490–570/y440–480 continua marcada. As coordenadas são referências visuais aproximadas no PNG de 1000 × 1000, não máscaras de defeitos.
+
+As vistas laterais 512/2048 mostram riscos na faixa, calota e nos encontros junto às orelhas. Há linhas finas isoladas sobre a calota e pequenos sinais escuros no polo superior e entorno da pinna, ausentes ou bem menos presentes no controle nativo. Nem toda marca coincide exatamente com a V14: melhorar a face não equivale a limpar todas as superfícies.
+
+Pinna, cavidade e lóbulo conservam a leitura geral, sem nova lâmina larga atravessando a cavidade observada. Não interpreto os riscos como prova automática de furos, invasão de uma peça específica ou normais invertidas. O mecanismo precisa de evidência própria.
+
+**512 e 2048 ficam visualmente muito próximos nos problemas principais.** Não encontro nas imagens uma eliminação das cicatrizes por elevar a resolução. Isso não afirma igualdade pixel a pixel, equivalência de suporte alfa ou equivalência em outras escalas e luzes.
+
+### Manto
+
+Nos closes 512 e 2048, a linha horizontal interrompida inferior do V14, aproximadamente em y945, deixa de ser discernível. A superfície ampla e a borda lateral ficam mais limpas nessa região, mantendo o volume aparente.
+
+Persistem, porém, riscos longos verticais na parte superior, desde o pescoço/ombros e sobre os painéis posteriores. Alguns ficam nítidos como linhas retas escuras. O nativo tem mudanças legítimas de plano nessa área, mas não essas mesmas linhas. Há, portanto, **melhora localizada real, sem limpeza integral do manto**. Ruído fino de Cycles não deve ser confundido com essas marcas lineares coerentes.
+
+## 4. Controles adicionais: evidência útil, causalidade limitada
+
+### Recorte analítico
+
+O controle `shared-2048-analytic-clip-control-band-front` reconstrói os frames do mesmo JSON, conserva somente os três vértices do triângulo e deixa de usar alfa nos três componentes investigados. A faixa fica limpa e visualmente próxima do nativo; as cicatrizes centrais não são discerníveis como na candidata mascarada.
+
+Isso mostra que o resultado limpo é recuperável nessa bancada ao mudar o caminho de representação/renderização. **Não isola alfa sozinho:** além de retirar a superfície excedente e o recorte pelo shader, muda de quad para triângulo, incluindo o cálculo da normal da face. Não se conclui somente pela imagem qual etapa causa cada risco, nem que a distorção dos frames foi corrigida. O controle não é geometria de cubes Bedrock e não é candidata de entrega.
+
+### Sombras desligadas
+
+O controle `shared-2048-no-shadow-control-band-front` desliga a participação em raios de sombra dos três componentes. As marcas da faixa ficam menos contrastadas, mas continuam visíveis. A aparência da face, sobrancelhas e cavidades auriculares também muda substancialmente.
+
+O par demonstra influência das sombras no contraste, não prova que elas sejam a causa única. Desligá-las não recupera fielmente o aspecto nativo nem constitui correção aprovada. Ambos os controles devem permanecer claramente rotulados como diagnósticos, sem substituir as imagens das candidatas reais.
+
+## 5. Decisão visual e limites
+
+- **Opaco 300:** rejeitado para fidelidade próxima devido à segmentação/degraus evidentes.
+- **Opacos 700 e 1.400:** alternativas locais úteis para prosseguir a investigação. 1.400 é o mais limpo visualmente; 700 já oferece grande parte da melhora observada. A seleção final depende também das auditorias e do orçamento, não só destes renders.
+- **Máscara compartilhada:** ganho demonstrado na limpeza facial e na linha inferior do manto, mas não aprovada como transporte integralmente fiel. Os riscos residuais são evidência contra promover apenas por uma vista inteira favorável ou por aumentar o tier.
+- **Conjunto:** nenhum ensaio resolve simultaneamente todas as perdas da faixa, face, orelhas e manto. A limpeza local da faixa opaca não pode ser apresentada como limpeza da escultura inteira.
+
+Não se certificam ausência global de contatos/interseções, espessura, precisão geométrica, faces ocultas, invisibilidade de regiões removidas, todas as silhuetas/iluminações, PBR, filtragem/mipmaps, desempenho, suporte ou comportamento Minecraft/Bedrock/Vibrant Visuals. Todos os renders são diagnósticos externos Blender. Nenhuma conclusão de runtime deve ser derivada da nitidez ou da velocidade de produção dessas imagens.
+
+O mecanismo preciso dos riscos remanescentes continua em aberto nesta revisão. O próximo critério visual é repetir controles equivalentes após uma correção demonstrável, preservando as imagens atuais e sem esconder marcas por alteração oportunista da luz, das sombras ou do material.
+
+## Limite de intervenção
+
+Este revisor escreveu somente `opaque_transport_v15/evidence/review-visual-v15.md`. Não alterou fontes, malhas, atlas, cenas, scripts ou outros relatórios, nem gerou imagens sintéticas.

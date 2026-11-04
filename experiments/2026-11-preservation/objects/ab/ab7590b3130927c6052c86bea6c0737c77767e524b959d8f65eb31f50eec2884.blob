@@ -1,0 +1,77 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {ATELIER_DESIGNS,CATALOG_PERMUTATIONS,NATIVE_PERMUTATIONS,designFor} from '../src/domain/catalog.ts';
+import {PALETTE_SHAPES,rotateEdges} from '../src/domain/palette-layout.ts';
+import {encodeTile,decodeTile} from '../src/domain/block-codec.ts';
+import {planFinish,withEdges,type Tile} from '../src/domain/surface.ts';
+import {migrateLegacyAtelierSnapshot} from '../src/domain/catalog-migration.ts';
+
+const grid=(w:number,d:number):Tile[]=>Array.from({length:w*d},(_,i)=>({position:{x:i%w,y:0,z:Math.floor(i/w)},stone:0,cloth:0,frontal:0,facing:0,edges:15}));
+test('Atelier packing retains every recipe and orientation with 9×64 + 126×112 states',()=>{
+ assert.equal(ATELIER_DESIGNS.length,135);
+ assert.equal(ATELIER_DESIGNS.filter(d=>d.codec==='edges').length,9);
+ assert.equal(ATELIER_DESIGNS.filter(d=>d.codec==='compact').length,126);
+ assert.equal(CATALOG_PERMUTATIONS-NATIVE_PERMUTATIONS,51608);assert.equal(NATIVE_PERMUTATIONS,8232);assert.equal(CATALOG_PERMUTATIONS,59840);
+ for(const d of ATELIER_DESIGNS){
+  const shapes=d.codec==='edges'?Array.from({length:16},(_,edges)=>({edges,frontal:0})):PALETTE_SHAPES;
+  let count=0;
+  for(const shape of shapes)for(let facing=0;facing<4;facing++){
+   const t={...planFinish(grid(1,1),{stone:0,cloth:0,ornamental:false,facing,design:d.id})[0]!,edges:rotateEdges(shape.edges,facing),frontal:shape.frontal};
+   const e=encodeTile(t);assert.deepEqual(decodeTile(e.id,t.position,e.states),t);count++;
+   assert.equal(Object.keys(e.states).length,d.codec==='edges'?2:3);
+   for(let edges=0;edges<16;edges++){const next=withEdges(t,edges),encoded=encodeTile(next);assert.deepEqual(decodeTile(encoded.id,next.position,encoded.states),next);}
+  }
+  assert.equal(count,d.codec==='edges'?64:112);
+ }
+});
+
+test('all rectangular Atelier planners fit the compact state domain in all four directions',()=>{
+ // Cosmetic axes do not affect topology. Exercise each semantic combination.
+ for(const structure of ['pilaster','ogive','trestle'])for(const textile of ['none','agnus','ruby','verdant','requiem'])for(const frontal of ['none','cross','agnus']){
+  const design=designFor(structure,'walnut',textile,frontal);
+  for(let w=1;w<=16;w++)for(let d=1;d<=8;d++)for(let facing=0;facing<4;facing++){
+   const tiles=planFinish(grid(w,d),{stone:0,cloth:0,ornamental:false,facing,design:design.id});
+   for(const t of tiles){const e=encodeTile(t);assert.deepEqual(decodeTile(e.id,t.position,e.states),t);}
+  }
+ }
+});
+
+test('precompact Atelier snapshot conversion is explicit, pure, and rejects unsupported roles',()=>{
+ const bare=designFor('trestle','walnut','none','none');
+ const source={id:bare.id,states:{'altare:edges':15,'altare:facing':3,'altare:role':2}};
+ const before=structuredClone(source),result=migrateLegacyAtelierSnapshot(source);
+ assert.equal(result.ok,true);if(result.ok){assert.deepEqual(result.normalizations,['unused-role-cleared']);assert.deepEqual(result.snapshot.states,{'altare:edges':15,'altare:facing':3});}
+ assert.deepEqual(source,before);
+ const decorated=designFor('ogive','marble','agnus','cross');
+ for(let facing=0;facing<4;facing++)for(const p of PALETTE_SHAPES){
+  const old={id:decorated.id,states:{'altare:edges':rotateEdges(p.edges,facing),'altare:facing':facing,'altare:role':p.frontal}};
+  const r=migrateLegacyAtelierSnapshot(old);assert.equal(r.ok,true);if(r.ok){const tile=decodeTile(r.snapshot.id,{x:0,y:0,z:0},r.snapshot.states)!;assert.equal(tile.edges,old.states['altare:edges']);assert.equal(tile.facing,facing);assert.equal(tile.frontal,p.frontal);assert.deepEqual(r.normalizations,[]);}
+ }
+ const rejected=migrateLegacyAtelierSnapshot({id:decorated.id,states:{'altare:edges':0,'altare:facing':0,'altare:role':1}});
+ assert.equal(rejected.ok,false);if(!rejected.ok)assert.equal(rejected.reason,'unrepresentable-pose');
+ for(const invalid of [NaN,Infinity,-1,16,1.5,'1',null,undefined]){
+  const r=migrateLegacyAtelierSnapshot({id:decorated.id,states:{'altare:edges':invalid,'altare:facing':0,'altare:role':0}});assert.equal(r.ok,false);
+ }
+ assert.equal(migrateLegacyAtelierSnapshot({id:'minecraft:stone',states:{}}).ok,false);
+});
+
+
+test('new Atelier and classic schemas reject malformed or mixed legacy snapshots',()=>{
+ const bare=designFor('trestle','walnut','none','none');
+ const decorated=designFor('ogive','marble','agnus','cross');
+ const position={x:0,y:0,z:0};
+ const bareTile=planFinish(grid(1,1),{stone:0,cloth:0,ornamental:false,facing:0,design:bare.id})[0]!;
+ for(const invalid of [NaN,Infinity,-1,16,1.5,'1',null,undefined]){
+  assert.throws(()=>decodeTile(bare.id,position,{'altare:edges':invalid,'altare:facing':0}));
+  assert.throws(()=>encodeTile({...bareTile,edges:invalid as number}));
+ }
+ for(const invalid of [NaN,Infinity,-1,4,1.5,'1',null,undefined]){
+  assert.throws(()=>decodeTile(bare.id,position,{'altare:edges':15,'altare:facing':invalid}));
+  assert.throws(()=>encodeTile({...bareTile,facing:invalid as number}));
+ }
+ for(const legacyRole of [0,1,2,3])assert.throws(()=>decodeTile(bare.id,position,{'altare:edges':15,'altare:facing':0,'altare:role':legacyRole}));
+ assert.throws(()=>decodeTile(bare.id,position,{'altare:edges':15,'altare:facing':0,'altare:shape':0,'altare:detail':0}));
+ const compact={'altare:shape':0,'altare:detail':0,'altare:facing':0};
+ for(const extra of [{'altare:edges':15},{'altare:role':0},{'altare:shape':null},{'altare:detail':'0'}])assert.throws(()=>decodeTile(decorated.id,position,{...compact,...extra}));
+ assert.throws(()=>decodeTile('altare:mensa',position,{'altare:shape':0,'altare:detail':0,'altare:facing':0,'altare:stone':0,'altare:cloth':1,'altare:frontal':0}));
+});

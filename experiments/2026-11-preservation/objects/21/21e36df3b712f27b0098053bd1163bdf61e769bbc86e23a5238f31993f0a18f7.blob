@@ -1,0 +1,70 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import {pathToFileURL} from 'node:url';
+
+// Read-only input audit. Writes only its explicitly named report directory.
+const checkout=path.resolve(import.meta.dirname,'..');
+const source=path.resolve(process.argv[2]??'/workspace/scratch/212c580ada5b/altare-editor-review-20261103');
+const output=path.resolve(process.argv[3]??path.join(checkout,'out/two-pedestal-integration'));
+const root=path.join(source,'addons/altare');
+const canonical=value=>Array.isArray(value)?value.map(canonical):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(k=>[k,canonical(value[k])])):value;
+const hashBytes=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
+const hash=value=>hashBytes(JSON.stringify(canonical(value)));
+const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+const inputHashes={};
+function record(p){inputHashes[path.relative(source,p)]=hashBytes(fs.readFileSync(p));}
+const packageFile=path.join(root,'package.json'),manifestFile=path.join(root,'packs/behavior/manifest.json');
+record(packageFile);record(manifestFile);
+for(const name of ['catalog.ts','surface.ts','block-codec.ts','palette-layout.ts','classic-textile-layout.ts','frontal-layout.ts'])record(path.join(root,'src/domain',name));
+const math={floor:Math.floor,mod:(a,b)=>a%b};
+const blocks=[],globalSignatures=new Set(),groups={};
+const expressions=new Map();
+function evaluate(expression,q){if(typeof expression!=='string')return expression;let fn=expressions.get(expression);if(!fn){fn=Function('q','math',`return (${expression});`);expressions.set(expression,fn);}return fn(q,math);}
+const directory=path.join(root,'packs/behavior/blocks');
+for(const file of fs.readdirSync(directory).filter(f=>f.endsWith('.json')).sort()){
+ const filename=path.join(directory,file);record(filename);
+ const b=read(filename)['minecraft:block'];
+ const rows=Object.entries(b.description.states??{}).reduce((rows,[k,values])=>{
+  if(!Array.isArray(values))throw Error(`Unsupported state domain ${b.description.identifier}:${k}`);
+  return rows.flatMap(row=>values.map(v=>({...row,[k]:v})));
+ },[{}]);
+ const signatures=new Set();
+ for(const states of rows){
+  const q={block_state:k=>states[k]},components={...b.components};
+  for(const p of b.permutations??[])if(evaluate(p.condition,q))Object.assign(components,p.components);
+  const geometry=components['minecraft:geometry'];
+  if(geometry?.bone_visibility)components['minecraft:geometry']={...geometry,bone_visibility:Object.fromEntries(Object.entries(geometry.bone_visibility).map(([name,expression])=>[name,!!evaluate(expression,q)]))};
+  const signature=hash(components);signatures.add(signature);globalSignatures.add(signature);
+ }
+ const item={id:b.description.identifier,declared:rows.length,componentSignatures:signatures.size,duplicateOutputs:rows.length-signatures.size};blocks.push(item);
+ const group=item.id.split(':')[1].split('_')[0],g=groups[group]??(groups[group]={ids:0,declared:0,componentSignatures:0,duplicateOutputs:0});g.ids++;
+ for(const k of ['declared','componentSignatures','duplicateOutputs'])g[k]+=item[k];
+}
+const {planFinish}=await import(pathToFileURL(path.join(root,'src/domain/surface.ts')));
+const {rotateEdges}=await import(pathToFileURL(path.join(root,'src/domain/palette-layout.ts')));
+const legacyPoses=new Set();
+for(let w=1;w<=16;w++)for(let d=1;d<=8;d++)for(let facing=0;facing<4;facing++)for(const ornamental of [false,true]){
+ const width=facing%2?d:w,depth=facing%2?w:d;
+ const tiles=Array.from({length:width*depth},(_,i)=>({position:{x:i%width,y:0,z:Math.floor(i/width)},stone:0,cloth:0,frontal:0,facing:0,edges:15}));
+ for(const t of planFinish(tiles,{stone:0,cloth:0,facing,ornamental}))legacyPoses.add(`${rotateEdges(t.edges,-facing)},${t.frontal}`);
+}
+const retainedRosette=new Set(legacyPoses);for(let edges=0;edges<16;edges++)if(edges&1)retainedRosette.add(`${edges},5`);
+const declared=blocks.reduce((n,b)=>n+b.declared,0),signatureTotal=blocks.reduce((n,b)=>n+b.componentSignatures,0);
+const bare=blocks.filter(b=>/^altare:a_.*_none_none$/.test(b.id));
+const tailoredAtelier=6*16+3*64+126*112;
+const compactCatalog=declared-groups.a.declared+tailoredAtelier;
+const report={schemaVersion:1,createdAt:new Date().toISOString(),source,sourcePackage:read(packageFile),manifestVersion:read(manifestFile).header.version,
+ methodology:'Enumerate every declared state; shallow-merge matching permutation components in order; evaluate bone_visibility; recursively sort object keys and preserve arrays; SHA-256 effective component JSON. Identifiers inside components, unused material bindings, collision, and tick behavior are retained. Block identifier/description and latent states are excluded.',
+ limitations:['Component equivalence is not decoded-state or future editor equivalence.','Different geometry identifiers are not resolved to mesh equivalence.','Counts of unique signatures are not automatically realizable Cartesian state declarations; packed domains may require padding or ID splits.','Planner restriction excludes arbitrary historical role/mask combinations and needs an explicit migration policy.','No source definitions, worlds, schemas or packages are changed.'],
+ totals:{blockIds:blocks.length,declared,componentSignatures:signatureTotal,duplicateOutputs:declared-signatureTotal,globalComponentSignatures:globalSignatures.size,additionalCrossIdDuplicates:signatureTotal-globalSignatures.size,previousNonCanonicalCount:70496,canonicalizationDelta:signatureTotal-70496},
+ groups,bare,legacy:{plannerPoses:[...legacyPoses].sort(),plannerPoseCount:legacyPoses.size,plannerStates:legacyPoses.size*4*3*5,retainingRosettePoseCount:retainedRosette.size,retainingRosetteStates:retainedRosette.size*4*3*5,rosetteMeaning:'Published role 5 is not produced by current rectangular planning; retain it for all eight local masks exposing the front.'},
+ proposals:{bareOnly:declared-bare.reduce((n,b)=>n+b.duplicateOutputs,0),tailoredAtelier,afterTailoredAtelier:compactCatalog,afterTailoredAtelierAndPlannerLegacy:compactCatalog-11520+legacyPoses.size*60,afterTailoredAtelierAndRosetteLegacy:compactCatalog-11520+retainedRosette.size*60},inputHashes,blocks};
+const markdown=[ '# Altare state redundancy audit','',`Source: ${source}`,`Version: ${report.manifestVersion.join('.')}`,`Generated: ${report.createdAt}`,'',report.methodology,'',`Declared: **${declared}**, across ${blocks.length} block IDs. Canonical component signatures: **${signatureTotal}**; duplicate outputs: **${declared-signatureTotal}**. Additional cross-ID exact duplicates: ${signatureTotal-globalSignatures.size}.`,
+`Prior noncanonical count: 70,496; canonicalization delta: ${signatureTotal-70496}. ${signatureTotal===70496?'Sorting keys did not change the result.':'The changed count reflects object-key normalization, not an altered source catalog.'}`,'','## Families',...Object.entries(groups).map(([k,g])=>`- ${k}: ${g.declared} declared → ${g.componentSignatures} signatures; ${g.duplicateOutputs} duplicate outputs.`),'','## Practical redesign arithmetic',
+`- Bare-only exact-output quotient: ${report.proposals.bareOnly}. Six Pilaster/Ogive IDs require 16 component outputs each; three Trestle IDs require 64. This discards latent role/facing.`,
+`- Tailored Atelier: 6 × 16 + 3 × 64 + 126 × 112 = ${tailoredAtelier}; catalog becomes ${compactCatalog}. The 112-state restriction preserves planner poses, not all arbitrary saves.`,
+`- Legacy rectangle planner: ${legacyPoses.size} poses × 4 facings × 3 stones × 5 cloths = ${legacyPoses.size*60}; combined catalog ${report.proposals.afterTailoredAtelierAndPlannerLegacy}.`,
+`- Retain role 5 as well: ${retainedRosette.size} poses × 60 = ${retainedRosette.size*60}; combined catalog ${report.proposals.afterTailoredAtelierAndRosetteLegacy}.`,'','## Limitations',...report.limitations.map(s=>`- ${s}`),'','## Reproduce',`node --experimental-strip-types tools/audit-state-redundancy.mjs "${source}" "${output}"`,'','The JSON contains every audited block and SHA-256 hashes of the package, manifest, source codecs/planner and all input block definitions.',''].join('\n');
+fs.mkdirSync(output,{recursive:true});fs.writeFileSync(path.join(output,'state-redundancy.json'),JSON.stringify(report,null,2)+'\n');fs.writeFileSync(path.join(output,'state-redundancy.md'),markdown);
+console.log(JSON.stringify({output,totals:report.totals,legacy:report.legacy,proposals:report.proposals},null,2));

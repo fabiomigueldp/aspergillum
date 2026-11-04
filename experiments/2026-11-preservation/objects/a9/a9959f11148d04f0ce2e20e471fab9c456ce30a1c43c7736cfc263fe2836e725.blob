@@ -1,0 +1,15 @@
+"""Independent, read-only audit of retained inputs. No exporter imports."""
+import numpy as np, json, hashlib
+from pathlib import Path
+OUT=Path(__file__).resolve().parent; B=OUT.parents[1]
+inputs={'band':'band_shell_v13/constrained_fit/retained-band.npz','shell':'ear_rim_v11/structural_rebuild/retained-shell.npz','anatomy':'body_interface_v9/constrained_fit/retained-anatomy.npz'}
+def q(x):return np.quantile(x,[0,.01,.5,.9,.99,1]).tolist()
+out={}
+for k,r in inputs.items():
+ p=B/r;d=np.load(p);v=d['points'];f=d['triangles'];t=v[f]
+ cross=np.cross(t[:,1]-t[:,0],t[:,2]-t[:,0]);twice=np.linalg.norm(cross,axis=1)
+ lens=np.linalg.norm(t-np.roll(t,-1,axis=1),axis=2);w=lens.max(1);h=twice/w
+ fn=cross/np.maximum(twice[:,None],1e-30);n=d['normals'];norm=np.linalg.norm(n,axis=1)
+ valid=norm>1e-12;nn=n/np.maximum(norm[:,None],1e-30);dots=np.einsum('ij,ikj->ik',fn,nn[f]);angles=np.degrees(np.arccos(np.clip(dots[valid[f]],-1,1)))
+ out[k]={'file':r,'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'vertices':len(v),'triangles':len(f),'nonfinite_coordinates':int((~np.isfinite(v)).sum()),'nonfinite_normals':int((~np.isfinite(n)).sum()),'zero_area':int((twice==0).sum()),'near_degenerate_faces_area_lt_1e-12_blocks2':np.flatnonzero(twice/2<1e-12).tolist(),'area_quantiles_blocks2':q(twice/2),'minimum_altitude_quantiles_blocks':q(h),'aspect_ratio_quantiles':q(w/h),'opposed_corner_source_normals':int(((dots<0)&valid[f]).sum()),'faces_any_opposed_source_normal':int(np.any((dots<0)&valid[f],axis=1).sum()),'valid_source_normal_face_angle_quantiles_degrees':q(angles),'max_aspect_face':int(np.argmax(w/h)),'zero_normal_vertex_ids':np.flatnonzero(~valid).tolist(),'faces_with_zero_normal':np.flatnonzero((~valid[f]).any(1)).tolist(),'normals_length_quantiles':q(norm),'quantile_order':[0,.01,.5,.9,.99,1]}
+(OUT/'input-audit.json').write_text(json.dumps(out,indent=2,allow_nan=False));print(json.dumps(out,indent=2,allow_nan=False))

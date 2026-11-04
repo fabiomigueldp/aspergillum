@@ -1,0 +1,438 @@
+--- /dev/null
++++ b/src/application/block-destruction-safety.ts
+@@ -0,0 +1,32 @@
++import type { Block } from "@minecraft/server";
++import { readAspersoriumContents, readTableContents } from "../infrastructure/compact-block-state";
++import { ASPERSORIUM_BLOCK, SACRISTAN_TABLE_BLOCK } from "../infrastructure/constants";
++import { getDockedSnapshot } from "../infrastructure/docked-item-registry";
++
++export type BlockDestructionRisk = "occupied" | "orphaned" | "unreadable";
++
++/** Read-only guard shared by cancellable destruction routes, never recovery. */
++export function blockDestructionRisk(block: Block): BlockDestructionRisk | undefined {
++  let kind: "aspersorium" | "table";
++  try {
++    const id = block.typeId;
++    if (id === ASPERSORIUM_BLOCK) kind = "aspersorium";
++    else if (id === SACRISTAN_TABLE_BLOCK) kind = "table";
++    else return undefined;
++  } catch {
++    // Unknown ownership is not permission to change another pack's behavior.
++    return undefined;
++  }
++
++  try {
++    if (!block.isValid) return "unreadable";
++    const contents = kind === "aspersorium" ? readAspersoriumContents(block.permutation) : readTableContents(block.permutation);
++    if (contents.cosmeticIndex !== null) return "occupied";
++    if (getDockedSnapshot(block.dimension.id, block.location) !== undefined) return "orphaned";
++    return undefined;
++  } catch {
++    // Once ownership is established, uncertainty preserves the block and raw
++    // registry rather than triggering a non-atomic destruction/recovery path.
++    return "unreadable";
++  }
++}
+--- /dev/null
++++ b/src/application/explosion-prevention.ts
+@@ -0,0 +1,28 @@
++import type { Block, ExplosionBeforeEvent } from "@minecraft/server";
++import { blockDestructionRisk } from "./block-destruction-safety";
++
++/** Selectively prevent destruction; do not attempt delivery or registry repair. */
++export function preventUnsafeExplosionBlockDamage(event: ExplosionBeforeEvent): void {
++  if (event.cancel) return;
++  let impacted: Block[];
++  try {
++    impacted = event.getImpactedBlocks();
++  } catch (error) {
++    // With no known affected block, there is no basis to cancel other projects'
++    // explosions. Report this unprotected path rather than claiming success.
++    console.warn(`[Aspergillum] Explosion impact list unavailable: ${String(error)}`);
++    return;
++  }
++  const remaining = impacted.filter((block) => blockDestructionRisk(block) === undefined);
++  if (remaining.length === impacted.length) return;
++
++  try {
++    // Synchronous, one call, retaining other blocks' order and object identities.
++    event.setImpactedBlocks(remaining);
++  } catch (error) {
++    // The call may have changed the list before throwing. Never retry or assume
++    // no effect. Known at-risk blocks justify cancelling this whole explosion.
++    event.cancel = true;
++    console.warn(`[Aspergillum] Cancelled explosion after block exclusion failed: ${String(error)}`);
++  }
++}
+--- a/src/application/player-break-prevention.ts
++++ b/src/application/player-break-prevention.ts
+@@ -1,8 +1,6 @@
+ import { system, type PlayerBreakBlockBeforeEvent } from "@minecraft/server";
+-import { readAspersoriumContents, readTableContents } from "../infrastructure/compact-block-state";
+-import { ASPERSORIUM_BLOCK, SACRISTAN_TABLE_BLOCK } from "../infrastructure/constants";
+-import { getDockedSnapshot } from "../infrastructure/docked-item-registry";
+ import { ACTION_MESSAGES, action, type ActionMessage } from "../presentation/messaging";
++import { blockDestructionRisk } from "./block-destruction-safety";
+ 
+ // Bounded, presentation-only throttling. Never authority for item/block state.
+ const lastFeedback = new Map<string, number>();
+@@ -11,35 +9,10 @@
+ 
+ /** Narrow prevention, not recovery or a durable quarantine protocol. */
+ export function preventUnsafePlayerBlockBreak(event: PlayerBreakBlockBeforeEvent): void {
+-  let kind: "aspersorium" | "table";
+-  try {
+-    const id = event.block.typeId;
+-    if (id === ASPERSORIUM_BLOCK) kind = "aspersorium";
+-    else if (id === SACRISTAN_TABLE_BLOCK) kind = "table";
+-    else return;
+-  } catch {
+-    // Cannot establish that this block belongs to us; do not affect other packs.
+-    return;
+-  }
+-
+-  let feedback: ActionMessage | undefined;
+-  try {
+-    if (!event.block.isValid) {
+-      feedback = ACTION_MESSAGES.registryRepairRequired;
+-    } else {
+-      const contents = kind === "aspersorium" ? readAspersoriumContents(event.block.permutation) : readTableContents(event.block.permutation);
+-      if (contents.cosmeticIndex !== null) feedback = ACTION_MESSAGES.emptyHandRequired;
+-      else if (getDockedSnapshot(event.block.dimension.id, event.block.location) !== undefined) {
+-        feedback = ACTION_MESSAGES.registryRecoveryRequired;
+-      }
+-    }
+-  } catch {
+-    // Once our block is identified, uncertainty preserves it instead of running
+-    // the non-atomic destruction/recovery path or normalizing its registry.
+-    feedback = ACTION_MESSAGES.registryRepairRequired;
+-  }
+-  if (feedback === undefined) return; // Never reverse an existing cancellation.
+-  const message = feedback;
++  const risk = blockDestructionRisk(event.block);
++  if (risk === undefined) return; // Never reverse an existing cancellation.
++  const message: ActionMessage = risk === "occupied" ? ACTION_MESSAGES.emptyHandRequired
++    : risk === "orphaned" ? ACTION_MESSAGES.registryRecoveryRequired : ACTION_MESSAGES.registryRepairRequired;
+   event.cancel = true; // Synchronous: only presentation is deferred below.
+ 
+   try {
+--- a/src/bootstrap/main.ts
++++ b/src/bootstrap/main.ts
+@@ -23,6 +23,7 @@
+   handleSacristanTableUseOn,
+ } from "../application/sacristan-table";
+ import { preventUnsafePlayerBlockBreak } from "../application/player-break-prevention";
++import { preventUnsafeExplosionBlockDamage } from "../application/explosion-prevention";
+ import { hasValidCompactContents } from "../infrastructure/compact-block-state";
+ import { yawToSixteenWayRotation } from "../domain/rotation";
+ import {
+@@ -228,6 +229,8 @@
+   preventUnsafePlayerBlockBreak(event);
+   if (isAspergillum(event.itemStack)) event.cancel = true;
+ });
++
++world.beforeEvents.explosion.subscribe(preventUnsafeExplosionBlockDamage);
+ 
+ world.afterEvents.playerHotbarSelectedSlotChange.subscribe((event) => {
+   cancelTransientPlayerActions(event.player.id);
+--- a/tests/application/compact-event-routing.test.ts
++++ b/tests/application/compact-event-routing.test.ts
+@@ -409,3 +409,178 @@
+   });
+ 
+ });
++
++describe("selective prevention through the real explosion-before subscription", () => {
++  function eventFor(blocks: FakeBlock[], cancel = false) {
++    const impacted = blocks.map((block) => block.asBlock());
++    const event = {
++      cancel,
++      getImpactedBlocks: vi.fn(() => impacted),
++      setImpactedBlocks: vi.fn((_blocks: typeof impacted) => {}),
++    };
++    return event;
++  }
++  function dispatch(event: ReturnType<typeof eventFor>): void {
++    const subscribers = engine.before.get("explosion");
++    if (subscribers?.length !== 1) throw new Error("Expected exactly one production explosion-before subscription");
++    for (const callback of subscribers) callback(event);
++  }
++  function occupy(kind: "aspersorium" | "table", block: FakeBlock) {
++    block.permutation = new FakePermutation(block.typeId, kind === "aspersorium"
++      ? { ...encodeAspersoriumContents({ waterUnits: 14, cosmeticIndex: 0 }), [ROTATION_STATE]: 7 }
++      : { ...encodeTableContents({ cosmeticIndex: 0 }), [TABLE_ROTATION_STATE]: 11 }).asPermutation();
++  }
++  function unrelated(id = "minecraft:stone") {
++    return new FakeBlock(new FakeDimension(), new FakePermutation(id, {}).asPermutation());
++  }
++
++  it.each(["aspersorium", "table"] as const)("excludes occupied %s synchronously without writes, delivery or delayed recovery", (kind) => {
++    const { block, player, dimension } = fixture(kind); occupy(kind, block);
++    const snapshot = captureDockedAspergillum(createAspergillum(3), 3);
++    setDockedSnapshot(dimension.id, block.location, snapshot);
++    const raw = world.getDynamicProperty(dockedShardPropertyId(dimension.id, block.location));
++    world.setDynamicProperty.mockClear();
++    const stone = unrelated(); const otherAddon = unrelated("altare:classic");
++    const event = eventFor([stone, block, otherAddon]);
++    dispatch(event);
++    expect(event.cancel).toBe(false);
++    expect(event.setImpactedBlocks).toHaveBeenCalledExactlyOnceWith([stone.asBlock(), otherAddon.asBlock()]);
++    advanceTicks();
++    expect(world.getDynamicProperty(dockedShardPropertyId(dimension.id, block.location))).toBe(raw);
++    expect(world.setDynamicProperty).not.toHaveBeenCalled();
++    expect(player.equipment.setEquipment).not.toHaveBeenCalled();
++    expect(player.onScreenDisplay.setActionBar).not.toHaveBeenCalled();
++    expect(block.setPermutation).not.toHaveBeenCalled();
++    expect(dimension.drops).toHaveLength(0);
++    expect(scheduleAspersoriumWaterVisualRemoval).not.toHaveBeenCalled();
++  });
++  it.each(["aspersorium", "table"] as const)("excludes visually empty %s with an orphaned snapshot", (kind) => {
++    const { block, dimension } = fixture(kind);
++    const snapshot = captureDockedAspergillum(createAspergillum(2), 2);
++    setDockedSnapshot(dimension.id, block.location, snapshot); world.setDynamicProperty.mockClear();
++    const event = eventFor([block]); dispatch(event);
++    expect(event.setImpactedBlocks).toHaveBeenCalledExactlyOnceWith([]);
++    expect(getDockedSnapshot(dimension.id, block.location)).toEqual(snapshot);
++    expect(world.setDynamicProperty).not.toHaveBeenCalled(); expect(dimension.drops).toHaveLength(0);
++  });
++  it.each(["aspersorium", "table"] as const)("preserves unreadable %s shard bytes and excludes its block", (kind) => {
++    const { block, dimension } = fixture(kind);
++    const property = dockedShardPropertyId(dimension.id, block.location);
++    const raw = '{"future":99,"opaque":"preserve"}';
++    world.setDynamicProperty(property, raw); world.setDynamicProperty.mockClear();
++    const event = eventFor([block]); dispatch(event);
++    expect(event.setImpactedBlocks).toHaveBeenCalledExactlyOnceWith([]);
++    expect(world.getDynamicProperty(property)).toBe(raw); expect(world.setDynamicProperty).not.toHaveBeenCalled();
++  });
++  it.each(["aspersorium", "table"] as const)("excludes %s with an unsupported neighbor in the same shard", (kind) => {
++    const { block, dimension } = fixture(kind);
++    const property = dockedShardPropertyId(dimension.id, block.location);
++    const raw = JSON.stringify({ schemaVersion: 1, entries: { "3,64,-3": { schemaVersion: 99, opaque: "neighbor" } } });
++    world.setDynamicProperty(property, raw); world.setDynamicProperty.mockClear();
++    const event = eventFor([block]); dispatch(event);
++    expect(event.setImpactedBlocks).toHaveBeenCalledExactlyOnceWith([]);
++    expect(world.getDynamicProperty(property)).toBe(raw); expect(world.setDynamicProperty).not.toHaveBeenCalled();
++  });
++  it.each(["aspersorium", "table"] as const)("excludes reserved %s states", (kind) => {
++    const { block } = fixture(kind);
++    block.permutation = new FakePermutation(block.typeId, kind === "aspersorium"
++      ? { "aspergillum:contents_a": 1, "aspergillum:contents_b": 2, "aspergillum:contents_c": 6, "aspergillum:contents_d": 6, [ROTATION_STATE]: 7 }
++      : { "aspergillum:table_contents_a": 1, "aspergillum:table_contents_b": 8, [TABLE_ROTATION_STATE]: 11 }).asPermutation();
++    const event = eventFor([block]); dispatch(event);
++    expect(event.setImpactedBlocks).toHaveBeenCalledExactlyOnceWith([]);
++    expect(world.setDynamicProperty).not.toHaveBeenCalled(); expect(block.setPermutation).not.toHaveBeenCalled();
++  });
++  it.each(["aspersorium", "table"] as const)("excludes %s with legacy or missing states", (kind) => {
++    const { block } = fixture(kind);
++    block.permutation = new FakePermutation(block.typeId, { "aspergillum:occupied": false }).asPermutation();
++    const event = eventFor([block]); dispatch(event);
++    expect(event.setImpactedBlocks).toHaveBeenCalledExactlyOnceWith([]);
++  });
++  it.each(["aspersorium", "table"] as const)("excludes identified %s if its permutation becomes unavailable", (kind) => {
++    const { block } = fixture(kind); const id = block.typeId;
++    Object.defineProperty(block, "typeId", { value: id });
++    Object.defineProperty(block, "permutation", { get: () => { throw new Error("unavailable permutation"); } });
++    const event = eventFor([block]); dispatch(event);
++    expect(event.setImpactedBlocks).toHaveBeenCalledExactlyOnceWith([]);
++  });
++  it.each(["aspersorium", "table"] as const)("leaves valid empty %s in the explosion without rewriting its list", (kind) => {
++    const { block } = fixture(kind); const event = eventFor([block]); dispatch(event);
++    expect(event.setImpactedBlocks).not.toHaveBeenCalled(); expect(event.cancel).toBe(false);
++    expect(world.setDynamicProperty).not.toHaveBeenCalled();
++  });
++  it.each(["aspersorium", "table"] as const)("excludes an identified but invalid %s", (kind) => {
++    const { block } = fixture(kind); block.isValid = false;
++    const event = eventFor([block]); dispatch(event);
++    expect(event.setImpactedBlocks).toHaveBeenCalledExactlyOnceWith([]);
++    expect(world.getDynamicProperty).not.toHaveBeenCalled(); expect(world.setDynamicProperty).not.toHaveBeenCalled();
++  });
++  it.each(["aspersorium", "table"] as const)("excludes %s when registry reading fails without attempting repair", (kind) => {
++    const { block } = fixture(kind);
++    world.getDynamicProperty.mockImplementationOnce(() => { throw new Error("registry unavailable"); });
++    const event = eventFor([block]); dispatch(event);
++    expect(event.setImpactedBlocks).toHaveBeenCalledExactlyOnceWith([]);
++    expect(world.setDynamicProperty).not.toHaveBeenCalled(); expect(block.setPermutation).not.toHaveBeenCalled();
++  });
++  it("leaves other add-ons and unidentifiable blocks alone without reading their registry", () => {
++    const unknown = unrelated();
++    Object.defineProperty(unknown, "typeId", { get: () => { throw new Error("unavailable ID"); } });
++    const event = eventFor([unrelated(), unrelated("altare:classic"), unknown]); dispatch(event);
++    expect(event.setImpactedBlocks).not.toHaveBeenCalled(); expect(event.cancel).toBe(false);
++    expect(world.getDynamicProperty).not.toHaveBeenCalled();
++  });
++  it("retains unprotected order and duplicate occurrences while excluding both occupied kinds", () => {
++    const caldeirinha = fixture("aspersorium").block; occupy("aspersorium", caldeirinha);
++    const mesa = fixture("table").block; occupy("table", mesa);
++    const stone = unrelated(); const altare = unrelated("altare:classic");
++    const event = eventFor([caldeirinha, stone, mesa, altare, caldeirinha, stone]); dispatch(event);
++    expect(event.setImpactedBlocks).toHaveBeenCalledExactlyOnceWith([stone.asBlock(), altare.asBlock(), stone.asBlock()]);
++  });
++  it("does not inspect or reverse an already cancelled explosion", () => {
++    const { block } = fixture("table"); occupy("table", block);
++    const event = eventFor([block], true); dispatch(event);
++    expect(event.cancel).toBe(true); expect(event.getImpactedBlocks).not.toHaveBeenCalled();
++    expect(event.setImpactedBlocks).not.toHaveBeenCalled(); expect(world.getDynamicProperty).not.toHaveBeenCalled();
++  });
++  it("leaves an empty impact list untouched", () => {
++    const event = eventFor([]); dispatch(event);
++    expect(event.cancel).toBe(false); expect(event.setImpactedBlocks).not.toHaveBeenCalled();
++  });
++  it("does not cancel unrelated explosions when the impact list cannot be read", () => {
++    const event = eventFor([]);
++    event.getImpactedBlocks.mockImplementationOnce(() => { throw new Error("impact list unavailable"); });
++    vi.spyOn(console, "warn").mockImplementation(() => {});
++    expect(() => dispatch(event)).not.toThrow();
++    expect(event.cancel).toBe(false); expect(event.setImpactedBlocks).not.toHaveBeenCalled();
++    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining("impact list unavailable"));
++  });
++  it.each([false, true])("cancels conservatively if exclusion throws (mutation before throw: %s), without retry", (afterEffect) => {
++    const { block } = fixture("table"); occupy("table", block);
++    const stone = unrelated(); const event = eventFor([stone, block]);
++    let effected = event.getImpactedBlocks();
++    event.setImpactedBlocks.mockImplementationOnce((blocks) => {
++      if (afterEffect) effected = blocks;
++      throw new Error("exclusion failed");
++    });
++    vi.spyOn(console, "warn").mockImplementation(() => {});
++    expect(() => dispatch(event)).not.toThrow();
++    expect(event.cancel).toBe(true); expect(event.setImpactedBlocks).toHaveBeenCalledTimes(1);
++    expect(effected).toEqual(afterEffect ? [stone.asBlock()] : [stone.asBlock(), block.asBlock()]);
++    expect(world.setDynamicProperty).not.toHaveBeenCalled(); expect(block.setPermutation).not.toHaveBeenCalled();
++    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining("Cancelled explosion"));
++  });
++  it("does not end a customization session when explosion damage is excluded", () => {
++    const { block, player, dimension } = fixture("table"); occupy("table", block);
++    const started = acquireCustomizationSession(player.id, dimension.id, block.location, system.currentTick);
++    if (started.status !== "acquired") throw new Error("Expected new session");
++    const event = eventFor([block]); dispatch(event); advanceTicks();
++    expect(isCurrentCustomizationSession(started.session)).toBe(true);
++    expect(dimension.drops).toHaveLength(0); expect(world.setDynamicProperty).not.toHaveBeenCalled();
++  });
++  it("never schedules exclusion after the cancellable event has returned", () => {
++    const { block } = fixture("table"); occupy("table", block);
++    const run = vi.spyOn(system, "run"); const runTimeout = vi.spyOn(system, "runTimeout");
++    const event = eventFor([block]); dispatch(event);
++    expect(event.setImpactedBlocks).toHaveBeenCalledExactlyOnceWith([]);
++    expect(run).not.toHaveBeenCalled(); expect(runTimeout).not.toHaveBeenCalled();
++  });
++});
+--- /dev/null
++++ b/docs/EXPLOSION_PREVENTION.md
+@@ -0,0 +1,41 @@
++# Prevenção seletiva de destruição por explosão
++
++Revisão diagnóstica 2.0.0, 03/11/2026. Implementada somente na cópia de desenvolvimento, sem instalar, abrir mundos ou publicar. **NO-GO permanece: esta prevenção não corrige undocking, entrega ambígua ou durabilidade.**
++
++## Contrato e fonte
++
++A API estável `ExplosionBeforeEvent.setImpactedBlocks` atualiza a lista de blocos impactados; `cancel` permite cancelar a explosão. A implementação usa somente esses membros existentes nos tipos instalados de `@minecraft/server` 2.9.0. Fonte oficial consultada especificamente para esta rota nova: [ExplosionBeforeEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/explosionbeforeevent?view=minecraft-bedrock-stable). Isso não repete a validação Creator Tools nem comprova o comportamento do engine.
++
++`block-destruction-safety.ts` centraliza a decisão read-only compartilhada com a quebra por jogador. `explosion-prevention.ts`, inscrito em `world.beforeEvents.explosion` pelo bootstrap real, remove da lista somente as duas classes de bloco do Aspergillum quando:
++
++- a ocupação compacta indica item acomodado;
++- há snapshot órfão em bloco visualmente vazio;
++- o bloco identificado está inválido, os states são ausentes/legados/reservados, ou a leitura falha;
++- o shard contém dados não suportados, inclusive um vizinho que não pode ser interpretado sem perda.
++
++Blocos vazios válidos sem snapshot, vanilla e outros add-ons mantêm a mesma ordem e referências na lista. Se nada foi excluído, não chama o setter. Não tenta identificar propriedade de um bloco cujo `typeId` não possa ser lido; esse caso permanece desprotegido. Um evento já cancelado é deixado intacto.
++
++A filtragem é síncrona e não agenda efeitos. Não entrega itens, não muda states, não grava o registry, não remove entidade visual nem encerra sessões. Snapshots e bytes opacos permanecem intactos. UUIDs, estados, arte, áudio e versões não mudam; é continuação da mesma cópia diagnóstica não distribuída.
++
++## Falhas e limites explícitos
++
++- Se não for possível obter a lista impactada, registra warning e não cancela uma explosão que não pode associar aos nossos blocos. Esse caminho não oferece proteção.
++- Se o setter falhar depois de identificar pelo menos um bloco a proteger, cancela **a explosão inteira**, preservando também os blocos alheios naquele evento. Isso é uma degradação conservadora do comportamento, não filtragem parcial garantida. Não repete a chamada: ela pode ter produzido efeito antes de lançar.
++- Outro subscriber pode substituir a lista ou desfazer o cancelamento depois do nosso callback. Não há prova de prioridade entre add-ons.
++- Não cobre comandos, substituição direta, ausência do evento, interrupção do script, downgrade ou callbacks pós-quebra já agendados. Não promete proteção de entidades, jogadores ou fogo pelo simples filtro de blocos.
++- Não resolve a escrita/entrega não atômica de retirada, o replay tardio nem persistência conjunta de inventário/bloco/registry. As caracterizações existentes continuam executadas e não foram convertidas em critérios de aceitação.
++
++## Evidência automatizada e gate nativo
++
++As regressões em `tests/application/compact-event-routing.test.ts` chamam a inscrição de produção em host simulado. Cobrem ambos os blocos, ocupação/orfandade, bytes opacos e vizinhos, schemas inválidos, falhas de leitura, ordem/duplicatas/blocos alheios, evento previamente cancelado, erro antes/depois do setter, ausência de efeitos e sessão preservada. Os 29 testes novos falham com o bootstrap anterior e passam depois da inscrição; os 47 testes anteriores de rotas continuam passando. Eles provam decisões do callback, não destruição/loot reais.
++
++`npm run check` passou com 338 testes do add-on, modelo offline de recuperação, testes do viewer, tipos, documentação e build/validadores. Das 8.629 fontes/assets/arquivos de pack com hash anterior, 8.628 permanecem byte a byte idênticos; somente o bundle compilado `packs/behavior/scripts/main.js` mudou, como esperado. O total de estados permanece 64.848. Relatórios e logs estão em `out/state-compaction/explosion-prevention/`. Nenhum `.mcaddon` novo foi produzido.
++
++Para futuro gate nativo, somente depois de haver pacote diagnóstico autorizado e identificável, usar mundo descartável sem saves antigos:
++
++1. Colocar mesa/caldeirinha ocupadas, controles vazios válidos e blocos vanilla/Altare próximos.
++2. Explodir TNT e creeper em Survival e Creative: ocupados devem permanecer com exatamente o mesmo item; controles seguem o comportamento normal da explosão.
++3. Repetir com interface da mesa aberta; a exclusão não deve encerrar a sessão ou criar drops. Reabrir/recarregar e conferir o snapshot, sem tratar isso como prova de durabilidade sob crash.
++4. Registrar versão exata, hash, Content Log e presença de outros add-ons. Warning de falha de leitura/exclusão é resultado a investigar, não aceite silencioso.
++
++Nenhum desses passos foi executado no Minecraft. Creator Tools não foi consultado novamente; a falha anterior HTTP 502 e os demais gates de release continuam pendentes.
+--- a/docs/PROJECT_STATUS.md
++++ b/docs/PROJECT_STATUS.md
+@@ -1,6 +1,8 @@
+ # Estado do projeto
+ 
+ ## Revisão diagnóstica 2.0.0 — 03/11/2026
++
++Prevenção seletiva de explosão implementada na cópia: preserva caldeirinha/mesa ocupadas ou ambíguas e mantém os demais blocos na lista impactada. Falha de exclusão cancela conservadoramente a explosão inteira. [Contrato, 29 regressões e limites](EXPLOSION_PREVENTION.md). Sem proteção geral contra comandos, sem resolver retirada/persistência e sem aprovação nativa.
+ 
+ Compactação de água e ocupação em cópia isolada. Schemas incompatíveis com blocos antigos; não instalar diretamente sobre mundos 1.2.5. Opções preservadas, prova exaustiva de estados e conversor offline testados. Handlers e inscrições de eventos foram exercitados com host simulado; limites legados e falha do Creator Tools mantêm NO-GO de release. [Contrato e gates](COMPACT_BLOCK_STATES_2.0.0.md). Proteção de registros opacos e [modelo offline de recuperação](RECOVERY_PROTOCOL_DIAGNOSTIC.md) separados de qualquer promessa de atomicidade. Nenhum teste Minecraft ou publicação declarado.
+ 
+--- a/docs/STATE_AND_CONCURRENCY.md
++++ b/docs/STATE_AND_CONCURRENCY.md
+@@ -132,7 +132,7 @@
+ 
+ Ocupado com outro item na mão não retira nada; a interface solicita mão vazia. A loot table ocupada não fornece um aspersório genérico: `onBreak` tenta restaurar o snapshot; a deduplicação limitada e os riscos de falha/replay não garantem entrega única. Blocos ocupados legados sem snapshot recuperam um item V3 vazio como fallback compatível.
+ 
+-A quebra por jogador agora passa por uma [prevenção separada](PLAYER_BREAK_PREVENTION.md): ocupado, snapshot órfão ou dados ilegíveis são recusados no evento anterior, sem executar recuperação. Isso não cobre destruições por outros meios nem corrige a retirada não atômica; os handlers pós-quebra e suas limitações continuam existentes.
++A quebra por jogador agora passa por uma [prevenção separada](PLAYER_BREAK_PREVENTION.md): ocupado, snapshot órfão ou dados ilegíveis são recusados no evento anterior, sem executar recuperação. A [prevenção seletiva de explosão](EXPLOSION_PREVENTION.md) compartilha essa decisão e exclui somente os nossos blocos de risco da lista impactada; falha de exclusão cancela conservadoramente a explosão inteira. Essas rotas não cobrem comandos e substituição direta nem corrigem a retirada não atômica; os handlers pós-quebra e suas limitações continuam existentes.
+ 
+ ## Mesa do Sacristão e sessões de personalização
+ 
+--- a/docs/TESTING.md
++++ b/docs/TESTING.md
+@@ -1,6 +1,8 @@
+ # Estratégia de testes e QA
+ 
+ ## Revisão diagnóstica 2.0.0 — 03/11/2026
++
++A prevenção de explosão é testada pela inscrição real em host simulado, com filtragem seletiva, falhas antes/depois do efeito e preservação de snapshots/sessões/blocos alheios. [Contrato e gate nativo pendente](EXPLOSION_PREVENTION.md). Não confundir esses testes com prova de execução no Minecraft.
+ 
+ Compactação de água e ocupação em cópia isolada. Schemas incompatíveis com blocos antigos; não instalar diretamente sobre mundos 1.2.5. Opções preservadas, prova exaustiva de estados e conversor offline testados. Handlers e inscrições de eventos foram exercitados com host simulado; limites legados e falha do Creator Tools mantêm NO-GO de release. [Contrato e gates](COMPACT_BLOCK_STATES_2.0.0.md). Proteção de registros opacos e [modelo offline de recuperação](RECOVERY_PROTOCOL_DIAGNOSTIC.md) separados de qualquer promessa de atomicidade. Nenhum teste Minecraft ou publicação declarado.
+ 
+--- a/docs/COMPACT_BLOCK_STATES_2.0.0.md
++++ b/docs/COMPACT_BLOCK_STATES_2.0.0.md
+@@ -13,6 +13,8 @@
+ A fonte autoritativa é `src/domain/block-state-layout.ts`. Runtime e gerador usam a mesma definição. Os códigos excedentes renderizam vazios, mas o runtime recusa operações sobre eles. Não são uma política de recuperação de corrupção.
+ 
+ ## Aparência e comportamento preservados
++
++Exceção comportamental deliberada nesta cópia: além de impedir quebra por jogador em blocos ocupados/ambíguos, a [prevenção de explosão](EXPLOSION_PREVENTION.md) exclui esses blocos da lista impactada. Essa medida preserva o estado existente sem acionar recuperação; não altera o codec nem fecha os gates de persistência e validação nativa.
+ 
+ Geometrias, UVs, mapas de cor/normal/MER, attachables, poses de primeira/terceira pessoa, VFX, água visual e áudio não são redesenhados. Todos os acabamentos, rotações e quantidades continuam disponíveis. IDs de itens, UUIDs dos packs, identidade das instâncias e schema 3 dos itens permanecem.
+ 
+--- a/docs/PLAYER_BREAK_PREVENTION.md
++++ b/docs/PLAYER_BREAK_PREVENTION.md
+@@ -27,7 +27,7 @@
+ 
+ Nesta cópia, a tentativa de quebrar um dos dois blocos enquanto ocupado é recusada. A instrução de retirar primeiro **não torna undocking atômico**: os riscos já caracterizados de entrega seguida de erro e rollback continuam abertos. Um bloco vazio com vizinho inválido também pode ficar indisponível; isso preserva dados desconhecidos, não diagnostica corrupção no bloco específico.
+ 
+-Não há proteção estabelecida contra explosões, comandos, substituição sem evento, downgrade, interrupção do script, callback de recuperação já agendado, ou outro subscriber que posteriormente reverta o cancelamento. A fonte consultada não garante ordem/prioridade entre subscribers. Nenhum desses limites foi ocultado removendo as caracterizações antigas.
++Esta rota não protege explosões. Uma [filtragem seletiva posterior](EXPLOSION_PREVENTION.md) adiciona prevenção própria para o evento anterior de explosão, ainda sem validação nativa. Permanecem fora das duas rotas comandos, substituição sem evento, downgrade, interrupção do script, callback de recuperação já agendado ou outro subscriber que posteriormente reverta a decisão. A fonte consultada não garante ordem/prioridade entre subscribers. Nenhum desses limites foi ocultado removendo as caracterizações antigas.
+ 
+ O gate nativo continua necessário para confirmar cancelamento, ausência de destruição/loot e comportamento sob repetição em Survival/Creative na versão exata. O host simulado prova que nosso callback define a flag e não emite efeitos, não que o engine obedeceu em uma sessão real.
+ 
+--- a/docs/ARCHITECTURE.md
++++ b/docs/ARCHITECTURE.md
+@@ -53,6 +53,8 @@
+ ## Fronteira de preservação do registro
+ 
+ Antes de atualizar um shard, `docked-item-registry.ts` recusa qualquer interpretação que descarte campos, entradas ou metadados. Somente snapshots V1/V2 canônicos suportados são aceitos; V1 permite a promoção documentada para zero cargas. Bytes não suportados ficam intactos e bloqueiam o shard inteiro, inclusive diante de formatação externa equivalente. Vetores com campos extras e propriedades customizadas com IDs centrais também são recusados, pois o writer não os emite e a restauração os perderia ou sobreporia. Não muda schemas/IDs e não torna as escritas atômicas. A [análise de recuperação](RECOVERY_PROTOCOL_DIAGNOSTIC.md) separa esta proteção implementada do journal apenas modelado offline.
++
++`application/block-destruction-safety.ts` concentra a decisão read-only usada nos eventos anteriores de quebra por jogador e explosão. Blocos próprios ocupados, com snapshot órfão ou ilegíveis são preservados sem disparar recuperação. A rota de explosão filtra sincronamente sua lista e, se a exclusão falhar, cancela a explosão inteira sem repetir a operação. [Escopo e limites](EXPLOSION_PREVENTION.md): isso não garante ordem entre subscribers nem resolve undocking/persistência.
+ 
+ ## Estrutura atual
+ 
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -12,6 +12,7 @@
+ - Modela falhas e journal conservador offline, com contraexemplos de entrega ambígua, replay e downgrade; não integra um protocolo sem prova de durabilidade e mantém caracterizações de falhas pós-efeito.
+ - Acrescenta protótipo offline de quarentena/reconciliação assistida, com preservação integral da entrada, 54 testes, 12 exemplos e propostas humanas sem autorização/execução; runtime permanece inalterado nesta etapa.
+ - Acrescenta prevenção síncrona de quebra por jogador sobre blocos ocupados/ambíguos, sem entregas ou escritas; 12 regressões antes/depois e 22 novos testes, sem promessa para explosões/comandos ou retirada não atômica.
++- Acrescenta prevenção seletiva de explosão pelo callback anterior, compartilhando a decisão read-only com a quebra por jogador; 29 novos testes de rotas preservam snapshots, sessões e blocos alheios. Falha na exclusão cancela conservadoramente a explosão inteira; comandos, undocking e durabilidade continuam abertos.
+ - Mantém NO-GO de release: Creator Tools falhou na referência de versão após HTTP 502, e teste nativo/migração integral continuam pendentes.
+ - Validação e limitações em `docs/COMPACT_BLOCK_STATES_2.0.0.md`.
+ 

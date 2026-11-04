@@ -1,0 +1,98 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+vi.mock("@minecraft/server", async () => import("../mocks/compact-runtime"));
+
+import { dockedEntryKey, dockedShardPropertyId, type DockedAspergillumSnapshot } from "../../src/domain/docking";
+import { deleteDockedSnapshot, getDockedSnapshot, setDockedSnapshot } from "../../src/infrastructure/docked-item-registry";
+import { resetRuntime, world } from "../mocks/compact-runtime";
+
+const dimension = "minecraft:overworld";
+const location = { x: 2, y: 64, z: -3 };
+const key = dockedEntryKey(location);
+const propertyId = dockedShardPropertyId(dimension, location);
+const snapshot: DockedAspergillumSnapshot = {
+  schemaVersion: 2, instanceId: "preserved-A", charges: 3, nameTag: "Named item",
+  cosmeticId: "bronze_ivory", sprayProfileId: "contained",
+  customProperties: { "third.party:note": "Preserve this", "third.party:vector": { kind: "vector3", x: 1, y: 2, z: 3 } },
+};
+function writeRaw(raw: string) { world.setDynamicProperty(propertyId, raw); world.setDynamicProperty.mockClear(); }
+function raw() { return world.getDynamicProperty(propertyId); }
+function shard(entries: Record<string, unknown> = { [key]: snapshot }) { return { schemaVersion: 1, entries }; }
+beforeEach(() => resetRuntime());
+
+describe("lossless registry boundary before world mutation", () => {
+  it("keeps canonical V2 metadata and unrelated valid entries across a targeted update/delete", () => {
+    const neighbor = { ...snapshot, instanceId: "neighbor-B", charges: 1 };
+    writeRaw(JSON.stringify(shard({ [key]: snapshot, "3,64,-3": neighbor })));
+    expect(getDockedSnapshot(dimension, location)).toEqual(snapshot);
+    expect(setDockedSnapshot(dimension, location, { ...snapshot, cosmeticId: "classic" })).toEqual(snapshot);
+    expect(JSON.parse(raw() as string).entries["3,64,-3"]).toEqual(neighbor);
+    expect(deleteDockedSnapshot(dimension, location)?.instanceId).toBe(snapshot.instanceId);
+    expect(JSON.parse(raw() as string).entries).toEqual({ "3,64,-3": neighbor });
+  });
+
+  it("accepts canonical legacy V1 and promotes only the documented zero-charge schema", () => {
+    const { charges: _charges, ...legacy } = { ...snapshot, schemaVersion: 1 };
+    writeRaw(JSON.stringify(shard({ [key]: legacy })));
+    expect(getDockedSnapshot(dimension, location)).toEqual({ ...snapshot, charges: 0 });
+    expect(world.setDynamicProperty).not.toHaveBeenCalled();
+    setDockedSnapshot(dimension, location, { ...snapshot, charges: 0 });
+    expect(getDockedSnapshot(dimension, location)).toEqual({ ...snapshot, charges: 0 });
+  });
+
+  it("preserves legacy V1 neighbors via the explicit zero-charge migration during V2 update/delete", () => {
+    const { charges: _charges, ...legacy } = { ...snapshot, schemaVersion: 1, instanceId: "legacy-neighbor" };
+    writeRaw(JSON.stringify(shard({ [key]: snapshot, "3,64,-3": legacy })));
+    setDockedSnapshot(dimension, location, { ...snapshot, cosmeticId: "classic" });
+    expect(JSON.parse(raw() as string).entries["3,64,-3"]).toEqual({ ...legacy, schemaVersion: 2, charges: 0 });
+    deleteDockedSnapshot(dimension, location);
+    expect(JSON.parse(raw() as string).entries).toEqual({ "3,64,-3": { ...legacy, schemaVersion: 2, charges: 0 } });
+  });
+
+  it("accepts JSON.stringify output with a different property order without rewriting on read", () => {
+    const reordered = Object.fromEntries(Object.entries(snapshot).reverse());
+    const original = JSON.stringify({ entries: { [key]: reordered }, schemaVersion: 1 });
+    writeRaw(original);
+    expect(getDockedSnapshot(dimension, location)).toEqual(snapshot);
+    expect(raw()).toBe(original);
+    expect(world.setDynamicProperty).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    "unknown-root-field", "invalid-neighbor", "future-neighbor", "unknown-item-field",
+    "invalid-custom-property", "invalid-charges", "legacy-nonzero-charges", "duplicate-key",
+    "noncanonical-json", "array-entries", "future-shard", "vector-extra-field",
+    "reserved:charges", "reserved:schema_version", "reserved:instance_id", "reserved:cosmetic_id", "reserved:spray_profile_id",
+  ])("refuses %s without altering any original property bytes", (kind) => {
+    const value = shard() as { schemaVersion: number; entries: Record<string, unknown>; extra?: string };
+    if (kind === "unknown-root-field") value.extra = "opaque future data";
+    if (kind === "invalid-neighbor") value.entries["3,64,-3"] = { opaque: { payload: "must survive" } };
+    if (kind === "future-neighbor") value.entries["3,64,-3"] = { ...snapshot, schemaVersion: 99 };
+    if (kind === "unknown-item-field") value.entries[key] = { ...snapshot, opaque: "must survive" };
+    if (kind === "invalid-custom-property") value.entries[key] = { ...snapshot, customProperties: { unknown: { arbitrary: true } } };
+    if (kind === "vector-extra-field") value.entries[key] = { ...snapshot, customProperties: { vector: { kind: "vector3", x: 1, y: 2, z: 3, opaque: "must survive" } } };
+    if (kind.startsWith("reserved:")) value.entries[key] = { ...snapshot, customProperties: { [`aspergillum:${kind.slice("reserved:".length)}`]: "must survive" } };
+    if (kind === "invalid-charges") value.entries[key] = { ...snapshot, charges: 99 };
+    if (kind === "legacy-nonzero-charges") value.entries[key] = { ...snapshot, schemaVersion: 1 };
+    if (kind === "array-entries") value.entries = [] as unknown as Record<string, unknown>;
+    if (kind === "future-shard") value.schemaVersion = 99;
+    let original = JSON.stringify(value);
+    if (kind === "duplicate-key") original = original.replace('"schemaVersion":1', '"schemaVersion":99,"schemaVersion":1');
+    if (kind === "noncanonical-json") original = ` \n${original}\n`;
+    writeRaw(original);
+    expect(() => getDockedSnapshot(dimension, location)).toThrow();
+    expect(() => setDockedSnapshot(dimension, location, snapshot)).toThrow();
+    expect(() => deleteDockedSnapshot(dimension, location)).toThrow();
+    expect(raw()).toBe(original);
+    expect(world.setDynamicProperty).not.toHaveBeenCalled();
+  });
+
+  it("refuses an oversized update before mutation, including multibyte text", () => {
+    const original = JSON.stringify(shard());
+    writeRaw(original);
+    expect(() => setDockedSnapshot(dimension, location, {
+      ...snapshot, customProperties: { text: "界".repeat(10_000) },
+    })).toThrow(/exceeds/);
+    expect(raw()).toBe(original);
+    expect(world.setDynamicProperty).not.toHaveBeenCalled();
+  });
+});

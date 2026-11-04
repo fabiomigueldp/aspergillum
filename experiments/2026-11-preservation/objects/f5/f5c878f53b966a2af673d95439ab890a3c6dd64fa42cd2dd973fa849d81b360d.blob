@@ -1,0 +1,33 @@
+import bpy,numpy as np,json,math
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+from collections import Counter
+r='/workspace/scratch/212c580ada5b/paz-sleeve-proxy/';out=r+'cuff-fit/'
+bpy.ops.wm.open_mainfile(filepath=r+'cuff-open/P85-CUFF-TECHNICAL-RETAINED.blend',use_scripts=False)
+o=bpy.data.objects['PROXY85 manga de controle'];h=bpy.data.objects['PROXY85 mão rígida — dedos originais'];old=o.data;new=old.copy();o.data=new
+bpy.context.view_layer.update();dg=bpy.context.evaluated_depsgraph_get()
+def geom(x):
+ ev=x.evaluated_get(dg);m=ev.to_mesh();p=[x.matrix_world@v.co for v in m.vertices];f=[tuple(z.vertices) for z in m.polygons];ev.to_mesh_clear();return p,f
+hp,hf=geom(h);ht=BVHTree.FromPolygons(hp,hf);M=32;N=28;c=sum((old.vertices[N*M+i].co for i in range(M)),Vector())/M;c0=sum((old.vertices[(N-1)*M+i].co for i in range(M)),Vector())/M;axis=(c-c0).normalized();observed=[];clipped=0
+for ring,depth in [(29,0),(30,.004)]:
+ center=c-axis*depth;radii=[];dirs=[];limits=[];hits=[]
+ for i in range(M):
+  v=old.vertices[ring*M+i].co-center;direction=v.normalized();dirs.append(direction);oldrad=v.length;outer=(old.vertices[N*M+i].co-c).length;limits.append(outer-.003)
+  hit,n,idx,d=ht.ray_cast(center+direction*.12,-direction,.12)
+  rad=(hit-center).dot(direction) if hit is not None else None;hits.append(rad);radii.append(rad+.004 if rad is not None else oldrad)
+ # Smooth only the inferred ring, not the hand. Preserve clearance against measured rays.
+ arr=np.array(radii);fourier=np.fft.rfft(arr);fourier[5:]=0;smooth=np.fft.irfft(fourier,n=M);final=np.minimum(np.maximum(smooth,arr),limits);clipped+=int(np.sum(np.maximum(smooth,arr)>limits))
+ for i in range(M):new.vertices[ring*M+i].co=center+dirs[i]*float(final[i])
+ observed.append({'depth_m':depth,'valid_ray_hits':sum(a is not None for a in hits),'old_radius_range_m':[min((old.vertices[ring*M+i].co-center).length for i in range(M)),max((old.vertices[ring*M+i].co-center).length for i in range(M))],'new_radius_range_m':[float(final.min()),float(final.max())]})
+new.update();bpy.context.view_layer.update();p,f=geom(o);t=BVHTree.FromPolygons(p,f);pairs=[(a,b) for a,b in t.overlap(t) if a<b and not set(f[a])&set(f[b])];edges=Counter(tuple(sorted((face[i],face[(i+1)%len(face)]))) for face in f for i in range(len(face)))
+report={'construction':'Inner cuff aperture fit to existing wrist with 4mm sampled radial clearance; hand and external rim unchanged','samples':observed,'clearance_clamped_samples':clipped,'self_intersections':len(pairs),'nonmanifold_edges':sum(n!=2 for n in edges.values()),'sleeve_hand_pairs':len(t.overlap(ht)),'max_raw_vertex_change_m':max((a.co-b.co).length for a,b in zip(old.vertices,new.vertices)),'unmodified_original_vertices_max_delta_m':max((old.vertices[i].co-new.vertices[i].co).length for i in range(928)),'note':'Technical fit to existing generic hand, not evidence of faithful original wrist anatomy.'};json.dump(report,open(out+'audit.json','w'),indent=2)
+bpy.ops.wm.save_as_mainfile(filepath=out+'P85-CUFF-FIT-TRIAL.blend')
+s=bpy.context.scene;s.render.engine='CYCLES';s.cycles.samples=40;s.render.resolution_x=700;s.render.resolution_y=700;s.render.resolution_percentage=100
+for x in bpy.data.objects:
+ if x.type=='MESH' and x not in(o,h):x.hide_render=True
+cam=s.camera;cam.data.type='ORTHO';cam.data.ortho_scale=.34;target=c+Vector((0,-.035,-.025))
+for view,off in [('profile',(-5,0,0)),('threequarter',(-3,-5,-.4))]:
+ cam.location=target+Vector(off);cam.rotation_euler=(target-cam.location).to_track_quat('-Z','Y').to_euler()
+ for state in ['before','after']:
+  o.data=old if state=='before' else new;bpy.context.view_layer.update();s.render.filepath=out+state+'-'+view+'.png';bpy.ops.render.render(write_still=True)
+print(report)

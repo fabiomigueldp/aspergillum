@@ -1,0 +1,8 @@
+import bpy,json
+from mathutils import Vector
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V57-child-neck-trial.blend',use_scripts=False);o=bpy.data.objects['Menino — cabeça colo retopologia V55 reversível'];k=o.data.shape_keys.key_blocks[-1];a=k.value
+for v,b in zip(k.data,o.data.vertices):v.co=b.co+(v.co-b.co)*a
+k.value=1;k.slider_min=0;k.slider_max=1;report=json.load(open(r+'V57-child-neck-verification.json'));report['stored_key_is_bounded']=True;report['rollback']='TESTE57=0 restores V55; TESTE57=1 is bounded25% candidate';json.dump(report,open(r+'V57-child-neck-verification.json','w'),indent=2);bpy.ops.wm.save_as_mainfile(filepath=r+'V57-child-neck-trial.blend')
+s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=640;s.render.resolution_y=640;s.render.resolution_percentage=100;c=s.camera;ct=Vector((.025,-.275,1.69));c.data.ortho_scale=.25;c.location=ct+Vector((-2,-3,0));c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler();light=bpy.data.lights.new('Diagnostic restrained lateral','AREA');light.energy=15;light.size=.5;ob=bpy.data.objects.new('Diagnostic restrained lateral',light);bpy.context.collection.objects.link(ob);ob.location=(-1.5,-1.5,2.3);ob.rotation_euler=(ct-ob.location).to_track_quat('-Z','Y').to_euler()
+for val,label in [(0,'V55'),(1,'V57')]:
+ k.value=val;s.render.filepath=r+label+'-neck-side-balanced.png';bpy.ops.render.render(write_still=True)

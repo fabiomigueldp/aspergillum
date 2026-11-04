@@ -1,0 +1,43 @@
+# Diagnóstico independente: ponte e orelhas V10
+
+## Achados acionáveis
+
+A incompatibilidade está na costura original calota–ponte, não apenas na pele adaptada em V8/V9. As orelhas congeladas não devem ser recolhidas para apagá-la.
+
+- Os 607 pares da casca V7 contra anatomia V9 são 207 calota + 400 ponte. A calota não tem vértices gerados. Portanto, editar apenas a ponte gerada não elimina os 207 pares da calota.
+- Dos 400 pares da ponte, 172 usam faces com 3 vértices gerados, 70 com 2 e 158 com apenas 1: estes últimos envolvem os zippers junto aos limites originais.
+- 365/400 pares estão nos extremos laterais do parâmetro t: 150 no primeiro décimo e 215 no último. Também 365/400 incidem em alguma face ligada à máscara de orelhas; a igualdade dos totais não significa que sejam necessariamente o mesmo conjunto.
+- 206/400 pares estão na primeira faixa longitudinal s∈[0,1/6), junto à calota. Há também 12 junto ao manto, portanto não se deve ignorar regressões posteriores.
+- **16 pares da ponte têm uma aresta fonte fixa atravessando estritamente o interior de uma face anatômica congelada.** Mover somente o terceiro vértice gerado não retira essa aresta da pele. Todos ficam em s=0, t≈0,027–0,080 ou 0,920–0,978. Os pares e testemunhos estão em `bridge-contact-details.json`.
+- Esses 32 vértices fonte são bit a bit iguais à malha avaliada original e às chaves Basis e TESTE74. Todas as 16 faces anatômicas correspondentes também conservam a geometria original. A calota inteira coincide com a fonte avaliada. Logo, esses cruzamentos não foram criados pela adaptação V8/V9.
+- A incompatibilidade mais ampla também já existia: testes arquivados registravam 928 pares entre ponte V6 e anatomia original, 916 na V7. Não se trata de prova sobre todas as peças highpoly nem de julgamento artístico de toda a origem.
+
+## Implicação para o desenho
+
+A solução estrutural precisa reconsiderar localmente o limite lateral da calota e a rota da ponte ao redor de ambas as orelhas. Uma tentativa que conserva todos os limites originais pode melhorar parte dos contatos, mas não limpar integralmente essa interface. Reformular o limite em uma **nova candidata** não autoriza alterar fontes ou versões anteriores; sua extensão e seu custo visual devem ser explicitamente medidos.
+
+Uma translação medial não é automaticamente segura: pode trocar a lâmina aparente por compressão e novos cruzamentos internos. A faixa V5 segue congelada, com seus próprios 797 pares contra a anatomia; remodelar a ponte não resolve esses pares. O solver deve medir simultaneamente casca própria, anatomia e faixa, e apresentar contatos novos separadamente de totais.
+
+## O que as imagens já provam
+
+A comparação Blender V8/V9 mostra lâminas vermelhas e pontas azuis dentro das cavidades, não apenas atrás de pele invisível. As imagens laterais devem mostrar tanto as margens externas e lóbulos quanto a cavidade. A invisibilidade de um componente não pode ser inferida da expressão “atrás da orelha” ou do nome de uma camada.
+
+A classificação V9 de 910 direções × 21 amostras já encontrou exposição em 203/214 faces incidentes às orelhas. Não reexecutei essa pesquisa geral nem liberei nenhum dos 88 vértices protegidos. Finita ausência de raios visíveis não demonstra invisibilidade universal.
+
+## Gate de candidata
+
+`review_bridge_candidate.py` reabre a candidata e verifica identidades, fonte/cap/manto, topologia, cruzamentos próprios, espessura pareada, transversabilidade, área/stretch/rotação, contatos contra anatomia e faixa e contatos novos contra peças legadas. Os hashes congelados são conferidos antes/depois. Pares nos proxies híbridos não certificam a geometria híbrida real.
+
+`classify_bridge_contacts.py` distingue novos pares com raios escapando da montagem e testa explicitamente todos os pares de faces que compartilham vértices, com tolerância relativa para o paralelismo. Esses testes não certificam tangências, coplanaridade geral, folga global ou visibilidade universal.
+
+O julgamento visual deve usar as mesmas sete câmeras V9, duas oblíquas sem halo e projeções de contorno. Exigir separadamente: preservação da anatomia; ausência de novo recobrimento das orelhas; redução efetiva de vermelho/azul dentro das cavidades; ausência de lacunas/fendas/abas; preservação do perfil temporal, posterior e da faixa. Um total de contatos menor não substitui nenhum desses requisitos.
+
+Nenhum arquivo fonte ou candidata foi alterado por este diagnóstico. Não houve exportação, publicação ou teste Minecraft. Renders citados são Blender.
+
+## Componentes e limite da remoção de geometria oculta
+
+A casca completa V7 é **uma única componente conexa fechada**, com 6.244 vértices e 12.484 triângulos, Euler 2 e gate manifold válido. Calota e ponte compartilham 456 vértices; ponte e manto compartilham 640. A candidata boundary-posterior-30mm conserva a conectividade e os índices. Isso foi confirmado por uma consulta barata de conectividade, sem repetir testes de colisão: `component-connectivity.json`.
+
+As lâminas vermelhas/azuis a corrigir são regiões expostas dessa mesma superfície. Os rótulos calota, ponte e manto não são componentes fechadas independentes, e não há componente independente da casca certificada invisível para remover. Excluir um subconjunto próprio não vazio de faces dessa superfície conexa fechada cria bordas abertas, salvo uma reconstrução explícita que feche novamente a superfície. A aparência parcialmente oculta em certas câmeras não demonstra que essa exclusão preserve fechamento, silhueta ou volume.
+
+Separadamente, a anatomia V9 contém duas componentes: a principal com 689 vértices e 1.374 triângulos, e o defeito microscópico herdado com 3 vértices e 2 faces opostas (vértices 437–439, faces 424/1131, source IDs 5257–5259). Este defeito já estava documentado na V8/V9, permanece congelado e está fora do escopo da ponte. Não foi apagado, não é uma lâmina da casca e não serve como justificativa para remover outra geometria. A faixa V5 também é uma única componente conexa.

@@ -1,0 +1,27 @@
+# Nossa Senhora da Paz — checkpoint V59, 2026-11-02
+
+Etapa editável revisada localmente, NÃO modelo final nem gêmeo fiel concluído.
+Blender4.3.2; abrir .blend com autoexec desabilitado. Sem execução automática necessária. Trabalhar em cópia.
+
+## Estado
+Maria preservada no checkpointV43. Menino incorpora pose de braço/mãoV48/V49, calota contínuaV50 (ainda lisa), proporções faciaisV52, ligação cabeça/coloV55 e comprimento/barra da túnicaV59. V55 é candidata técnica com ressalva visual de faixa submandibular. V59 foi retida como melhoria reversível da túnica. V51/V53/V54/V56–V58 não foram promovidas.
+
+## Rollback e edição
+- Túnica: TESTE59=0 restauraV55;1 mostraV59.
+- Cabeça/colo: ocultar em viewport+render `Menino — cabeça colo retopologia V55 reversível`, reexibir `Menino — base infantil anatômica CC0` e `Menino — pescoço` originais. Isso restaura geometriaV52 com pescoço separado, preservados ocultos.
+- Na cabeça original, TESTE52=0 restaura proporções anteriores. A cabeça unificada é geometria avaliada separada; alterar chave na cabeça oculta não altera automaticamente a uniãoV55.
+- Cabelo: ocultar `Menino — cabelo contínuo V50 reversível` e reexibir `Menino — cabelo rente` restaura cabelo anterior.
+- Mão visível do Menino mantém TESTE49 e TESTE48; braços da túnica mantêmTESTE48. Não zerar todas as chaves indiscriminadamente.
+
+## Auditoria V59
+Malha da túnica fechada,zero arestas não-manifold,zero triângulos degenerados,zero coordenadas não finitas,zero inversões/auto-interseções. Rotação máxima de normal28.78° na mudança de curvatura da barra. Razão de aspecto triangular p95 passou3.521→3.607; máximo130.62 já existia e não aumentou. Área local0.363..1.721×: deformação proporcional intencional, não alegação de ausência de distorção. Outros objetos/chaves/matrizes idênticos aV55.
+Scripts `inspect-checkpoint.py` e `audit-v59-face-quality.py` funcionam localmente: blender -b --disable-autoexec -P SCRIPT. Não alteram o .blend. Auditoria regrava apenasJSON.
+
+## Limitações
+Fidelidade global, rosto/cabelo, faixa mandíbula-colo, apoio da mão de Maria, pés ainda em forma de cápsulas e outros detalhes continuam pendentes. Garment e punhos usam malhas fechadas/interseções intencionais; não é modelo pronto para impressão. Renders são do estudo, não fotografias do original.
+
+## Referência e direitos
+Imagem real da Paróquia Nossa Senhora da Paz, Glicério, São Paulo.
+Fonte: https://arquivo.arq.br/projetos/paroquia-nossa-senhora-da-paz
+Fotos locais reference-8.jpg (perfil) e reference-9.jpg (rosto) NÃO incluídas; nenhum screenshot de terceiros. O .blend conserva apenas caminho externo da referência, sem imagem empacotada, confirmado pela auditoria. Pode editar geometria sem foto. Não alegamos licença de redistribuição das fotografias.
+Nenhum addon publicado, GitHub ou serviço alterado por este pacote.

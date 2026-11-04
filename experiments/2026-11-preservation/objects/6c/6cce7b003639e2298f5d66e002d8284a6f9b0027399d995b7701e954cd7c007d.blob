@@ -1,0 +1,387 @@
+{
+  "interpretation": "The actual Cycles source-face emission control demonstrates primary-ray source/part swaps. Independent geometric alpha trace does not: this is renderer traversal/continuation behavior, not absent ideal triangle support. ID material preserves alpha/backface before first opaque surface; different emission response cannot alter primary geometry traversal.",
+  "qualification": "One sample, BOX .01 filter is near pixel center, not the original48sample Blackman-Harris integration; it demonstrates the mechanism at the stated samples, not every original sample. The exact float32 t arithmetic and tie-order are still not instrumented.",
+  "summary": {
+    "mapping_assertion": true,
+    "roi_pixels": 3321,
+    "actual_source_ID_mismatch": 142,
+    "actual_part_mismatch": 141,
+    "clip_ID_vs_ideal_center_ray_mismatch": 2,
+    "masked_ID_vs_ideal_center_ray_mismatch": 144,
+    "max_raw_decoded_deviation_from_integer": {
+      "masked": 0.00048828125,
+      "clip": 0.00048828125
+    },
+    "dark_pixels": 301,
+    "actual_ID_mismatch_at_dark": 77,
+    "clean_pixels": 2737,
+    "actual_ID_mismatch_at_clean": 42
+  },
+  "witnesses": [
+    {
+      "pixel": [
+        493,
+        471
+      ],
+      "actual_masked_ID": [
+        2727,
+        1,
+        0
+      ],
+      "actual_clip_ID": [
+        134,
+        0,
+        1
+      ],
+      "ideal_center_first": {
+        "triangle": 538,
+        "part": 0,
+        "native_face": 134,
+        "half": 1,
+        "polygon": 269,
+        "local_loop_triangle": 538,
+        "distance_mm": 3082.5087869688728,
+        "barycentric": [
+          0.2791957135190538,
+          0.03314185907425101,
+          0.6876624274066951
+        ],
+        "point": [
+          0.03162000027298927,
+          -0.4174912154456934,
+          3.5948204253669025
+        ],
+        "UV": [
+          0.8438312137033476,
+          0.2791957135190538
+        ],
+        "flat_corner_normal": [
+          -0.04395562542019362,
+          -0.8734029648925432,
+          0.48501047814540527
+        ],
+        "triangle_geometric_normal": [
+          -0.043966591893657876,
+          -0.8734232229639214,
+          0.484973001706871
+        ]
+      },
+      "center_ray_hits_matching_actual_masked_ID": [
+        {
+          "triangle": 28684,
+          "part": 1,
+          "native_face": 2727,
+          "half": 0,
+          "alpha_opaque": true,
+          "frontfacing": true,
+          "distance_from_camera_mm": 3083.204234771619,
+          "distance_behind_ideal_um": 695.4478027467736,
+          "geometric_normal_difference_degrees": 4.341968091480993,
+          "normal": [
+            -0.11865729051779993,
+            -0.8734317740037033,
+            0.47226833851923433
+          ],
+          "uv": [
+            0.8519867504219653,
+            0.16200982087903626
+          ]
+        }
+      ]
+    },
+    {
+      "pixel": [
+        559,
+        449
+      ],
+      "actual_masked_ID": [
+        3717,
+        1,
+        0
+      ],
+      "actual_clip_ID": [
+        111,
+        0,
+        0
+      ],
+      "ideal_center_first": {
+        "triangle": 444,
+        "part": 0,
+        "native_face": 111,
+        "half": 0,
+        "polygon": 222,
+        "local_loop_triangle": 444,
+        "distance_mm": 3091.2064030715364,
+        "barycentric": [
+          0.11578465579476704,
+          0.38098844080085364,
+          0.5032269034043793
+        ],
+        "point": [
+          0.06593999901413918,
+          -0.4087936012068429,
+          3.606260426364307
+        ],
+        "UV": [
+          0.7516134517021896,
+          0.11578465579476704
+        ],
+        "flat_corner_normal": [
+          0.13988185354391505,
+          -0.8438570453220366,
+          0.5180138551327379
+        ],
+        "triangle_geometric_normal": [
+          0.1398952043153554,
+          -0.843860847780969,
+          0.5180040553817598
+        ]
+      },
+      "center_ray_hits_matching_actual_masked_ID": [
+        {
+          "triangle": 32644,
+          "part": 1,
+          "native_face": 3717,
+          "half": 0,
+          "alpha_opaque": true,
+          "frontfacing": true,
+          "distance_from_camera_mm": 3092.529674081952,
+          "distance_behind_ideal_um": 1323.2710104160717,
+          "geometric_normal_difference_degrees": 8.729594166236572,
+          "normal": [
+            0.12310841855535008,
+            -0.7569177864405507,
+            0.6418097707660249
+          ],
+          "uv": [
+            0.6182174205227832,
+            0.6798536672864582
+          ]
+        }
+      ]
+    },
+    {
+      "pixel": [
+        510,
+        468
+      ],
+      "actual_masked_ID": [
+        2994,
+        1,
+        1
+      ],
+      "actual_clip_ID": [
+        894,
+        0,
+        1
+      ],
+      "ideal_center_first": {
+        "triangle": 3578,
+        "part": 0,
+        "native_face": 894,
+        "half": 1,
+        "polygon": 1789,
+        "local_loop_triangle": 3578,
+        "distance_mm": 3083.0152092189496,
+        "barycentric": [
+          0.35243880643077796,
+          0.26184253720072687,
+          0.3857186563684951
+        ],
+        "point": [
+          0.04045999994874001,
+          -0.4169847934497727,
+          3.5963804253921885
+        ],
+        "UV": [
+          0.6928593281842476,
+          0.35243880643077796
+        ],
+        "flat_corner_normal": [
+          -0.03853568849130762,
+          -0.8207357216357545,
+          0.5700069086805337
+        ],
+        "triangle_geometric_normal": [
+          -0.03854214576769062,
+          -0.8207268881021981,
+          0.5700191910328143
+        ]
+      },
+      "center_ray_hits_matching_actual_masked_ID": [
+        {
+          "triangle": 29754,
+          "part": 1,
+          "native_face": 2994,
+          "half": 1,
+          "alpha_opaque": true,
+          "frontfacing": true,
+          "distance_from_camera_mm": 3083.7446608810747,
+          "distance_behind_ideal_um": 729.4516621247915,
+          "geometric_normal_difference_degrees": 5.345819378048222,
+          "normal": [
+            -0.015042326348204975,
+            -0.8693465290298832,
+            0.4939740285498101
+          ],
+          "uv": [
+            0.695748597214717,
+            0.038711015146177696
+          ]
+        }
+      ]
+    },
+    {
+      "pixel": [
+        500,
+        471
+      ],
+      "actual_masked_ID": [
+        138,
+        0,
+        0
+      ],
+      "actual_clip_ID": [
+        138,
+        0,
+        0
+      ],
+      "ideal_center_first": {
+        "triangle": 552,
+        "part": 0,
+        "native_face": 138,
+        "half": 0,
+        "polygon": 276,
+        "local_loop_triangle": 552,
+        "distance_mm": 3082.3256027159173,
+        "barycentric": [
+          0.08383941868131561,
+          0.0416020191049391,
+          0.8745585622137453
+        ],
+        "point": [
+          0.03526000013947487,
+          -0.41767439969864906,
+          3.5948204253370584
+        ],
+        "UV": [
+          0.9372792811068726,
+          0.08383941868131561
+        ],
+        "flat_corner_normal": [
+          -0.04394115145536467,
+          -0.8734311482245893,
+          0.4849610340221699
+        ],
+        "triangle_geometric_normal": [
+          -0.04395372864875331,
+          -0.8734324779801517,
+          0.4849574993206347
+        ]
+      },
+      "center_ray_hits_matching_actual_masked_ID": [
+        {
+          "triangle": 552,
+          "part": 0,
+          "native_face": 138,
+          "half": 0,
+          "alpha_opaque": true,
+          "frontfacing": true,
+          "distance_from_camera_mm": 3082.3256027159173,
+          "distance_behind_ideal_um": 0.0,
+          "geometric_normal_difference_degrees": 0.0,
+          "normal": [
+            -0.04395372864875331,
+            -0.8734324779801517,
+            0.4849574993206347
+          ],
+          "uv": [
+            0.9372792811068726,
+            0.08383941868131561
+          ]
+        }
+      ]
+    },
+    {
+      "pixel": [
+        559,
+        440
+      ],
+      "actual_masked_ID": [
+        4111,
+        1,
+        1
+      ],
+      "actual_clip_ID": [
+        4111,
+        1,
+        1
+      ],
+      "ideal_center_first": {
+        "triangle": 34222,
+        "part": 1,
+        "native_face": 4111,
+        "half": 1,
+        "polygon": 8223,
+        "local_loop_triangle": 16446,
+        "distance_mm": 3095.6046279404313,
+        "barycentric": [
+          0.04340266643289464,
+          0.7120886806702004,
+          0.244508652896905
+        ],
+        "point": [
+          0.06593999901413918,
+          -0.4043953771004162,
+          3.610940426909208
+        ],
+        "UV": [
+          0.6222543264484526,
+          0.04340266643289464
+        ],
+        "flat_corner_normal": [
+          0.10410599858560161,
+          -0.8594506137726584,
+          0.5005063271770854
+        ],
+        "triangle_geometric_normal": [
+          0.10409358084546656,
+          -0.8594506931189493,
+          0.500508773673475
+        ]
+      },
+      "center_ray_hits_matching_actual_masked_ID": [
+        {
+          "triangle": 34222,
+          "part": 1,
+          "native_face": 4111,
+          "half": 1,
+          "alpha_opaque": true,
+          "frontfacing": true,
+          "distance_from_camera_mm": 3095.6046279404313,
+          "distance_behind_ideal_um": 0.0,
+          "geometric_normal_difference_degrees": 0.0,
+          "normal": [
+            0.10409358084546656,
+            -0.8594506931189493,
+            0.500508773673475
+          ],
+          "uv": [
+            0.6222543264484526,
+            0.04340266643289464
+          ]
+        }
+      ]
+    }
+  ],
+  "input_paths": [
+    "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/lit_surface_v16/lighting_research/render_source_ids.py",
+    "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/lit_surface_v16/lighting_research/source-id-pixels.npz",
+    "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/lit_surface_v16/lighting_research/source-id-controls.json"
+  ],
+  "input_hashes": {
+    "render_source_ids.py": "8b39c4bc796a59e13f3569fa7a5c2019e62b116d3fa0f205c99e7093f48729c3",
+    "source-id-pixels.npz": "03a4de2ef7729ddb9fd8795369445159227dbdaf0260810e265127274500cea2",
+    "source-id-controls.json": "a23d77b4ac4bdd02942df68c89d53847f0d1d36e46d7fd9e06acd36a1c54cb01"
+  }
+}

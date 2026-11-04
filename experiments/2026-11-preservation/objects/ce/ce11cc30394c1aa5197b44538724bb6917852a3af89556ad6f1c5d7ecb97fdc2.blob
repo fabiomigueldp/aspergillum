@@ -1,0 +1,44 @@
+{
+  "version": "0.12.0",
+  "tests": {
+    "altare": {
+      "passed": 108,
+      "failed": 0
+    },
+    "aspergillum": {
+      "passed": 107,
+      "failed": 0
+    },
+    "viewer": {
+      "passed": 84,
+      "failed": 0
+    }
+  },
+  "aggregateRootCheck": "passed",
+  "altareTypecheckBuildStructuralValidation": "passed",
+  "documentationCheck": "passed",
+  "viewerViteBuild": "passed",
+  "nativeMinecraftValidation": "pending",
+  "officialCreatorValidation": {
+    "target": "1.26.40",
+    "errors": 0,
+    "unexpectedWarnings": 0,
+    "acceptedExistingComplexityWarnings": 2084,
+    "note": "Target pinned using the CLI supported environment option after network version lookup fallback. Registry lookups returned 502; installed stable API types and offline checks were used."
+  },
+  "browser": "blocked; not bypassed",
+  "geometryMaximum": {
+    "cubeRecords": 46,
+    "faces": 211,
+    "collisions": 5
+  },
+  "nativeLimitations": [
+    "80,000 Altare states exceeds the global reference of 65,536; diagnostic only.",
+    "Collision conservatively covers the small triangular openings.",
+    "Minecraft import, Content Log and native profiling remain pending."
+  ],
+  "cpuSourceHashParity": {
+    "files": 38,
+    "mismatches": 0
+  }
+}

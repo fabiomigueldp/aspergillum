@@ -1,0 +1,58 @@
+from pathlib import Path
+O=Path(__file__).resolve().parent
+exec(compile((O/'ray_diagnosis.py').read_text().split("views={'left-ear'")[0],str(O/'ray_diagnosis.py'),'exec'))
+z=np.load(B/'shell_band_v3/evidence/band-source.npz');bvh['render_source_band']=BVHTree.FromPolygons(z['points'].tolist(),z['triangles'].tolist(),all_triangles=True)
+c=np.load(B/'band_shell_v13/constrained_fit/valley-source-mask-n8.npz');bvh['candidate']=BVHTree.FromPolygons(c['points'].tolist(),c['triangles'].tolist(),all_triangles=True)
+views=[('full-front',(0,-8,1.9),(0,-.03,1.88),4.3,(900,1200)),('junction-profile',(3,-.1,3.4),(.03,-.10,3.42),.8,(1000,1000)),('junction-back',(2,3,3.5),(.03,-.1,3.34),.95,(1000,1000)),('head-front',(.25,-3.5,3.44),(.03,-.20,3.43),.85,(900,900)),('left-ear',(-3,-.16,3.50),(-.085,-.205,3.485),.50,(1000,1000)),('right-ear',(3,-.16,3.48),(.17,-.205,3.46),.50,(1000,1000)),('rear-open',(.035,3,3.52),(.035,-.15,3.43),.70,(1000,1000)),('left-ear-oblique',(-2,-1.5,3.82),(-.085,-.205,3.485),.50,(1000,1000)),('right-ear-oblique',(2,-1.5,3.82),(.17,-.205,3.46),.50,(1000,1000)),('band-front',(.035,-3.5,3.58),(.035,-.30,3.58),.52,(1000,1000))]
+vc=[]
+for name,pos,target,scale,res in views:
+ d=(Vector(target)-Vector(pos)).normalized();q=d.to_track_quat('-Z','Y');vc.append((name,np.array(pos),np.array(d),np.array(q@Vector((1,0,0))),np.array(q@Vector((0,1,0))),scale,res))
+def front_hit(name,ori,di):
+ now=ori.copy()
+ for _ in range(6):
+  p,n,f,t=bvh[name].ray_cast(Vector(now),Vector(di),10)
+  if p is None:return None
+  if np.dot(n,di)<0:return (float(np.dot(np.array(p)-ori,di))*1000,int(f))
+  now=np.array(p)+di*2e-6
+ return None
+def visible_at(p,bandname):
+ out=[]
+ for vn,pos,di,right,up,scale,res in vc:
+  delta=p-pos;xx=delta@right;yy=delta@up;width=scale; height=scale*res[1]/res[0];pix=[(xx/width+.5)*res[0],(.5-yy/height)*res[1]]
+  if not(0<=pix[0]<res[0] and 0<=pix[1]<res[1]):continue
+  ori=pos+right*xx+up*yy;targetd=float((p-ori)@di)*1000
+  h={k:front_hit(k,ori,di) for k in [bandname,'shell','anatomy']};available={k:v for k,v in h.items() if v is not None}
+  if not available:continue
+  winner=min(available,key=lambda k:available[k][0]);depth=targetd-available[winner][0];r={'view':vn,'pixel':pix,'surface_depth_before_contact_mm':depth,'nearest_current':winner,'current_band':h[bandname],'current_shell':h['shell'],'current_anatomy':h['anatomy'],'locally_unoccluded':depth<=.02 and depth>=-.05}
+  if r['locally_unoccluded']:
+   sh=front_hit('source_shell',ori,di);bh=front_hit('render_source_band',ori,di);r['source_band']=bh;r['source_shell']=sh
+   if sh and bh:
+    r['source_shell_ahead_mm']=bh[0]-sh[0];r['source_first_among_band_shell']='band' if bh[0]<sh[0] else 'shell'
+   # An actual foreground anatomy hit prevents interpreting source band/shell ordering as visible.
+   if bh and sh and h['anatomy'] and h['anatomy'][0]<min(bh[0],sh[0])-.02:r['source_occluded_by_frozen_anatomy']=True
+  out.append(r)
+ return out
+rs=json.loads((O/'valley-source-mask-n8-shell-segments.json').read_text());rs=[r for r in rs if r['band_part']==0];results=[]
+for ix,r in enumerate(rs):
+ seg=np.array(r['segment']);fi=r['band_face'];tri=c['points'][c['triangles'][fi]];n=np.cross(tri[1]-tri[0],tri[2]-tri[0]);n/=np.linalg.norm(n);tangent=seg[1]-seg[0];tangent/=np.linalg.norm(tangent);cross=np.cross(n,tangent);cross/=np.linalg.norm(cross);samples=[]
+ for fraction in [.25,.5,.75]:
+  p=seg[0]*(1-fraction)+seg[1]*fraction
+  for perturb in [0,-.00005,.00005]:
+   q=p+cross*perturb
+   # Only perturb within this triangle's actual domain.
+   uv=np.linalg.lstsq(np.stack([tri[1]-tri[0],tri[2]-tri[0]],1),q-tri[0],rcond=None)[0]
+   if min(uv[0],uv[1],1-uv.sum())< -1e-8:continue
+   tests=visible_at(q,'candidate');samples.append({'fraction':fraction,'tangent_offset_mm':perturb*1000,'point':q.tolist(),'views':tests})
+ live=[v for s in samples for v in s['views'] if v['locally_unoccluded']];inversions=[v for v in live if v.get('current_band') and v.get('current_shell') and v['current_band'][0]-v['current_shell'][0]>.01 and v.get('source_shell_ahead_mm',0)<-.01 and not v.get('source_occluded_by_frozen_anatomy',False)];compatible=[v for v in live if v.get('source_shell_ahead_mm',0)>.01 and not v.get('source_occluded_by_frozen_anatomy',False)]
+ cat='potentially_visible_source_order_inversion' if inversions else 'potentially_visible_reference_shell_dominant' if compatible else 'occluded_at_all_sampled_points_in_sampled_cameras' if not live and any(s['views'] for s in samples) else 'indeterminate_visible_boundary_or_source_order';results.append({'segment_index':ix,'band_face':fi,'shell_face':r['shell_face'],'v12_parent_face':r['v12_parent_face'],'uv':r['uv'],'length_mm':r['length_mm'],'category':cat,'unoccluded_observations':len(live),'inversion_observations':len(inversions),'reference_shell_dominant_observations':len(compatible),'representative_inversion':inversions[0] if inversions else None,'representative_reference_embedding':compatible[0] if compatible else None,'samples':samples})
+ print(ix,cat,flush=True) if ix%50==0 else None
+from collections import Counter
+summary={'scope':'All 358 current exterior contact segments, 25/50/75% points and +/-0.05mm in-face transverse perturbations when still inside face. Ten fixed cameras. Three native meshes only (candidate band, frozen shell, frozen anatomy); no halo/alpha/context occluder modeled. Local unoccluded means potential visibility, not proof of full-scene visibility or perceptual detectability. A closer native surface establishes occlusion of sampled points even when omitted context may add more occlusion. Diagnostic colors are not original materials.','category_counts':dict(Counter(r['category'] for r in results)),'category_length_mm_without_union':{k:sum(r['length_mm'] for r in results if r['category']==k) for k in set(r['category'] for r in results)},'categories_by_uv':{},'method_limit':'No category certifies artistic intent, global invisibility, the whole segment between samples, or permission to enlarge repair mask.'}
+for cat in summary['category_counts']:
+ rr=[r for r in results if r['category']==cat];summary['categories_by_uv'][cat]={'u_range':[min(r['uv'][0] for r in rr),max(r['uv'][0] for r in rr)],'v_range':[min(r['uv'][1] for r in rr),max(r['uv'][1] for r in rr)]}
+(O/'remaining-exterior-contact-visibility.json').write_text(json.dumps(results,indent=2));(O/'remaining-exterior-contact-visibility-summary.json').write_text(json.dumps(summary,indent=2));print(json.dumps(summary,indent=2))
+# One longest-segment midpoint per each of the 37 original curve components; not a component-wide visibility proof.
+base=json.loads((O/'contact-segments-with-uv.json').read_text());co=json.loads((O/'contact-map.json').read_text())['curve_components'];br=[]
+for comp in co:
+ i=max(comp['segment_indices'],key=lambda k:base[k]['length_mm']);r=base[i];p=np.array(r['segment']).mean(0);vv=visible_at(p,'band');br.append({'component_id':comp['component_id'],'component_segments':comp['count'],'component_length_mm_without_union':comp['length_mm_sum'],'band_parts':comp['band_parts'],'representative_segment_index':i,'band_part':r['band_part'],'point':p.tolist(),'views':vv,'locally_unoccluded_views':[v['view'] for v in vv if v['locally_unoccluded']]})
+(O/'baseline-37-components-visibility-samples.json').write_text(json.dumps(br,indent=2));print('BASELINE_COMPONENTS',len(br),'some unoccluded',sum(bool(r['locally_unoccluded_views']) for r in br))

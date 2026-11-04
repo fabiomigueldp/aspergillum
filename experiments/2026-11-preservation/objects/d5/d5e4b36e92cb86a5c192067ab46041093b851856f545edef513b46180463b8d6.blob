@@ -1,0 +1,63 @@
+# Compactação pré-lançamento do catálogo antigo
+
+Revisão isolada sobre a 0.12.3, anterior à integração de novas famílias. Não foi instalada, publicada nem aplicada a mundos. O número da versão da cópia foi preservado somente para a comparação byte a byte; antes de qualquer distribuição, a integração precisa receber uma nova versão e aviso de quebra do esquema persistido.
+
+## Registro e semântica
+
+- Permanecem 414 IDs, incluindo os 135 Atelier e `altare:mensa`. Nenhuma opção de material, toalha, cor ou aplique é removida.
+- Nove Atelier sem toalha e sem aplique usam `edges` × `facing`: 16 × 4 = 64 estados por receita. A frente lógica permanece mesmo quando duas vistas forem visualmente equivalentes.
+- Os demais 126 Atelier usam o codebook já existente de 28 poses locais × quatro frentes: 112 estados por receita. `shape` tem sete valores, `detail` quatro; as poses preservam contorno e papel central inteiro ou dividido.
+- O Clássico passa de 11.520 a 3.000 estados: 50 poses × quatro frentes × três pedras × cinco tecidos. Inclui as 42 poses produzidas pelo planejador retangular e oito poses da roseta legada. `shape` tem dez valores, `detail` cinco. A tabela independente de 54 poses de tecido clássico não muda. [Detalhes do Clássico](CLASSIC_COMPACTION.md).
+- Os defaults conservam a aparência anterior: módulo isolado, frente 0, sem papel central; no Clássico, pedra 0 e tecido 1. O codebook começa na pose de contorno 15.
+- Nenhuma fonte artística, textura, modelo, colisão ou regra de aparência mudou. O gerador resolve as consultas a estados removidos para a pose correspondente. A introdução de um codec não altera a interpretação dos materiais Atelier.
+
+### Orçamento medido
+
+| Parcela | Antes | Depois |
+| --- | ---: | ---: |
+| 135 Atelier | 34.560 | 14.688 |
+| Clássico | 11.520 | 3.000 |
+| Demais 278 IDs | 33.920 | 33.920 |
+| Altare | 80.000 | 51.608 |
+| Altare + Aspergillum local | 89.744 | 61.352 |
+
+Economia: 28.392 estados. Reserva conhecida: 4.184 em relação a 65.536, antes de novas famílias. Cada propriedade continua abaixo de 16 valores. Outros packs precisam ser somados. Os validadores voltam a exigir orçamento conhecido ≤65.536, sem a antiga exceção diagnóstica de 80.000/90.000. Isso não prova tempo de carregamento, memória, FPS, estabilidade nativa ou aprovação de Marketplace; tampouco transforma 65.537 em um limiar comprovado de falha de carregamento.
+
+## Quebra de compatibilidade e conversão explícita
+
+**Mesmo ID não significa mesmo esquema. Não é atualização segura de um mundo existente.** Remover `edges`/`frontal`/`role` e introduzir índices compactos pode fazer o Bedrock perder ou normalizar dados durante o carregamento, antes de o script lê-los. Backup é necessário, mas não converte os estados. Não abrir um save antigo com esta revisão contando com migração automática.
+
+`migrateLegacyAtelierSnapshot` e `migrateLegacyClassicSnapshot` convertem exclusivamente snapshots explicitamente exportados **antes** da troca de pack. São funções puras, sem escrita nem acesso ao Minecraft. Exigem todas e somente as chaves do esquema legado, números inteiros finitos e valores válidos; entradas mistas, incompletas ou de outro ID são recusadas.
+
+- Atelier: 16.416 dos 34.560 snapshots cartesianos antigos são aceitos. Em 1.728 deles, a receita nua continha um papel sem efeito visual; sua remoção é reportada como `unused-role-cleared`. Frente e contorno permanecem. Os 18.144 estados decorados sem pose equivalente são recusados, sem apagar motivos para tentar fazê-los caber.
+- Clássico: 3.000 dos 11.520 snapshots são aceitos; 8.520 combinações sem pose equivalente são recusadas. As oito poses de roseta permanecem. O conversor nunca chama o reparo de contorno com perda de frontal.
+- O codec normal não interpreta snapshots antigos como novos. IDs compactados recusam misturas de chaves; o codec `edges` recusa números fora de intervalo, strings, nulos e não finitos.
+- O reparo explícito após quebra/edição conserva a pose quando representável. Se o contorno deixa de comportar o papel, passa a papel 0; reaplicar acabamento a um retângulo válido recentraliza o programa iconográfico. Isso não é estratégia de migração de saves.
+
+Antes de uma migração real, seria necessário exportar e validar o snapshot de cada célula com o pack antigo ainda ativo, rejeitar conjuntos incompatíveis, testar importação controlada em uma cópia e manter backup externo para rollback. Esse fluxo operacional não foi implementado nem executado nesta revisão. Downgrade também exige snapshot/conversão compatível ou restauração do backup, nunca mera troca de pack.
+
+## Evidência reproduzível
+
+A partir de `addons/altare`:
+
+```sh
+npm run check
+node tools/audit-variations.mjs
+node tools/verify-catalog-compaction.mjs /caminho/da/baseline-0.12.3/addons/altare > out/catalog-compaction/semantic-report.json
+```
+
+O verificador exige uma baseline separada já compilada de 80.000 estados e a revisão isolada de 51.608. Compara todos os componentes efetivos dos 14.688 estados Atelier e 3.000 clássicos: geometria selecionada, visibilidade avaliada, materiais inclusive vínculos não visíveis, colisão e demais componentes. Também testa todas as conversões legadas aceitas contra o componente antigo, incluindo a normalização sem efeito visual dos nus.
+
+Resultado desta revisão: 17.688 comparações novas e 19.416 conversões aceitas idênticas semanticamente. Todos os 278 blocos não alterados, os 4.971 arquivos do Resource Pack e os 27 arquivos artísticos de autoria permanecem byte-idênticos. O relatório contém hashes agregados dos arquivos preservados. Os testes enumeram os retângulos 1–16 × 1–8 nas quatro frentes, round-trip, reparo dos 16 contornos, preservação da roseta, entradas inválidas e rejeição explícita de estados mistos. A ordem do codebook clássico está fixada por hash em teste.
+
+Esse verificador é deliberadamente estrito para esta revisão isolada. Uma integração que adicione família, geometria ou versão deve separar suas diferenças autorizadas; não tratar uma falha por essas mudanças como prova de regressão visual nem desativar a comparação sem revisar o delta.
+
+## Gates ainda nativos
+
+Em mundo novo descartável e com a versão final exata: abrir cada família no editor; aplicar/cancelar/reabrir; salvar e recarregar; conferir 1×1, 2×2, 7×2, 8×2 e 16×8 nas quatro frentes; inspecionar Guadalupe, roseta e metades centrais; quebrar/repor/reaplicar; conferir colisões, objetos apoiados e Content Log. Depois medir desempenho e multiplayer. Nenhum teste offline substitui esses gates.
+
+## Resultado do validador oficial nesta cópia
+
+Creator Tools 0.17.7 foi executado diretamente sobre a pasta dos packs, com `--offline`, sem instalar nem publicar um arquivo de release. **Terminou com código 4; esse gate não está aprovado.** As consultas que ainda fez a metadados públicos de versão e Script API receberam HTTP 502. O relatório esperou `format_version` 1.26.0 e apontou 416 erros relativos ao valor 1.26.30, que já existia sem alteração na baseline: 414 blocos, um item e a segunda checagem do mesmo item. Não houve outra categoria de erro.
+
+Os 2.084 avisos GEOMETRY 501 foram conferidos contra os mesmos modelos preservados e a política diagnóstica existente; nenhum aviso geométrico inesperado. Não se reduziu a versão-alvo, não se suprimiu erro e não se ampliou a exceção de complexidade. Esse resultado, registrado em `out/catalog-compaction/creator-tools-summary.json`, não substitui uma validação oficial final com metadados corretos nem o teste nativo. Os checks locais de Altare (129 testes), Aspergillum (107) e viewer (84) passaram integralmente.

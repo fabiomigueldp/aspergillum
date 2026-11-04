@@ -1,0 +1,65 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { initialState, encodeJournal, runModel, reload, enumerate, counterexamples, report, LIMIT } from './recovery-analysis.mjs';
+
+test('all modeled single-fault boundaries preserve raw evidence and never replay delivery on reload', () => {
+  const result = report();
+  assert.equal(result.coverage.rows, 54);
+  assert.equal(result.coverage.injectedFaults, 51);
+  assert.equal(result.successfulAssertions, true);
+});
+for (const raw of [null, '', 'not JSON', '{"future":999,"bad-entry":null}', '  {"emoji":"🕊","quotes":"\\\""}\n', '{"entries":{"a":{"futureSecretShape":[1,2]}}}']) {
+  test(`raw evidence survives unparsed: ${JSON.stringify(raw)}`, () => {
+    for (const row of enumerate(raw)) assert.equal(row.evidencePreserved, true);
+  });
+}
+test('UTF-8 encoding and JSON escape overhead refuse before any mutation', () => {
+  for (const raw of ['x'.repeat(LIMIT), '"'.repeat(16000), '🕊'.repeat(8000)]) {
+    const initial = initialState('dock', raw);
+    const result = runModel(initial);
+    assert.deepEqual(result.state, initial);
+    assert.deepEqual(result.trace, []);
+    assert.match(result.stopped, /budget/);
+  }
+  // Raw is below the budget, but JSON string escaping alone makes the journal too large.
+  assert.ok(Buffer.byteLength('"'.repeat(16000)) < LIMIT);
+});
+test('full envelope, including longer intermediate phase, is budgeted before prepare', () => {
+  let raw = '';
+  const base = Buffer.byteLength(encodeJournal(initialState('dock', raw)));
+  raw = 'a'.repeat(LIMIT - base);
+  assert.equal(Buffer.byteLength(encodeJournal(initialState('dock', raw))), LIMIT);
+  const initial = initialState('dock', raw);
+  const result = runModel(initial);
+  assert.deepEqual(result.state, initial);
+  assert.match(result.stopped, /phase/);
+});
+test('any preexisting journal including corrupt/future shape blocks all operations', () => {
+  for (const kind of ['dock', 'undock', 'break']) for (const journal of ['broken', '{"schemaVersion":99}', '{}']) {
+    const initial = { ...initialState(kind), journal };
+    const result = runModel(initial);
+    assert.deepEqual(result.state, initial);
+    assert.equal(result.trace.length, 0);
+    assert.equal(result.stopped, 'existing-journal-blocks-operation');
+  }
+});
+test('repeated reload does not retry and retains the exact journal', () => {
+  const result = runModel(initialState('break'), { index: 2, mode: 'throw-after' });
+  let state = result.state;
+  for (let i = 0; i < 20; i++) {
+    const next = reload(state);
+    assert.deepEqual(next.state, state);
+    assert.equal(next.automaticDeliveries, 0);
+    state = next.state;
+  }
+});
+test('counterexamples defeat stronger claims rather than asserting exactly-once', () => {
+  const c = counterexamples();
+  assert.equal(c.ambiguousDelivery.equalRecoveryJournal, true);
+  assert.deepEqual(c.ambiguousDelivery.retryOutcomes, [1, 2]);
+  assert.deepEqual(c.replayWithoutGeneration.validNewEvent, c.replayWithoutGeneration.replayOldEvent);
+  assert.equal(c.downgrade.deliveriesAfterOldHandler, 2);
+  assert.equal(c.reorderedCrash.persistedAfterCrash.journal, null);
+  assert.equal(c.reorderedCrash.persistedAfterCrash.delivered, 1);
+  assert.deepEqual(c.legacyDoubleRollbackFailure.final, { hand: null, registry: null, block: 'empty', delivered: 0 });
+});

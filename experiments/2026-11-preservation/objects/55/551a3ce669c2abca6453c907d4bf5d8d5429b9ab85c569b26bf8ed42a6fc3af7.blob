@@ -1,0 +1,1243 @@
+{
+  "candidate": "ear_rim_v11/structural_rebuild/convex-protected-1.5mm.npz",
+  "sha256": "47208180c70e9f24c9ae4675f1d48cf8d8dd82e62eebb6b277b8705c1861414d",
+  "new_connectivity": true,
+  "input_hashes_start": {
+    "lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz": "712a550fbbb56090ae700e30e4e21153d04c16139062ebcd2a72e818f3e34f7b",
+    "body_interface_v9/constrained_fit/retained-anatomy.npz": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+    "shell_band_v5/retained_candidate/evidence/band-paired.npz": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647"
+  },
+  "topology": {
+    "vertices": 6442,
+    "triangles": 12880,
+    "edges": 19320,
+    "euler": 2,
+    "components": [
+      {
+        "vertices": 6442,
+        "faces": 12880,
+        "signed_volume_m3": 0.013591653340365642
+      }
+    ],
+    "boundary_edges": 0,
+    "non_two_face_edges": 0,
+    "inconsistent_edge_winding": 0,
+    "bad_vertex_links": [],
+    "unused_vertices": [],
+    "duplicate_triangle_index_sets": 0,
+    "degenerate_faces_under_1e_16_m2": [
+      12298,
+      12385
+    ]
+  },
+  "self_intersection": {
+    "bvh_candidates": 0,
+    "explicit_adjacent_pairs_tested": 94573,
+    "union_pairs_tested": 94573,
+    "strict_crossings": 0,
+    "crossing_pairs": [],
+    "shared_vertices_histogram": {
+      "1": 5,
+      "2": 4
+    },
+    "spatial_witness_points": 9,
+    "scale_relative_parallel_tolerance": 1e-12,
+    "double_precision_candidate_pairs": [
+      [
+        649,
+        12750
+      ],
+      [
+        6647,
+        12551
+      ],
+      [
+        12247,
+        12721
+      ],
+      [
+        12268,
+        12814
+      ],
+      [
+        12583,
+        12589
+      ],
+      [
+        12663,
+        12664
+      ],
+      [
+        12720,
+        12725
+      ],
+      [
+        12722,
+        12723
+      ],
+      [
+        12722,
+        12724
+      ]
+    ],
+    "double_precision_strict_candidates": 9,
+    "predicate_refinement": "convex-protected-1.5mm-predicate-check.json",
+    "array_file_caution": "self_pairs/self_witness_points in review-arrays.npz are raw double-precision candidates, not confirmed crossings; final counts use80decimal refinement."
+  },
+  "quality": {
+    "whole": {
+      "faces": 12880,
+      "area_mm2_percentiles": [
+        7.057096715761063e-14,
+        0.1024746448386404,
+        2.1612999812897478,
+        58.79311665298812,
+        3181.7095370531642,
+        4793.519413725468,
+        46734.60689732935
+      ],
+      "minimum_angle_degrees_percentiles": [
+        1.8622742305103574e-11,
+        0.5705293358152981,
+        0.8218234204167814,
+        9.945558977048709,
+        46.93656670264172,
+        54.89772968742274,
+        59.14744745607922
+      ],
+      "max_edge_over_min_altitude_percentiles": [
+        1.1759726018377514,
+        7.03458870520684,
+        71.59423085365988,
+        100.96301898923198,
+        3076656411520.7407
+      ],
+      "min_angle_under_1_degree_faces": 911,
+      "min_angle_under_0_1_degree_faces": 7
+    },
+    "new_rim": {
+      "faces": 401,
+      "area_mm2_percentiles": [
+        7.057096715761063e-14,
+        0.0007497740540347546,
+        0.008843468446719663,
+        0.3192962338491664,
+        4.114315642946151,
+        7.13405331938617,
+        13.38106750515708
+      ],
+      "minimum_angle_degrees_percentiles": [
+        2.3533424234024354e-10,
+        0.2020609445884997,
+        0.8757501935941351,
+        14.941783327985227,
+        44.198583008861206,
+        55.280899025644764,
+        56.86474741587494
+      ],
+      "max_edge_over_min_altitude_percentiles": [
+        1.2071297288504392,
+        4.665151493235303,
+        75.40848633682268,
+        291.1124699301452,
+        243465351979.9319
+      ],
+      "min_angle_under_1_degree_faces": 24,
+      "min_angle_under_0_1_degree_faces": 2
+    },
+    "trimmed_source": {
+      "faces": 512,
+      "area_mm2_percentiles": [
+        1.8331298202016078e-11,
+        0.033241267010129555,
+        0.18037220662580664,
+        5.829959972699047,
+        74.2947027172857,
+        135.07129413353738,
+        238.1653670958585
+      ],
+      "minimum_angle_degrees_percentiles": [
+        1.8622742305103574e-11,
+        0.10120547819000988,
+        0.2701862939933999,
+        6.227494665650056,
+        43.60248116368123,
+        50.27580644724145,
+        55.90874810712625
+      ],
+      "max_edge_over_min_altitude_percentiles": [
+        1.2987418674347013,
+        10.523574539435868,
+        215.61428191687634,
+        566.7138144307423,
+        3076656411520.7407
+      ],
+      "min_angle_under_1_degree_faces": 79,
+      "min_angle_under_0_1_degree_faces": 5
+    },
+    "unchanged_source": {
+      "faces": 11967,
+      "area_mm2_percentiles": [
+        0.4260022597417041,
+        2.1366974787826947,
+        6.3778967197205905,
+        62.432122480827715,
+        3312.9115269813765,
+        4855.63393145724,
+        46734.60689732935
+      ],
+      "minimum_angle_degrees_percentiles": [
+        0.21749674062283586,
+        0.5845657671548949,
+        0.8621852580165684,
+        9.89907557915263,
+        47.250633911828906,
+        54.947617302392025,
+        59.14744745607922
+      ],
+      "max_edge_over_min_altitude_percentiles": [
+        1.1759726018377514,
+        7.027082776811684,
+        68.17526477273873,
+        98.14559677347532,
+        276.0147572605296
+      ],
+      "min_angle_under_1_degree_faces": 808,
+      "min_angle_under_0_1_degree_faces": 0
+    }
+  },
+  "preservation": {
+    "surviving_vertices": 6045,
+    "surviving_positions_bit_exact": true,
+    "new_vertices": 397,
+    "exact_faces": 11967,
+    "exact_oriented_face_lineage_failures": [],
+    "inherited_faces_reversed_against_parent": [],
+    "changed_old_faces": 517,
+    "changed_old_faces_not_intersecting_cutter_volumes": [],
+    "trimmed_vertex_to_parent_plane_max_mm": 0.00011176196257918253,
+    "trimmed_vertex_barycentric_min": -0.002057702823397157,
+    "mantle_faces_exact": true
+  },
+  "contacts": {
+    "anatomy": {
+      "strict_crossing_pairs": 153,
+      "unique_shell_faces": 125,
+      "unique_obstacle_faces": 19,
+      "by_shell_part": {
+        "1": 72,
+        "0": 36,
+        "3": 45
+      },
+      "by_face_role": {
+        "0": 39,
+        "1": 69,
+        "2": 45
+      },
+      "spatial_witness_points": 306,
+      "spatial_box": {
+        "min": [
+          -0.06469390532320372,
+          -0.25707554702373553,
+          3.3190539704797475
+        ],
+        "max": [
+          0.1837652282325084,
+          -0.028134026266623997,
+          3.550979022134938
+        ]
+      },
+      "rim_contact_pairs": [
+        [
+          12876,
+          659
+        ],
+        [
+          12250,
+          659
+        ],
+        [
+          12763,
+          659
+        ],
+        [
+          12815,
+          659
+        ],
+        [
+          12814,
+          659
+        ],
+        [
+          12877,
+          659
+        ],
+        [
+          12877,
+          655
+        ],
+        [
+          12267,
+          659
+        ],
+        [
+          12813,
+          659
+        ],
+        [
+          12266,
+          659
+        ],
+        [
+          12266,
+          1367
+        ],
+        [
+          12282,
+          1367
+        ],
+        [
+          12808,
+          665
+        ],
+        [
+          12809,
+          665
+        ],
+        [
+          12260,
+          665
+        ],
+        [
+          12263,
+          665
+        ],
+        [
+          12812,
+          665
+        ],
+        [
+          12811,
+          665
+        ],
+        [
+          12265,
+          665
+        ],
+        [
+          12810,
+          665
+        ],
+        [
+          12810,
+          1333
+        ],
+        [
+          12264,
+          665
+        ],
+        [
+          12280,
+          1333
+        ],
+        [
+          12280,
+          1332
+        ],
+        [
+          12834,
+          1332
+        ],
+        [
+          12834,
+          643
+        ],
+        [
+          12769,
+          1238
+        ],
+        [
+          12778,
+          1238
+        ],
+        [
+          12300,
+          688
+        ],
+        [
+          12300,
+          1352
+        ],
+        [
+          12862,
+          1352
+        ],
+        [
+          12287,
+          1352
+        ],
+        [
+          12863,
+          1352
+        ],
+        [
+          12861,
+          1352
+        ],
+        [
+          12861,
+          1351
+        ],
+        [
+          12845,
+          1351
+        ],
+        [
+          12846,
+          1351
+        ],
+        [
+          12843,
+          1351
+        ],
+        [
+          12844,
+          1351
+        ],
+        [
+          12842,
+          1351
+        ],
+        [
+          12841,
+          1351
+        ],
+        [
+          12847,
+          1351
+        ],
+        [
+          12840,
+          1351
+        ],
+        [
+          12839,
+          1351
+        ],
+        [
+          12839,
+          665
+        ]
+      ],
+      "incident_ear_pairs": 118,
+      "all_vertices_ear_pairs": 0,
+      "witness_nearest_baseline_witness_mm_percentiles": [
+        0.0,
+        0.07741907599419712,
+        2.0976039003965563,
+        3.537685589088624
+      ],
+      "non_ear_pairs": [
+        [
+          6255,
+          1098
+        ],
+        [
+          6254,
+          443
+        ],
+        [
+          6254,
+          1098
+        ],
+        [
+          6253,
+          443
+        ],
+        [
+          6271,
+          1083
+        ],
+        [
+          6271,
+          892
+        ],
+        [
+          7426,
+          123
+        ],
+        [
+          7426,
+          124
+        ],
+        [
+          7429,
+          123
+        ],
+        [
+          7429,
+          124
+        ],
+        [
+          7428,
+          123
+        ],
+        [
+          7428,
+          124
+        ],
+        [
+          7427,
+          123
+        ],
+        [
+          7427,
+          124
+        ],
+        [
+          7425,
+          123
+        ],
+        [
+          7425,
+          124
+        ],
+        [
+          7430,
+          123
+        ],
+        [
+          7430,
+          124
+        ],
+        [
+          5805,
+          1098
+        ],
+        [
+          5806,
+          1098
+        ],
+        [
+          5804,
+          1098
+        ],
+        [
+          5803,
+          1098
+        ],
+        [
+          5802,
+          1098
+        ],
+        [
+          5801,
+          443
+        ],
+        [
+          5801,
+          1098
+        ],
+        [
+          5846,
+          1083
+        ],
+        [
+          5846,
+          892
+        ],
+        [
+          6501,
+          142
+        ],
+        [
+          6500,
+          142
+        ],
+        [
+          6502,
+          142
+        ],
+        [
+          6502,
+          836
+        ],
+        [
+          6288,
+          142
+        ],
+        [
+          6288,
+          836
+        ],
+        [
+          6289,
+          836
+        ],
+        [
+          6290,
+          836
+        ]
+      ]
+    },
+    "band": {
+      "strict_crossing_pairs": 1279,
+      "unique_shell_faces": 496,
+      "unique_obstacle_faces": 259,
+      "by_shell_part": {
+        "0": 1133,
+        "1": 117,
+        "3": 29
+      },
+      "by_face_role": {
+        "1": 131,
+        "0": 1119,
+        "2": 29
+      },
+      "spatial_witness_points": 2558,
+      "spatial_box": {
+        "min": [
+          -0.09605628751200466,
+          -0.41847017106708156,
+          3.5067819100150914
+        ],
+        "max": [
+          0.17571827392918238,
+          -0.2156302415470685,
+          3.6147945393169425
+        ]
+      },
+      "rim_contact_pairs": [
+        [
+          12677,
+          14
+        ],
+        [
+          12238,
+          14
+        ],
+        [
+          12583,
+          14
+        ],
+        [
+          12583,
+          15
+        ],
+        [
+          12679,
+          859
+        ],
+        [
+          12679,
+          3
+        ],
+        [
+          12680,
+          858
+        ],
+        [
+          12680,
+          859
+        ],
+        [
+          12680,
+          857
+        ],
+        [
+          12680,
+          2
+        ],
+        [
+          12680,
+          3
+        ],
+        [
+          12576,
+          33
+        ],
+        [
+          12576,
+          889
+        ],
+        [
+          12665,
+          33
+        ],
+        [
+          12665,
+          889
+        ],
+        [
+          12579,
+          33
+        ],
+        [
+          12579,
+          889
+        ],
+        [
+          12577,
+          33
+        ],
+        [
+          12577,
+          889
+        ],
+        [
+          12582,
+          33
+        ],
+        [
+          12582,
+          889
+        ],
+        [
+          12580,
+          33
+        ],
+        [
+          12580,
+          889
+        ],
+        [
+          12231,
+          33
+        ],
+        [
+          12231,
+          889
+        ],
+        [
+          12669,
+          889
+        ],
+        [
+          12217,
+          33
+        ],
+        [
+          12217,
+          889
+        ],
+        [
+          12671,
+          33
+        ]
+      ]
+    }
+  },
+  "limitations": [
+    "No clinical/anatomical interpretation of the coordinate ear mask.",
+    "Strict crossing tests do not certify tangencies or general coplanar overlaps.",
+    "Changed tessellation invalidates raw pair identity comparisons; contact counts and spatial witnesses are reported, not new pair claims.",
+    "Near-rim ray chord measurements are actual sampled mesh intersections, not a global positive-thickness certificate.",
+    "No alpha, normalmap, highpoly head/halo, Bedrock export or Minecraft test."
+  ],
+  "near_rim_thickness": {
+    "method": "From every inherited face/rim shared edge, sample at 2%,10%,50%,100% toward inherited face centroid; cast into material along that face negative normal to first shell hit. Actual rebuilt mesh, never old paired distances.",
+    "boundary_edges": 389,
+    "rays_cast": 1556,
+    "hits": 1549,
+    "valid_exit_hits": 1543,
+    "ray_start_inset_mm": 9.999999999999999e-05,
+    "valid_chord_mm_percentiles": [
+      0.00010284264078942441,
+      0.003695062653403147,
+      0.04543275969151874,
+      0.5975603700451553,
+      2.8737685635522006,
+      11.493734469807068,
+      14.599982066249847
+    ],
+    "shortest_20_samples": [
+      {
+        "face": 12335,
+        "rim_face": 12282,
+        "boundary_edge": [
+          6102,
+          6103
+        ],
+        "alpha_to_face_centroid": 0.5,
+        "point": [
+          0.16855670223680272,
+          -0.14996605244088146,
+          3.521959807307475
+        ],
+        "hit": [
+          0.1685567945241928,
+          -0.1499660164117813,
+          3.5219597816467285
+        ],
+        "hit_face": 12282,
+        "thickness_chord_mm": 0.00010284264078942441,
+        "exit_facing": 0.4245511204328194,
+        "hit_part": 3,
+        "hit_is_start_face": false
+      },
+      {
+        "face": 12335,
+        "rim_face": 12282,
+        "boundary_edge": [
+          6102,
+          6103
+        ],
+        "alpha_to_face_centroid": 1.0,
+        "point": [
+          0.16860017792334028,
+          -0.15006003726990466,
+          3.522010572860586
+        ],
+        "hit": [
+          0.16860030591487885,
+          -0.1500599980354309,
+          3.522010564804077
+        ],
+        "hit_face": 12282,
+        "thickness_chord_mm": 0.000137389305873603,
+        "exit_facing": 0.4245511204328194,
+        "hit_part": 3,
+        "hit_is_start_face": false
+      },
+      {
+        "face": 12335,
+        "rim_face": 12283,
+        "boundary_edge": [
+          6096,
+          6103
+        ],
+        "alpha_to_face_centroid": 1.0,
+        "point": [
+          0.16860017792334028,
+          -0.15006003726990466,
+          3.522010572860586
+        ],
+        "hit": [
+          0.16860030591487885,
+          -0.1500599980354309,
+          3.522010564804077
+        ],
+        "hit_face": 12282,
+        "thickness_chord_mm": 0.000137389305873603,
+        "exit_facing": 0.4245511204328194,
+        "hit_part": 3,
+        "hit_is_start_face": false
+      },
+      {
+        "face": 12335,
+        "rim_face": 12282,
+        "boundary_edge": [
+          6102,
+          6103
+        ],
+        "alpha_to_face_centroid": 0.1,
+        "point": [
+          0.16852192168757268,
+          -0.14989086457766287,
+          3.521919194864986
+        ],
+        "hit": [
+          0.1685221642255783,
+          -0.14989079535007477,
+          3.5219192504882812
+        ],
+        "hit_face": 12282,
+        "thickness_chord_mm": 0.00025382096307803294,
+        "exit_facing": 0.4245511204328194,
+        "hit_part": 3,
+        "hit_is_start_face": false
+      },
+      {
+        "face": 12335,
+        "rim_face": 12282,
+        "boundary_edge": [
+          6102,
+          6103
+        ],
+        "alpha_to_face_centroid": 0.02,
+        "point": [
+          0.16851496557772666,
+          -0.14987582700501914,
+          3.521911072376488
+        ],
+        "hit": [
+          0.16851523518562317,
+          -0.14987574517726898,
+          3.521911144256592
+        ],
+        "hit_face": 12282,
+        "thickness_chord_mm": 0.0002862918992401319,
+        "exit_facing": 0.4245511204328194,
+        "hit_part": 3,
+        "hit_is_start_face": false
+      },
+      {
+        "face": 312,
+        "rim_face": 12762,
+        "boundary_edge": [
+          6067,
+          6071
+        ],
+        "alpha_to_face_centroid": 0.1,
+        "point": [
+          0.16289057575784505,
+          -0.179676356153733,
+          3.473350149572661
+        ],
+        "hit": [
+          0.16289092600345612,
+          -0.17967630922794342,
+          3.4733500480651855
+        ],
+        "hit_face": 12762,
+        "thickness_chord_mm": 0.000357471413078747,
+        "exit_facing": 0.9609129443673255,
+        "hit_part": 3,
+        "hit_is_start_face": false
+      },
+      {
+        "face": 649,
+        "rim_face": 12759,
+        "boundary_edge": [
+          6071,
+          6113
+        ],
+        "alpha_to_face_centroid": 0.1,
+        "point": [
+          0.16336829325072152,
+          -0.17514864488266935,
+          3.4773085792504164
+        ],
+        "hit": [
+          0.16336864233016968,
+          -0.175148606300354,
+          3.477308511734009
+        ],
+        "hit_face": 12759,
+        "thickness_chord_mm": 0.00035901718458953837,
+        "exit_facing": 0.9571959540442253,
+        "hit_part": 3,
+        "hit_is_start_face": false
+      },
+      {
+        "face": 648,
+        "rim_face": 12750,
+        "boundary_edge": [
+          6070,
+          6113
+        ],
+        "alpha_to_face_centroid": 0.1,
+        "point": [
+          0.16336945344956966,
+          -0.1751366422392055,
+          3.4773169349041355
+        ],
+        "hit": [
+          0.1633698046207428,
+          -0.17513659596443176,
+          3.4773168563842773
+        ],
+        "hit_face": 12750,
+        "thickness_chord_mm": 0.00036665946961657027,
+        "exit_facing": 0.9563170125346657,
+        "hit_part": 3,
+        "hit_is_start_face": false
+      },
+      {
+        "face": 309,
+        "rim_face": 12761,
+        "boundary_edge": [
+          6069,
+          6070
+        ],
+        "alpha_to_face_centroid": 0.1,
+        "point": [
+          0.1636223262040717,
+          -0.17317942825843305,
+          3.479961500129687
+        ],
+        "hit": [
+          0.1636226773262024,
+          -0.17317934334278107,
+          3.479961395263672
+        ],
+        "hit_face": 12761,
+        "thickness_chord_mm": 0.00037093409471490303,
+        "exit_facing": 0.9340915261210628,
+        "hit_part": 3,
+        "hit_is_start_face": false
+      },
+      {
+        "face": 312,
+        "rim_face": 12762,
+        "boundary_edge": [
+          6067,
+          6071
+        ],
+        "alpha_to_face_centroid": 0.5,
+        "point": [
+          0.16295508957390797,
+          -0.17904866755440874,
+          3.473892677601701
+        ],
+        "hit": [
+          0.1629568338394165,
+          -0.17904844880104065,
+          3.4738922119140625
+        ],
+        "hit_face": 12762,
+        "thickness_chord_mm": 0.001824300204841711,
+        "exit_facing": 0.9609129443673255,
+        "hit_part": 3,
+        "hit_is_start_face": false
+      },
+      {
+        "face": 648,
+        "rim_face": 12750,
+        "boundary_edge": [
+          6070,
+          6113
+        ],
+        "alpha_to_face_centroid": 0.5,
+        "point": [
+          0.16336791517022228,
+          -0.17513512107636775,
+          3.477312320128835
+        ],
+        "hit": [
+          0.16336967051029205,
+          -0.17513489723205566,
+          3.477311849594116
+        ],
+        "hit_face": 12750,
+        "thickness_chord_mm": 0.0018301127854807417,
+        "exit_facing": 0.9563170125346657,
+        "hit_part": 3,
+        "hit_is_start_face": false
+      },
+      {
+        "face": 649,
+        "rim_face": 12759,
+        "boundary_edge": [
+          6071,
+          6113
+        ],
+        "alpha_to_face_centroid": 0.5,
+        "point": [
+          0.16336691499880146,
+          -0.17514546818280208,
+          3.4773051169790765
+        ],
+        "hit": [
+          0.16336865723133087,
+          -0.17514529824256897,
+          3.477304697036743
+        ],
+        "hit_face": 12759,
+        "thickness_chord_mm": 0.0018360296169499632,
+        "exit_facing": 0.9571959540442253,
+        "hit_part": 3,
+        "hit_is_start_face": false
+      },
+      {
+        "face": 309,
+        "rim_face": 12761,
+        "boundary_edge": [
+          6069,
+          6070
+        ],
+        "alpha_to_face_centroid": 0.5,
+        "point": [
+          0.16358590892410335,
+          -0.17344786764466735,
+          3.4795921177370683
+        ],
+        "hit": [
+          0.16358767449855804,
+          -0.17344744503498077,
+          3.4795916080474854
+        ],
+        "hit_face": 12761,
+        "thickness_chord_mm": 0.0018738900623953667,
+        "exit_facing": 0.9340915261210628,
+        "hit_part": 3,
+        "hit_is_start_face": false
+      },
+      {
+        "face": 312,
+        "rim_face": 12762,
+        "boundary_edge": [
+          6067,
+          6071
+        ],
+        "alpha_to_face_centroid": 1.0,
+        "point": [
+          0.1630357318439866,
+          -0.17826405680525337,
+          3.4745708376380016
+        ],
+        "hit": [
+          0.1630392074584961,
+          -0.1782636195421219,
+          3.474569797515869
+        ],
+        "hit_face": 12762,
+        "thickness_chord_mm": 0.0036342557112016946,
+        "exit_facing": 0.9609129443673255,
+        "hit_part": 3,
+        "hit_is_start_face": false
+      },
+      {
+        "face": 649,
+        "rim_face": 12759,
+        "boundary_edge": [
+          6071,
+          6113
+        ],
+        "alpha_to_face_centroid": 1.0,
+        "point": [
+          0.16336519218390141,
+          -0.17514149730796805,
+          3.477300789139902
+        ],
+        "hit": [
+          0.16336865723133087,
+          -0.17514115571975708,
+          3.477299690246582
+        ],
+        "hit_face": 12759,
+        "thickness_chord_mm": 0.0036449479582894126,
+        "exit_facing": 0.9571959540442253,
+        "hit_part": 3,
+        "hit_is_start_face": false
+      },
+      {
+        "face": 648,
+        "rim_face": 12750,
+        "boundary_edge": [
+          6070,
+          6113
+        ],
+        "alpha_to_face_centroid": 1.0,
+        "point": [
+          0.16336599232103807,
+          -0.17513321962282058,
+          3.4773065516597086
+        ],
+        "hit": [
+          0.16336949169635773,
+          -0.17513278126716614,
+          3.4773056507110596
+        ],
+        "hit_face": 12750,
+        "thickness_chord_mm": 0.003659735660019214,
+        "exit_facing": 0.9563170125346657,
+        "hit_part": 3,
+        "hit_is_start_face": false
+      },
+      {
+        "face": 309,
+        "rim_face": 12761,
+        "boundary_edge": [
+          6069,
+          6070
+        ],
+        "alpha_to_face_centroid": 1.0,
+        "point": [
+          0.16354038732414292,
+          -0.17378341687746027,
+          3.4791303897462953
+        ],
+        "hit": [
+          0.16354389488697052,
+          -0.1737825572490692,
+          3.4791293144226074
+        ],
+        "hit_face": 12761,
+        "thickness_chord_mm": 0.003743847549028578,
+        "exit_facing": 0.9340915261210628,
+        "hit_part": 3,
+        "hit_is_start_face": false
+      },
+      {
+        "face": 6188,
+        "rim_face": 12228,
+        "boundary_edge": [
+          6300,
+          6345
+        ],
+        "alpha_to_face_centroid": 0.02,
+        "point": [
+          -0.08535722989682483,
+          -0.16895954983339034,
+          3.4730520615417704
+        ],
+        "hit": [
+          -0.08535627275705338,
+          -0.16896460950374603,
+          3.4730494022369385
+        ],
+        "hit_face": 12228,
+        "thickness_chord_mm": 0.005812598522222834,
+        "exit_facing": 0.7168438620070336,
+        "hit_part": 3,
+        "hit_is_start_face": false
+      },
+      {
+        "face": 6423,
+        "rim_face": 12727,
+        "boundary_edge": [
+          6400,
+          6401
+        ],
+        "alpha_to_face_centroid": 0.02,
+        "point": [
+          0.16054913394217268,
+          -0.18427940356970085,
+          3.4320791853320785
+        ],
+        "hit": [
+          0.1605553776025772,
+          -0.1842757612466812,
+          3.4320809841156006
+        ],
+        "hit_face": 12727,
+        "thickness_chord_mm": 0.007446889560722048,
+        "exit_facing": 0.7937005440545054,
+        "hit_part": 3,
+        "hit_is_start_face": false
+      },
+      {
+        "face": 6212,
+        "rim_face": 12248,
+        "boundary_edge": [
+          6374,
+          6375
+        ],
+        "alpha_to_face_centroid": 0.02,
+        "point": [
+          0.16064417869036496,
+          -0.1843860496511233,
+          3.4341500723315157
+        ],
+        "hit": [
+          0.16065114736557007,
+          -0.18438653647899628,
+          3.434147357940674
+        ],
+        "hit_face": 12248,
+        "thickness_chord_mm": 0.007467262696789112,
+        "exit_facing": 0.9519707413662077,
+        "hit_part": 3,
+        "hit_is_start_face": false
+      }
+    ],
+    "caution": "Normals/first-hit float32 BVH and discrete samples only; adjacent rim can bound a local chord. This is not global minimum thickness, and near a sharp corner chord can tend to zero."
+  },
+  "input_hashes_finish": {
+    "lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz": "712a550fbbb56090ae700e30e4e21153d04c16139062ebcd2a72e818f3e34f7b",
+    "body_interface_v9/constrained_fit/retained-anatomy.npz": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+    "shell_band_v5/retained_candidate/evidence/band-paired.npz": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647"
+  },
+  "frozen_inputs_intact": true
+}

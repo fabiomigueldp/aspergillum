@@ -1,0 +1,9 @@
+import bpy,json,hashlib
+from pathlib import Path
+ROOT=Path('/workspace/scratch/212c580ada5b');OUT=ROOT/'paz-minecraft-render-20261103';SRC=ROOT/'paz-addon-audit-20261103/source'
+s=bpy.context.scene;s.cycles.use_denoising=False;s.cycles.samples=128
+bpy.ops.wm.save_as_mainfile(filepath=str(OUT/'Nossa-Senhora-da-Paz-0.1.3-preview.blend'))
+bpy.ops.render.render(write_still=True)
+obs=[o for o in s.objects if o.name.startswith('ADDON_0.1.3')];vs=[o.matrix_world@v.co for o in obs for v in o.data.vertices]
+meta={'version':'0.1.3 experimental','engine':'Blender '+bpy.app.version_string+' Cycles','cube_count':len(obs),'texture_dimensions':[64,64],'geometry_sha256':hashlib.sha256((SRC/'Paz_RP/models/blocks/imagem.geo.json').read_bytes()).hexdigest(),'texture_sha256':hashlib.sha256((SRC/'Paz_RP/textures/blocks/imagem.png').read_bytes()).hexdigest(),'exact_assets_match_original_mcaddon':True,'block_scale':16,'size_blocks_blender_xyz':[max(v[i] for v in vs)-min(v[i] for v in vs) for i in range(3)],'render_is_game_screenshot':False,'environment':'Original illustrative block-style scenery, not Minecraft assets','limit':'Does not establish in-game compatibility, collisions, game lighting or gameplay correctness.'}
+(OUT/'render-metadata.json').write_text(json.dumps(meta,indent=2));print('RENDER_COMPLETE',meta)

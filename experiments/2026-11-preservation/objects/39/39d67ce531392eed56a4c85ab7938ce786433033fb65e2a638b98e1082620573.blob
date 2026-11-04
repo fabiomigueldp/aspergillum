@@ -1,0 +1,82 @@
+# Parecer geométrico independente V11
+
+**Recomendo retenção técnica local de `structural_rebuild/polygonal-pinna-0.5mm-clean.npz`, sujeita à revisão visual final separada. Não aprovo a interface inteira como limpa, sem interseções ou pronta para exportação.** A candidata demonstra uma reconstrução fechada da borda com nova conectividade, preserva fontes fora do recorte e melhora substancialmente o condicionamento numérico da alternativa arredondada. A anatomia V9 e faixa V5 continuam congeladas. Nenhum arquivo fonte foi modificado por esta revisão; não houve exportação, publicação ou teste Minecraft.
+
+SHA-256 da candidata: `c79f296415d566db5f9c109389375e0d3ae112fbccbbc89c8628200939fbf81f`.
+
+## 1. Nova conectividade e domínio explícito
+
+A casca final tem **6.334 vértices, 12.664 triângulos e 18.996 arestas**, uma componente conexa, Euler 2 e volume orientado positivo. Há zero bordas abertas, arestas com incidência diferente de dois, enlaces de vértice defeituosos, vértices sem uso, duplicatas por índices ou inconsistências de orientação das arestas.
+
+A reconstrução mantém exatamente 6.084 vértices V7 sobreviventes e 12.060 faces orientadas originais. Há 250 vértices realmente novos, 358 triângulos recortados com ancestral fonte e **246 faces novas de fechamento**. Dos 424 triângulos antigos afetados, todos intersectam geometricamente o envelope declarado; os 212 ancestrais parcialmente retidos geram os 358 filhos. As posições e faces do manto são exatas. Não é a família V10 de deslocamento de vértices internos da ponte.
+
+O envelope direito exclui quatro pontos altos da máscara protetora V9 que haviam estendido o hull até a têmpora. Essa máscara é uma seleção geométrica de proteção, não uma segmentação anatômica precisa. Excluir pontos do *cutter* não alterou qualquer ponto da anatomia. A escolha do limite deve ser julgada nas imagens, não pela redução de contatos isolada.
+
+No teste independente de domínio:
+
+- Cada triângulo fonte afetado é recortado analiticamente pelos dois volumes convexos; a área remanescente esperada confere com seus filhos. Erro máximo por ancestral: **7,62×10⁻¹⁶ m²**; soma dos erros: 4,54×10⁻¹⁵ m².
+- Nenhuma sobreposição coplanar acima de 10⁻¹⁷ m² foi encontrada entre filhos do mesmo ancestral ou pares espacialmente próximos do novo rim.
+- Os vértices do rim satisfazem os semiespaços do envelope até 4,45×10⁻¹³ mm e seus triângulos são orientados contra as faces do cutter, como exige uma diferença sólida.
+- A ancestralidade de um triângulo específico do cutter apresenta mínimo baricêntrico −3,83×10⁻⁶ junto a diagonais coplanares. Isso não foi ocultado nem interpretado como geometria fora do volume: o teste dos semiespaços da superfície convexa passa. Não se usa esse atributo sozinho como prova exata de subtriângulo.
+- A variante poligonal não precisou da limpeza adicional de triangulação: sua lista de grupos retriangulados é vazia. A variante arredondada anterior precisou de sete grupos, cujo domínio foi comparado independentemente com clipping em 65 dígitos e passou nos dois sentidos, sem preenchimento ou remoção indevida.
+
+Evidências: `polygonal-pinna-0.5mm-clean-review.json`, `-patch-domain-check.json` e `extruded-pinna-0.5mm-clean-planar-domain-check.json`.
+
+## 2. Cruzamentos próprios, adjacência e qualidade
+
+**Zero cruzamentos próprios estritos confirmados.** A triagem BVH não apontou pares não adjacentes; além dela foram testados explicitamente **92.731 pares de faces adjacentes**. Três flags de dupla precisão desapareceram ao recomputar os predicados com 80 dígitos sobre as coordenadas float64 armazenadas. São resíduos numéricos, não três cruzamentos reais. O JSON de revisão tem o resultado conciliado e preserva separadamente a lista bruta. Os arrays `self_pairs` são a triagem bruta, não uma lista final de cruzamentos confirmados.
+
+Não há faces de área abaixo de 10⁻¹⁶ m². Área mínima: **5,6547×10⁻¹⁰ m²**. O novo rim tem ângulo mínimo 1,525° e nenhuma face abaixo de 1°. Os triângulos fonte recortados têm ângulo mínimo 0,0822° e cinco faces abaixo de 0,1°; portanto ainda há triângulos estreitos, mesmo sem degeneração.
+
+A versão arredondada anterior tinha 54 triângulos fonte recortados abaixo de 0,1° e duas faces novas que giravam mais de 1° após float32. Ela continua preservada como alternativa de pesquisa, mas a versão poligonal é tecnicamente preferível. As versões `convex-protected-1.5mm` e `-precise` não devem ser retidas: além da abertura temporal visual, tinham respectivamente duas e uma faces quase degeneradas.
+
+Evidências: `polygonal-pinna-0.5mm-clean-review.json`, `-predicate-check.json`, `-review-arrays.npz` e os controles correspondentes dos protótipos anteriores.
+
+## 3. Espessura medida no novo fechamento
+
+Não reutilizei distâncias entre pares antigos como prova da nova borda. Identifiquei as duas paredes por proveniência V5/V7 e extraí suas **curvas reais de encontro com o novo rim**. Os dois componentes de rim se ligam às duas paredes identificáveis, em vez de formar somente um bolso tangente numa delas.
+
+- Menor distância entre segmentos dos lábios opostos: **0,237470 mm à esquerda e 0,339722 mm à direita**.
+- Menor caminho pelas arestas da superfície do rim entre lábios: 0,339795 mm à esquerda e 0,365455 mm à direita. Esse caminho discreto é um limite superior da geodésica de superfície, não uma espessura global.
+- Em 1.000 raios calculados diretamente contra todos os triângulos em dupla precisão, amostras de centróide dos 250 encontros dão corda mínima **0,244231 mm** e mediana **0,590939 mm**. Nenhum desses raios de centróide sai pelo próprio rim.
+- A 2% do caminho da aresta até o centróide, aparece corda de 0,008275 mm. Ela termina na quina do rim e cresce para 0,041374 mm a 10% e 0,206869 mm a 50%. Essa variação é a geometria de uma quina, não prova isolada de perda global da espessura.
+
+A amostragem inicial com BVH float32 produziu mínimos próximos ao próprio deslocamento inicial do raio. Ela está preservada nos relatórios preliminares, mas **não sustenta o parecer de espessura**. Os resultados decisivos acima vêm do cálculo direto em dupla precisão e das curvas de encontro das duas paredes.
+
+Não há certificado de espessura mínima global ou folga positiva. Há evidência geométrica específica de fechamento das duas paredes com largura finita nos locais medidos, sem confundir raio perto de quina com parede afinada.
+
+Evidências: `polygonal-pinna-0.5mm-clean-rim-lips.json`, `-exact-chords.json` e `-exact-chord-samples.json`.
+
+## 4. Transporte float32: melhora real, sem certificado de jogo
+
+O controle independente arredonda todos os pontos float64 para float32 e volta a float64, então recomputa áreas e orientação. Não colapsou vértices, não criou degenerados e não inverteu faces.
+
+- Altitude mínima de triângulo: **0,005024 mm**, contra 0,000171 mm na alternativa arredondada anterior e 0,104153 mm na V7.
+- Maior rotação de normal: **0,3284°**, contra 4,0679° na alternativa arredondada e 0,0151° na V7.
+- Razão de áreas float32/float64: **0,995607–1,011406**, contra 0,934691–1,131601 na alternativa arredondada.
+
+A versão poligonal é substancialmente menos frágil, mas não recupera todo o condicionamento da malha V7 sem recorte. Isso é diagnóstico de quantização, não teste de conversão Bedrock, culling, mipmaps, alfa, PBR, normalmap, desempenho ou engine.
+
+Evidência: `polygonal-pinna-0.5mm-clean-float32-check.json`.
+
+## 5. Contatos residuais e efeito da tesselação
+
+A nova superfície não é livre de interseções externas:
+
+- Casca × anatomia: **98 pares** em 51 faces da casca e 27 faces anatômicas; 55 pares na calota, 35 na ponte e 8 no rim novo. Destes, 63 incidem na máscara geométrica de orelha V9. Os 35 demais são a relação residual já presente fora dessa máscara, não uma classificação médica.
+- Casca × faixa: **1.339 pares**, incluindo 40 no rim. Faixa mais exposta nas cavidades não é automaticamente novo defeito da faixa, mas continua uma pendência visual separada.
+- Faixa × anatomia continua a relação congelada de 797 pares; não foi misturada com os números casca × faixa.
+
+**Não uso a queda 122→98 entre as candidatas como ganho adicional de limpeza:** a soma das extensões das linhas de interseção casca/anatomia é praticamente idêntica, **288,355 mm na arredondada e 288,366 mm na poligonal**. A tesselação mudou. O ganho da poligonal é principalmente qualidade numérica e menor subdivisão desnecessária.
+
+Contra a V7+V9 original, a extensão de linhas medida cai de **1.199,136 para 288,366 mm**. Na candidata, 263,964 mm ficam do lado direito e 24,402 mm do esquerdo; 14,458 mm pertencem ao novo rim. São somas dos comprimentos dos segmentos triângulo–triângulo, SEM união ou deduplicação espacial global. Podem somar traços espacialmente duplicados. Não medem profundidade de penetração, área visível ou ausência de contato.
+
+Evidências: `polygonal-pinna-0.5mm-clean-contact-trace-lengths.json`, `-candidate-contact-segments.json`, `-baseline-contact-segments.json`, `-review-arrays.npz` e `contact-spatial-witnesses.json`.
+
+## 6. Preservação, limites e decisão
+
+A candidata respeita os inputs congelados conferidos por SHA-256 antes/depois: casca V7 original, anatomia V9 completa e faixa V5. A revisão não alterou outras versões ou arquivos fonte. A reconstrução muda somente a cópia e declara seus vértices/faces removidos, ancestrais e faces novas.
+
+O teste de contorno da união final e a revisão visual pertencem aos trabalhos separados do responsável/revisor visual. A máscara V10 de vértices perto de contorno foi usada como alerta inicial, não como veto: retirar um vértice da casca nessa máscara pode não mudar a silhueta da união quando a anatomia a cobre.
+
+**Decisão geométrica: reter a variante poligonal como progresso técnico local, caso a revisão visual final confirme a limpeza das lâminas e a cobertura temporal.** Não a promover a solução global: ainda há contatos, faixa descoberta, triângulos estreitos e limites de amostragem. Zero cruzamento estrito não prova tangências/coplanaridade geral, espessura mínima global ou invisibilidade. Os testes e renders são externos; rosto e halo não foram substituídos por highpoly, e nenhum desses arquivos é uma versão publicada do addon.

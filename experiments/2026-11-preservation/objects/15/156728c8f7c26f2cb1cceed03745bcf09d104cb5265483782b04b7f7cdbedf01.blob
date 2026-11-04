@@ -1,0 +1,152 @@
+import type { Block, BlockComponentBlockBreakEvent, BlockComponentPlayerInteractEvent, BlockPermutation, Dimension, ItemStack as MinecraftItemStack, Player, RawMessage, Vector3 } from "@minecraft/server";
+import { vi } from "vitest";
+
+type Property = string | number | boolean | Vector3;
+type State = string | number | boolean;
+let sequence = 0;
+let nextRun = 1;
+const runs = new Map<number, { at: number; callback: () => void }>();
+
+/** Deterministic Bedrock scheduler: callbacks are never run inside the input event. */
+export const system = {
+  currentTick: 0,
+  run(callback: () => void): number { return this.runTimeout(callback, 1); },
+  runTimeout(callback: () => void, delay = 1): number {
+    const id = nextRun++;
+    runs.set(id, { at: this.currentTick + Math.max(1, delay), callback });
+    return id;
+  },
+  clearRun(id: number): void { runs.delete(id); },
+};
+export function advanceTicks(count = 1): void {
+  for (let i = 0; i < count; i++) {
+    system.currentTick++;
+    for (const [id, run] of [...runs]) {
+      if (run.at <= system.currentTick && runs.delete(id)) run.callback();
+    }
+  }
+}
+
+const properties = new Map<string, Property>();
+function writeWorldProperty(key: string, value?: Property): void {
+  if (value === undefined) properties.delete(key);
+  else properties.set(key, value);
+}
+export const world = {
+  getDynamicProperty: vi.fn((key: string): Property | undefined => properties.get(key)),
+  setDynamicProperty: vi.fn(writeWorldProperty),
+};
+export function resetRuntime(): void {
+  advanceTicks(50); // Finish all real loading leases and input/break claims before reset.
+  runs.clear();
+  properties.clear();
+  world.getDynamicProperty.mockClear();
+  world.setDynamicProperty.mockClear();
+}
+
+export const EquipmentSlot = { Mainhand: "Mainhand" };
+export const EntityComponentTypes = { Equippable: "minecraft:equippable", Inventory: "minecraft:inventory" };
+export const GameMode = { Creative: "creative", Survival: "survival", Adventure: "adventure", Spectator: "spectator" };
+export class ItemStack {
+  nameTag: string | undefined;
+  private properties = new Map<string, Property>();
+  private lore: RawMessage[] = [];
+  constructor(readonly typeId: string, public amount = 1) {}
+  clone(): ItemStack {
+    const item = new ItemStack(this.typeId, this.amount);
+    item.nameTag = this.nameTag;
+    item.properties = new Map([...this.properties].map(([key, value]) => [key, structuredClone(value)]));
+    item.lore = structuredClone(this.lore);
+    return item;
+  }
+  getDynamicProperty(key: string): Property | undefined { return this.properties.get(key); }
+  setDynamicProperty(key: string, value?: Property): void {
+    if (value === undefined) this.properties.delete(key);
+    else this.properties.set(key, structuredClone(value));
+  }
+  getDynamicPropertyIds(): string[] { return [...this.properties.keys()]; }
+  setLore(lore: RawMessage[]): void { this.lore = structuredClone(lore); }
+  getRawLore(): RawMessage[] { return structuredClone(this.lore); }
+  asItem(): MinecraftItemStack { return this as unknown as MinecraftItemStack; }
+}
+
+export class FakePermutation {
+  readonly type: { id: string };
+  constructor(typeId: string, readonly states: Readonly<Record<string, State>>) { this.type = { id: typeId }; }
+  getAllStates(): Record<string, State> { return { ...this.states }; }
+  getState(name: string): State | undefined { return this.states[name]; }
+  withState(name: string, value: State): FakePermutation {
+    if (!Object.hasOwn(this.states, name)) throw new Error(`State ${name} is not declared on this compact block`);
+    return new FakePermutation(this.type.id, { ...this.states, [name]: value });
+  }
+  asPermutation(): BlockPermutation { return this as unknown as BlockPermutation; }
+}
+export class FakeDimension {
+  readonly id = `runtime-test:dimension-${++sequence}`;
+  block: FakeBlock | undefined;
+  readonly drops: Array<{ item: MinecraftItemStack; location: Vector3 }> = [];
+  readonly spawnItem = vi.fn((item: MinecraftItemStack, location: Vector3) => {
+    this.drops.push({ item: item.clone(), location: { ...location } });
+    return {};
+  });
+  getBlock(): Block | undefined { return this.block?.asBlock(); }
+  asDimension(): Dimension { return this as unknown as Dimension; }
+}
+export class FakeBlock {
+  isValid = true;
+  readonly location = { x: 2, y: 64, z: -3 };
+  readonly setPermutation = vi.fn((permutation: BlockPermutation): void => { this.permutation = permutation; });
+  constructor(readonly dimension: FakeDimension, public permutation: BlockPermutation) { dimension.block = this; }
+  get typeId(): string { return this.permutation.type.id; }
+  asBlock(): Block { return this as unknown as Block; }
+  breakEvent(): BlockComponentBlockBreakEvent {
+    return { block: this.asBlock(), dimension: this.dimension.asDimension(), brokenBlockPermutation: this.permutation } as BlockComponentBlockBreakEvent;
+  }
+}
+export class FakePlayer {
+  readonly id = `runtime-test:player-${++sequence}`;
+  isValid = true;
+  isSneaking = false;
+  selectedSlotIndex = 0;
+  mode: string = GameMode.Survival;
+  location = { x: 2.5, y: 64.5, z: -2.5 };
+  hand: MinecraftItemStack | undefined;
+  readonly inventory: MinecraftItemStack[] = [];
+  readonly onScreenDisplay = { setActionBar: vi.fn((_message: RawMessage) => {}) };
+  readonly equipment = {
+    getEquipment: vi.fn(() => this.hand?.clone()),
+    setEquipment: vi.fn((_slot: unknown, item?: MinecraftItemStack): boolean => {
+      this.hand = item?.clone();
+      return true;
+    }),
+  };
+  readonly container = {
+    addItem: vi.fn((item: MinecraftItemStack): MinecraftItemStack | undefined => {
+      this.inventory.push(item.clone());
+      return undefined;
+    }),
+  };
+  constructor(public dimension: FakeDimension) {}
+  getGameMode(): string { return this.mode; }
+  getComponent(name: string): unknown {
+    if (name === EntityComponentTypes.Equippable) return this.equipment;
+    if (name === EntityComponentTypes.Inventory) return { container: this.container };
+    return undefined;
+  }
+  asPlayer(): Player { return this as unknown as Player; }
+  interaction(block: FakeBlock): BlockComponentPlayerInteractEvent {
+    return { player: this.asPlayer(), block: block.asBlock() } as BlockComponentPlayerInteractEvent;
+  }
+}
+export function failOnce(): never { throw new Error("Injected write failure before mutation"); }
+
+/** Remove equipment for one write, after persistence, without hiding the item during earlier reads. */
+export function missEquipmentAfterNextRegistryWrite(player: FakePlayer, readsBeforeWrite = 0): void {
+  world.setDynamicProperty.mockImplementationOnce((key, value) => {
+    writeWorldProperty(key, value);
+    const getComponent = player.getComponent.bind(player);
+    const component = vi.spyOn(player, "getComponent");
+    for (let i = 0; i < readsBeforeWrite; i++) component.mockImplementationOnce(getComponent);
+    component.mockReturnValueOnce(undefined);
+  });
+}

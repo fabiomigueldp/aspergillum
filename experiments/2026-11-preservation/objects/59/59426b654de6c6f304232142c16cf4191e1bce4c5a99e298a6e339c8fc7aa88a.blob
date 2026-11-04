@@ -1,0 +1,30 @@
+{
+  "blender": "4.3.2",
+  "engine": "Cycles CPU",
+  "samples": 16,
+  "seed": 73,
+  "resolution": [
+    640,
+    640
+  ],
+  "viewTransform": "Standard",
+  "normalLighting": ".18 + .82 * max(0, storedVertexNormal dot normalize([.25,.35,1])) as emission",
+  "culling": "Geometry Backfacing from original indexed winding; transparent backside",
+  "alpha": "nearest texture alpha > .5",
+  "referenceScope": "South-only official local attributes; existing transform matrices reused. No independent hierarchy/rotation validation.",
+  "camera": {
+    "location": [
+      -0.28125,
+      0.25,
+      10.3125
+    ],
+    "target": [
+      -0.28125,
+      0.25,
+      0.3125
+    ],
+    "orthoScale": 0.36875003576278687
+  },
+  "noBrowser": true,
+  "noNormalMapShader": true
+}

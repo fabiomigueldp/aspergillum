@@ -1,0 +1,19 @@
+{
+  "samples": 20000,
+  "seed": 20261104,
+  "method": "Project fixed held-out outer crown samples onto V5 cap, compare nearest-face plane signed proxy against source highpoly head versus the actual legacy reduced part15 head. Not an exact SDF or collision proof.",
+  "source_highpoly_negative_over_0p1mm": 2138,
+  "legacy_negative_over_0p1mm": 1864,
+  "new_threshold_events_from_legacy_head": 1011,
+  "recovered_events": 1285,
+  "legacy_max_inward_proxy": 0.003315666730486555,
+  "legacy_signed_delta_vs_high_quantiles": [
+    -0.0020885946410089673,
+    -0.0006074167393950347,
+    0.0003833258124927852,
+    0.0012329803939235243,
+    0.001802743332063983
+  ],
+  "interpretation": "Total threshold count is lower with the legacy head, but 1,011 events change locally into the negative class while 1,285 recover. This is an interface diagnosis, not evidence of aggregate regression or exact intersections. Colored one-sided renders expose local body/cap contact that the same-stone highpoly-context previews cannot certify.",
+  "runtime_tested": false
+}

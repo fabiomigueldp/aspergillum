@@ -1,0 +1,38 @@
+import bpy,json,heapq,math
+from mathutils import Vector
+from pathlib import Path
+r=str(Path(__file__).resolve().parent)+'/'
+bpy.ops.wm.open_mainfile(filepath=r+'V43-hand-contact-trial.blend',use_scripts=False)
+seed=json.load(open(r+'cuff-mask-seed.json'));mesh=bpy.data.objects[seed['object']].data;assert len(mesh.vertices)==seed['vertex_count'];attr=mesh.attributes.get('.sculpt_mask') or mesh.attributes.new('.sculpt_mask','FLOAT','POINT')
+for v in attr.data:v.value=0
+for i,w in seed['weights']:attr.data[i].value=w
+r=r+'reproduced/';Path(r).mkdir(exist_ok=True)
+o=bpy.data.objects['Maria — túnica e mangas integradas'];m=o.data;a=m.attributes['.sculpt_mask'];orig=[v.co.copy() for v in m.vertices];support={i for i,v in enumerate(a.data) if v.value>0};adj=[set() for _ in orig]
+for e in m.edges:
+ i,j=e.vertices;adj[i].add(j);adj[j].add(i)
+boundary={i for i in support if any(j not in support for j in adj[i])};ds={i:0. for i in boundary};q=[(0.,i) for i in boundary];heapq.heapify(q)
+while q:
+ d,i=heapq.heappop(q)
+ if d!=ds[i]:continue
+ for j in adj[i]&support:
+  nd=d+(orig[i]-orig[j]).length
+  if nd<ds.get(j,1e9):ds[j]=nd;heapq.heappush(q,(nd,j))
+def smooth(t):
+ t=max(0.,min(1.,t));return t*t*(3-2*t)
+w={i:smooth(ds[i]/.06)*smooth((orig[i].z-2.78)/.12) for i in support}
+core={i for i in support if w[i]>.999999};iterations=0;error=0.
+for i,v in enumerate(a.data):v.value=w.get(i,0)
+o.shape_key_add(name='Basis');key=o.shape_key_add(name='DIAGNÓSTICO — campo geodésico limitado cuff 5 mm, não promover');delta=Vector((0,.005,0))
+for i,v in enumerate(key.data):v.co=orig[i]+delta*w.get(i,0)
+key.value=1;ratios=[];jumps=[];normals=[]
+for e in m.edges:
+ i,j=e.vertices;l=(orig[i]-orig[j]).length
+ if l>1e-9 and (i in support or j in support):ratios.append((key.data[i].co-key.data[j].co).length/l);jumps.append(abs(w.get(i,0)-w.get(j,0)))
+for p in m.polygons:
+ ids=list(p.vertices);aa,bb,cc=[orig[i] for i in ids[:3]];xx,yy,zz=[key.data[i].co for i in ids[:3]];n=(bb-aa).cross(cc-aa);nn=(yy-xx).cross(zz-xx)
+ if n.length and nn.length:normals.append(math.degrees(n.angle(nn)))
+report={'method':'Geodesic distance smoothstep over60mm times axial smoothstep over120mm; boundary0; upper cuff core1; analytical gradient bound37.5 per meter','support_count':len(support),'boundary_count':len(boundary),'core_count':len(core),'iterations':iterations,'residual_last_update':error,'posterior_changed':sum(orig[i].y>=0 and v>0 for i,v in w.items()),'outside_support_changed':0,'boundary_weight_max':max(w[i] for i in boundary),'max_adjacent_weight_jump':max(jumps),'analytic_gradient_bound_per_m':37.5,'analytic_edge_ratio_interval':[.8125,1.1875],'edge_ratio_min':min(ratios),'edge_ratio_max':max(ratios),'edges_over_20pct_stretch':sum(t>1.2 or t<.8 for t in ratios),'faces_normal_rotation_gt15deg':sum(t>15 for t in normals),'normal_rotation_max_deg':max(normals),'faces_reversed':sum(t>90 for t in normals),'diagnostic_translation_m':list(delta),'purpose':'Diagnostic only; compare before adoption'}
+json.dump(report,open(r+'cuff-bounded-diagnostic.json','w'),indent=2);print(report);bpy.ops.wm.save_as_mainfile(filepath=r+'cuff-bounded-diagnostic.blend')
+h=bpy.data.objects['Maria — mão ao peito anatômica'];center=sum((v.co for v in h.data.vertices),Vector())/len(h.data.vertices);s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=600;s.render.resolution_y=800;s.render.resolution_percentage=100;c=s.camera
+for view,off in [('front',(0,-5,0)),('threequarter',(-3,-5,.2)),('profile',(5,0,0)),('reverse',(-5,0,0)),('close',(-3,-5,.2))]:
+ ct=Vector((.15,-.19,2.87)) if view=='close' else center;c.location=ct+Vector(off);c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=.36 if view=='close' else .48;s.render.filepath=r+'cuff-bounded-after-'+view+'.png';bpy.ops.render.render(write_still=True)

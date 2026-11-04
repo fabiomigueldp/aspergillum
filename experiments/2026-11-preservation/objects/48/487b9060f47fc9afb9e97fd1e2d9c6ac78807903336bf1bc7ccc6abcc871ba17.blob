@@ -1,0 +1,46 @@
+{
+  "observed": "JSON counts, file bytes; no runtime performance measurement",
+  "texture": "same4096x2048 RGBA color;32MiB uncompressed estimate, not VRAM observation",
+  "variants": [
+    {
+      "path": "../opaque_transport_v15/shared_mask/shared_mask_2048.geo.json",
+      "cubes": 41565,
+      "quads": 41582,
+      "raster_triangles": 83164,
+      "bytes": 12519264,
+      "sha256": "7d316ce8c92b346095a73e9f1f540167146a4f4aad707491d53f20b7d427de72"
+    },
+    {
+      "path": "transparent_trim/roi68-depth1.geo.json",
+      "cubes": 41701,
+      "quads": 41718,
+      "raster_triangles": 83436,
+      "bytes": 12562098,
+      "sha256": "fc00b96e8174108fbc0383220b49285f38b1e92c684f527f7604bbe9a50d9ead"
+    },
+    {
+      "path": "transparent_trim/roi68-depth2.geo.json",
+      "cubes": 41973,
+      "quads": 41990,
+      "raster_triangles": 83980,
+      "bytes": 12646980,
+      "sha256": "447726952733be98c08f421106172c12eccfa00eeb2a8590fb4ccb9f5896baad"
+    },
+    {
+      "path": "transparent_trim/roi68-depth3.geo.json",
+      "cubes": 42517,
+      "quads": 42534,
+      "raster_triangles": 85068,
+      "bytes": 12817667,
+      "sha256": "0836f7efac70df97dc57ea32a9ecfbc347521a8a699164ef209fb82fd5e3a37b"
+    },
+    {
+      "path": "transparent_trim/roi68-depth3-restored-transparent.geo.json",
+      "cubes": 42993,
+      "quads": 43010,
+      "raster_triangles": 86020,
+      "bytes": 12966416,
+      "sha256": "510b3666805386a8652be83e1c515b411b6b0d7dd10b1f47da94895d4b9c7fb7"
+    }
+  ]
+}

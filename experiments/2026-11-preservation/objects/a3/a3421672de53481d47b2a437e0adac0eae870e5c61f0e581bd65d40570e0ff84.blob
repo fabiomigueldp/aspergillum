@@ -1,0 +1,189 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> altare-bedrock-addon@0.12.3 check
+> npm run typecheck && npm test && npm run build && node tools/validate.mjs
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> altare-bedrock-addon@0.12.3 typecheck
+> tsc --noEmit
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> altare-bedrock-addon@0.12.3 test
+> node --experimental-strip-types --test tests/*.node.ts
+
+✔ split monogram joins across the actual north-face UV seam without stretching or mirroring the motif (184.250181ms)
+✔ Bedrock import places every visible perimeter bone on its world side, across all orientations and masks (71.628453ms)
+✔ every drape segment includes the complete hem, independent of sag and direction (12.179639ms)
+✔ stone and linen are periodic at module boundaries; ornament resolution fits the explicit memory budget (13.194855ms)
+✔ all rotated cloth vertices remain below the support plane and within the lateral envelope (51.668901ms)
+✔ Atelier packing retains every recipe and orientation with 9×64 + 126×112 states (1523.792836ms)
+✔ all rectangular Atelier planners fit the compact state domain in all four directions (4639.172645ms)
+✔ precompact Atelier snapshot conversion is explicit, pure, and rejects unsupported roles (4.709671ms)
+✔ new Atelier and classic schemas reject malformed or mixed legacy snapshots (2.292331ms)
+✔ catalog has stable unique identities and a bounded total state budget (4.513441ms)
+✔ collection centers remain unique at widths 1..16 and in four directions (47.552739ms)
+✔ conversion rejects unknown designs, detects identity changes and rolls back across families (1.958832ms)
+✔ persistent codec round-trips every reachable recipe pose without writing cosmetic axes (84.881117ms)
+✔ classic codebook is exactly 50 poses and 3000 reachable states; all effective outputs preserve the old block (1804.007142ms)
+✔ all rectangular planner poses and eight rosette contours are preserved (536.299506ms)
+✔ migration is pure and rejects every removed pose without silent repair (589.199562ms)
+✔ migration rejects malformed or ambiguous old states without throwing (0.80867ms)
+✔ the green orphrey has a straight upper border independently of the scallop phase (12.885593ms)
+✔ emblems fit above every scallop and silver embroidery has its own non-emissive metal response (100.568972ms)
+✔ cloth facets and stitched corners meet at each shared physical height in all directions (134.269841ms)
+✔ linen owns the support plane and folded lips meet it without coplanar faces (140.671339ms)
+✔ folded lips close the outer corners with no overlapping volume (66.28539ms)
+✔ corner seams join the actual lace endpoints and end at the shared hem phase (71.914327ms)
+✔ cloth clears the architectural envelope and tiles retain a continuous free support plane (567.97629ms)
+✔ the shared textile selection follows the altar family and retains color and relief intent (57.301985ms)
+✔ Cruzeta adds seventeen finishes without relaxing either state ceiling (20.310693ms)
+✔ Cruzeta carpentry does not change with textile, dye or front direction (3034.245904ms)
+✔ Cruzeta compiled contours share corner posts and keep diagonal support inside collision bounds (37.78139ms)
+✔ Cruzeta materials preserve wood, receive all shared cloths, and have no metallic body or extra relief (1.861385ms)
+✔ symmetric Cruzeta hides direction while preserving the draft for a later cloth (0.84259ms)
+✔ Cruzeta inlay retains physical scale and shared posts reconstruct a complete motif (17.743754ms)
+✔ Cruzeta square recessed shafts meet lower rails and every X has one contained through-peg (24.883862ms)
+✔ Cruzeta marquetry repeats on whole texture pixels without uneven broken diamonds (61.655046ms)
+✔ every published design reopens and applies with exactly the same identity (16.331402ms)
+✔ model and textile changes preserve compatible choices and retain suspended relief (4.595793ms)
+✔ one floral textile resolves red relief variants and all eight plain colors (0.880423ms)
+✔ scheduled expiry explains closure once without applying the draft or retaining a lock (5.698787ms)
+✔ a lease discovered expired by an interaction gets the same notice before the timer fires (1.559641ms)
+✔ voluntary cancellation before the deadline does not show an expiry warning (1.462572ms)
+✔ non-timeout invalidation before the deadline keeps its existing silent dismissal (0.672587ms)
+✔ unregistered target permutations are rejected before any altar cell is written (6.536524ms)
+✔ Content Log diagnostics preserve the real cause and bound cyclic/large errors (1.286315ms)
+✔ seven-block frontal preserves the reference programme in visual left-to-right order (2.31257ms)
+✔ raised frame closes exactly the two outer ends, never internal module seams (132.617465ms)
+✔ background meets continuously at seams and material masks keep enamel nonmetallic (311.997097ms)
+✔ widths 1..16 keep exactly one whole or split centre, with compact compositions at 3/4 (2.324208ms)
+✔ seven-block layout has the same iconographic order in all four orientations (2.57989ms)
+✔ new joinery recipes persist all rectangular centres and repair arbitrary contour changes (2392.099027ms)
+✔ new models preserve all textile choices and suspend only stone and applied relief (2.199164ms)
+✔ wood members retain their dimensions under textiles, respect the cell and keep full-height support (330.132315ms)
+✔ balaustraded tables have an open centre, supported perimeter bays and bounded multipart collisions (12.389862ms)
+✔ conversion to joinery rolls back original IDs and every state after a partial write (2.731818ms)
+✔ return rails meet in butt joints and reach every internal module boundary (0.338528ms)
+✔ before generation: rectangular surfaces have only exterior cloth, including 1×1 and long narrow altars (14.241491ms)
+✔ odd and even fronts have a single centered ornament in all four orientations (16.933153ms)
+✔ disconnected, holed, oversized and unloaded surfaces are rejected without partial plans (2.599437ms)
+✔ neighbors on another level do not join the mensa; unresolved neighbors keep their previous edge (0.841673ms)
+✔ style changes preserve the support position and do not write blocks above the altar (0.697281ms)
+✔ transaction preflights the entire surface and rolls back a failed write (2.63292ms)
+✔ rollback failure is explicit and successful writes change only style/edge states (1.067857ms)
+✔ sessions lock every cell, have one editor per player, expire, and release on lifecycle cancellation (1.620533ms)
+✔ native editor binds every input as client writable, including disabled and hidden dropdowns (3.181851ms)
+✔ fixed dropdown values never authorize a finish change (0.511995ms)
+✔ native editor commits only on Apply, restores the opened altar and cleans subscriptions (0.831938ms)
+✔ invalid client selections are rejected and a released lease closes the view without a finish (0.82187ms)
+✔ native joinery controls show the actual material and never apply a suspended relief (0.570442ms)
+✔ one native cloth selector offers lace on every model and shows direction only for emblems (2.057798ms)
+✔ native editor dimensions follow the draft front and restore without changing world tiles (2.095199ms)
+✔ native title preserves the editing orientation through a symmetric model and closes without stale updates (0.727467ms)
+✔ ornament identity never interprets an architectural centre role as Guadalupe (194.25672ms)
+✔ Guadalupe intent survives saved classic textiles, model switches, explicit choices and Restore (186.176361ms)
+✔ mixed altar keeps genuine Guadalupe but ignores unrelated architectural centres (1.32442ms)
+✔ explicit Guadalupe choice after an architectural transition is retained and Restore removes only that draft choice (0.603639ms)
+✔ lancet has two symmetric circular branches, a unique pointed crown and a vertical spring (3.154164ms)
+✔ binary facade mask shares the exact opening polygon and keeps a sub-texel lip (109.576997ms)
+✔ raked intrados has closed front edges, inset mitres and outward normals in every world direction (7.912746ms)
+✔ the rectangular reveal faces form the continuous nearest-wall envelope, with no exposed mitre spikes (92.434809ms)
+✔ arcades dress only exposed sides and share corner piers with neighboring bays (21.418017ms)
+✔ whole reliefs fit the pointed field without clipping their upper corners (1.58343ms)
+✔ universal cloths keep the same architecture, support height and direction of the central embroidery (1561.560114ms)
+✔ odd reliefs enter the recessed field and fit its pointed roof; even halves bear on the shared pier (499.800163ms)
+✔ rotated intrados and all dressed contours respect the support, exterior envelope and mesh ceilings (6520.690819ms)
+✔ cutout colors retain donor RGB under transparent pixels and borrow only their existing PBR maps (395.264797ms)
+✔ symmetric finishes need only sixteen poses each and survive every contour change (346.195152ms)
+✔ lace repeats without a seam, has real holes and a connected heavy border (455.505131ms)
+✔ ornate cloth and body share full-height support and dress only exposed faces (201.152593ms)
+✔ shared floral and lace choices retain the intended relief when moving through Colonnade (2.177504ms)
+✔ capitals share the exposed corners and join the full architrave under either finish (1473.771006ms)
+✔ fluting is matte and continuous around shaft faces; gilding remains periodic (1.404128ms)
+✔ shaft facets close without cracks in all four directions and retain their true silhouette (84.408528ms)
+✔ moulded panel frames stand clear of the recessed field and stay inside the columns (10.874034ms)
+✔ all sculpted parts keep the placement cell, top plane and texture bounds valid (272.250678ms)
+✔ projecting ledges remain closed above and below their narrower supports (59.569223ms)
+✔ the seven-block dressed altar keeps its compiled surface cost bounded (48.965661ms)
+✔ fine panel beads close their corners with butt joints and no overlapping front faces (2.598802ms)
+✔ each exposed corner has one shared shaft and every shaft has a unique centre (45.961567ms)
+✔ every octagonal shaft fits its bearing surfaces and the three profile courses meet (63.647548ms)
+✔ compact palette codebook has a safe isolated default and 112 unique reversible poses (5.738915ms)
+✔ every liturgical color fits rectangular centres 1..16 in all structures, surfaces and directions (1531.151366ms)
+✔ breaking a neighbour never produces an unencodable palette pose or changes color (12.137499ms)
+✔ palette changes participate in late identity checks and rollback without writing above the altar (2.803724ms)
+✔ raking panel reveals face outward and retain both horizontal and vertical slopes in all directions (130.178166ms)
+✔ panel corners close monotonically into their bearing members without spikes or coincident exterior planes (9.965429ms)
+✔ every lateral reveal joins an emitted shaft face, including the narrower intermediate half-piers (66.118437ms)
+✔ engaged piers share exterior corners and meet each neighboring bay without duplicate internal faces (25.325494ms)
+✔ the carcass and profile courses meet through internal bays without holes or double ledges (104.76303ms)
+✔ the shaped shafts have a real cut nose, closed bearing heads and continuous bearing heights (2.410534ms)
+✔ all cloths leave the same architecture and free support plane at y=16 (1991.63088ms)
+✔ odd reliefs bear on the recessed field and split reliefs on the shared pier, above the lower frame (464.748603ms)
+✔ materials keep vertical piers and horizontal rails, and the directional textile uses the selected face (2.287527ms)
+✔ all baked contours, reliefs and garments remain inside their bounded diagnostic mesh budget (5145.930886ms)
+✔ strict parser refuses duplicate keys, escaped duplicates, malformed UTF-8 and excessive nesting (18.925951ms)
+✔ whole snapshot validates exact envelope, provenance and cell boundaries (34.250519ms)
+✔ normalization is individually reported and needs explicit consent; last rejection prevents all conversion (24.807031ms)
+✔ file audit defaults to no writes; conversion creates a new self-verifying bundle and exact rollback (15.854726ms)
+✔ rejected source leaves no output directory and existing reports are never overwritten (5.186738ms)
+✔ regular-file guards reject links, directories, devices, FIFOs and existing linked destinations (17.987844ms)
+✔ interrupted writes cannot create a verifiable bundle or permit overwrite on retry (5.329699ms)
+✔ verify rejects corruption of every component, missing/extra files, links and path traversal manifests (12.236645ms)
+✔ rehashed converted data and audit cannot bypass deterministic verification (11.301157ms)
+✔ separately trusted digests detect a wholly replaced otherwise valid bundle (9.968579ms)
+✔ CLI defaults to audit, refuses duplicate options, and uses nonzero statuses without partial output (2399.096735ms)
+✔ all 80000 legacy state combinations receive exact accept/reject accounting, including 278 unchanged IDs (2268.568614ms)
+✔ numeric lexical validation rejects rounded fractions, underflow, exponents and unsafe integers before JSON.parse (1.45052ms)
+✔ all writers reject symlinked parent aliases, including rollback into its own bundle (8.823636ms)
+✔ structural members keep their shape under every textile and relief (1047.009102ms)
+✔ trestle collisions use stable origin/size boxes, support y=16 and leave the middle open (53.544407ms)
+✔ trestle end frames are selected on the two structural ends in every orientation (156.415786ms)
+✔ stable collision volumes contain the rotated structural vertices, including diagonal braces and faceted balusters (222.159168ms)
+✔ scalloped silhouette, trim and split embroidery share a continuous physical domain (73.75249ms)
+✔ liturgical dyes preserve embroidery, silhouettes and shared PBR while changing only the fabric (84.264248ms)
+✔ linen is a thin independent surface over a structural slab at the full support height (198.280969ms)
+✔ fold facets assemble a continuous left-to-right UV strip in the actual Bedrock world basis (15.013785ms)
+✔ one cloth collection is available across all structures and all floral dyes (18.839502ms)
+✔ universal layouts round-trip rectangular centres and arbitrary contour repairs (6292.111613ms)
+✔ classic textile roles remain independent of the complete Guadalupe iconographic programme (29.864708ms)
+✔ directional Colonnade embroidery occurs on the selected face and never repeats a central emblem behind it (35.630098ms)
+✔ long falls retain full reliefs above the plinth, with square motifs scaled in both axes (12.177945ms)
+✔ diagnostic warning policy retains only the verified colonnade complexity warning (23.348035ms)
+✔ pilaster complexity warnings require the published identity, measured mesh and bounded face count (53.741623ms)
+✔ changed warning types, severity, paths and counts cannot enter the exception (8.894562ms)
+✔ ogive exception checks severity, exact count, identity, contour and the independent face ceiling (32.016166ms)
+✔ the diagnostic exception cannot admit an over-budget geometry or a mismatched identity (29.650745ms)
+ℹ tests 143
+ℹ suites 0
+ℹ pass 143
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 44987.937091
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> altare-bedrock-addon@0.12.3 build
+> node tools/build.mjs
+
+Altare 0.12.3: 413 compiled designs, 4700 geometries, 85 material sets, stable API bundle.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice
+Validated: 41 cubes per geometry, 3000 block permutations, y=16 support, opaque materials, stable API, locale parity.
+Collection validated: 413 designs, 4692 geometries, max 110 cubes; 51608 total state combinations; multipart support and binary cutout contract.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

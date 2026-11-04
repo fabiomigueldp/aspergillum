@@ -1,0 +1,16 @@
+from pathlib import Path
+from PIL import Image
+import numpy as np,json,hashlib
+R=Path(__file__).resolve().parents[1];V=R.parent/'opaque_transport_v15/evidence';E=R/'evidence'
+clip=np.array(Image.open(V/'shared-2048-analytic-clip-control-band-front.png').convert('RGB'),float);base=np.array(Image.open(V/'shared-2048-band-front.png').convert('RGB'),float)
+regions={'scar_ROI':(490,440,571,481),'band_context':(175,365,825,705)}
+records=[]
+for name in ['roi68-depth1','roi68-depth2','roi68-depth3','roi68-depth3-restored-transparent']:
+ p=E/f'{name}-band-front.png'
+ if not p.exists():continue
+ a=np.array(Image.open(p).convert('RGB'),float);rr={}
+ for region,(x0,y0,x1,y1)in regions.items():
+  before=(clip-base).mean(-1)[y0:y1,x0:x1];after=(clip-a).mean(-1)[y0:y1,x0:x1];bd=before>=10;ad=after>=10
+  rr[region]={'bounds_xy_exclusive':[x0,y0,x1,y1],'pixels':int(bd.size),'baseline_darker_than_clip_ge10':int(bd.sum()),'candidate_darker_than_clip_ge10':int(ad.sum()),'baseline_dark_resolved':int(np.sum(bd&~ad)),'new_dark_vs_baseline':int(np.sum(ad&~bd)),'mean_abs_RGB_diff_to_clip':float(np.abs(clip[y0:y1,x0:x1]-a[y0:y1,x0:x1]).mean()),'mean_signed_gray_diff_clip_minus_candidate':float(after.mean())}
+ records.append({'candidate':name,'image_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'regions':rr})
+(E/'lit-image-comparison.json').write_text(json.dumps({'reference':'V15 analytic clip, not Bedrock candidate','method':'Same imported geometry camera/lights as V15; ordinary48-sample renders. Threshold is observational image metric, not per-pixel geometric identity or engine criterion. Adaptive sampling/noise can affect counts; renderer ID controls are separate.','candidates':records},indent=2)+'\n');print(json.dumps(records,indent=2))

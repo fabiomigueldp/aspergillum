@@ -1,0 +1,22 @@
+✔ strict parser refuses duplicate keys, escaped duplicates, malformed UTF-8 and excessive nesting (6.066801ms)
+✔ whole snapshot validates exact envelope, provenance and cell boundaries (35.912746ms)
+✔ normalization is individually reported and needs explicit consent; last rejection prevents all conversion (23.122145ms)
+✔ file audit defaults to no writes; conversion creates a new self-verifying bundle and exact rollback (20.348104ms)
+✔ rejected source leaves no output directory and existing reports are never overwritten (3.675618ms)
+✔ regular-file guards reject links, directories, devices, FIFOs and existing linked destinations (26.442718ms)
+✔ interrupted writes cannot create a verifiable bundle or permit overwrite on retry (8.861542ms)
+✔ verify rejects corruption of every component, missing/extra files, links and path traversal manifests (14.755621ms)
+✔ rehashed converted data and audit cannot bypass deterministic verification (9.857788ms)
+✔ separately trusted digests detect a wholly replaced otherwise valid bundle (7.699957ms)
+✔ CLI defaults to audit, refuses duplicate options, and uses nonzero statuses without partial output (1214.036346ms)
+✔ all 80000 legacy state combinations receive exact accept/reject accounting, including 278 unchanged IDs (1417.47164ms)
+✔ numeric lexical validation rejects rounded fractions, underflow, exponents and unsafe integers before JSON.parse (0.920476ms)
+✔ all writers reject symlinked parent aliases, including rollback into its own bundle (5.814199ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3085.859953

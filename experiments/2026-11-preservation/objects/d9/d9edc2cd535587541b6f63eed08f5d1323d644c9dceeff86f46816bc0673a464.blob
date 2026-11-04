@@ -1,0 +1,139 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+ RUN  v3.2.7 /workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103
+
+ ❯ tests/application/compact-event-routing.test.ts (25 tests | 5 failed) 291ms
+   ✓ compact states through registered production event routes > deduplicates item and block input for aspersorium, then routes break and player-after-break once 31ms
+   ✓ compact states through registered production event routes > deduplicates item and block input for table, then routes break and player-after-break once 9ms
+   ✓ compact states through registered production event routes > playerHotbarSelectedSlotChange cancels production loading before delayed commit 15ms
+   ✓ compact states through registered production event routes > playerDimensionChange cancels production loading before delayed commit 3ms
+   ✓ compact states through registered production event routes > playerGameModeChange cancels production loading before delayed commit 2ms
+   ✓ compact states through registered production event routes > playerInventoryItemChange cancels production loading before delayed commit 10ms
+   ✓ compact states through registered production event routes > entityDie cancels production loading before delayed commit 4ms
+   ✓ compact states through registered production event routes > playerSpawn cancels production loading before delayed commit 2ms
+   ✓ compact states through registered production event routes > playerLeave cancels production loading before delayed commit 1ms
+   ✓ compact states through registered production event routes > playerHotbarSelectedSlotChange invalidates production table callbacks without losing its stored item 4ms
+   ✓ compact states through registered production event routes > playerDimensionChange invalidates production table callbacks without losing its stored item 2ms
+   ✓ compact states through registered production event routes > playerGameModeChange invalidates production table callbacks without losing its stored item 2ms
+   ✓ compact states through registered production event routes > entityDie invalidates production table callbacks without losing its stored item 1ms
+   ✓ compact states through registered production event routes > playerSpawn invalidates production table callbacks without losing its stored item 2ms
+   ✓ compact states through registered production event routes > playerLeave invalidates production table callbacks without losing its stored item 2ms
+   ✓ compact states through registered production event routes > preserves a replacement snapshot before a registered break callback executes its deferred recovery 7ms
+   ✓ known lifecycle limitations retained outside the codec scope > records delayed break replay consuming the current missing snapshot 5ms
+   ✓ known lifecycle limitations retained outside the codec scope > records delayed break replay consuming the current replacement snapshot 19ms
+   × known lifecycle limitations retained outside the codec scope > keeps a newly opened table session alive after the old close callback 15ms
+     → expected false to be true // Object.is equality
+   × known lifecycle limitations retained outside the codec scope > refuses stale table edit on a replacement item without a break event 6ms
+     → expected true to be false // Object.is equality
+   × known lifecycle limitations retained outside the codec scope > refuses stale table profile on a replacement item without a break event 7ms
+     → expected true to be false // Object.is equality
+   × known lifecycle limitations retained outside the codec scope > refuses stale table restore on a replacement item without a break event 3ms
+     → expected true to be false // Object.is equality
+   × known lifecycle limitations retained outside the codec scope > refuses stale table retrieve on a replacement item without a break event 6ms
+     → expected true to be false // Object.is equality
+   ✓ known lifecycle limitations retained outside the codec scope > records loss after both the aspersorium docking write and hand rollback fail 4ms
+   ✓ known lifecycle limitations retained outside the codec scope > records loss after both the table docking write and hand rollback fail 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > known lifecycle limitations retained outside the codec scope > keeps a newly opened table session alive after the old close callback
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/application/compact-event-routing.test.ts:213:54
+    211|     expect(newActions.applySprayProfile("contained")).toBe(true);
+    212|     oldActions.close();
+    213|     expect(newActions.applyCosmetic("bronze_ivory")).toBe(true);
+       |                                                      ^
+    214|   });
+    215| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > known lifecycle limitations retained outside the codec scope > refuses stale table edit on a replacement item without a break event
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/application/compact-event-routing.test.ts:225:74
+    223|     setDockedSnapshot(dimension.id, block.location, replacement);
+    224|     const before = block.permutation.getAllStates();
+    225|     if (action === "edit") expect(actions.applyCosmetic("bronze_ivory"…
+       |                                                                          ^
+    226|     if (action === "profile") expect(actions.applySprayProfile("contai…
+    227|     if (action === "restore") expect(actions.restoreClassic()).toBe(fa…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > known lifecycle limitations retained outside the codec scope > refuses stale table profile on a replacement item without a break event
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/application/compact-event-routing.test.ts:226:78
+    224|     const before = block.permutation.getAllStates();
+    225|     if (action === "edit") expect(actions.applyCosmetic("bronze_ivory"…
+    226|     if (action === "profile") expect(actions.applySprayProfile("contai…
+       |                                                                              ^
+    227|     if (action === "restore") expect(actions.restoreClassic()).toBe(fa…
+    228|     if (action === "retrieve") expect(actions.finishAndRetrieve()).toB…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > known lifecycle limitations retained outside the codec scope > refuses stale table restore on a replacement item without a break event
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/application/compact-event-routing.test.ts:227:64
+    225|     if (action === "edit") expect(actions.applyCosmetic("bronze_ivory"…
+    226|     if (action === "profile") expect(actions.applySprayProfile("contai…
+    227|     if (action === "restore") expect(actions.restoreClassic()).toBe(fa…
+       |                                                                ^
+    228|     if (action === "retrieve") expect(actions.finishAndRetrieve()).toB…
+    229|     expect(getDockedSnapshot(dimension.id, block.location)).toEqual(re…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > known lifecycle limitations retained outside the codec scope > refuses stale table retrieve on a replacement item without a break event
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/application/compact-event-routing.test.ts:228:68
+    226|     if (action === "profile") expect(actions.applySprayProfile("contai…
+    227|     if (action === "restore") expect(actions.restoreClassic()).toBe(fa…
+    228|     if (action === "retrieve") expect(actions.finishAndRetrieve()).toB…
+       |                                                                    ^
+    229|     expect(getDockedSnapshot(dimension.id, block.location)).toEqual(re…
+    230|     expect(block.permutation.getAllStates()).toEqual(before);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 20 passed (25)
+   Start at  17:27:24
+   Duration  1.68s (transform 613ms, setup 0ms, collect 793ms, tests 291ms, environment 0ms, prepare 135ms)
+

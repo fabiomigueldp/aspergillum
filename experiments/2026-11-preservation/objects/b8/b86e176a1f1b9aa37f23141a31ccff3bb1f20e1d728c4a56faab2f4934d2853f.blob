@@ -1,0 +1,17 @@
+# V15 shared right-triangle mask LAB
+
+Isolated alternative to V14: two right triangles per native source triangle, all sharing a single uniform-stone binary alpha mask. No dilation. No normal-map or inherited highpoly detail claim. Not a released add-on, no Minecraft test or performance claim.
+
+Use `shared_mask_2048.geo.json` + `shared_mask_2048.png` for the complete assembly. Equivalent 512 and 128 tiers have identical shape transforms and different shared alpha sampling. The original 2048-square RGBA region is preserved in the left half of the 4096x2048 atlas; 17 legacy bones and their pixel UVs are byte-value equivalent. `_new_parts.geo.json` + `right_triangle_N.png` isolates only band, shell and anatomy.
+
+All emitted south faces use the official Blockbench convention, not Aspergillum's reversed UV/normal association. Cubes remain south-only and zero-depth. Native source triangles are split at the altitude to the longest edge, with exact area and float64 position self-audits in `build-report.json`; source corner barycentrics and provenance are in NPZ/JSONL mappings.
+
+The canonical triangle is sampled at texel centers, with diagonal boundary centers explicitly included. At ideal nearest mip0 this adds exactly 1/N of surface area, and removes none, separately per right triangle. No dilation step is performed, but quantization still creates extra support. This guarantee does not include float precision, filtering or runtime handling.
+
+Do not call this exact triangle rendering, lossless texture transport, or verified practical runtime cost. Geometry cost nearly doubles while unique new texture content is one tile. Independent ray/visual evaluation is separate.
+
+## Completed self-checks
+
+`sampled-support-check.json` reloads each actual JSON/PNG pair and tests the 18 central V14 witness rays. All three tiers keep the first native part and hit presence on these rays, including protected-gap dense row 7442. This is limited sampling, not global assurance; the independent validation directory contains broader evaluation when available. For shell face 4488, the canonical-mask theoretical maximum outward distances are 37.029, 9.257 and 2.314 micrometers at N128/N512/N2048 respectively. Across all new parts the N2048 maximum is 62.358 micrometers. All three tiers have identical cube shape transforms.
+
+`precision-sensitivity.json` records a deliberately hypothetical Float32 absolute-endpoint storage test: three minuscule anatomy half-triangles collapse in that arithmetic order, totaling 5.18e-15 blocks². This is not an engine prediction; actual transform/storage order has not been observed. Float64 preservation is therefore not presented as a runtime precision guarantee.

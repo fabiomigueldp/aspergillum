@@ -1,0 +1,13 @@
+from pathlib import Path
+from PIL import Image,ImageDraw,ImageFont
+R=Path(__file__).resolve().parents[1];V3=R.parent/'shell_band_v3';C=R/'curvature_candidate';font='/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf';bold='/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf';title=ImageFont.truetype(bold,28);mid=ImageFont.truetype(bold,22);small=ImageFont.truetype(font,18)
+canvas=Image.new('RGB',(1800,1370),(242,242,240));d=ImageDraw.Draw(canvas);d.text((22,15),'V75 | V4: curvatura da calota | prova externa, NÃO Minecraft',font=title,fill=(25,25,25));d.text((22,52),'Mesma cabeça/auréola highpoly apenas como contexto. Manto e costura não integrados.',font=small,fill=(50,50,50));d.text((22,78),'V4 aumenta geometria e reduz resolução dos tiles da coroa para manter atlas2k. Nenhuma publicação aprovada.',font=small,fill=(50,50,50))
+cols=[('Fonte high V75',V3/'evidence','source'),('V3f: 3.652 faces de cubo',V3/'constrained_source/evidence','bedrock-perwall'),('V4: 8.132 faces de cubo',C/'evidence','bedrock-perwall')]
+for row,view in enumerate(['front','profile']):
+ for col,(label,folder,tag) in enumerate(cols):
+  x=col*600;y=125+row*615;d.text((x+15,y),label,font=mid,fill=(25,25,25));im=Image.open(folder/f'{tag}-{view}.png').convert('RGB').resize((590,590),Image.Resampling.LANCZOS);canvas.paste(im,(x+5,y+30))
+canvas.save(C/'evidence/COMPARE_V3F_V4_NOT_MINECRAFT.png')
+canvas=Image.new('RGB',(1200,710),(242,242,240));d=ImageDraw.Draw(canvas);d.text((20,15),'Controle nativo: mesma luz e contexto; sem máscara alfa',font=mid,fill=(25,25,25));d.text((20,47),'Triângulos planos, sem normalmap. Diagnóstico de geometria, não exportação Bedrock.',font=small,fill=(50,50,50))
+for col,(folder,label) in enumerate([(V3/'constrained_source/evidence','V3f: calota1.740 tri'),(C/'evidence','V4: calota6.220 tri')]):
+ x=col*600;d.text((x+15,83),label,font=mid,fill=(25,25,25));im=Image.open(folder/'paired-front.png').convert('RGB').resize((590,590),Image.Resampling.LANCZOS);canvas.paste(im,(x+5,115))
+canvas.save(C/'evidence/NATIVE_GEOMETRY_CONTROL.png')

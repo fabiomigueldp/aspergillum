@@ -1,0 +1,14 @@
+from pathlib import Path
+import numpy as np,json,sys,importlib.util
+from mathutils.bvhtree import BVHTree
+O=Path(__file__).resolve().parent;B=O.parent.parent;sys.dont_write_bytecode=True
+spec=importlib.util.spec_from_file_location('gate',B/'shell_band_v3/tools/independent_gate.py');g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g)
+base=np.load(B/'body_interface_v8/anatomy_fit/baseline-welded.npz');cand=np.load(B/'body_interface_v8/anatomy_fit/retained-anatomy.npz');band=np.load(B/'shell_band_v5/retained_candidate/evidence/band-paired.npz');body=np.load(O/'source-part15.npz');src=np.load(B/'evidence/source_meshes.npz');meta=json.loads((B/'evidence/source-export.json').read_text());ff=src['high_f'][:meta['parts'][0]['high_triangles']];vv=src['high_v'][:ff.max()+1];sb={'points':vv,'triangles':ff}
+rep={'scope':'Native structural V5 band; original TESTE29 band used only for source-baseline diagnosis. Strict crossings, not intentional-overlap judgment.','rows':{}};out={}
+for name,a,b in [('baseline_to_v5band',base,band),('retained_to_v5band',cand,band),('source_body_to_source_band',body,sb)]:
+ ta=BVHTree.FromPolygons(a['points'].tolist(),a['triangles'].tolist(),all_triangles=True,epsilon=0);tb=BVHTree.FromPolygons(b['points'].tolist(),b['triangles'].tolist(),all_triangles=True,epsilon=0);hits=[]
+ for i,j in ta.overlap(tb):
+  w=g.strict_hits(a['points'][a['triangles'][i]],b['points'][b['triangles'][j]])+g.strict_hits(b['points'][b['triangles'][j]],a['points'][a['triangles'][i]])
+  if w:hits.append({'body_face':int(i),'band_face':int(j),'witnesses':w})
+ w=np.array([w for h in hits for w in h['witnesses']]);rep['rows'][name]={'pairs':len(hits),'body_faces':len(set(h['body_face'] for h in hits)),'band_faces':len(set(h['band_face'] for h in hits)),'bbox_xyz':[w.min(0).tolist(),w.max(0).tolist()] if len(w) else None};out[name]=hits;print(name,rep['rows'][name],flush=True)
+basekeys={(h['body_face'],h['band_face']) for h in out['baseline_to_v5band']};new=[h for h in out['retained_to_v5band'] if (h['body_face'],h['band_face']) not in basekeys];w=np.array([w for h in new for w in h['witnesses']]);rep['new_retained_pairs']={'count':len(new),'body_faces':sorted(set(h['body_face'] for h in new)),'band_faces':sorted(set(h['band_face'] for h in new)),'bbox_xyz':[w.min(0).tolist(),w.max(0).tolist()] if len(w) else None};rep['crossings']=out;(O/'band-contact-detail.json').write_text(json.dumps(rep,indent=2));print('new',rep['new_retained_pairs'],flush=True)

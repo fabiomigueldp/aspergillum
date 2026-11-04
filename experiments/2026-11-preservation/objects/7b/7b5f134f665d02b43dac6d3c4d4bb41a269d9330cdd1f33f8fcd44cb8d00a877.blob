@@ -1,0 +1,243 @@
+{
+  "input": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/shell_band_v3/adaptive_source/evidence/iteration-01.npz",
+  "sha256": "6377b6931bc78758162968ca7bed0ff41fbcf2d40226da8fa3535f9efb1be008",
+  "method": "Blender BVH epsilon zero broad phase; double-precision strict segment-triangle intersection in both directions. Shared-vertex pairs are included.",
+  "limitations": "Not a proof for tangencies, general coplanar overlaps, minimum clearance, or intersections with other objects. BVH broad phase uses Blender precision. No game validation.",
+  "vertices": 876,
+  "triangles": 1748,
+  "euler": 2,
+  "boundary_edges": 0,
+  "edges_not_two_faces": 0,
+  "inconsistent_edge_winding": 0,
+  "bad_vertex_links": [],
+  "unused_vertices": [],
+  "degenerate_triangles": [],
+  "minimum_triangle_area": 2.21162240188337e-07,
+  "bvh_candidates": 4,
+  "strict_crossings": 4,
+  "crossings": [
+    {
+      "triangles": [
+        53,
+        828
+      ],
+      "vertices": [
+        [
+          47,
+          48,
+          399
+        ],
+        [
+          837,
+          498,
+          486
+        ]
+      ],
+      "shared_vertices": 0,
+      "witnesses": [
+        [
+          -0.08893620331714043,
+          -0.2057443363673974,
+          3.5000373313493456
+        ],
+        [
+          -0.08894254342464458,
+          -0.20455808457317912,
+          3.498327513922235
+        ]
+      ],
+      "source_indices": [
+        [
+          47,
+          48,
+          21346
+        ],
+        [
+          38818,
+          3090,
+          3057
+        ]
+      ],
+      "source_side": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ]
+    },
+    {
+      "triangles": [
+        53,
+        1244
+      ],
+      "vertices": [
+        [
+          47,
+          48,
+          399
+        ],
+        [
+          486,
+          498,
+          487
+        ]
+      ],
+      "shared_vertices": 0,
+      "witnesses": [
+        [
+          -0.08890907812448605,
+          -0.2045710316218905,
+          3.4983068215090047
+        ],
+        [
+          -0.08894254342464458,
+          -0.20455808457317912,
+          3.498327513922235
+        ]
+      ],
+      "source_indices": [
+        [
+          47,
+          48,
+          21346
+        ],
+        [
+          3057,
+          3090,
+          3058
+        ]
+      ],
+      "source_side": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ]
+    },
+    {
+      "triangles": [
+        54,
+        828
+      ],
+      "vertices": [
+        [
+          48,
+          60,
+          399
+        ],
+        [
+          837,
+          498,
+          486
+        ]
+      ],
+      "shared_vertices": 0,
+      "witnesses": [
+        [
+          -0.08893620331714043,
+          -0.2057443363673974,
+          3.5000373313493456
+        ],
+        [
+          -0.08914504785760993,
+          -0.20562910760919617,
+          3.4996312906146847
+        ]
+      ],
+      "source_indices": [
+        [
+          48,
+          81,
+          21346
+        ],
+        [
+          38818,
+          3090,
+          3057
+        ]
+      ],
+      "source_side": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ]
+    },
+    {
+      "triangles": [
+        54,
+        1244
+      ],
+      "vertices": [
+        [
+          48,
+          60,
+          399
+        ],
+        [
+          486,
+          498,
+          487
+        ]
+      ],
+      "shared_vertices": 0,
+      "witnesses": [
+        [
+          -0.08890907812448605,
+          -0.2045710316218905,
+          3.4983068215090047
+        ],
+        [
+          -0.08914504785760993,
+          -0.20562910760919617,
+          3.4996312906146847
+        ]
+      ],
+      "source_indices": [
+        [
+          48,
+          81,
+          21346
+        ],
+        [
+          3057,
+          3090,
+          3058
+        ]
+      ],
+      "source_side": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          1,
+          1
+        ]
+      ]
+    }
+  ],
+  "opposed_coplanar_edge_adjacent_candidates": [],
+  "elapsed_seconds": 0.03880619700066745,
+  "passes_screen": false
+}

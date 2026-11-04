@@ -1,0 +1,24 @@
+import bpy,json
+from mathutils import Vector
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';name='Maria — mão ao peito anatômica'
+def coords(o):
+ ks=o.data.shape_keys.key_blocks if o.data.shape_keys else []
+ out=[]
+ for v in o.data.vertices:
+  p=v.co.copy()
+  for k in list(ks)[1:]:p+=(k.data[v.index].co-k.relative_key.data[v.index].co)*k.value
+  out.append(p)
+ return out
+bpy.ops.wm.open_mainfile(filepath=r+'V41-hand-gui-trial.blend',use_scripts=False);edited=coords(bpy.data.objects[name])
+bpy.ops.wm.open_mainfile(filepath=r+'V40-mouthplane-verified.blend',use_scripts=False);o=bpy.data.objects[name];base=coords(o);d=[a-b for a,b in zip(edited,base)];changes=[x.length for x in d if x.length>1e-7]
+if not o.data.shape_keys:o.shape_key_add(name='Base mão preservada')
+k=o.shape_key_add(name='TESTE 41 — dedos reunidos e apoio GUI');k.value=1
+for i,v in enumerate(k.data):v.co=o.data.vertices[i].co+(d[i] if d[i].length>1e-7 else Vector((0,0,0)))
+json.dump({'affected_vertices':len(changes),'max_delta':max(changes,default=0),'mean_delta':sum(changes)/max(1,len(changes)),'method':'Native GUI Grab80px/0.7 fingers frontal; Grab200px then115px/0.7 in right orthographic to lean hand toward chest; independent key over V40.'},open(r+'V41-verification.json','w'),indent=2)
+bpy.ops.wm.save_as_mainfile(filepath=r+'V41-hand-verified.blend')
+# Render matching baselines and candidate from fixed center of original hand.
+center=sum(base,Vector())/len(base);print('HAND CENTER',center[:])
+for label,file in [('V40','V40-mouthplane-verified.blend'),('V41','V41-hand-verified.blend')]:
+ bpy.ops.wm.open_mainfile(filepath=r+file,use_scripts=False);s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=600;s.render.resolution_y=800;s.render.resolution_percentage=100;c=s.camera
+ for view,off in [('front',(0,-5,0)),('threequarter',(-3,-5,.2)),('profile',(5,0,0))]:
+  c.location=center+Vector(off);c.rotation_euler=(center-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=.48;s.render.filepath=r+label+'-hand-'+view+'.png';bpy.ops.render.render(write_still=True)

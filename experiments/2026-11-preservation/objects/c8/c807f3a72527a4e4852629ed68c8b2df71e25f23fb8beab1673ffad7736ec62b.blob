@@ -1,0 +1,86 @@
+# Diagnóstico geométrico independente V13
+
+## Conclusão acionável
+
+As ilhas azuis examinadas no vale entre as duas cristas são **oclusão da faixa contínua pela casca**, não furos modelados da faixa. Em 14 dos 17 pixels indicados pela revisão visual, a primeira face frontal é a casca; a faixa externa e sua parede interna existem imediatamente atrás. Nos mesmos 17 raios da fonte original avaliada, a faixa vem à frente da casca. A diferença de ordem fonte→redução sustenta um defeito localizado sem atribuir intenção artística à simples presença de contatos na fonte.
+
+A causa mais específica é o recuo do vale da faixa reduzida por interpolação entre amostras. A casca reduzida também recua em relação à sua fonte, porém menos. Por isso a alternativa de reamostrar/restaurar localmente o vale em direção à fonte é preferível a deslocar a casca inteira apenas para reduzir a contagem. Essa é orientação de diagnóstico, não aprovação de uma candidata ainda não revista.
+
+Nada foi corrigido, exportado, publicado ou executado no Minecraft neste diagnóstico. Anatomia V9, casca V11 e faixa V12 permanecem congeladas. Não foram repetidos gates invariáveis de V11/V12.
+
+## Inputs e superfícies físicas
+
+- Faixa: `band_ear_v12/structural_rebuild/retained-band.npz`, 584 vértices/1.164 triângulos. Parede externa `face_parts=0`, interna `=1`, retornos antigos `=2`, fechamentos V12 `=3`. `source_side=1` aponta fisicamente para dentro.
+- Casca: `ear_rim_v11/structural_rebuild/retained-shell.npz`, 6.334 vértices/12.664 triângulos.
+- Anatomia: `body_interface_v9/constrained_fit/retained-anatomy.npz`.
+- Primeira fonte comparativa: `evidence/source_meshes.npz`, `high_f[0:48128]` para faixa TESTE29 avaliada em viewport, `high_f[48128:416808]` para TESTE34 (368.680 triângulos); vértices em `high_v`. Particionamento conferido em `evidence/source-export.json`.
+- Confirmação da faixa fonte em resolução render: `shell_band_v3/evidence/band-source.npz`, 192.512 triângulos, contra a mesma TESTE34 original. As 17 relações de ordem se mantêm. Isso não usa um híbrido high como candidata.
+
+Hashes exatos dos três inputs retidos constam em `contact-map.json`. Nenhum nome de objeto ou atributo UV foi usado sozinho para afirmar intenção ou direção física das paredes.
+
+## Mapa espacial dos 1.360 pares
+
+Reutilizei apenas os segmentos do parecer V12 já validados sobre os mesmos inputs congelados. O agrupamento junta extremidades a até 10⁻⁸ m e encontra **37 componentes de curvas**. Ele não faz união/deduplicação global de segmentos sobrepostos.
+
+- Parede externa: 477 pares, soma 1.458,496 mm.
+- Parede interna: 839 pares, soma 2.314,336 mm.
+- Fechamentos V12: 44 pares, soma 5,861 mm.
+- Total: 1.360 pares, soma 3.778,693 mm, sem união global.
+- 1.134 pares envolvem a parte calota da casca; 226 envolvem a ponte.
+- 1.007 segmentos têm ponto médio em y < −0,28 m; somam 3.332,025 mm. Essa guarda geométrica não equivale a uma região visual inteira defeituosa.
+
+As duas maiores componentes atravessam muita extensão da faixa: uma interna com 499 segmentos e outra externa com 249. As pequenas componentes no vale são curvas locais fechadas/coerentes com as ilhas. Não há motivo para eliminar globalmente todas essas relações: contatos internos e margens de encaixe são diferentes das ilhas visíveis.
+
+Arquivos: `contact-map.json`, `contact-segments-with-uv.json`, `contact-map-projections.png`.
+
+## Testemunhos das ilhas azuis
+
+Foram reconstruídos os raios ortográficos das quatro câmeras V12 informadas pela revisão visual, com culling compatível com faces frontais.
+
+- Em 14/17 pixels, a casca atual vem à frente da faixa externa por **0,046–0,479 mm ao longo da câmera**.
+- Os três outros pixels ficam um pouco fora das ilhas e já mostram ouro primeiro; não são contados como falha comprovada daquele pixel.
+- Nos 17 raios, a faixa high original fica à frente da casca original por **0,379–0,992 mm**. A confirmação usando faixa render permanece em **0,379–0,991 mm**.
+- Os pontos azuis situam-se no vale, v aproximadamente 7,475–9,422. Cristas fonte em v=3 e v=13 não são esses pontos.
+- A ordem típica atual é casca externa → faixa externa → casca interna → faixa interna → anatomia. Isso demonstra interpenetração de paredes, e não buraco na faixa.
+
+`visible-blue-ray-witnesses.json` guarda todas as interseções viewport. `visible-blue-ray-witnesses-render-source.json` acrescenta a resolução render. `visible-patch-clearance-witnesses.json` registra direções físicas, normais e folgas locais.
+
+## Amostragem densa do vale e proteção de regiões sem defeito
+
+A amostragem independente faz 20 subdivisões baricêntricas em cada face externa e mantém v∈[5,11], y<−0,28 m: **15.818 amostras**, com duplicação intencional em arestas. Não é amostragem uniforme por área, nem máscara de visibilidade de uma câmera.
+
+Uma inversão exige simultaneamente casca atual mais externa que faixa atual por >0,01 mm e faixa fonte mais externa que casca fonte por >0,01 mm. Há **1.376 amostras inversas em 35 faces externas da faixa**; o conjunto toca 60 faces externas da casca.
+
+- Suporte total u≈35,2–140 e v≈5,9–10,4, mas em **ilhas descontínuas**, não um retângulo inteiro a corrigir.
+- Centro u80–96: nenhuma inversão detectada no vale.
+- Extremos frontais u24–32 e u144–160: nenhuma inversão detectada no vale.
+- Pequenas ilhas u72–80 e u96–104 também existem; uma correção apenas dos grandes recortes laterais seria incompleta.
+- Casca além da faixa atual: máximo **0,3903 mm**, mediana **0,1164 mm** nas amostras inversas.
+- Recuo da faixa atual frente à sua fonte render: **0,4454–0,8683 mm**.
+- A casca atual também está recuada frente à original: **0,0028–0,3864 mm**, não expandida.
+
+Arquivos `valley-dense-map.npz` (colunas explícitas), `valley-dense-summary.json`, `valley-inversion-uv-map.png`. Não usar o envelope u35–140 como licença para mexer em toda a frente. Preservar centro, cristas, anatomia e todas as regiões sem defeito demonstrado; expandir apenas o suficiente para uma transição válida e documentada.
+
+## Encaixe superior versus defeito novo
+
+Nas amostras frontais entre v0 e v3, a casca original já vem à frente da faixa original em **147/236 pontos**. No vale v5–11, essa situação não ocorre em nenhuma das 458 amostras iniciais da fonte, contra 44 na reduzida. As bandas v3–5, v11–13 e v13–16 não apresentaram inversão nessa amostragem.
+
+A comparação separa uma região de sobreposição herdada da sequência de ilhas novas do vale. Ela **não prova intenção artística** de cada contato superior, nem autoriza remoção global da sobreposição.
+
+Há ainda 12 testemunhos de inversão junto à margem superior v≈1,65–2,7. A inversão também ocorre nos raios de câmera, não só nas normais locais. Exemplo no frontal 900²: pixel aproximado (447,5;257,1), face externa da faixa 207, com casca atual 0,580 mm adiante e faixa fonte 0,545 mm adiante. A revisão visual foi solicitada para separar esse possível serrilhado da borda do encaixe superior contínuo. **Não foi incluído automaticamente na máscara do vale.**
+
+Dados: `front-embedding-comparison.json`, `upper-edge-visible-witnesses.json`. Pontos fora do enquadramento de uma câmera não são evidência visual dessa câmera.
+
+## Espaço até anatomia e alternativa de recuar casca
+
+Nos 14 testemunhos das ilhas, normais externas de faixa e casca estão quase alinhadas (dot aproximadamente 0,978–1,0). Casts ao longo da normal externa da faixa localizam a casca externa **0,036–0,329 mm** além da faixa externa.
+
+Como comparação, transladar a parede dupla da casca ao longo da direção interna, mantendo sua espessura no raio e posicionando casca externa 0,1 mm atrás da parede interna da faixa, exigiria aproximadamente **0,63–0,92 mm**. Sobrariam **1,33–3,04 mm** até a anatomia nesses raios. Essa hipótese mostra que existe espaço local; não é certificado de segurança do patch inteiro, suas transições, tangências ou outras direções, nem prescrição para mover casca.
+
+Restaurar amostragem da faixa em direção à fonte deve ser comparado antes: corrige o componente que mais recuou, conserva a casca e evita consumir a folga até anatomia. Os vértices e curvas das duas cristas devem ser preservados, não só sua contagem.
+
+## Limites e revisão da futura candidata
+
+BVHTree usa precisão finita; as distâncias direcionais apresentadas são estimativas e não distâncias mínimas globais nem profundidade volumétrica. Usa-se limiar 0,01 mm para evitar interpretar ruído microscópico como inversão. Toda conclusão de visibilidade refere-se aos raios e imagens específicos, não a todas as vistas.
+
+Uma candidata futura deve ser comparada contra estes testemunhos e mapa denso, checando se elimina as inversões visíveis, preserva áreas protegidas e ambas as cristas e não introduz novos contatos, sobreposições coplanares, auto-interseções ou fragilidade numérica. As validações devem abranger a geometria realmente alterada; não se repete a bateria congelada da anatomia/casca se permanecerem byte-idênticas. Resultado local não é aprovação artística global, addon, integração ou prova de Minecraft.

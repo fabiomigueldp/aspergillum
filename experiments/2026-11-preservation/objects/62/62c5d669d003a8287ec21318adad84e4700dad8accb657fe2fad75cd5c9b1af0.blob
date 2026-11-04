@@ -1,0 +1,21 @@
+# Clássico: compactação pré-lançamento
+
+O bloco `altare:mensa` passa de 11.520 a 3.000 estados: 50 poses locais × 4 frentes × 3 pedras × 5 tecidos. O domínio cartesiano usa `altare:shape` (10 valores) e `altare:detail` (5 valores), ambos abaixo do limite de 16 valores por propriedade. `altare:facing`, `altare:stone` e `altare:cloth` conservam seus valores. A pose inicial é contorno 15, frontal 0, frente 0, pedra 0 e tecido 1.
+
+As primeiras 42 poses são exatamente as produzidas pelo planejador retangular, incluindo todos os contornos sem frontal. As oito últimas conservam a roseta, papel 5, em cada contorno local com frente exposta. A tabela independente `classic-textile-layout.ts` de 54 poses não muda. Após uma publicação deste novo esquema, os índices devem permanecer estáveis.
+
+O compilador conserva os oito identificadores de geometria, todos os vínculos de materiais (inclusive não visíveis), as mesmas expressões de visibilidade com os estados retirados substituídos por constantes, colisão, seleção, resistência, tick e componente de superfície. Malhas e mapas não são editados. Cada estado recebe exatamente uma permutação de materiais e uma de geometria.
+
+## Migração e limites
+
+`migrateLegacyClassicSnapshot({id,states})` é uma função pura para snapshots **exportados antes da atualização**, contendo os cinco estados legados completos. Preserva a configuração representável e retorna incompatibilidade explícita para os 8.520 estados retirados. Estados inválidos e IDs alheios também são rejeitados. Não escreve no mundo, não altera a entrada e nunca usa o reparo com perda de frontal. `repairClassic` é somente um reparo explícito do contorno durante edição: quando o frontal deixa de caber no contorno, retorna frontal 0.
+
+**Não é migração automática segura de mundos Bedrock.** Retirar propriedades do mesmo ID pode fazer o motor resetar ou normalizar estados ao carregar, antes que scripts consigam lê-los. Uma função lógica de conversão não previne isso. Usar somente em mundo novo ou realizar exportação anterior, validar representabilidade e testar uma importação controlada com backup/rollback antes de qualquer atualização de mundo existente. Esta cópia diagnóstica não foi instalada.
+
+## Evidência reproduzível
+
+`node --experimental-strip-types --test tests/classic-compaction.node.ts`
+
+Os testes enumeram os 3.000 estados compactos, comparam materiais e visibilidade efetiva com as expressões/modelos legados, verificam geometria e componentes comuns, enumeram as 42 poses do planejador e as oito rosetas, e testam a conversão pura de todos os 11.520 snapshots anteriores. Isso não prova renderização nativa, carregamento seguro de saves nem importação no Minecraft.
+
+A migração exige um objeto de estados com exatamente as cinco chaves legadas próprias: campos extras, mistura do esquema antigo/novo, arrays, nulos, strings, valores não finitos ou fora dos limites retornam `invalid-states`. Um teste fixa a ordem dos 50 pares por SHA-256 de `JSON.stringify(CLASSIC_POSES)`: `f66361d205f1805def0943dbb0a510e0b1808bafb53fa4cb99bb2c0764dccfbd`.

@@ -1,0 +1,24 @@
+# Nossa Senhora da Paz — checkpoint V49 (2026-11-02)
+
+Estudo editável em andamento, etapa visual reversível admitida após revisão independente; NÃO modelo final/perfeito nem gêmeo fiel concluído.
+
+## Conteúdo e recuperação
+Blender 4.3.2. Abrir V49-child-hand-trial.blend com autoexec desabilitado. Nenhum script é necessário para visualizar ou editar. Trabalhar em cópia.
+O arquivo incorpora as melhorias anteriores de Maria até V43, V48 (pose do braço visível do Menino) e V49 (escala da mão e dedos descendo suavemente). Não contém tentativas rejeitadas V44–V47 como pose ativa.
+
+No objeto `Menino — mão anatômica`, zerar a chave `TESTE49 — escala mão e queda delicada dos dedos` restaura a mão V48. Para recuperar V43, zerar também a chave TESTE48 deste objeto e TESTE48 da túnica do Menino. Não zerar chaves anteriores indiscriminadamente.
+Chaves e geometria não relacionadas ao Menino foram preservadas. Relatório V49-scope-verification.json confirma geometria, transformações e todas as chaves dos demais objetos idênticas a V48.
+
+## Contato e limitações
+Consultar V49-root-contact-assessment.md e JSON detalhado: os contatos novos estão na inserção intencional da raiz do punho na manga fechada. Três direções de raycast concordam; nenhum dedo atravessa tecido. Isto NÃO é uma união Boolean pronta para impressão nem uma manga oca real.
+A mão de Maria ainda tem limitação de apoio sobre o peito. Solução de cuff de Maria não foi modificada nesta etapa. Rosto, cabelo, proporções, túnica e pés do Menino ainda precisam de trabalho substancial. A aceitação é local e reversível, não afirma fidelidade global.
+
+## Evidências e scripts
+Renders incluídos são do modelo, não fotos reais. `V49-hand-close-before/after` usam a mesma câmera/luz. Scripts audit-v49-root-* rodam com Blender -b --disable-autoexec -P SCRIPT e auditam o arquivo local; não instalam nada. Ordem para relatório completo: pairs, depth-views, parity. Somente relatórios/renders são regravados, nunca o .blend.
+
+## Fontes e direitos
+Referência real: imagem da Paróquia Nossa Senhora da Paz, Glicério, São Paulo.
+Fonte consultada: https://arquivo.arq.br/projetos/paroquia-nossa-senhora-da-paz
+Referências locais anteriores reference-8.jpg (perfil geral) e reference-9.jpg (rosto) NÃO são redistribuídas neste pacote. Não incluímos fotos de terceiros nem screenshots. O .blend pode manter caminhos externos para referência, não bytes empacotados. A ausência da foto não impede edição da geometria.
+
+O pacote não publica addon nem altera GitHub/produção. V43 e demais backups locais permanecem intactos.

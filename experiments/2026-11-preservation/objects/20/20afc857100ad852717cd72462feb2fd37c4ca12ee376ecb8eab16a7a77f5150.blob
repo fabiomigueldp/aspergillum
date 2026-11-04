@@ -1,0 +1,69 @@
+{
+  "status": "LAB V14 geometry/alpha proof; NEW PBR DETAIL PENDING; not a game screenshot or a published addon",
+  "source_to_bb": {
+    "matrix_rows": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ],
+      [
+        0.0,
+        -1.0,
+        0.0
+      ]
+    ],
+    "scale": 16,
+    "units": "1 source unit = 1 Minecraft block"
+  },
+  "bedrock_export": {
+    "x_reflected": true,
+    "rotation": "SciPy extrinsic xyz of [U,V,N]; JSON [-rx,-ry,+rz]",
+    "face": "south only",
+    "cube_depth": 0,
+    "reconstruct": "Inverse X reflection, then XYZ rotation about inverse-reflected pivot, then source=(bb.x,-bb.z,bb.y)/16"
+  },
+  "textures": {
+    "size": [
+      4096,
+      4096
+    ],
+    "legacy_region": [
+      0,
+      0,
+      2048,
+      2048
+    ],
+    "legacy_preservation": "decoded RGBA pixels bit-exact; original PNG files additionally frozen byte-exact",
+    "tile": [
+      20,
+      20
+    ],
+    "padding": 1,
+    "alpha": "binary 0/255; half-plane conservative cover 0.75*min(world units/texel)",
+    "new_slots": "right rectangle x=2048+20*c,y=20*r, c<102,r<204; then bottom-left x=20*c,y=2048+20*r,c<102,r<102",
+    "old_uv_addresses": "unchanged pixel coordinates and uv_size on all untouched bones; normalized UV halves with doubled texture size"
+  },
+  "per_texel_provenance": {
+    "records": "transport_faces.jsonl.gz; one row per new cube/triangle",
+    "numeric": "transport_arrays.npz",
+    "source_inputs": "source-band-frozen.npz, source-shell-frozen.npz, source-anatomy-frozen.npz retain all lineage arrays",
+    "decode": "Find record whose atlas_uv rectangle contains texel. pixel_to_native_barycentric @ [local_x+0.5,local_y+0.5,1] yields raw native triangle barycentrics. Clamp each to >=0 and normalize for covered-margin sampling; native_triangle gives source vertex rows. source_uv, high_source face/bary and baseline IDs live in frozen NPZ. Alpha uses unprojected pixel center and oriented edge distances. Non-new upper-left pixels map to identical legacy coordinates; unused pixels are transparent zero-color and neutral normal.",
+    "normal_methods": {
+      "0": "neutral [128,128,255,255] pending, not a highpoly detail bake"
+    }
+  },
+  "limitations": [
+    "23,081 cubes and 4096-square textures may exceed practical target cost; no target runtime loading or performance claim.",
+    "South-only zero-depth cubes preserve established exporter conventions; winding, alpha cutoff, mipmaps and backface behavior remain runtime untested.",
+    "Conservative alpha and finite 20-pixel tiles are not lossless triangular geometry; subpixel walls/creases can rasterize differently.",
+    "New shell/band normals are pending because stored native normals are smooth geometry normals, not inherited highpoly detail.",
+    "Anatomy existing face correspondence is exact, but displaced faces need a declared normal-transport model rather than a false highpoly bake.",
+    "No behavior pack or published add-on is generated."
+  ]
+}

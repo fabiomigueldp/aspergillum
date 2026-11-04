@@ -1,0 +1,8 @@
+import bpy
+from mathutils import Vector
+r='/workspace/scratch/212c580ada5b/paz-sleeve-proxy/';bpy.ops.wm.open_mainfile(filepath=r+'V85-PROXY-MANGA-NAO-INTEGRADA.blend',use_scripts=False)
+ghost=bpy.data.materials.new('DIAGNOSTIC ghost V75 — not final material');ghost.use_nodes=True;nt=ghost.node_tree;nt.nodes.clear();out=nt.nodes.new('ShaderNodeOutputMaterial');mix=nt.nodes.new('ShaderNodeMixShader');mix.inputs[0].default_value=.83;diff=nt.nodes.new('ShaderNodeBsdfDiffuse');diff.inputs[0].default_value=(.35,.42,.48,1);trans=nt.nodes.new('ShaderNodeBsdfTransparent');nt.links.new(diff.outputs[0],mix.inputs[1]);nt.links.new(trans.outputs[0],mix.inputs[2]);nt.links.new(mix.outputs[0],out.inputs[0])
+for x in bpy.data.objects:
+ if x.type=='MESH' and not x.name.startswith('PROXY85'):
+  x.data=x.data.copy();x.data.materials.clear();x.data.materials.append(ghost)
+s=bpy.context.scene;s.render.engine='CYCLES';s.cycles.samples=48;s.render.resolution_x=650;s.render.resolution_y=950;s.render.resolution_percentage=100;s.cycles.transparent_max_bounces=16;c=s.camera;c.data.type='ORTHO';c.data.ortho_scale=1.95;target=Vector((-.14,-.05,2.35));c.location=target+Vector((-5,-8,0));c.rotation_euler=(target-c.location).to_track_quat('-Z','Y').to_euler();s.render.filepath=r+'PROVISORIO-threequarter.png';bpy.ops.wm.save_as_mainfile(filepath=r+'V85-DIAGNOSTICO-contexto.blend')

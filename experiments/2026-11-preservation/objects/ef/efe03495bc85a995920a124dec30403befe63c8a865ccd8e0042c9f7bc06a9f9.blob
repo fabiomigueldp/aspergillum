@@ -1,0 +1,9 @@
+import bpy,json,numpy as np
+from mathutils import Vector
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V84-chest-fingers-trial.blend',use_scripts=False);o=bpy.data.objects['Maria — mão ao peito anatômica'];k=o.data.shape_keys.key_blocks['TESTE84 — adução distal reversível'];versions={}
+for val in [0,1]:
+ k.value=val;bpy.context.view_layer.update();dg=bpy.context.evaluated_depsgraph_get();m=o.evaluated_get(dg).to_mesh();p=np.array([v.co[:] for v in m.vertices]);T=np.array([f.vertices[:] for f in m.polygons]);vol=abs(np.einsum('ij,ij->i',p[T[:,0]],np.cross(p[T[:,1]],p[T[:,2]])).sum()/6);versions[val]={'volume':float(vol)};o.evaluated_get(dg).to_mesh_clear()
+json.dump({'hand_volume':versions,'relative_change':versions[1]['volume']/versions[0]['volume']-1,'note':'Global signed mesh volume, not proof of local anatomical fidelity; distal rigid spans in separate report'},open(r+'V84-volume-audit.json','w'),indent=2)
+s=bpy.context.scene;s.cycles.samples=24;s.render.resolution_x=450;s.render.resolution_y=700;s.render.resolution_percentage=100;c=s.camera;ct=Vector((.04,-.13,3.04));c.data.ortho_scale=1.20;c.location=ct+Vector((-2,-6,0));c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler()
+for name,val in [('V75',0),('V84',1)]:
+ k.value=val;s.render.filepath=r+name+'-chest-hand-context.png';bpy.ops.render.render(write_still=True)

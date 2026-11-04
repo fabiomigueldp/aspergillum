@@ -1,0 +1,134 @@
+# Revisão visual independente: encaixe V7 → V8
+
+Data: 2026-11-03. Estado: revisão concluída da candidata retida, incluindo controle nativo, transporte JSON e comparação posterior sem halo.
+
+**Parecer final: reter a V8 como melhora visual local verificável, sem aprovar o encaixe global nem a entrega Bedrock.** A região cinza maior no topo e as ilhas cinza da ponte deixam de ser visíveis, sem regressão perceptível de face, orelhas ou silhueta geral nas vistas examinadas. Pequenos pontos cinza retornam na cap quando a parte 15 ajustada passa novamente pelo transporte JSON/alfa; portanto, o resultado final de transporte ainda não está visualmente limpo.
+
+Candidata retida: `body_interface_v8/anatomy_fit/retained-anatomy.npz`. SHA-256 lido localmente: `c1971f80ca5bd99a8d51461823a42e03ed6400282e31a18586602cd0216b4519`, igual ao de `inward-0p5mm-iteration00.npz`. O registro abaixo conserva a sequência de controles; a conclusão detalhada está na última seção.
+
+## Escopo e método
+
+Leitura de `lateral_v7/README.md` e `lateral_v7/evidence/review-visual.md`, seguida de inspeção direta dos quatro PNGs `lateral_v7/evidence/adaptive-consistent-{full-front,junction-profile,junction-back,head-front}.png` em sua resolução disponível.
+
+São diagnósticos Blender, **não capturas de Minecraft**. A casca estrutural é nativa e colorida: cap azul, ponte vermelha, manto verde e faixa ouro. A composição cinza é o corpo legado reimportado de JSON/alfa, com 18 partes, sem normalmap e sem escultura highpoly acrescentada como contexto. A identificação por peça do corpo não está codificada nas cores destes renders: a associação de uma superfície cinza à parte 15 depende do diagnóstico geométrico, não é demonstrada só pelo pixel.
+
+Este parecer examina aparência e silhueta. Não deduz causas, profundidade real, clearance ou interseção a partir de imagens e não usa contagens geométricas para aprovar aparência. Coordenadas abaixo são aproximadas, em pixels, com origem no canto superior esquerdo.
+
+## Mapa visual do baseline V7
+
+### Cap azul
+
+- **Topo da cabeça:** a vista `head-front` mostra uma região cinza irregular relativamente grande invadindo o campo azul próximo ao topo, aproximadamente x435–530/y150–176. Não é o halo: o disco passa atrás, separado do campo azul pela leitura de contorno e cor. Em `junction-profile`, a mesma classe de descontinuidade aparece na borda superior da cap, por volta de x230–330/y136–160. A correspondência exata de pontos 3D não é afirmada.
+- **Superfície azul:** vários pequenos pontos/ilhas cinzas se distribuem pela cap, particularmente legíveis no perfil. Estão dentro do campo azul, afastados de face e orelha, e por isso são sinais visuais relevantes do encaixe. O render não decide se são intrusão de anatomia, lacuna, textura ou outro mecanismo.
+- **Faixa ouro:** pequenos trechos azuis dentro da faixa não são classificados como anatomia cinza. A borda frontal da cap acompanha a testa e deve continuar legível depois da correção.
+- Em `full-front`, a região é pequena demais para examinar todos os pontos; essa vista serve principalmente para a silhueta geral.
+
+### Ponte vermelha
+
+- **Nuca, perfil:** há uma ilha cinza irregular dentro da faixa vermelha, aproximadamente x532–574/y565–596, imediatamente abaixo da cap. É o vazamento aparente mais claro da junção nesta vista. Não é a orelha nem o disco do halo: fica atrás/abaixo da orelha e separada do halo.
+- **Nuca, traseira:** reaparece uma ilha cinza comprida perto do centro inferior do halo, aproximadamente x458–507/y480–501. Seu limite contra o vermelho é visível, embora a área acima seja ocultada pelo disco.
+- **Extremidade direita, traseira:** persiste uma ponta/recorte estreito no encontro vermelho–verde, aproximadamente x621–638/y495–534. O render não permite classificá-lo como vazamento da anatomia nem atribuir sua causa. Guardar como marco de comparação local.
+- **Atrás da orelha, perfil:** o vermelho conserva algumas linhas/dobras estreitas, mas sem a multiplicidade de pregas descrita nos controles antigos. Sua presença isolada não prova defeito geométrico.
+- Na vista frontal da cabeça, o vermelho aparece em pequenas faixas atrás das orelhas, sobretudo à direita da imagem. Isso não é, por si só, vazamento de anatomia.
+
+### Manto verde e ombros
+
+- Nas regiões verdes visíveis do pescoço posterior, não identifico uma ilha cinza interna tão inequívoca quanto a da ponte.
+- Há contato cinza–verde com bordas recortadas/degraus perto dos ombros: no perfil, sobretudo x615–755/y839–953; na traseira, na borda esquerda do verde, aproximadamente x404–471/y708–811, e na borda direita do ombro. O corpo cinza ocupa o lado anterior/lateral dessas interfaces.
+- Essas imagens não bastam para separar uma borda intencional entre anatomia/roupa e manto de uma invasão indesejada da casca. Registrar a posição e verificar na nova candidata; não chamar todo ombro exposto de vazamento.
+- No corpo inteiro, o manto aparece principalmente em tiras laterais verdes atrás da figura. Não há saliência cinza independente evidente nessas tiras nessa escala, mas a oclusão frontal e a resolução impedem aprovar a integração completa.
+
+## Exposições intencionais e oclusões
+
+- Face, orelhas, pescoço anterior, mãos e corpo frontal cinzas fazem parte da composição exposta. A correção não deve apagá-los nem arredondar sua silhueta para esconder problemas de encaixe.
+- O grande disco cinza posterior é o halo. No perfil é visto quase de aresta; na traseira cobre a maior parte da cap posterior e da junção superior. Não deve ser contado como anatomia vazando, nem a região ocultada pode ser aprovada por ausência de defeitos visíveis.
+- Os pontos escuros e a aparência facetada do restante do corpo são limitações perceptíveis do corpo legado, mas não se atribuem automaticamente à junção nem entram como regressão nova sem comparação direta.
+
+## Marcos de preservação de silhueta
+
+Comparar nas mesmas câmeras, materiais e iluminação:
+
+1. Arco superior da cap, inclinação da testa/faixa ouro e perfil do nariz/queixo.
+2. Forma e exposição das duas orelhas.
+3. Descida posterior da cap até a ponte, sem novo volume saliente atrás da orelha.
+4. Curva da nuca e alargamento do manto até os ombros.
+5. Contorno global do manto, corpo e halo na frente de corpo inteiro.
+
+Uma redução dos pontos cinza só constitui melhora se não vier acompanhada de perda de anatomia exposta, buracos, retração visível ou alteração relevante desses contornos. A imagem precisa sustentar essa conclusão independentemente dos testes numéricos.
+
+## Parecer provisório
+
+**V7 permanece um baseline técnico, não uma composição visualmente resolvida.** Há evidência visual clara de descontinuidade cinza dentro da cap e da ponte, com a ilha da nuca como prioridade. As interfaces de ombro/manto e as zonas cobertas pelo halo permanecem inconclusivas. Não há aprovação V8 enquanto seus renders não forem inspecionados diretamente.
+
+## Registro da comparação com V8
+
+As seções seguintes registram os controles e a inspeção da candidata. Fontes e evidências V7 não foram modificadas.
+
+## Controle de representação: parte 15 nativa sem ajuste
+
+As quatro imagens `body_interface_v8/evidence/native-control-{full-front,junction-profile,junction-back,head-front}.png` foram inspecionadas diretamente. Segundo a descrição do responsável, somente a parte 15 foi substituída pelos seus 1.376 triângulos pretendidos originais, sem expansão alfa; as demais partes continuam em JSON e a casca V7 é a mesma. Esta etapa é um **controle**, não a correção V8.
+
+- Persistem a ilha cinza da ponte na nuca, no perfil e na traseira, e a região cinza maior no topo da cap, no perfil e na frente da cabeça. A mudança de representação sozinha não resolve esses marcos.
+- Muitos pontos cinza pequenos da cap deixam de aparecer ou ficam menos perceptíveis já neste controle. Essa melhora não poderá ser atribuída ao ajuste futuro da geometria.
+- A leitura das facetas da face e do pescoço fica diferente, especialmente na vista `head-front`, sem mudança perceptível do contorno geral. Essa diferença de superfície pertence à representação nativa versus JSON/alfa, não à futura correção.
+- Orelhas, nariz/queixo, silhueta do manto, mancha da nuca e ponta direita da junção posterior conservam os marcos de comparação. O halo continua impedindo inspeção de parte da superfície posterior.
+
+**Baseline correto para a próxima candidata nativa: `native-control-*`.** A comparação V7 JSON versus candidata nativa será apenas auxiliar; não isola os efeitos do ajuste. Se houver transporte JSON da candidata, ele deverá ter sua própria comparação com o baseline JSON e não será considerado teste Minecraft.
+
+## Primeira candidata nativa: `fit-first`
+
+Inspeção direta de `fit-first-junction-profile.png` e `fit-first-head-front.png`, comparadas às vistas equivalentes de `native-control`. Arquivo informado pelo responsável: `anatomy_fit/inward-0p5mm-iteration00.npz`. Candidata provisória, ainda não selecionada; o responsável está testando uma alternativa com menor deslocamento. Não usei o valor de deslocamento nem contagens de interseções para emitir o parecer abaixo.
+
+**Resultado visual parcial: melhora clara do encaixe aparente, sem regressão de silhueta identificada nessas duas vistas.**
+
+- O rasgo cinza maior no topo da cap deixa de ser visível tanto no perfil quanto na frontal da cabeça.
+- A ilha cinza da nuca deixa de ser visível no perfil; a ponte vermelha passa a ser visualmente contínua nessa região.
+- Os pequenos pontos cinza que ainda restavam no campo azul do controle nativo deixam de ser perceptíveis nas duas imagens examinadas.
+- O contorno do nariz, lábios, queixo e mandíbula no perfil permanece perceptivelmente igual ao controle, assim como a orelha e sua borda externa. Na frontal, não identifico alteração perceptível do formato/exposição das duas orelhas, da face ou da região da testa junto à faixa ouro.
+- O arco da cap, a descida posterior azul, a curva vermelha da nuca e o alargamento verde até os ombros conservam seu desenho. Não aparece novo abaulamento nem buraco perceptível para substituir as manchas.
+- Permanecem pequenos trechos vermelhos junto às orelhas e as bordas recortadas da interface ombro/manto. A candidata não resolve por evidência visual todos os problemas da composição.
+
+Esta observação não aprova uma candidata ainda não congelada. Traseira, corpo inteiro, áreas sob o halo, compatibilidade com todas as partes, transporte JSON e execução Minecraft continuam fora deste parecer parcial.
+
+
+## Parecer final: candidata retida, transporte e área sem halo
+
+### Evidências examinadas
+
+Além das quatro imagens V7 e das quatro `native-control-*`, foram inspecionadas diretamente:
+
+- As quatro `fit-first-{full-front,junction-profile,junction-back,head-front}.png`, com a parte 15 ajustada como malha nativa e casca nativa.
+- As quatro `fit-json-{full-front,junction-profile,junction-back,head-front}.png`, com a parte 15 ajustada reexportada e reimportada via cubos JSON/alfa; a casca continua nativa. Isto não é uma exportação completa da casca para Bedrock.
+- O par `native-control-nohalo-junction-back.png` e `fit-first-nohalo-junction-back.png`, que remove apenas a oclusão do halo para inspeção diagnóstica.
+
+A comparação principal foi mantida por representação: `fit-first` contra `native-control`; `fit-json` contra `lateral_v7/evidence/adaptive-consistent`. O par sem halo foi comparado entre si. Nenhuma contagem de interseções foi usada como aprovação visual.
+
+### Nativo ajustado versus controle nativo
+
+A melhora já vista no perfil/frontal é confirmada pela traseira: a ilha cinza abaixo do halo deixa de aparecer e a ponte fica visualmente contínua nessa região. A frente de corpo inteiro preserva o desenho geral de cabeça, manto, corpo e halo; não aparece alteração perceptível de proporção ou nova saliência. Essa vista global não substitui as ampliações da junção.
+
+O recorte/ponta da borda direita da ponte continua parcialmente legível, mas a pequena interrupção cinza/clara ao longo da borda vermelho–verde fica menos evidente. Não atribuo causa nem trato isso como prova de clearance.
+
+Na faixa ouro, permanecem os pequenos recortes azuis e o encontro irregular perto das têmporas já visíveis nos controles. Não identifico rasgo novo ou deformação perceptível da faixa. Também não identifico nova alteração perceptível nas feições, orelhas e seus contornos. Isso é uma conclusão visual limitada às câmeras, não garantia de preservação numérica de todos os vértices nem de ausência de contato.
+
+### Posterior sem halo
+
+O controle revela vários pontos cinza distribuídos pela cap posterior e várias ilhas cinza na ponte, parte delas ocultadas nas câmeras normais. Na candidata nativa ajustada, esses sinais deixam de ser perceptíveis nessa vista. A cap e a ponte mantêm suas curvas gerais, sem novo volume saliente ou buraco aparente. O contorno do manto até os ombros e as exposições laterais da face/orelha continuam estáveis.
+
+Portanto, há evidência visual adicional da melhora na superfície antes ocultada pelo halo. Esta vista não examina outras direções escondidas ou o transporte JSON sem halo, que não foi fornecido.
+
+### Transporte JSON versus V7 JSON
+
+O rasgo grande do topo não reaparece na frontal da cabeça ou no perfil. A mancha principal da nuca não reaparece no perfil nem na porção visível da traseira. A melhora principal sobre o baseline V7 permanece perceptível após a reexportação/reimportação da parte 15.
+
+**Entretanto, pequenos pontos cinza reaparecem dentro da cap azul.** São especialmente claros no perfil, abaixo do meio da cap, com exemplos aproximados em x310/y349 e x402/y371, e discretos na faixa azul exposta da traseira. Eles não são perceptíveis nas vistas nativas equivalentes. A diferença observada acompanha a troca de representação; os PNGs, sozinhos, não demonstram o mecanismo exato nem permitem atribuí-lo exclusivamente à expansão alfa.
+
+Na frontal e no corpo inteiro, as proporções e contornos permanecem perceptivelmente iguais ao baseline JSON. As diferenças na leitura facetada/granulada da face entre nativo e JSON não são tratadas como deformação do ajuste. O halo permanece em sua posição, e a exposição de face, orelhas e pescoço anterior não foi escondida para limpar a cap.
+
+### Decisão e limites
+
+**Reter a candidata como evolução local, mantendo o transporte e o encaixe global pendentes.** O objetivo visual local de eliminar as manchas maiores sem alterar perceptivelmente a silhueta foi alcançado nas vistas fornecidas. Não declarar o conjunto “sem vazamentos”: o transporte JSON ainda mostra pontinhos cinza, a composição conserva interfaces ambíguas nos ombros e não foi avaliada em Minecraft.
+
+O responsável informou que a revisão geométrica encontrou contatos herdados e novos com a faixa V5. Esta revisão visual não confirma nem refuta esse resultado: a ausência de regressão perceptível na faixa não autoriza ignorá-lo. A aprovação global deve permanecer suspensa até os problemas geométricos e de transporte aplicáveis serem resolvidos e validados separadamente.
+
+Não foram modificadas fontes, publicadas versões, instalados pacotes nem usadas normais de aparência para ocultar os sinais examinados. Este relatório não certifica culling/alpha, mipmaps, iluminação de engine, Content Log, PBR ou desempenho no jogo.

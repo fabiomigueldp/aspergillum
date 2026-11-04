@@ -1,0 +1,169 @@
+"""V9 anatomy experiment; immutable shell V7/band V5 and original connectivity.
+Works in mm around the original anatomy, optimizes 3D displacement with local
+shell AND band cavity constraints plus explicit geometric-quality penalties.
+All output is isolated in constrained_fit. No automatic retained selection.
+"""
+from pathlib import Path
+import sys, json, hashlib, time
+import numpy as np
+from scipy.optimize import minimize
+from mathutils.bvhtree import BVHTree
+sys.dont_write_bytecode=True
+O=Path(__file__).resolve().parent; B=O.parent.parent
+args=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
+tag=args[0] if args else 'quality095'
+if (O/f'{tag}-iteration00.npz').exists():
+ raise SystemExit('Refusing to overwrite a preserved trial. Choose a new output prefix.')
+minarea=float(args[1]) if len(args)>1 else .97
+contact_weight=float(args[2]) if len(args)>2 else 30.
+smooth_weight=float(args[3]) if len(args)>3 else .1
+iterations=int(args[4]) if len(args)>4 else 4
+maskfile=args[5] if len(args)>5 else ''
+base=np.load(B/'body_interface_v8/anatomy_fit/baseline-welded.npz'); v8=np.load(B/'body_interface_v8/anatomy_fit/retained-anatomy.npz'); ins=np.load(B/'body_interface_v8/anatomy_fit/inner-shell-and-baseline-inspection.npz')
+p0=base['points']; f=base['triangles']; n0=base['normals']; p8=v8['points']; center=p0.mean(0); P0=(p0-center)*1000; P8=(p8-center)*1000
+protected=v8['protected_vertices'].copy(); active=v8['active_vertices'].copy(); released=np.zeros(len(p0),bool)
+if maskfile:
+ masks=np.load(Path(maskfile)); released=masks['released_ear_vertices'].astype(bool); protected[released]=False; active[released]=True
+# Small component and all source vertices outside the approved support remain exact.
+ids=np.flatnonzero(active); inv=np.full(len(p0),-1,int); inv[ids]=np.arange(len(ids))
+q0=P0[f]; raw0=np.cross(q0[:,1]-q0[:,0],q0[:,2]-q0[:,0]); area0=np.linalg.norm(raw0,axis=1); valid=area0>2e-6; vf=f[valid]; a0=area0[valid]; unit0=raw0[valid]/a0[:,None]
+# Faces and edges with no free vertex cannot change and need no objective terms.
+fm=np.any(active[vf],axis=1); gf=vf[fm]; ga0=a0[fm]; gn0=unit0[fm]
+rest_e1=P0[gf[:,1]]-P0[gf[:,0]];rest_e2=P0[gf[:,2]]-P0[gf[:,0]];rest_len=np.linalg.norm(rest_e1,axis=1);rest_x=rest_e1/rest_len[:,None];rest_y=np.cross(gn0,rest_x);restR=np.zeros((len(gf),2,2));restR[:,0,0]=rest_len;restR[:,0,1]=np.sum(rest_e2*rest_x,axis=1);restR[:,1,1]=np.sum(rest_e2*rest_y,axis=1);restRi=np.linalg.inv(restR)
+edges=np.unique(np.sort(np.concatenate([f[:,[0,1]],f[:,[1,2]],f[:,[2,0]]]),axis=1),axis=0); edges=edges[np.any(active[edges],axis=1)]; el0=np.linalg.norm(P0[edges[:,1]]-P0[edges[:,0]],axis=1); em=el0>1e-5; edges=edges[em];el0=el0[em];smooth_scale=np.clip(100/(el0**2),.1,10)
+obs=[]
+for name,path in [('shell','lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz'),('band','shell_band_v5/retained_candidate/evidence/band-paired.npz')]:
+ a=np.load(B/path); v=a['points']; fs=a['triangles']; ii=ins['inner_shell_face_indices'] if name=='shell' else np.flatnonzero(np.all(a['source_side'][fs]==1,axis=1));vv=(v-center)*1000;ts=vv[fs];ns=np.cross(ts[:,1]-ts[:,0],ts[:,2]-ts[:,0]);ns/=np.linalg.norm(ns,axis=1)[:,None]
+ obs.append(dict(name=name,v=v,mm=vv,f=fs,ii=ii,ts=ts,ns=ns,full=BVHTree.FromPolygons(v.tolist(),fs.tolist(),all_triangles=True,epsilon=0),inner=BVHTree.FromPolygons(v.tolist(),fs[ii].tolist(),all_triangles=True,epsilon=0),data=a,path=path))
+
+def contacts(p,f1,v2,f2,tree2,selftest=False):
+ t=BVHTree.FromPolygons(p.tolist(),f1.tolist(),all_triangles=True,epsilon=0); pairs=np.array(t.overlap(tree2),int).reshape(-1,2)
+ if selftest:
+  pairs=pairs[pairs[:,0]<pairs[:,1]];pairs=pairs[~np.any(f1[pairs[:,0],:,None]==f2[pairs[:,1],None,:],axis=(1,2))]
+ if not len(pairs): return pairs
+ a=p[f1[pairs[:,0]]];b=v2[f2[pairs[:,1]]];hit=np.zeros(len(pairs),bool)
+ for orig,tar in [(a,b),(b,a)]:
+  e1,e2=tar[:,1]-tar[:,0],tar[:,2]-tar[:,0]
+  for k in range(3):
+   pp=orig[:,k];dr=orig[:,(k+1)%3]-pp;h=np.cross(dr,e2);det=np.einsum('ij,ij->i',e1,h);valid=abs(det)>1e-20;den=np.where(valid,det,1);s=pp-tar[:,0];u=np.einsum('ij,ij->i',s,h)/den;qq=np.cross(s,e1);vv=np.einsum('ij,ij->i',dr,qq)/den;tt=np.einsum('ij,ij->i',e2,qq)/den;hit|=valid&(tt>1e-8)&(tt<1-1e-8)&(u>1e-8)&(vv>1e-8)&(u+vv<1-1e-8)
+ return pairs[hit]
+
+def meshmetrics(P):
+ p=P/1000+center;p[~active]=p0[~active];t=P[f];raw=np.cross(t[:,1]-t[:,0],t[:,2]-t[:,0]);a=np.linalg.norm(raw,axis=1);ratio=a[valid]/area0[valid];cos=np.sum(raw[valid]*raw0[valid],axis=1)/(a[valid]*area0[valid]);edgeratio=np.linalg.norm(P[edges[:,1]]-P[edges[:,0]],axis=1)/el0;mm=np.linalg.norm(P-P0,axis=1);mm8=np.linalg.norm(P-P8,axis=1);moving=mm>1e-8;cs={o['name']:contacts(p,f,o['v'],o['f'],o['full']) for o in obs};tree=BVHTree.FromPolygons(p.tolist(),f.tolist(),all_triangles=True,epsilon=0);sc=contacts(p,f,p,f,tree,True)
+ sv=np.linalg.svd(np.stack([P[gf[:,1]]-P[gf[:,0]],P[gf[:,2]]-P[gf[:,0]]],axis=2)@restRi,compute_uv=False)
+ row={'stretch_min':float(sv.min()),'stretch_max':float(sv.max()),'shell_pairs':len(cs['shell']),'band_pairs':len(cs['band']),'self_pairs':len(sc),'shell_parts':{str(i):int(sum(obs[0]['data']['face_parts'][cs['shell'][:,1]]==i)) for i in range(3)},'moved_vertices':int(moving.sum()),'min_area_ratio':float(ratio.min()),'max_area_ratio':float(ratio.max()),'area_ratio_p01':float(np.percentile(ratio,1)),'area_ratio_below_0p95':int(sum(ratio<.95)),'area_ratio_below_1':int(sum(ratio<1-1e-8)),'face_flips':int(sum(cos<=0)),'max_normal_degrees':float(np.degrees(np.arccos(np.clip(cos,-1,1))).max()),'edge_ratio_range':[float(edgeratio.min()),float(edgeratio.max())],'max_displacement_mm':float(mm.max()),'p95_moved_mm':float(np.percentile(mm[moving],95)) if moving.any() else 0,'median_moved_mm':float(np.median(mm[moving])) if moving.any() else 0,'max_change_from_v8_mm':float(mm8.max()),'worst_area_face':int(np.flatnonzero(valid)[ratio.argmin()]),'worst_area_source_face':int(base['source_face_indices'][np.flatnonzero(valid)[ratio.argmin()]]),'protected_exact':bool(np.array_equal(p[protected],p0[protected]))}
+ # float round trip: enforce fixed values in persisted artifacts below.
+ return row,cs
+
+# Sample vertex, edge midpoint and barycentric interior of all movable faces.
+# Samples constrain finite local nearest surfaces, not extrapolated arbitrary planes.
+sfi=[]; sbary=[]
+for tri in gf:
+ for bary in [(1,0,0),(0,1,0),(0,0,1),(.5,.5,0),(.5,0,.5),(0,.5,.5),(1/3,1/3,1/3)]:sfi.append(tri);sbary.append(bary)
+sfi=np.array(sfi,int);sbary=np.array(sbary,float);snorm=(n0[sfi]*sbary[:,:,None]).sum(1);snorm/=np.maximum(np.linalg.norm(snorm,axis=1)[:,None],1e-10)
+# Deduplicate repeated positions/weights to prevent dense tessellation overweighting.
+key=[]
+for tri,bary in zip(sfi,sbary):key.append(tuple(sorted((int(a),float(b)) for a,b in zip(tri,bary) if b)))
+_,uniq=np.unique(np.array([str(k) for k in key]),return_index=True);sfi=sfi[uniq];sbary=sbary[uniq];snorm=snorm[uniq]
+
+accumulated=[{},{}]
+
+def cavity_constraints(P):
+ samples=(P[sfi]*sbary[:,:,None]).sum(1);ps=samples/1000+center;cc=[]
+ for oi,o in enumerate(obs):
+  near=[o['inner'].find_nearest(tuple(x)) for x in ps];idx=np.array([o['ii'][n[2]] for n in near]);nearq=(np.array([n[0] for n in near])-center)*1000;dist=np.array([n[3]*1000 for n in near]);norm=o['ns'][idx];align=(snorm*norm).sum(1);signed=((samples-nearq)*norm).sum(1)
+  # Locality plus opposing normals filters irrelevant bands behind the visible face.
+  keep=(dist<25)&(align<-.15)&np.any(active[sfi],axis=1)
+  # Avoid extrapolating a finite band plane sideways/upwards beyond its footprint.
+  if oi==1:
+   covered=np.zeros(len(ps),bool)
+   for j,(pp,nn) in enumerate(zip(ps,snorm)):
+    for sign in [-1,1]:
+     hit=o['inner'].ray_cast(tuple(pp),tuple(nn*sign),.012)
+     if hit[2] is not None and np.dot(nn,hit[1])<-.15:covered[j]=True;break
+   keep &= covered
+  cc.append((sfi[keep],sbary[keep],norm[keep],nearq[keep],oi,np.flatnonzero(keep),signed[keep]))
+ # Add exact local projected triangle-overlap samples from actual crossings.
+ # Clip the body triangle in barycentric coordinates to each finite obstacle
+ # triangle footprint. Only points above that finite triangle get a halfspace.
+ p=P/1000+center
+ for oi,o in enumerate(obs):
+  cp=contacts(p,f,o['v'],o['f'],o['full']);cp=cp[np.isin(cp[:,1],o['ii'])];cf=[];cb=[];cn=[];cq=[]
+  for bodyface,obsface in cp:
+   tri=f[bodyface]
+   if not np.any(active[tri]):continue
+   nn=o['ns'][obsface]
+   if np.dot(unit0[np.flatnonzero(valid).searchsorted(bodyface)] if valid[bodyface] else n0[tri].mean(0),nn)>-.15:continue
+   tt=o['ts'][obsface];e1=tt[1]-tt[0];e2=tt[2]-tt[0];g11=np.dot(e1,e1);g12=np.dot(e1,e2);g22=np.dot(e2,e2);det=g11*g22-g12*g12
+   if det<1e-12:continue
+   vv=P[tri]-tt[0];de1=vv@e1;de2=vv@e2;u=(g22*de1-g12*de2)/det;v=(g11*de2-g12*de1)/det
+   # Each clipping condition is affine in the anatomy barycentrics.
+   poly=[np.array([1.,0,0]),np.array([0.,1,0]),np.array([0.,0,1])]
+   for plane in [u,v,1-u-v]:
+    new=[]
+    if not len(poly):break
+    for aa,bb in zip(poly,poly[1:]+poly[:1]):
+     da=float(aa@plane);db=float(bb@plane);ina=da>=-1e-9;inb=db>=-1e-9
+     if ina:new.append(aa)
+     if ina!=inb:new.append(aa+(bb-aa)*(da/(da-db)))
+    poly=new
+   if not len(poly):continue
+   # All footprint corners are needed to constrain the local affine plane.
+   for bary in poly:
+    if np.sum(bary*active[tri])<1e-8:continue
+    cf.append(tri);cb.append(bary);cn.append(nn);cq.append(tt[0])
+  if cf:
+   for fi,bb,nn,qq in zip(cf,cb,cn,cq):
+    key=tuple(fi)+tuple(np.round(bb,5))+tuple(np.round(nn,6))+tuple(np.round(qq,3));accumulated[oi][key]=(fi,bb,nn,qq)
+  if accumulated[oi]:
+   cf,cb,cn,cq=map(np.array,zip(*accumulated[oi].values()));a=list(cc[oi]);a[0]=np.concatenate([a[0],cf]);a[1]=np.concatenate([a[1],cb]);a[2]=np.concatenate([a[2],cn]);a[3]=np.concatenate([a[3],cq]);cc[oi]=tuple(a)
+ return cc
+
+# Quality barrier floors are deliberately above acceptance floor to leave margin.
+# Max-normal/edge soft constraints likewise have stricter internal thresholds.
+def objective(x, cc):
+ P=P0.copy();P[ids]+=x.reshape(-1,3);D=P-P0; grad=np.zeros_like(P);loss=.3*np.sum(D*D);grad+=.6*D
+ # displacement smoothness allows rigid hidden-patch translations without area collapse
+ diff=D[edges[:,1]]-D[edges[:,0]]; w=smooth_weight*smooth_scale;loss+=np.sum(w[:,None]*diff*diff);g=2*w[:,None]*diff;np.add.at(grad,edges[:,1],g);np.add.at(grad,edges[:,0],-g)
+ # Metric preservation, more tolerant than raw displacement-gradient regularization.
+ ev=P[edges[:,1]]-P[edges[:,0]];lens=np.maximum(np.linalg.norm(ev,axis=1),1e-15);r=lens/el0;strain=r-1;loss+=50*np.sum(strain*strain);g=100*strain[:,None]*ev/(lens*el0)[:,None];np.add.at(grad,edges[:,1],g);np.add.at(grad,edges[:,0],-g)
+ # Strong explicit edge-length and total-displacement gates.
+ elo=np.minimum(r-.92,0);ehi=np.maximum(r-1.08,0);loss+=2e6*np.sum(elo*elo+ehi*ehi);eg=4e6*(elo+ehi)[:,None]*ev/(lens*el0)[:,None];np.add.at(grad,edges[:,1],eg);np.add.at(grad,edges[:,0],-eg)
+ mag=np.maximum(np.linalg.norm(D,axis=1),1e-12);over=np.maximum(mag-10,0);loss+=1e4*np.sum(over*over);grad+=2e4*over[:,None]*D/mag[:,None]
+ # Hard-quality-target penalties: true area ratio floor and upper stretch limit.
+ t=P[gf];u=t[:,1]-t[:,0];v=t[:,2]-t[:,0]
+ # Intrinsic principal stretches prevent anisotropic crushing hidden by area gain.
+ FF=np.stack([u,v],axis=2)@restRi;UU,SS,VV=np.linalg.svd(FF,full_matrices=False);slo=np.minimum(SS-.97,0);shi=np.maximum(SS-1.03,0);loss+=2e6*np.sum(slo*slo+shi*shi);ds=4e6*(slo+shi);gF=(UU*ds[:,None,:])@VV;gE=gF@np.transpose(restRi,(0,2,1));np.add.at(grad,gf[:,1],gE[:,:,0]);np.add.at(grad,gf[:,2],gE[:,:,1]);np.add.at(grad,gf[:,0],-gE.sum(axis=2))
+ raw=np.cross(u,v);area=np.maximum(np.linalg.norm(raw,axis=1),1e-15);un=raw/area[:,None];ratio=area/ga0
+ low=np.minimum(ratio-minarea,0);high=np.maximum(ratio-1.15,0);loss+=2e6*np.sum(low*low+high*high);da=4e6*(low+high)/ga0
+ # Encourage area near1 even inside permitted limits.
+ astrain=ratio-1;loss+=10*np.sum(astrain*astrain);da+=20*astrain/ga0
+ g1=np.cross(v,un)*da[:,None];g2=np.cross(un,u)*da[:,None];np.add.at(grad,gf[:,1],g1);np.add.at(grad,gf[:,2],g2);np.add.at(grad,gf[:,0],-g1-g2)
+ # Normal rotation ceiling20deg, independent of area and no orientation flips.
+ cosine=(un*gn0).sum(1);bad=np.minimum(cosine-np.cos(np.deg2rad(12)),0);loss+=2e6*np.sum(bad*bad);gc=4e6*bad[:,None]*(gn0-un*cosine[:,None])/area[:,None];g1=np.cross(v,gc);g2=np.cross(gc,u);np.add.at(grad,gf[:,1],g1);np.add.at(grad,gf[:,2],g2);np.add.at(grad,gf[:,0],-g1-g2)
+ # Prefer inside halfspaces of BOTH physical inner surfaces, clearance0.3mm.
+ for fi,bb,nn,qq,oi,_,_ in cc:
+  sm=(P[fi]*bb[:,:,None]).sum(1);gap=((sm-qq)*nn).sum(1)-.3;pen=np.minimum(gap,0);loss+=contact_weight*np.sum(pen*pen);cg=2*contact_weight*pen[:,None]*nn
+  for k in range(3):np.add.at(grad,fi[:,k],cg*bb[:,k,None])
+ return loss,grad[ids].ravel()
+
+baseline,bc=meshmetrics(P0);prior,pc=meshmetrics(P8);print('BASELINE',json.dumps(baseline),flush=True);print('V8',json.dumps(prior),flush=True)
+x=np.zeros((len(ids),3)).ravel();logs=[]
+for iteration in range(iterations):
+ P=P0.copy();P[ids]+=x.reshape(-1,3);cc=cavity_constraints(P)
+ if iteration==0:
+  # Finite difference gradient validation at a small random displacement.
+  rng=np.random.default_rng(723);xx=rng.normal(scale=.01,size=x.shape);val,grad=objective(xx,cc);checks=[]
+  for ix in rng.choice(len(x),12,replace=False):
+   xp=xx.copy();xm=xx.copy();xp[ix]+=1e-5;xm[ix]-=1e-5;num=(objective(xp,cc)[0]-objective(xm,cc)[0])/2e-5;checks.append(abs(num-grad[ix])/max(1,abs(num)))
+  print('GRADIENT_MAX_RELATIVE',max(checks),flush=True);assert max(checks)<1e-3
+ t=time.time();res=minimize(lambda xx:objective(xx,cc),x,jac=True,method='L-BFGS-B',bounds=[(-12,12)]*len(x),options={'maxiter':1300,'ftol':1e-11,'gtol':1e-5,'maxls':40,'maxcor':25});x=res.x;P=P0.copy();P[ids]+=x.reshape(-1,3);row,cs=meshmetrics(P);p=P/1000+center;p[~active]=p0[~active];row['protected_exact']=bool(np.array_equal(p[protected],p0[protected]));row.update(iteration=iteration,solver_success=bool(res.success),solver_message=str(res.message),solver_iterations=int(res.nit),seconds=time.time()-t,objective=float(res.fun),constraints={o['name']:len(cc[i][0]) for i,o in enumerate(obs)})
+ for name,pairs in cs.items():
+  cur=set(map(tuple,pairs));bas=set(map(tuple,bc[name]));pre=set(map(tuple,pc[name]));row[name+'_new_vs_original']=len(cur-bas);row[name+'_removed_vs_original']=len(bas-cur);row[name+'_new_vs_v8']=len(cur-pre);row[name+'_removed_vs_v8']=len(pre-cur)
+ raw=np.cross(p[f[:,1]]-p[f[:,0]],p[f[:,2]]-p[f[:,0]]);norm=np.zeros_like(p)
+ for k in range(3):np.add.at(norm,f[:,k],raw)
+ norm/=np.maximum(np.linalg.norm(norm,axis=1)[:,None],1e-24)
+ name=f'{tag}-iteration{iteration:02d}';np.savez_compressed(O/(name+'.npz'),points=p,triangles=f,normals=norm,source_indices=base['source_indices'],source_face_indices=base['source_face_indices'],protected_vertices=protected,active_vertices=active,changed_vertices=np.linalg.norm(p-p0,axis=1)>1e-11,displacement=p-p0,protected_face=v8['protected_face'],protected_ears=v8['protected_ears']&~released,protected_lowneck=v8['protected_lowneck'],released_ear_vertices=released)
+ np.savez_compressed(O/(name+'-contacts.npz'),body_shell_pairs=cs['shell'],body_band_pairs=cs['band']);logs.append(row);print(json.dumps(row),flush=True)
+ report={'tag':tag,'method':'3D displacement, metric/area/normal regularization, BOTH cavity obstacles sampled at vertices edges and face centroids; soft constraints, acceptance gates evaluated independently','original':baseline,'v8':prior,'parameters':{'area_floor_penalty_target':minarea,'actual_acceptance_area_floor':.95,'contact_weight':contact_weight,'smooth_weight':smooth_weight,'clearance_target_mm':.3,'max_rotation_acceptance_degrees':20},'active_vertices':ids.tolist(),'released_ear_vertices':np.flatnonzero(released).tolist(),'maskfile':maskfile,'iterations':logs,'input_hashes':{o['path']:hashlib.sha256((B/o['path']).read_bytes()).hexdigest() for o in obs},'limitations':'Soft constraints do not prove feasibility. Local cavity samples are not minimum global clearance. Some area reduction may remain and must not be described as no compression. Not exported, visual-reviewed or game-validated.'};(O/(tag+'-report.json')).write_text(json.dumps(report,indent=2))
+print('DONE',tag,flush=True)

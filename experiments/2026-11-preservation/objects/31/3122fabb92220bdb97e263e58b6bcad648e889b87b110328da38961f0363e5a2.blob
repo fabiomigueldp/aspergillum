@@ -1,0 +1,41 @@
+# Prevenção seletiva de destruição por explosão
+
+Revisão diagnóstica 2.0.0, 03/11/2026. Implementada somente na cópia de desenvolvimento, sem instalar, abrir mundos ou publicar. **NO-GO permanece: esta prevenção não corrige undocking, entrega ambígua ou durabilidade.**
+
+## Contrato e fonte
+
+A API estável `ExplosionBeforeEvent.setImpactedBlocks` atualiza a lista de blocos impactados; `cancel` permite cancelar a explosão. A implementação usa somente esses membros existentes nos tipos instalados de `@minecraft/server` 2.9.0. Fonte oficial consultada especificamente para esta rota nova: [ExplosionBeforeEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/explosionbeforeevent?view=minecraft-bedrock-stable). Isso não repete a validação Creator Tools nem comprova o comportamento do engine.
+
+`block-destruction-safety.ts` centraliza a decisão read-only compartilhada com a quebra por jogador. `explosion-prevention.ts`, inscrito em `world.beforeEvents.explosion` pelo bootstrap real, remove da lista somente as duas classes de bloco do Aspergillum quando:
+
+- a ocupação compacta indica item acomodado;
+- há snapshot órfão em bloco visualmente vazio;
+- o bloco identificado está inválido, os states são ausentes/legados/reservados, ou a leitura falha;
+- o shard contém dados não suportados, inclusive um vizinho que não pode ser interpretado sem perda.
+
+Blocos vazios válidos sem snapshot, vanilla e outros add-ons mantêm a mesma ordem e referências na lista. Se nada foi excluído, não chama o setter. Não tenta identificar propriedade de um bloco cujo `typeId` não possa ser lido; esse caso permanece desprotegido. Um evento já cancelado é deixado intacto.
+
+A filtragem é síncrona e não agenda efeitos. Não entrega itens, não muda states, não grava o registry, não remove entidade visual nem encerra sessões. Snapshots e bytes opacos permanecem intactos. UUIDs, estados, arte, áudio e versões não mudam; é continuação da mesma cópia diagnóstica não distribuída.
+
+## Falhas e limites explícitos
+
+- Se não for possível obter a lista impactada, registra warning e não cancela uma explosão que não pode associar aos nossos blocos. Esse caminho não oferece proteção.
+- Se o setter falhar depois de identificar pelo menos um bloco a proteger, cancela **a explosão inteira**, preservando também os blocos alheios naquele evento. Isso é uma degradação conservadora do comportamento, não filtragem parcial garantida. Não repete a chamada: ela pode ter produzido efeito antes de lançar.
+- Outro subscriber pode substituir a lista ou desfazer o cancelamento depois do nosso callback. Não há prova de prioridade entre add-ons.
+- Não cobre comandos, substituição direta, ausência do evento, interrupção do script, downgrade ou callbacks pós-quebra já agendados. Não promete proteção de entidades, jogadores ou fogo pelo simples filtro de blocos.
+- Não resolve a escrita/entrega não atômica de retirada, o replay tardio nem persistência conjunta de inventário/bloco/registry. As caracterizações existentes continuam executadas e não foram convertidas em critérios de aceitação.
+
+## Evidência automatizada e gate nativo
+
+As regressões em `tests/application/compact-event-routing.test.ts` chamam a inscrição de produção em host simulado. Cobrem ambos os blocos, ocupação/orfandade, bytes opacos e vizinhos, schemas inválidos, falhas de leitura, ordem/duplicatas/blocos alheios, evento previamente cancelado, erro antes/depois do setter, ausência de efeitos e sessão preservada. Os 29 testes novos falham com o bootstrap anterior e passam depois da inscrição; os 47 testes anteriores de rotas continuam passando. Eles provam decisões do callback, não destruição/loot reais.
+
+`npm run check` passou com 338 testes do add-on, modelo offline de recuperação, testes do viewer, tipos, documentação e build/validadores. Das 8.629 fontes/assets/arquivos de pack com hash anterior, 8.628 permanecem byte a byte idênticos; somente o bundle compilado `packs/behavior/scripts/main.js` mudou, como esperado. O total de estados permanece 64.848. Relatórios e logs estão em `out/state-compaction/explosion-prevention/`. Nenhum `.mcaddon` novo foi produzido.
+
+Para futuro gate nativo, somente depois de haver pacote diagnóstico autorizado e identificável, usar mundo descartável sem saves antigos:
+
+1. Colocar mesa/caldeirinha ocupadas, controles vazios válidos e blocos vanilla/Altare próximos.
+2. Explodir TNT e creeper em Survival e Creative: ocupados devem permanecer com exatamente o mesmo item; controles seguem o comportamento normal da explosão.
+3. Repetir com interface da mesa aberta; a exclusão não deve encerrar a sessão ou criar drops. Reabrir/recarregar e conferir o snapshot, sem tratar isso como prova de durabilidade sob crash.
+4. Registrar versão exata, hash, Content Log e presença de outros add-ons. Warning de falha de leitura/exclusão é resultado a investigar, não aceite silencioso.
+
+Nenhum desses passos foi executado no Minecraft. Creator Tools não foi consultado novamente; a falha anterior HTTP 502 e os demais gates de release continuam pendentes.

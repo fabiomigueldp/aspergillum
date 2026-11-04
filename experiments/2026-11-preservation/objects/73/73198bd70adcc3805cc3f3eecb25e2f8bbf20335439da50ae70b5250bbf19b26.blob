@@ -1,0 +1,15 @@
+# V63 — transição do tornozelo oposto
+
+Fonte: V62, retida pelo revisor. Estudo localizado, não anatomia final.
+
+Foi preservada a curva original `Menino — perna.001`, ocultada, e criada cópia `Menino — tornozelo oposto V63 reversível`. Apenas o controle inferior recebeu -15 mm em Z e raio 0,8 → 0,62. Coordenadas XY e controles superior/intermediário preservados. A interpolação AUTO da curva ajusta o trecho inferior continuamente.
+
+Todas as malhas avaliadas existentes permanecem idênticas (delta máximo 0), inclusive pés, apoio plantar, laje e restante da estátua. Zero auto-interseções no tornozelo. Há 68 pares de contato tornozelo/pé, inserção intencional entre superfícies distintas, não união topológica para impressão.
+
+Comparação 3/4 V62/V63 com mesma câmera/luz/resolução mostra eliminação da fenda escura do lado esquerdo do tornozelo oposto. Vista de perfil oposto não mostra abertura no contato. A comparação contextual 600×900 do Menino mostra ganho discreto, sem transformação perceptível da pose ou silhueta geral. Pés continuam simples e parecidos com sapatos: não foram acrescentados dedos nem detalhes ocultos sem referência.
+
+Rollback: ocultar V63 e reexibir `Menino — perna.001`. V62 e V61 intocados. Arquivo salvo antes das alterações de câmera para diagnóstico.
+
+Arquivos: V63-opposite-ankle-trial.blend; V63-opposite-ankle-verification.json; opposite-ankle-transition-trial.py. Renders V63-foot-close-{front,threequarter,opposite-profile}.png; par contextual V62-child-ankle-context.png / V63-child-ankle-context.png.
+
+Referência fotográfica usada no estudo geral: https://arquivo.arq.br/projetos/paroquia-nossa-senhora-da-paz . Não se atribui às dimensões de base ou volumes ocultos uma medição real.

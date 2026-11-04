@@ -1,0 +1,22 @@
+import bpy,json,math
+from mathutils import Vector,Matrix
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V63-opposite-ankle-trial.blend',use_scripts=False);dg=bpy.context.evaluated_depsgraph_get();o=bpy.data.objects['Maria — mão protetora anatômica'];old=[v.co.copy() for v in o.data.vertices];fs=[tuple(f.vertices) for f in o.data.polygons];pivot=Vector((-.2262586206,-.2062660158,1.9987738132));R=Matrix.Rotation(math.radians(35),3,'X');new=[pivot+R@(p-pivot) for p in old]
+o.shape_key_add(name='Basis');k=o.shape_key_add(name='TESTE64 — gesto protetor ao lado da cabeça');k.value=1
+for v,p in zip(k.data,new):v.co=p
+
+def wb(ob):
+ e=ob.evaluated_get(dg);m=e.to_mesh();p=[ob.matrix_world@v.co for v in m.vertices];f=[tuple(v.vertices) for v in m.polygons];e.to_mesh_clear();return BVHTree.FromPolygons(p,f)
+B=BVHTree.FromPolygons(old,fs);A=BVHTree.FromPolygons(new,fs);contacts={}
+for ob in bpy.data.objects:
+ if ob.type in ['MESH','CURVE'] and ob!=o and not ob.hide_render:
+  tree=wb(ob);b=B.overlap(tree);a=A.overlap(tree)
+  if b or a:contacts[ob.name]={'before_pairs':len(b),'after_pairs':len(a),'new_pairs':len(set(a)-set(b)),'removed_pairs':len(set(b)-set(a))}
+selfpairs=[(a,b) for a,b in A.overlap(A) if a<b and not set(fs[a])&set(fs[b])]
+report={'source':'V63','scope':'Only Maria protective hand; rigid wrist rotation +35deg X, no finger details; child and sleeve untouched','pivot_world':list(pivot),'max_displacement_m':max((a-b).length for a,b in zip(old,new)),'edge_length_max_error_m':max(abs((old[e.vertices[0]]-old[e.vertices[1]]).length-(new[e.vertices[0]]-new[e.vertices[1]]).length) for e in o.data.edges),'self_intersections':len(selfpairs),'surface_contacts':contacts,'rollback':'TESTE64=0 restores V63'};json.dump(report,open(r+'V64-gesture-verification.json','w'),indent=2);bpy.ops.wm.save_as_mainfile(filepath=r+'V64-protective-gesture-trial.blend')
+s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=700;s.render.resolution_y=850;s.render.resolution_percentage=100;c=s.camera;ct=Vector((-.03,-.19,1.95));c.data.ortho_scale=.72
+for v,off in [('profile',(-3,0,0)),('front',(0,-3,0)),('threequarter',(-2,-3,0))]:
+ c.location=ct+Vector(off);c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler()
+ for ver,value in [('V63',0),('V64',1)]:
+  k.value=value;s.render.filepath=r+ver+'-protective-gesture-'+v+'.png';bpy.ops.render.render(write_still=True)
+print(report)

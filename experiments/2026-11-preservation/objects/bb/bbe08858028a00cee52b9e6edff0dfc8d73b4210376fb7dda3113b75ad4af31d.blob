@@ -1,0 +1,4968 @@
+{
+  "question": "Do unchanged original vertices inside or at the patch boundary differ from same-UV evaluated source?",
+  "method": "Evaluate exact high-source triangular grid at each old source UV, separately for the two walls. Also compare original source_indices directly where available. This checks positions, not between-vertex curves.",
+  "regions": {
+    "patch_all_old_vertices": {
+      "vertices": 78,
+      "checked_wall_vertices": 78,
+      "same_uv_max_delta_mm": 0.0,
+      "same_uv_all_bit_exact": true,
+      "source_index_max_delta_mm": 0.0,
+      "source_index_all_bit_exact": true
+    },
+    "patch_boundary_old_vertices": {
+      "vertices": 72,
+      "checked_wall_vertices": 72,
+      "same_uv_max_delta_mm": 0.0,
+      "same_uv_all_bit_exact": true,
+      "source_index_max_delta_mm": 0.0,
+      "source_index_all_bit_exact": true
+    },
+    "patch_interior_old_vertices": {
+      "vertices": 6,
+      "checked_wall_vertices": 6,
+      "same_uv_max_delta_mm": 0.0,
+      "same_uv_all_bit_exact": true,
+      "source_index_max_delta_mm": 0.0,
+      "source_index_all_bit_exact": true
+    },
+    "conformity_neighbor_old_vertices": {
+      "vertices": 108,
+      "checked_wall_vertices": 108,
+      "same_uv_max_delta_mm": 0.0,
+      "same_uv_all_bit_exact": true,
+      "source_index_max_delta_mm": 0.0,
+      "source_index_all_bit_exact": true
+    }
+  },
+  "rows": [
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 35,
+      "side": 0,
+      "uv": [
+        32.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 36,
+      "side": 0,
+      "uv": [
+        32.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 42,
+      "side": 0,
+      "uv": [
+        40.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 43,
+      "side": 0,
+      "uv": [
+        40.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 44,
+      "side": 0,
+      "uv": [
+        40.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 49,
+      "side": 0,
+      "uv": [
+        48.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 50,
+      "side": 0,
+      "uv": [
+        48.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 51,
+      "side": 0,
+      "uv": [
+        48.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 56,
+      "side": 0,
+      "uv": [
+        56.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 57,
+      "side": 0,
+      "uv": [
+        56.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 58,
+      "side": 0,
+      "uv": [
+        56.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 63,
+      "side": 0,
+      "uv": [
+        64.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 64,
+      "side": 0,
+      "uv": [
+        64.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 65,
+      "side": 0,
+      "uv": [
+        64.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 71,
+      "side": 0,
+      "uv": [
+        72.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 72,
+      "side": 0,
+      "uv": [
+        72.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 77,
+      "side": 0,
+      "uv": [
+        80.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 78,
+      "side": 0,
+      "uv": [
+        80.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 79,
+      "side": 0,
+      "uv": [
+        80.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 91,
+      "side": 0,
+      "uv": [
+        96.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 92,
+      "side": 0,
+      "uv": [
+        96.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 93,
+      "side": 0,
+      "uv": [
+        96.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 98,
+      "side": 0,
+      "uv": [
+        104.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 99,
+      "side": 0,
+      "uv": [
+        104.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 100,
+      "side": 0,
+      "uv": [
+        104.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 105,
+      "side": 0,
+      "uv": [
+        112.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 106,
+      "side": 0,
+      "uv": [
+        112.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 107,
+      "side": 0,
+      "uv": [
+        112.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 112,
+      "side": 0,
+      "uv": [
+        120.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 113,
+      "side": 0,
+      "uv": [
+        120.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 114,
+      "side": 0,
+      "uv": [
+        120.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 119,
+      "side": 0,
+      "uv": [
+        128.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 120,
+      "side": 0,
+      "uv": [
+        128.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 121,
+      "side": 0,
+      "uv": [
+        128.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 126,
+      "side": 0,
+      "uv": [
+        136.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 127,
+      "side": 0,
+      "uv": [
+        136.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 128,
+      "side": 0,
+      "uv": [
+        136.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 133,
+      "side": 0,
+      "uv": [
+        144.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 134,
+      "side": 0,
+      "uv": [
+        144.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 253,
+      "side": 1,
+      "uv": [
+        32.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 254,
+      "side": 1,
+      "uv": [
+        32.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 260,
+      "side": 1,
+      "uv": [
+        40.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 261,
+      "side": 1,
+      "uv": [
+        40.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 262,
+      "side": 1,
+      "uv": [
+        40.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 267,
+      "side": 1,
+      "uv": [
+        48.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 268,
+      "side": 1,
+      "uv": [
+        48.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 269,
+      "side": 1,
+      "uv": [
+        48.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 274,
+      "side": 1,
+      "uv": [
+        56.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 275,
+      "side": 1,
+      "uv": [
+        56.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 276,
+      "side": 1,
+      "uv": [
+        56.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 281,
+      "side": 1,
+      "uv": [
+        64.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 282,
+      "side": 1,
+      "uv": [
+        64.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 283,
+      "side": 1,
+      "uv": [
+        64.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 289,
+      "side": 1,
+      "uv": [
+        72.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 290,
+      "side": 1,
+      "uv": [
+        72.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 295,
+      "side": 1,
+      "uv": [
+        80.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 296,
+      "side": 1,
+      "uv": [
+        80.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 297,
+      "side": 1,
+      "uv": [
+        80.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 309,
+      "side": 1,
+      "uv": [
+        96.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 310,
+      "side": 1,
+      "uv": [
+        96.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 311,
+      "side": 1,
+      "uv": [
+        96.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 316,
+      "side": 1,
+      "uv": [
+        104.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 317,
+      "side": 1,
+      "uv": [
+        104.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 318,
+      "side": 1,
+      "uv": [
+        104.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 323,
+      "side": 1,
+      "uv": [
+        112.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 324,
+      "side": 1,
+      "uv": [
+        112.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 325,
+      "side": 1,
+      "uv": [
+        112.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 330,
+      "side": 1,
+      "uv": [
+        120.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 331,
+      "side": 1,
+      "uv": [
+        120.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 332,
+      "side": 1,
+      "uv": [
+        120.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 337,
+      "side": 1,
+      "uv": [
+        128.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 338,
+      "side": 1,
+      "uv": [
+        128.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 339,
+      "side": 1,
+      "uv": [
+        128.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 344,
+      "side": 1,
+      "uv": [
+        136.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 345,
+      "side": 1,
+      "uv": [
+        136.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 346,
+      "side": 1,
+      "uv": [
+        136.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 351,
+      "side": 1,
+      "uv": [
+        144.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_all_old_vertices",
+      "old_vertex": 352,
+      "side": 1,
+      "uv": [
+        144.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 35,
+      "side": 0,
+      "uv": [
+        32.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 36,
+      "side": 0,
+      "uv": [
+        32.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 42,
+      "side": 0,
+      "uv": [
+        40.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 43,
+      "side": 0,
+      "uv": [
+        40.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 44,
+      "side": 0,
+      "uv": [
+        40.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 49,
+      "side": 0,
+      "uv": [
+        48.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 51,
+      "side": 0,
+      "uv": [
+        48.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 56,
+      "side": 0,
+      "uv": [
+        56.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 58,
+      "side": 0,
+      "uv": [
+        56.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 63,
+      "side": 0,
+      "uv": [
+        64.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 64,
+      "side": 0,
+      "uv": [
+        64.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 65,
+      "side": 0,
+      "uv": [
+        64.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 71,
+      "side": 0,
+      "uv": [
+        72.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 72,
+      "side": 0,
+      "uv": [
+        72.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 77,
+      "side": 0,
+      "uv": [
+        80.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 78,
+      "side": 0,
+      "uv": [
+        80.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 79,
+      "side": 0,
+      "uv": [
+        80.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 91,
+      "side": 0,
+      "uv": [
+        96.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 92,
+      "side": 0,
+      "uv": [
+        96.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 93,
+      "side": 0,
+      "uv": [
+        96.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 98,
+      "side": 0,
+      "uv": [
+        104.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 99,
+      "side": 0,
+      "uv": [
+        104.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 100,
+      "side": 0,
+      "uv": [
+        104.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 105,
+      "side": 0,
+      "uv": [
+        112.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 106,
+      "side": 0,
+      "uv": [
+        112.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 107,
+      "side": 0,
+      "uv": [
+        112.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 112,
+      "side": 0,
+      "uv": [
+        120.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 113,
+      "side": 0,
+      "uv": [
+        120.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 114,
+      "side": 0,
+      "uv": [
+        120.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 119,
+      "side": 0,
+      "uv": [
+        128.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 121,
+      "side": 0,
+      "uv": [
+        128.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 126,
+      "side": 0,
+      "uv": [
+        136.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 127,
+      "side": 0,
+      "uv": [
+        136.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 128,
+      "side": 0,
+      "uv": [
+        136.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 133,
+      "side": 0,
+      "uv": [
+        144.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 134,
+      "side": 0,
+      "uv": [
+        144.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 253,
+      "side": 1,
+      "uv": [
+        32.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 254,
+      "side": 1,
+      "uv": [
+        32.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 260,
+      "side": 1,
+      "uv": [
+        40.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 261,
+      "side": 1,
+      "uv": [
+        40.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 262,
+      "side": 1,
+      "uv": [
+        40.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 267,
+      "side": 1,
+      "uv": [
+        48.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 269,
+      "side": 1,
+      "uv": [
+        48.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 274,
+      "side": 1,
+      "uv": [
+        56.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 276,
+      "side": 1,
+      "uv": [
+        56.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 281,
+      "side": 1,
+      "uv": [
+        64.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 282,
+      "side": 1,
+      "uv": [
+        64.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 283,
+      "side": 1,
+      "uv": [
+        64.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 289,
+      "side": 1,
+      "uv": [
+        72.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 290,
+      "side": 1,
+      "uv": [
+        72.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 295,
+      "side": 1,
+      "uv": [
+        80.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 296,
+      "side": 1,
+      "uv": [
+        80.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 297,
+      "side": 1,
+      "uv": [
+        80.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 309,
+      "side": 1,
+      "uv": [
+        96.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 310,
+      "side": 1,
+      "uv": [
+        96.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 311,
+      "side": 1,
+      "uv": [
+        96.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 316,
+      "side": 1,
+      "uv": [
+        104.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 317,
+      "side": 1,
+      "uv": [
+        104.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 318,
+      "side": 1,
+      "uv": [
+        104.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 323,
+      "side": 1,
+      "uv": [
+        112.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 324,
+      "side": 1,
+      "uv": [
+        112.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 325,
+      "side": 1,
+      "uv": [
+        112.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 330,
+      "side": 1,
+      "uv": [
+        120.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 331,
+      "side": 1,
+      "uv": [
+        120.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 332,
+      "side": 1,
+      "uv": [
+        120.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 337,
+      "side": 1,
+      "uv": [
+        128.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 339,
+      "side": 1,
+      "uv": [
+        128.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 344,
+      "side": 1,
+      "uv": [
+        136.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 345,
+      "side": 1,
+      "uv": [
+        136.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 346,
+      "side": 1,
+      "uv": [
+        136.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 351,
+      "side": 1,
+      "uv": [
+        144.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_boundary_old_vertices",
+      "old_vertex": 352,
+      "side": 1,
+      "uv": [
+        144.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_interior_old_vertices",
+      "old_vertex": 50,
+      "side": 0,
+      "uv": [
+        48.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_interior_old_vertices",
+      "old_vertex": 57,
+      "side": 0,
+      "uv": [
+        56.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_interior_old_vertices",
+      "old_vertex": 120,
+      "side": 0,
+      "uv": [
+        128.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_interior_old_vertices",
+      "old_vertex": 268,
+      "side": 1,
+      "uv": [
+        48.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_interior_old_vertices",
+      "old_vertex": 275,
+      "side": 1,
+      "uv": [
+        56.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "patch_interior_old_vertices",
+      "old_vertex": 338,
+      "side": 1,
+      "uv": [
+        128.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 29,
+      "side": 0,
+      "uv": [
+        24.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 35,
+      "side": 0,
+      "uv": [
+        32.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 36,
+      "side": 0,
+      "uv": [
+        32.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 37,
+      "side": 0,
+      "uv": [
+        32.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 41,
+      "side": 0,
+      "uv": [
+        40.0,
+        3.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 42,
+      "side": 0,
+      "uv": [
+        40.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 43,
+      "side": 0,
+      "uv": [
+        40.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 44,
+      "side": 0,
+      "uv": [
+        40.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 49,
+      "side": 0,
+      "uv": [
+        48.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 51,
+      "side": 0,
+      "uv": [
+        48.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 52,
+      "side": 0,
+      "uv": [
+        48.0,
+        13.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 55,
+      "side": 0,
+      "uv": [
+        56.0,
+        3.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 56,
+      "side": 0,
+      "uv": [
+        56.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 58,
+      "side": 0,
+      "uv": [
+        56.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 59,
+      "side": 0,
+      "uv": [
+        56.0,
+        13.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 63,
+      "side": 0,
+      "uv": [
+        64.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 64,
+      "side": 0,
+      "uv": [
+        64.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 65,
+      "side": 0,
+      "uv": [
+        64.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 70,
+      "side": 0,
+      "uv": [
+        72.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 71,
+      "side": 0,
+      "uv": [
+        72.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 72,
+      "side": 0,
+      "uv": [
+        72.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 73,
+      "side": 0,
+      "uv": [
+        72.0,
+        13.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 77,
+      "side": 0,
+      "uv": [
+        80.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 78,
+      "side": 0,
+      "uv": [
+        80.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 79,
+      "side": 0,
+      "uv": [
+        80.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 84,
+      "side": 0,
+      "uv": [
+        88.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 85,
+      "side": 0,
+      "uv": [
+        88.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 86,
+      "side": 0,
+      "uv": [
+        88.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 91,
+      "side": 0,
+      "uv": [
+        96.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 92,
+      "side": 0,
+      "uv": [
+        96.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 93,
+      "side": 0,
+      "uv": [
+        96.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 98,
+      "side": 0,
+      "uv": [
+        104.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 99,
+      "side": 0,
+      "uv": [
+        104.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 100,
+      "side": 0,
+      "uv": [
+        104.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 104,
+      "side": 0,
+      "uv": [
+        112.0,
+        3.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 105,
+      "side": 0,
+      "uv": [
+        112.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 106,
+      "side": 0,
+      "uv": [
+        112.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 107,
+      "side": 0,
+      "uv": [
+        112.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 108,
+      "side": 0,
+      "uv": [
+        112.0,
+        13.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 112,
+      "side": 0,
+      "uv": [
+        120.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 113,
+      "side": 0,
+      "uv": [
+        120.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 114,
+      "side": 0,
+      "uv": [
+        120.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 115,
+      "side": 0,
+      "uv": [
+        120.0,
+        13.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 119,
+      "side": 0,
+      "uv": [
+        128.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 121,
+      "side": 0,
+      "uv": [
+        128.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 122,
+      "side": 0,
+      "uv": [
+        128.0,
+        13.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 125,
+      "side": 0,
+      "uv": [
+        136.0,
+        3.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 126,
+      "side": 0,
+      "uv": [
+        136.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 127,
+      "side": 0,
+      "uv": [
+        136.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 128,
+      "side": 0,
+      "uv": [
+        136.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 133,
+      "side": 0,
+      "uv": [
+        144.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 134,
+      "side": 0,
+      "uv": [
+        144.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 135,
+      "side": 0,
+      "uv": [
+        144.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 141,
+      "side": 0,
+      "uv": [
+        152.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 247,
+      "side": 1,
+      "uv": [
+        24.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 253,
+      "side": 1,
+      "uv": [
+        32.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 254,
+      "side": 1,
+      "uv": [
+        32.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 255,
+      "side": 1,
+      "uv": [
+        32.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 259,
+      "side": 1,
+      "uv": [
+        40.0,
+        3.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 260,
+      "side": 1,
+      "uv": [
+        40.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 261,
+      "side": 1,
+      "uv": [
+        40.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 262,
+      "side": 1,
+      "uv": [
+        40.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 267,
+      "side": 1,
+      "uv": [
+        48.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 269,
+      "side": 1,
+      "uv": [
+        48.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 270,
+      "side": 1,
+      "uv": [
+        48.0,
+        13.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 273,
+      "side": 1,
+      "uv": [
+        56.0,
+        3.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 274,
+      "side": 1,
+      "uv": [
+        56.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 276,
+      "side": 1,
+      "uv": [
+        56.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 277,
+      "side": 1,
+      "uv": [
+        56.0,
+        13.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 281,
+      "side": 1,
+      "uv": [
+        64.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 282,
+      "side": 1,
+      "uv": [
+        64.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 283,
+      "side": 1,
+      "uv": [
+        64.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 288,
+      "side": 1,
+      "uv": [
+        72.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 289,
+      "side": 1,
+      "uv": [
+        72.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 290,
+      "side": 1,
+      "uv": [
+        72.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 291,
+      "side": 1,
+      "uv": [
+        72.0,
+        13.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 295,
+      "side": 1,
+      "uv": [
+        80.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 296,
+      "side": 1,
+      "uv": [
+        80.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 297,
+      "side": 1,
+      "uv": [
+        80.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 302,
+      "side": 1,
+      "uv": [
+        88.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 303,
+      "side": 1,
+      "uv": [
+        88.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 304,
+      "side": 1,
+      "uv": [
+        88.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 309,
+      "side": 1,
+      "uv": [
+        96.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 310,
+      "side": 1,
+      "uv": [
+        96.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 311,
+      "side": 1,
+      "uv": [
+        96.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 316,
+      "side": 1,
+      "uv": [
+        104.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 317,
+      "side": 1,
+      "uv": [
+        104.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 318,
+      "side": 1,
+      "uv": [
+        104.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 322,
+      "side": 1,
+      "uv": [
+        112.0,
+        3.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 323,
+      "side": 1,
+      "uv": [
+        112.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 324,
+      "side": 1,
+      "uv": [
+        112.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 325,
+      "side": 1,
+      "uv": [
+        112.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 326,
+      "side": 1,
+      "uv": [
+        112.0,
+        13.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 330,
+      "side": 1,
+      "uv": [
+        120.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 331,
+      "side": 1,
+      "uv": [
+        120.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 332,
+      "side": 1,
+      "uv": [
+        120.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 333,
+      "side": 1,
+      "uv": [
+        120.0,
+        13.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 337,
+      "side": 1,
+      "uv": [
+        128.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 339,
+      "side": 1,
+      "uv": [
+        128.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 340,
+      "side": 1,
+      "uv": [
+        128.0,
+        13.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 343,
+      "side": 1,
+      "uv": [
+        136.0,
+        3.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 344,
+      "side": 1,
+      "uv": [
+        136.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 345,
+      "side": 1,
+      "uv": [
+        136.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 346,
+      "side": 1,
+      "uv": [
+        136.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 351,
+      "side": 1,
+      "uv": [
+        144.0,
+        5.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 352,
+      "side": 1,
+      "uv": [
+        144.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 353,
+      "side": 1,
+      "uv": [
+        144.0,
+        11.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    },
+    {
+      "region": "conformity_neighbor_old_vertices",
+      "old_vertex": 359,
+      "side": 1,
+      "uv": [
+        152.0,
+        8.0
+      ],
+      "same_uv_source_delta_mm": 0.0,
+      "same_uv_bit_exact": true,
+      "source_index_delta_mm": 0.0,
+      "source_index_bit_exact": true
+    }
+  ],
+  "boundary_chord_samples": {
+    "sample_points_per_edge": 17,
+    "edges": 78,
+    "max_deviation_mm": 1.0021951959444562,
+    "quantiles_mm": [
+      0.13702962625676984,
+      0.4855508180474349,
+      0.8583384035220711,
+      1.0021951959444562
+    ],
+    "rows": [
+      {
+        "edge": [
+          91,
+          99
+        ],
+        "side": 0,
+        "uv": [
+          [
+            96.0,
+            5.0
+          ],
+          [
+            104.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.6911442161583577,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          91,
+          92
+        ],
+        "side": 0,
+        "uv": [
+          [
+            96.0,
+            5.0
+          ],
+          [
+            96.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.14752479661514373,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          99,
+          100
+        ],
+        "side": 0,
+        "uv": [
+          [
+            104.0,
+            8.0
+          ],
+          [
+            104.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.14527849717344946,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          100,
+          106
+        ],
+        "side": 0,
+        "uv": [
+          [
+            104.0,
+            11.0
+          ],
+          [
+            112.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.5858628132584071,
+        "at_t": 0.5625
+      },
+      {
+        "edge": [
+          98,
+          99
+        ],
+        "side": 0,
+        "uv": [
+          [
+            104.0,
+            5.0
+          ],
+          [
+            104.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.14718579653032454,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          105,
+          106
+        ],
+        "side": 0,
+        "uv": [
+          [
+            112.0,
+            5.0
+          ],
+          [
+            112.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.14269791879821256,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          98,
+          105
+        ],
+        "side": 0,
+        "uv": [
+          [
+            104.0,
+            5.0
+          ],
+          [
+            112.0,
+            5.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.856768521992641,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          42,
+          49
+        ],
+        "side": 0,
+        "uv": [
+          [
+            40.0,
+            5.0
+          ],
+          [
+            48.0,
+            5.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.6329509913675336,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          42,
+          43
+        ],
+        "side": 0,
+        "uv": [
+          [
+            40.0,
+            5.0
+          ],
+          [
+            40.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.14185221759295863,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          51,
+          58
+        ],
+        "side": 0,
+        "uv": [
+          [
+            48.0,
+            11.0
+          ],
+          [
+            56.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.8774544486351555,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          112,
+          113
+        ],
+        "side": 0,
+        "uv": [
+          [
+            120.0,
+            5.0
+          ],
+          [
+            120.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.14574274348606314,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          106,
+          112
+        ],
+        "side": 0,
+        "uv": [
+          [
+            112.0,
+            8.0
+          ],
+          [
+            120.0,
+            5.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.5215155554090795,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          107,
+          114
+        ],
+        "side": 0,
+        "uv": [
+          [
+            112.0,
+            11.0
+          ],
+          [
+            120.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.8631697669799171,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          106,
+          107
+        ],
+        "side": 0,
+        "uv": [
+          [
+            112.0,
+            8.0
+          ],
+          [
+            112.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.14062681435928492,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          35,
+          43
+        ],
+        "side": 0,
+        "uv": [
+          [
+            32.0,
+            5.0
+          ],
+          [
+            40.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.4742361799633641,
+        "at_t": 0.4375
+      },
+      {
+        "edge": [
+          35,
+          36
+        ],
+        "side": 0,
+        "uv": [
+          [
+            32.0,
+            5.0
+          ],
+          [
+            32.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.1471514837436053,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          36,
+          44
+        ],
+        "side": 0,
+        "uv": [
+          [
+            32.0,
+            8.0
+          ],
+          [
+            40.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.46516931234729936,
+        "at_t": 0.4375
+      },
+      {
+        "edge": [
+          44,
+          51
+        ],
+        "side": 0,
+        "uv": [
+          [
+            40.0,
+            11.0
+          ],
+          [
+            48.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.6469794814230362,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          49,
+          56
+        ],
+        "side": 0,
+        "uv": [
+          [
+            48.0,
+            5.0
+          ],
+          [
+            56.0,
+            5.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.8242269561050516,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          92,
+          93
+        ],
+        "side": 0,
+        "uv": [
+          [
+            96.0,
+            8.0
+          ],
+          [
+            96.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.14448340366602996,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          93,
+          99
+        ],
+        "side": 0,
+        "uv": [
+          [
+            96.0,
+            11.0
+          ],
+          [
+            104.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.49081272313271895,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          114,
+          121
+        ],
+        "side": 0,
+        "uv": [
+          [
+            120.0,
+            11.0
+          ],
+          [
+            128.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.9095384975675888,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          58,
+          65
+        ],
+        "side": 0,
+        "uv": [
+          [
+            56.0,
+            11.0
+          ],
+          [
+            64.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.8510373463761433,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          56,
+          64
+        ],
+        "side": 0,
+        "uv": [
+          [
+            56.0,
+            5.0
+          ],
+          [
+            64.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.5341535720566227,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          78,
+          79
+        ],
+        "side": 0,
+        "uv": [
+          [
+            80.0,
+            8.0
+          ],
+          [
+            80.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.139720760977553,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          71,
+          79
+        ],
+        "side": 0,
+        "uv": [
+          [
+            72.0,
+            8.0
+          ],
+          [
+            80.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.4939388794297009,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          71,
+          77
+        ],
+        "side": 0,
+        "uv": [
+          [
+            72.0,
+            8.0
+          ],
+          [
+            80.0,
+            5.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.7164206956434547,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          77,
+          78
+        ],
+        "side": 0,
+        "uv": [
+          [
+            80.0,
+            5.0
+          ],
+          [
+            80.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.13886030753701434,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          65,
+          72
+        ],
+        "side": 0,
+        "uv": [
+          [
+            64.0,
+            11.0
+          ],
+          [
+            72.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 1.0021951959444562,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          71,
+          72
+        ],
+        "side": 0,
+        "uv": [
+          [
+            72.0,
+            8.0
+          ],
+          [
+            72.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.1503064667795387,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          63,
+          64
+        ],
+        "side": 0,
+        "uv": [
+          [
+            64.0,
+            5.0
+          ],
+          [
+            64.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.14789129627148442,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          63,
+          71
+        ],
+        "side": 0,
+        "uv": [
+          [
+            64.0,
+            5.0
+          ],
+          [
+            72.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.5336971198586,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          126,
+          127
+        ],
+        "side": 0,
+        "uv": [
+          [
+            136.0,
+            5.0
+          ],
+          [
+            136.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.14239820649520862,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          119,
+          126
+        ],
+        "side": 0,
+        "uv": [
+          [
+            128.0,
+            5.0
+          ],
+          [
+            136.0,
+            5.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.6257842726855366,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          113,
+          119
+        ],
+        "side": 0,
+        "uv": [
+          [
+            120.0,
+            8.0
+          ],
+          [
+            128.0,
+            5.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.49922879820458643,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          133,
+          134
+        ],
+        "side": 0,
+        "uv": [
+          [
+            144.0,
+            5.0
+          ],
+          [
+            144.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.1457274471238075,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          127,
+          133
+        ],
+        "side": 0,
+        "uv": [
+          [
+            136.0,
+            8.0
+          ],
+          [
+            144.0,
+            5.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.4673474741573412,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          128,
+          134
+        ],
+        "side": 0,
+        "uv": [
+          [
+            136.0,
+            11.0
+          ],
+          [
+            144.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.45433046276546124,
+        "at_t": 0.5625
+      },
+      {
+        "edge": [
+          121,
+          128
+        ],
+        "side": 0,
+        "uv": [
+          [
+            128.0,
+            11.0
+          ],
+          [
+            136.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.6362546577669393,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          309,
+          310
+        ],
+        "side": 1,
+        "uv": [
+          [
+            96.0,
+            5.0
+          ],
+          [
+            96.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.14542933721445292,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          309,
+          317
+        ],
+        "side": 1,
+        "uv": [
+          [
+            96.0,
+            5.0
+          ],
+          [
+            104.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.6834031838954578,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          318,
+          324
+        ],
+        "side": 1,
+        "uv": [
+          [
+            104.0,
+            11.0
+          ],
+          [
+            112.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.5833472125570557,
+        "at_t": 0.5625
+      },
+      {
+        "edge": [
+          317,
+          318
+        ],
+        "side": 1,
+        "uv": [
+          [
+            104.0,
+            8.0
+          ],
+          [
+            104.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.1469588984156863,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          316,
+          317
+        ],
+        "side": 1,
+        "uv": [
+          [
+            104.0,
+            5.0
+          ],
+          [
+            104.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.14634920484950892,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          323,
+          324
+        ],
+        "side": 1,
+        "uv": [
+          [
+            112.0,
+            5.0
+          ],
+          [
+            112.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.14150447091979307,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          316,
+          323
+        ],
+        "side": 1,
+        "uv": [
+          [
+            104.0,
+            5.0
+          ],
+          [
+            112.0,
+            5.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.8520044932761635,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          260,
+          267
+        ],
+        "side": 1,
+        "uv": [
+          [
+            40.0,
+            5.0
+          ],
+          [
+            48.0,
+            5.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.631245357741949,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          260,
+          261
+        ],
+        "side": 1,
+        "uv": [
+          [
+            40.0,
+            5.0
+          ],
+          [
+            40.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.14175417626640283,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          269,
+          276
+        ],
+        "side": 1,
+        "uv": [
+          [
+            48.0,
+            11.0
+          ],
+          [
+            56.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.87535272765293,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          324,
+          330
+        ],
+        "side": 1,
+        "uv": [
+          [
+            112.0,
+            8.0
+          ],
+          [
+            120.0,
+            5.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.5159196530098985,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          330,
+          331
+        ],
+        "side": 1,
+        "uv": [
+          [
+            120.0,
+            5.0
+          ],
+          [
+            120.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.14450454157104584,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          325,
+          332
+        ],
+        "side": 1,
+        "uv": [
+          [
+            112.0,
+            11.0
+          ],
+          [
+            120.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.862001460424075,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          324,
+          325
+        ],
+        "side": 1,
+        "uv": [
+          [
+            112.0,
+            8.0
+          ],
+          [
+            112.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.14280776666541473,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          253,
+          254
+        ],
+        "side": 1,
+        "uv": [
+          [
+            32.0,
+            5.0
+          ],
+          [
+            32.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.14742830783523042,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          253,
+          261
+        ],
+        "side": 1,
+        "uv": [
+          [
+            32.0,
+            5.0
+          ],
+          [
+            40.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.4643097133881097,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          254,
+          262
+        ],
+        "side": 1,
+        "uv": [
+          [
+            32.0,
+            8.0
+          ],
+          [
+            40.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.4659447084038308,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          262,
+          269
+        ],
+        "side": 1,
+        "uv": [
+          [
+            40.0,
+            11.0
+          ],
+          [
+            48.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.645789214332142,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          267,
+          274
+        ],
+        "side": 1,
+        "uv": [
+          [
+            48.0,
+            5.0
+          ],
+          [
+            56.0,
+            5.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.8209409778450273,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          310,
+          311
+        ],
+        "side": 1,
+        "uv": [
+          [
+            96.0,
+            8.0
+          ],
+          [
+            96.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.14602113053379895,
+        "at_t": 0.5625
+      },
+      {
+        "edge": [
+          311,
+          317
+        ],
+        "side": 1,
+        "uv": [
+          [
+            96.0,
+            11.0
+          ],
+          [
+            104.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.4836065856376621,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          332,
+          339
+        ],
+        "side": 1,
+        "uv": [
+          [
+            120.0,
+            11.0
+          ],
+          [
+            128.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.9074186074759562,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          276,
+          283
+        ],
+        "side": 1,
+        "uv": [
+          [
+            56.0,
+            11.0
+          ],
+          [
+            64.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.8494105871942778,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          274,
+          282
+        ],
+        "side": 1,
+        "uv": [
+          [
+            56.0,
+            5.0
+          ],
+          [
+            64.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.52844622844764,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          296,
+          297
+        ],
+        "side": 1,
+        "uv": [
+          [
+            80.0,
+            8.0
+          ],
+          [
+            80.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.14089408478004103,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          289,
+          297
+        ],
+        "side": 1,
+        "uv": [
+          [
+            72.0,
+            8.0
+          ],
+          [
+            80.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.48749505045720765,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          289,
+          295
+        ],
+        "side": 1,
+        "uv": [
+          [
+            72.0,
+            8.0
+          ],
+          [
+            80.0,
+            5.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.7094543785097406,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          295,
+          296
+        ],
+        "side": 1,
+        "uv": [
+          [
+            80.0,
+            5.0
+          ],
+          [
+            80.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.13702962625676984,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          289,
+          290
+        ],
+        "side": 1,
+        "uv": [
+          [
+            72.0,
+            8.0
+          ],
+          [
+            72.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.15173826531572265,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          283,
+          290
+        ],
+        "side": 1,
+        "uv": [
+          [
+            64.0,
+            11.0
+          ],
+          [
+            72.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.9988491846348367,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          281,
+          282
+        ],
+        "side": 1,
+        "uv": [
+          [
+            64.0,
+            5.0
+          ],
+          [
+            64.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.147064860454468,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          281,
+          289
+        ],
+        "side": 1,
+        "uv": [
+          [
+            64.0,
+            5.0
+          ],
+          [
+            72.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.5286417513990128,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          337,
+          344
+        ],
+        "side": 1,
+        "uv": [
+          [
+            128.0,
+            5.0
+          ],
+          [
+            136.0,
+            5.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.6241129422490871,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          344,
+          345
+        ],
+        "side": 1,
+        "uv": [
+          [
+            136.0,
+            5.0
+          ],
+          [
+            136.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.14262455626913773,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          331,
+          337
+        ],
+        "side": 1,
+        "uv": [
+          [
+            120.0,
+            8.0
+          ],
+          [
+            128.0,
+            5.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.4924705409309131,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          351,
+          352
+        ],
+        "side": 1,
+        "uv": [
+          [
+            144.0,
+            5.0
+          ],
+          [
+            144.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.14616657784458126,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          345,
+          351
+        ],
+        "side": 1,
+        "uv": [
+          [
+            136.0,
+            8.0
+          ],
+          [
+            144.0,
+            5.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.4568733379276758,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          346,
+          352
+        ],
+        "side": 1,
+        "uv": [
+          [
+            136.0,
+            11.0
+          ],
+          [
+            144.0,
+            8.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.45406361675220497,
+        "at_t": 0.5
+      },
+      {
+        "edge": [
+          339,
+          346
+        ],
+        "side": 1,
+        "uv": [
+          [
+            128.0,
+            11.0
+          ],
+          [
+            136.0,
+            11.0
+          ]
+        ],
+        "maximum_source_minus_chord_mm": 0.635032209507373,
+        "at_t": 0.5
+      }
+    ]
+  },
+  "conclusion": "Original points are compatible if exact; fixed piecewise-linear boundary edges need not be source-compatible between them. This is a distinct constraint from retaining vertices and crests."
+}

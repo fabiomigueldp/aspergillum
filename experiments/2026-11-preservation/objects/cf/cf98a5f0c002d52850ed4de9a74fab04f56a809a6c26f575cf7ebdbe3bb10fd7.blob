@@ -1,0 +1,20 @@
+from pathlib import Path
+import json,uuid,zipfile,hashlib
+ROOT=Path(__file__).resolve().parents[1];RP=ROOT/'resource_pack';BP=ROOT/'behavior_pack'
+variant_files={'hybrid':('sculpture_hybrid.geo.json','sculpture_hybrid.png'),'voxel192':('sculpture_voxel192.geo.json','sculpture_voxel192.png')}
+reports=[]
+for key,(geon,pngn) in variant_files.items():
+ uid=lambda s:str(uuid.uuid5(uuid.NAMESPACE_URL,'https://local.invalid/paz-v75-single-'+key+'-20261103/'+s))
+ rpm=json.load(open(RP/'manifest.json'));bpm=json.load(open(BP/'manifest.json'))
+ for prefix,m in [('rp',rpm),('bp',bpm)]:
+  m['header']['uuid']=uid(prefix+'-header');m['modules'][0]['uuid']=uid(prefix+'-module');m['header']['name']='Paz V75 '+key.upper()+' LAB '+prefix.upper();m['header']['description']='Single variant for disposable test world only. Do not enable with the combined Paz V75 LAB pack. No runtime QA.'
+ bpm['dependencies']=[{'uuid':rpm['header']['uuid'],'version':[0,0,1]}]
+ path=ROOT/('Paz-V75-'+key.upper()+'-LAB-NOT-RELEASE.mcaddon')
+ files={'RP/manifest.json':json.dumps(rpm,indent=2).encode(),'BP/manifest.json':json.dumps(bpm,indent=2).encode()}
+ for rel in [f'entity/{key}.entity.json',f'models/entity/{geon}',f'textures/entity/{pngn}','render_controllers/sculpture.render_controllers.json','texts/languages.json','texts/en_US.lang','texts/pt_BR.lang']:files['RP/'+rel]=(RP/rel).read_bytes()
+ for rel in [f'entities/{key}.json','texts/languages.json','texts/en_US.lang','texts/pt_BR.lang']:files['BP/'+rel]=(BP/rel).read_bytes()
+ with zipfile.ZipFile(path,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+  for name,data in files.items():z.writestr(name,data)
+ with zipfile.ZipFile(path) as z:assert z.testzip() is None and all(z.read(n)==data for n,data in files.items())
+ reports.append({'variant':key,'file':path.name,'bytes':path.stat().st_size,'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'single_png':pngn,'runtime_tested':False})
+(ROOT/'evidence/single-packs.json').write_text(json.dumps(reports,indent=2));print(json.dumps(reports,indent=2))

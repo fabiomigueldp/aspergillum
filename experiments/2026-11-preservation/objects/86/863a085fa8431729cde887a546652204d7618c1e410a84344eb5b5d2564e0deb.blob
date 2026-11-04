@@ -1,0 +1,319 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> aspergillum-bedrock-addon@2.0.0 test
+> vitest run --run tests/infrastructure/break-recovery-location.test.ts
+
+
+ RUN  v3.2.7 /workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103
+
+ ❯ tests/infrastructure/break-recovery-location.test.ts (18 tests | 16 failed) 119ms
+   × deferred recovery requires a currently loaded air block > preserves a reoccupied aspersorium even when its snapshot is exactly unchanged 17ms
+     → expected undefined to be '{"schemaVersion":1,"entries":{"2,64,-…' // Object.is equality
+   × deferred recovery requires a currently loaded air block > preserves a reoccupied table even when its snapshot is exactly unchanged 3ms
+     → expected undefined to be '{"schemaVersion":1,"entries":{"2,64,-…' // Object.is equality
+   × deferred recovery requires a currently loaded air block > refuses recovery into minecraft:stone without modifying that replacement 2ms
+     → expected undefined to be '{"schemaVersion":1,"entries":{"2,64,-…' // Object.is equality
+   × deferred recovery requires a currently loaded air block > refuses recovery into minecraft:water without modifying that replacement 2ms
+     → expected undefined to be '{"schemaVersion":1,"entries":{"2,64,-…' // Object.is equality
+   × deferred recovery requires a currently loaded air block > refuses recovery into minecraft:fire without modifying that replacement 2ms
+     → expected undefined to be '{"schemaVersion":1,"entries":{"2,64,-…' // Object.is equality
+   × deferred recovery requires a currently loaded air block > refuses recovery into altare:mensa without modifying that replacement 3ms
+     → expected undefined to be '{"schemaVersion":1,"entries":{"2,64,-…' // Object.is equality
+   × deferred recovery requires a currently loaded air block > preserves bytes when location inspection is undefined 3ms
+     → expected undefined to be '{"schemaVersion":1,"entries":{"2,64,-…' // Object.is equality
+   × deferred recovery requires a currently loaded air block > preserves bytes when location inspection is invalid 5ms
+     → expected undefined to be '{"schemaVersion":1,"entries":{"2,64,-…' // Object.is equality
+   × deferred recovery requires a currently loaded air block > preserves bytes when location inspection is read-throws 4ms
+     → expected undefined to be '{"schemaVersion":1,"entries":{"2,64,-…' // Object.is equality
+   × deferred recovery requires a currently loaded air block > preserves bytes when location inspection is validity-throws 12ms
+     → expected undefined to be '{"schemaVersion":1,"entries":{"2,64,-…' // Object.is equality
+   × deferred recovery requires a currently loaded air block > preserves bytes when location inspection is air-throws 10ms
+     → expected undefined to be '{"schemaVersion":1,"entries":{"2,64,-…' // Object.is equality
+   × deferred recovery requires a currently loaded air block > preserves bytes when location inspection is air-unknown 11ms
+     → expected undefined to be '{"schemaVersion":1,"entries":{"2,64,-…' // Object.is equality
+   × deferred recovery requires a currently loaded air block > keeps existing aspersorium recovery behavior for valid loaded air and unchanged snapshot 13ms
+     → expected "getBlock" to be called once with arguments: [ { x: 2, y: 64, z: -3 } ]
+
+Number of calls: 0
+
+   × deferred recovery requires a currently loaded air block > keeps existing table recovery behavior for valid loaded air and unchanged snapshot 3ms
+     → expected "getBlock" to be called once with arguments: [ { x: 2, y: 64, z: -3 } ]
+
+Number of calls: 0
+
+   ✓ deferred recovery requires a currently loaded air block > keeps the legacy empty-item fallback only when the location is loaded air 4ms
+   × deferred recovery requires a currently loaded air block > does not fabricate the legacy fallback into a replacement when the snapshot is missing 14ms
+     → expected "spy" to not be called at all, but actually been called 1 times
+
+Received: 
+
+  1st spy call:
+
+    Array [
+      ItemStack {
+        "amount": 1,
+        "lore": Array [
+          Object {
+            "translate": "item.aspergillum.lore.charges",
+            "with": Array [
+              "0",
+              "4",
+            ],
+          },
+          Object {
+            "rawtext": Array [
+              Object {
+                "translate": "item.aspergillum.lore.profile",
+              },
+              Object {
+                "translate": "ui.aspergillum.profile.standard.name",
+              },
+            ],
+          },
+          Object {
+            "rawtext": Array [
+              Object {
+                "translate": "item.aspergillum.lore.appearance",
+              },
+              Object {
+                "translate": "ui.aspergillum.metal.silver.name",
+              },
+              Object {
+                "translate": "item.aspergillum.lore.grip",
+              },
+              Object {
+                "translate": "ui.aspergillum.grip.chestnut.name",
+              },
+            ],
+          },
+          Object {
+            "translate": "item.aspergillum.lore.instructions",
+          },
+          Object {
+            "translate": "item.aspergillum.lore.docking",
+          },
+          Object {
+            "translate": "item.aspergillum.lore.creative",
+          },
+        ],
+        "nameTag": undefined,
+        "properties": Map {
+          "aspergillum:charges" => 0,
+          "aspergillum:schema_version" => 3,
+          "aspergillum:instance_id" => "ag-17i-i-2b3c4o7dr8f",
+          "aspergillum:cosmetic_id" => "classic",
+          "aspergillum:spray_profile_id" => "standard",
+        },
+        "typeId": "aspergillum:aspergillum",
+      },
+      Object {
+        "x": 2.5,
+        "y": 64.8,
+        "z": -2.5,
+      },
+    ]
+
+
+Number of calls: 1
+
+   ✓ deferred recovery requires a currently loaded air block > still preserves a changed snapshot even when the address is air 4ms
+   × deferred recovery requires a currently loaded air block > does not schedule an automatic retry when a refused location later becomes air 4ms
+     → expected undefined to be '{"schemaVersion":1,"entries":{"2,64,-…' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 16 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/infrastructure/break-recovery-location.test.ts > deferred recovery requires a currently loaded air block > preserves a reoccupied aspersorium even when its snapshot is exactly unchanged
+ FAIL  tests/infrastructure/break-recovery-location.test.ts > deferred recovery requires a currently loaded air block > preserves a reoccupied table even when its snapshot is exactly unchanged
+AssertionError: expected undefined to be '{"schemaVersion":1,"entries":{"2,64,-…' // Object.is equality
+
+- Expected: 
+"{\"schemaVersion\":1,\"entries\":{\"2,64,-3\":{\"schemaVersion\":2,\"instanceId\":\"ag-1e-1-vw89awv5mz\",\"nameTag\":\"Preserved recovery item\",\"charges\":3,\"cosmeticId\":\"classic\",\"sprayProfileId\":\"standard\",\"customProperties\":{\"fixture:note\":\"keep\"}}}}"
+
++ Received: 
+undefined
+
+ ❯ Object.unchanged tests/infrastructure/break-recovery-location.test.ts:28:48
+     26|   const schedule = () => scheduleDockedBreakRecovery(dimension.asDimen…
+     27|   const unchanged = () => {
+     28|     expect(world.getDynamicProperty(property)).toBe(raw);
+       |                                                ^
+     29|     expect(world.setDynamicProperty).not.toHaveBeenCalled();
+     30|     expect(dimension.spawnItem).not.toHaveBeenCalled();
+ ❯ tests/infrastructure/break-recovery-location.test.ts:39:23
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/16]⎯
+
+ FAIL  tests/infrastructure/break-recovery-location.test.ts > deferred recovery requires a currently loaded air block > refuses recovery into minecraft:stone without modifying that replacement
+ FAIL  tests/infrastructure/break-recovery-location.test.ts > deferred recovery requires a currently loaded air block > refuses recovery into minecraft:water without modifying that replacement
+ FAIL  tests/infrastructure/break-recovery-location.test.ts > deferred recovery requires a currently loaded air block > refuses recovery into minecraft:fire without modifying that replacement
+ FAIL  tests/infrastructure/break-recovery-location.test.ts > deferred recovery requires a currently loaded air block > refuses recovery into altare:mensa without modifying that replacement
+AssertionError: expected undefined to be '{"schemaVersion":1,"entries":{"2,64,-…' // Object.is equality
+
+- Expected: 
+"{\"schemaVersion\":1,\"entries\":{\"2,64,-3\":{\"schemaVersion\":2,\"instanceId\":\"ag-70-3-1iv3uodaprt\",\"nameTag\":\"Preserved recovery item\",\"charges\":3,\"cosmeticId\":\"classic\",\"sprayProfileId\":\"standard\",\"customProperties\":{\"fixture:note\":\"keep\"}}}}"
+
++ Received: 
+undefined
+
+ ❯ Object.unchanged tests/infrastructure/break-recovery-location.test.ts:28:48
+     26|   const schedule = () => scheduleDockedBreakRecovery(dimension.asDimen…
+     27|   const unchanged = () => {
+     28|     expect(world.getDynamicProperty(property)).toBe(raw);
+       |                                                ^
+     29|     expect(world.setDynamicProperty).not.toHaveBeenCalled();
+     30|     expect(dimension.spawnItem).not.toHaveBeenCalled();
+ ❯ tests/infrastructure/break-recovery-location.test.ts:44:23
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/16]⎯
+
+ FAIL  tests/infrastructure/break-recovery-location.test.ts > deferred recovery requires a currently loaded air block > preserves bytes when location inspection is undefined
+ FAIL  tests/infrastructure/break-recovery-location.test.ts > deferred recovery requires a currently loaded air block > preserves bytes when location inspection is invalid
+ FAIL  tests/infrastructure/break-recovery-location.test.ts > deferred recovery requires a currently loaded air block > preserves bytes when location inspection is read-throws
+ FAIL  tests/infrastructure/break-recovery-location.test.ts > deferred recovery requires a currently loaded air block > preserves bytes when location inspection is validity-throws
+ FAIL  tests/infrastructure/break-recovery-location.test.ts > deferred recovery requires a currently loaded air block > preserves bytes when location inspection is air-throws
+ FAIL  tests/infrastructure/break-recovery-location.test.ts > deferred recovery requires a currently loaded air block > preserves bytes when location inspection is air-unknown
+AssertionError: expected undefined to be '{"schemaVersion":1,"entries":{"2,64,-…' // Object.is equality
+
+- Expected: 
+"{\"schemaVersion\":1,\"entries\":{\"2,64,-3\":{\"schemaVersion\":2,\"instanceId\":\"ag-i8-7-1liuf5xwl89\",\"nameTag\":\"Preserved recovery item\",\"charges\":3,\"cosmeticId\":\"classic\",\"sprayProfileId\":\"standard\",\"customProperties\":{\"fixture:note\":\"keep\"}}}}"
+
++ Received: 
+undefined
+
+ ❯ Object.unchanged tests/infrastructure/break-recovery-location.test.ts:28:48
+     26|   const schedule = () => scheduleDockedBreakRecovery(dimension.asDimen…
+     27|   const unchanged = () => {
+     28|     expect(world.getDynamicProperty(property)).toBe(raw);
+       |                                                ^
+     29|     expect(world.setDynamicProperty).not.toHaveBeenCalled();
+     30|     expect(dimension.spawnItem).not.toHaveBeenCalled();
+ ❯ tests/infrastructure/break-recovery-location.test.ts:54:23
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/16]⎯
+
+ FAIL  tests/infrastructure/break-recovery-location.test.ts > deferred recovery requires a currently loaded air block > keeps existing aspersorium recovery behavior for valid loaded air and unchanged snapshot
+ FAIL  tests/infrastructure/break-recovery-location.test.ts > deferred recovery requires a currently loaded air block > keeps existing table recovery behavior for valid loaded air and unchanged snapshot
+AssertionError: expected "getBlock" to be called once with arguments: [ { x: 2, y: 64, z: -3 } ]
+
+Number of calls: 0
+
+ ❯ tests/infrastructure/break-recovery-location.test.ts:60:20
+     58|     expect(lookup).not.toHaveBeenCalled();
+     59|     advanceTicks();
+     60|     expect(lookup).toHaveBeenCalledExactlyOnceWith(f.block.location);
+       |                    ^
+     61|     expect(f.dimension.drops).toHaveLength(1);
+     62|     expect(captureDockedAspergillum(f.dimension.drops[0]!.item, 3)).to…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/16]⎯
+
+ FAIL  tests/infrastructure/break-recovery-location.test.ts > deferred recovery requires a currently loaded air block > does not fabricate the legacy fallback into a replacement when the snapshot is missing
+AssertionError: expected "spy" to not be called at all, but actually been called 1 times
+
+Received: 
+
+  1st spy call:
+
+    Array [
+      ItemStack {
+        "amount": 1,
+        "lore": Array [
+          Object {
+            "translate": "item.aspergillum.lore.charges",
+            "with": Array [
+              "0",
+              "4",
+            ],
+          },
+          Object {
+            "rawtext": Array [
+              Object {
+                "translate": "item.aspergillum.lore.profile",
+              },
+              Object {
+                "translate": "ui.aspergillum.profile.standard.name",
+              },
+            ],
+          },
+          Object {
+            "rawtext": Array [
+              Object {
+                "translate": "item.aspergillum.lore.appearance",
+              },
+              Object {
+                "translate": "ui.aspergillum.metal.silver.name",
+              },
+              Object {
+                "translate": "item.aspergillum.lore.grip",
+              },
+              Object {
+                "translate": "ui.aspergillum.grip.chestnut.name",
+              },
+            ],
+          },
+          Object {
+            "translate": "item.aspergillum.lore.instructions",
+          },
+          Object {
+            "translate": "item.aspergillum.lore.docking",
+          },
+          Object {
+            "translate": "item.aspergillum.lore.creative",
+          },
+        ],
+        "nameTag": undefined,
+        "properties": Map {
+          "aspergillum:charges" => 0,
+          "aspergillum:schema_version" => 3,
+          "aspergillum:instance_id" => "ag-17i-i-2b3c4o7dr8f",
+          "aspergillum:cosmetic_id" => "classic",
+          "aspergillum:spray_profile_id" => "standard",
+        },
+        "typeId": "aspergillum:aspergillum",
+      },
+      Object {
+        "x": 2.5,
+        "y": 64.8,
+        "z": -2.5,
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ tests/infrastructure/break-recovery-location.test.ts:75:39
+     73|     const f = fixture(); world.setDynamicProperty(f.property, undefine…
+     74|     f.schedule(); f.block.permutation = f.occupied; advanceTicks();
+     75|     expect(f.dimension.spawnItem).not.toHaveBeenCalled(); expect(world…
+       |                                       ^
+     76|   });
+     77|   it("still preserves a changed snapshot even when the address is air"…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/16]⎯
+
+ FAIL  tests/infrastructure/break-recovery-location.test.ts > deferred recovery requires a currently loaded air block > does not schedule an automatic retry when a refused location later becomes air
+AssertionError: expected undefined to be '{"schemaVersion":1,"entries":{"2,64,-…' // Object.is equality
+
+- Expected: 
+"{\"schemaVersion\":1,\"entries\":{\"2,64,-3\":{\"schemaVersion\":2,\"instanceId\":\"ag-1d3-l-22uvu7v3dxe\",\"nameTag\":\"Preserved recovery item\",\"charges\":3,\"cosmeticId\":\"classic\",\"sprayProfileId\":\"standard\",\"customProperties\":{\"fixture:note\":\"keep\"}}}}"
+
++ Received: 
+undefined
+
+ ❯ Object.unchanged tests/infrastructure/break-recovery-location.test.ts:28:48
+     26|   const schedule = () => scheduleDockedBreakRecovery(dimension.asDimen…
+     27|   const unchanged = () => {
+     28|     expect(world.getDynamicProperty(property)).toBe(raw);
+       |                                                ^
+     29|     expect(world.setDynamicProperty).not.toHaveBeenCalled();
+     30|     expect(dimension.spawnItem).not.toHaveBeenCalled();
+ ❯ tests/infrastructure/break-recovery-location.test.ts:86:92
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/16]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  16 failed | 2 passed (18)
+   Start at  19:26:45
+   Duration  1.08s (transform 246ms, setup 0ms, collect 250ms, tests 119ms, environment 0ms, prepare 175ms)
+

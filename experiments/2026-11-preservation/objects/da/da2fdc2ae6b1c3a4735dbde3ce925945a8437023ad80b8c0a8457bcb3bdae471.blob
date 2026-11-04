@@ -1,0 +1,56 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-cloth-obstacle-surface-trial.py').read().split('counts=collections.Counter')[0])
+from scipy.optimize import minimize,LinearConstraint
+from scipy import sparse
+pairlist=np.load(r+'neck-source-layer-pairs.npz')['pairs']+160386
+pairmap={int(a):int(b) for a,b in pairlist for a,b in [(a,b),(b,a)]};primary={int(a):int(a) for a,b in pairlist};primary.update({int(b):int(a) for a,b in pairlist});patch=set(json.load(open(r+'neck-paired-boundary-feasibility-growth.json'))['patch_faces']);counts=collections.Counter(tuple(sorted((a,b))) for fi in patch for a,b in zip(fs[fi],fs[fi][1:]+fs[fi][:1]));boundary={v for e,n in counts.items() if n==1 for v in e};ids={v for fi in patch for v in fs[fi]};nodes=sorted({primary[v] for v in ids});fixed={primary[v] for v in boundary};free=sorted(set(nodes)-fixed);ix={v:i for i,v in enumerate(free)};ni={v:i for i,v in enumerate(nodes)};adj=collections.defaultdict(set)
+for a,b in counts:
+ a,b=primary[a],primary[b]
+ if a!=b:adj[a].add(b);adj[b].add(a)
+L=np.zeros((len(nodes),len(free)))
+for a in nodes:
+ if a in ix:L[ni[a],ix[a]]=1
+ for b in adj[a]:
+  if b in ix:L[ni[a],ix[b]]-=1/len(adj[a])
+H=np.eye(len(free))+.5*(L.T@L)+12*(L.T@L)@(L.T@L)
+# Skin-obstacle samples on both layers, sharing exactly the same displacement DOF per true source pair.
+samples=[([v],[1.0]) for v in ids]
+for fi in patch:
+ f=fs[fi];samples.append((list(f),[1/len(f)]*len(f)))
+for a,b in counts:samples.append(([a,b],[.5,.5]))
+x=np.zeros((len(free),3));history=[]
+def coords(x):
+ out=p.copy()
+ for a,i in ix.items():out[a]+=x[i];out[pairmap[a]]+=x[i]
+ return out
+def energy(v):X=v.reshape(-1,3);return .5*np.sum(X*(H@X))
+def grad(v):return (H@v.reshape(-1,3)).ravel()
+for outer in range(12):
+ q=coords(x);A=[];lo=[];mind=1;fixedbad=0
+ for vs,weights in samples:
+  point=sum((Vector(q[v])*w for v,w in zip(vs,weights)),Vector());near,nor,_,dist=hb.find_nearest(point);sd=(point-near).dot(nor);mind=min(mind,sd)
+  if sd>.002:continue
+  row=np.zeros((len(free),3));cur=0
+  for v,w in zip(vs,weights):
+   a=primary[v]
+   if a in ix:row[ix[a]]+=w*np.array(nor);cur+=w*np.dot(x[ix[a]],nor)
+  if not np.any(row):
+   if sd<0:fixedbad+=1
+   continue
+  A.append(row.ravel());lo.append(.00005-sd+cur)
+ if not A:break
+ AA=np.array(A);bb=np.array(lo);Hi=np.linalg.inv(H);R=np.einsum('ij,mjk->mik',Hi,AA.reshape(-1,len(free),3)).reshape(len(A),-1);W=AA@R.T
+ def dual(lam):
+  wl=W@lam
+  return .5*lam@wl-bb@lam,wl-bb
+ print({'outer':outer,'constraints':len(A),'solver':'dual bounded L-BFGS'},flush=True)
+ result=minimize(dual,np.zeros(len(A)),jac=True,bounds=[(0,None)]*len(A),method='L-BFGS-B',options={'maxiter':2000,'ftol':1e-15,'gtol':1e-10,'maxls':40});nx=(R.T@result.x).reshape(-1,3);residual=float(np.max(bb-AA@nx.ravel()));result.success=residual<1e-6;result.message=str(result.message)+'; max primal violation='+str(residual);delta=float(np.max(np.linalg.norm(nx-x,axis=1)));x=nx
+ row={'iteration':outer,'success':bool(result.success),'message':str(result.message),'constraints':len(A),'minimum_sample_signed_before':float(mind),'fixed_negative_samples':fixedbad,'step_max':delta,'max_displacement':float(np.linalg.norm(x,axis=1).max())};history.append(row);print(row,flush=True)
+ if not result.success or fixedbad or delta<1e-7:break
+q=coords(x);tri=[]
+for f in fs:
+ for j in range(1,len(f)-1):tri.append([f[0],f[j],f[j+1]])
+T=np.array(tri);P=p[T];Q=q[T];na=np.cross(P[:,1]-P[:,0],P[:,2]-P[:,0]);nb=np.cross(Q[:,1]-Q[:,0],Q[:,2]-Q[:,0]);area=np.linalg.norm(na,axis=1);valid=area>1e-12;ratio=np.linalg.norm(nb,axis=1)[valid]/area[valid]
+def tree(v):return BVHTree.FromPolygons(v.tolist(),fs)
+def selfpairs(t):return set((a,b) for a,b in t.overlap(t) if a<b and not set(fs[a])&set(fs[b]))
+bt=tree(p);nt=tree(q);before=selfpairs(bt);after=selfpairs(nt);bc=set(hb.overlap(bt));nc=set(hb.overlap(nt));d=np.linalg.norm(q-p,axis=1);pairerror=max(float(np.linalg.norm((q[a]-q[b])-(p[a]-p[b]))) for a,b in pairlist if a in ids);report={'method':'True paired-source midsurface displacement DOFs, fixed shared boundary, coupled3D sequential linear skin obstacles, squared-Laplacian displacement regularization; topology unchanged','free_mid_nodes':len(free),'boundary_mid_nodes':len(fixed),'history':history,'max_displacement':float(d.max()),'boundary_delta':float(d[list(boundary)].max()),'outside_patch_delta':float(d[[v for v in range(len(p)) if v not in ids]].max()),'pair_vector_change_max':pairerror,'area_range':[float(ratio.min()),float(ratio.max())],'flips':int(((na*nb).sum(1)<-1e-15).sum()),'new_self_pairs':len(after-before),'removed_self_pairs':len(before-after),'head_new_pairs':len(nc-bc),'head_removed_pairs':len(bc-nc),'patch_head_pairs_before':sum(b in patch for a,b in bc),'patch_head_pairs_after':sum(b in patch for a,b in nc),'new_self_pair_ids':list(after-before)};json.dump(report,open(r+'V86-midsurface-proof.json','w'),indent=2);np.savez(r+'V86-midsurface-proof.npz',original=p,candidate=q);print({k:v for k,v in report.items() if k not in ['history','new_self_pair_ids']},flush=True)
+# This is diagnostic only. Never save/promote a blend from the optimizer directly.

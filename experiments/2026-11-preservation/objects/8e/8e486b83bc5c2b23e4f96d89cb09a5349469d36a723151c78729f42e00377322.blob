@@ -1,0 +1,83 @@
+# Parecer geométrico independente V12
+
+**Recomendo retenção técnica local de `structural_rebuild/polygonal-pinna-0.6mm-clean.npz`, condicionada ao parecer visual separado.** A faixa permanece um sólido fechado com as duas cristas contínuas e frente preservada; os cortes laterais têm fechamento real entre as duas paredes. A variante de 0,6 mm elimina as sobreposições coplanares novas que inviabilizavam a preferência pela primeira candidata de 0,5 mm. Isso não aprova a interface inteira, a arte final ou uma exportação.
+
+SHA-256: `1c293d8c5b35cca07cfc0e73d2b2e360cbbc3bea27688bb6e6373537ecf54c76`.
+
+A anatomia V9 e casca V11 permanecem congeladas, conferidas por hash, sem repetir seus gates invariáveis. A fonte V5 e o cutter V11 original também permanecem intactos. Nada exportado/publicado; esta revisão não executou Minecraft nem substituiu rosto ou halo por highpoly.
+
+## 1. Diagnóstico e escopo real do recorte
+
+A fonte tem 856 faces na parede externa (`source_side=0`), 856 na parede interna (`source_side=1`, fisicamente voltada para a cavidade) e 200 faces mistas de retorno. Os retornos não são tratados como planos ilimitados da parede interna. O objeto fonte é uma componente; não eram fragmentos topologicamente desconectados.
+
+Aplicar o envelope das orelhas não apaga apenas alguns triângulos microscópicos: a variante final afeta 1.102 faces fonte, das quais 962 saem inteiras e 140 produzem descendentes recortados. Contudo essa região densamente tessellada representa aproximadamente 11,3% da área da faixa, não metade da faixa. Ambas as terminações são encurtadas, enquanto as 488 faces que têm algum vértice com y < −0,28 m ficam exatas. Essa guarda frontal é geométrica, não uma segmentação anatômica.
+
+O mapa inicial `baseline-map.json` registra a localização, linhagens, duas paredes, retornos e componentes afetados pelo primeiro envelope. Área recortada e contatos não classificam sozinhos o ouro como visualmente indesejado; a decisão de aparência exige as imagens com toda a faixa, incluindo o fechamento, na mesma cor ouro.
+
+## 2. Topologia, preservação e domínio
+
+A final possui **584 vértices, 1.164 triângulos e 1.746 arestas**, uma componente fechada, Euler 2, volume orientado positivo, zero arestas abertas/não-manifold, orientação de arestas inconsistente, enlaces defeituosos, vértices sem uso ou duplicatas por conjunto de índices. Não há área abaixo de 10⁻¹⁶ m².
+
+- 436 vértices fonte mantêm coordenadas bit a bit exatas; há 148 vértices novos.
+- 810 faces orientadas fonte ficam exatas, 210 triângulos recortados têm ancestral fonte e 144 faces fecham os cortes.
+- Todos os 1.102 ancestrais alterados intersectam o envelope declarado; nenhum ancestral herdado está invertido.
+- O clipping independente dos **1.912 triângulos fonte**, incluindo os retirados por completo, confere a área esperada com os descendentes. Erro máximo por ancestral: **4,40×10⁻¹⁷ m²**; soma: 4,46×10⁻¹⁶ m².
+- Nenhuma sobreposição coplanar positiva acima de 10⁻¹⁷ m² foi encontrada entre filhos ou faces da faixa, incluindo adjacências.
+- Os fechamentos pertencem ao domínio convexo do cutter e têm orientação oposta às faces do cutter, conforme uma diferença sólida. Há mínimo baricêntrico −2,82×10⁻⁶ contra uma triangulação específica do cutter, junto a diagonais internas coplanares; por isso a conferência do volume por semiespaços e do plano não é substituída por esse atributo de proveniência.
+
+A candidata de 0,6 mm usa um envelope lateral 0,1 mm maior que o da casca V11. Essa diferença de envelopes **não é um certificado de folga de 0,1 mm entre os meshes**.
+
+## 3. Duas cristas preservadas como curvas, não apenas como contagem
+
+Identifiquei as duas linhas originais por parâmetros fonte v=3 e v=13. Depois comparei os intervalos geométricos de cada segmento fonte fora do cutter com a união das arestas candidatas coincidentes em 3D, sem confiar no UV candidato.
+
+As quatro curvas, duas em cada parede, permanecem conexas, com exatamente duas pontas e sem ramificações. Não há lacunas, duplicações de domínio nem perda fora do recorte. O erro máximo de comprimento por segmento é menor que 7,45×10⁻¹³ mm.
+
+Na parede externa:
+
+- Crista v=3: **585,840 mm** restantes de 630,745 mm fonte, aproximadamente 7,1% removidos nas pontas.
+- Crista v=13: **568,176 mm** restantes de 664,741 mm fonte, aproximadamente 14,5% removidos nas pontas.
+
+As correspondentes internas medem 584,292 e 566,523 mm. Isso sustenta a existência e continuidade do perfil duplo restante; não afirma comprimento integral preservado ou terminação artisticamente aprovada.
+
+## 4. Cruzamentos próprios e coplanaridade
+
+**Zero cruzamentos próprios estritos confirmados.** O broadphase usa todas as caixas AABB em float64, unido explicitamente a **7.507 pares adjacentes**. A triagem padrão float64 e outra em longdouble sem epsilon positivo nos baricêntricos produziram 200 flags próximas de fronteiras; todas foram refinadas sobre as coordenadas binárias armazenadas com 80 dígitos. Nenhuma confirmou cruzamento estrito. As listas brutas são preservadas, não confundidas com o resultado final.
+
+Além disso, a varredura coplanar examinou todos os pares AABB da faixa contra ela própria, a casca e a anatomia. Usa distância ao plano ≤10⁻¹² m, alinhamento de normais |dot|≥1−10⁻¹⁰ e área positiva >10⁻¹⁷ m². Na final: **zero sobreposições coplanares detectadas** nas três relações.
+
+A primeira candidata de 0,5 mm passava o gate próprio, mas compartilhava o mesmo plano de fechamento da casca: 60 pares apresentavam sobreposição coplanar, com soma de área 1,46779 mm² sem união espacial. Esse problema não aparecia corretamente na contagem de cruzamentos estritos. A candidata de 0,6 mm resolve essa coincidência e tem condicionamento numérico melhor. Os arquivos de 0,5 mm ficam preservados como diagnóstico, sem recomendação de retenção.
+
+Tangências e contatos arbitrariamente menores que os limiares não recebem certificado global de ausência.
+
+## 5. Espessura nova e qualidade numérica
+
+Os fechamentos formam duas componentes de 58 e 86 faces. Cada uma se liga às duas paredes identificadas e também a quatro arestas de retorno misto. Medi as curvas reais de encontro parede/fechamento, não pares de vértices antigos:
+
+- Distância mínima entre segmentos dos lábios opostos: **0,099875 mm à esquerda e 0,272772 mm à direita**.
+- 592 raios em dupla precisão, quatro posições por encontro, atingem a malha real. Nos centróides, a mediana de corda é **0,410936 mm**; a menor corda é **0,015558 mm** e sai pelo próprio rim.
+- Raios próximos de quinas e faces estreitas podem sair pelo rim antes de atravessar para a parede oposta. Isso é distinguido de uma medição da espessura entre paredes. Os testemunhos completos estão disponíveis.
+
+Há fechamento de largura finita nos locais medidos, mas **não há prova de espessura mínima global**. A largura não é uniformemente a nominal original de 0,5 mm.
+
+Quantização direta float64→float32→float64 não colapsa vértices, degenera ou inverte faces. Altitude mínima: **0,010665 mm**; rotação máxima da normal: **0,428935°**; razão de áreas: **0,988853–1,002479**. Na candidata de 0,5 mm, a rotação máxima era 4,2844°.
+
+O menor ângulo é 0,077775°, em um triângulo fonte recortado; há uma face abaixo de 0,1°. O novo rim tem mínimo 1,30543° e nenhuma face abaixo de 1°. Portanto o gate não esconde os triângulos estreitos remanescentes. A análise float32 não certifica JSON/cubos, culling, alfa, mipmaps, PBR, normalmap, desempenho ou runtime Bedrock.
+
+## 6. Contatos restantes e comparação espacial
+
+A nova faixa ainda intersecta outros meshes:
+
+- **Faixa × anatomia: 189 pares**, incluindo 15 no fechamento. Todos incidem na máscara conservadora de orelhas V9, mas essa máscara não equivale a segmentação anatômica precisa.
+- **Faixa × casca: 1.360 pares**, incluindo 44 no fechamento.
+
+Não subtraí identidades de pares após trocar tesselação. A soma dos comprimentos de segmentos de interseção mostra:
+
+- Anatomia: **883,256 → 318,149 mm** em relação à faixa fonte, sendo 304,476 mm do lado direito e 13,673 mm do esquerdo. O novo rim soma 3,293 mm.
+- Casca: **3.782,715 → 3.778,693 mm**, praticamente igual. O novo rim soma 5,861 mm. O aumento 1.339→1.360 pares não é sozinho evidência de piora espacial; tampouco a pequena queda de comprimento demonstra limpeza dessa interface.
+
+Essas somas **não têm união/deduplicação espacial global**, não medem profundidade, área visível ou folga. Os segmentos individuais são preservados. Os 98 contatos casca/anatomia da V11 continuam uma relação congelada diferente, sem serem somados a esses números.
+
+## Decisão
+
+**Favorável à retenção técnica local de 0,6 mm, se a revisão visual confirmar as terminações e o duplo bordo.** O trabalho demonstra recorte fechado, duas cristas restantes contínuas, frente exata e remoção de uma coincidência planar criada no primeiro teste. Não demonstra interface global livre de interseções. Não recomendo variantes adicionais sem uma falha visual ou geométrica concreta; a revisão de arte e a eventual etapa futura de exportação permanecem separadas.

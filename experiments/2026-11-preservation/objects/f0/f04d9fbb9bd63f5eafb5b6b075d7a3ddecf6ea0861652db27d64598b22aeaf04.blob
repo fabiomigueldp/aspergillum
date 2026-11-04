@@ -1,0 +1,13 @@
+from pathlib import Path
+import numpy as np,json
+O=Path(__file__).resolve().parent;B=O.parents[1]
+a=np.load(B/'body_interface_v9/constrained_fit/retained-anatomy.npz');s=np.load(B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz');b=np.load(B/'shell_band_v5/retained_candidate/evidence/band-paired.npz');co=np.load(B/'bridge_ear_v10/evidence/seven-view-contour-mask.npz');w=json.loads((O/'contact-spatial-witnesses.json').read_text());qp=np.array([r['point'] for r in w]);rows=[]
+for file in sorted((B/'ear_rim_v11/structural_rebuild').glob('*-cutter.npz')):
+ d=np.load(file);report={'cutter':str(file.relative_to(B)),'sides':{}}
+ for side in [-1,1]:
+  pl=d['planes'][d['face_sides']==side]
+  def inside(q):return np.all(q@pl[:,:3].T+pl[:,3]<=1e-10,axis=1)
+  si=inside(s['points']);ai=inside(a['points']);bi=inside(b['points']);wi=inside(qp);sib=np.flatnonzero(si&co['contour_vertices']);nearbody=np.flatnonzero(ai&~a['protected_ears']);earw=np.array([(r['point'][0]-.04)*side>0 and bool(r['ear_vertices_incident']) for r in w]);outside=earw&~wi
+  report['sides'][str(side)]={'shell_vertices_inside':int(si.sum()),'shell_faces_all_vertices_inside':int(np.all(si[s['triangles']],1).sum()),'shell_faces_any_vertex_inside':int(np.any(si[s['triangles']],1).sum()),'contour_vertex_ids_inside':sib.tolist(),'contour_vertices_by_view':dict(zip(co['view_names'].tolist(),np.sum(co['per_view'][:,sib],axis=1).tolist())),'non_ear_anatomy_vertices_inside':nearbody.tolist(),'band_vertices_inside':int(bi.sum()),'ear_contact_witnesses_inside':int((earw&wi).sum()),'ear_contact_witnesses_outside':int(outside.sum()),'outside_contact_box':{'min':qp[outside].min(0).tolist(),'max':qp[outside].max(0).tolist()} if outside.any() else None}
+ rows.append(report)
+(O/'hull-scope.json').write_text(json.dumps(rows,indent=2));print(json.dumps(rows,indent=2))

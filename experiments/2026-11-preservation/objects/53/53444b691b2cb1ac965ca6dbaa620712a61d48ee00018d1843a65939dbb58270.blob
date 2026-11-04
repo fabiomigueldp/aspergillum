@@ -1,0 +1,63 @@
+"""Blender CPU rasterization of exported buffer data, not a game/WebGL render.
+Stored vertex normals drive emission intensity explicitly. Blender must never
+repair the pre-patch normals by recomputing shading normals from geometry.
+"""
+import bpy,json,sys,math,hashlib
+from pathlib import Path
+from mathutils import Vector,Matrix
+R=Path(__file__).resolve().parent
+manifest=json.loads((R/'manifest.json').read_text())
+only=set(sys.argv[sys.argv.index('--')+1:]) if '--' in sys.argv else set()
+light=Vector((.25,.35,1)).normalized()
+results=[]
+for item in manifest['scenes']:
+ if only and item['name'] not in only:continue
+ data=json.loads((R/(item['name']+'.json')).read_text())
+ bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
+ scene=bpy.context.scene;scene.render.engine='CYCLES';scene.cycles.device='CPU';scene.cycles.samples=16;scene.cycles.seed=73;scene.cycles.use_denoising=False;scene.cycles.transparent_max_bounces=256
+ scene.render.threads_mode='FIXED';scene.render.threads=8;scene.render.resolution_x=640;scene.render.resolution_y=640;scene.render.resolution_percentage=100
+ scene.render.image_settings.file_format='PNG';scene.render.image_settings.color_mode='RGBA';scene.render.image_settings.color_depth='8';scene.render.film_transparent=True;scene.view_settings.view_transform='Standard';scene.view_settings.look='None';scene.view_settings.exposure=0;scene.view_settings.gamma=1
+ scene.world.use_nodes=True;scene.world.node_tree.nodes.get('Background').inputs['Strength'].default_value=0
+ # The framing is computed once from the same before mesh, then held fixed.
+ points=[Vector(v) for v in data['variants']['before']['vertices']];lo=Vector(tuple(min(p[i] for p in points) for i in range(3)));hi=Vector(tuple(max(p[i] for p in points) for i in range(3)));target=(lo+hi)/2;direction=Vector(data['camera']).normalized()
+ camdata=bpy.data.cameras.new(item['name']+' fixed orthographic');cam=bpy.data.objects.new(camdata.name,camdata);scene.collection.objects.link(cam);scene.camera=cam;cam.location=target+direction*10
+ # Explicit Bedrock Y-up, avoiding to_track_quat's implicit world Z-up.
+ right=Vector((0,1,0)).cross(direction).normalized();up=direction.cross(right).normalized();cam.rotation_euler=Matrix((right,up,direction)).transposed().to_euler();camdata.type='ORTHO'
+ rotation=cam.rotation_euler.to_matrix().transposed();camera_points=[rotation@(p-target) for p in points];camdata.ortho_scale=max(max(p[i] for p in camera_points)-min(p[i] for p in camera_points) for i in [0,1])*1.18;camdata.clip_start=.01;camdata.clip_end=100
+ texture_path=Path(data['texture'])
+ if not texture_path.exists():texture_path=R/'textures'/texture_path.name
+ image=bpy.data.images.load(str(texture_path),check_existing=True)
+ objects={}
+ for variant,buffers in data['variants'].items():
+  me=bpy.data.meshes.new(variant+' exact triangle buffers');me.from_pydata(buffers['vertices'],[],buffers['triangles']);me.update();ob=bpy.data.objects.new(me.name,me);scene.collection.objects.link(ob);objects[variant]=ob
+  me.uv_layers.new(name='Exported original UV');me.color_attributes.new(name='Stored-normal Lambert',type='FLOAT_COLOR',domain='CORNER')
+  # Adding custom-data layers can invalidate earlier RNA layer references.
+  # Retrieve both only after allocation, then verify every imported attribute.
+  uv=me.uv_layers['Exported original UV'];color=me.color_attributes['Stored-normal Lambert']
+  for face in me.polygons:
+   for li in face.loop_indices:
+    vi=me.loops[li].vertex_index;uv.data[li].uv=buffers['uvs'][vi];n=Vector(buffers['normals'][vi]);intensity=.18+.82*max(0,n.dot(light));color.data[li].color=(intensity,intensity,intensity,1)
+  for li,loop in enumerate(me.loops):
+   vi=loop.vertex_index;expected_uv=buffers['uvs'][vi];intensity=.18+.82*max(0,Vector(buffers['normals'][vi]).dot(light))
+   assert max(abs(uv.data[li].uv[i]-expected_uv[i]) for i in range(2))<1e-6,'UV import mismatch'
+   assert max(abs(color.data[li].color[i]-intensity) for i in range(3))<1e-6,'Stored-normal import mismatch'
+  for mode in ['uv','normal']:
+   mat=bpy.data.materials.new(variant+' '+mode+' explicit diagnostic');mat.use_nodes=True;n=mat.node_tree.nodes;n.clear();links=mat.node_tree.links
+   out=n.new('ShaderNodeOutputMaterial');em=n.new('ShaderNodeEmission');tr=n.new('ShaderNodeBsdfTransparent');tex=n.new('ShaderNodeTexImage');tex.image=image;tex.interpolation='Closest';tex.extension='CLIP';tex.projection='FLAT';uv_node=n.new('ShaderNodeUVMap');uv_node.uv_map=uv.name;links.new(uv_node.outputs['UV'],tex.inputs['Vector'])
+   if mode=='uv':links.new(tex.outputs['Color'],em.inputs['Color'])
+   else:
+    vc=n.new('ShaderNodeVertexColor');vc.layer_name=color.name;links.new(vc.outputs['Color'],em.inputs['Color'])
+   # True indexed winding controls visibility. No material-normal backface test.
+   alpha=n.new('ShaderNodeMath');alpha.operation='GREATER_THAN';alpha.inputs[1].default_value=.5;links.new(tex.outputs['Alpha'],alpha.inputs[0]);mix=n.new('ShaderNodeMixShader');links.new(alpha.outputs[0],mix.inputs[0]);links.new(tr.outputs[0],mix.inputs[1]);links.new(em.outputs[0],mix.inputs[2])
+   geom=n.new('ShaderNodeNewGeometry');back=n.new('ShaderNodeMixShader');links.new(geom.outputs['Backfacing'],back.inputs[0]);links.new(mix.outputs[0],back.inputs[1]);links.new(tr.outputs[0],back.inputs[2]);links.new(back.outputs[0],out.inputs[0]);me.materials.append(mat)
+  for face in me.polygons:face.material_index=0
+ for variant,ob in objects.items():
+  for other in objects.values():other.hide_render=other!=ob
+  for mode_index,mode in enumerate(['uv','normal']):
+   for face in ob.data.polygons:face.material_index=mode_index
+   path=R/f"{item['name']}-{variant}-{mode}.png";scene.render.filepath=str(path);bpy.ops.render.render(write_still=True)
+   results.append({'file':path.name,'scene':item['name'],'variant':variant,'mode':mode,'vertices':len(data['variants'][variant]['vertices']),'triangles':len(data['variants'][variant]['triangles']),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()})
+ settings={'blender':bpy.app.version_string,'engine':'Cycles CPU','samples':16,'seed':73,'resolution':[640,640],'viewTransform':'Standard','normalLighting':'.18 + .82 * max(0, storedVertexNormal dot normalize([.25,.35,1])) as emission','culling':'Geometry Backfacing from original indexed winding; transparent backside','alpha':'nearest texture alpha > .5','referenceScope':data['oracleScope'],'camera':{'location':list(cam.location),'target':list(target),'orthoScale':camdata.ortho_scale,'up':list(up),'right':list(right),'referenceUp':'Bedrock +Y'},'importReadbackValidatedEveryLoop':True,'noBrowser':True,'noNormalMapShader':True}
+ (R/(item['name']+'-settings.json')).write_text(json.dumps(settings,indent=2))
+(R/'render-results.json').write_text(json.dumps(results,indent=2))
+print('OFFLINE_RENDER_COMPLETE',len(results))

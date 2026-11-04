@@ -1,0 +1,38 @@
+# Semente separada + viabilidade de orientação — diagnóstico final desta frente
+
+V75 preservado. Não foi salvo nenhum blend de semente ou promovida geometria defeituosa. Nenhum software novo instalado. Geometria avaliada e triangulação explícita do Blender usadas, tanto na pele quanto no manto; os totais por triângulos não devem ser comparados diretamente a totais anteriores por polígonos.
+
+## Regiões conectadas
+Duas regiões de interseção no recorte:232faces/395pares e78faces/134pares. O recorte pareado756faces permanece dentro do pescoço delimitado, sem vértices de borda física da casca.
+
+## Semente realmente separada da pele, mas inválida como manto
+Não usei nova projeção por amostras. Intersectei as projeçõesYZ completas dos triângulos de ambas superfícies. Em cada célula, comparei as funções afinsX nos vértices da célula, gerando57.509desigualdades sobre234deslocamentos pareados. São85.045células; nenhuma projeção relevante degenerada e nenhum conflito de contorno fixo. Os vetores entre camadas e Y/Z permanecem fixos.
+
+Uma retirada uniforme dos nós livres constrói uma solução desses obstáculos. O mínimo do deslocamento máximo para esse sistema é18,5903mm; o pior obstáculo tem coeficiente livre .3466 e demanda6,444mm no ponto de célula. Teste independente de triângulos da semente:975pares pele–patch antes, ZERO depois. Portanto a separação estática da pele foi de fato demonstrada, não inferida de amostras.
+
+Entretanto essa semente cria276auto-interseções,40flips e área até27,18×. Ela foi recusada. Não é ponto inicial válido para aproximar uma casca de qualidade; eliminar contato com pele sacrificando o próprio manto não atende à tarefa.
+
+## Bloqueio demonstrado, sem novos ajustes artificiais
+Formulei o mesmo sistema de separação com1.512desigualdades lineares adicionais de orientação das faces, contorno e pares fixos. Resolvido por HiGHS já disponível:
+- exigir produto escalar das normais>=5% do original: INVIÁVEL;
+- testar a condição necessária ainda mais fraca produto>=0: também INVIÁVEL.
+O segundo teste é diagnóstico de impossibilidade dentro desse espaço, não relaxamento para aceitar candidato. Nenhuma forma foi gerada a partir dele.
+
+A fórmula linear da orientação foi conferida diretamente contra as normais3D de1.512triângulos, erro máximo7,1e-15. Isso afasta um simples erro de sinal como explicação da inviabilidade observada.
+
+## O que essa conclusão significa (e o que NÃO significa)
+Dentro do espaço restrito **topologia atual + Y/Z fixos + deslocamentoX pareado somente para fora + contorno fixo**, não obtive solução que satisfaça simultaneamente separação da pele e nem sequer orientação não-negativa. Aumentar margem, intensidade, iterações ou suavização não corrige a incompatibilidade desse espaço de movimentos.
+
+Não é prova de que qualquer escultura3D seja impossível. Uma reconstrução real precisa alterar a tesselação/interior em3D (ou redefinir contorno de forma fundamentada), preservando a silhueta documentada e validando tangentes/espessura. Não há, neste fluxo atual, uma semente que demonstre simultaneamente separação, ausência de auto-interseções, orientação e continuidade sob essas condições; por isso não comecei a aproximação e não gerei mais variantes.
+
+## Continuidade segura
+Guardar V75 como base, conservar mapa exato de pares e sistema de obstáculos para uma reconstrução local com retopologia verdadeira. O gargalo não é instalação ou autorização, mas construção geométrica/artística robusta sob restrições. Não alegar CCD completo nem usar ausência de cruzamento pele–patch para omitir deformação da casca.
+
+Arquivos principais:
+- neck-detached-seed-feasibility.json
+- neck-separated-envelope-seed-proof.json/.npz
+- neck-envelope-constraints.npz e neck-envelope-constraint-data.npz
+- neck-envelope-orientation-feasibility.json
+- neck-envelope-nonnegative-orientation-feasibility.json
+- neck-envelope-orientation-formula-audit.json
+- scripts de extração/solução correspondentes.

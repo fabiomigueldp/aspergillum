@@ -1,0 +1,16 @@
+# Causa da quebra pescoço–vestes — diagnóstico V75, sem deformação
+
+Imagens V75-neck-surface-attribution-profile.png e-oblique.png usam cores apenas diagnósticas: azul=cabeça/pescoço; laranja=túnica/mangas; verde=manto/véu. Não foram salvas no .blend e não representam material final.
+
+## Causas distintas comprovadas
+
+1. Linha serrilhada sob a região posterior da mandíbula pertence inteiramente à malha azul cabeça/pescoço, não é costura da túnica nem sombra projetada pelo manto. Raio no pixelaproximado(365,278) encontra somente cabeça em(-0,081209;-0,127187;3,345694), face7527. Portanto elevar vestimenta não corrige essa geometria e não é diagnóstico anatômico de pescoço comprido.
+2. Pequena mancha azul atravessando manto verde é interpenetração real. Raio(271,307): cabeça atingida a4,928037m e manto a4,931430m, diferença3,394mm; faces15648/169343. Pele fica à frente do tecido nesta vista. Não confundir com buraco topológico: as três malhas têm zero arestas de contorno abertas.
+3. Contato inferior azul/laranja é inserção de dois objetos fechados;411 pares triangulares cabeça–túnica na região do pescoço. Não é uma união soldada. Cabeça–manto tem3528 pares globais,529 emZ3,05–3,42; esses números são diagnóstico de contatos existentes, não defeitos novos nem autorização para remover todos.
+4. Ombro laranja arredondado e borda verde fina fazem a leitura geral mais mecânica, mas não validam deslocar posição anatômica com base em sombra.
+
+## Consequência
+
+Retirar a hipótese de subir6–8cm como próximo passo sem evidência adicional. Prioridades tecnicamente distintas e locais: (a) corrigir interpenetração de~3,4mm no tecido preservando silhueta/continuidade; (b) diagnosticar e regularizar a linha serrilhada da própria pele com máscara local e fronteira fixa, sem alterar comprimento/pose da cabeça. Não executar ambas como deslocamento amplo do ombro. Nenhuma geometria foi alterada neste estudo; V75 permanece base.
+
+Fontes: reference8/reference9 do arquivo.arq.br; marcos fotográficos continuam incertos. Cores e raios identificam superfícies do modelo, não reconstrução fotogramétrica do original.

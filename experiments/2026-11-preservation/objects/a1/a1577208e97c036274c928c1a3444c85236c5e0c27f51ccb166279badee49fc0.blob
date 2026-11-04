@@ -1,0 +1,20 @@
+import numpy as np,json
+from scipy.sparse import load_npz,coo_matrix,hstack,vstack,eye
+from scipy.optimize import linprog
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';M=load_npz(r+'neck-envelope-constraints.npz');d=np.load(r+'neck-envelope-constraint-data.npz');p=d['points'];T=d['triangles'];patchtri=d['patchtri'];pairs=d['pairs'];free=d['free'];n=len(free);ix={int(v):i for i,v in enumerate(free)};primary={int(a):int(a) for a,b in pairs};primary.update({int(b):int(a) for a,b in pairs});rr=[];cc=[];vv=[];rhs=[]
+for ti in patchtri:
+ ids=T[ti];a,b,c=p[ids];e=b-a;f=c-a;normal=np.cross(e,f);norm2=np.dot(normal,normal)
+ if norm2<1e-24:continue
+ coeff=np.array([normal[1]*(e[2]-f[2])+normal[2]*(f[1]-e[1]),normal[1]*f[2]-normal[2]*f[1],-normal[1]*e[2]+normal[2]*e[1]])/norm2
+ row=len(rhs);rhs.append(-.95)
+ for v,w in zip(ids,coeff):
+  key=primary[int(v)]
+  if key in ix:rr.append(row);cc.append(ix[key]);vv.append(float(w))
+C=coo_matrix((vv,(rr,cc)),shape=(len(rhs),n)).tocsr();Z=coo_matrix((M.shape[0]+C.shape[0],1));A=hstack([vstack([-M,-C]),Z]);bounded=hstack([eye(n),coo_matrix(-np.ones((n,1)))]);A=vstack([A,bounded]).tocsr();b=np.r_[-d['rhs'],-np.array(rhs),np.zeros(n)];cost=np.r_[np.ones(n)*1e-4,1.0];result=linprog(cost,A_ub=A,b_ub=b,bounds=[(0,None)]*(n+1),method='highs',options={'primal_feasibility_tolerance':1e-9,'dual_feasibility_tolerance':1e-9});report={'method':'Exact projected-cell separation + fixed-pair/boundary + positive orientation LP; minimize maximum X retreat, then weak total retreat','free_nodes':n,'skin_constraints':M.shape[0],'orientation_constraints':C.shape[0],'orientation_dot_min_fraction':.05,'success':bool(result.success),'status':int(result.status),'message':result.message}
+if result.success:
+ u=result.x[:-1];q=p.copy()
+ for v,i in ix.items():
+  q[v,0]-=u[i]
+  partner=int(next(b if a==v else a for a,b in pairs if a==v or b==v));q[partner,0]-=u[i]
+ report.update({'max_retreat_m':float(result.x[-1]),'max_constraint_violation':float((A@result.x-b).max()),'min_skin_inequality_slack':float((M@u-d['rhs']).min()),'min_orientation_dot_fraction':float((1+C@u).min())});np.savez(r+'neck-envelope-oriented-seed.npz',original=p,candidate=q,triangles=T,patchtri=patchtri)
+json.dump(report,open(r+'neck-envelope-orientation-feasibility.json','w'),indent=2);print(report)

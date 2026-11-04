@@ -1,0 +1,33 @@
+# QA manual no Minecraft Bedrock
+
+**Estado: não executado. Não instalar em saves de uso real.**
+
+O pacote mantém a identidade da 0.1.3 e não constitui uma segunda versão independente. Importar outro pacote com os mesmos UUIDs e versão pode ser tratado pelo Minecraft como duplicado. Não apagar instalações ou packs usados por mundos importantes para forçar essa importação. Preparar um ambiente de teste isolado ou uma cópia descartável sem afetar a instalação existente.
+
+## Registrar antes de começar
+
+- Versão completa e plataforma do cliente: pendente.
+- Versão mínima declarada que precisa ser testada: 1.26.40.
+- Hash SHA-256 do pacote realmente importado: pendente; calcular sobre os bytes usados.
+- Hash da fonte: usar o relatório dessa mesma compilação.
+- Nome de mundo descartável, responsável e horário: pendentes.
+- Logging de conteúdo habilitado no cliente e arquivo de log da sessão: pendentes.
+
+## Casos de aceitação
+
+1. **Importação:** importar o .mcaddon, confirmar reconhecimento do pacote de comportamento e do pacote de recursos, sem erro/duplicação inesperada.
+2. **Ativação:** criar um mundo descartável e confirmar ambos os packs ativos. Não ligar experimentos apenas para ocultar falhas; registrar qualquer requisito encontrado.
+3. **Inventário:** localizar Nossa Senhora da Paz na categoria de construção, verificar nome em pt_BR e en_US, ícone, item segurado e textura. Em mundo com comandos habilitados, `/give @s paz_glicerio:imagem` deve obter o item.
+4. **Quatro direções:** colocar manualmente quatro imagens enquanto o jogador olha para norte, sul, leste e oeste. Confirmar orientação visual da frente e continuidade de texturas. A consistência dos JSONs não prova que a frente artística coincide com a frente esperada.
+5. **Seleção/colisão:** caminhar e mirar ao redor da base e da parte superior. Registrar a limitação atual: geometria até ~27,59 px, seleção/colisão até 16 px. Julgar se isso é aceitável para o produto; não marcar esse caso aprovado se a decisão for que deve haver interação no topo.
+6. **Sobrevivência:** obter uma imagem em survival, colocar, quebrar sem encantamentos, recolher e recolocar. Repetir com ferramenta e mão vazia. Confirmar um item devolvido por bloco quebrado, nenhuma perda/duplicação. O esperado por documentação não equivale a teste executado.
+7. **Salvar/reabrir:** colocar imagens nas quatro orientações, guardar um item no inventário e em um baú; salvar, sair e reabrir. Conferir IDs, nomes, orientação, texturas e quantidades.
+8. **Recarregar chunk:** afastar-se o suficiente para descarregar a área e voltar. Conferir reaparecimento, ausência de clipping inesperado e estado preservado.
+9. **Content log:** examinar o log real inteiro da sessão, separar avisos preexistentes e erros atribuíveis a este addon, guardar o arquivo e seu hash. Um log vazio não é evidência suficiente de que logging funcionou.
+10. **Revisão visual no jogo:** frontal, perfil, três quartos, perto/longe, em dia/noite; verificar presença de Maria e Menino e leitura da imagem. A geometria antiga continua não aprovada até uma revisão explícita. Uma captura do Blender não substitui esse caso.
+
+## Preencher a evidência
+
+Somente depois de executar cada caso, atualizar `evidence/release-evidence.json` com fatos reais. O código exige todos os casos, revisão visual, alvo mínimo testado e arquivo de log com checksum. Quando qualquer fonte ou pacote mudar, os hashes invalidam a evidência anterior e os casos afetados precisam ser repetidos.
+
+A aprovação visual exige revisor e hash da geometria exata. Não vincular aprovação da escultura Blender a um export Bedrock diferente sem revisar esse export. Os 78 testes Python validam a ferramenta, não representam 78 testes dentro do Minecraft.

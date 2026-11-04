@@ -1,0 +1,85 @@
+/** Compare an explicitly supplied, already built precompact addon with this build.
+ * Read-only with respect to both packs and all game worlds. Report is stdout. */
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import {fileURLToPath} from 'node:url';
+import {ATELIER_DESIGNS,CATALOG_PERMUTATIONS,LEGACY_ID} from '../src/domain/catalog.ts';
+import {decodeTile} from '../src/domain/block-codec.ts';
+import {migrateLegacyAtelierSnapshot} from '../src/domain/catalog-migration.ts';
+import {migrateLegacyClassicSnapshot} from '../src/domain/classic-layout.ts';
+import {readLocalCombinedStateBudget,assertCombinedStateBudget} from './lib/block-state-budget.mjs';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const baseline=process.argv[2]&&path.resolve(process.argv[2]);
+assert(baseline&&baseline!==root,'Usage: node tools/verify-catalog-compaction.mjs /path/to/precompact/addons/altare');
+const localBudget=readLocalCombinedStateBudget(root);assertCombinedStateBudget(localBudget);
+const read=(dir,name)=>JSON.parse(fs.readFileSync(path.join(dir,name),'utf8'));
+const sha=buffer=>crypto.createHash('sha256').update(buffer).digest('hex');
+const files=(dir,relative='')=>fs.readdirSync(path.join(dir,relative),{withFileTypes:true}).flatMap(e=>e.isDirectory()?files(dir,path.join(relative,e.name)):[path.join(relative,e.name)]).sort();
+function blocks(dir){return new Map(files(path.join(dir,'packs/behavior/blocks')).map(name=>{const doc=read(dir,`packs/behavior/blocks/${name}`);return [doc['minecraft:block'].description.identifier,{name,block:doc['minecraft:block']}];}));}
+const old=blocks(baseline),current=blocks(root),cache=new Map();
+const stateRows=states=>Object.entries(states).reduce((rows,[key,values])=>rows.flatMap(row=>values.map(value=>({...row,[key]:value}))),[{}]);
+function evaluate(expression,states){
+ if(typeof expression!=='string')return expression;
+ let fn=cache.get(expression);if(!fn){fn=Function('q','math',`return (${expression})`);cache.set(expression,fn);}
+ return fn({block_state:key=>states[key]},{floor:Math.floor,mod:(a,b)=>a%b});
+}
+function effective(block,states){
+ const components={...block.components};
+ for(const p of block.permutations??[])if(evaluate(p.condition,states))Object.assign(components,p.components);
+ const geometry=components['minecraft:geometry'];
+ if(geometry?.bone_visibility)components['minecraft:geometry']={...geometry,bone_visibility:Object.fromEntries(Object.entries(geometry.bone_visibility).map(([name,value])=>[name,Boolean(evaluate(value,states))]))};
+ return components;
+}
+const digestMap=map=>sha(JSON.stringify([...map].sort()));
+function compareTree(relative){
+ const previous=files(path.join(baseline,relative)),next=files(path.join(root,relative));
+ assert.deepEqual(next,previous,`${relative}: file inventory differs`);
+ const hashes=[];
+ for(const file of previous){const before=fs.readFileSync(path.join(baseline,relative,file)),after=fs.readFileSync(path.join(root,relative,file));assert(before.equals(after),`${relative}/${file}: file differs`);hashes.push([file,sha(after)]);}
+ return {files:previous.length,manifestSha256:digestMap(hashes),byteIdentical:true};
+}
+assert.deepEqual([...current.keys()].sort(),[...old.keys()].sort(),'Block IDs changed');
+const affected=new Set([...ATELIER_DESIGNS.map(d=>d.id),LEGACY_ID]);
+let unchangedBlocks=0;
+for(const [id,{name}] of current)if(!affected.has(id)){
+ assert(fs.readFileSync(path.join(root,'packs/behavior/blocks',name)).equals(fs.readFileSync(path.join(baseline,'packs/behavior/blocks',old.get(id).name))),`${id}: unrelated block changed`);unchangedBlocks++;
+}
+let atelierCompared=0,classicCompared=0;
+for(const id of affected){
+ const before=old.get(id).block,after=current.get(id).block;
+ for(const states of stateRows(after.description.states)){
+  const t=decodeTile(id,{x:0,y:0,z:0},states);
+  const oldStates=id===LEGACY_ID?{'altare:edges':t.edges,'altare:frontal':t.frontal,'altare:facing':t.facing,'altare:stone':t.stone,'altare:cloth':t.cloth}:{'altare:edges':t.edges,'altare:facing':t.facing,'altare:role':t.frontal};
+  assert.deepEqual(effective(after,states),effective(before,oldStates),`${id}: semantic component mismatch for ${JSON.stringify(states)}`);
+  if(id===LEGACY_ID)classicCompared++;else atelierCompared++;
+ }
+}
+const migration={atelier:{accepted:0,rejected:0,normalizedUnusedRole:0},classic:{accepted:0,rejected:0}};
+for(const id of affected){
+ const before=old.get(id).block,after=current.get(id).block;
+ for(const states of stateRows(before.description.states)){
+  const snapshot={id,states},copy=structuredClone(snapshot),isClassic=id===LEGACY_ID;
+  const result=isClassic?migrateLegacyClassicSnapshot(snapshot):migrateLegacyAtelierSnapshot(snapshot),counts=isClassic?migration.classic:migration.atelier;
+  assert.deepEqual(snapshot,copy,'Snapshot migration mutated its input');
+  if(!result.ok){counts.rejected++;assert.equal(result.reason,'unrepresentable-pose');assert.strictEqual(result.snapshot,snapshot);continue;}
+  counts.accepted++;
+  if(!isClassic&&result.normalizations.length)counts.normalizedUnusedRole++;
+  assert.deepEqual(effective(after,result.snapshot.states),effective(before,states),`${id}: migration changed components for ${JSON.stringify(states)}`);
+ }
+}
+const countStates=map=>[...map.values()].reduce((sum,{block})=>sum+stateRows(block.description.states??{}).length,0);
+const oldTotal=countStates(old),newTotal=countStates(current);
+assert.equal(newTotal,localBudget.altare,'Emitted Altare budget disagrees with semantic enumeration');
+assert.equal(oldTotal,80000,'Unexpected baseline budget');assert.equal(newTotal,CATALOG_PERMUTATIONS);assert.equal(newTotal,51608);
+assert.equal(atelierCompared,14688);assert.equal(classicCompared,3000);
+assert.deepEqual(migration,{atelier:{accepted:16416,rejected:18144,normalizedUnusedRole:1728},classic:{accepted:3000,rejected:8520}});
+const report={schemaVersion:1,baselineVersion:read(baseline,'package.json').version,candidateVersion:read(root,'package.json').version,
+ blocks:{idsPreserved:current.size,schemasChanged:affected.size,unaffectedByteIdentical:unchangedBlocks},
+ states:{before:oldTotal,after:newTotal,saved:oldTotal-newTotal,aspergillum:localBudget.aspergillum,combined:localBudget.combined,combinedHeadroom:localBudget.combinedHeadroom},
+ stateBudgetSources:localBudget.sources,
+ semantics:{atelierCompared,classicCompared,allEffectiveComponentsEqual:true,migration},
+ resources:compareTree('packs/resource'),authoredAssets:compareTree('assets-src'),
+ limitations:['Comparison is offline and does not validate native Bedrock loading, persistence, rendering, or performance.','Same block IDs with changed state schemas are not safe to install over existing worlds. Migration accepts exported snapshots only; no world is read or modified.','Rejected old combinations are not silently repaired or stripped of iconography.','Known combined budget counts only the emitted Altare and sibling Aspergillum packs in this copy, including nested block directories; other add-ons are not counted.']};
+console.log(JSON.stringify(report,null,2));

@@ -1,0 +1,154 @@
+# Revisão visual independente V14: escultura inteira e transporte
+
+Data: 2026-11-03. Estado: **revisão concluída, incluindo transporte estrutural/alpha, PBR parcial e ensaio alpha alternativo**.
+
+**Parecer final: favorável somente à retenção como prova técnica de integração. A escultura inteira reconstruída do JSON/atlas conserva a composição e incorpora grande melhora de cobertura da casca em relação ao legado V2. Porém, o transporte acrescenta costuras serrilhadas e marcas escuras ausentes no controle nativo flat. O PBR parcial recupera relevo facial aparente, mas conserva essas perdas e produz sombreamento quase preto nas cavidades auriculares, também presente no controle nativo com o mesmo mapa. O alpha sem dilatação piora as fendas nas vistas examinadas e não deve ser promovido. Não há aprovação de fidelidade integral, acabamento artístico ou Minecraft.**
+
+## 1. Evidência examinada e identidade
+
+Foram inspecionados diretamente os 18 PNGs V14 de material uniforme, sem normalmap:
+
+- `json-flat-whole-{front,threequarter,profile,back}.png`.
+- `native-flat-whole-{front,threequarter,profile,back}.png`.
+- `json-flat-focus-{head-front,band-front,left-ear,right-ear,mantle-back}.png`.
+- `native-flat-focus-{head-front,band-front,left-ear,right-ear,mantle-back}.png`.
+
+Também foram inspecionados os quatro `legacy-flat-whole-{front,threequarter,profile,back}.png` e `legacy-normal-head-front.png`. Todos estão em `assembly_transport_v14/evidence/`. O close legacy-normal é registro contextual da aparência PBR antiga; a atribuição ao normalmap usa os pares V14 color/normal descritos na seção 6, não comparação com flat uniforme.
+
+Li os manifests dos quatro conjuntos flat, os manifests legacy, o código `tools/render_assembly.py`, `export_work/transport_contract.json`, `export_work/build-report.json`, `export_work/pbr-investigation-report.json` e os relatórios do teste externo de convenção UV. Conferi os hashes dos arquivos V14 atuais diretamente:
+
+- Geometria `paz_v75_v14_lab_sculpture.geo.json`: SHA-256 `60ca91b76eb9f8d4a1cb2bf4f69f6e7e5c97d17abc63db26883cee9d3fead00b`.
+- Atlas de transporte `paz_v75_v14_lab_sculpture.png`: SHA-256 `4793c77398d1e0301ccd8dfaef53a83ded9befbbcbb88571a9d1479b2a972ac7`.
+
+O JSON-only reconstitui as faces dos cubos do arquivo, com atlas alpha. O controle nativo substitui somente `part_00` pela faixa V13 C1 n4, `part_01` pela casca V11 e `part_15` pela anatomia V9, mantendo as outras peças do mesmo JSON. Os hashes nativos registrados são, respectivamente, `aa27567ac125b12a298c283b0e9c99130fe222bf2ce3bdf9f22edf2908f4404b`, `c79f296415d566db5f9c109389375e0d3ae112fbccbbc89c8628200939fbf81f` e `c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db`.
+
+O construtor informa 23.081 cubos no conjunto e 18.484 novas faces transportadas, sem simplificação adicional das três malhas retidas. Essas contagens são lidas do relatório de construção, não deduzidas das imagens nem validação de custo de jogo.
+
+## 2. O que está controlado
+
+Nos pares flat, câmera/enquadramento, resolução, luz, exposição, material difuso uniforme de pedra, culling unilateral e contexto são iguais. A luz é fixa, Cycles com 48 amostras, sem denoising; halo está presente em ambos. Não há normalmap. A cor do atlas não é usada no shader flat, somente seu alpha sobre os quadriláteros JSON. O controle nativo ignora alpha nas três malhas trocadas, pois suas bordas são os triângulos reais; demais peças mantêm o alpha legado.
+
+Assim, o par isola o efeito da **representação transportada por quadriláteros/UV/alpha e sua reconstrução**, contra os triângulos nativos sob a mesma apresentação. Não isola sozinho cada mecanismo interno, como dilatação do recorte, sobreposição entre quadriláteros, precisão numérica, normal geométrica ou caminho de sombra. Chamarei o defeito de regressão do transporte quando esse par o demonstra; não chamarei automaticamente cada marca de furo, normal invertida ou falha topológica.
+
+Nenhuma cabeça ou halo highpoly foi usada nessas cenas. Não se atribui à nova casca uma melhoria facial oriunda de contexto highpoly. Os flat usam pedra neutra diagnóstica, não reprodução completa do material PBR original; o esquema azul/ouro usado nas pesquisas anteriores era código de componentes e não material artístico original.
+
+## 3. Figura inteira: melhora e limites
+
+### Frente e três quartos
+
+A V14 JSON mantém a composição da figura maior, da figura menor, dos halos e da base, assim como as proporções e postura aparentes. A calota antes pontilhada por grandes regiões escuras no legado passa a apresentar cobertura contínua nas duas vistas. A faixa continua reconhecível em arco. A melhoria aparece no ativo efetivamente reconstruído, não apenas no controle nativo.
+
+Não observo desaparecimento grosseiro de braços, mãos, corpo, figura menor ou base. Facetamento da face, pequenas marcas no corpo, contorno pixelado do halo e outras limitações legadas continuam. A escala de corpo inteiro não permite certificar o relevo milimétrico da faixa ou os menores encaixes auriculares.
+
+### Perfil e costas
+
+No legado, a superfície do manto tem uma extensa aparência quase preta com marcas claras e a calota ainda mostra descontinuidades escuras. Na V14 JSON, o manto passa a ter uma grande superfície de pedra contínua e legível, coincidindo amplamente com o controle nativo. A cobertura da calota também melhora no perfil. Isso é mudança evidente sob a mesma luz/material; as imagens, sozinhas, não provam que a causa de todo o preto legado era orientação invertida ou furo.
+
+Os contornos de perfil e de costas V14/nativo são visualmente próximos nas vistas examinadas, sem nova aba larga ou grande retração observada. Não se declara igualdade pixel a pixel nem silhueta 3D exata. O halo posterior continua ocultando parte da cabeça e não valida o que cobre.
+
+**Regressão visível mesmo na vista inteira:** as costas JSON têm uma linha horizontal escura e interrompida aproximadamente em y648, além de sinais verticais próximos aos ombros, que não aparecem da mesma forma no nativo. A vista `back` mede 800 × 1100 pixels. Essas marcas não devem ser apresentadas como detalhes esculpidos.
+
+## 4. Closes: perdas introduzidas pelo transporte
+
+As coordenadas abaixo são aproximações visuais, com origem no canto superior esquerdo, não máscaras exatas nem testemunhos de ray tracing.
+
+### Face e testa
+
+Nos closes `head-front` e `band-front`, as arestas entre planos da testa, sobrancelha, nariz, face e pescoço apresentam faixas serrilhadas claras/escuras no JSON, enquanto o controle nativo mostra transições poligonais limpas. Uma diagonal escura na testa fica mais pronunciada no JSON. O perfil geral da face permanece; a mudança não é nova anatomia detalhada nem suavização artística demonstrada.
+
+A diferença é particularmente clara na lateral esquerda iluminada, onde a malha de costuras acompanha vários triângulos da face e do pescoço. O lado direito, menos contrastado, não prova ausência do problema. Sem normalmap neste par, essas marcas não podem ser atribuídas ao bake PBR experimental.
+
+### Calota e faixa
+
+A cobertura ampla conquistada pela casca V11 sobrevive ao transporte nas câmeras examinadas: não reaparece o padrão de grandes perfurações do legado V2. O arco, largura geral e relevo da faixa são reconhecíveis; não observo achatamento grosseiro nem perda de toda uma crista.
+
+Entretanto, o JSON acrescenta pequenas cicatrizes escuras na superfície da faixa, incluindo uma região central em `band-front` aproximadamente x490–570/y440–480 e outras ao longo da margem. Há riscos isolados na calota que não estão no nativo equivalente. O close lateral esquerdo também mostra uma cadeia de marcas e serrilhado ao longo da faixa. O transporte tem material uniforme, por isso ausência de ilhas azuis não é critério disponível: não se transfere automaticamente a aprovação visual colorida V13 ao JSON.
+
+O controle nativo mostra o ganho V13 sem as diagonais marcadas da primeira máscara de pesquisa. As novas marcas JSON são distintas desse resultado nativo. A margem superior facetada e as terminações temporais já conhecidas continuam limites próprios, não foram consideradas resolvidas.
+
+### Orelhas e encontros temporais
+
+Pinna, cavidade, margem e lóbulo continuam reconhecíveis nas duas laterais e não há nova lâmina larga atravessando toda a cavidade. Contudo, o JSON introduz pequenas pontas/manchas escuras junto aos polos superiores, bordas serrilhadas na cavidade e riscos sobre a casca adjacente, além das costuras da face.
+
+Na lateral direita, o polo superior e a conexão da faixa exibem sinais escuros adicionais aproximadamente x445–575/y415–555. No nativo da mesma vista, o encontro é poligonal, porém mais limpo. Não se interpreta toda linha escura da terminação como nova falha: parte da borda e do recorte temporal já existe no nativo. Não houve retirada do halo apenas em um membro do par.
+
+### Manto posterior
+
+O close `mantle-back` confirma que o defeito observado na vista inteira não é somente uma impressão distante: no JSON, a região dos ombros apresenta linhas verticais e bordas serrilhadas, e há uma linha horizontal interrompida aproximadamente x345–605/y945, ausente no nativo correspondente. A superfície nativa possui seus próprios planos e mudanças de normal nos ombros; isso não equivale às marcas adicionadas pela representação alpha.
+
+O manto mantém volume e cobertura globais, mas não se transporta com a mesma limpeza aparente. Ruído estocástico de Cycles existe nas imagens; não se classifica todo grão como defeito. As marcas citadas têm forma/localização coerente com bordas e aparecem em contraste com o controle nativo, portanto não são justificadas apenas pelo ruído do render.
+
+## 5. Orientação e divergência do visualizador externo
+
+Li `independent_validation/blockbench-uv-oracle.json` e `joint-position-uv-comparison.json`. O teste reporta que as funções primárias de Blockbench, extraídas e executadas com um fixture assimétrico, concordam com a convenção South usada pelo exportador/importador desta comparação. O módulo Aspergillum examinado reproduz o conjunto de cantos, mas espelha a associação U e inverte o atributo normal South em cubos de profundidade zero; 18.484 faces foram comparadas, com diferença UV corrigida pelo espelhamento no teste.
+
+Isso resolve a atribuição inicial de uma suposta divergência nova V14: é uma discordância de convenção no visualizador externo, não prova de regressão geométrica nova. Eu li os resultados; não reexecutei esse teste. Ele executa código primário com stubs, não o aplicativo completo nem Minecraft. A comparação visual interna permanece útil dentro da convenção declarada, mas não certifica carregamento, orientação, culling ou base tangente no motor.
+
+## 6. PBR parcial: comparação concluída
+
+### Fontes, controle e identidade
+
+O relatório experimental declara: anatomia por transferência dos valores legados entre referenciais de faces; faixa por correspondência de parâmetro geométrico à fonte, com fechamentos/retornos flat; casca inteira ainda com normais geométricas planas por falta de correspondência high-source por texel validada. Isso é um experimento parcial, não equivalência integral da escultura original. Valores legados com Z tangente negativo não foram silenciosamente corrigidos.
+
+Hashes diretamente conferidos:
+
+- Atlas de cor PBR experimental: `b6a55bb305085b8fe760672aa4ab72bb368b8f2f9843cfe8dfb164a0491a3aa5`.
+- Atlas normal PBR experimental: `f2a48b36bcb2855bb7e2cf698acedf884d35f9d902bfc51a98c66da7239b2f00`.
+
+Foram examinados diretamente mais 15 PNGs:
+
+- `json-color-control-{head-front,band-front,mantle-back}.png`.
+- `json-normal-experiment-{front,threequarter,head-front,band-front,left-ear,mantle-back}.png`.
+- `native-normal-contract-{front,threequarter,head-front,band-front,left-ear,mantle-back}.png`.
+
+Os pares JSON color/normal usam exatamente a mesma geometria, atlas de cor/alpha, luz, câmera, culling e contexto. A mudança é ativar o normalmap. Os pares JSON/nativo normal usam o mesmo mapa normal e material, mantendo a distinção entre quadriláteros alpha e três malhas de triângulos nativos. A conversão do canal verde DirectX para Blender é explícita e não valida a convenção Minecraft.
+
+**Controle nativo PBR válido:** somente `native-normal-contract-*`. Li o código atualizado e seu manifest: as UVs de cada vértice/face vêm diretamente do contrato de transporte. O primeiro `native-normal-experiment-*`, baseado em reprojeção dos cantos float32, está supersedido para conclusões PBR nesta revisão. O diagnóstico registrou diferenças máximas de 12,5804 texels na faixa, 35,9221 na casca e 0,0860 na anatomia entre a reprojeção anterior e o contrato. São extremos em faces finas, não deslocamentos de toda a imagem. O residual máximo de projeção 0,0845 mm não implicava UV confiável nessas faces. A revisão flat anterior permanece válida porque o material nativo uniforme não consulta RGB/normal/alpha dessas UVs.
+
+### O que o normalmap melhora
+
+No par `head-front`, o JSON com normalmap recupera a leitura de pálpebras, olhos e boca e torna as regiões largas da face aparentemente mais arredondadas. Esse ganho não depende de trocar a cabeça por highpoly: usa a mesma geometria JSON do controle color. É ganho de sombreamento, não nova anatomia, nova silhueta ou eliminação de todos os planos faciais.
+
+O close de faixa preserva a leitura das saliências e o arco. A diferença local de relevo entre color e normal é mais discreta que na face; não sustenta equivalência de detalhe fonte em toda a faixa. A casca continua mostrando seus planos geométricos, coerente com a ausência de bake de detalhe completo declarada pelo construtor.
+
+As duas vistas inteiras PBR conservam composição, proporções e cobertura geral. Seu alcance é parcial: não foram examinadas aqui costas/perfil inteiros PBR ou close PBR da orelha direita. As quatro vistas inteiras flat continuam sendo a evidência da cobertura global sob o material estrutural de controle.
+
+### O que o normalmap não resolve e o que piora
+
+Com o normalmap ligado, surgem regiões quase pretas dentro das duas orelhas na frontal fechada. O mesmo JSON sem normal tem cavidades poligonais, porém sem essas áreas de preto intenso. Como albedo, alpha, geometria, câmera e culling são fixos, esse par atribui a mudança ao sombreamento com normalmap, não demonstra novos furos geométricos.
+
+As regiões pretas também aparecem em `native-normal-contract-head-front` e `native-normal-contract-band-front`, e a marca escura inferior é visível no close nativo da orelha esquerda. O close legacy-normal já mostrava aparência semelhante. Portanto, não é uma perda criada exclusivamente pela representação em quadriláteros V14. A conclusão sustentada é um limite do mapa/transferência/sombreamento usado neste experimento, com problemas legados ainda presentes. Não determino por imagem qual texel com Z negativo ou qual etapa da correspondência causa cada mancha.
+
+As cicatrizes centrais e laterais da faixa, a diagonal escura da testa e as marcas do manto continuam no JSON normal. O close `mantle-back` confirma que a linha horizontal inferior e os riscos verticais dos ombros não desaparecem ao ligar o normalmap. A grande superfície do manto nativo normal é mais limpa, como já era no par flat.
+
+O nativo com material/normal do atlas também apresenta linhas pontilhadas sutis sobre alguns limites da face, calota e manto que não existiam no flat uniforme. Isso mostra que nem toda marca do ensaio final é exclusiva dos quads/alpha. Como não há nesta série um nativo color sem normal, não separo o papel de RGB, amostragem do atlas e normalmap nesses pontos nativos. A comparação JSON color/normal, em contrapartida, isola o efeito de normal nas cavidades auriculares.
+
+**Parecer PBR:** técnica útil para recuperar relevo facial aparente, mas experimental e insuficiente como acabamento. Não transforma a geometria/alpha atual em transporte fiel nem prova equivalência PBR da V75 original. Normais planas da casca, transferência de anatomia declarada e artefatos auriculares precisam continuar explícitos.
+
+## 7. Alpha sem dilatação: ensaio não retido
+
+Foram inspecionados diretamente `alpha-center-trial-band-front.png` e `alpha-center-trial-mantle-back.png`, comparados aos flat JSON originais nas mesmas câmeras. Li o manifest do render, `export_work/alpha-center-only-trial-report.json` e `independent_validation/alpha-center-only-independent-audit.json`.
+
+O ensaio conserva geometria/RGB, quadrante legado e demais parâmetros, alterando somente alpha dos 18.484 tiles novos: de cobertura conservadora para decisão pelo centro de cada pixel, sem margem. O atlas alternativo tem SHA-256 `c173a3695d8bdf4a614690e2a76a89a3a403266e326011704709e401c6589ef1`. O relatório o identifica como diagnóstico não retido, sem alteração dos assets do resource pack.
+
+O resultado é visualmente pior nas duas câmeras: uma rede de pontilhado escuro passa a seguir quase todas as bordas triangulares da calota/testa/face, e aparecem descontinuidades segmentadas claras/escuras na margem esquerda do manto. As cicatrizes centrais da faixa e a linha horizontal inferior do manto não foram eliminadas. Não recomendo essa alternativa como correção.
+
+O teste controlado demonstra sensibilidade real à regra de alpha e troca de excesso por perda de cobertura. A auditoria independente reporta redução de área adicionada e aumento de área ausente, mas seus totais por face não são área de união/silhueta nem contagem de defeitos visuais. Resolver um texel ou um testemunho geométrico não basta para manter a aparência do conjunto.
+
+## 8. Parecer final e limites
+
+Foram inspecionados diretamente **40 PNGs**: 18 flat V14/nativo, quatro legacy flat inteiros, um legacy normal fechado, 15 de PBR controlado e dois do ensaio alpha. A escolha das vistas permite avaliar a escultura inteira e os encontros críticos, sem substituir os limites de runtime por uma imagem favorável.
+
+- **Ganho demonstrado de integração:** a cobertura e o conjunto V11/V13/V9 aparecem na escultura inteira efetivamente reconstruída, mantendo a composição e melhorando claramente a calota/manto em relação ao legado nas vistas examinadas.
+- **Fidelidade visual irrestrita não aprovada:** surgem costuras serrilhadas e marcas que o nativo flat não possui. A aprovação local da faixa V13 não passa automaticamente ao JSON/atlas.
+- **PBR apenas parcial:** recupera relevo facial sob controles corretos, mas mantém defeitos de transporte e acrescenta sombreamento auricular quase preto compartilhado pelo nativo com o mesmo mapa. Não é equivalência integral de detalhe/material.
+- **Alternativa alpha sem dilatação rejeitada visualmente:** cria descontinuidades novas e não resolve as marcas principais nas duas vistas testadas.
+- **Retenção técnica limitada:** conservar como LAB reproduzível, com rollback e controles, para investigar transporte/atlas. Não promover como arte final ou versão pronta.
+
+Os próximos gates pertencem à correção da representação alpha/atlas e do experimento de normais, mantendo os controles já estabelecidos; depois será necessário teste real da engine. Não se recomenda esconder perdas de cobertura apenas com mudança de material. Nenhuma ampliação de intervenção na escultura fonte é autorizada por este parecer.
+
+Não se certificam topologia, ausência global de contatos/interseções, espessura, folga, arte final, todas as luzes/ângulos, mipmaps, alpha em distância, desempenho, funcionamento Bedrock/Vibrant Visuals ou publicação. Todos os renders são diagnósticos externos Blender. A discordância observada de um visualizador externo não invalida os controles internos nem certifica o motor real.
+
+## Limite de intervenção
+
+Este revisor altera somente `assembly_transport_v14/evidence/review-visual-v14.md`. Não altera fontes, malhas, atlas, cenas, exportadores ou outros relatórios e não produz imagens com geração sintética.

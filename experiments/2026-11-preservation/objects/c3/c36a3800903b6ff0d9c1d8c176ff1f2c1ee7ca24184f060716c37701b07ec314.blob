@@ -1,0 +1,41 @@
+// Read-only use of the verified, original Aspergillum module. This is not Minecraft.
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import * as THREE from '../../../paz-workbench-validation-20261103/source/viewer-3d/node_modules/three/build/three.module.js';
+import {buildBedrockGeometry} from '../../../paz-workbench-validation-20261103/source/viewer-3d/src/shared/bedrock-geometry.js';
+const out=import.meta.dirname;
+const sourceRoot=path.resolve(out,'../../../paz-workbench-validation-20261103/source');
+const integrity=JSON.parse(fs.readFileSync(path.resolve(sourceRoot,'../source-integrity.json')));
+const modules=['viewer-3d/src/shared/bedrock-geometry.js','viewer-3d/src/shared/bedrock-uv.js'];
+const hashes=modules.map(p=>{
+  const b=fs.readFileSync(path.join(sourceRoot,p));
+  const actual=crypto.createHash('sha1').update(`blob ${b.length}\0`).update(b).digest('hex');
+  const expected=integrity.find(x=>x.path===p)?.expected;
+  if(actual!==expected)throw Error('Module changed: '+p);
+  return {path:p,gitBlob:actual,unchanged:true};
+});
+const file=process.argv[2];if(!file)throw Error('Pass V14 .geo.json');
+const doc=JSON.parse(fs.readFileSync(file)),g=doc['minecraft:geometry'][0],desc=g.description;
+const built=buildBedrockGeometry(g,{identifier:desc.identifier,textureWidth:desc.texture_width,textureHeight:desc.texture_height,formatVersion:doc.format_version},{default:new THREE.MeshBasicMaterial(),named:{}},{includePivots:false,includeLocators:false});
+built.root.updateMatrixWorld(true);
+const positions=[],metadata=[],counts={};let finite=true,faceCount=0;
+const bounds=new THREE.Box3(),faceNames=['east','west','up','down','south','north'];
+for(const {mesh,boneName}of built.meshRecords){
+  const ci=counts[boneName]??0;counts[boneName]=ci+1;
+  const pos=mesh.geometry.getAttribute('position'),uv=mesh.geometry.getAttribute('uv'),normal=mesh.geometry.getAttribute('normal');
+  const nm=new THREE.Matrix3().getNormalMatrix(mesh.matrixWorld);
+  for(const group of mesh.geometry.groups){
+    const fi=group.start/6;metadata.push({bone:boneName,cube:ci,face:faceNames[fi]});faceCount++;
+    for(let j=0;j<4;j++){
+      const i=fi*4+j,p=new THREE.Vector3().fromBufferAttribute(pos,i).applyMatrix4(mesh.matrixWorld),n=new THREE.Vector3().fromBufferAttribute(normal,i).applyMatrix3(nm).normalize();
+      const row=[p.x,p.y,p.z,uv.getX(i),uv.getY(i),n.x,n.y,n.z];
+      if(!row.every(Number.isFinite))finite=false;
+      positions.push(...row);bounds.expandByPoint(p);
+    }
+  }
+}
+const values=new Float64Array(positions);fs.writeFileSync(path.join(out,'actual-module-faces.f64'),Buffer.from(values.buffer));
+fs.writeFileSync(path.join(out,'actual-module-face-map.json'),JSON.stringify(metadata));
+const report={input:path.resolve(file),sha256:crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex'),modules:hashes,sourceCommit:'3eaf97b172a38dac794461b156b70864737875d6',threeVersion:THREE.REVISION,cubeMeshes:built.meshRecords.length,bones:built.boneRecords.length,faceGroups:faceCount,finitePositionsNormalsUvs:finite,counts,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray(),size:bounds.getSize(new THREE.Vector3()).toArray()},recordLayout:'face x 4 vertices (top-left, top-right, bottom-left, bottom-right), each x,y,z,u,v,nx,ny,nz; f64 little-endian',limitation:'Unmodified external geometry builder; no browser, pixels, material resolution, engine, shaders or performance proof.'};
+fs.writeFileSync(path.join(out,'actual-module-validation.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));

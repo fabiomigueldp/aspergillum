@@ -1,0 +1,17 @@
+import numpy as np,json,collections
+from pathlib import Path
+R=Path(__file__).resolve().parents[1];a=np.load(R/'evidence/seam-welded-compact.npz');sr=np.load(R/'evidence/seam-source-inspection.npz');v=np.load(R.parent/'shell_band_v5/retained_candidate/evidence/cap-paired.npz');r=json.loads((R/'evidence/seam-welded-geometric-gate.json').read_text());source=json.loads((R/'evidence/seam-source-geometric-gate.json').read_text());vf=set(map(tuple,np.sort(v['source_indices'][v['triangles']],axis=1)))
+def fkey(x):return tuple(sorted(x))
+def pairkey(x):return tuple(sorted(map(fkey,x)))
+sp={pairkey(x['source_indices']) for x in source['crossings']};sc=collections.Counter();cap_by_other=collections.defaultdict(list)
+for x in source['crossings']:
+ ids=x['source_indices'];part=[0 if max(t)<160386 else 2 if min(t)>=160386 else 1 for t in ids];sc[tuple(sorted(part))]+=1
+ if 0 in part and part!=[0,0]:
+  other=ids[1] if part[0]==0 else ids[0];cap_by_other[fkey(other)].extend(x['witnesses'])
+ct=collections.Counter();details=[];counts=collections.Counter();exact=0
+for x in r['crossings']:
+ i,j=x['triangles'];part=a['face_parts'][[i,j]].tolist();counts[tuple(part)]+=1;exact+=pairkey(x['source_indices']) in sp
+ if part[0]!=0:continue
+ kind='retained_v5' if fkey(x['source_indices'][0]) in vf else 'boundary_refined';w=cap_by_other.get(fkey(x['source_indices'][1]),[]);dist=float(np.linalg.norm(np.array(w)[:,None]-np.array(x['witnesses'])[None],axis=2).min()) if w else None;ct[kind]+=1;ct['source_same_other_face_crossed' if w else 'source_same_other_face_not_crossed']+=1;details.append({'triangles':[i,j],'type':kind,'other_part':part[1],'source_has_cap_crossing_same_other_triangle':bool(w),'nearest_source_crossing_witness_distance':dist,'source_indices':x['source_indices'],'witnesses':x['witnesses']})
+report={'candidate_strict_crossings':r['strict_crossings'],'candidate_part_pairs':{str(k):v for k,v in counts.items()},'source_strict_crossings':source['strict_crossings'],'source_part_pairs':{str(k):v for k,v in sc.items()},'exact_same_source_face_pair_crossings':exact,'cap_involved_classification':dict(ct),'cap_involved_details':details,'interpretation':'Pairs with both unchanged faces are exact inherited source crossings. Refined/retained cap faces have different triangulation: same-other-face source matches demonstrate an already intersecting local region, not identical pair geometry. Missing same-other-face matches are candidate-introduced strict pairs relative to this source screen, not proof of globally new intersection regions.','geometry_not_modified':True}
+(R/'evidence/seam-crossing-attribution.json').write_text(json.dumps(report,indent=2));print(json.dumps({k:v for k,v in report.items() if k!='cap_involved_details'},indent=2))

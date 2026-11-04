@@ -1,0 +1,11 @@
+import bpy,numpy as np,json
+from mathutils import Vector
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V71-veil-trial.blend',use_scripts=False);o=bpy.data.objects['TESTE 34 — conexão de superfícies avaliadas'];p=[v.co.copy() for v in o.data.vertices];q=[v.co.copy() for v in o.evaluated_get(bpy.context.evaluated_depsgraph_get()).data.vertices]
+def av(vs,f):return sum(((vs[f[j]]-vs[f[0]]).cross(vs[f[j+1]]-vs[f[0]])*.5 for j in range(1,len(f)-1)),Vector()).length
+rows=[]
+for f in o.data.polygons:
+ inds=list(f.vertices)
+ if not any((p[i]-q[i]).length>1e-8 for i in inds):continue
+ a=av(p,inds);b=av(q,inds)
+ if a>1e-12:rows.append((b/a,a,b,f.index,list(sum((p[i] for i in inds),Vector())/len(inds))))
+rat=[r[0] for r in rows];report={'ratio_quantiles':np.percentile(rat,[0,1,5,50,95,99,100]).tolist(),'faces_ratio_under_point25':sum(v<.25 for v in rat),'worst_faces':sorted(rows)[:8]};json.dump(report,open(r+'V71-area-audit.json','w'),indent=2);print(report)

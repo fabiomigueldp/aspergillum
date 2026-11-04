@@ -1,0 +1,25 @@
+✔ normaliza documentos minecraft:geometry modernos (1.98466ms)
+✔ normaliza geometrias Bedrock legadas sem perder bones (0.420637ms)
+✔ gera IDs estáveis para .json e .geo.json e normaliza texturas (0.379786ms)
+✔ converts Bedrock channels for the established third-person and canonical viewmodel bases (3.1463ms)
+✔ converts authored Bedrock geometry into the Three.js coordinate basis (0.34796ms)
+✔ subtracts an external Bedrock pivot when grafting a bound geometry (3.216797ms)
+✔ resolves bone names case-insensitively and restores authored transforms (1.792182ms)
+✔ returns mesh, locator and material records without relying on global renderer state (4.361692ms)
+✔ honors the upside-down cube pivot convention unique to geometry 1.12 (0.378119ms)
+✔ keeps the rotated panels of a legacy 1.12 barrette assembled (5.051286ms)
+✔ rotates a cube without an explicit pivot around its own center (0.267436ms)
+✔ matches THREE.BoxGeometry row-major vertex order without diagonal shear (3.310812ms)
+✔ preserves signed uv_size for horizontal and vertical Bedrock mirroring (0.467326ms)
+✔ maps THREE +Z to Bedrock south and -Z to north (0.206845ms)
+✔ expands Bedrock Box UV into the six canonical face rectangles (0.494872ms)
+✔ uses explicit per-face uv_size and material instance without quantizing (0.278887ms)
+✔ treats an omitted per-face UV as an intentionally unrendered Bedrock face (0.288642ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 319.216085

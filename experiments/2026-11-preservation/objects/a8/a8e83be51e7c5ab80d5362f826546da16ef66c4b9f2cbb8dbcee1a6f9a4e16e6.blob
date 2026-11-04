@@ -1,0 +1,34 @@
+from pathlib import Path
+import numpy as np,json,sys
+O=Path(__file__).resolve().parent;B=O.parents[1];tag=sys.argv[1] if len(sys.argv)>1 else 'valley-source-c1-n4';c=np.load(B/f'band_shell_v13/constrained_fit/{tag}.npz');b=np.load(B/'band_ear_v12/structural_rebuild/retained-band.npz');src=np.load(B/'shell_band_v3/evidence/band-source.npz');su=np.load(B/'shell_band_v3/evidence/band-source-parameters.npz')['uv'];sc=np.load(B/'shell_band_v3/evidence/band-source-wall-classes.npz')['wall_class'];p=c['points'];f=c['triangles'];uv=c['source_uv'];w=c['v13_source_projection_weight'];ids=np.where(w>0)[0];sf=c['v13_high_source_face'][ids];bc=c['v13_high_source_barycentric'][ids];high=np.einsum('ij,ijk->ik',bc,src['points'][src['triangles'][sf]]);srcuv=np.einsum('ij,ijk->ik',bc,su[src['triangles'][sf]]);mapped=c['v13_planar_reference_points'][ids]+w[ids,None]*(high-c['v13_planar_reference_points'][ids]);recon=0.;minbar=1.
+# Independently recover candidate UV and planar-reference positions from its actual original-parent support.
+for vi in ids:
+ child=np.flatnonzero(np.any(f==vi,axis=1))[0];parent=c['v13_parent_face_indices'][child];bt=b['source_uv'][b['triangles'][parent]];sol=np.linalg.solve((bt[1:]-bt[0]).T,uv[vi]-bt[0]);bb=np.r_[1-sol.sum(),sol];pref=bb@b['points'][b['triangles'][parent]];recon=max(recon,float(np.linalg.norm(pref-c['v13_planar_reference_points'][vi])));minbar=min(minbar,float(bb.min()))
+# Independent weight implementation for chosen final C1 field, preserving old vertices and keeping only actual patch incidents.
+t=np.maximum(0,np.minimum(1,np.minimum(uv[:,1]-3,13-uv[:,1])/2));vw=3*t*t-2*t*t*t;longs=[]
+for lo,hi in [(32,80),(96,144)]:
+ t=np.maximum(0,np.minimum(1,np.minimum(uv[:,0]-lo,hi-uv[:,0])/8));longs.append(3*t*t-2*t*t*t)
+expected=vw*np.maximum(*longs);expected[c['v13_parent_vertex_indices']>=0]=0;inc=np.zeros(len(p),bool);inc[np.unique(f[c['v13_face_roles']==2])]=True;expected[~inc]=0
+# Triangle-domain checks in parameter space, including every ancestral patch face.
+def cross(a,b):return a[0]*b[1]-a[1]*b[0]
+def signed_area(t):return cross(t[1]-t[0],t[2]-t[0])/2
+def clip(subject,tri):
+ poly=list(subject);orient=np.sign(signed_area(tri))
+ for a,d in zip(tri,np.roll(tri,-1,axis=0)):
+  if not poly:break
+  out=[]
+  for x,y in zip(poly,poly[1:]+poly[:1]):
+   dx=orient*cross(d-a,x-a);dy=orient*cross(d-a,y-a)
+   if dx>=0:out.append(x)
+   if (dx>=0)!=(dy>=0):out.append(x+(y-x)*(dx/(dx-dy)))
+  poly=out
+ return np.array(poly)
+def area(poly):return abs(sum(cross(poly[i]-poly[0],poly[i+1]-poly[0]) for i in range(1,len(poly)-1)))/2 if len(poly)>2 else 0.
+rows=[]
+for parent in np.unique(c['v13_parent_face_indices'][c['v13_face_roles']==2]):
+ ch=np.where(c['v13_parent_face_indices']==parent)[0];bt=b['source_uv'][b['triangles'][parent]];ct=uv[f[ch]];aa=np.array([signed_area(t) for t in ct]);ba=signed_area(bt);maxov=0.
+ for i in range(len(ct)):
+  for j in range(i):maxov=max(maxov,area(clip(ct[i],ct[j])))
+ pp=ct.reshape(-1,2);sol=np.linalg.solve((bt[1:]-bt[0]).T,(pp-bt[0]).T).T;bb=np.c_[1-sol.sum(1),sol];rows.append({'parent_face':int(parent),'children':len(ch),'wrong_uv_orientation':int((aa*ba<=0).sum()),'uv_area_error':float(abs(aa.sum()-ba)),'minimum_parent_uv_barycentric':float(bb.min()),'max_pair_overlap_uv_area':maxov})
+rep={'candidate':tag,'projected_vertices':len(ids),'high_source_face_id_valid':bool(np.all((sf>=0)&(sf<len(src['triangles'])))),'source_wall_matches_candidate_side':bool(np.array_equal(sc[sf],c['source_side'][ids])),'source_barycentric_sum_max_error':float(np.max(abs(bc.sum(1)-1))),'source_barycentric_min':float(bc.min()),'source_uv_max_error':float(np.max(np.linalg.norm(srcuv-uv[ids],axis=1))),'source_recorded_point_max_error_m':float(np.max(np.linalg.norm(high-c['v13_high_source_points'][ids],axis=1))),'candidate_blend_max_error_m':float(np.max(np.linalg.norm(mapped-p[ids],axis=1))),'planar_reference_independent_max_error_m':recon,'planar_reference_min_parent_barycentric':minbar,'C1_weight_independent_max_error':float(np.max(abs(expected-w))),'patch_parent_faces':len(rows),'patch_wrong_uv_orientation':sum(r['wrong_uv_orientation'] for r in rows),'patch_max_uv_area_error':max(r['uv_area_error'] for r in rows),'patch_min_barycentric':min(r['minimum_parent_uv_barycentric'] for r in rows),'patch_max_positive_pair_overlap_uv_area':max(r['max_pair_overlap_uv_area'] for r in rows),'limitation':'C1 describes the smoothstep restoration weight, not a C1-continuous piecewise-triangle mesh or a global exact high-source reconstruction.'}
+(O/f'{tag}-source-domain-check.json').write_text(json.dumps(rep,indent=2));(O/f'{tag}-patch-uv-domains.json').write_text(json.dumps(rows,indent=2));print(json.dumps(rep,indent=2))

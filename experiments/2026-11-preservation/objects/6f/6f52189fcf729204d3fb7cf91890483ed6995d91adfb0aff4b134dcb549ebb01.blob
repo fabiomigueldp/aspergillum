@@ -1,0 +1,123 @@
+{
+  "candidate": "opaque-0700",
+  "geometry_sha256": "d5690cdfebaf54b25a4579e881e5ee54bd3429003ba6bc033870124f4311a409",
+  "texture_sha256": "4e6b32cdc15b3f721f939c8121e7112913262ecb99afe392c9bb5ab695d4c52d",
+  "method": "Full band only, six fixed orthographic directions. Front-facing exact actual JSON quads with actual nearest mip0 alpha vs native triangles. Sample pixel centers at 1024 square and native bbox plus40mm; binary projected support, no lighting/shadows, not union area in 3D. Red=extra support, blue=lost support, gray=both.",
+  "views": [
+    {
+      "view": "front",
+      "resolution": [
+        1024,
+        1024
+      ],
+      "pixel_step_mm": 0.30596324543525594,
+      "native_pixels": 73445,
+      "candidate_pixels": 74205,
+      "extra_pixels": 760,
+      "lost_pixels": 0,
+      "extra_fraction_native": 0.010347879365511608,
+      "lost_fraction_native": 0.0,
+      "extra_projected_area_mm2": 71.14626574352874,
+      "lost_projected_area_mm2": 0.0,
+      "extra_distance_to_native_mask_center_max_mm": 0.9675407358725248,
+      "lost_distance_to_candidate_mask_center_max_mm": 0.0,
+      "candidate_corners_outside_viewport": 0
+    },
+    {
+      "view": "back",
+      "resolution": [
+        1024,
+        1024
+      ],
+      "pixel_step_mm": 0.30596324543525594,
+      "native_pixels": 73445,
+      "candidate_pixels": 74205,
+      "extra_pixels": 760,
+      "lost_pixels": 0,
+      "extra_fraction_native": 0.010347879365511608,
+      "lost_fraction_native": 0.0,
+      "extra_projected_area_mm2": 71.14626574352874,
+      "lost_projected_area_mm2": 0.0,
+      "extra_distance_to_native_mask_center_max_mm": 0.9675407358725248,
+      "lost_distance_to_candidate_mask_center_max_mm": 0.0,
+      "candidate_corners_outside_viewport": 0
+    },
+    {
+      "view": "left",
+      "resolution": [
+        1024,
+        1024
+      ],
+      "pixel_step_mm": 0.24272632616683515,
+      "native_pixels": 188100,
+      "candidate_pixels": 189428,
+      "extra_pixels": 1328,
+      "lost_pixels": 0,
+      "extra_fraction_native": 0.007060074428495481,
+      "lost_fraction_native": 0.0,
+      "extra_projected_area_mm2": 78.24054018238806,
+      "lost_projected_area_mm2": 0.0,
+      "extra_distance_to_native_mask_center_max_mm": 1.3071212694386916,
+      "lost_distance_to_candidate_mask_center_max_mm": 0.0,
+      "candidate_corners_outside_viewport": 0
+    },
+    {
+      "view": "right",
+      "resolution": [
+        1024,
+        1024
+      ],
+      "pixel_step_mm": 0.24272632616683515,
+      "native_pixels": 188100,
+      "candidate_pixels": 189428,
+      "extra_pixels": 1328,
+      "lost_pixels": 0,
+      "extra_fraction_native": 0.007060074428495481,
+      "lost_fraction_native": 0.0,
+      "extra_projected_area_mm2": 78.24054018238806,
+      "lost_projected_area_mm2": 0.0,
+      "extra_distance_to_native_mask_center_max_mm": 1.3071212694386916,
+      "lost_distance_to_candidate_mask_center_max_mm": 0.0,
+      "candidate_corners_outside_viewport": 0
+    },
+    {
+      "view": "front-right",
+      "resolution": [
+        1024,
+        1024
+      ],
+      "pixel_step_mm": 0.304063750255194,
+      "native_pixels": 102795,
+      "candidate_pixels": 103549,
+      "extra_pixels": 754,
+      "lost_pixels": 0,
+      "extra_fraction_native": 0.007334987110268009,
+      "lost_fraction_native": 0.0,
+      "extra_projected_area_mm2": 69.71089222131675,
+      "lost_projected_area_mm2": 0.0,
+      "extra_distance_to_native_mask_center_max_mm": 1.216255001020776,
+      "lost_distance_to_candidate_mask_center_max_mm": 0.0,
+      "candidate_corners_outside_viewport": 0
+    },
+    {
+      "view": "front-left",
+      "resolution": [
+        1024,
+        1024
+      ],
+      "pixel_step_mm": 0.31727384520900764,
+      "native_pixels": 99942,
+      "candidate_pixels": 100857,
+      "extra_pixels": 915,
+      "lost_pixels": 0,
+      "extra_fraction_native": 0.009155310079846312,
+      "lost_fraction_native": 0.0,
+      "extra_projected_area_mm2": 92.10636396114404,
+      "lost_projected_area_mm2": 0.0,
+      "extra_distance_to_native_mask_center_max_mm": 1.5863692260450382,
+      "lost_distance_to_candidate_mask_center_max_mm": 0.0,
+      "candidate_corners_outside_viewport": 0
+    }
+  ],
+  "limitations": "Finite raster sampling may miss narrow or subpixel changes. Distances are between mask pixel centers, not exact continuous Hausdorff. This is silhouette-support diagnosis, not Minecraft or a view of the complete sculpture."
+}

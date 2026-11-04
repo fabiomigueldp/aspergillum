@@ -1,0 +1,208 @@
+{
+  "candidate": "opaque-0300",
+  "geometry_sha256": "cb039f3caa947054417e4a93769fd8f8ad7a48edafe6ebfd1be7d61018284066",
+  "method": "Independent positive-volume OBBs reconstructed from actual JSON. Every native V13 band triangle gets seven fixed barycentric interior samples,31,108 total. Tests containment by union of boxes and outward endpoint of connected box-union interval along oriented native triangle normal. Cube metadata/provenance not used for test calculations.",
+  "barycentric_samples": [
+    [
+      0.3333333333333333,
+      0.3333333333333333,
+      0.3333333333333333
+    ],
+    [
+      0.8,
+      0.1,
+      0.1
+    ],
+    [
+      0.1,
+      0.8,
+      0.1
+    ],
+    [
+      0.1,
+      0.1,
+      0.8
+    ],
+    [
+      0.45,
+      0.45,
+      0.1
+    ],
+    [
+      0.1,
+      0.45,
+      0.45
+    ],
+    [
+      0.45,
+      0.1,
+      0.45
+    ]
+  ],
+  "all": {
+    "samples": 31108,
+    "inside_sample_count": 31108,
+    "missing_sample_count": 0,
+    "maximum_uncontained_distance_mm": 9.882502802205373e-14,
+    "outward_exit_mm_quantiles": [
+      -9.882502802205373e-14,
+      0.1453536050630282,
+      0.4890265277886385,
+      1.1958254129237695,
+      6.058900317382806
+    ],
+    "area_weighted_outward_exit_mean_mm": 0.1587452327465829,
+    "area_weighted_outward_exit_q50_q90_q99_mm": [
+      0.10876329720570822,
+      0.33579268122098205,
+      0.908877005258511
+    ]
+  },
+  "face_parts": {
+    "0": {
+      "samples": 14651,
+      "inside_sample_count": 14651,
+      "missing_sample_count": 0,
+      "maximum_uncontained_distance_mm": 9.882502802205373e-14,
+      "outward_exit_mm_quantiles": [
+        -9.882502802205373e-14,
+        0.1397475960604547,
+        0.40007528416636734,
+        1.2571437015582112,
+        5.971265841364357
+      ],
+      "area_weighted_outward_exit_mean_mm": 0.15186922980700007,
+      "area_weighted_outward_exit_q50_q90_q99_mm": [
+        0.10749530698949225,
+        0.32081032079137045,
+        0.9987239462823404
+      ]
+    },
+    "1": {
+      "samples": 14651,
+      "inside_sample_count": 14651,
+      "missing_sample_count": 0,
+      "maximum_uncontained_distance_mm": 0.0,
+      "outward_exit_mm_quantiles": [
+        0.0010927244967941497,
+        0.1475687580483871,
+        0.49933356377582316,
+        0.9474421123847874,
+        6.058900317382806
+      ],
+      "area_weighted_outward_exit_mean_mm": 0.16593693262401915,
+      "area_weighted_outward_exit_q50_q90_q99_mm": [
+        0.11012871907400532,
+        0.3539005764805942,
+        0.8602874278915867
+      ]
+    },
+    "2": {
+      "samples": 798,
+      "inside_sample_count": 798,
+      "missing_sample_count": 0,
+      "maximum_uncontained_distance_mm": 0.0,
+      "outward_exit_mm_quantiles": [
+        0.0004401696421389014,
+        0.06453141664953045,
+        0.35009542302567387,
+        0.6599059622741886,
+        0.7406066313238764
+      ],
+      "area_weighted_outward_exit_mean_mm": 0.12763393617714588,
+      "area_weighted_outward_exit_q50_q90_q99_mm": [
+        0.07119818058730451,
+        0.3150124952730289,
+        0.5863626443714068
+      ]
+    },
+    "3": {
+      "samples": 1008,
+      "inside_sample_count": 1008,
+      "missing_sample_count": 0,
+      "maximum_uncontained_distance_mm": 0.0,
+      "outward_exit_mm_quantiles": [
+        0.0026922433615645947,
+        0.4988873179342328,
+        1.084869258287604,
+        1.745617852085161,
+        3.572434309598263
+      ],
+      "area_weighted_outward_exit_mean_mm": 0.5420792381306766,
+      "area_weighted_outward_exit_q50_q90_q99_mm": [
+        0.463218284358737,
+        1.0490663210256301,
+        1.433106144109045
+      ]
+    }
+  },
+  "v13_face_roles": {
+    "0": {
+      "samples": 6244,
+      "inside_sample_count": 6244,
+      "missing_sample_count": 0,
+      "maximum_uncontained_distance_mm": 9.882502802205373e-14,
+      "outward_exit_mm_quantiles": [
+        -9.882502802205373e-14,
+        0.20897775847864133,
+        0.9471870181260091,
+        2.261221063519193,
+        6.058900317382806
+      ],
+      "area_weighted_outward_exit_mean_mm": 0.15367077776064034,
+      "area_weighted_outward_exit_q50_q90_q99_mm": [
+        0.08669041515604824,
+        0.30672798779454385,
+        1.1569893809380123
+      ]
+    },
+    "1": {
+      "samples": 3360,
+      "inside_sample_count": 3360,
+      "missing_sample_count": 0,
+      "maximum_uncontained_distance_mm": 0.0,
+      "outward_exit_mm_quantiles": [
+        1.7132493086636603e-05,
+        0.08369257081846401,
+        0.23362078533985298,
+        0.46717186013665385,
+        0.7429874782682433
+      ],
+      "area_weighted_outward_exit_mean_mm": 0.11868894568537341,
+      "area_weighted_outward_exit_q50_q90_q99_mm": [
+        0.08888683484700169,
+        0.2725546184156436,
+        0.4940480545831766
+      ]
+    },
+    "2": {
+      "samples": 21504,
+      "inside_sample_count": 21504,
+      "missing_sample_count": 0,
+      "maximum_uncontained_distance_mm": 0.0,
+      "outward_exit_mm_quantiles": [
+        0.00283643529649225,
+        0.14895657770764714,
+        0.41762490964328197,
+        0.6547152636147472,
+        0.8588554117892614
+      ],
+      "area_weighted_outward_exit_mean_mm": 0.186704822658488,
+      "area_weighted_outward_exit_q50_q90_q99_mm": [
+        0.14514521053216578,
+        0.39334463064881336,
+        0.6405443721048573
+      ]
+    }
+  },
+  "max_witness": {
+    "native_face": 4280,
+    "point": [
+      -0.09408885856252407,
+      -0.2235075916504673,
+      3.5286314371593406
+    ],
+    "outward_exit_mm": 6.058900317382806
+  },
+  "limitations": "Finite surface sampling, not continuous Hausdorff/volume union computation. Outward interval is support extension along source normal, not Euclidean closest-surface error or proof of visible occlusion. Internal faces of overlapping cuboids may still render differently."
+}

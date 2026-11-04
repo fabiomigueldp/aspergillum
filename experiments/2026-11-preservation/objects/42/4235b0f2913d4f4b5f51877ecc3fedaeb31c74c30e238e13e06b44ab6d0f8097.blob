@@ -1,0 +1,14 @@
+from pathlib import Path
+O=Path(__file__).resolve().parent
+exec(compile((O/'ray_diagnosis.py').read_text().split("views={'left-ear'")[0],str(O/'ray_diagnosis.py'),'exec'))
+z=np.load(B/'shell_band_v3/evidence/band-source.npz');bvh['render_source_band']=BVHTree.FromPolygons(z['points'].tolist(),z['triangles'].tolist(),all_triangles=True)
+rs=json.loads((O/'front-embedding-comparison.json').read_text())['samples'];rs=[r for r in rs if r['uv'][1]<3 and r['source_shell_ahead_mm'] is not None and r['current_shell_ahead_mm'] is not None and r['source_shell_ahead_mm']<-.01 and r['current_shell_ahead_mm']>.01]
+views={'head-front':((.25,-3.5,3.44),(.03,-.20,3.43),.85,900),'left-ear-oblique':((-2,-1.5,3.82),(-.085,-.205,3.485),.5,1000),'right-ear-oblique':((2,-1.5,3.82),(.17,-.205,3.46),.5,1000)};out=[]
+for r in rs:
+ for vn,(pos,tar,scale,res) in views.items():
+  d=(Vector(tar)-Vector(pos)).normalized();q=d.to_track_quat('-Z','Y');right=q@Vector((1,0,0));up=q@Vector((0,1,0));p=Vector(r['point']);delta=p-Vector(pos);xx=delta.dot(right);yy=delta.dot(up);ori=Vector(pos)+right*xx+up*yy;pixel=[(xx/scale+.5)*res,(.5-yy/scale)*res];vv={k:next((h for h in hits(k,ori,d) if h['front_facing']),None) for k in ['shell','band','source_shell','render_source_band']};v={'uv':r['uv'],'band_face':r['band_face'],'view':vn,'pixel':pixel,'hits':vv}
+  if all(vv.values()):v.update(current_shell_ahead_mm=vv['band']['distance_mm']-vv['shell']['distance_mm'],source_shell_ahead_mm=vv['render_source_band']['distance_mm']-vv['source_shell']['distance_mm']);v['source_to_current_inversion']=v['current_shell_ahead_mm']>.01 and v['source_shell_ahead_mm']<-.01
+  out.append(v)
+(O/'upper-edge-visible-witnesses.json').write_text(json.dumps(out,indent=2))
+for r in out:
+ if r.get('source_to_current_inversion'):print(r['view'],r['band_face'],np.round(r['uv'],2),np.round(r['pixel'],2),r['current_shell_ahead_mm'],r['source_shell_ahead_mm'])

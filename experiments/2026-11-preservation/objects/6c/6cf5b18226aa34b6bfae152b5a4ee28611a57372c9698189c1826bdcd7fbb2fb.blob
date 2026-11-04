@@ -1,0 +1,74 @@
+# V75 · V8 · encaixe da anatomia sob a casca
+
+Pesquisa isolada sobre a candidata V7. Não é addon, publicação, aprovação artística nem teste Minecraft. As imagens são diagnósticos Blender. Fontes V75, V2 e candidata V7 permanecem intactas.
+
+## Diagnóstico confirmado
+
+A parte 15 é `Maria — anatomia feminina adaptada CC0`, cabeça e pescoço. A extração avaliada V75 foi reaberta sem salvar e conferida bit a bit contra os arrays preservados: 102.088 vértices / 204.160 triângulos. A transformação inversa do mapa alfa reproduz exatamente os 1.376 triângulos exportados dessa parte, admitida rotação cíclica de vértices.
+
+Há três causas, e não apenas simplificação do corpo:
+
+1. A própria fonte TESTE34 já intersecta a anatomia fonte, no topo, perto das orelhas e no baixo pescoço.
+2. A casca aproximada V7 acrescenta contatos mais frontais na calota e posteriores na ponte. Na faixa frontal y < −0,33, os contatos estão a apenas cerca de 0,3–0,4 mm da superfície original: folgas submilimétricas foram perdidas. Na ponte, o desvio à fonte é maior.
+3. A redução da anatomia troca contatos locais. Substituir a cabeça reduzida pela fonte não resolve o encaixe.
+
+As contagens de pares entre diferentes tesselações não medem gravidade. O relatório independente separa localização, faces e distâncias: `independent_diagnosis/comparison-summary.json`. As imagens `CONTACT_LOCATION_SOURCE_VS_REDUCED.png` e `HEAD_CROSS_SECTIONS.png` mostram a distribuição em coordenadas verificadas.
+
+O mapa completo encontra 4.169 pares casca × anatomia reduzida: 2.917 na calota, 916 na ponte e 336 no manto. A túnica parte 9 tem outros 371 pares com o manto. O halo foi depois convertido a cuboide/ellipse, portanto o mapa triangular anterior do halo é apenas proxy e não valida os seus contatos finais. Nenhuma dessas contagens representa número de furos.
+
+## Controle visual
+
+`evidence/native-control-*.png` usa os triângulos nativos originais da parte 15 no lugar da sua representação alfa. Casca, câmeras, luz e outras partes permanecem iguais. É o controle apropriado para uma correção nativa. A simples troca de representação já reduz pequenos pontos cinza e muda facetas; isso não será creditado à correção. A ilha cinza na nuca e o rasgo maior no topo persistem no controle.
+
+O exportador de diagnóstico foi testado usando a geometria controle: preserva todos os pixels alfa da textura original e todas as outras partes. Diferenças de pivô/rotação ficam abaixo de 5×10⁻⁸ unidades de parâmetro; origem e tamanho coincidem. Isso testa a implementação de transporte, não o comportamento da engine.
+
+## Correção retida
+
+`anatomy_fit/retained-anatomy.npz`, SHA-256 `c1971f80ca5bd99a8d51461823a42e03ed6400282e31a18586602cd0216b4519`.
+
+A candidata move somente porções cobertas da anatomia ao longo de suas normais internas, com suavidade em grafo e restrições pontuais da cavidade. A casca V7 permanece congelada. Mesmos 692 vértices soldados e 1.376 triângulos; nenhuma face é apagada nem mascarada para obter a melhora.
+
+- 274 vértices movidos. Mediana dos movidos 0,971 mm, p95 2,885 mm, máximo 9,756 mm na nuca; maior mudança identificada na cap 3,970 mm.
+- Face, orelhas e baixo pescoço: 280 vértices protegidos exatamente. Os 410 vértices fora do domínio ativo estão bit a bit intactos.
+- Gate independente: 4.169 → 670 pares casca × anatomia, com 630 comuns, **40 novos** e 3.539 removidos. Resíduos: cap 260, ponte 410, manto zero. Não é interface global limpa.
+- 465 pares estão em 51 triângulos imutáveis pela máscara atual. Destes, 462 estão na máscara ampla das orelhas. A máscara é geométrica por coordenadas, não segmentação anatômica ou prova de visibilidade; refiná-la não exige necessariamente deformar a orelha visível.
+- Zero novas auto-interseções estritas ou inversões. Rotação máxima de normal 42,15°; uma face da nuca retém apenas 13,7% da área original. Essa compressão é real e deve permanecer declarada.
+- Uma componente microscópica herdada, 3 vértices e 2 faces opostas, permanece inalterada. Por isso o gate integral da anatomia não passa, embora não haja regressão topológica nesse teste.
+
+A alternativa com teto de 5 mm manteve contatos no manto. Refinamentos com menos contatos impunham maior deformação, sem justificativa visual para retenção. Tentativas, máscaras e relatório completo estão em `anatomy_fit/README.md`; revisão independente em `independent_diagnosis/REVIEW_RETAINED_ANATOMY.md`.
+
+## Revisão visual e transporte diagnóstico
+
+O parecer independente, `evidence/review-visual-v8.md`, retém a candidata como melhora local: o rasgo cinza maior do topo e a ilha cinza da nuca deixam de ser visíveis nas quatro vistas nativas; a vista extra sem halo confirma a melhora posterior. Face, orelhas, faixa ouro e silhueta geral não mostram regressão perceptível nas imagens examinadas.
+
+As projeções binárias de triângulos nativos, sem halo nem outras peças, mostram que o contorno não é matematicamente idêntico: distâncias bidirecionais máximas de borda rasterizada são 0,415 mm frontal, 1,953 mm perfil e 2,074 mm traseira, com p95 zero nas três vistas. Parte da pequena retração corresponde à anatomia que antes ultrapassava o topo da casca. É um teste limitado a três projeções e resolução de 2.048 pixels, não garantia global de silhueta. `evidence/fit-first-outline.json` conserva também a medida horizontal por linha, mais sensível à inclinação do contorno.
+
+`diagnostic_transport/fit-first.geo.json` e `fit-first.png` reexportam **somente a parte 15** em uma cópia do JSON legado. Todas as outras bones e pixels fora das células da parte 15 permanecem intactos. O arquivo JSON ainda contém as bones antigas 0/1; no renderer elas são substituídas pela casca V7 e faixa V5 nativas. **Esse JSON não é a escultura V7/V8 integral exportada.** Não há novo addon, material de jogo, normalmap recalculado ou vínculo client_entity.
+
+Os renders `fit-json-*` realmente reimportam esses cubos e a textura alfa. As manchas grandes continuam ausentes, mas pequenos pontos cinza retornam na cap. O contraste com a geometria nativa evidencia o limite da cobertura dos pixels alfa, ainda não corrigido. A cor é neutra de diagnóstico; não se aproveita silenciosamente o normalmap antigo em uma base tangente alterada.
+
+A verificação dos 1.376 cubos mede erro máximo de canto de 4,071×10⁻⁷ bloco contra o quadro dos triângulos, dentro da tolerância 10⁻⁶ da importação Blender. Duas faces microscópicas colapsam na precisão da importação, **também no controle legado**, IDs 424/1131. Portanto o teste passa somente para as faces não colapsadas; não existe passe global irrestrito. Ver `evidence/fit-first-transport-validation.json` e controle correspondente.
+
+## Interfaces ainda abertas
+
+A faixa V5 nativa não integrou os obstáculos do solver. Anatomia × faixa passa de 1.210 para 1.115 pares, com **111 novos**, 206 removidos e 1.004 comuns. A faixa original TESTE29 também intersecta a anatomia fonte nas mesmas regiões frontais/laterais (6.706 pares em outra tesselação). Isso confirma herança, mas não aprova os 111 pares novos contra V5. A túnica mantém 60 pares, sem novos. Isso impede alegar encaixe completo ou ausência de regressões geométricas em outras peças, mesmo com melhora visual local.
+
+Próximas hipóteses sustentadas pelas evidências: incluir a faixa como obstáculo; separar superfícies ocultas e contornos realmente visíveis na máscara das orelhas; medir a cobertura física dos pixels alfa, não só os triângulos pretendidos. Nenhuma dessas correções está implícita na candidata retida.
+
+## Arquivos principais
+
+- `anatomy_fit/retained-anatomy.npz`: candidata geométrica congelada.
+- `independent_diagnosis/REVIEW_RETAINED_ANATOMY.md`: gate independente e limites.
+- `evidence/V7_V8_NATIVE_AND_JSON_NOT_MINECRAFT.png`: comparação isolando geometria e transporte.
+- `evidence/V7_V8_NO_HALO_DIAGNOSTIC.png`: controle posterior sem halo.
+- `evidence/retained-structural-diagnostic.blend`: cena de diagnóstico com casca/faixa nativas e corpo JSON reimportado, sem vínculo com jogo.
+- `diagnostic_transport/fit-first.geo.json`: cópia diagnóstica do legado, somente parte 15 reexportada; não montagem V7 integral.
+
+## Limites de validação
+
+Os testes de cruzamentos estritos não certificam tangência, coplanaridade geral, distância mínima global ou comportamento alfa/culling do Minecraft. A anatomia reduzida possui defeitos próprios e não foi substituída por uma cabeça highpoly para melhorar a demonstração. Interfaces com túnica, auréola e demais peças não ficam automaticamente aprovadas por uma melhora da cabeça.
+
+
+## Pacote de pesquisa
+
+`V75-V8-ANATOMY-FIT-RESEARCH-NOT-ADDON.zip` inclui candidata, baseline, testes, scripts, imagens e uma cena Blender de diagnóstico. Exclui outras cenas e backups `.blend`, caches Python e as duas grandes cópias extraídas da fonte (`source-part1.npz` e `source-part15.npz`), regeneráveis pelo script de extração a partir de V75. O manifesto lista arquivos incluídos e exclusões. Os scripts mantêm dependências dos diretórios irmãos V3–V7 e da fonte V75; o ZIP não é addon nem pacote de execução independente.

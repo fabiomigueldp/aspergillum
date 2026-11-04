@@ -1,0 +1,11 @@
+# Cirurgia mínima de fronteira — rejeitada no diagnóstico
+
+Verificação independente confirmada: a aresta fixa 183606–183605 atravessa o interior do triângulo preservado 170534/183618/170535. Nenhum solver restrito a nós internos pode resolver isso. A premissa anterior foi corrigida em `neck-collar-internal-dof-assessment.md` e a evidência numérica está em `neck-fixed-boundary-exact-correction.json`.
+
+Auditoria de todas as 604 arestas de fronteira do recorte820 contra triangulação explícita do tecido preservado identificou essa única passagem transversal não adjacente. Essa auditoria não é certificação de contatos coplanares/tangenciais: o teste aqui usa interseção estrita de segmento e triângulo.
+
+Cirurgia mínima combinatória avaliada, sem mover geometria: incorporar faces incidentes à aresta atravessante e face atravessada, com fechamento por correspondência exata da camada oposta. Acrescenta quatro faces, recorte824; suporte limitado a X[-0,10070,-0,09203],Y[-0,09998,-0,06771],Z[3,33903,3,37764]. Nenhuma face sem par.
+
+**Rejeitada antes de criar colar**: nova fronteira tem dois vértices com grau diferente de2 (não forma dois loops simples) e outra passagem transversal, aresta170535–183618 contra triângulo183603/183606/170532, face180873, t=0,764622. Portanto a cirurgia mínima não é uma intervenção segura. Não houve preenchimento, candidato ou alteração de V75.
+
+Método estrutural posterior exigiria identificar de uma vez o componente inteiro de auto-interseção e construir domínio regular com fronteiras simples separadas do tecido por teste completo, não adicionar sucessivamente cada face que aparece. A atual máscara não fornece essa garantia. Não ampliei novamente por tentativa.

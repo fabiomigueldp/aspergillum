@@ -1,0 +1,22 @@
+{
+  "tests_passed": [
+    "Only documented cube fields",
+    "Finite non-negative cube dimensions",
+    "All8312 cubes use exactly south face",
+    "All8312 geometric triangle correspondences reconstructed with Blockbench inverse",
+    "UV rectangles within4096 atlas",
+    "PNG alpha binary0/255",
+    "Original V75 source SHA256 unchanged",
+    "No poly_mesh"
+  ],
+  "cube_count": 8312,
+  "roundtrip_max_absolute_model_units": 1.9537308837414002e-07,
+  "roundtrip_max_absolute_blocks": 1.2210818023383752e-08,
+  "unvalidated": [
+    "Bedrock parsing and content log",
+    "front/back culling",
+    "alpha at distance and mipmaps",
+    "performance on target mobile device"
+  ],
+  "rejected_for_release": true
+}

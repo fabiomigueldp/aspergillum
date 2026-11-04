@@ -1,0 +1,35 @@
+"""Secondary final-output check, limited central V14 rays and canonical-mask math.
+Not an engine/renderer audit. Writes only to shared_mask/.
+"""
+from pathlib import Path
+import json,time,numpy as np
+from scipy.spatial.transform import Rotation
+from PIL import Image
+W=Path(__file__).resolve().parent;B=W.parent.parent;START=time.perf_counter();A=np.array([[1,0,0],[0,0,1],[0,-1,0]],float)
+a=np.load(W/'transport_arrays.npz');rows=[];tpoints=[];tpart=[];tface=[]
+for label,pi in [('band',0),('shell',1),('anatomy',15)]:
+ d=np.load(W/f'source-{label}-frozen.npz');v=d['points'];f=d['triangles'];tpoints.extend(v[f]);tpart.extend([pi]*len(f));tface.extend(range(len(f)))
+tri=np.array(tpoints);parts=np.array(tpart);faces=np.array(tface);ee0=tri[:,1]-tri[:,0];ee1=tri[:,2]-tri[:,0];nn=np.cross(ee0,ee1);nn/=np.linalg.norm(nn,axis=1)[:,None];d00=np.einsum('ij,ij->i',ee0,ee0);d01=np.einsum('ij,ij->i',ee0,ee1);d11=np.einsum('ij,ij->i',ee1,ee1);den=d00*d11-d01*d01
+raw=json.loads((B/'band_shell_v13/independent_diagnosis/visible-blue-ray-witnesses.json').read_text())['rows'];rays=[{'label':r['view'],'pixel':r['pixel'],'origin':r['origin'],'direction':r['direction'],'maxdist':10}for r in raw];dense=np.load(B/'band_shell_v13/independent_diagnosis/valley-dense-map.npz')['samples'][7442];p=dense[3:6];norm=dense[6:9];rays.append({'label':'protected-gap-dense-row7442','pixel':None,'origin':(p+norm*.015).tolist(),'direction':(-norm).tolist(),'maxdist':.04})
+def baseline(r):
+ o=np.array(r['origin']);d=np.array(r['direction']);d/=np.linalg.norm(d);nd=nn@d;tt=np.divide(np.einsum('ij,ij->i',tri[:,0]-o,nn),nd,out=np.full(len(nn),np.inf),where=np.abs(nd)>1e-12);valid=(nd<-1e-12)&(tt>=0)&(tt<=r['maxdist']);pt=o+tt[:,None]*d;dp=pt-tri[:,0];dot0=np.einsum('ij,ij->i',dp,ee0);dot1=np.einsum('ij,ij->i',dp,ee1);bc1=(d11*dot0-d01*dot1)/den;bc2=(d00*dot1-d01*dot0)/den;ok=valid&(bc1>=-1e-9)&(bc2>=-1e-9)&(bc1+bc2<=1+1e-9);ids=np.flatnonzero(ok)
+ if not len(ids):return None
+ i=int(ids[np.argmin(tt[ids])]);return {'part':int(parts[i]),'face':int(faces[i]),'distance_mm':float(tt[i]*1000)}
+base=[baseline(r)for r in rays];results=[];bounds=[];same_geometry=True;ref=None
+for N in [128,512,2048]:
+ g=json.loads((W/f'shared_mask_{N}.geo.json').read_text())['minecraft:geometry'][0];cubes=[g['bones'][int(p)]['cubes'][int(c)]for p,c in zip(a['part'],a['cube_index'])];s=np.array([c['size']for c in cubes]);ori=np.array([c['origin']for c in cubes]);ori[:,0]=-ori[:,0]-s[:,0];piv=np.array([c['pivot']for c in cubes])*[-1,1,1];rot=Rotation.from_euler('xyz',np.array([c['rotation']for c in cubes])*[-1,-1,1],degrees=True).as_matrix();nm=rot[:,:,2];uv=np.array([c['uv']['south']['uv']for c in cubes]);sz=np.array([c['uv']['south']['uv_size']for c in cubes]);assert np.array_equal(sz,np.full(sz.shape,N));geom_numbers=np.column_stack([s,ori,piv,rot.reshape(-1,9)])
+ if ref is None:ref=geom_numbers
+ else:same_geometry&=bool(np.array_equal(geom_numbers,ref))
+ atlas=np.array(Image.open(W/f'shared_mask_{N}.png'));mask=atlas[:N,2048:2048+N,3]>0;assert np.array_equal(mask,np.arange(N)[None,:]<=np.arange(N)[:,None]);assert int(mask.sum())==N*(N+1)//2
+ # Every strictly subdiagonal cell is full native; every diagonal cell intersects exactly half.
+ original_area=float(a['child_area_blocks2'].sum());covered_area=original_area*(N+1)/N;extra=original_area/N
+ leg=a['quad_size']/16;out=leg[:,0]*leg[:,1]/(N*np.linalg.norm(leg,axis=1));bounds.append({'tier':N,'native_area_blocks2':original_area,'opaque_area_blocks2':covered_area,'outside_native_area_blocks2':extra,'missing_native_area_blocks2':0.,'outside_fraction':1/N,'max_outward_distance_mm':float(out.max()*1000),'percentile_outward_distance_mm':dict(zip(['50','95','99'],np.quantile(out,[.5,.95,.99])*1000)),'shell4488_max_outward_distance_mm':float(out[(a['part']==1)&(a['native_face']==4488)].max()*1000)})
+ for ri,r in enumerate(rays):
+  o=np.array(r['origin'])@A.T*16;d=np.array(r['direction']);d/=np.linalg.norm(d);d=d@A.T*16;nd=nm@d;tt=np.divide(np.einsum('ij,ij->i',piv-o,nm),nd,out=np.full(len(nm),np.inf),where=np.abs(nd)>1e-12);valid=(nd<-1e-12)&(tt>=0)&(tt<=r['maxdist']);pt=o+tt[:,None]*d;local=np.einsum('ni,nij->nj',pt-piv,rot)+piv-ori;x=local[:,0]/s[:,0]*N;y=(1-local[:,1]/s[:,1])*N;inside=valid&(x>=0)&(x<N)&(y>=0)&(y<N);ids=np.flatnonzero(inside);opaque=np.zeros(len(cubes),bool);opaque[ids]=atlas[uv[ids,1]+np.floor(y[ids]).astype(int),uv[ids,0]+np.floor(x[ids]).astype(int),3]>0;hitids=np.flatnonzero(opaque)
+  hit=None
+  if len(hitids):
+   i=int(hitids[np.argmin(tt[hitids])]);hit={'part':int(a['part'][i]),'face':int(a['native_face'][i]),'half':int(a['half'][i]),'distance_mm':float(tt[i]*1000),'pixel_float':[float(x[i]),float(y[i])]}
+  results.append({'tier':N,'label':r['label'],'pixel':r['pixel'],'native':base[ri],'alpha':hit,'changed_first_part':bool(base[ri]and hit and base[ri]['part']!=hit['part']),'changed_hit_presence':(base[ri]is None)!=(hit is None)})
+ report={'status':'limited_self_check_only','same_shape_transforms_across_tiers':same_geometry,'integer_masks_verified_from_final_png':True,'area_and_bounds':bounds,'rays':results,'central_ray_count':len(rays),'changed_first_parts_by_tier':{str(n):sum(r['changed_first_part']for r in results if r['tier']==n)for n in [128,512,2048]},'changed_hit_presence_by_tier':{str(n):sum(r['changed_hit_presence']for r in results if r['tier']==n)for n in [128,512,2048]},'method':'Read each final combined JSON, derive transformed quad plane/local UV using official south convention, nearest sample final PNG alpha at mip0. Compare same bounded central V14 rays to source triangles. No legacy context, screen raster, engine, filtering or float32 simulation. Analytic area follows exact integer-cell intersection, not a renderer estimate. Diagonal pixel centers included; half-open rectangle tests exclude exact max U/V borders, so exact raster edge ownership is deliberately unclaimed.','seconds':time.perf_counter()-START};(W/'sampled-support-check.json').write_text(json.dumps(report,indent=2,allow_nan=False)+'\n')
+ print('tier',N,'central_changed_parts',sum(r['changed_first_part']for r in results if r['tier']==N),'protected_gap',results[-1],flush=True)
+print('DONE',time.perf_counter()-START,flush=True)

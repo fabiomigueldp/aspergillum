@@ -1,0 +1,38 @@
+"""Compare PNGs from offline rasterization. Does not decide shader/game parity."""
+import json,hashlib
+from pathlib import Path
+import numpy as np
+from PIL import Image,ImageDraw,ImageFont
+R=Path(__file__).resolve().parent
+manifest=json.loads((R/'manifest.json').read_text())
+font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',16)
+small=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',13)
+def pixels(path):return np.array(Image.open(path).convert('RGBA'),dtype=float)/255
+def compare(a,b):
+ union=(a[:,:,3]>.01)|(b[:,:,3]>.01);opaque=(a[:,:,3]>.99)&(b[:,:,3]>.99)
+ pa=a[:,:,:3]*a[:,:,3,None];pb=b[:,:,:3]*b[:,:,3,None];delta=np.max(np.abs(pa-pb),axis=2)
+ return {'referenceCoveredPixels':int((b[:,:,3]>.5).sum()),'testCoveredPixels':int((a[:,:,3]>.5).sum()),'silhouetteDifferentPixels':int(np.count_nonzero((a[:,:,3]>.5)!=(b[:,:,3]>.5))),'meanPremultipliedRgbAbsoluteError255':float(np.abs(pa-pb)[union].mean()*255),'unionPixelsWithRgbDeltaAbove1':int(np.count_nonzero((delta>1/255+1e-8)&union)),'unionPixelsWithRgbDeltaAbove8':int(np.count_nonzero((delta>8/255+1e-8)&union)),'opaqueIntersectionPixels':int(opaque.sum()),'opaqueIntersectionMeanRgbAbsoluteError255':float(np.abs(a[:,:,:3]-b[:,:,:3])[opaque].mean()*255) if opaque.any() else None}
+metrics={}
+for scene in manifest['scenes']:
+ name=scene['name'];data=json.loads((R/(name+'.json')).read_text());variants=list(data['variants']);cols=len(variants)
+ contact=Image.new('RGB',(cols*384,850),(27,31,40));d=ImageDraw.Draw(contact)
+ d.text((15,12),scene['label'],font=font,fill='white');d.text((15,38),'Diagnóstico offline. Colunas: ANTES | CANDIDATA'+(' | REFERÊNCIA LOCAL BLOCKBENCH' if 'reference' in variants else ''),font=small,fill=(180,192,208))
+ rowmetrics={}
+ for row,mode in enumerate(['uv','normal']):
+  for col,var in enumerate(variants):
+   im=Image.open(R/f'{name}-{var}-{mode}.png').convert('RGBA');im.thumbnail((384,384));x=col*384;y=75+row*385;contact.paste(im,(x,y),im);d.text((x+15,y),f'{dict(before="antes",after="candidata",reference="referência")[var]} / {"textura sem luz" if mode=="uv" else "luz pela normal do buffer"}',font=font,fill='white')
+  if 'reference' in variants:
+   ref=pixels(R/f'{name}-reference-{mode}.png');rowmetrics[mode]={var:compare(pixels(R/f'{name}-{var}-{mode}.png'),ref) for var in ['before','after']}
+  else:rowmetrics[mode]={'beforeVsAfter':compare(pixels(R/f'{name}-before-{mode}.png'),pixels(R/f'{name}-after-{mode}.png'))}
+ contact.save(R/f'{name}-contact.png')
+ a=data['variants']['after'];b=data['variants']['before'];attrs={'positionsBeforeAfterExact':a['vertices']==b['vertices'],'trianglesBeforeAfterExact':a['triangles']==b['triangles']}
+ if 'reference' in data['variants']:
+  ref=data['variants']['reference'];position=[];uv=[];normal=[]
+  for k in range(0,len(a['vertices']),4):
+   ap=np.array(a['vertices'][k:k+4]);rp=np.array(ref['vertices'][k:k+4]);perm=np.linalg.norm(ap[:,None]-rp[None],axis=2).argmin(axis=1)
+   assert len(set(perm))==4,'ambiguous reference vertex match'
+   position.extend(np.linalg.norm(ap-rp[perm],axis=1));uv.extend(np.abs(np.array(a['uvs'][k:k+4])-np.array(ref['uvs'][k:k+4])[perm]).ravel());normal.extend(np.abs(np.array(a['normals'][k:k+4])-np.array(ref['normals'][k:k+4])[perm]).ravel())
+  attrs.update({'maxPositionDeltaVsOfficialBlock':float(max(position)),'maxUvDeltaVsOfficial':float(max(uv)),'maxNormalDeltaVsOfficial':float(max(normal))})
+ metrics[name]={'attributes':attrs,'pixels':rowmetrics}
+(R/'visual-comparison.json').write_text(json.dumps(metrics,indent=2))
+print(json.dumps(metrics,indent=2))

@@ -1,0 +1,46 @@
+/** Synthetic offline examples only. Writes diagnostic evidence, never world data. */
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { spawnSync } from 'node:child_process';
+import { CONTRACT, draftJournal, hash, reconcileRawInput, recordReviewProposal } from './recovery-quarantine.mjs';
+
+const output = resolve('out/state-compaction/quarantine-proposal');
+mkdirSync(output, { recursive: true });
+const snapshot = { schemaVersion: 2, instanceId: 'synthetic-item-A', charges: 3, cosmeticId: 'classic', sprayProfileId: 'standard', customProperties: { 'sample:note': 'Synthetic evidence only' } };
+const journal = { worldId: 'synthetic-world', operationId: 'synthetic-op-0001', kind: 'break', address: { dimension: 'overworld', x: 1, y: 64, z: 2 }, createdAt: 100, phase: 'effects-may-have-occurred', occupancyGeneration: null, snapshot, rawRegistry: ' {"opaqueOriginal":"🕊","unknownVersion":99}\n', originalHand: null, originalBlock: { illustrative: 'previous-occupied-block' } };
+const input = changes => ({ schemaVersion: 1, journalRaw: draftJournal(journal), context: { worldId: journal.worldId, contract: CONTRACT, epoch: 'inspection-1', asOf: 200, maxObservationAge: 50 }, observations: [], relatedJournalRaws: [], ...changes });
+const seen = (id, kind = 'inventory', changes = {}) => ({ observationId: id, worldId: journal.worldId, contract: CONTRACT, epoch: 'inspection-1', capturedAt: 180, location: { kind, ref: `synthetic-${id}` }, snapshot, occupancyGeneration: null, ...changes });
+const cases = {
+  no_visible_item: input({}),
+  one_exact_item: input({ observations: [seen('found')] }),
+  registry_and_item: input({ observations: [seen('source', 'registry'), seen('found')] }),
+  two_item_locations: input({ observations: [seen('found'), seen('other', 'drop')] }),
+  id_content_conflict: input({ observations: [seen('found'), seen('other', 'drop', { snapshot: { ...snapshot, charges: 2 } })] }),
+  old_observation: input({ observations: [seen('old', 'inventory', { capturedAt: 90 })] }),
+  old_contract: input({ context: { worldId: journal.worldId, contract: 'old-pack', epoch: 'inspection-1', asOf: 200, maxObservationAge: 50 } }),
+  conflicting_operation: input({ relatedJournalRaws: [draftJournal({ ...journal, address: { ...journal.address, x: 7 } })], observations: [seen('found')] }),
+  corrupt_related_journal: input({ relatedJournalRaws: ['corrupt journal with opaque data 🕊'], observations: [seen('found')] }),
+  mismatched_generation: input({ journalRaw: draftJournal({ ...journal, occupancyGeneration: 'occupation-A' }), observations: [seen('found', 'inventory', { occupancyGeneration: 'occupation-B' })] }),
+  completed_but_ambiguous: input({ journalRaw: draftJournal({ ...journal, phase: 'completed' }) }),
+  source_only: input({ observations: [seen('source', 'registry')] }),
+};
+const results = [];
+for (const [name, value] of Object.entries(cases)) {
+  const raw = JSON.stringify(value);
+  const report = reconcileRawInput(raw);
+  if (report.executionAllowed || report.automaticRetryAllowed || report.releaseAllowed || report.allowedEffects.length !== 0 || !report.quarantineRetained || report.originalInputRaw !== raw) throw new Error(`Unsafe output: ${name}`);
+  writeFileSync(`${output}/${name}.input.json`, raw);
+  writeFileSync(`${output}/${name}.report.json`, `${JSON.stringify(report, null, 2)}\n`);
+  results.push({ name, evidencePattern: report.evidencePattern, proposal: report.proposal, reasons: report.reasons,
+    inputSha256: hash(raw), reportSha256: hash(readFileSync(`${output}/${name}.report.json`, 'utf8')) });
+}
+const exactRaw = readFileSync(`${output}/one_exact_item.input.json`, 'utf8');
+const exact = reconcileRawInput(exactRaw);
+const review = recordReviewProposal(exact, { proposalFingerprint: exact.proposalFingerprint, decision: 'designate-observed-copy', observationId: 'found', acknowledgesDuplicateOrLossRisk: true });
+writeFileSync(`${output}/human-review-proposal.json`, `${JSON.stringify(review, null, 2)}\n`);
+const cli = spawnSync(process.execPath, ['tools/recovery-quarantine.mjs', '--input', `${output}/one_exact_item.input.json`], { encoding: 'utf8' });
+if (cli.status !== 0 || cli.stdout !== readFileSync(`${output}/one_exact_item.report.json`, 'utf8') || readFileSync(`${output}/one_exact_item.input.json`, 'utf8') !== exactRaw) throw new Error(`CLI mismatch: ${cli.stderr}`);
+const summary = { scope: 'SYNTHETIC OFFLINE EXAMPLES ONLY', cases: results.length, cliReadOnlySmoke: 'passed', allQuarantinesRetained: true, allEffectsEmpty: true, noNativeValidation: true, results };
+writeFileSync(`${output}/summary.json`, `${JSON.stringify(summary, null, 2)}\n`);
+writeFileSync(`${output}/README.md`, '# Quarentena: exemplos sintéticos\n\nDoze entradas e relatórios do protótipo offline. Nenhuma coleta de mundo ou mutação de jogo. Todas as saídas mantêm quarentena e efeitos vazios. `human-review-proposal.json` é somente um registro de revisão, sem autorização/execução. Os JSONs de entrada são compactos, sem newline final, conforme o contrato conservador.\n\nReproduzir: `node tools/recovery-quarantine-scenarios.mjs`. Inspecionar uma entrada: `node tools/recovery-quarantine.mjs --input out/state-compaction/quarantine-proposal/one_exact_item.input.json`.\n');
+console.log(JSON.stringify({ output, cases: summary.cases, cliReadOnlySmoke: summary.cliReadOnlySmoke, allQuarantinesRetained: true }, null, 2));

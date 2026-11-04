@@ -1,0 +1,16 @@
+import json,math,sys,hashlib
+from pathlib import Path
+import numpy as np
+from mathutils import Euler,Vector
+R=Path(__file__).resolve().parents[1];B=R.parent;tag=sys.argv[sys.argv.index('--')+1];gp=R/f'diagnostic_transport/{tag}.geo.json';g=json.loads(gp.read_text());body=next(x for x in g['minecraft:geometry'][0]['bones'] if x['name']=='part_15');maps=json.loads((R/f'diagnostic_transport/{tag}-triangles.json').read_text());errors=[];normaldots=[];collapsed=[]
+for ti,(c,m) in enumerate(zip(body['cubes'],maps)):
+ o=Vector(c['origin']);sz=Vector(c['size']);pv=Vector(c['pivot']);piv=Vector((-pv.x,pv.y,pv.z));a=c['rotation'];rot=Euler(tuple(math.radians(x) for x in [-a[0],-a[1],a[2]]),'XYZ').to_matrix();corners=[]
+ for q in [(1,1,1),(1,0,1),(0,0,1),(0,1,1)]:
+  p=o+Vector([q[i]*sz[i] for i in range(3)]);bb=rot@(Vector((-p.x,p.y,p.z))-piv)+piv;corners.append(np.array(bb))
+ aa,b,cc=np.array([m[x] for x in ['a','b','c']]);u=b-aa;w=np.linalg.norm(u);u/=w;v=cc-aa-(cc-aa)@u*u;h=np.linalg.norm(v);v/=h;T=m['uv'][2];mu=w/(T-2);mv=h/(T-2)
+ expected=np.array([aa-mu*u+(h+mv)*v,aa-mu*u-mv*v,aa+(w+mu)*u-mv*v,aa+(w+mu)*u+(h+mv)*v]);errors.extend(np.linalg.norm(np.array(corners)-expected,axis=1)/16)
+ n=np.cross(corners[1]-corners[0],corners[2]-corners[0]);nl=np.linalg.norm(n)
+ if nl<1e-16:collapsed.append(ti)
+ else:normaldots.append(float((n/nl)@np.cross(u,v)))
+ assert c['size'][2]==0 and set(c['uv'])=={'south'}
+rep={'geometry_sha256':hashlib.sha256(gp.read_bytes()).hexdigest(),'cubes_checked':len(body['cubes']),'actual_json_corners_vs_independent_native_triangle_frame_max_error_blocks':float(max(errors)),'south_face_normal_dot_min':min(normaldots),'all_faces_south_and_zero_depth':True,'collapsed_faces_at_Blender_import_precision':collapsed,'passes_noncollapsed_transport_check':bool(max(errors)<1e-6 and min(normaldots)>.9999),'global_all_faces_pass':not collapsed and bool(max(errors)<1e-6 and min(normaldots)>.9999),'corner_tolerance_blocks':1e-6,'not_shader_alpha_or_minecraft_validation':True};(R/f'evidence/{tag}-transport-validation.json').write_text(json.dumps(rep,indent=2));print(rep)

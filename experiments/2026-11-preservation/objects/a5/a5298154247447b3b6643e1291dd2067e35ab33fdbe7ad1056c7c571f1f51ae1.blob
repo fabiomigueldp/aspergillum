@@ -1,0 +1,16 @@
+from pathlib import Path
+import json,hashlib,numpy as np
+R=Path(__file__).resolve().parents[1];B=R.parent
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+inputs=json.loads((R/'evidence/input-hashes.json').read_text());inputs_ok=True
+for r in inputs:
+ p=Path(r['path']);r['current_sha256']=sha(p);r['unchanged']=r['current_sha256']==r['sha256'];inputs_ok &=r['unchanged']
+manifest=json.loads((R/'structural_fit/trials-manifest.json').read_text());base=np.load(B/manifest['frozen_baseline']);mf=np.unique(base['triangles'][base['face_parts']==2]);rows=[]
+for r in manifest['attempts']:
+ p=R/'structural_fit'/r['candidate'];d=np.load(p);checks={'sha256_matches':sha(p)==r['sha256'],'triangles_exact':np.array_equal(d['triangles'],base['triangles']),'source_indices_exact':np.array_equal(d['source_indices'],base['source_indices']),'face_parts_exact':np.array_equal(d['face_parts'],base['face_parts']),'mantle_positions_exact':np.array_equal(d['points'][mf],base['points'][mf]),'finite_points':bool(np.isfinite(d['points']).all())};rows.append({'candidate':r['candidate'],'sha256':sha(p),**checks});assert all(checks.values())
+assert inputs_ok and len(rows)==97
+status={'status':'INVESTIGATION_COMPLETE_NO_V10_RETAINED','attempt_count':97,'all_attempts_preserved':True,'retained_candidate':None,'reference_shell':manifest['frozen_baseline'],'reference_anatomy':manifest['frozen_body'],'reference_band':manifest['frozen_band'],'original_inputs_unchanged':True,'all_trials_same_connectivity':True,'all_trials_mantle_positions_exact':True,'last_checkpoint':'structural_fit/relax075-continuation-iteration05.npz','last_checkpoint_rejected':True,'last_checkpoint_self_crossings_independent':42,'native_geometric_approval':False,'artistic_approval':False,'bedrock_exported':False,'minecraft_runtime_tested':False,'published':False,'hidden_components_removed':False,'scope':'Local structural cap-bridge experiments with frozen V9 anatomy and V5 band; no change to original files. No retained improvement in this family.'}
+(R/'STATUS.json').write_text(json.dumps(status,indent=2));rep={'status':status,'inputs':inputs,'attempt_checks':rows,'independent_geometric_review':'independent_diagnosis/REVIEW_FINAL_V10.md','independent_visual_review':'evidence/review-visual-v10.md','renderer':'Blender Cycles, native shell+band+V9 anatomy, legacy remaining JSON; not Minecraft','outline_checks':{}}
+for tag in ['baseline-identity','boundary30','constrained-final']:
+ d=json.loads((R/f'evidence/{tag}-outline.json').read_text());rep['outline_checks'][tag]=d['views']
+(R/'evidence/final-validation.json').write_text(json.dumps(rep,indent=2));print({'inputs_unchanged':inputs_ok,'attempts_verified':len(rows),'no_v10_retained':True})

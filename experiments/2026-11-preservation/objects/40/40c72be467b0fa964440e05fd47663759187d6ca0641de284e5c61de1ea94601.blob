@@ -1,0 +1,25 @@
+from pathlib import Path
+import numpy as np,json
+from mathutils.bvhtree import BVHTree
+O=Path(__file__).resolve().parent;B=O.parent.parent
+
+def contacts(v,f,v2,f2):
+ t=BVHTree.FromPolygons(v.tolist(),f.tolist(),all_triangles=True,epsilon=0);t2=BVHTree.FromPolygons(v2.tolist(),f2.tolist(),all_triangles=True,epsilon=0);pairs=np.array(t.overlap(t2),int).reshape(-1,2)
+ if not len(pairs):return pairs
+ a=v[f[pairs[:,0]]];b=v2[f2[pairs[:,1]]];hit=np.zeros(len(pairs),bool)
+ for orig,tar in [(a,b),(b,a)]:
+  e1,e2=tar[:,1]-tar[:,0],tar[:,2]-tar[:,0]
+  for k in range(3):
+   pp=orig[:,k];dr=orig[:,(k+1)%3]-pp;h=np.cross(dr,e2);det=np.einsum('ij,ij->i',e1,h);valid=abs(det)>1e-20;den=np.where(valid,det,1);ss=pp-tar[:,0];u=np.einsum('ij,ij->i',ss,h)/den;qq=np.cross(ss,e1);vv=np.einsum('ij,ij->i',dr,qq)/den;tt=np.einsum('ij,ij->i',e2,qq)/den;hit|=valid&(tt>1e-8)&(tt<1-1e-8)&(u>1e-8)&(vv>1e-8)&(u+vv<1-1e-8)
+ return pairs[hit]
+if __name__=='__main__':
+ base=np.load(B/'body_interface_v8/anatomy_fit/baseline-welded.npz');v8=np.load(B/'body_interface_v8/anatomy_fit/retained-anatomy.npz');sh=np.load(B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz');ba=np.load(B/'shell_band_v5/retained_candidate/evidence/band-paired.npz');f=base['triangles'];protected=v8['protected_vertices'];inactive=~v8['active_vertices'];rep={};out={}
+ for name,other in [('band',ba),('shell',sh)]:
+  rows={}
+  for tag,d in [('baseline',base),('v8',v8)]:
+   cc=contacts(d['points'],f,other['points'],other['triangles']);out[tag+'_'+name+'_pairs']=cc
+   row={'pairs':len(cc),'protected_fixed_pairs':int(np.all(protected[f[cc[:,0]]],axis=1).sum()),'inactive_fixed_pairs':int(np.all(inactive[f[cc[:,0]]],axis=1).sum()),'ear_only_fixed_pairs':int(np.all(v8['protected_ears'][f[cc[:,0]]],axis=1).sum()),'protected_fixed_body_face_indices':np.unique(cc[np.all(protected[f[cc[:,0]]],axis=1),0]).tolist(),'nonfixed_pairs_not_proven_removable':int((~np.all(protected[f[cc[:,0]]],axis=1)).sum())}
+   rows[tag]=row;print(name,tag,row,flush=True)
+  a=set(map(tuple,out['baseline_'+name+'_pairs']));b=set(map(tuple,out['v8_'+name+'_pairs']));rows['delta']={'new':len(b-a),'removed':len(a-b),'common':len(a&b)};rep[name]=rows
+ rep['limits']='Pairs with all 3 body vertices protected and obstacle frozen cannot disappear. This lower bound applies only to this connectivity/fixed mask. Remaining pairs are not proven simultaneously removable; preserving visible shape/quality can impose additional conflicts. Counts are not holes or severity.'
+ np.savez_compressed(O/'independent-baseline-v8-contacts.npz',**out);(O/'fixed-contact-lower-bound.json').write_text(json.dumps(rep,indent=2))

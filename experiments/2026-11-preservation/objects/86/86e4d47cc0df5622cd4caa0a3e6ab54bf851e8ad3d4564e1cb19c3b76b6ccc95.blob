@@ -1,0 +1,117 @@
+{
+  "-1": {
+    "crop_mean_abs_clip_diff": 1.128549645390071,
+    "central_roi_mean_darkening": 1.271604938271605,
+    "central_roi_dark10_pixels": 155,
+    "witnesses": {
+      "(493, 471)": {
+        "RGB": [
+          158.0,
+          160.0,
+          161.0
+        ],
+        "clip_minus_shared_mean": 15.666666666666666
+      },
+      "(559, 449)": {
+        "RGB": [
+          164.0,
+          167.0,
+          168.0
+        ],
+        "clip_minus_shared_mean": 5.0
+      },
+      "(510, 468)": {
+        "RGB": [
+          147.0,
+          149.0,
+          150.0
+        ],
+        "clip_minus_shared_mean": 29.0
+      }
+    }
+  },
+  "-3.5": {
+    "crop_mean_abs_clip_diff": 1.2433014184397164,
+    "central_roi_mean_darkening": 2.552945899829369,
+    "central_roi_dark10_pixels": 294,
+    "witnesses": {
+      "(493, 471)": {
+        "RGB": [
+          109.0,
+          111.0,
+          112.0
+        ],
+        "clip_minus_shared_mean": 64.66666666666667
+      },
+      "(559, 449)": {
+        "RGB": [
+          103.0,
+          105.0,
+          106.0
+        ],
+        "clip_minus_shared_mean": 66.66666666666667
+      },
+      "(510, 468)": {
+        "RGB": [
+          130.0,
+          132.0,
+          133.0
+        ],
+        "clip_minus_shared_mean": 46.0
+      }
+    }
+  },
+  "-10": {
+    "crop_mean_abs_clip_diff": 1.4135851063829787,
+    "central_roi_mean_darkening": 3.1508581752484193,
+    "central_roi_dark10_pixels": 338,
+    "witnesses": {
+      "(493, 471)": {
+        "RGB": [
+          108.0,
+          110.0,
+          110.0
+        ],
+        "clip_minus_shared_mean": 66.0
+      },
+      "(559, 449)": {
+        "RGB": [
+          64.0,
+          66.0,
+          66.0
+        ],
+        "clip_minus_shared_mean": 106.0
+      },
+      "(510, 468)": {
+        "RGB": [
+          127.0,
+          128.0,
+          129.0
+        ],
+        "clip_minus_shared_mean": 49.666666666666664
+      }
+    }
+  },
+  "('-1', '-3.5')": {
+    "mean_abs_difference": 0.24613475177304966,
+    "pixels_diff_gt10": 498,
+    "max_mean_diff": 65.33333333333333
+  },
+  "('-10', '-3.5')": {
+    "mean_abs_difference": 0.33330496453900704,
+    "pixels_diff_gt10": 460,
+    "max_mean_diff": 62.666666666666664
+  },
+  "reproducer-0": {
+    "interior_pixels": 25600,
+    "red_hole_pixels": 12663
+  },
+  "reproducer-1e-07": {
+    "interior_pixels": 25600,
+    "red_hole_pixels": 12663
+  },
+  "reproducer-1e-05": {
+    "interior_pixels": 25600,
+    "red_hole_pixels": 0
+  }
+}

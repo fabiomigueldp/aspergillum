@@ -1,0 +1,40 @@
+{
+  "method": "Identical saved 20,000 area-weighted source outer crown points; nearest candidate outer surface, then nearest head face-plane sign. Paired deltas compare identical points.",
+  "limitations": "Monte Carlo area estimate. Head sign is a nearest-plane proxy, not exact SDF. Distances are Blender units (assumed meters in threshold descriptions). No certified coplanar/tangency/clearance test and no Minecraft or visual validation. Quality tolerances are provisional engineering policy, not perceptual guarantees.",
+  "fixed_samples_sha256": "269d17593ab6199bc72ad6fddc6b94b8d00010785909f4335558579c905913e6",
+  "source_sha256": "f8fdbf50dce753f12fe1594c39bae710704b35805782248a2a72de8f37ee48f3",
+  "sample_count": 20000,
+  "thresholds": {
+    "p95_ratio": 1.05,
+    "p99_ratio": 1.1,
+    "contact_increase_fraction": 0.005,
+    "maximum_depth_increase": 5e-05
+  },
+  "baseline": {
+    "input": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/shell_band_v4/curvature_candidate/evidence/cap-paired.npz",
+    "sha256": "635dc4752d22e106b4f5c9c217e098260ed1b030053379d3b5c6848472889c2e",
+    "vertices": 3112,
+    "outer_vertices": 1556,
+    "triangles": 6220,
+    "invariants": {
+      "source_exact_positions": true,
+      "source_exact_normals": true,
+      "unique_source_indices": true,
+      "protected_row40_vertices_retained": true,
+      "protected_row40_faces_unchanged": true,
+      "rim112_vertices_retained": true,
+      "rim112_edges_retained": true,
+      "source_pairmap_exact": true
+    },
+    "error_mean": 0.0002371258608723659,
+    "error_p95": 0.0004640936647774651,
+    "error_p99": 0.0009474661940475906,
+    "error_max": 0.0035475590266287327,
+    "new_negative_count": 1276,
+    "new_negative_area_fraction": 0.0638,
+    "conservative_new_negative_count": 1144,
+    "max_inward_depth_where_high_outside": 0.0012512465073086787,
+    "signed_delta_p01": -0.0005312031308994847
+  },
+  "candidates": {}
+}

@@ -1,0 +1,32 @@
+import {CLASSIC_POSES} from '../src/domain/classic-layout.ts';
+import {rotateEdges} from '../src/domain/palette-layout.ts';
+import {visibility,geometryName} from '../assets-src/model.mjs';
+const material=id=>({texture:`altare_${id}`,render_method:'opaque',ambient_occlusion:1,face_dimming:true});
+export function materials(stone=0,cloth=1,frontal=0){
+ return {'*':material(`stone_${stone}`),stone:material(`stone_${stone}`),linen:material('linen'),top:material('linen'),seam:material(cloth>=3?'seam_white_gold':'linen'),
+  hem:material(`hem_${[2,4].includes(cloth)?'long':'short'}_${cloth>=3?'gold':'plain'}`),frontal:material(`frontal_${Math.max(1,frontal)}`),frame:material('frontal_frame')};
+}
+const poseCondition=i=>`q.block_state('altare:shape') == ${Math.floor(i/5)} && q.block_state('altare:detail') == ${i%5}`;
+// Substitute only removed states, retaining all original bone keys/cloth semantics.
+function geom(long,facing,pose){
+ const values={edges:rotateEdges(pose.edges,facing),frontal:pose.frontal};
+ return {identifier:`geometry.altare.${geometryName(long,facing)}`,bone_visibility:Object.fromEntries(Object.entries(visibility(facing)).map(([k,v])=>[k,v.replace(/q\.block_state\('altare:(edges|frontal)'\)/g,(_,name)=>String(values[name]))]))};
+}
+export function compileClassic(){
+ const permutations=[];
+ for(let stone=0;stone<3;stone++)for(let cloth=0;cloth<5;cloth++)for(let frontal=0;frontal<12;frontal++){
+  const poses=CLASSIC_POSES.flatMap((p,i)=>p.frontal===frontal?[`(${poseCondition(i)})`]:[]);
+  permutations.push({condition:`q.block_state('altare:stone') == ${stone} && q.block_state('altare:cloth') == ${cloth} && (${poses.join(' || ')})`,components:{'minecraft:material_instances':materials(stone,cloth,frontal)}});
+ }
+ for(const [i,pose] of CLASSIC_POSES.entries())for(const long of [false,true])for(let facing=0;facing<4;facing++){
+  const cloth=long?"q.block_state('altare:cloth') == 2 || q.block_state('altare:cloth') == 4":"q.block_state('altare:cloth') != 2 && q.block_state('altare:cloth') != 4";
+  permutations.push({condition:`(${poseCondition(i)}) && q.block_state('altare:facing') == ${facing} && (${cloth})`,components:{'minecraft:geometry':geom(long,facing,pose)}});
+ }
+ return {format_version:'1.26.30','minecraft:block':{
+  description:{identifier:'altare:mensa',menu_category:{category:'construction'},states:{'altare:shape':Array.from({length:10},(_,i)=>i),'altare:detail':[0,1,2,3,4],'altare:stone':[0,1,2],'altare:cloth':[1,0,2,3,4],'altare:facing':[0,1,2,3]}},
+  components:{'minecraft:geometry':geom(false,0,CLASSIC_POSES[0]),'minecraft:material_instances':materials(),'minecraft:collision_box':true,'minecraft:selection_box':true,
+   'minecraft:destructible_by_mining':{seconds_to_destroy:1.5},'minecraft:destructible_by_explosion':{explosion_resistance:6},
+   'minecraft:movable':{movement_type:'immovable'},'minecraft:map_color':'#d1c9b5','minecraft:light_dampening':15,
+   'minecraft:tick':{interval_range:[80,120],looping:true},'altare:surface':{}},permutations,
+ }};
+}

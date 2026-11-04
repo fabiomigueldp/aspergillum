@@ -1,0 +1,27 @@
+from audit_primary_rays import *
+O=Path(__file__).resolve().parent
+base=json.load(open(O/'primary-ray-report.json'));grid=np.load(O/'primary-ray-grid.npz');pixels=grid['pixels'];sel=(pixels[:,0]>=490)&(pixels[:,0]<=570)&(pixels[:,1]>=440)&(pixels[:,1]<=480);pixels=pixels[sel];dark=grid['clip_minus_quad_mean_rgb'][sel]>=10;clean=np.abs(grid['clip_minus_quad_mean_rgb'][sel])<=3
+q=scene('quads');r=trace(q,pixels,stacks=True);stacks=[[]for _ in pixels]
+for ti,ix,depth,bc,uv,opaque,front in r['intersections']:
+ for j,k in enumerate(ix):
+  if depth[j]>=0:stacks[k].append({'triangle':int(ti),'part':int(q['part'][ti]),'native_face':int(q['native_face'][ti]),'half':int(q['half'][ti]),'distance':float(depth[j]),'front':bool(front),'alpha_opaque':bool(opaque[j]),'accepted':bool(front and opaque[j]),'uv':uv[j].tolist()})
+for s in stacks:s.sort(key=lambda a:(a['distance'],a['triangle']))
+metrics=[]
+for i,s in enumerate(stacks):
+ first=next(a for a in s if a['accepted']);ulp=float(np.spacing(np.float32(first['distance'])));pre=[a for a in s if not a['accepted'] and a['distance']<=first['distance']];gap=(first['distance']-pre[-1]['distance']) if pre else np.inf
+ # Exploratory one-nextafter continuation only. Not a claim of exact Cycles intersection kernel.
+ first_after=None;tmin=0.;skipped=[]
+ for a in s:
+  if a['distance']<tmin:
+   if a['accepted']:skipped.append(a)
+   continue
+  if a['accepted']:first_after=a;break
+  tmin=float(np.nextafter(np.float32(a['distance']),np.float32(np.inf)))
+ metrics.append({'pixel':pixels[i].tolist(),'dark':bool(dark[i]),'clean':bool(clean[i]),'first_opaque_triangle':first['triangle'],'preceding_transparent_count':len(pre),'nearest_preceding_gap_um':float(gap*1e6)if np.isfinite(gap)else None,'gap_in_float32_ulp':float(gap/ulp)if np.isfinite(gap)else None,'float32_t_ulp_um':ulp*1e6,'one_nextafter_model_skips_ideal_first':bool(first_after is None or first_after['triangle']!=first['triangle']),'one_nextafter_model_first':first_after,'first_skipped_opaque':skipped[0]if skipped else None,'nearest_transparent':pre[-1]if pre else None,'ideal_first':first})
+summary={}
+for name,mask in [('all',np.ones(len(pixels),bool)),('dark',dark),('clean',clean)]:
+ rows=[a for a,b in zip(metrics,mask)if b];summary[name]={'count':len(rows),'with_preceding_transparent':sum(a['preceding_transparent_count']>0 for a in rows),'gap_below_one_ulp':sum(a['gap_in_float32_ulp'] is not None and a['gap_in_float32_ulp']<1 for a in rows),'gap_below_two_ulp':sum(a['gap_in_float32_ulp'] is not None and a['gap_in_float32_ulp']<2 for a in rows),'one_nextafter_model_skips_ideal_first':sum(a['one_nextafter_model_skips_ideal_first']for a in rows)}
+witnesses=[]
+for w in base['witnesses']:
+ i=int(np.flatnonzero((pixels==w['pixel']).all(1))[0]);first=metrics[i]['ideal_first']['distance'];near=[a for a in stacks[i]if abs(a['distance']-first)<1e-5];witnesses.append({'kind':w['kind'],'clip_minus_quad_mean_rgb':w['clip_minus_quad_mean_rgb'],**metrics[i],'stack_within_10_um_of_ideal_first':near})
+report={'scope':'All actual scar-window pixel centers. Exact float64 geometric depths from saved float32 inputs. Single-nextafter model exploratory, pending source-code contract; not actual Cycles hits.','summary':summary,'witnesses':witnesses};(O/'transparency-stacks-report.json').write_text(json.dumps(report,indent=2));(O/'transparency-stacks-all-pixels.json').write_text(json.dumps(metrics,indent=2));print(json.dumps(summary,indent=2));print(json.dumps(witnesses[:2],indent=2))

@@ -1,0 +1,133 @@
+# V16 independent primary-ray diagnosis
+
+## Finding
+
+**Actual Cycles primary rays can bypass the intended band and return the shell behind it. This is not just a lighting difference on an otherwise identical first-hit surface.** The source-face emission control independently identifies these substitutions at the visible scars. Ideal geometric/alpha coverage remains present at those locations.
+
+The evidence is consistent with near-coincident transparent cards, float32 hit-distance ordering, and the one-ULP continuation step after a transparent hit. The exact Embree intersection arithmetic and tie order were not instrumented, so this report does not claim a complete reproduction of that kernel or a unique explanation for every scar.
+
+## Renderer inputs and method
+
+Opened the preserved V15 shared2048 and analytic-clip scenes, plus the V14 native-flat-focus scene, using Blender4.3.2 without saving changes. Extracted every mesh's actual world-space float32 vertex positions, loop-triangle vertex order, UV corners, MeshPolygon normals, saved corner normals, and packed texture alpha. All three input blend hashes are unchanged. All20 objects were included, not only the band. The saved files retain their last render camera, so the documented band-front pose was explicitly reproduced in memory.
+
+The independent primary audit intersects the **actual loop triangles**, not an assumed ideal quad plane. Stored float32 coordinates and UVs are promoted to float64 for intersection. It applies geometric front-face rejection and nearest/mip0 alpha from the actual packed image. This is a mathematical first-opaque oracle, not Cycles' float32/Embree traversal. Source IDs are independently mapped through the transport contract; original cube_index equals saved polygon index, native_face equals cube_index//2, and half equals cube_index%2 for all three replaced parts.
+
+Distances in the primary report start at the camera. The separate float32 continuation audit subtracts the actual saved clip_start,0.10000000149011612 blocks, because the Cycles orthographic origin starts at that clipping plane. The stored renderer uses48 samples, seed0, Blackman-Harris width1.5. Center rays and regular5×5 subpixel grids are explicitly not reconstructions of those stochastic samples.
+
+## Ideal first-opaque surface at the actual scars
+
+The audit covers60,551 pixel centers in x300–700,y420–570. The actual scar window is x490–570,y440–480:3,321 centers.
+
+- All3,321 scar-window rays agree between shared, clip, and native on **part and source native face**.
+- Shared and clip also agree on source half. Native full-triangle hits classified into the exact source-half triangles agree as well.
+- Shared and clip hit the same stored first-three-corner triangle: hit depth and geometric triangle normal are exactly equal in this window.
+- There are301 pixels in this window with clip-minus-shared mean RGB≥10. All301 retain that same ideal face/half/depth agreement. The maximum shared-to-native hit-depth difference is0.154µm.
+- At those301 pixels, shared-to-clip MeshPolygon normal differences max0.00397°, interpolated saved corner-normal differences max0.02172°, and geometric triangle-normal differences exactly0°. These are separate mesh quantities; none is assumed to be the final shader normal.
+- All600 regularly spaced subpixel rays across12 strong-scar and12 nearby-clean witnesses preserve the native source face.
+
+Across the wider60,551-center strip,31 source-face substitutions occur, with zero part substitutions. All are outside the scar window. Their clip-minus-shared RGB difference is at most6.33, below the selected dark-scar threshold. The old450-ray and40,401-ray critical-gap audits did not cover this question.
+
+**This ideal first-opaque agreement does not imply that actual renderer camera rays cannot skip the surface.** It only excludes missing mathematical alpha support or an ordinary deterministic first-hit face replacement in the tested oracle.
+
+## Actual rendered primary-face substitutions
+
+The lighting researcher rendered source IDs through the original alpha/backface graph, replacing diffuse response with source-ID emission. The actual saved vertices and UVs were retained. This control uses one sample and a narrow BOX0.01 filter, so its samples are near pixel centers rather than the original48-sample integration.
+
+I independently checked the material ID mapping, decoded the raw float EXR/NPZ, and verified that the reported deeper shell faces are front-facing and opaque along the corresponding center rays. Decoded IDs differ from integers by at most0.0004883, far below a face-ID step.
+
+|Pixel|Ideal and rendered clip first surface|Actual rendered masked first surface|Shell depth behind intended band|Geometric normal difference|
+|---|---|---|---:|---:|
+|(493,471)|Band face134,half1|Shell face2727,half0|0.69545mm|4.342°|
+|(559,449)|Band face111,half0|Shell face3717,half0|1.32327mm|8.730°|
+|(510,468)|Band face894,half1|Shell face2994,half1|0.72945mm|5.346°|
+
+In the3,321-pixel window the actual rendered source IDs disagree at142 pixels, including141 part swaps. The narrow-filter clip control differs from the exact-center oracle at only2 pixels, which must not be mislabeled an exact-center replay. Nearby controls(500,471) and(559,440) retain the same source IDs in both rendered variants.
+
+These observations directly demonstrate primary surface substitution at the strongest scars. Lighting subsequently operates on a different surface. They do not certify that primary skipping alone accounts for every original48-sample dark pixel.
+
+## Near-coincident transparent-card witnesses
+
+At pixel(493,471), the intended opaque band134/half1 intersects at camera t3.0825087869688725 blocks. Additional transparent front-facing cards intersect at:
+
+- Band138/half1: +0.034841µm behind the intended hit.
+- Band135/half1: +0.062659µm behind.
+- Band136/half1: +0.147159µm behind.
+
+The float32 hit-distance ULP is0.238419µm. Thus ideal depth ordering can place the opaque hit first while renderer-sized arithmetic places nearby transparent hits in the same distance bucket.
+
+In the scar window, transparent geometry within one float32 t ULP is present at251/301 dark pixels(83.4%) versus363/2,737 nearby-clean pixels(13.3%). Equal rounded float32 t occurs at208/301 dark pixels(69.1%) versus325/2,737 clean pixels(11.9%). Both strongest scar witnesses retain the correct ideal source face at all25 tested subpixels, yet all25 contain a transparent neighbor within one ULP.
+
+The independent sensitivity model advances tmin by np.nextafter(float32(t),+inf) after each transparent intersection. In exact geometric order it skips the ideal opaque hit at131 dark centers. This model is **not an Embree emulator**: actual float32 intersection calculations and tie ordering can differ, especially where the exact-depth transparent hit lies just behind the opaque one.
+
+The reviewed Blender4.3.2 source supports the continuation mechanism:
+
+- [kernel/bvh/util.h](https://raw.githubusercontent.com/blender/blender/v4.3.2/intern/cycles/kernel/bvh/util.h): positive intersection_t_offset advances one float32 representable value.
+- [kernel/integrator/shade_surface.h](https://raw.githubusercontent.com/blender/blender/v4.3.2/intern/cycles/kernel/integrator/shade_surface.h): transparent continuation retains ray origin and sets ray.tmin from that offset.
+- [kernel/camera/camera.h](https://raw.githubusercontent.com/blender/blender/v4.3.2/intern/cycles/kernel/camera/camera.h): orthographic near-clip origin and filtered raster samples.
+
+These source findings were supplied by the parallel lighting researcher; this branch independently checked their numerical consequences against extracted geometry.
+
+## Exact-support trimming selection
+
+The local witness selection contains68 original part_00 cards with alpha0 intersections within one ULP across the scar window;49 occur at selected dark pixels. Every selected intersection is actually alpha0, not merely back-facing. `trim-candidate-original-cubes.json` contains original bone/cube IDs, source face/half, UVs, signed depth gaps, and per-pixel provenance.
+
+This is a **selection**, not an all-view removal certificate. Any removal must independently preserve every opaque source texel and its intended affine surface. Subsequent candidate validation is recorded separately in `trim-geometry-independent.json`; renderer improvement and float32 reconstruction must be evaluated separately from ideal support equality.
+
+## Main evidence
+
+- `renderer-inputs.json`, `{quads,clipped,native}-renderer-inputs.npz`, `alpha-*.npy`: actual saved renderer inputs and preservation hashes.
+- `primary-ray-report.json`, `primary-ray-grid.npz`: source-face/half, depth, and separately defined normal comparisons.
+- `float32-ties-report.json`, `float32-ties-all-pixels.json`, `float32-ties-subpixels.json`: near-clip-correct transparent depth witnesses and sensitivity model.
+- `rendered-source-id-independent-verification.json`: actual source-ID control mapping/decoding and geometric confirmation of deeper hits.
+- `trim-candidate-original-cubes.json`: original-card selection for targeted exact-support trim tests.
+- Reproduction scripts are alongside the reports. All files written by this branch are under `lit_surface_v16/independent_rays/`.
+
+No PBR, Minecraft/runtime, mobile performance, final artistic acceptance, or universal seam-free claim follows from this diagnosis.
+
+## Completed trim and restoration audits
+
+The output JSON audit did not import the builder. It independently checked every output-to-original cube mapping, child UV rectangle, inherited transform and metadata, and untouched cube value. It reconstructed the child's world corners from output JSON and compared them with the parent's UV-affine surface. It then checked all4,194,304 original mask texels for each distinct actual output rectangle pattern, as well as every claimed alpha0 removal certificate. The same original atlas bytes were retained.
+
+|Variant|Total cubes|Raster triangles|Selected original parents|Retained children per selected parent|Alpha0 rectangles removed|
+|---|---:|---:|---:|---:|---:|
+|Original shared2048|41,565|83,164|0|1|0|
+|ROI68 depth1|41,701|83,436|68|3|68|
+|ROI68 depth2|41,973|83,980|68|7|204|
+|ROI68 depth3|42,517|85,068|68|15|476|
+|Depth3 with transparent rectangles restored|42,993|86,020|68|22|0|
+|All-band depth1 geometry control|59,341|118,716|8,888|3|8,888|
+
+All output patterns preserve every original opaque texel, with zero overlap. The restored control partitions the entire original UV square exactly once, including all transparent texels. The targeted variants preserve41,497 untouched cubes value-for-value; the broad all-band control preserves32,677 untouched cubes. Maximum reconstructed Float64 child-corner difference from its parent UV-affine surface is below9.66×10⁻¹⁶ blocks. This is ideal transform/nearest-mip0 support validation, not a claim that float32 import is bit-exact.
+
+The actual depth1/2/3 Blender meshes were then extracted and independently traced. All3,321 ROI centers still preserve source face and half. Maximum ideal first-hit drift relative to the original saved mesh is0.164/0.218/0.187µm. Stored flat/corner/triangle normals can differ after subdivision; in depth3 the maximum geometric-triangle normal difference at those center hits is0.04682°. The actual imported atlas alpha remains identical.
+
+### The restored-transparent causal control is strict
+
+Every kept depth3 cube, index and serialized field is exactly unchanged. Exactly476 previously removed alpha0 rectangles are appended to the band. More importantly, independently extracted **actual saved Blender buffers** verify that all kept vertex positions, UVs, loop-triangle order, MeshPolygon normals, saved corner normals, loop-triangle normals and source IDs remain bit-exact, across all20 parts. Only the new transparent primitives are added. All3,321 ideal first-hit distances are exactly equal between trimmed and restored depth3.
+
+This holds the opaque surfaces fixed while changing transparent geometry presence. A BVH rebuild or different traversal order is part of that intervention, not separately controlled.
+
+|Variant|ROI centers with transparent geometry within one t ULP|Among301 originally dark centers|Actual rendered source-ID mismatches against clip, one near-center sample|Mean lost band fraction versus clip,48-sample control|
+|---|---:|---:|---:|---:|
+|Original shared2048|749|251|142|4.6403%|
+|ROI68 depth1|515|164|107|3.4176%|
+|ROI68 depth2|303|101|72|1.9372%|
+|ROI68 depth3|173|66|39|0.9799%|
+|Depth3 restored-transparent|752|251|242|7.0053%|
+
+The source-ID and48-sample measurements were independently decoded from the researcher's raw arrays, with their output-polygon→original-cube→native-face/half mapping cross-checked against the actual saved loop-triangle lineage. Restoring only transparent geometry worsens the measured primary-band sampling while opaque geometry and ideal first hits stay fixed. This materially strengthens the transparent-traversal diagnosis and separates the benefit of removal from a blanket normal correction.
+
+### Not approved globally
+
+The local aggregate improvement is not a complete repair. At previously clean pixel(500,471), original and clip48-sample controls both sample the band100% of the time, but depth3 samples it only87.5% of the time. Its one-sample source ID still agrees, illustrating why a single center sample is insufficient. The trimmed depth3 control still has39 source-ID mismatches and607 pixels with more than1% lost band contribution in the measured ROI. New regressions and remaining errors prevent global approval.
+
+The exhaustive certificate concerns intended affine geometry with nearest/mip0 alpha. Float32 transforms, intersection arithmetic, raster/filter sampling, mipmaps, other views, and actual Minecraft shaders remain separate questions. The all-band geometry control's support and cost passed this branch's audit; no actual all-band renderer result is claimed here.
+
+Additional completed evidence:
+
+- `trim-geometry-independent.json`:all targeted and control support/transform/cost audits.
+- `trim-renderer-inputs-*.json`, `roi68-*-renderer-inputs.npz`:preserved actual candidate inputs.
+- `trim-primary-stacks-*.json`, `roi68-*-primary-ray-grid.npz`:candidate first-hit and transparent-stack comparisons.
+- `restored-control-prefix-verification.json`:serialized kept-cube identity.
+- `restored-control-actual-prefix-verification.json`:bit-exact actual kept Blender buffers.
+- `trim-rendered-ids-independent-verification.json`:decoded renderer source IDs and48-sample band contributions, with verified source lineage.

@@ -1,0 +1,9 @@
+from pathlib import Path
+import numpy as np,os
+O=Path(__file__).resolve().parent;os.environ['MPLCONFIGDIR']=str(O/'.mplconfig')
+import matplotlib;matplotlib.use('Agg');import matplotlib.pyplot as plt
+z=np.load(O/'valley-dense-map.npz');a=z['samples'];inv=z['inversion'];fig,axs=plt.subplots(2,1,figsize=(15,8))
+for ax,col,lab in [(axs[0],9,'Casca atual além da faixa atual (mm)'),(axs[1],11,'Recuo da faixa reduzida perante fonte render (mm)')]:
+ # plot all samples neutral and defect support precisely.
+ ax.scatter(a[:,1],a[:,2],s=.5,c='#ded8cb',rasterized=True);im=ax.scatter(a[inv,1],a[inv,2],s=5,c=a[inv,col],cmap='viridis',rasterized=True);fig.colorbar(im,ax=ax,label=lab);ax.set_xlim(24,160);ax.set_ylim(3,13);ax.axhline(3,c='#aa780d');ax.axhline(13,c='#aa780d');ax.axhline(5,c='#999999',lw=.5);ax.axhline(11,c='#999999',lw=.5);ax.axvspan(80,96,color='#4c9e5f',alpha=.12,label='Centro sem inversão detectada');ax.set_ylabel('v (cristas em 3 e 13)');ax.set_xlabel('u fonte ao longo da faixa');ax.grid(alpha=.15)
+axs[0].legend(loc='upper center');fig.suptitle('Suporte amostrado da inversão geométrica no vale, não máscara de visibilidade\n15.818 amostras; azul existe por oclusão da faixa contínua. Evitar correção global do envelope.');fig.tight_layout();fig.savefig(O/'valley-inversion-uv-map.png',dpi=180)

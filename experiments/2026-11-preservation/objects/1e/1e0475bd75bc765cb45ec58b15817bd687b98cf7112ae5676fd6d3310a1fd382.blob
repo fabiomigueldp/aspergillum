@@ -1,0 +1,58 @@
+{
+  "scope": "All 358 current exterior contact segments, 25/50/75% points and +/-0.05mm in-face transverse perturbations when still inside face. Ten fixed cameras. Three native meshes only (candidate band, frozen shell, frozen anatomy); no halo/alpha/context occluder modeled. Local unoccluded means potential visibility, not proof of full-scene visibility or perceptual detectability. A closer native surface establishes occlusion of sampled points even when omitted context may add more occlusion. Diagnostic colors are not original materials.",
+  "category_counts": {
+    "occluded_at_all_sampled_points_in_sampled_cameras": 159,
+    "indeterminate_visible_boundary_or_source_order": 87,
+    "potentially_visible_reference_shell_dominant": 64,
+    "potentially_visible_source_order_inversion": 48
+  },
+  "category_length_mm_without_union": {
+    "occluded_at_all_sampled_points_in_sampled_cameras": 556.7884199986677,
+    "potentially_visible_source_order_inversion": 127.96480263179515,
+    "potentially_visible_reference_shell_dominant": 198.31946161021472,
+    "indeterminate_visible_boundary_or_source_order": 249.23160528236357
+  },
+  "categories_by_uv": {
+    "occluded_at_all_sampled_points_in_sampled_cameras": {
+      "u_range": [
+        2.700868047167305,
+        170.72398160172162
+      ],
+      "v_range": [
+        0.5571510276372134,
+        10.027966183365136
+      ]
+    },
+    "indeterminate_visible_boundary_or_source_order": {
+      "u_range": [
+        6.250593411388821,
+        170.45944406512538
+      ],
+      "v_range": [
+        1.712101250746904,
+        12.100245202193623
+      ]
+    },
+    "potentially_visible_reference_shell_dominant": {
+      "u_range": [
+        4.153181596238755,
+        170.8585550622474
+      ],
+      "v_range": [
+        1.1269690659179177,
+        10.551984648383923
+      ]
+    },
+    "potentially_visible_source_order_inversion": {
+      "u_range": [
+        6.253798259747431,
+        169.7626389748205
+      ],
+      "v_range": [
+        1.8001795808154029,
+        12.052239361319284
+      ]
+    }
+  },
+  "method_limit": "No category certifies artistic intent, global invisibility, the whole segment between samples, or permission to enlarge repair mask."
+}

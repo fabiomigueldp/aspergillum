@@ -1,0 +1,114 @@
+# Revisão: quarentena e reconciliação assistida
+
+## Estado implementado e escopo
+
+Existe um **protótipo offline**, `tools/recovery-quarantine.mjs`, com testes em `tools/recovery-quarantine.node-test.mjs`. Não está integrado ao runtime. Recebe um único conjunto de evidências explicitamente fornecido e produz relatório/propostas sem executar entrega, alteração de inventário/bloco/registry, limpeza, liberação, migração ou publicação. Não possui leitor de mundo nem processamento de lote de casos independentes.
+
+O modelo separado `tools/recovery-analysis.mjs` enumera falhas sob hipóteses abstratas de writes sobreviventes e ordenados. Nem esse modelo nem o classificador demonstram exactly-once, flush durável ou atomicidade Bedrock. Esta revisão descreve o código; não transforma evidência sintética em aprovação nativa.
+
+## Identidades e fingerprints reais
+
+- **operationId:** identificador declarado da tentativa, com 8–128 caracteres alfanuméricos, `_` ou `-`. O protótipo valida o valor fornecido, não o gera nem prova unicidade global. Registros relacionados distintos com o mesmo ID bloqueiam classificação favorável.
+- **instanceId:** vem do snapshot V2. Igualdade não prova unicidade física. Mesmo ID com conteúdo diferente é conflito; conteúdo igual em locais distintos pode indicar representações coexistentes.
+- **snapshotFingerprint:** usa `sha256-canonical-snapshot-v1`, SHA-256 da representação JSON com chaves de objetos ordenadas. **Não é hash dos bytes brutos do snapshot.** A função valida o formato exato V2 e recusa campos extras, versões desconhecidas e valores inválidos, sem sanitizar ou normalizar cargas/metadados. Preserva todos os campos aceitos na representação canônica. Ordem de chaves não muda o fingerprint; ordem de arrays não é normalizada.
+- **journalFingerprint:** SHA-256 UTF-8 da string bruta `journalRaw`, emitido quando o journal foi validado. O envelope também tem `checksum`, calculado sobre a representação canônica de seu `body`. Nenhum desses hashes é assinatura, prova de autoria ou garantia de durabilidade.
+- **Raw registry:** `rawRegistry` é string opaca ou `null`, preservada sem parser de registry. `originalHand` e `originalBlock` são valores JSON fornecidos, não serializações completas de ItemStack/bloco verificadas pelo engine. A presença deles não prova completude do backup.
+- **occupancyGeneration:** string fornecida ou `null`. Ausente/desconhecida é representada explicitamente por `null`; o programa não inventa geração a partir de tick, endereço, item ou quebra. Duas gerações não nulas divergentes geram conflito. Mesmo quando coincidem, o relatório declara que não há vínculo nativo com o evento.
+
+O fingerprint canônico permite comparar snapshots aceitos com ordem de chaves diferente. Não permite afirmar equivalência byte a byte entre um ItemStack real e o snapshot exportado, nem detectar todas as cópias existentes no mundo.
+
+## Formato e funções
+
+O contrato de rascunho é `aspergillum-2.0.0-diagnostic-recovery-draft1`.
+
+`draftJournal(input)` valida dados explícitos e devolve uma string `{body, checksum}`; não persiste nada. O body contém:
+
+- schema/contrato/algoritmo, `worldId`, `operationId`, `kind` (`dock`, `undock` ou `break`);
+- `address: {dimension, x, y, z}`, `createdAt`, `phase`, `occupancyGeneration`;
+- `snapshot`, `snapshotFingerprint`, `rawRegistry`, `originalHand`, `originalBlock`.
+
+As fases são `prepared`, `effects-may-have-occurred` e `completed`. O rascunho verifica o orçamento de 30.000 bytes UTF-8 para todas elas, incluindo escape JSON e checksum, antes de retornar. Não trunca nem divide silenciosamente o envelope.
+
+`readJournal(raw)` recusa formato/schema/contrato/algoritmo desconhecido, checksum incorreto e envelope que não seja exatamente reproduzido por `JSON.stringify(JSON.parse(raw))`. Portanto espaços externos, chaves duplicadas e certas grafias alternativas de números são recusados. Essa regra não exige ordenar previamente todas as chaves do envelope.
+
+`reconcile(input)` recebe exatamente estas chaves:
+
+```text
+{schemaVersion: 1, journalRaw: string,
+ context: {worldId, contract, epoch, asOf, maxObservationAge},
+ observations: [...], relatedJournalRaws: [...]}
+```
+
+Cada observação contém `observationId`, `worldId`, `contract`, `epoch`, `capturedAt`, `location: {kind, ref}`, `snapshot` e `occupancyGeneration`. Os tipos de local são `registry`, `hand`, `inventory` e `drop`. Referências, epochs e tempos são declarações do arquivo, não observações autenticadas do engine. O código verifica consistência de mundo/contrato/época e janela temporal; não consulta relógio ou mundo para comprovar essas declarações.
+
+`relatedJournalRaws` permite verificar registros relacionados ao caso principal, não classificar um lote independente. Exportações repetidas idênticas são ignoradas como duplicação documental. Outros registros no mesmo mundo com operação, endereço ou item conflitantes, registros ilegíveis ou mistura de mundos mantêm o resultado sem classificação favorável.
+
+## Resultado e regras conservadoras existentes
+
+Todos os relatórios e registros de revisão conservam:
+
+```text
+quarantineRetained: true
+ tombstonesRetained: true
+ executionAllowed: false
+ automaticRetryAllowed: false
+ releaseAllowed: false
+ allowedEffects: []
+```
+
+Esses campos descrevem a proposta; não criam quarentena real num mundo. Não existe uma saída que autorize reentrega, limpeza ou liberação.
+
+Erros e conflitos produzem `evidencePattern: "unclassified"`, motivos e proposta de coletar/corrigir evidência. Quando a entrada foi validada, o padrão provisório é um destes:
+
+| Padrão | Proposta |
+| --- | --- |
+| `multiple-registry-observations` | revisar múltiplas ocorrências na fonte |
+| `multiple-observed-item-locations` | revisar múltiplas cópias observadas |
+| `registry-and-item-observations` | revisar representações coexistentes |
+| `one-observed-item-location` | revisar designação da cópia observada |
+| `registry-only-observations` | revisar fonte retida com risco de duplicação |
+| `no-current-match` | coletar mais evidência, sem reemissão automática |
+
+Um snapshot retido pode ser evidência, não segundo item físico. As propostas não confundem esses conceitos nem concluem ausência a partir de busca vazia/parcial. O item pode estar em inventário indisponível, jogador offline, outro chunk/dimensão ou já ter sido coletado.
+
+Observações idênticas do mesmo local não contam como duas ocorrências. ID de observação reutilizado, conteúdo/geração divergente no mesmo local, mesmo item com conteúdo distinto, contexto inválido ou geração declarada divergente impedem classificação favorável mesmo com outra observação aparentemente compatível. A fase `completed` nunca permite remover tombstone.
+
+Os nomes dos padrões são observacionais: um item em mão pode ser a origem de docking, não uma entrega. Lugares observados em horários diferentes não comprovam cópias físicas simultâneas. O relatório inclui fingerprints da entrada/proposta; estes vinculam conteúdo, não autenticidade. Ordem de arrays pode afetar ordem dos motivos, observações escolhidas e fingerprints. Não há promessa de equivalência ao permutar arrays.
+
+## Revisão humana: proposta, não aprovação
+
+`recordReviewProposal(report, choice)` verifica o fingerprint do relatório e aceita escolhas limitadas: `retain-quarantine`, `designate-observed-copy` ou `request-assisted-restoration`. As duas últimas exigem reconhecimento explícito de risco de duplicação/perda.
+
+Designar cópia exige o padrão `one-observed-item-location` e o ID de uma observação correspondente. Pedir restauração assistida só aceita `no-current-match` ou `registry-only-observations`, recusando casos com item físico observado, múltiplas fontes ou evidência conflitante; **essa condição não prova backup completo nem segurança de restauração**. O resultado permanece sem efeitos permitidos.
+
+Não há assinatura, autenticação do revisor, registro de responsável/data, armazenamento de decisões, workflow de aprovação ou executor. Um relatório alterado sem atualizar seu hash é recusado, mas qualquer pessoa capaz de recalcular hashes pode fabricar um relatório coerente. A vinculação por hash não autentica decisão humana. Evidência nova exige novo relatório e revisão; não há acompanhamento automático de mudanças. Reapresentar um relatório antigo e sua escolha antiga ainda produz apenas um registro histórico. Isso não revalida o mundo atual nem demonstra que o contexto permaneceu igual.
+
+## CLI e preservação de entrada
+
+```text
+node tools/recovery-quarantine.mjs --input arquivo-explicitamente-fornecido.json
+```
+
+A CLI lê somente esse arquivo local e escreve relatório no stdout. Não salva arquivos por conta própria. A entrada deve ser JSON compacto no formato exato produzido por `JSON.stringify`, sem newline final. `reconcileRawInput` conserva `originalInputRaw` em todos os caminhos, inclusive recusa de JSON inválido/não canônico, journals relacionados ilegíveis e observações conflitantes. O texto bruto entra no fingerprint final da proposta. `reconcile(input)` recebe um objeto já interpretado e conserva sua representação integral em `inputCanonical`, sem alegar recuperar a formatação anterior. Recusas também mantêm flags de bloqueio e permitem somente o registro de manutenção da quarentena.
+
+Journals ilegíveis/futuros conservam `journalRaw` no relatório. Isso preserva a string recebida, sem reescrever o registry. Não é exportação integral de mundo.
+
+## Limites e backlog, não funcionalidades existentes
+
+- **Quarentena persistente:** integração teria de gravar intenção antes dos efeitos e cobrir todas as rotas mutáveis. O protótipo não instala bloqueios, não repara shards e não garante exclusão concorrente.
+- **Eventos e ABA:** operationId/fingerprint/geração declarada não distinguem replay antigo de quebra nova quando o evento não carrega identidade da ocupação. Mesmo item reacomodado pode reproduzir o conteúdo anterior.
+- **Tombstones:** não existem armazenamento, expiração, coleta ou liberação de capacidade. Não há prazo demonstrado para replay. Retenção finita e recusa segura por capacidade exigem outro desenho.
+- **Downgrade:** divergência declarada de contrato é recusada; o programa não impede um pack antigo de ignorar journal/quarentena e emitir outra cópia.
+- **Rollback:** avaliar restauração exigiria conjunto coerente de mundo, inventários, entidades, propriedades, journal e packs. O protótipo não verifica esse conjunto e não restaura nada. Restaurar só registry/pack pode duplicar itens já entregues.
+- **Durabilidade:** readback não prova flush. Crash pode preservar spawn e perder journal anterior; essa hipótese invalida a garantia abstrata de writes ordenados sobreviventes.
+- **Evidência e aprovação:** futuras assinaturas, proveniência autenticada, identificação do responsável, verificação de backups e executor autorizado estão fora do escopo. Coleta automática, parser de mundo e batch também não existem.
+
+Os testes disponíveis cobrem validação/fingerprints, recusa de formatos futuros/corruptos, orçamento, coexistência/conflitos, contexto temporal, geração declarada, propostas humanas sem efeitos e uso offline. Não constituem testes Bedrock ou aprovação de integração. Qualquer integração ou ação sobre mundo exige revisão e autorização separadas.
+
+## Evidência reproduzível
+
+`npm run verify:quarantine-proposal` executa 54 testes Node e produz 12 exemplos sintéticos em `out/state-compaction/quarantine-proposal/`. Cada exemplo conserva a entrada integral, o relatório e os hashes. Uma chamada real da CLI confirma saída idêntica ao classificador e arquivo de entrada inalterado. Todos os casos mantêm quarentena, proíbem retry/liberação/execução e têm `allowedEffects: []`.
+
+A revisão adversarial encontrou uma proposta de restauração excessivamente permissiva quando já havia itens observados. Um teste falhou antes e passou depois da restrição aos dois padrões sem item físico observado; evidência em `out/state-compaction/quarantine-review-before.log` e `quarantine-tests.log`. Foi também reforçada a retenção de toda a entrada bruta no relatório. Os testes não integram quarentena ao Minecraft.
+
+A [prevenção da quebra por jogador](PLAYER_BREAK_PREVENTION.md) é uma defesa separada, sem integrar este classificador ao runtime. A API informa que clone copia propriedades; o novo contraexemplo com marca clonada reforça que uma marca não prova unicidade. Nenhuma marca foi adicionada a itens.

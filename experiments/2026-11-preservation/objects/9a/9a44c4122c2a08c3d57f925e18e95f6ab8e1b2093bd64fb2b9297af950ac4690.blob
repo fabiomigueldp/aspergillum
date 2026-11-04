@@ -1,0 +1,113 @@
+# V16: diagnóstico dos riscos sob luz
+
+Pesquisa isolada sobre a candidata compartilhada V15. As fontes, máscaras e candidatos anteriores permanecem preservados. Nenhum teste é screenshot ou certificação Minecraft.
+
+## Pergunta
+
+Por que a representação de quads mascarados apresenta riscos sob luz, enquanto o controle triangular recortado analiticamente fica limpo, apesar da correspondência geométrica e da cobertura primária ideal verificadas?
+
+## Controles separados
+
+- Emissão da normal, mascarada e recortada: compara o que a câmera vê sem iluminação.
+- Sem rebotes não transparentes: testa a dependência de iluminação indireta, mantendo o tratamento de transparência.
+- Sem sombras e sem rebotes: diagnóstico anterior refinado; não é correção.
+- Sem visibilidade difusa adicional: distingue raios BSDF ao ambiente, que podem contribuir para Diffuse Direct mesmo sem rebotes adicionais. Não é correção.
+- Translação conjunta de vértices/câmera para a origem da cabeça: teste de condicionamento numérico, com erro de arredondamento registrado.
+- Distância da câmera ortográfica alterada com enquadramento constante: mede sensibilidade a profundidade/precisão.
+- Passes lineares Diffuse Direct, Indirect e Color, além de IDs de face: localizam o fenômeno sem confundir albedo, normal e iluminação.
+- Reprodutor mínimo de máscaras complementares quase coplanares: confronta uma hipótese concreta da implementação Cycles 4.3.2.
+
+## Hipótese de melhoria
+
+Os cartões têm regiões transparentes que ainda participam das interseções do traçador. Uma subdivisão diádica pode eliminar retângulos comprovadamente totalmente transparentes, conservando todos os texels opacos, o atlas e os planos originais. A seleção inicial é guiada pelos testemunhos dos riscos; a prova de remoção deve valer para qualquer vista sob nearest/mip0, não apenas para a câmera usada na seleção.
+
+Essa representação aumenta cubes e pode mudar condições numéricas. Será tratada como ensaio até a auditoria de suporte, custo e imagens. Nenhuma mudança de visibilidade, sombras, cor ou luz será usada como correção de candidata.
+
+Resultados e decisão serão acrescentados após os testes.
+
+## Resultado: causa demonstrada no diagnóstico, correção apenas parcial
+
+**O Cycles realmente vê a casca atrás da faixa em pixels dos riscos.** A V16 identificou essa troca com IDs emitidos pelo renderer real, não apenas com interseções matemáticas. Retirar regiões transparentes dos cartões reduz o problema, mas as variantes introduzem outras trocas e nenhuma passa o critério de ausência de novas regressões. Não houve publicação, integração runtime ou aprovação de acabamento.
+
+### 1. O que causa os riscos examinados
+
+No pixel (493,471), o controle triangular vê a faixa, face134/metade1; o mascarado vê a casca, face2727/metade0, 695,45 µm atrás. Em (559,449), troca faixa111/metade0 por casca3717/metade0, 1.323,27 µm atrás. Um terceiro testemunho repete o fenômeno. São coordenadas dos PNGs1000².
+
+O controle de IDs, uma amostra BOX0,01, encontra142 trocas de fonte na janela central de3.321 pixels,141 delas entre componentes. Um controle binário separado,48 amostras fixas, confirma perda de cobertura média da faixa de4,64%. Os testes não são replay exato do render original adaptativo, mas demonstram a identidade incorreta observada pelo renderer nas mesmas regiões.
+
+A interseção ideal em float64 encontra a faixa correta em todos os3.321 centros examinados. Entretanto, nos riscos, há outros cartões **transparentes** a apenas0,03484–0,14716 µm do hit desejado. A distância do raio nessa câmera tem passo float32 de aproximadamente0,238 µm. O Cycles4.3.2 avança a distância mínima para o próximo float após atravessar uma superfície transparente. Essa continuação e a ordem de interseção quase empatada são compatíveis com saltar a superfície que deveria aparecer. [Código da travessia](https://github.com/blender/blender/blob/v4.3.2/intern/cycles/kernel/integrator/shade_surface.h#L460-L470), [avanço da distância](https://github.com/blender/blender/blob/v4.3.2/intern/cycles/kernel/bvh/util.h#L20-L49).
+
+A geometria transparente a menos de um passo aparece em83,4% dos pixels escuros, contra13,3% dos controles limpos. Aproximar/afastar somente a câmera ortográfica muda os riscos, apesar da mesma projeção e iluminação pretendida. Um reprodutor mínimo com duas máscaras complementares perde cobertura com separação0 ou1e−7, mas não em1e−5. Não depende de luz ou textura.
+
+**Escopo da conclusão:** a troca primária foi demonstrada no CyclesCPU/Embree desta bancada. A aritmética interna de cada hit e a ordem exata de desempate não foram instrumentadas. Não se afirma que todos os riscos em todas as vistas tenham uma única causa, nem que o Minecraft tenha o mesmo comportamento.
+
+### 2. Por que os controles anteriores eram insuficientes
+
+A casca tem normal e cor parecidas com a faixa. Por isso, emissão de normais e albedo constante não identificam bem a troca. O passe Diffuse Color continua uniforme; a perda está em Diffuse Direct, correspondente à iluminação recebida pela superfície de trás.
+
+Zerar rebotes adicionais não retira toda chegada BSDF ao ambiente. Desligar apenas visibilidade de sombra também não retira oclusão difusa. Desligar ambas reduz os riscos visíveis, mas apenas oculta a iluminação da superfície errada; os IDs primários continuam incorretos. Esses controles não são correções. A translação conjunta para perto da origem também não elimina o padrão.
+
+Não foi repetida a hipótese descartada de correção ampla de normais. Não há normalmap no material deste diagnóstico e não foi usado PBR para disfarçar as marcas.
+
+## Melhoria concreta testada: recorte transparente certificado
+
+Foram selecionados68 cartões da faixa, correspondentes a52 faces nativas, pela auditoria da vizinhança de precisão na janela central. A seleção cobre os49 cartões implicados nos pixels mais escuros. Cada cartão foi subdividido em retângulos diádicos. Retângulos totalmente opacos ficam grandes; somente regiões mistas são subdivididas novamente; só os retângulos inteiramente alfa-zero são descartados.
+
+- Mesmo atlas, mesmos pixels, mesmos frames, pivôs e rotações herdados.
+- Nenhum deslocamento de superfície, simplificação, nova cor ou alteração de luz/sombra.
+- Auditoria exaustiva: todos os4.194.304 texels de cada template são classificados; nenhum opaco perdido ou duplicado. São removidos68/204/476 retângulos nos níveis1/2/3.
+- Os41.497 cubes não selecionados permanecem iguais. Os19 outros bones também.
+- A equivalência de suporte vale sob nearest/mip0, em aritmética ideal, para qualquer vista. Filtragem, mipmaps, bordas e runtime continuam não certificados.
+- O erro máximo de cantos float64 em relação ao pai é9,61e−16 bloco. A reconstrução float32 do renderer desloca alguns hits em até0,218 µm; isso importa na análise de precisão, apesar de ser visualmente minúsculo.
+
+### Custo e efeito local
+
+| Representação | Cubes | Triângulos raster | Trocas de fonte no centro | Perda média da faixa,48 amostras |
+|---|---:|---:|---:|---:|
+| V15 |41.565|83.164|142|4,64%|
+| Recorte nível1 |41.701|83.436|107|3,42%|
+| Recorte nível2 |41.973|83.980|72|1,94%|
+| Recorte nível3 |42.517|85.068|39|0,98%|
+| Nível3 com transparências recolocadas |42.993|86.020|242|7,01%|
+
+A textura permanece exatamente a mesma,4096×2048;32MiB é uma estimativa RGBA8 sem mipmaps, não VRAM observada. O nível3 acrescenta952 cubes e1.904 triângulos, cerca de2,29% sobre a V15. Nenhum FPS, carregamento ou desempenho Minecraft foi medido.
+
+Os renders iluminados usam as mesmas câmeras, materiais e luzes da V15. A região central melhora claramente de1 para3. No nível3, os pixels centrais pelo menos10 níveisRGB mais escuros que o controle caem de301 para25. É uma métrica de imagem sujeita a amostragem, separada dos testes de identidade.
+
+### Contraprova: recolocar somente transparências
+
+O controle restaurado mantém **todos os buffers retidos do nível3 bit-idênticos**, inclusive posições, UVs, ordem dos triângulos e normais, e acrescenta somente os476 retângulos alfa-zero removidos. O primeiro hit matemático ideal é idêntico nos3.321 centros. Mesmo assim, no render real as trocas centrais aumentam de39 para242 e os riscos voltam fortemente.
+
+A vizinhança transparente menor que um passo de precisão retorna de173 para752 centros, contra749 na V15. Esse teste separa a presença de geometria transparente da melhoria por simples subdivisão/arredondamento dos filhos retidos. A inclusão também reconstrói a BVH e pode mudar sua ordem de empate; não se afirma que cada caminho interno foi registrado.
+
+## Regressões: nenhuma variante é aprovada globalmente
+
+No quadro1000² completo, as divergências de fonte/componente contra o recorte analítico são:
+
+- V15:691.
+- Nível1:647, com120 resolvidas e76 novas.
+- Nível2:600, com165 resolvidas e74 novas.
+- Nível3:568, com192 resolvidas e69 novas.
+- Controle restaurado:824.
+
+No testemunho previamente correto(500,471), a cobertura da faixa cai de100% para95,8%/95,8%/87,5%. Fora do centro, no restante visível da faixa, os níveis1/2/3 acrescentam4/25/37 novas divergências. O nível3 melhora mais o centro, mas não é uniformemente superior ao nível2 em toda região. Os riscos laterais, auriculares e de outras partes não foram todos eliminados.
+
+**Decisão:** preservar os três ensaios e a contraprova como pesquisa; o nível3 demonstra melhoria local, mas não substituir a V15 por ele como correção global ou addon final. Não aumentar indiscriminadamente subdivisão ou cubes para tentar fazer o Cycles parecer correto.
+
+## Arquivos e revisão
+
+- `transparent_trim/roi68-depth{1,2,3}.geo.json`: combinados experimentais completos, com mapeamento de cada filho ao cube original.
+- `transparent_trim/roi68-depth3-restored-transparent.geo.json`: contraprova, nunca candidata.
+- `evidence/roi68-depth*-band-front.png`: comparações iluminadas.
+- `evidence/roi68-depth3-context-*`: figura inteira três-quartos, cabeça e ambas as orelhas.
+- `lighting_research/RESEARCH_LIGHTING_V16.md`: fontes oficiais, reprodutor, distância, passes e IDs realmente renderizados.
+- `lighting_research/`: comparação dos tiers, imagens de erros resolvidos/novos e dados lineares EXR/NPZ.
+- `independent_rays/REVIEW_PRIMARY_RAYS_V16.md`: auditoria independente das interseções, suporte alfa, arquivos e buffers reais.
+- `evidence/review-visual-v16.md`: parecer visual independente.
+- `evidence/V16-LOCAL-TRIM-DIAGNOSTIC-NOT-APPROVED.blend`: cena de nível3 salva e reaberta, com20 meshes apenas do JSON e atlas original empacotado. Não é arte aprovada.
+
+O build opcional `all-band-depth1` terminou após uma interrupção de transporte. Existe, mas não foi renderizado ou selecionado:59.341 cubes/118.716 triângulos. Não é necessário ao resultado causal e não autoriza extrapolar a melhoria local.
+
+## Próxima decisão
+
+O defeito identificado pertence ao diagnóstico por travessia transparente do Cycles. Não deve ser automaticamente atribuído ao shader de recorte, depth test ou iluminação do Bedrock. Antes de acrescentar custo de geometria à versão de jogo para corrigir esse sintoma, é necessário confrontar o asset com o renderer/runtime de destino. Isso também não autoriza declarar o asset correto no Minecraft sem esse teste. As fontes e os resultados anteriores permanecem preservados para essa decisão.

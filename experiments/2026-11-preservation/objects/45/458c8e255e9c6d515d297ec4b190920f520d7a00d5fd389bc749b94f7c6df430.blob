@@ -1,0 +1,29 @@
+# Recuperação atrasada: recusa em endereço ocupado ou indisponível
+
+Diagnóstico 2.0.0, 03/11/2026. Mudança limitada na cópia de desenvolvimento, sem mundos, instalação ou publicação. **NO-GO permanece. Não há nova garantia de atomicidade, durabilidade ou entrega exatamente uma vez.**
+
+## Defeito e correção estreita
+
+`scheduleDockedBreakRecovery` capturava o snapshot no despacho e comparava seu conteúdo no callback. Isso recusava um snapshot diferente, mas não detectava um bloco recolocado com a **mesma** instância/conteúdo. Nesse caso, podia entregar outro item e excluir o registro de uma ocupação ainda presente.
+
+O callback agora conserva a comparação anterior e, antes de construir/entregar o item, consulta `dimension.getBlock(location)`. Só prossegue quando recebe um bloco válido com `isAir === true`. Bloco ocupado, pedra/Altare, água, fogo, `undefined`, referência inválida ou erro de leitura interrompem essa tentativa, preservando os bytes do registro. Não altera o bloco encontrado, não entrega nem exclui snapshot nesse ramo, e não agenda retry quando a posição depois fica vazia.
+
+`getBlock` e `isAir` constam dos tipos estáveis instalados 2.9.0. A documentação oficial descreve retorno indefinido para localização não carregada e possíveis erros de leitura; `isAir` identifica espaço vazio e também pode lançar em chunk descarregado. Fontes consultadas para esta nova checagem: [Dimension.getBlock](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/dimension?view=minecraft-bedrock-stable#getblock), [Block.isAir e isValid](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/block?view=minecraft-bedrock-stable#isair). Não é prova de execução nativa nem nova tentativa Creator Tools.
+
+## Custo de disponibilidade e limites
+
+- Qualquer preenchimento do endereço, inclusive água/fogo após destruição legítima, suspende a recuperação automática. O snapshot fica pendente para inspeção; nenhum reparo automático foi acrescentado.
+- Os handlers de quebra já cancelam loading/encerram sessão **antes** de agendar a recuperação. Esta checagem não conserva nem reabre essas sessões.
+- Ar não autentica o evento. Um replay atrasado enquanto o endereço permanece ar ainda pode gerar fallback vazio ou consumir outro snapshot. Reacomodar e destruir novamente antes do callback também não estabelece geração única.
+- A ordem continua `spawn → delete`. Erro depois de spawn, falha de exclusão, undocking e rollback duplamente falho continuam não atômicos. Os testes que caracterizam esses riscos permanecem.
+- Nenhuma identidade persistente, journal, tombstone, marca de item, schema, UUID ou state foi adicionado. A prevenção de jogador/explosão permanece separada.
+
+## Evidência focada
+
+18 testes novos exercitam diretamente a função de recuperação de produção: reocupação idêntica dos dois blocos, pedra/Altare/água/fogo, leitura indisponível/inválida, getters que lançam, caminho válido em ar, fallback legado, snapshot substituído e ausência de retry automático. A primeira execução teve 16 falhas antes da checagem. Mais dois testes passam pelas inscrições reais do bootstrap para o caso de reocupação com snapshot idêntico.
+
+Os testes antigos foram corrigidos para representar destruição concluída: capturam a permutação anterior e deixam o bloco vivo como ar. Replays continuam reutilizando o evento anterior enquanto o endereço está vazio. As expectativas de duplicação/perda **não** foram apagadas nem transformadas em sucesso de recuperação.
+
+O gate desta mudança é focado: cinco suítes de infraestrutura/handlers/rotas afetadas, tipos, compilação do script e documentação. Não repete prova visual, orçamento de states, modelo offline de journal ou consultas Creator Tools. O gate completo anterior permanece uma evidência histórica, não uma aprovação desta mudança no Minecraft.
+
+Validação nativa futura precisaria de build diagnóstico autorizado e cenário instrumentado em mundo descartável que recoloque um bloco entre despacho e callback, além dos controles em ar e chunk indisponível. Isso não foi executado e não autoriza instalação sobre saves antigos.

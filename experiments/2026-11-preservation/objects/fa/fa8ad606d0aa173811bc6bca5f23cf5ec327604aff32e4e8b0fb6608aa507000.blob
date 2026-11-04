@@ -1,0 +1,140 @@
+# Aspergillum
+
+## Revisão diagnóstica 2.0.0 — 03/11/2026
+
+Compactação de água e ocupação em cópia isolada. Schemas incompatíveis com blocos antigos; não instalar diretamente sobre mundos 1.2.5. Arte e opções preservadas, com validação offline e migração de snapshots em desenvolvimento. [Contrato e gates](docs/COMPACT_BLOCK_STATES_2.0.0.md). Nenhum teste Minecraft ou publicação declarado.
+
+Artefato eventual, ainda não produzido: `dist/releases/Aspergillum-2.0.0.mcaddon`.
+
+
+Add-On para Minecraft: Bedrock Edition 26.40 que adiciona um **aspersório litúrgico funcional**, uma **caldeirinha (aspersorium)** e uma **Mesa do Sacristão** para configuração gratuita. O projeto usa somente APIs estáveis, não substitui conteúdo vanilla e não exige experimentos.
+
+> **Versão 1.2.5:** os dezesseis aspersórios usam a própria geometria 3D e materiais PBR no inventário por proxies independentes compatíveis com o runtime 26.40. A correção do formato rejeitado na 1.2.4 está em [`docs/releases/1.2.5.md`](docs/releases/1.2.5.md).
+
+## Instalação rápida
+
+1. Se uma versão de desenvolvimento anterior estiver instalada, remova **Aspergillum — Comportamento** e **Aspergillum — Recursos** em **Configurações → Armazenamento** e feche o Minecraft.
+2. Abra [`dist/releases/Aspergillum-1.2.5.mcaddon`](dist/releases/Aspergillum-1.2.5.mcaddon) com o Minecraft.
+3. Ative **Aspergillum — Comportamento** no mundo. A dependência ativa o Resource Pack correspondente.
+4. Não habilite Beta APIs nem Upcoming Creator Features; o add-on não precisa delas.
+
+O alvo mínimo é Creator `1.26.40`, correspondente ao Bedrock 26.40. Os módulos estáveis do manifest são `@minecraft/server` `2.9.0` e `@minecraft/server-ui` `2.1.0`; `@minecraft/common` `1.3.0` permanece somente como dependência npm/tipos da UI.
+
+## Como usar
+
+- Fabrique o **Aspersório** com gravetos e pepitas de ferro.
+- Fabrique a **Caldeirinha** com lingotes de ferro e uma corrente, e coloque-a sobre uma superfície.
+- Fabrique a **Mesa do Sacristão** com carvalho escuro, carpete verde e uma pepita de ferro. A receita cria somente a estação; personalizar nunca consome materiais.
+- Use um balde d'água na caldeirinha para enchê-la com dezesseis unidades, representadas em quatro quartos visuais.
+- Com o aspersório na mão, use-o na caldeirinha para carregar até quatro aspersões. Uma caldeirinha cheia fornece quatro carregamentos completos; o gesto conduz o braço para baixo e para a frente, com transferência autoritativa no tick 10.
+- Use a ação **Atacar/Minar** para aspergir. O gesto não causa dano nem quebra blocos.
+- No modo Criativo, uma carga real já presente não é consumida e a caldeirinha não perde água ao carregar; ao voltar ao Sobrevivência, permanece apenas o número finito de cargas gravado no item.
+- Agache e use o aspersório na caldeirinha para acomodá-lo como decoração. As cargas que couberem retornam à caldeirinha e qualquer restante permanece no item acomodado. Use a mão vazia para retirá-lo.
+- A caldeirinha não possui menu ou inventário: carregar, acomodar e retirar são interações diretas no mundo.
+- Use o aspersório na Mesa do Sacristão para acomodá-lo e abrir o menu. Escolha `Clássico`, `Processional` ou `Contido` e combine prata clássica/envelhecida, dourado festivo ou bronze cerimonial com couro castanho/vinho/preto ou marfim vegetal. **Concluir e retirar** devolve o mesmo item; **Fechar** deixa-o exposto sobre o veludo. Nenhuma configuração consome água, carga ou ingrediente.
+- Para testes rápidos com cheats: `/function aspergillum/dev_kit`.
+
+As cargas permanecem finitas e persistentes. Ao acomodar, a transferência satura a caldeirinha em `16/16` sem bloquear a ação; cargas excedentes, nome, identidade e propriedades ficam preservados num snapshot por chunk. Ao retirar ou quebrar uma caldeirinha ocupada, o script recupera exatamente o aspersório registrado; a água do bloco quebrado é descartada intencionalmente.
+
+## Arquitetura visual de integração
+
+- geometria `1.16.0`, primeira versão cujo schema oficial documenta o campo `binding`;
+- raiz sem malha `aspergillum_bound` com `q.item_slot_to_bone_name(context.item_slot)`, preservando exatamente o caminho comprovado na 1.0.7;
+- filho `aspergillum_presentation`, responsável somente pelas poses aprovadas por perspectiva;
+- filho neutro `aspergillum_action`, com malha separada em `handle` e `sprinkler_head`; a cabeça hospeda `spray_aim` e o locator `aspergillum_tip` sem tocar no binding;
+- malha real de 15,6 unidades autorada ao redor do grip empírico `[-6, 24, 1]`, nove unidades acima da pose da 1.0.8;
+- geometria base `[25, 0, -12]`, correção de apresentação exclusiva da terceira pessoa `position [5, -1.5, -2.25]`/`rotation [10, 0, 0]` e primeira pessoa aprovada preservada sem translação;
+- carregamento de 16 ticks recomposto como correção aditiva exclusiva de `rightarm`: peso `0.32` em primeira pessoa, amplitude integral em terceira, nenhum canal `rightitem`, envelope Hermite analítico até `0,8 s` e cauda matemática até `1,1 s` que neutraliza a costura vanilla de `rightarm.y`; a aspersão mantém sua ponte equivalente já aprovada;
+- `aspergillum_action` executa um flick compacto de primeira pessoa ou uma silhueta mais ampla de terceira pessoa, selecionados por controller e pelo contexto da perspectiva;
+- aspersão reservada no swing e confirmada no tick 5: cancelamento anterior não consome carga e cancelamento posterior não reembolsa;
+- emissão balística de 36 gotas em seis grupos espaciais contínuos, sincronizada ao release e visível no multiplayer;
+- bridge visual de quatro microgotas nasce no mesmo frame autoritativo calculado no tick 5 e confirma a ligação cabeça→leque sem formar uma segunda rajada;
+- origem aproximada da ponta em `0,55` bloco à frente, `0,48` à direita e `0,15` abaixo dos olhos; inclusive o primeiro pulso parte da direção capturada no início do gesto, com resposta de 80% e no máximo 30° de giro;
+- base lateral transportada paralelamente entre pulsos, evitando inversão do leque ao atravessar o olhar vertical;
+- leque anisotrópico: abertura horizontal máxima aproximada de `14,5°`, vertical máxima inferior a `5,2°`, sem halo circular;
+- gotas com billboard `rotate_xyz` e envelope `0.042 × 0.100`, restaurando a legibilidade aprovada em qualquer ângulo sem alterar velocidade, gravidade, arrasto ou alcance;
+- micro-splash cosmético discreto no contato e áudio semanticamente separado entre pistas privadas do ator e eventos espaciais do mundo;
+- 15 famílias e 48 variantes próprias em OGG Vorbis mono/48 kHz, selecionadas por shuffle bag sem repetição imediata; commits de fill/load/dock/undock/release só soam após a mutação correspondente ter sido validada;
+- arquitetura híbrida deliberada: o servidor compartilha um único frame de release entre áudio, bridge e primeiro pulso, enquanto o script conserva o leque controlável; não há duplicação pela timeline nem emissão em tentativa vazia;
+- material opaco `entity`, textura com alfa integral, cubos com espessura positiva e UVs per-face explícitos somente nas superfícies renderizadas, sempre com footprint inteiro mínimo de um texel;
+- atlas `128 × 128` gerado da fonte semântica `assets-src/models/aspergillum.model.json`, com superfícies coerentes de couro, prata, ouro e prata perfurada, padding dilatado de dois texels e mapas color/normal/MER derivados do mesmo layout;
+- quatro níveis visuais de água projetados por entidade translúcida autorreparável, enquanto bloco e aspersório acomodado permanecem integralmente opacos;
+- mesa de madeira escura com tampo de veludo verde, ferragens discretas e réplica derivada da mesma malha/texturas do item; dezesseis materiais acompanham o acabamento selecionado;
+- apresentação de inventário renderizada pelo motor a partir de uma geometria de enquadramento derivada dos mesmos quatorze cubos/UVs e dos mesmos mapas color/normal/MER do attachable; uma ponte `block_placer`/`item_visual` interna seleciona os dezesseis acabamentos sem publicar PNGs de item;
+- partículas de destruição explícitas: 56 fragmentos de metal martelado/patinado para a caldeirinha e 80 fragmentos predominantemente de madeira para a mesa, sem amostrar água ou o item acomodado;
+- rotação visual em 16 direções por estado próprio e geometrias estáveis, sem traits de rotação experimentais;
+- texturas convencionais como fallback e texture sets PBR para Vibrant Visuals;
+- localização `pt_BR` e `en_US`.
+
+## Desenvolvimento
+
+Requisitos: Node.js 20.11 ou superior (Node 22+ é recomendado pelo Minecraft Creator Tools).
+
+```powershell
+npm install
+npm run check
+npm run package
+```
+
+Comandos importantes:
+
+| Comando | Resultado |
+| --- | --- |
+| `npm run typecheck` | Verifica TypeScript contra Script API 2.9.0 |
+| `npm test` | Executa os testes unitários do domínio |
+| `npm run build` | Gera assets, compila o script e valida o conteúdo |
+| `npm run build:audio` | Reconstrói deterministicamente masters e 48 OGGs a partir das fontes versionadas |
+| `npm run validate:animation` | Amostra a coreografia a 120 Hz e verifica envelopes/continuidade |
+| `npm run validate:vfx` | Verifica locator, bridge, orientação, impacto, sons e fallback de 36 gotas |
+| `npm run validate:audio` | Verifica catálogo, definitions, proveniência, mono/48 kHz/Vorbis e ausência de órfãos |
+| `npm run render:inventory-icons` | Reproduz os antigos PNGs da 1.2.2 apenas como diagnóstico histórico; a 1.2.4 não os publica |
+| `npm run capture:models -- --subject all` | Captura modelos e composições estáticas em vistas reproduzíveis |
+| `npm run capture:avatars -- --action sprinkle` | Captura skin + jogador + attachable e sua animação, sem alterar os packs |
+| `npm run addon -- projects` | Lista os projetos administrados pelo gerenciador local multi-add-on |
+| `npm run addon -- status` | Mapeia Shared e mundos para Aspergillum, Ornatum e demais projetos registrados |
+| `npm run addon -- install <add-on> current` | Instala um artefato pronto sem reconstruí-lo ou afetar outros add-ons |
+| `npm run package` | Cria e valida oficialmente o `.mcaddon` |
+| `npm run clean` | Remove somente artefatos gerados conhecidos |
+
+O modelo autoral fica em [`assets-src/models/aspergillum.model.json`](assets-src/models/aspergillum.model.json). [`tools/generate-assets.mjs`](tools/generate-assets.mjs) remove metadados de produção, respeita as máscaras autorais, empacota apenas as faces visíveis, gera a geometria Bedrock distribuída e pinta deterministicamente color/normal/MER. A referência visual em [`assets-src/concept-art/aspergillum-concept.png`](assets-src/concept-art/aspergillum-concept.png) orienta proporções e materiais, mas não é distribuída no add-on.
+
+O [gerenciador local de Add-Ons](docs/ADDON_MANAGER.md) é uma ferramenta de desenvolvimento não distribuída. Ele registra projetos independentes, mantém catálogos e estados separados por `addonId` e consegue instalar, atualizar ou remover um add-on sem alterar os demais presentes no mesmo mundo.
+
+A identidade oficial da 1.2.1 fica em [`assets-src/branding/`](assets-src/branding/README.md). O Cover Renderer recompõe a cena a partir dos modelos reais, enquanto o gerador publica o PNG de 256 px aprovado de forma byte-idêntica nos dois packs; saídas temporárias de `out/cover-renders/` nunca são usadas diretamente pelo pacote.
+
+Nomes, descrições e locales dos dois packs seguem o [contrato de identidade pública](docs/PACK_IDENTITY.md). Ambos usam `pack.name` e `pack.description` em escopos de tradução independentes, preservando `Aspergillum` como marca e distinguindo **Comportamento** de **Recursos** sem incluir a versão no nome.
+
+Os PNGs de item da 1.2.2 permanecem arquivados em [`assets-src/inventory-icons/`](assets-src/inventory-icons/README.md) como evidência reproduzível. Desde a 1.2.4, o pack não os copia nem registra no atlas de itens: o Bedrock renderiza a malha real por uma ponte interna estável descrita em [Arquitetura](docs/ARCHITECTURE.md).
+
+O [Avatar Lab](docs/AVATAR_LAB.md) é uma ferramenta separada do add-on. Ele usa a skin **Batina preta com pelerine** como preset padrão, monta o rig wide/slim do jogador, resolve `rightItem → aspergillum_bound`, executa hold/carga/aspersão e gera PNGs e manifests com hashes em `out/avatar-captures/`.
+
+Os 48 SFX próprios desta release são versionados com suas fontes, receitas de processamento, masters, OGGs e hashes; veja [Contrato de áudio](docs/AUDIO_DESIGN_CONTRACT.md).
+
+## Estrutura
+
+Os projetos relacionados e suas fontes também ficam neste repositório: [Altare](addons/altare/README.md), [Aurifrita](addons/aurifrita/README.md), [Evangeliário](addons/evangeliarium/README.md) e [3D Workbench / Render Studio](viewer-3d/README.md). Consulte [preparação do workspace e política de arquivos gerados](docs/WORKSPACE.md) para reconstruir o ambiente em outro computador.
+
+```text
+packs/behavior/       Behavior Pack e JavaScript compilado
+packs/resource/       Resource Pack, modelos, animações e partículas
+src/domain/           regras puras e testáveis
+src/application/      casos de uso de carga e aspersão
+src/infrastructure/   adaptação para inventário, estados e feedback Bedrock
+src/bootstrap/        registro único de componentes e eventos
+tests/                testes unitários sem dependência do jogo
+tools/                geração, validação e empacotamento
+assets-src/           referências de produção não distribuídas
+docs/                 estado, contratos, arquitetura, roadmap, QA e release
+dist/releases/        pacotes e hashes gerados (ignorados pelo Git)
+dist/validation/      relatórios oficiais por versão (ignorados pelo Git)
+```
+
+Comece pelo [índice da documentação](docs/README.md), pelo [estado atual](docs/PROJECT_STATUS.md) e pelo [roadmap da V1](docs/ROADMAP.md).
+
+## Limite conhecido da plataforma
+
+`playerSwingStart` é um after-event. O add-on cancela o dano antes que ele ocorra e cancela a quebra final, mas alguns dispositivos podem mostrar por um instante o feedback vanilla de mineração ao aspergir contra um bloco. Isso deve ser avaliado no teste físico de mouse/teclado, controle e toque descrito no plano de QA.
+
+## Licença
+
+Código e assets próprios sob a licença MIT. Minecraft é marca da Microsoft/Mojang; este projeto não é afiliado nem endossado por elas.

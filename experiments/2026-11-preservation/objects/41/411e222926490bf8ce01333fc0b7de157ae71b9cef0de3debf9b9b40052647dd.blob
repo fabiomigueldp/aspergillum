@@ -1,0 +1,3120 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-11-03T17:42:50.011Z",
+  "source": "/workspace/scratch/212c580ada5b/altare-editor-review-20261103",
+  "sourcePackage": {
+    "name": "altare-bedrock-addon",
+    "version": "0.12.3",
+    "private": true,
+    "type": "module",
+    "description": "Altares modulares para o Criativo. Guadalupe preservada nas transições e aviso de encerramento por prazo. Diagnóstico 0.12.3.",
+    "engines": {
+      "node": ">=24"
+    },
+    "addonManager": {
+      "schemaVersion": 1,
+      "id": "altare",
+      "displayName": "Altare",
+      "artifactPrefix": "Altare",
+      "sharedDirectory": "pack.altare",
+      "worldDirectory": "altare.managed",
+      "publicIdentity": {
+        "behaviorUuid": "c139b210-8db8-4385-8541-4ee47a381796",
+        "resourceUuid": "41384022-51a6-4f55-a4c6-88d06544f212"
+      }
+    },
+    "scripts": {
+      "build": "node tools/build.mjs",
+      "typecheck": "tsc --noEmit",
+      "test": "node --experimental-strip-types --test tests/*.node.ts",
+      "check": "npm run typecheck && npm test && npm run build && node tools/validate.mjs",
+      "package": "npm run check && node tools/package.mjs",
+      "capture": "node tools/capture.mjs"
+    }
+  },
+  "manifestVersion": [
+    0,
+    12,
+    3
+  ],
+  "methodology": "Enumerate every declared state; shallow-merge matching permutation components in order; evaluate bone_visibility; recursively sort object keys and preserve arrays; SHA-256 effective component JSON. Identifiers inside components, unused material bindings, collision, and tick behavior are retained. Block identifier/description and latent states are excluded.",
+  "limitations": [
+    "Component equivalence is not decoded-state or future editor equivalence.",
+    "Different geometry identifiers are not resolved to mesh equivalence.",
+    "Counts of unique signatures are not automatically realizable Cartesian state declarations; packed domains may require padding or ID splits.",
+    "Planner restriction excludes arbitrary historical role/mask combinations and needs an explicit migration policy.",
+    "No source definitions, worlds, schemas or packages are changed."
+  ],
+  "totals": {
+    "blockIds": 414,
+    "declared": 80000,
+    "componentSignatures": 70496,
+    "duplicateOutputs": 9504,
+    "globalComponentSignatures": 70496,
+    "additionalCrossIdDuplicates": 0,
+    "previousNonCanonicalCount": 70496,
+    "canonicalizationDelta": 0
+  },
+  "groups": {
+    "a": {
+      "ids": 135,
+      "declared": 34560,
+      "componentSignatures": 29664,
+      "duplicateOutputs": 4896
+    },
+    "j": {
+      "ids": 36,
+      "declared": 3840,
+      "componentSignatures": 3840,
+      "duplicateOutputs": 0
+    },
+    "l": {
+      "ids": 63,
+      "declared": 7056,
+      "componentSignatures": 5040,
+      "duplicateOutputs": 2016
+    },
+    "mensa": {
+      "ids": 1,
+      "declared": 11520,
+      "componentSignatures": 11040,
+      "duplicateOutputs": 480
+    },
+    "s": {
+      "ids": 2,
+      "declared": 32,
+      "componentSignatures": 32,
+      "duplicateOutputs": 0
+    },
+    "u": {
+      "ids": 177,
+      "declared": 22992,
+      "componentSignatures": 20880,
+      "duplicateOutputs": 2112
+    }
+  },
+  "bare": [
+    {
+      "id": "altare:a_ogive_limestone_none_none",
+      "declared": 256,
+      "componentSignatures": 16,
+      "duplicateOutputs": 240
+    },
+    {
+      "id": "altare:a_ogive_marble_none_none",
+      "declared": 256,
+      "componentSignatures": 16,
+      "duplicateOutputs": 240
+    },
+    {
+      "id": "altare:a_ogive_walnut_none_none",
+      "declared": 256,
+      "componentSignatures": 16,
+      "duplicateOutputs": 240
+    },
+    {
+      "id": "altare:a_pilaster_limestone_none_none",
+      "declared": 256,
+      "componentSignatures": 16,
+      "duplicateOutputs": 240
+    },
+    {
+      "id": "altare:a_pilaster_marble_none_none",
+      "declared": 256,
+      "componentSignatures": 16,
+      "duplicateOutputs": 240
+    },
+    {
+      "id": "altare:a_pilaster_walnut_none_none",
+      "declared": 256,
+      "componentSignatures": 16,
+      "duplicateOutputs": 240
+    },
+    {
+      "id": "altare:a_trestle_limestone_none_none",
+      "declared": 256,
+      "componentSignatures": 64,
+      "duplicateOutputs": 192
+    },
+    {
+      "id": "altare:a_trestle_marble_none_none",
+      "declared": 256,
+      "componentSignatures": 64,
+      "duplicateOutputs": 192
+    },
+    {
+      "id": "altare:a_trestle_walnut_none_none",
+      "declared": 256,
+      "componentSignatures": 64,
+      "duplicateOutputs": 192
+    }
+  ],
+  "legacy": {
+    "plannerPoses": [
+      "0,0",
+      "1,0",
+      "1,1",
+      "1,2",
+      "1,3",
+      "1,4",
+      "1,8",
+      "1,9",
+      "10,0",
+      "11,0",
+      "11,2",
+      "12,0",
+      "13,0",
+      "13,11",
+      "13,3",
+      "13,7",
+      "14,0",
+      "15,0",
+      "15,2",
+      "2,0",
+      "3,0",
+      "3,10",
+      "3,4",
+      "3,6",
+      "4,0",
+      "5,0",
+      "5,1",
+      "5,2",
+      "5,3",
+      "5,4",
+      "5,8",
+      "5,9",
+      "6,0",
+      "7,0",
+      "7,10",
+      "7,4",
+      "7,6",
+      "8,0",
+      "9,0",
+      "9,11",
+      "9,3",
+      "9,7"
+    ],
+    "plannerPoseCount": 42,
+    "plannerStates": 2520,
+    "retainingRosettePoseCount": 50,
+    "retainingRosetteStates": 3000,
+    "rosetteMeaning": "Published role 5 is not produced by current rectangular planning; retain it for all eight local masks exposing the front."
+  },
+  "proposals": {
+    "bareOnly": 77984,
+    "tailoredAtelier": 14400,
+    "afterTailoredAtelier": 59840,
+    "afterTailoredAtelierAndPlannerLegacy": 50840,
+    "afterTailoredAtelierAndRosetteLegacy": 51320
+  },
+  "inputHashes": {
+    "addons/altare/package.json": "1bce5a8d20a7c4806fe774757c961284eeea40e97ae618125d53598f9c9a95a0",
+    "addons/altare/packs/behavior/manifest.json": "6ac8d45cd61c1aa30d7b3c5b7ccd8e35f43d8cd2e6352696b8918b4a8a137756",
+    "addons/altare/src/domain/catalog.ts": "ec5b7c150e43be6b3de530be3b3d2319d9747dafc3a421f944f381529a3be522",
+    "addons/altare/src/domain/surface.ts": "02d73335e5d3484ae18c98a73d13b5b9a5b89736e1c5dc709489c3885b42497f",
+    "addons/altare/src/domain/block-codec.ts": "866d8f68cc923406b0186a10091f34c34f353cbdd6d07623a89451276af0dd08",
+    "addons/altare/src/domain/palette-layout.ts": "e7c7e9a092cc57292ac9bf5292a9b296dac0f007f0a246445fd7de7b3f623700",
+    "addons/altare/src/domain/classic-textile-layout.ts": "21ab44976f3dc69aa2073c6abbc74564515839cfbd6fad52aea97aa2c3086035",
+    "addons/altare/src/domain/frontal-layout.ts": "132eddb90ad5f35f8a5fdb498e30585c812ffcc87e95bbfb869d65cc623d9e13",
+    "addons/altare/packs/behavior/blocks/a_ogive_limestone_agnus_agnus.block.json": "03b9391e1d483212f0fe11a5c1e08b0f9f1592a42651b3229a9a95d691ab4114",
+    "addons/altare/packs/behavior/blocks/a_ogive_limestone_agnus_cross.block.json": "8f4fb626f82b6e90306ef4c23ca28b56e7360caa7598925bb2ccf28b3faa42f3",
+    "addons/altare/packs/behavior/blocks/a_ogive_limestone_agnus_none.block.json": "8e4794c7276c96cd19a39ca14df36ac109961a50cac1359ce8428255fe8ac691",
+    "addons/altare/packs/behavior/blocks/a_ogive_limestone_none_agnus.block.json": "9d3f6fe1640e171dc43832966a71db22545b490829691b677525c927ffccce67",
+    "addons/altare/packs/behavior/blocks/a_ogive_limestone_none_cross.block.json": "8305e7acd50dabb78f57f4b9f728b586bdfd25f1927dabbd54eed59d23b5d2b5",
+    "addons/altare/packs/behavior/blocks/a_ogive_limestone_none_none.block.json": "94a06aa6200242bbcc6fc97a07c5234d4c5e4d5a244772351678b20078c1cbdb",
+    "addons/altare/packs/behavior/blocks/a_ogive_limestone_requiem_agnus.block.json": "7663fd42a5d7a338d5c8b9a010e3254659a6bdda6d21d0d5a20505b4dcd49b0a",
+    "addons/altare/packs/behavior/blocks/a_ogive_limestone_requiem_cross.block.json": "b7c0eea2fee833b5110da4370028f379ddddb3b75903004d9bd3e2e08a04dfae",
+    "addons/altare/packs/behavior/blocks/a_ogive_limestone_requiem_none.block.json": "4e1e70116d079feaf93c448d2d01ace5db8bd4fb10b4e987cf8f117302c77ae7",
+    "addons/altare/packs/behavior/blocks/a_ogive_limestone_ruby_agnus.block.json": "fb173d1e009b1f4e155c8e5c54270a8ac6466e64e9e7c3ac73fd62426523c2ac",
+    "addons/altare/packs/behavior/blocks/a_ogive_limestone_ruby_cross.block.json": "4973cb40a439dbee6fcedccdb10e05b490a949bf6f7ad7baf9c45a980a547b70",
+    "addons/altare/packs/behavior/blocks/a_ogive_limestone_ruby_none.block.json": "1d6ddce7781018624793876a14346faa9798ed12dae7970e3aecb5214a1f12f4",
+    "addons/altare/packs/behavior/blocks/a_ogive_limestone_verdant_agnus.block.json": "2553fb8f7ae4caf10304d217fd3597521e07aaefb75d40081f5ae30128e6052d",
+    "addons/altare/packs/behavior/blocks/a_ogive_limestone_verdant_cross.block.json": "76a9f139946824f9b870425f21fa7fac15b8036e293cba1dbea9d3d25a06fce9",
+    "addons/altare/packs/behavior/blocks/a_ogive_limestone_verdant_none.block.json": "01dc403b76f35d2f34e9f68a2242fbc53968dffff2c8989935ccdcf8e77fa26f",
+    "addons/altare/packs/behavior/blocks/a_ogive_marble_agnus_agnus.block.json": "1c6638772cc22f8fe28d0f62a1f22d371748609c5d8f1e61104f5b42b775294f",
+    "addons/altare/packs/behavior/blocks/a_ogive_marble_agnus_cross.block.json": "446533401ae7aea84fe5bf47d4b17cf29a2e38a2f6f51318c3643eb7ae1f028a",
+    "addons/altare/packs/behavior/blocks/a_ogive_marble_agnus_none.block.json": "a0ec4d7c9611fb91268c2f6b1b86925bdf289f8109d8d450cf192dba4cf68dff",
+    "addons/altare/packs/behavior/blocks/a_ogive_marble_none_agnus.block.json": "fada615d663b8a24cfcff5d980b023a96c453e07f339ea5d3654d47348454f91",
+    "addons/altare/packs/behavior/blocks/a_ogive_marble_none_cross.block.json": "de35082f8b4c461fdbf6dbd9745e1b47f62f3c96d62324573de13a99984c859c",
+    "addons/altare/packs/behavior/blocks/a_ogive_marble_none_none.block.json": "fd227bd8c76cb00c7fa564d789c158d8e9896012bdd3f3eaf58f158e04f1a08f",
+    "addons/altare/packs/behavior/blocks/a_ogive_marble_requiem_agnus.block.json": "1fe197b997fcc8d7e8b6d5ce0d86809b2246f65ce0cd787cfa33be4db3eb562c",
+    "addons/altare/packs/behavior/blocks/a_ogive_marble_requiem_cross.block.json": "9f9ba4cb7f22147dae0d26fb9e312bf1b5db86e87ea1e42fc2723a769f12cb4b",
+    "addons/altare/packs/behavior/blocks/a_ogive_marble_requiem_none.block.json": "b88ad7b1e5587a99ea2b38202b71b95113d14001db03718a434b23673ec9c864",
+    "addons/altare/packs/behavior/blocks/a_ogive_marble_ruby_agnus.block.json": "f842eec5d5f71e0016c0e2b3ca0cdaf087bf743dd1d20dd1223efc52981428f8",
+    "addons/altare/packs/behavior/blocks/a_ogive_marble_ruby_cross.block.json": "41e360e2493461d788bef66c4d6d1f347b23b2f8050f98c9d4cf9182098bad7a",
+    "addons/altare/packs/behavior/blocks/a_ogive_marble_ruby_none.block.json": "f1ea393fb46954e2fa40628c4327454489522e0ef8f93510d9d42ec41ff3d22a",
+    "addons/altare/packs/behavior/blocks/a_ogive_marble_verdant_agnus.block.json": "62cefd75a5adfed47bb60dd26bda18437459a701377bbad73d22e80b0aa26cc1",
+    "addons/altare/packs/behavior/blocks/a_ogive_marble_verdant_cross.block.json": "6d2b471e94b146864a86de942fa084e9519c9994d2834ab695951c83e1c4e1fd",
+    "addons/altare/packs/behavior/blocks/a_ogive_marble_verdant_none.block.json": "04e6154646452b4b186acd1f928fa9ce38b4badcc8dd15eb991df66bc4abc04b",
+    "addons/altare/packs/behavior/blocks/a_ogive_walnut_agnus_agnus.block.json": "4b60e85c6df82adcb741b63f1073663ea1303916ecdd1e7264ebbff438913f7e",
+    "addons/altare/packs/behavior/blocks/a_ogive_walnut_agnus_cross.block.json": "0ae0d015e922d1b41cc61fdae2bbfd8229638052b80751b075dc52d545819e4c",
+    "addons/altare/packs/behavior/blocks/a_ogive_walnut_agnus_none.block.json": "4cd01b9be20960521ccf3a3baa40e287063c9a7ac1b36877c69746d4a88ed7cb",
+    "addons/altare/packs/behavior/blocks/a_ogive_walnut_none_agnus.block.json": "54e6ada3eeb6d32090ecd2ee9fdec0405a0216a47c7cba25aa004a36677dbfea",
+    "addons/altare/packs/behavior/blocks/a_ogive_walnut_none_cross.block.json": "f55738aa27e76369edb6c701e57d50e8849c97d9b4879b517c2b182e85b82e54",
+    "addons/altare/packs/behavior/blocks/a_ogive_walnut_none_none.block.json": "b664d2d22e5520ed377eef400f8bb9d368992505128b87e5d377d43c77329c3a",
+    "addons/altare/packs/behavior/blocks/a_ogive_walnut_requiem_agnus.block.json": "2222b81f98c0e0f952f53c75a353172539a9d945e8246e154b7af18cb87a314e",
+    "addons/altare/packs/behavior/blocks/a_ogive_walnut_requiem_cross.block.json": "5df7962871576d58d4e05477d8fd0a3626a4ee8330018b85e2ac3acd16fea1f3",
+    "addons/altare/packs/behavior/blocks/a_ogive_walnut_requiem_none.block.json": "fadbbcafc1f7648059dea807c2afc12a14fcc4205577361499393700c606904e",
+    "addons/altare/packs/behavior/blocks/a_ogive_walnut_ruby_agnus.block.json": "ff1d846c1e1348494cb171d4cbad32b7b85abaee47ab68810ef83a41bff9465e",
+    "addons/altare/packs/behavior/blocks/a_ogive_walnut_ruby_cross.block.json": "f0f8cc8c5e12cbabc6f64cd8546408377c70705b06b5e58b9f3bf63ac7b3375e",
+    "addons/altare/packs/behavior/blocks/a_ogive_walnut_ruby_none.block.json": "79283ef31e2fae153720adb6b22e3df1fc555133d4ccf88b1f830429daa9e8fc",
+    "addons/altare/packs/behavior/blocks/a_ogive_walnut_verdant_agnus.block.json": "0852663f5e2e4e13671d6b5d90b714543ba58f7a2d9090d5bf6806bb28c088fc",
+    "addons/altare/packs/behavior/blocks/a_ogive_walnut_verdant_cross.block.json": "7d75f5a5a0d6af9ea4b2d391af8f1db4b51ac1cc4ee6ebe5e957946b9ce7de35",
+    "addons/altare/packs/behavior/blocks/a_ogive_walnut_verdant_none.block.json": "6783d78a0189d440e9df92222ef45c30be5a30265e74519901d3dc8cb7f0f08a",
+    "addons/altare/packs/behavior/blocks/a_pilaster_limestone_agnus_agnus.block.json": "92ecfbde90a2774d4aeaaf64bf9b5920e99f184f7f5b923901109e0991958ece",
+    "addons/altare/packs/behavior/blocks/a_pilaster_limestone_agnus_cross.block.json": "fb3f7451ef6a4e62b86b95c850bc5037c38f10e88d1ca3ae1de16cec2910d219",
+    "addons/altare/packs/behavior/blocks/a_pilaster_limestone_agnus_none.block.json": "73e800f3b036d369326c3b7ea45b1ca2dbd7c1518178e4fa0afb4baac2dd59c4",
+    "addons/altare/packs/behavior/blocks/a_pilaster_limestone_none_agnus.block.json": "29082e72232114f98743cb0ec234f187edcfa0d97feb344289ec2c9c3c2ac22d",
+    "addons/altare/packs/behavior/blocks/a_pilaster_limestone_none_cross.block.json": "4d5d0739b15e1e375aa423f8085545219542349a764293bb90dc89c204b8a433",
+    "addons/altare/packs/behavior/blocks/a_pilaster_limestone_none_none.block.json": "ea357f4b57e4a54cd174f5dfe2bfbbce3911a30169e96686bad833a9be540c36",
+    "addons/altare/packs/behavior/blocks/a_pilaster_limestone_requiem_agnus.block.json": "26d3793def91b1309d86ce63713ae4762157eb0dc82b2bafe3e8b34f0ed8b723",
+    "addons/altare/packs/behavior/blocks/a_pilaster_limestone_requiem_cross.block.json": "60c7af6149f19a3f2020609f16e3cbd4076dc19afe8a23b532ac4c5340386e91",
+    "addons/altare/packs/behavior/blocks/a_pilaster_limestone_requiem_none.block.json": "1354cee9aff25d111d394359ec6fff20e928aa9913d0a5e6cbbc1bca515e66e9",
+    "addons/altare/packs/behavior/blocks/a_pilaster_limestone_ruby_agnus.block.json": "a45e843fb6f3cc02fcfcfde3c52d7919813ac9fafe3b6c30e18314a6611b4ed1",
+    "addons/altare/packs/behavior/blocks/a_pilaster_limestone_ruby_cross.block.json": "9c04ad88cc5d0c71226faf987b39268c0f17399ffd67c7c709d0379bca46ecb8",
+    "addons/altare/packs/behavior/blocks/a_pilaster_limestone_ruby_none.block.json": "5c49d1d59a60fe8315d2d37139aaaba998e8665b344e0aed923a16dc208ee811",
+    "addons/altare/packs/behavior/blocks/a_pilaster_limestone_verdant_agnus.block.json": "053bcf80bf94b594216dfa93c5e8460f647458d1b520464c97bdc0813c842792",
+    "addons/altare/packs/behavior/blocks/a_pilaster_limestone_verdant_cross.block.json": "ac4b605c0b79031b6cc747a470d2038fb93fa0c1dd1e8f7ac61d32716907cf8a",
+    "addons/altare/packs/behavior/blocks/a_pilaster_limestone_verdant_none.block.json": "3a3affc38d90d60986ce46cc17843362cf9828dae170536f53be26293f89b7ad",
+    "addons/altare/packs/behavior/blocks/a_pilaster_marble_agnus_agnus.block.json": "29f55bd2a76e68e921026078f1b1096d57ebc582b07b762f009d87b93fee6cd6",
+    "addons/altare/packs/behavior/blocks/a_pilaster_marble_agnus_cross.block.json": "ebe710566014c10ef81fd1213cd08030bdb28b7808d74c90ea8bfb77ca1b649a",
+    "addons/altare/packs/behavior/blocks/a_pilaster_marble_agnus_none.block.json": "87bcd3f501cf263dd8bac20e0b920510f82dc8e0cb75d510b61cea1301bab971",
+    "addons/altare/packs/behavior/blocks/a_pilaster_marble_none_agnus.block.json": "b55723daf7bf84f7adec6aa92406c749f147df53b3abceec44306e681830709e",
+    "addons/altare/packs/behavior/blocks/a_pilaster_marble_none_cross.block.json": "a96b05d6825cf58a32cb5cf54053dc61eb5c3f9dc01251e1a01e1282de4a9511",
+    "addons/altare/packs/behavior/blocks/a_pilaster_marble_none_none.block.json": "599eef0cbf5bfa143b1bab410a755aae16960ad613aa0838ed1f53920093b768",
+    "addons/altare/packs/behavior/blocks/a_pilaster_marble_requiem_agnus.block.json": "d30e315685298fd411c0aa347bac7c00b924fe7a65badd70ae969cdcc3452f39",
+    "addons/altare/packs/behavior/blocks/a_pilaster_marble_requiem_cross.block.json": "256cdb01ca3990541f89129e288bc9410f14e1654aa4b8b100cecae0b526259e",
+    "addons/altare/packs/behavior/blocks/a_pilaster_marble_requiem_none.block.json": "f57b5ac52a5588c6180edc85f29a748d8c44849387f35ebb9efad7ca163460e9",
+    "addons/altare/packs/behavior/blocks/a_pilaster_marble_ruby_agnus.block.json": "d7091ad2ca2fdeb7eb2efdd653359868fa8dde78c53f911cdd97653481c07a53",
+    "addons/altare/packs/behavior/blocks/a_pilaster_marble_ruby_cross.block.json": "069cd8df62683dac20ea8b3eb7a871451386cbc58ebafa69239b9c74f051dc73",
+    "addons/altare/packs/behavior/blocks/a_pilaster_marble_ruby_none.block.json": "a251210b820bdfb7a516f5cb30b04f5e69d019b8e2d56dbf867b750ceb6be057",
+    "addons/altare/packs/behavior/blocks/a_pilaster_marble_verdant_agnus.block.json": "29d7b51db9118fd1769c04865a3a201976db8219f85d9b3c6d49b3d9f0fc7845",
+    "addons/altare/packs/behavior/blocks/a_pilaster_marble_verdant_cross.block.json": "04294c716127e7c9d36931971e20723bb1b7ecba6279107a2c38ecc0bb0cd0de",
+    "addons/altare/packs/behavior/blocks/a_pilaster_marble_verdant_none.block.json": "06a985b449e93ec9f2332a1778ad7c8d8388e720b44a5921d024ac70b018298c",
+    "addons/altare/packs/behavior/blocks/a_pilaster_walnut_agnus_agnus.block.json": "8dd370de7544f491f4b7e35be328a6ed4dbfdce4857a5fcb7b18e288e8b2a903",
+    "addons/altare/packs/behavior/blocks/a_pilaster_walnut_agnus_cross.block.json": "1148a1dd8979db6f6cd3a00f095b037376271a84402a8404d519b822f5ec1d29",
+    "addons/altare/packs/behavior/blocks/a_pilaster_walnut_agnus_none.block.json": "d38a26b6d7bbb80008cf255f00573c93a492e8144134c3662798df1255d08ac7",
+    "addons/altare/packs/behavior/blocks/a_pilaster_walnut_none_agnus.block.json": "29f8685b19c8e8e4db73c7c5f2df72de8f0e8696425094bae5f35bfd363ec833",
+    "addons/altare/packs/behavior/blocks/a_pilaster_walnut_none_cross.block.json": "bfe10ef757d754aa9c7df037c5098428823c61396330605fd7cafc3341d4593e",
+    "addons/altare/packs/behavior/blocks/a_pilaster_walnut_none_none.block.json": "190281ffdb7d010f718e67b02649acfa6282c0b4b0d4d68a2c1fc9bc9bcb0afb",
+    "addons/altare/packs/behavior/blocks/a_pilaster_walnut_requiem_agnus.block.json": "96dbfdd46e95a7496699c36643227b42f1cca0bef54ec23a18ce24c6842d38cf",
+    "addons/altare/packs/behavior/blocks/a_pilaster_walnut_requiem_cross.block.json": "301bd73d0be81e34767504284c690c9bcc67681f34bbf9d0787bef22c955fc5f",
+    "addons/altare/packs/behavior/blocks/a_pilaster_walnut_requiem_none.block.json": "cc6305f57c4e9e5130a179815dac5e8cd9291c7809cf9e00e0a6d4a055895054",
+    "addons/altare/packs/behavior/blocks/a_pilaster_walnut_ruby_agnus.block.json": "842d74c7c7c6cfb98b4e50931335d514486257b9ada5d1c21193fa0f0c4def74",
+    "addons/altare/packs/behavior/blocks/a_pilaster_walnut_ruby_cross.block.json": "336cfd8a365c3072ffb2538b96c054bb7ad7a590797c0cedf4da2d313f18d7c5",
+    "addons/altare/packs/behavior/blocks/a_pilaster_walnut_ruby_none.block.json": "2c15ed397bdcf0202f96691a30d02f241e87d8da3c833c6c2db715076127dd4c",
+    "addons/altare/packs/behavior/blocks/a_pilaster_walnut_verdant_agnus.block.json": "d1299eee3fca2cb3865dd421b5729c363eb82cc51aa1aaa0df4d639c594fb7b3",
+    "addons/altare/packs/behavior/blocks/a_pilaster_walnut_verdant_cross.block.json": "6677a7e63381f57aed27d1d6fa69cca62d3bcaeff986b89dcfd236100317ac10",
+    "addons/altare/packs/behavior/blocks/a_pilaster_walnut_verdant_none.block.json": "dc93a185669eeb1f9eba2dd0e521818959769d9306cfa45b3cde7f69df44aab5",
+    "addons/altare/packs/behavior/blocks/a_trestle_limestone_agnus_agnus.block.json": "7e9584b3e9f4dee1c5086bb9261b2886967ef598d7fc15f5b159337699ebec79",
+    "addons/altare/packs/behavior/blocks/a_trestle_limestone_agnus_cross.block.json": "e23d68c95c3a9c5f114ab7964b7ae971486091c92d56aaa9d3bfd10e2e90760a",
+    "addons/altare/packs/behavior/blocks/a_trestle_limestone_agnus_none.block.json": "b60ddabcae20494fa1507cb5b0790855f13c34e7165c1045b2a0a75a5bf14a4d",
+    "addons/altare/packs/behavior/blocks/a_trestle_limestone_none_agnus.block.json": "675fe525e3a72a9d1f6de5eb8ef7a5f9860c0909ba0057df345132b916486014",
+    "addons/altare/packs/behavior/blocks/a_trestle_limestone_none_cross.block.json": "02b1a6833a1f197792df25b9dfdd031ee43ed2d6d70b2f744a362bcf38b3a9c7",
+    "addons/altare/packs/behavior/blocks/a_trestle_limestone_none_none.block.json": "0a4728fa2d3c1464e1086c47480c6027890105b73a2720f97271b4d4389db069",
+    "addons/altare/packs/behavior/blocks/a_trestle_limestone_requiem_agnus.block.json": "f99d1b27603e4d5099b25e5356e7719ba189fb76246ad4260d07358c37235773",
+    "addons/altare/packs/behavior/blocks/a_trestle_limestone_requiem_cross.block.json": "8472b0a8db92c5fe5db1e9c48428253efe1be4442c0f0b18cb44bbe505bef099",
+    "addons/altare/packs/behavior/blocks/a_trestle_limestone_requiem_none.block.json": "07ffe66150197dae28975b65b542c4546f3ba464dde48ed8cc142e5908017fa8",
+    "addons/altare/packs/behavior/blocks/a_trestle_limestone_ruby_agnus.block.json": "e98d280a03fb76acababded373075da8f366792bd75f74729e99a0140fae4d40",
+    "addons/altare/packs/behavior/blocks/a_trestle_limestone_ruby_cross.block.json": "b332af113ed8068e301a42bc8948424df2dd5e57f9807de0bd264c88c2e19179",
+    "addons/altare/packs/behavior/blocks/a_trestle_limestone_ruby_none.block.json": "772198bae99fb0625dc288bdbf5779cac31761383563239b6cddb02310207937",
+    "addons/altare/packs/behavior/blocks/a_trestle_limestone_verdant_agnus.block.json": "71b9f3c2b986c7ef9fcad346d6426a1cf5934ec9fd7a8a6a3fe4df411d72eedd",
+    "addons/altare/packs/behavior/blocks/a_trestle_limestone_verdant_cross.block.json": "df2fa8c9a2777887bce546914adf6b96a5c561ed7a30154bfd7e8d7ade4d77cb",
+    "addons/altare/packs/behavior/blocks/a_trestle_limestone_verdant_none.block.json": "7b7f88b492ce92ca83d77fc12c4a0722a098100cc08450681bf6bc5715f0f461",
+    "addons/altare/packs/behavior/blocks/a_trestle_marble_agnus_agnus.block.json": "d463ff4cef2809693df4291b60bd56ab20188c863097d82782ad64bfb395b05d",
+    "addons/altare/packs/behavior/blocks/a_trestle_marble_agnus_cross.block.json": "aa82d984514f5cc03057a7e00741f9bbbf77ef3b50645a0b3294ed5b853bd0dc",
+    "addons/altare/packs/behavior/blocks/a_trestle_marble_agnus_none.block.json": "c928a56d2a2332fa604803b5c8f6ac510c734fd7112c2eecc817af78d3205475",
+    "addons/altare/packs/behavior/blocks/a_trestle_marble_none_agnus.block.json": "f825468013067334cb857814a226e0ad14ac771b7cef530ee1a4027e94934583",
+    "addons/altare/packs/behavior/blocks/a_trestle_marble_none_cross.block.json": "16e446bbdfd3d5f6482c90d5b3a3d0dd296771cdb44cf463ecc99be7fb0f4a4f",
+    "addons/altare/packs/behavior/blocks/a_trestle_marble_none_none.block.json": "cdcb6b8ac354e400d630eaf6b1f05a4d3afbf918207358954d4367307298f59c",
+    "addons/altare/packs/behavior/blocks/a_trestle_marble_requiem_agnus.block.json": "56843b4658dfd079aff0b696f1e262a1ccd70529fcac4f2da1f07b2c39a3d4a8",
+    "addons/altare/packs/behavior/blocks/a_trestle_marble_requiem_cross.block.json": "4f551a6a2b2e1250afe57efbe64445f79428cc50ffab12cbefbb4286e8300011",
+    "addons/altare/packs/behavior/blocks/a_trestle_marble_requiem_none.block.json": "ff673466410415c7062e5a39f8cf6ca38b8b2d530d121c6903f6ec76c6a0f0f9",
+    "addons/altare/packs/behavior/blocks/a_trestle_marble_ruby_agnus.block.json": "fc86be60d52d31c47303686f6e9e3a44b5982f126e7606700c011394a05f0d47",
+    "addons/altare/packs/behavior/blocks/a_trestle_marble_ruby_cross.block.json": "40a698b0017f6c069ce80c07fe8a89dbca6170c08df77d15f2f86f01e92a665e",
+    "addons/altare/packs/behavior/blocks/a_trestle_marble_ruby_none.block.json": "95877047500d2acdda770a35b6e591388897bfbf18a4b6dd31bdab867bb32785",
+    "addons/altare/packs/behavior/blocks/a_trestle_marble_verdant_agnus.block.json": "9c362d0ca5f8534098e3686b96f621ec99ef32c3035e18e36c7c113892f812e2",
+    "addons/altare/packs/behavior/blocks/a_trestle_marble_verdant_cross.block.json": "6d629410d8548067759cfc9579f55f5eac22cfe5bf3466665545109a052bac53",
+    "addons/altare/packs/behavior/blocks/a_trestle_marble_verdant_none.block.json": "303fda00391b8d3222468cdc0529e54d44610fc2d91cc334e2084814795ee258",
+    "addons/altare/packs/behavior/blocks/a_trestle_walnut_agnus_agnus.block.json": "83ce629ccdefcfdf36387a0840a9676c395e4195ae8521ad418d3e0ed3ed8c16",
+    "addons/altare/packs/behavior/blocks/a_trestle_walnut_agnus_cross.block.json": "2eb0dd0f1e3ae5828c0477d6172bca6e4d95841d70ed166a8edf953ea9e9770d",
+    "addons/altare/packs/behavior/blocks/a_trestle_walnut_agnus_none.block.json": "5faf949b0208a7c260a13c5dfe4b6f7a0a5da508a69366a0956f0af54debf31c",
+    "addons/altare/packs/behavior/blocks/a_trestle_walnut_none_agnus.block.json": "0ed665302209a52b5f55f4fb39a887bdca22ddc79805caa6f48632143bda7cc3",
+    "addons/altare/packs/behavior/blocks/a_trestle_walnut_none_cross.block.json": "11990da26d14d3ad15fbd2bbf4146fcc0e7ed5d32c78d517a8299509bec7ab58",
+    "addons/altare/packs/behavior/blocks/a_trestle_walnut_none_none.block.json": "4788ed30d500bdb11894e37c703a7696e994b3368bfa811f8545e4cd4e28d8a0",
+    "addons/altare/packs/behavior/blocks/a_trestle_walnut_requiem_agnus.block.json": "952723936844e2450f58aa6ad8dfea2dc032d4548f04dae774b6845f0ad24b77",
+    "addons/altare/packs/behavior/blocks/a_trestle_walnut_requiem_cross.block.json": "f6052e80c992202823ea321286357e1172a2c2848b5fd06483f303fcac9e75d2",
+    "addons/altare/packs/behavior/blocks/a_trestle_walnut_requiem_none.block.json": "2f8a7f8ebfea881149c12502ad6249145fb7b324a4031ce8a58930a9854ce1b2",
+    "addons/altare/packs/behavior/blocks/a_trestle_walnut_ruby_agnus.block.json": "678b3ff0007d949c3e62266302b8c6c4b52d30de4ada8d16066cc184b0de4f6a",
+    "addons/altare/packs/behavior/blocks/a_trestle_walnut_ruby_cross.block.json": "a3dc936ddb5b9f4f40883f35203087c5c3382798e081fedc75e1d64c66cfa952",
+    "addons/altare/packs/behavior/blocks/a_trestle_walnut_ruby_none.block.json": "c15941fb41308091de3c8c8fce27798d0df8c138fc4efe9146736d0019a7b6f9",
+    "addons/altare/packs/behavior/blocks/a_trestle_walnut_verdant_agnus.block.json": "90d67ae656a986a5a286dab3b6de3393160e9ec543cacedc5431a4c1eb5a3459",
+    "addons/altare/packs/behavior/blocks/a_trestle_walnut_verdant_cross.block.json": "edee180f80ec145f9ca3495f821e7aa0dbd4f8291ba45b26abadb3367ec33452",
+    "addons/altare/packs/behavior/blocks/a_trestle_walnut_verdant_none.block.json": "f3f06b875f1b2cb08a6c5c41ae056549b83c7980592efac96a438122c4b9ab03",
+    "addons/altare/packs/behavior/blocks/j_baluster_agnus.block.json": "1256277d8f3f93356fb8fe3199fcc83e3dca6ec9c98656184490dfb3ffdc7174",
+    "addons/altare/packs/behavior/blocks/j_baluster_none.block.json": "b6da6691f7944a00aa1eec2110e311b41b5f56dcf221ef62dd2a5c2a43ba4eb1",
+    "addons/altare/packs/behavior/blocks/j_baluster_requiem.block.json": "40fe40a7676033799c18ee3d48503782fc7a7b95319c6ce21a48b2a734369fd2",
+    "addons/altare/packs/behavior/blocks/j_baluster_ruby.block.json": "572bcfa800c92f00c6397cbe21343c9e0dc635d4b19e939a4b8b0d019e6b1fba",
+    "addons/altare/packs/behavior/blocks/j_baluster_ruby_black.block.json": "76611ed57dba6eb531f24cdb6e07d2bea5364d8506e7c125be985cc13f7b1891",
+    "addons/altare/packs/behavior/blocks/j_baluster_ruby_gold.block.json": "ed4b4eaea15a97468ccaa533f88f5d25259154528968da7a9e3b2c720c11d118",
+    "addons/altare/packs/behavior/blocks/j_baluster_ruby_green.block.json": "d23ef9e2089a6d680de4d418bf099d05eac220e5b6cec61ff7af92cfb129ae88",
+    "addons/altare/packs/behavior/blocks/j_baluster_ruby_purple.block.json": "e21240a60274206d4bd73b5719ee576fdbafcb2a664556b991a2d1e59138b7b6",
+    "addons/altare/packs/behavior/blocks/j_baluster_ruby_rose.block.json": "7ee46661d335ca9299220905df9987bb74800cdffb9866186b120e6d80741ccf",
+    "addons/altare/packs/behavior/blocks/j_baluster_ruby_silver.block.json": "abbd4b8691f7be3b7a872b61e3328340662b5374118ebf8ee491cc2849f7627a",
+    "addons/altare/packs/behavior/blocks/j_baluster_ruby_white.block.json": "36e0308e20c36acc30827c53c4d6ff1b5b1e2ea19e495455b2d7620ab6b57d5d",
+    "addons/altare/packs/behavior/blocks/j_baluster_verdant.block.json": "9264c28e9c22f42234e76ef1613af97165a7777377b9a9f42032aea01a56074e",
+    "addons/altare/packs/behavior/blocks/j_coffer_agnus.block.json": "2fdd1a0c30f8c9a13e49586f129b801c1e62197cd65228f22645639f9f73f33f",
+    "addons/altare/packs/behavior/blocks/j_coffer_none.block.json": "0c0075b75364120958fb350e3eaa19efd55f482d761e955eb609e4553e9b4cea",
+    "addons/altare/packs/behavior/blocks/j_coffer_requiem.block.json": "181fb809289bb07f899068ac460cfc0b3ebf01cce4e2f2a8477b55d14091ea6f",
+    "addons/altare/packs/behavior/blocks/j_coffer_ruby.block.json": "7fa50748ad8a8dec4f83642cc3c57b109403b4a66033021836295a19f90a9f0c",
+    "addons/altare/packs/behavior/blocks/j_coffer_ruby_black.block.json": "a55c8a73f99c246750a8a0cc1dd195428c595db03a7780ebf2b50a13a3355377",
+    "addons/altare/packs/behavior/blocks/j_coffer_ruby_gold.block.json": "b2f223e5c8e23996c0f4c81ed39c1b086756ac62e0138dca1ebe14868f8f0850",
+    "addons/altare/packs/behavior/blocks/j_coffer_ruby_green.block.json": "e4cde80535b93a674f5c5a80ec67b60b4da353dc835e501b5b2aeb52f52f6129",
+    "addons/altare/packs/behavior/blocks/j_coffer_ruby_purple.block.json": "347425577aa0e28181c7178e7239c15835a01dd7f8e9ec87641a8bb7a6e04fc0",
+    "addons/altare/packs/behavior/blocks/j_coffer_ruby_rose.block.json": "0cabab2684a9adcc1eaa26780ee250e148ccae89dc6b4e6b5c3a2fead351e3f2",
+    "addons/altare/packs/behavior/blocks/j_coffer_ruby_silver.block.json": "e41f93b2a2635a646ace452f0af7624b07a70e33e20ccb36c11535b7a24c2153",
+    "addons/altare/packs/behavior/blocks/j_coffer_ruby_white.block.json": "0e0db880fcb8e48f82f071977bafd571e860bcab914be3ea2f6bdbbb135f1b25",
+    "addons/altare/packs/behavior/blocks/j_coffer_verdant.block.json": "d4e7f96dc06652ef06a97ab804d85fc4397e9765a18e96efff568bdda02c666f",
+    "addons/altare/packs/behavior/blocks/j_crossbrace_agnus.block.json": "4216e4ea470ac8345781f7452d4134467425ddcb30e94f1c2983d19803835fd1",
+    "addons/altare/packs/behavior/blocks/j_crossbrace_none.block.json": "bd77c48a9b00c50661e01a706835b789f16f3295ccabbd09718b968206d763d0",
+    "addons/altare/packs/behavior/blocks/j_crossbrace_requiem.block.json": "d952ac40ff85fe9a43db3670f6be06b8bf7c6e870f4a33c19307427378a43633",
+    "addons/altare/packs/behavior/blocks/j_crossbrace_ruby.block.json": "706790c86481b6755550ea81652b9e03893b6c5ed19a94035b9250252ac55e4d",
+    "addons/altare/packs/behavior/blocks/j_crossbrace_ruby_black.block.json": "e7792bca65dfe3c55c7f6e6c05acaf891a3c97255959cfd6bfa279bf1cc4677f",
+    "addons/altare/packs/behavior/blocks/j_crossbrace_ruby_gold.block.json": "9eac4b21c5d671de53e8dd0640b594e66645bb72f0a503f9a4855817e863581d",
+    "addons/altare/packs/behavior/blocks/j_crossbrace_ruby_green.block.json": "6a07f59f4aea3e7ec6d89467efdf869a080005ac2b3535742716c69ad005335e",
+    "addons/altare/packs/behavior/blocks/j_crossbrace_ruby_purple.block.json": "f1a843cfac28529621ed42d6ff8be76a26b8c12e10ae82215c9d1391144e14a9",
+    "addons/altare/packs/behavior/blocks/j_crossbrace_ruby_rose.block.json": "f0d3349ed9fc6355cb4b824bbb3c6919443ed0de374bb81867eb5d09d1cc62e7",
+    "addons/altare/packs/behavior/blocks/j_crossbrace_ruby_silver.block.json": "6a75955284d918068c9d31f09943875f54ac61f7ca9b474db0f6c40b4aeb0ba7",
+    "addons/altare/packs/behavior/blocks/j_crossbrace_ruby_white.block.json": "04ca24cbbf5ab0184839d6d7c876a21862ca0a5d81bc476071b1407dbbe26e4f",
+    "addons/altare/packs/behavior/blocks/j_crossbrace_verdant.block.json": "8b5f237becd0e1f6a8f94a50ae188d9ee1faaafa2fe00b4d0b553530753ad837",
+    "addons/altare/packs/behavior/blocks/l_ogive_limestone_black.block.json": "b940683c957fd0c83717ba2ae06d557f704c81762ef7ba0116f6e54b2304c902",
+    "addons/altare/packs/behavior/blocks/l_ogive_limestone_gold.block.json": "126ab32ff2c3f3e2c81fd3ca945a3e3df14dba8c601597c89876a83c10b10fc2",
+    "addons/altare/packs/behavior/blocks/l_ogive_limestone_green.block.json": "6fda9d8f73001baa354cf796dc54515c71f36d627b36631bfa3a87cf1f249bf2",
+    "addons/altare/packs/behavior/blocks/l_ogive_limestone_purple.block.json": "0ab3b3990b110b7956f7ce67857147429ff5ce94609b065de877883a839eef25",
+    "addons/altare/packs/behavior/blocks/l_ogive_limestone_rose.block.json": "42e759fe8b659ceed026c0e65498db69ec7cdb9bc1d1913d5949649152b6a118",
+    "addons/altare/packs/behavior/blocks/l_ogive_limestone_silver.block.json": "42743d78ed826aa4324869fd55348430872661403f6cdddcb1865a3e207c454a",
+    "addons/altare/packs/behavior/blocks/l_ogive_limestone_white.block.json": "d475051162f48eec4d02b1abdbc0e63da912c3e6d6ed063fefe835b6295ca0ba",
+    "addons/altare/packs/behavior/blocks/l_ogive_marble_black.block.json": "27b47825a6bc14bdd055dc02829724368e235f7fa24c6817021d6041ac65deb1",
+    "addons/altare/packs/behavior/blocks/l_ogive_marble_gold.block.json": "dd5ecde7b0201e97752614678cbc3155abb671ef4f8e2b90406ee9b681fd3cfe",
+    "addons/altare/packs/behavior/blocks/l_ogive_marble_green.block.json": "9e66e88b662ae75bb441cf11b85ba7eea574751364edc20bd2491b2a31277925",
+    "addons/altare/packs/behavior/blocks/l_ogive_marble_purple.block.json": "fddfe4038f3d68757c207680296c879aefe117213737d720719b8ae4e2262658",
+    "addons/altare/packs/behavior/blocks/l_ogive_marble_rose.block.json": "fec4cf5f868d69173af4c40cb8fd18bad904016c155e8e9a96003a075a4b5c49",
+    "addons/altare/packs/behavior/blocks/l_ogive_marble_silver.block.json": "5caff8eed44baf3cbaa3d953dcddd7e9d46b28466195270f846b9ffb428fa294",
+    "addons/altare/packs/behavior/blocks/l_ogive_marble_white.block.json": "81f433f4b6355e7cc1366f32f6e17dc08a456b979c4619d4422f3b3d9ab5fe50",
+    "addons/altare/packs/behavior/blocks/l_ogive_walnut_black.block.json": "5010c27cec19f5a1581fecb33391723a3a6c648e72c7ed9dfa0e309ded2b9693",
+    "addons/altare/packs/behavior/blocks/l_ogive_walnut_gold.block.json": "9710497c13152f01de3eb1147fa2627189113c6bc5fca9b263ada7cd225f83fb",
+    "addons/altare/packs/behavior/blocks/l_ogive_walnut_green.block.json": "a34f15732ba4ac96c35269aa6a62a75abf004431d0f2a885864b9f7f0b4a66eb",
+    "addons/altare/packs/behavior/blocks/l_ogive_walnut_purple.block.json": "e96f83e2d095a81c893bc861f93ce2cbf0e35f27d002eb7d402981e8def438e8",
+    "addons/altare/packs/behavior/blocks/l_ogive_walnut_rose.block.json": "b996b648e51f42425a4f23216aacf8831667188d6df7fb73ccf573aa6455f244",
+    "addons/altare/packs/behavior/blocks/l_ogive_walnut_silver.block.json": "d7ddcc93c3b4d7931064712c853ee523f3bca1279b40559c5312d862ffdd11c3",
+    "addons/altare/packs/behavior/blocks/l_ogive_walnut_white.block.json": "20379a7dfa9535968c11ec0579bea9c80dd8bee25e59d8889281264cc3f95c59",
+    "addons/altare/packs/behavior/blocks/l_pilaster_limestone_black.block.json": "3a8606fee85fe561fcae51fe5b8579b70f2eef0d185f743fa852f1f6cb4be502",
+    "addons/altare/packs/behavior/blocks/l_pilaster_limestone_gold.block.json": "0da92ed33d85643ebf700568dd576a3f9e0545d25a745c1801ba1cc21dab4225",
+    "addons/altare/packs/behavior/blocks/l_pilaster_limestone_green.block.json": "877c2c7a1674499924ed60dc89c71efe3d5da55ea96b6b36ad9bbc60ffaa964f",
+    "addons/altare/packs/behavior/blocks/l_pilaster_limestone_purple.block.json": "a78d698ff7fcf2100574fabda7fa84283ad78d3045ad7ffe2be6e5128a28fe5d",
+    "addons/altare/packs/behavior/blocks/l_pilaster_limestone_rose.block.json": "1e4e37cc4095694484a59f6904a55130146157656766ea96d7b090386ee2f23a",
+    "addons/altare/packs/behavior/blocks/l_pilaster_limestone_silver.block.json": "9f1569416aaeec6cdeb7d7c68a4cba04a3a43021e5081ef8b80c7c3e394d12e0",
+    "addons/altare/packs/behavior/blocks/l_pilaster_limestone_white.block.json": "ce30873b9fa6b444fe6124503d5b26f3c17fb9c587bf28443d1445a1e267cda8",
+    "addons/altare/packs/behavior/blocks/l_pilaster_marble_black.block.json": "e7ef8c5b92f522fd8c6c97ed00ede9c1e675d8fa7a74afcd3169288899fb270e",
+    "addons/altare/packs/behavior/blocks/l_pilaster_marble_gold.block.json": "c3b8d71330aa0dbc144d8b455cbef51da206d031f3ed66ba206cc7605cc20922",
+    "addons/altare/packs/behavior/blocks/l_pilaster_marble_green.block.json": "7334df7e66674f470940ea3f08c46ad551f2cf4b6a3841d5531a6badf6f66e94",
+    "addons/altare/packs/behavior/blocks/l_pilaster_marble_purple.block.json": "9a2fa764c0035be050edb0675e5217cc18b54590542461bb053adb177205714b",
+    "addons/altare/packs/behavior/blocks/l_pilaster_marble_rose.block.json": "82101e07b1bd010de812d26b406e60763d84e95df8740015cd585634afee5a25",
+    "addons/altare/packs/behavior/blocks/l_pilaster_marble_silver.block.json": "260a234a483f309b911b6cc3a103fb5209ec8b88f6730f74eae1ec00b6bb9aaf",
+    "addons/altare/packs/behavior/blocks/l_pilaster_marble_white.block.json": "4c8aee3b72d4c648ef7a4af344f5360d6358b2e0964aca148917531200a760af",
+    "addons/altare/packs/behavior/blocks/l_pilaster_walnut_black.block.json": "f544f1adb680cb839e74df610bdcb87f4ecff7040682cc3d96980a1bee79b01b",
+    "addons/altare/packs/behavior/blocks/l_pilaster_walnut_gold.block.json": "8240ee8590f9c3d8a36e0e4561a29f77d416704ab4867bdf5980721c92905ac5",
+    "addons/altare/packs/behavior/blocks/l_pilaster_walnut_green.block.json": "8f412c89e627c40314ce7ee9f1979cdca1d05c0711750bfc10aaa7c7bf4599d4",
+    "addons/altare/packs/behavior/blocks/l_pilaster_walnut_purple.block.json": "03cec99552b2aa3452b8ba0065328b090e0bf94fa5fe6be2d7059c7c31f9ab02",
+    "addons/altare/packs/behavior/blocks/l_pilaster_walnut_rose.block.json": "60e24ee48fb2b5d284ca8b02fe5f74fcfceccff55c9915790fdeccaa2df4b704",
+    "addons/altare/packs/behavior/blocks/l_pilaster_walnut_silver.block.json": "6f6166926c72764c5459886f08bdc948d3be890bd9e29935c50617d6c2441c93",
+    "addons/altare/packs/behavior/blocks/l_pilaster_walnut_white.block.json": "96fc866e57c0e7bddbf23c9c8ee446312600c4d892abb7d6fea32eaca9ad6e35",
+    "addons/altare/packs/behavior/blocks/l_trestle_limestone_black.block.json": "cdde035f8ba31ff88becfe05a63b55d1f51e511a351f77a930a263ee7c27358b",
+    "addons/altare/packs/behavior/blocks/l_trestle_limestone_gold.block.json": "2bbc8eb1f5f5d60087e8723a566d0ecdffe8ce7d14f965434033998d7f431902",
+    "addons/altare/packs/behavior/blocks/l_trestle_limestone_green.block.json": "2c1edcef2bfce58497875193e3ed540fcf76ce7afb94cd721f57ba18eaed7b27",
+    "addons/altare/packs/behavior/blocks/l_trestle_limestone_purple.block.json": "00e084de6c39d14de033a010d4b559c80591a4a2936abfffcc3db83f27616ffb",
+    "addons/altare/packs/behavior/blocks/l_trestle_limestone_rose.block.json": "c54a76acffaaddeb346f5886349b000e84fb8e4b1a4aa832ec02b8161648ae17",
+    "addons/altare/packs/behavior/blocks/l_trestle_limestone_silver.block.json": "b74ac9f4b1ff9d9e6c83e16afe597f7f80f3343e17d150a618fac697eac29112",
+    "addons/altare/packs/behavior/blocks/l_trestle_limestone_white.block.json": "1019e4994ef9a68e53229165bdb87d2b8b4b79c8ce704edab8f5d364cace78d6",
+    "addons/altare/packs/behavior/blocks/l_trestle_marble_black.block.json": "3168aba572cb549366ee78221c5b29bd6464c91ce326e0688b8f038505f19fc2",
+    "addons/altare/packs/behavior/blocks/l_trestle_marble_gold.block.json": "967fc98c267efc473e2a763653dedd58eed26cb6121da7c3672fe518d3b431f8",
+    "addons/altare/packs/behavior/blocks/l_trestle_marble_green.block.json": "01a2e04346879cb99134f0c7f89f05400703f12d5d2c60835f31982f72a8db8e",
+    "addons/altare/packs/behavior/blocks/l_trestle_marble_purple.block.json": "9769f4b87f0ecd2d78e6033e8a7c554336fb320c7a8a0e9a91d4c9196527dd77",
+    "addons/altare/packs/behavior/blocks/l_trestle_marble_rose.block.json": "ea6d0c90ac7c42b90e9e70b846d88a87b1253a310c56f602b0ab03fc48160528",
+    "addons/altare/packs/behavior/blocks/l_trestle_marble_silver.block.json": "6d8019c43880442273bf1548439e5dc8e0133d9ef4c63d14c665c43a4c603575",
+    "addons/altare/packs/behavior/blocks/l_trestle_marble_white.block.json": "6eecbd44a1074deeacd8203ea43af5412ae718d9d0b1ba2881d71979bbfda60f",
+    "addons/altare/packs/behavior/blocks/l_trestle_walnut_black.block.json": "10ef48dfdead437f9f5b2ed7216563b9a1e20bffeca1a8ee90cdf629cdedd05d",
+    "addons/altare/packs/behavior/blocks/l_trestle_walnut_gold.block.json": "7d4d9a277cc8fe537ba2806d332fbb31fd14dfc14d43eae060e6caff5342599a",
+    "addons/altare/packs/behavior/blocks/l_trestle_walnut_green.block.json": "8aedde4328f3770669a5cafd0dfce1920ed325003146a54e3ae50b76fa8024c0",
+    "addons/altare/packs/behavior/blocks/l_trestle_walnut_purple.block.json": "41421f4becb645cd33910531b7a6873dc23101600e979800ac9221c22e61e4f8",
+    "addons/altare/packs/behavior/blocks/l_trestle_walnut_rose.block.json": "2e48ae950daa2b7564ecd7bc3a1e10515156efff9cf595d3e6c571d111196458",
+    "addons/altare/packs/behavior/blocks/l_trestle_walnut_silver.block.json": "4ab7b0b49852e5deb0e41390b8d0685ca6f1aaeabb738eb3694285c95699da9a",
+    "addons/altare/packs/behavior/blocks/l_trestle_walnut_white.block.json": "b4fb170e6ce7d8da0da44f805ad6dbcc60fc986a9775c5d1d48d7bce3c8b7541",
+    "addons/altare/packs/behavior/blocks/mensa.block.json": "d7231655dfef2648377e69f3c6df521f3c84763dde3462c91f9472625b0d1fda",
+    "addons/altare/packs/behavior/blocks/s_colonnade_bare.block.json": "81fb5cc7259b36bb0b66cc98c9fe331031eac52acdb5cf363d89409ae29000f3",
+    "addons/altare/packs/behavior/blocks/s_colonnade_lace.block.json": "1286b9ed1e6bee5509543305a834d0260ffca1d6fe54e9818bc330bf236bf2d1",
+    "addons/altare/packs/behavior/blocks/u_baluster_walnut_gold_long_none.block.json": "dbc522962746a34c73c8ba06f3904d426d6b0125008ea3508cc53d70a177b193",
+    "addons/altare/packs/behavior/blocks/u_baluster_walnut_gold_short_none.block.json": "dd7d8f5907f16f6c6bd22947cac7369e4c1dd8d20eff92d30df0b8094b5c033a",
+    "addons/altare/packs/behavior/blocks/u_baluster_walnut_lace_none.block.json": "b74d69dbd1928cd03609d5c94f1f26316727a7e6b3aeb871b342b210979b3345",
+    "addons/altare/packs/behavior/blocks/u_baluster_walnut_linen_long_none.block.json": "0e441580934cb2f1059cf3d9a02e6fedead3a278085d52705a6bfe798b4f28f0",
+    "addons/altare/packs/behavior/blocks/u_baluster_walnut_linen_short_none.block.json": "a569d6304dcc953a35fc1e8884f8b9f9cfc1c1d5259b282c3f05be408286bf4c",
+    "addons/altare/packs/behavior/blocks/u_classic_agnus.block.json": "105ca17156edb80a283f450989dcc4187ab1ea5f6ebdf4f384916df762cb91eb",
+    "addons/altare/packs/behavior/blocks/u_classic_lace.block.json": "469236e5fbb2602508bf73cf529371c2adef8f9c4088f3362c6d83284735c35c",
+    "addons/altare/packs/behavior/blocks/u_classic_requiem.block.json": "63e712a0ebd1068aa0b11ccc1051db9d8f8812cd7d8e98f32ed5e82e3f4780e9",
+    "addons/altare/packs/behavior/blocks/u_classic_ruby_black.block.json": "4f262d156c2c150f28ae1afda04fd4691815bfa280acb1e3d55ca8d93111f9d9",
+    "addons/altare/packs/behavior/blocks/u_classic_ruby_gold.block.json": "60996967c53fcb2013ec0fd1ef0700de57f5f92c1c6eb51b8044641544db8eae",
+    "addons/altare/packs/behavior/blocks/u_classic_ruby_green.block.json": "24217bb078e0607ace5b71499801bbfae15a0f1163015b336580a92c460a2a05",
+    "addons/altare/packs/behavior/blocks/u_classic_ruby_purple.block.json": "033ecd28cf05dd3c47c901e93be887a7e1695cedb9fd16588d0db8b9c41f66e8",
+    "addons/altare/packs/behavior/blocks/u_classic_ruby_red.block.json": "580fef06dd5636da431f722f655f778a01fc0fb374a90fb7b1b2be60a99484fe",
+    "addons/altare/packs/behavior/blocks/u_classic_ruby_rose.block.json": "3b277fc290aaf0e1b77c820907ac4fc93ad955f9c383d4489138727b67a0a28d",
+    "addons/altare/packs/behavior/blocks/u_classic_ruby_silver.block.json": "37f15993e95492eb26d53a4604ed9b735479094b5bbd9920d7746cabace72302",
+    "addons/altare/packs/behavior/blocks/u_classic_ruby_white.block.json": "ccae8a24e3a41288b657e9cc7c279d93fbc929d239869f0ee70833bb6a5e19a9",
+    "addons/altare/packs/behavior/blocks/u_classic_verdant.block.json": "c48b7d61acc558d304025249fb868f06d0af5698e7782cfa03a01c1d58d9e621",
+    "addons/altare/packs/behavior/blocks/u_coffer_walnut_gold_long_none.block.json": "98e2dafb88f8ae849052f71ba563e358e2cac91631c0d74368a6bf41e14ae73e",
+    "addons/altare/packs/behavior/blocks/u_coffer_walnut_gold_short_none.block.json": "6f6465d555eb0e8e1dc8bafd513ee1c7f5780add1cfda744dccc4f0eebe4378c",
+    "addons/altare/packs/behavior/blocks/u_coffer_walnut_lace_none.block.json": "f526c26508b5d24ca3f2840b4f899ef917ddc2dc129c0c8f113dafd393671c64",
+    "addons/altare/packs/behavior/blocks/u_coffer_walnut_linen_long_none.block.json": "37549c8dbb2e0ef5844c79f27e68d52c5b00e7d6a164dd35793ffdcb8c3e46c2",
+    "addons/altare/packs/behavior/blocks/u_coffer_walnut_linen_short_none.block.json": "69fde1719c5d89a118bf8b76baaddd07277f00ac1a4823e40b8950b9243a0376",
+    "addons/altare/packs/behavior/blocks/u_colonnade_agnus.block.json": "2497c8e78a2b3faf7665799dcbfc602dc9574a1a4eddd0aabdbc2228fe42a44f",
+    "addons/altare/packs/behavior/blocks/u_colonnade_gold_long.block.json": "3dbad8cdda9186a08bb12ca080f90badfe4a3bfd77a0c3f36e4bb91a093639b7",
+    "addons/altare/packs/behavior/blocks/u_colonnade_gold_short.block.json": "37c126beef139488fbb92dbbc8b70793b264beeb8c2081b3f97ae81135d67d9c",
+    "addons/altare/packs/behavior/blocks/u_colonnade_linen_long.block.json": "8a6396ad1668eb439b320b8fc378c8889cb1783fa8a835bb25366b8c16e15cbc",
+    "addons/altare/packs/behavior/blocks/u_colonnade_linen_short.block.json": "2692d640f2f696ca911aec120d61b70bcb8e2fa2c8effaf8cffa59dc3654fa2b",
+    "addons/altare/packs/behavior/blocks/u_colonnade_requiem.block.json": "eedf1bd1b8bd7a72ebe77967bac8a900fccae398b189dad4c78f090640428be0",
+    "addons/altare/packs/behavior/blocks/u_colonnade_ruby_black.block.json": "f6065e15b74287aca1e6f26ebfaabe78a948548e7f57b823cdc8cb7e3ba7744e",
+    "addons/altare/packs/behavior/blocks/u_colonnade_ruby_gold.block.json": "a9d17dd39a1398b0755be61b84d888a080f07888d45dc23f8d2e15f961b09b65",
+    "addons/altare/packs/behavior/blocks/u_colonnade_ruby_green.block.json": "fd74ae92d0bfe06ef6cb2d1ef5f910f74d3002a335a5a5557ba3201e4ce87b55",
+    "addons/altare/packs/behavior/blocks/u_colonnade_ruby_purple.block.json": "b872f80b877cf39c874d079f7baae9b67b779fb4cf25a9a5ae2daa9ec5d159c4",
+    "addons/altare/packs/behavior/blocks/u_colonnade_ruby_red.block.json": "99be6faad4de05db54613b13310b8c392fc835f5058d0e75a9aba54567e6b0ca",
+    "addons/altare/packs/behavior/blocks/u_colonnade_ruby_rose.block.json": "f821fb46e5c0c53eeda0a230ed3f82f79ff210c07d7b68d2998c5a5c8f85d4de",
+    "addons/altare/packs/behavior/blocks/u_colonnade_ruby_silver.block.json": "a51975be4606af05746c002a2489e96d5bd6dd67cbf8153bc2719829581f8012",
+    "addons/altare/packs/behavior/blocks/u_colonnade_ruby_white.block.json": "8b101a961596fe609e7ca6c2ece39e9f86f62fb1e5b72e92b5967672eb48de53",
+    "addons/altare/packs/behavior/blocks/u_colonnade_verdant.block.json": "cad565782db57ba7ff0cf5cac9ee9d41c74ef9c8e07796212d714f914a0e44dc",
+    "addons/altare/packs/behavior/blocks/u_crossbrace_walnut_gold_long_none.block.json": "c371ca5a2d7eabbf0aae5c44675be877cc7e021368a97e7d7cbbf3db582ccd6f",
+    "addons/altare/packs/behavior/blocks/u_crossbrace_walnut_gold_short_none.block.json": "5f535176061fffacb41da1259aec83b78cd636459a1163861ea0972feb4101d9",
+    "addons/altare/packs/behavior/blocks/u_crossbrace_walnut_lace_none.block.json": "06b4661d73d7274f8516493785c02cf39008bcd09d2c90d5d1eae226c455ec5d",
+    "addons/altare/packs/behavior/blocks/u_crossbrace_walnut_linen_long_none.block.json": "1accc9d2887f9af1890d6f8f1b737d98ead25a18aca4c9da49fe200381ea9d8c",
+    "addons/altare/packs/behavior/blocks/u_crossbrace_walnut_linen_short_none.block.json": "138b0aac0b2e2d43efc45ccd3295de4deeec5fc125daf1eca2ba4f2479dc0e79",
+    "addons/altare/packs/behavior/blocks/u_ogive_limestone_gold_long_agnus.block.json": "1d4d48fc08358d0ec92809c3acb6698a28cfa6155da1506ca26106223e71aac1",
+    "addons/altare/packs/behavior/blocks/u_ogive_limestone_gold_long_cross.block.json": "cfcc4f1926627aa085047ebdbbc5a483ae6daf4f0b068093404a5677a13abc00",
+    "addons/altare/packs/behavior/blocks/u_ogive_limestone_gold_long_none.block.json": "f46cb6e3497161fc65ba15819db7224a38910e5649760c049002d4c85d642ee7",
+    "addons/altare/packs/behavior/blocks/u_ogive_limestone_gold_short_agnus.block.json": "59c05ced4506646f24026aa120f43796a0ae942058ae4b10fcd3c4aae40ebaf4",
+    "addons/altare/packs/behavior/blocks/u_ogive_limestone_gold_short_cross.block.json": "f8935f8345e442169d90ebb65884ac49380d81a4399403610c87f741fddf5c4f",
+    "addons/altare/packs/behavior/blocks/u_ogive_limestone_gold_short_none.block.json": "645e04c2f36f31f97a3941e0274f625197630214429f38119a7826110e9201db",
+    "addons/altare/packs/behavior/blocks/u_ogive_limestone_lace_agnus.block.json": "3ae95885cdced1dc5543d752c2396c134bb8dd0447416473e3cbc56f252955c4",
+    "addons/altare/packs/behavior/blocks/u_ogive_limestone_lace_cross.block.json": "d3d9b53e3ce16783b063a399fe7cc1a95249110c74ea3c786a533bd73c8e38fe",
+    "addons/altare/packs/behavior/blocks/u_ogive_limestone_lace_none.block.json": "ea79ab3d2bd2e942d0b7be116e3569428b0a842a6de7666750cbe28a90b6da6d",
+    "addons/altare/packs/behavior/blocks/u_ogive_limestone_linen_long_agnus.block.json": "ebc1edab3ea4fc29b22ab4321a3bb154ee238b538b9b76d17388a005effcb36a",
+    "addons/altare/packs/behavior/blocks/u_ogive_limestone_linen_long_cross.block.json": "c7a52ccbd374079d8dd4c7ff946a649008a2df6202c491dbda1d1e1f0e5e38b8",
+    "addons/altare/packs/behavior/blocks/u_ogive_limestone_linen_long_none.block.json": "fb1a240f827d9d0be4750e4292903e936d62ea6fcc192e9efe4463f6bc6ed9b5",
+    "addons/altare/packs/behavior/blocks/u_ogive_limestone_linen_short_agnus.block.json": "386ad839a50224b1af9daf29cf81eebba6d0e91a00926a3df85026cb9bf1a6e9",
+    "addons/altare/packs/behavior/blocks/u_ogive_limestone_linen_short_cross.block.json": "d647e737c43ba4d887481a0597d5fc48d8ad88de5ce82efb06698459ca37b9c2",
+    "addons/altare/packs/behavior/blocks/u_ogive_limestone_linen_short_none.block.json": "7c72cb81d20601a48a1e9d93bcc2bf4bbadbf5db7b2cbed73a4e559081b434ad",
+    "addons/altare/packs/behavior/blocks/u_ogive_marble_gold_long_agnus.block.json": "be7e51ddf8614c64b91ff8d61b3e8b2edcee7f574d6cd91118832cb7ca84e118",
+    "addons/altare/packs/behavior/blocks/u_ogive_marble_gold_long_cross.block.json": "01558339c677cf75cf5e7293c2420f4962f70a7882efe48a615e476d50f7cb41",
+    "addons/altare/packs/behavior/blocks/u_ogive_marble_gold_long_none.block.json": "fb80d2b601be7addd9824d69618a685f86b28936f8f4dda64cd92110e1e71236",
+    "addons/altare/packs/behavior/blocks/u_ogive_marble_gold_short_agnus.block.json": "a6de36de6524be19c7b9394ca61398466d2b5ce4b9eef58056391015ac196c01",
+    "addons/altare/packs/behavior/blocks/u_ogive_marble_gold_short_cross.block.json": "95743fde1a02685448f7ddee7a7c2693e227b59f691c309bc3b25a33c36d2852",
+    "addons/altare/packs/behavior/blocks/u_ogive_marble_gold_short_none.block.json": "1aefb96c9677d631b8dfa4ec67243f34ee04ef9087c6081966b12c05baec3889",
+    "addons/altare/packs/behavior/blocks/u_ogive_marble_lace_agnus.block.json": "ca88a37c7356dd5385de32f663ef80b221342681ea15bd525e9baae52ad88686",
+    "addons/altare/packs/behavior/blocks/u_ogive_marble_lace_cross.block.json": "fe0294abaa47998ad7b6ac2fe5b885e50c1b5d29842c0a2270fe9db3c317edce",
+    "addons/altare/packs/behavior/blocks/u_ogive_marble_lace_none.block.json": "642bff06b564df1a9402cf8daa0cc38dec17f7f10ecf1df7f2636c8136368652",
+    "addons/altare/packs/behavior/blocks/u_ogive_marble_linen_long_agnus.block.json": "ea887ed18c3ad84e46b1fc14ae9f0bde77f8f52864ec9f80c660178080e593b6",
+    "addons/altare/packs/behavior/blocks/u_ogive_marble_linen_long_cross.block.json": "4b0a148a75304c2cf5d27448f363499a26ef400994f5a4372806174ee1f9fea3",
+    "addons/altare/packs/behavior/blocks/u_ogive_marble_linen_long_none.block.json": "321e3cf21fdf7901af52cfc084f9664c8d8626218d262620985a5d35ed3d607f",
+    "addons/altare/packs/behavior/blocks/u_ogive_marble_linen_short_agnus.block.json": "0cf3716535742d5c51df4c4ce87ce13c79cdd5aed9c64ffcd2f4e2c539c40327",
+    "addons/altare/packs/behavior/blocks/u_ogive_marble_linen_short_cross.block.json": "ad398622652089621a5908cbed293a0e0a4b693f4d0aaaf355c82f91cc2ea8b2",
+    "addons/altare/packs/behavior/blocks/u_ogive_marble_linen_short_none.block.json": "407827c265d76cb42e4c18a1ff08d2f4bd807a6ee3a1f2281250d569896b9839",
+    "addons/altare/packs/behavior/blocks/u_ogive_walnut_gold_long_agnus.block.json": "c50da0b22f6bbd40c2ff854aeb0459de9bc0de4ca3a71bee3fca174380b501e7",
+    "addons/altare/packs/behavior/blocks/u_ogive_walnut_gold_long_cross.block.json": "0ef8e997682ca992c489e92fccdde7f7efe246e13f38aa1318121fc6819cfcc4",
+    "addons/altare/packs/behavior/blocks/u_ogive_walnut_gold_long_none.block.json": "f4894300d31ce8afe9c46c126e0fbc79ea75862ae9db4206fa0bb680a51075f7",
+    "addons/altare/packs/behavior/blocks/u_ogive_walnut_gold_short_agnus.block.json": "b189a03e2930f78df2acce6d629d7ffa36e99e3730056fed8e29eddfb532eb23",
+    "addons/altare/packs/behavior/blocks/u_ogive_walnut_gold_short_cross.block.json": "9cf9f25bddd7a1dc6d37c356f5e08298ad887471f72c49e70bfd0c67e9ca8d47",
+    "addons/altare/packs/behavior/blocks/u_ogive_walnut_gold_short_none.block.json": "f00ebddce04742da52d004719e76855535ab71a18ee995d7abe0286451fc54cf",
+    "addons/altare/packs/behavior/blocks/u_ogive_walnut_lace_agnus.block.json": "8a3e99f20bb268478c065090f92409eaa4039ee9cb7718fe6d3cc423524f6f9b",
+    "addons/altare/packs/behavior/blocks/u_ogive_walnut_lace_cross.block.json": "cd1772f2d3c23c7f49beefc34d9656384285f5dbc3e80fb74d0ba4a890c9c36e",
+    "addons/altare/packs/behavior/blocks/u_ogive_walnut_lace_none.block.json": "ac62e692b411448ce1b249457873c71d5659353da04c256673908b2e01af226f",
+    "addons/altare/packs/behavior/blocks/u_ogive_walnut_linen_long_agnus.block.json": "54781352ee27ebaceab4a19f2fd736bc03dafbcb4bb0ac8208e70a4a42f72893",
+    "addons/altare/packs/behavior/blocks/u_ogive_walnut_linen_long_cross.block.json": "d3e7f3b3db7ad1330243ba035392f25b72f9eccd4edf3972a5b0780a4f223a73",
+    "addons/altare/packs/behavior/blocks/u_ogive_walnut_linen_long_none.block.json": "899e7b9b66afd36d3b16007842a8f45994e11f9a60054804a47e3c48e4e283dd",
+    "addons/altare/packs/behavior/blocks/u_ogive_walnut_linen_short_agnus.block.json": "1b9bb5d1037580e020e70eaa1463adffc2dc06f2afe8ff76cff3b5b93b365a8d",
+    "addons/altare/packs/behavior/blocks/u_ogive_walnut_linen_short_cross.block.json": "e036bc4090e214ac02a09c666342f1cccc4bb90bde290d598dcc12516edb0674",
+    "addons/altare/packs/behavior/blocks/u_ogive_walnut_linen_short_none.block.json": "b9ad286b706d0a5e1db61733180315f9815dcd414fe9ef9444eef1e349bb3960",
+    "addons/altare/packs/behavior/blocks/u_pilaster_limestone_gold_long_agnus.block.json": "205246943cc91e5f55f7509e6ab7e6216ffa15983f85e8f2ea00a01808b8744e",
+    "addons/altare/packs/behavior/blocks/u_pilaster_limestone_gold_long_cross.block.json": "48ce638045dcf512dbadb20eef60b05c0777f837b0b3b6db8f07c808b4dfe0bd",
+    "addons/altare/packs/behavior/blocks/u_pilaster_limestone_gold_long_none.block.json": "d8ee2a7443f9435e30c522e77bda8a67e20a4ac5539acf816b85734b2e381120",
+    "addons/altare/packs/behavior/blocks/u_pilaster_limestone_gold_short_agnus.block.json": "ae17708d1060fbbf42af7902e50eb957c0a16d805b50751c2b5866c38bc70c9f",
+    "addons/altare/packs/behavior/blocks/u_pilaster_limestone_gold_short_cross.block.json": "d279850ff4484b802f80cac7456cf221da35de6a7cb58e1ba5299e9be15f8080",
+    "addons/altare/packs/behavior/blocks/u_pilaster_limestone_gold_short_none.block.json": "32b987b18a1e0d96d6a8c92889ccc9e63c816028ee4473715f888470568d7300",
+    "addons/altare/packs/behavior/blocks/u_pilaster_limestone_lace_agnus.block.json": "919a1657a355168b87b2eb127892eb54b0255bdf501f1932f9f775c162a100b0",
+    "addons/altare/packs/behavior/blocks/u_pilaster_limestone_lace_cross.block.json": "fb0c3f8c5eeabb0be5ebb51c5efe5697432a52303278ddd914cd94b0966d8521",
+    "addons/altare/packs/behavior/blocks/u_pilaster_limestone_lace_none.block.json": "561b48505c650c0c90f46aea1bb35a340f6a68c46b58bc748a21cd54dccccdcf",
+    "addons/altare/packs/behavior/blocks/u_pilaster_limestone_linen_long_agnus.block.json": "1ef674f50219aca41d12878a17cf41decdb501794dc9de445e6d16e474904b97",
+    "addons/altare/packs/behavior/blocks/u_pilaster_limestone_linen_long_cross.block.json": "cbf88a2d6dba534a9462486c31784d5ad9542d2b6936d5c1ddc44747c787bd65",
+    "addons/altare/packs/behavior/blocks/u_pilaster_limestone_linen_long_none.block.json": "e3eeb234444c74b8607c67fdb208ccabfc4c3d95b1be6a3ef3afd4a7634c8c9b",
+    "addons/altare/packs/behavior/blocks/u_pilaster_limestone_linen_short_agnus.block.json": "c567fbddc1496a24fecbe792ff944d9df05981a476d3145ad287c6f91f40f90d",
+    "addons/altare/packs/behavior/blocks/u_pilaster_limestone_linen_short_cross.block.json": "4959e73efa7fabe25202dfc75b3f9bd88f2aaae7491339ffacf682378ac9d998",
+    "addons/altare/packs/behavior/blocks/u_pilaster_limestone_linen_short_none.block.json": "d163ac969b626e717c0bc3258fc7048d6d979d13d2a2ef9d7fa5354c871dbe91",
+    "addons/altare/packs/behavior/blocks/u_pilaster_marble_gold_long_agnus.block.json": "61fa283c723ac2fd745b8fcbc432bed14054e7ab6f89e6dc71bb666f0b766d7c",
+    "addons/altare/packs/behavior/blocks/u_pilaster_marble_gold_long_cross.block.json": "90ac1eb3c5474127d1b9fa85c4f8f623f1fd436fbdfb516fde261b274224bb32",
+    "addons/altare/packs/behavior/blocks/u_pilaster_marble_gold_long_none.block.json": "618a1e0b3866ced4bd5ff4bca00425404e2c421c7cba02c7e283c6c134d82e88",
+    "addons/altare/packs/behavior/blocks/u_pilaster_marble_gold_short_agnus.block.json": "2ea18f1b5d8a96f0d9a646adc55a541ca7e95fbb7e0e4d13dba7041b5b4f312b",
+    "addons/altare/packs/behavior/blocks/u_pilaster_marble_gold_short_cross.block.json": "6498be644c88a8827c97e9244e0103526373ce0edf30521049570c4d4fddacec",
+    "addons/altare/packs/behavior/blocks/u_pilaster_marble_gold_short_none.block.json": "1c4ecb0f24c5fb88ddbd9dae670d1e97765e29f182a2a29a9455d0296cc64f86",
+    "addons/altare/packs/behavior/blocks/u_pilaster_marble_lace_agnus.block.json": "b39f0d623b683f0eb0cdd4a02733fdf58d328862f96b05ac35e6526275ce2a6d",
+    "addons/altare/packs/behavior/blocks/u_pilaster_marble_lace_cross.block.json": "990a9d2391ae4b7b30516fdfd3d1eb5a5601b45fc723c0ea5201fba7250e8289",
+    "addons/altare/packs/behavior/blocks/u_pilaster_marble_lace_none.block.json": "18a03a036eae74b914d146c1d8c1d502539e75d71059d84baa586c5ef41ba9a2",
+    "addons/altare/packs/behavior/blocks/u_pilaster_marble_linen_long_agnus.block.json": "0e34e7a990cb7009ded08a750d1444765d00371d6d5d90dfc19b903e40c414ec",
+    "addons/altare/packs/behavior/blocks/u_pilaster_marble_linen_long_cross.block.json": "e8812f40e303bfc62d7cbaccdd38faa9658eb2262abc8701c8b925a84f51886e",
+    "addons/altare/packs/behavior/blocks/u_pilaster_marble_linen_long_none.block.json": "e94bc5d8cc983efb48bdfd039b27c788573ee34c4d29c7a52b6a4681bc9af564",
+    "addons/altare/packs/behavior/blocks/u_pilaster_marble_linen_short_agnus.block.json": "74c8d94aa1cda31fbc761c9c69cf4383c27a1c4f1893e7b78be2b81688272ef5",
+    "addons/altare/packs/behavior/blocks/u_pilaster_marble_linen_short_cross.block.json": "6483861d49914c85bf21fcaabf521399ed0932f0af97eae189200644d32d541e",
+    "addons/altare/packs/behavior/blocks/u_pilaster_marble_linen_short_none.block.json": "f334ac5e2412e24aafd509efbd279b07b77e2e1420458de8ce5aba2da3bafc7e",
+    "addons/altare/packs/behavior/blocks/u_pilaster_walnut_gold_long_agnus.block.json": "349e87bca38ad9dfa02a35c85678443a99dedee35840006a08e92de32eb8235a",
+    "addons/altare/packs/behavior/blocks/u_pilaster_walnut_gold_long_cross.block.json": "1017819932fdfc449b1084646ec054e27bb5b25a58edded7027684cb6bfb5d35",
+    "addons/altare/packs/behavior/blocks/u_pilaster_walnut_gold_long_none.block.json": "b50fefe9c8dc1fc634724af5411ac3fa7cedbd261ad546005eca4a7209b435c4",
+    "addons/altare/packs/behavior/blocks/u_pilaster_walnut_gold_short_agnus.block.json": "07434863717f971070ddd634c4039af58cebbe2e321dc435715f87865394700c",
+    "addons/altare/packs/behavior/blocks/u_pilaster_walnut_gold_short_cross.block.json": "d29126b8162222cdb0ec662c495c4234c6dba8ad65ade82689d88836d633a647",
+    "addons/altare/packs/behavior/blocks/u_pilaster_walnut_gold_short_none.block.json": "358e4568cf55539b3d0758f18f4e3894c4668683a8bfe65435242afc3f94e5e9",
+    "addons/altare/packs/behavior/blocks/u_pilaster_walnut_lace_agnus.block.json": "e858679e639083158c070fcbc25723af67c258fbf2f64678d537479de0f1dd9f",
+    "addons/altare/packs/behavior/blocks/u_pilaster_walnut_lace_cross.block.json": "bddad313c962d5f4d3cda10b88af5509ba0c9bd5038802ea128f9389e11dc06f",
+    "addons/altare/packs/behavior/blocks/u_pilaster_walnut_lace_none.block.json": "7555cb3c091dbec93cbb739593b656999e2c925e8f60d32dda6f497db0abc9ad",
+    "addons/altare/packs/behavior/blocks/u_pilaster_walnut_linen_long_agnus.block.json": "4f6bafc9bb0bf9e1c4a6775e4715d9872b1de45f40d8cb5a81d7268673dc3f33",
+    "addons/altare/packs/behavior/blocks/u_pilaster_walnut_linen_long_cross.block.json": "f99dde1fbb5eab7296cd297c34882cc122b1c3a021112ed913cdc9ff4d44e5d1",
+    "addons/altare/packs/behavior/blocks/u_pilaster_walnut_linen_long_none.block.json": "e07c9d0c6e039006bf8eeb22f59d4ca995884793204af634c9a73d0d56622694",
+    "addons/altare/packs/behavior/blocks/u_pilaster_walnut_linen_short_agnus.block.json": "4e332db7c4a7575aa7231a041b7d6136879b4bae591c503eddb6651657389bd3",
+    "addons/altare/packs/behavior/blocks/u_pilaster_walnut_linen_short_cross.block.json": "17176e5e66e76bdfccd5408d53f5026de43c21448d3b4b967c9b913201ccdd1b",
+    "addons/altare/packs/behavior/blocks/u_pilaster_walnut_linen_short_none.block.json": "7ddb33715dbb86283a57811a04933bcfeffcc4e5d78ac0cacccbf2fae57a9feb",
+    "addons/altare/packs/behavior/blocks/u_trestle_limestone_gold_long_agnus.block.json": "dc7851aa7bc894756b06da56dc90236e1a94da49aaffdfc658391963ef67f71f",
+    "addons/altare/packs/behavior/blocks/u_trestle_limestone_gold_long_cross.block.json": "105cc90d20a2efacec0612ea3be8915b46fca5f405adcd947ac098116eac9986",
+    "addons/altare/packs/behavior/blocks/u_trestle_limestone_gold_long_none.block.json": "feb8c3ca6b89af7404c6f6eac1278526b77ac9b3f845a83c9db379cc29ba4bd8",
+    "addons/altare/packs/behavior/blocks/u_trestle_limestone_gold_short_agnus.block.json": "4673683895a028a4650602a4e83b0e2df51d626a4e4d0f770ff1b9257ad965de",
+    "addons/altare/packs/behavior/blocks/u_trestle_limestone_gold_short_cross.block.json": "e099c698d09337d4e9a2e105c71e9109d7a55d867d39c801422543c8f535847d",
+    "addons/altare/packs/behavior/blocks/u_trestle_limestone_gold_short_none.block.json": "7daf2d7094451a2eb9786c4b135589ed89c87eea4253798ba014974188e4dd1c",
+    "addons/altare/packs/behavior/blocks/u_trestle_limestone_lace_agnus.block.json": "9052647b8ce865eeec7727c4cd0e48d1eacd0ca4273ae67ab70332ba093de94a",
+    "addons/altare/packs/behavior/blocks/u_trestle_limestone_lace_cross.block.json": "f74eccd034e8d2657fde5cc222d09b3fa5e6cc113c5f192e741666de58338aa5",
+    "addons/altare/packs/behavior/blocks/u_trestle_limestone_lace_none.block.json": "87f8f7408a5ce168de2ba3936b3db39171a6d8ea201885bc7e1460f32d5b272b",
+    "addons/altare/packs/behavior/blocks/u_trestle_limestone_linen_long_agnus.block.json": "23280740a8ccefb7c95c0c21cd67b76d24488839f013d65303fa8ab9268b8ef5",
+    "addons/altare/packs/behavior/blocks/u_trestle_limestone_linen_long_cross.block.json": "b19f0f60b3e02d0eaf3e8d141629e9f8589b0c9b6496ae04b8d684281ffccda3",
+    "addons/altare/packs/behavior/blocks/u_trestle_limestone_linen_long_none.block.json": "419fc5a0fbf5505f07c4a00245ce076dc5bd0b7f49d6fe7356acbeb613ac7af2",
+    "addons/altare/packs/behavior/blocks/u_trestle_limestone_linen_short_agnus.block.json": "d2856ca022a9ac560c89171d22c4c58657ac2b391207eb58d8558c8fd4724cb2",
+    "addons/altare/packs/behavior/blocks/u_trestle_limestone_linen_short_cross.block.json": "5281a5bed61a4c492766ab57d0e6d01b2b19a744240714890ce19a32463525a2",
+    "addons/altare/packs/behavior/blocks/u_trestle_limestone_linen_short_none.block.json": "df9c80c5bdc7f455d267d9d99cae2b1e73ae675da4ab45b404351c5eb141e392",
+    "addons/altare/packs/behavior/blocks/u_trestle_marble_gold_long_agnus.block.json": "d35663d5934e01d2243672252ca6ca23dac2a3a7db244d76c0f90eb5d9c4a352",
+    "addons/altare/packs/behavior/blocks/u_trestle_marble_gold_long_cross.block.json": "c4882cbd71b318cff02c5161bee2a2c2afe7c80d0034cffc04bb936972552f53",
+    "addons/altare/packs/behavior/blocks/u_trestle_marble_gold_long_none.block.json": "e6bd0f4e97e1a625a92995c156f30c45167afc4c8db78beb3fe31b0dd743de12",
+    "addons/altare/packs/behavior/blocks/u_trestle_marble_gold_short_agnus.block.json": "ed4ed51f9db49ad1cbbd815dcf6ca43aa4f7e4408625d34a1f115e28c30d4f6b",
+    "addons/altare/packs/behavior/blocks/u_trestle_marble_gold_short_cross.block.json": "2829da68be6ea92c6d2be4f9fe8c8157e0c9f4983fa7472feb5596adc2b6eaa2",
+    "addons/altare/packs/behavior/blocks/u_trestle_marble_gold_short_none.block.json": "8b3ca438f6691eb6bb94151ca682fd09205f89fabe96d0f4edb2735dfc2ddddc",
+    "addons/altare/packs/behavior/blocks/u_trestle_marble_lace_agnus.block.json": "a3be0cb5e15049cdc33e87d1188a683d76c6d05fc0765b585ab1606f2ed93a20",
+    "addons/altare/packs/behavior/blocks/u_trestle_marble_lace_cross.block.json": "eab8eca482425607155e9f1999b7ab26fdaae870db0eef835919aae68982f6a1",
+    "addons/altare/packs/behavior/blocks/u_trestle_marble_lace_none.block.json": "16da9416b2ab1d55dc5765440a98a55b5b3695ef9ed9fdd8b758275f7e3cf568",
+    "addons/altare/packs/behavior/blocks/u_trestle_marble_linen_long_agnus.block.json": "c777d077ce774548db0d7729c73ee7791839c9950b2da47b643d619d87ffbe9d",
+    "addons/altare/packs/behavior/blocks/u_trestle_marble_linen_long_cross.block.json": "9e584fa44ab73fbdb06fa5adf1136c27c80e636b5d4f27a2470591cf4356d93a",
+    "addons/altare/packs/behavior/blocks/u_trestle_marble_linen_long_none.block.json": "4d377791ecd5b1f9667c0fe6232c64c06c1bdec3fe882d78a9ca39f3bec3f70e",
+    "addons/altare/packs/behavior/blocks/u_trestle_marble_linen_short_agnus.block.json": "95223fcd0ee8fd69fd4084d8de297391217589f5b32f235040988d9b103bfec7",
+    "addons/altare/packs/behavior/blocks/u_trestle_marble_linen_short_cross.block.json": "ceb3306eefc47ffaee9b9bc19d45924fb4223947041be852ea6b20afb2c3ab9b",
+    "addons/altare/packs/behavior/blocks/u_trestle_marble_linen_short_none.block.json": "ebba197658b0d5ab94d070c60b9433a5f9004fb509d8af80d305b9772a04d898",
+    "addons/altare/packs/behavior/blocks/u_trestle_walnut_gold_long_agnus.block.json": "8e59ce0d77fe6ca8796d2fe6d1ffd93962ff0bda7e06c8850cc83672fc7eff49",
+    "addons/altare/packs/behavior/blocks/u_trestle_walnut_gold_long_cross.block.json": "a5962fdb4aa428fbf445eacc624c83c6a63d5a07a8f22b960ce9ab099c693922",
+    "addons/altare/packs/behavior/blocks/u_trestle_walnut_gold_long_none.block.json": "a501558c0bf1ac2dd0bcef21f7134b6ab2592ef4c3cbd37bd5d9424e97ebf99d",
+    "addons/altare/packs/behavior/blocks/u_trestle_walnut_gold_short_agnus.block.json": "7a690ec236ef2d66c2327a5a0f55feb43d8d301fa87bab7cc2b4e0f52ea2c134",
+    "addons/altare/packs/behavior/blocks/u_trestle_walnut_gold_short_cross.block.json": "02eb48841b594fd8c22996ce0f4a9610b84b5fb33c66777c2278809319a5fba9",
+    "addons/altare/packs/behavior/blocks/u_trestle_walnut_gold_short_none.block.json": "d75022fcea8d51a3795f43a0c3c62fdf4526e114a5408a19d76fa23c5cb6a91d",
+    "addons/altare/packs/behavior/blocks/u_trestle_walnut_lace_agnus.block.json": "0bb74e9a73ba7a2679525fae4523a3f8399d19dcc0aea0c88a9787ce9435f6c0",
+    "addons/altare/packs/behavior/blocks/u_trestle_walnut_lace_cross.block.json": "1a5ab6084e424e148760b36d47a63a57b3b7d165926c36d35157cc11151c33b7",
+    "addons/altare/packs/behavior/blocks/u_trestle_walnut_lace_none.block.json": "bce6879b4ab91388d6a64887aaa9855863d295bb2a8f7ec441b4810b1836f8b5",
+    "addons/altare/packs/behavior/blocks/u_trestle_walnut_linen_long_agnus.block.json": "7a0a4c7c6ad0c1123e21ce4554be94597efb1afb3e579b0fc9edd5bf344e7fda",
+    "addons/altare/packs/behavior/blocks/u_trestle_walnut_linen_long_cross.block.json": "97b72a409cf4e9f924fad2c5f55a618a0d573f8fddabb29b3a7cc53dcf72f591",
+    "addons/altare/packs/behavior/blocks/u_trestle_walnut_linen_long_none.block.json": "20f195457c8efa5577dd2a067d56ea01efdda1dba1919eecfd91b6da5b32f0a8",
+    "addons/altare/packs/behavior/blocks/u_trestle_walnut_linen_short_agnus.block.json": "99cbadde76a74b9352f26d13dfcc07b2daf477b3313c2635605214777ffaab31",
+    "addons/altare/packs/behavior/blocks/u_trestle_walnut_linen_short_cross.block.json": "1f04188c149280912a3b9c7e758cde42a27da82d6c5aee746ec74ff743f9efef",
+    "addons/altare/packs/behavior/blocks/u_trestle_walnut_linen_short_none.block.json": "c92f648bd1b1230bc4f888a0d51df5e46dbbb347a44b861306ac7e11d1860a77"
+  },
+  "blocks": [
+    {
+      "id": "altare:a_ogive_limestone_agnus_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_limestone_agnus_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_limestone_agnus_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_ogive_limestone_none_agnus",
+      "declared": 256,
+      "componentSignatures": 160,
+      "duplicateOutputs": 96
+    },
+    {
+      "id": "altare:a_ogive_limestone_none_cross",
+      "declared": 256,
+      "componentSignatures": 160,
+      "duplicateOutputs": 96
+    },
+    {
+      "id": "altare:a_ogive_limestone_none_none",
+      "declared": 256,
+      "componentSignatures": 16,
+      "duplicateOutputs": 240
+    },
+    {
+      "id": "altare:a_ogive_limestone_requiem_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_limestone_requiem_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_limestone_requiem_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_ogive_limestone_ruby_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_limestone_ruby_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_limestone_ruby_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_ogive_limestone_verdant_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_limestone_verdant_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_limestone_verdant_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_ogive_marble_agnus_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_marble_agnus_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_marble_agnus_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_ogive_marble_none_agnus",
+      "declared": 256,
+      "componentSignatures": 160,
+      "duplicateOutputs": 96
+    },
+    {
+      "id": "altare:a_ogive_marble_none_cross",
+      "declared": 256,
+      "componentSignatures": 160,
+      "duplicateOutputs": 96
+    },
+    {
+      "id": "altare:a_ogive_marble_none_none",
+      "declared": 256,
+      "componentSignatures": 16,
+      "duplicateOutputs": 240
+    },
+    {
+      "id": "altare:a_ogive_marble_requiem_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_marble_requiem_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_marble_requiem_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_ogive_marble_ruby_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_marble_ruby_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_marble_ruby_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_ogive_marble_verdant_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_marble_verdant_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_marble_verdant_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_ogive_walnut_agnus_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_walnut_agnus_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_walnut_agnus_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_ogive_walnut_none_agnus",
+      "declared": 256,
+      "componentSignatures": 160,
+      "duplicateOutputs": 96
+    },
+    {
+      "id": "altare:a_ogive_walnut_none_cross",
+      "declared": 256,
+      "componentSignatures": 160,
+      "duplicateOutputs": 96
+    },
+    {
+      "id": "altare:a_ogive_walnut_none_none",
+      "declared": 256,
+      "componentSignatures": 16,
+      "duplicateOutputs": 240
+    },
+    {
+      "id": "altare:a_ogive_walnut_requiem_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_walnut_requiem_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_walnut_requiem_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_ogive_walnut_ruby_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_walnut_ruby_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_walnut_ruby_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_ogive_walnut_verdant_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_walnut_verdant_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_ogive_walnut_verdant_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_pilaster_limestone_agnus_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_limestone_agnus_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_limestone_agnus_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_pilaster_limestone_none_agnus",
+      "declared": 256,
+      "componentSignatures": 160,
+      "duplicateOutputs": 96
+    },
+    {
+      "id": "altare:a_pilaster_limestone_none_cross",
+      "declared": 256,
+      "componentSignatures": 160,
+      "duplicateOutputs": 96
+    },
+    {
+      "id": "altare:a_pilaster_limestone_none_none",
+      "declared": 256,
+      "componentSignatures": 16,
+      "duplicateOutputs": 240
+    },
+    {
+      "id": "altare:a_pilaster_limestone_requiem_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_limestone_requiem_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_limestone_requiem_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_pilaster_limestone_ruby_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_limestone_ruby_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_limestone_ruby_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_pilaster_limestone_verdant_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_limestone_verdant_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_limestone_verdant_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_pilaster_marble_agnus_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_marble_agnus_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_marble_agnus_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_pilaster_marble_none_agnus",
+      "declared": 256,
+      "componentSignatures": 160,
+      "duplicateOutputs": 96
+    },
+    {
+      "id": "altare:a_pilaster_marble_none_cross",
+      "declared": 256,
+      "componentSignatures": 160,
+      "duplicateOutputs": 96
+    },
+    {
+      "id": "altare:a_pilaster_marble_none_none",
+      "declared": 256,
+      "componentSignatures": 16,
+      "duplicateOutputs": 240
+    },
+    {
+      "id": "altare:a_pilaster_marble_requiem_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_marble_requiem_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_marble_requiem_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_pilaster_marble_ruby_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_marble_ruby_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_marble_ruby_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_pilaster_marble_verdant_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_marble_verdant_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_marble_verdant_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_pilaster_walnut_agnus_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_walnut_agnus_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_walnut_agnus_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_pilaster_walnut_none_agnus",
+      "declared": 256,
+      "componentSignatures": 160,
+      "duplicateOutputs": 96
+    },
+    {
+      "id": "altare:a_pilaster_walnut_none_cross",
+      "declared": 256,
+      "componentSignatures": 160,
+      "duplicateOutputs": 96
+    },
+    {
+      "id": "altare:a_pilaster_walnut_none_none",
+      "declared": 256,
+      "componentSignatures": 16,
+      "duplicateOutputs": 240
+    },
+    {
+      "id": "altare:a_pilaster_walnut_requiem_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_walnut_requiem_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_walnut_requiem_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_pilaster_walnut_ruby_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_walnut_ruby_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_walnut_ruby_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_pilaster_walnut_verdant_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_walnut_verdant_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_pilaster_walnut_verdant_none",
+      "declared": 256,
+      "componentSignatures": 208,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:a_trestle_limestone_agnus_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_limestone_agnus_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_limestone_agnus_none",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_limestone_none_agnus",
+      "declared": 256,
+      "componentSignatures": 160,
+      "duplicateOutputs": 96
+    },
+    {
+      "id": "altare:a_trestle_limestone_none_cross",
+      "declared": 256,
+      "componentSignatures": 160,
+      "duplicateOutputs": 96
+    },
+    {
+      "id": "altare:a_trestle_limestone_none_none",
+      "declared": 256,
+      "componentSignatures": 64,
+      "duplicateOutputs": 192
+    },
+    {
+      "id": "altare:a_trestle_limestone_requiem_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_limestone_requiem_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_limestone_requiem_none",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_limestone_ruby_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_limestone_ruby_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_limestone_ruby_none",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_limestone_verdant_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_limestone_verdant_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_limestone_verdant_none",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_marble_agnus_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_marble_agnus_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_marble_agnus_none",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_marble_none_agnus",
+      "declared": 256,
+      "componentSignatures": 160,
+      "duplicateOutputs": 96
+    },
+    {
+      "id": "altare:a_trestle_marble_none_cross",
+      "declared": 256,
+      "componentSignatures": 160,
+      "duplicateOutputs": 96
+    },
+    {
+      "id": "altare:a_trestle_marble_none_none",
+      "declared": 256,
+      "componentSignatures": 64,
+      "duplicateOutputs": 192
+    },
+    {
+      "id": "altare:a_trestle_marble_requiem_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_marble_requiem_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_marble_requiem_none",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_marble_ruby_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_marble_ruby_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_marble_ruby_none",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_marble_verdant_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_marble_verdant_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_marble_verdant_none",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_walnut_agnus_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_walnut_agnus_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_walnut_agnus_none",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_walnut_none_agnus",
+      "declared": 256,
+      "componentSignatures": 160,
+      "duplicateOutputs": 96
+    },
+    {
+      "id": "altare:a_trestle_walnut_none_cross",
+      "declared": 256,
+      "componentSignatures": 160,
+      "duplicateOutputs": 96
+    },
+    {
+      "id": "altare:a_trestle_walnut_none_none",
+      "declared": 256,
+      "componentSignatures": 64,
+      "duplicateOutputs": 192
+    },
+    {
+      "id": "altare:a_trestle_walnut_requiem_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_walnut_requiem_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_walnut_requiem_none",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_walnut_ruby_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_walnut_ruby_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_walnut_ruby_none",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_walnut_verdant_agnus",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_walnut_verdant_cross",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:a_trestle_walnut_verdant_none",
+      "declared": 256,
+      "componentSignatures": 256,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_baluster_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_baluster_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_baluster_requiem",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_baluster_ruby",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_baluster_ruby_black",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_baluster_ruby_gold",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_baluster_ruby_green",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_baluster_ruby_purple",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_baluster_ruby_rose",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_baluster_ruby_silver",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_baluster_ruby_white",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_baluster_verdant",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_coffer_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_coffer_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_coffer_requiem",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_coffer_ruby",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_coffer_ruby_black",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_coffer_ruby_gold",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_coffer_ruby_green",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_coffer_ruby_purple",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_coffer_ruby_rose",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_coffer_ruby_silver",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_coffer_ruby_white",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_coffer_verdant",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_crossbrace_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_crossbrace_none",
+      "declared": 16,
+      "componentSignatures": 16,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_crossbrace_requiem",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_crossbrace_ruby",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_crossbrace_ruby_black",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_crossbrace_ruby_gold",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_crossbrace_ruby_green",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_crossbrace_ruby_purple",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_crossbrace_ruby_rose",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_crossbrace_ruby_silver",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_crossbrace_ruby_white",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:j_crossbrace_verdant",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:l_ogive_limestone_black",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_ogive_limestone_gold",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_ogive_limestone_green",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_ogive_limestone_purple",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_ogive_limestone_rose",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_ogive_limestone_silver",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_ogive_limestone_white",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_ogive_marble_black",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_ogive_marble_gold",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_ogive_marble_green",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_ogive_marble_purple",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_ogive_marble_rose",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_ogive_marble_silver",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_ogive_marble_white",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_ogive_walnut_black",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_ogive_walnut_gold",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_ogive_walnut_green",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_ogive_walnut_purple",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_ogive_walnut_rose",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_ogive_walnut_silver",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_ogive_walnut_white",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_pilaster_limestone_black",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_pilaster_limestone_gold",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_pilaster_limestone_green",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_pilaster_limestone_purple",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_pilaster_limestone_rose",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_pilaster_limestone_silver",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_pilaster_limestone_white",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_pilaster_marble_black",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_pilaster_marble_gold",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_pilaster_marble_green",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_pilaster_marble_purple",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_pilaster_marble_rose",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_pilaster_marble_silver",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_pilaster_marble_white",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_pilaster_walnut_black",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_pilaster_walnut_gold",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_pilaster_walnut_green",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_pilaster_walnut_purple",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_pilaster_walnut_rose",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_pilaster_walnut_silver",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_pilaster_walnut_white",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:l_trestle_limestone_black",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:l_trestle_limestone_gold",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:l_trestle_limestone_green",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:l_trestle_limestone_purple",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:l_trestle_limestone_rose",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:l_trestle_limestone_silver",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:l_trestle_limestone_white",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:l_trestle_marble_black",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:l_trestle_marble_gold",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:l_trestle_marble_green",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:l_trestle_marble_purple",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:l_trestle_marble_rose",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:l_trestle_marble_silver",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:l_trestle_marble_white",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:l_trestle_walnut_black",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:l_trestle_walnut_gold",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:l_trestle_walnut_green",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:l_trestle_walnut_purple",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:l_trestle_walnut_rose",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:l_trestle_walnut_silver",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:l_trestle_walnut_white",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:mensa",
+      "declared": 11520,
+      "componentSignatures": 11040,
+      "duplicateOutputs": 480
+    },
+    {
+      "id": "altare:s_colonnade_bare",
+      "declared": 16,
+      "componentSignatures": 16,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:s_colonnade_lace",
+      "declared": 16,
+      "componentSignatures": 16,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_baluster_walnut_gold_long_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_baluster_walnut_gold_short_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_baluster_walnut_lace_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_baluster_walnut_linen_long_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_baluster_walnut_linen_short_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_classic_agnus",
+      "declared": 648,
+      "componentSignatures": 648,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_classic_lace",
+      "declared": 648,
+      "componentSignatures": 504,
+      "duplicateOutputs": 144
+    },
+    {
+      "id": "altare:u_classic_requiem",
+      "declared": 648,
+      "componentSignatures": 648,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_classic_ruby_black",
+      "declared": 648,
+      "componentSignatures": 648,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_classic_ruby_gold",
+      "declared": 648,
+      "componentSignatures": 648,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_classic_ruby_green",
+      "declared": 648,
+      "componentSignatures": 648,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_classic_ruby_purple",
+      "declared": 648,
+      "componentSignatures": 648,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_classic_ruby_red",
+      "declared": 648,
+      "componentSignatures": 648,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_classic_ruby_rose",
+      "declared": 648,
+      "componentSignatures": 648,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_classic_ruby_silver",
+      "declared": 648,
+      "componentSignatures": 648,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_classic_ruby_white",
+      "declared": 648,
+      "componentSignatures": 648,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_classic_verdant",
+      "declared": 648,
+      "componentSignatures": 648,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_coffer_walnut_gold_long_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_coffer_walnut_gold_short_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_coffer_walnut_lace_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_coffer_walnut_linen_long_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_coffer_walnut_linen_short_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_colonnade_agnus",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_colonnade_gold_long",
+      "declared": 16,
+      "componentSignatures": 16,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_colonnade_gold_short",
+      "declared": 16,
+      "componentSignatures": 16,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_colonnade_linen_long",
+      "declared": 16,
+      "componentSignatures": 16,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_colonnade_linen_short",
+      "declared": 16,
+      "componentSignatures": 16,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_colonnade_requiem",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_colonnade_ruby_black",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_colonnade_ruby_gold",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_colonnade_ruby_green",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_colonnade_ruby_purple",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_colonnade_ruby_red",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_colonnade_ruby_rose",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_colonnade_ruby_silver",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_colonnade_ruby_white",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_colonnade_verdant",
+      "declared": 112,
+      "componentSignatures": 64,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_crossbrace_walnut_gold_long_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_crossbrace_walnut_gold_short_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_crossbrace_walnut_lace_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_crossbrace_walnut_linen_long_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_crossbrace_walnut_linen_short_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_limestone_gold_long_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_limestone_gold_long_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_limestone_gold_long_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_ogive_limestone_gold_short_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_limestone_gold_short_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_limestone_gold_short_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_ogive_limestone_lace_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_limestone_lace_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_limestone_lace_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_ogive_limestone_linen_long_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_limestone_linen_long_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_limestone_linen_long_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_ogive_limestone_linen_short_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_limestone_linen_short_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_limestone_linen_short_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_ogive_marble_gold_long_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_marble_gold_long_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_marble_gold_long_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_ogive_marble_gold_short_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_marble_gold_short_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_marble_gold_short_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_ogive_marble_lace_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_marble_lace_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_marble_lace_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_ogive_marble_linen_long_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_marble_linen_long_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_marble_linen_long_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_ogive_marble_linen_short_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_marble_linen_short_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_marble_linen_short_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_ogive_walnut_gold_long_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_walnut_gold_long_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_walnut_gold_long_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_ogive_walnut_gold_short_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_walnut_gold_short_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_walnut_gold_short_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_ogive_walnut_lace_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_walnut_lace_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_walnut_lace_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_ogive_walnut_linen_long_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_walnut_linen_long_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_walnut_linen_long_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_ogive_walnut_linen_short_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_walnut_linen_short_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_ogive_walnut_linen_short_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_pilaster_limestone_gold_long_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_limestone_gold_long_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_limestone_gold_long_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_pilaster_limestone_gold_short_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_limestone_gold_short_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_limestone_gold_short_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_pilaster_limestone_lace_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_limestone_lace_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_limestone_lace_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_pilaster_limestone_linen_long_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_limestone_linen_long_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_limestone_linen_long_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_pilaster_limestone_linen_short_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_limestone_linen_short_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_limestone_linen_short_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_pilaster_marble_gold_long_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_marble_gold_long_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_marble_gold_long_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_pilaster_marble_gold_short_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_marble_gold_short_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_marble_gold_short_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_pilaster_marble_lace_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_marble_lace_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_marble_lace_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_pilaster_marble_linen_long_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_marble_linen_long_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_marble_linen_long_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_pilaster_marble_linen_short_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_marble_linen_short_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_marble_linen_short_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_pilaster_walnut_gold_long_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_walnut_gold_long_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_walnut_gold_long_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_pilaster_walnut_gold_short_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_walnut_gold_short_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_walnut_gold_short_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_pilaster_walnut_lace_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_walnut_lace_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_walnut_lace_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_pilaster_walnut_linen_long_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_walnut_linen_long_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_walnut_linen_long_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_pilaster_walnut_linen_short_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_walnut_linen_short_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_pilaster_walnut_linen_short_none",
+      "declared": 64,
+      "componentSignatures": 16,
+      "duplicateOutputs": 48
+    },
+    {
+      "id": "altare:u_trestle_limestone_gold_long_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_limestone_gold_long_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_limestone_gold_long_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_limestone_gold_short_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_limestone_gold_short_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_limestone_gold_short_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_limestone_lace_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_limestone_lace_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_limestone_lace_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_limestone_linen_long_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_limestone_linen_long_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_limestone_linen_long_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_limestone_linen_short_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_limestone_linen_short_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_limestone_linen_short_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_marble_gold_long_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_marble_gold_long_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_marble_gold_long_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_marble_gold_short_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_marble_gold_short_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_marble_gold_short_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_marble_lace_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_marble_lace_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_marble_lace_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_marble_linen_long_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_marble_linen_long_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_marble_linen_long_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_marble_linen_short_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_marble_linen_short_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_marble_linen_short_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_walnut_gold_long_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_walnut_gold_long_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_walnut_gold_long_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_walnut_gold_short_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_walnut_gold_short_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_walnut_gold_short_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_walnut_lace_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_walnut_lace_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_walnut_lace_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_walnut_linen_long_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_walnut_linen_long_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_walnut_linen_long_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_walnut_linen_short_agnus",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_walnut_linen_short_cross",
+      "declared": 112,
+      "componentSignatures": 112,
+      "duplicateOutputs": 0
+    },
+    {
+      "id": "altare:u_trestle_walnut_linen_short_none",
+      "declared": 64,
+      "componentSignatures": 64,
+      "duplicateOutputs": 0
+    }
+  ]
+}

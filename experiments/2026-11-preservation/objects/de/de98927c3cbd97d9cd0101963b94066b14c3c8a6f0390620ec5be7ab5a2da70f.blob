@@ -1,0 +1,33 @@
+# V21 — rejeitada: alinhamento não equivale a fidelidade
+
+## Resultado
+Experimento local, não integrado nem publicado. V20 original preservada.
+
+- Câmera ortográfica estimada a partir de 10 correspondências manuais no retrato histórico da escultura.
+- Ajuste RBF local em shape key separada; deslocamento máximo 25,21 mm.
+- RMSE dos próprios pontos de controle caiu de 10,70 px para 0,57 px.
+- Essa métrica mede ajuste de controles escolhidos, não semelhança independente, precisão 3D nem validação da escultura.
+- Renders frontal e de perfil produzidos em Blender 4.3.2 e inspecionados: **reprovado**.
+
+## Defeitos observados
+1. Pálpebras perderam continuidade: relevo pouco definido, depressões e assimetria artificial; referência tem pálpebras fechadas convexas e contorno nítido.
+2. Nariz não reproduz plano frontal estreito e continuidade com testa; perfil ainda genérico.
+3. Boca sem o recorte limpo e a inclinação característica da referência.
+4. Massa craniana alta e cobertura semelhante a touca, não à faixa/véu aderente da obra.
+5. Junção de nuca/véu/ombro e silhueta de perfil continuam inadequadas.
+6. Mãos e Menino não foram corrigidos neste experimento.
+
+## Decisão
+Não repetir pequenas alterações de landmarks. Geometria anterior, já suavizada/reconstruída, não contém detalhe suficiente para se transformar em réplica por alinhamento 2D. O ensaio é evidência negativa útil para escolher outra base geométrica, não uma nova versão aprovada.
+
+Próxima avaliação: testar a reconstrução alternativa em investigação, comparando geometria sem textura e três vistas antes de qualquer integração. Textura projetada pode esconder volume incorreto e não conta como escultura fiel. Vista traseira não documentada deve ser explicitamente identificada como aproximada.
+
+## Artefatos
+- Nossa_Senhora_da_Paz_V21_correspondencias.blend: shape key reversível, original não sobrescrito.
+- v21-face-fit.png: retrato de teste.
+- v21-profile.png: inspeção lateral.
+- fit_metrics.json: erro de ajuste e aviso de limitação.
+- camera_fit.json / landmarks.json: dados de ajuste auditáveis.
+- fit-baseline.png: base antes da deformação na câmera ajustada.
+
+Referência histórica: https://arquivo.arq.br/projetos/paroquia-nossa-senhora-da-paz

@@ -1,0 +1,59 @@
+# Cruzeta em nogueira — 0.12.0
+
+Registro da primeira revisão. A revisão diagnóstica atual e seu reteste estão em [Polimento 0.12.1](CROSSBRACE_0.12.1.md).
+
+## Intenção e construção
+
+O oitavo modelo é uma mesa de marcenaria aberta. Não é uma recoloração da Arca ou uma variação dos Balaústres: cada vão tem travessa superior, travessa inferior e diagonais em X. Pés e cabeças escalonadas enquadram os montantes verticais. A nogueira escura recebe filetes e pequenos losangos de madeira clara, sem ouro ou emissividade, na travessa superior e nos encaixes.
+
+A construção vive em `assets-src/atelier/crossbrace-model.mjs`. Somente o contorno exposto recebe estrutura; uma quina usa um único montante. Em trechos contínuos, cada célula contribui com meio montante, formando uma junta compartilhada. Os veios permanecem verticais nos montantes e horizontais nas travessas/diagonais antes da rotação. As duas diagonais ocupam metades adjacentes da profundidade, com plano de encontro comum, sem duas faces exteriores coplanares no cruzamento. Não se declara uma simulação física de marcenaria.
+
+O tampo termina exatamente em y=16. A estrutura é idêntica sob todos os tecidos. A marchetaria é um mapa autoral procedural de 64², derivado no build; mapas das famílias anteriores não mudam. Textura de madeira e objetos litúrgicos não são imagens inventadas para o render: a prévia usa os arquivos distribuídos.
+
+## Estado e compatibilidade
+
+- 17 novos IDs: `altare:j_crossbrace_*` e `altare:u_crossbrace_walnut_*_none`. Não muda UUID, nome ou significado de qualquer estado anterior.
+- Dez desenhos de toalha e oito cores do Floral IHS. Sem aplique adicional; material fixo nogueira.
+- Sem toalha usa o codec simétrico já existente: somente `altare:edges`, 16 estados. A direção tem significado apenas quando uma toalha direcional é escolhida.
+- O leitor do codec simétrico deriva o material do design. Colunata continua mármore/0; Cruzeta usa nogueira/2. A ordem dos sete modelos antigos no editor é preservada; Cruzeta é acrescentada ao final.
+- Altare passa de 78.432 a **80.000** estados. A economia de 48 estados no novo bare impede ultrapassar o teto de 80.000; o teto não foi elevado. Com Aspergillum local: **89.744**, abaixo do teto diagnóstico de 90.000, mas acima da referência global de 65.536. Outros add-ons não estão incluídos.
+- A colisão possui até cinco caixas: tampo e até quatro envoltórias estreitas dos quadros. O centro está livre. Os pequenos vãos entre diagonais têm colisão conservadora, não recorte físico fino. Seleção conserva o cubo completo.
+- As geometrias novas usam no máximo **46 cubos e 211 faces**, abaixo do teto de 50 cubos por módulo, inclusive no isolado vestido. Não se acrescenta exceção de complexidade ao validador.
+- Mapas únicos: 33,2255859375 MiB antes de mipmaps/ícones, abaixo do teto existente de 33,25 MiB.
+
+Mundos anteriores só recebem a família após aplicar a ferramenta. Downgrade após colocar os novos IDs não é seguro: voltar ao acabamento anterior antes de remover a 0.12.0, sempre em cópia do mundo. O add-on não captura nem recria objetos acima da mensa.
+
+## Verificação reproduzível
+
+Na raiz:
+
+```
+npm --prefix addons/altare run check
+npm --prefix addons/altare run package
+node addons/altare/tools/capture-cpu.mjs
+```
+
+`crossbrace.node.ts` verifica orçamento, 17 acabamentos, codec simétrico, 16 contornos, dimensões de 1×1 a 16×8, quatro frentes, invariância sob dez tecidos, caixas de colisão e vértices rotacionados. Os testes existentes de marcenaria, editor e tecido incluem a nova família. O Estúdio 2.3.0 oferece dois presets: madeira exposta e linho curto.
+
+A prévia alternativa requer Python 3 com NumPy/Pillow e usa o adaptador geométrico compartilhado do projeto, incluindo transformações/UV reais, seguido de rasterização CPU. É **prévia técnica externa**, com iluminação simplificada e somente cor: não usa WebGL, PBR, iluminação nativa ou paridade Minecraft. O renderer oficial Chromium não pôde iniciar por restrição do ambiente; a restrição não foi contornada. Os manifests preservam os hashes dos modelos e mapas utilizados.
+
+## Resultados desta revisão
+
+- 108 testes Altare, 107 testes Aspergillum e 84 testes viewer aprovados; tipos, documentação e build aprovados.
+- Creator Tools no alvo 1.26.40: zero erros, zero avisos inesperados e 2.084 avisos limitados das famílias anteriores. Cruzeta não usa a exceção de complexidade. As consultas npm devolveram 502; a checagem foi offline, complementada pelos tipos estáveis instalados.
+- Os 397 blocos, 4.108 geometrias e 258 arquivos de textura anteriores são byte a byte idênticos à baseline. Os 78.432 estados antigos decodificam de modo idêntico; 1.568 estados novos e 25.088 reparos de contorno passaram.
+- Os 5.393 arquivos do pacote correspondem aos gerados. As 38 fontes de geometria/mapas das prévias correspondem ao pacote final.
+
+## Reteste no Minecraft
+
+1. Fazer uma cópia do mundo. Importar somente BP/RP Altare **[0,12,0]**, sem revisão concorrente, no alvo mínimo 1.26.40; sem experimentos.
+2. `/function altare/dev_kit`. Montar 1×1, 3×2, 7×2 e 8×2. Abrir Acabamento do altar e selecionar Cruzeta.
+3. Sem toalha: observar frente, verso, quatro quinas, interior e underside. Conferir cruzamentos sem cintilação, nenhuma duplicação de montantes e continuidade das travessas.
+4. Alternar todas as dez toalhas, principalmente linho curto, renda e Floral IHS verde/roxo. Conferir o verso do tecido através do quadro, centro ímpar e dois meios centros no par.
+5. Colocar pedra vanilla e caldeirinha sobre a mensa. Trocar de/para modelos antigos, aplicar, cancelar, restaurar e reabrir. Objetos superiores devem permanecer no lugar.
+6. Testar quatro frentes, remoção/reposição de módulos, salvar/reabrir e multiplayer. Reaplicar depois de redimensionar para recentralizar a toalha.
+7. Conferir luz através da mesa, colisão conservadora dos quadros, apoio do tampo, Content Log sem novos erros e profiling no dispositivo-alvo.
+
+Se a consulta de versão do Creator Tools falhar mesmo em `--offline`, o CLI pode cair no fallback 1.26.0 e rejeitar até arquivos já publicados. Neste ambiente, a validação é repetida com a opção existente `MCT_TEST_PINNED_MC_VERSION=1.26.40`, fixando o alvo declarado no manifest. Isso não altera schemas, arquivos ou a política de avisos.
+
+Build e validação offline não substituem essa etapa. A versão continua diagnóstica e não é promovida como fisicamente aprovada sem o teste do arquivo exato.

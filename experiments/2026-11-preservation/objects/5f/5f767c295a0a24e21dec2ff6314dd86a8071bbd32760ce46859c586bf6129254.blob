@@ -1,0 +1,30 @@
+import bpy,numpy as np,json,time
+from pathlib import Path
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+R=Path(__file__).resolve().parents[1];d=np.load(R/'evidence/repaired_meshes.npz');meta=json.load(open(R.parent/'evidence/source-export.json'));maps=json.load(open(R/'evidence/alpha-triangle-map.json'));geo=json.load(open(R/'resource_pack/models/entity/sculpture.geo.json'))['minecraft:geometry'][0]
+hv=d['high_v'];hf=d['high_f'];hn=d['high_n'];trees=[];partfaces=[];off=0
+for p in meta['parts']:
+ f=hf[off:off+p['high_triangles']];off+=p['high_triangles'];start=int(f.min());end=int(f.max())+1;trees.append(BVHTree.FromPolygons(hv[start:end].tolist(),(f-start).tolist(),all_triangles=True));partfaces.append(f)
+img=bpy.data.images.load(str(R/'resource_pack/textures/entity/sculpture.png'));A=np.array(img.pixels[:],dtype=np.float32).reshape((2048,2048,4))[::-1];normal=np.zeros((2048,2048,4),np.float32);normal[:]=[.5,.5,1,1]
+counters={};stats={'ray_hits':0,'fallback_nearest':0,'negative_tangent_z':0,'texels':0};starttime=time.time()
+def to_bl(p):return np.array([p[0],-p[2],p[1]])
+for mi,m in enumerate(maps):
+ pi=m['part'];ci=counters.get(pi,0);counters[pi]=ci+1;c=geo['bones'][pi]['cubes'][ci];uv=c['uv']['south'];tx,ty=uv['uv'];W,H=uv['uv_size'];mask=A[ty:ty+H,tx:tx+W,3]>.5
+ a,b,cc=np.array([m['a'],m['b'],m['c']]);U=(b-a);w=np.linalg.norm(U);U/=w;tmp=cc-a;proj=np.dot(tmp,U);V=tmp-proj*U;h=np.linalg.norm(V);V/=h;N=np.cross(U,V);M=np.column_stack((U,V,N));mu,mv=m['mask_local'][0];ww,hh=c['size'][:2];faceN=to_bl(N);tree=trees[pi];ff=partfaces[pi];eps=.04
+ for y,x in zip(*np.where(mask)):
+  px=(x+.5)/W*ww-mu;py=(1-(y+.5)/H)*hh-mv;p=to_bl(a+U*px+V*py)/16
+  q,fn,fi,dist=tree.ray_cast(Vector(p+faceN*eps),Vector(-faceN),eps*2)
+  if q is None:q,fn,fi,dist=tree.find_nearest(Vector(p));stats['fallback_nearest']+=1
+  else:stats['ray_hits']+=1
+  aa,bb,ccc=hv[ff[fi]];v0=bb-aa;v1=ccc-aa;v2=np.array(q)-aa;d00=np.dot(v0,v0);d01=np.dot(v0,v1);d11=np.dot(v1,v1);d20=np.dot(v2,v0);d21=np.dot(v2,v1);den=d00*d11-d01*d01
+  if abs(den)>1e-24:
+   wb=(d11*d20-d01*d21)/den;wc=(d00*d21-d01*d20)/den;weights=np.clip([1-wb-wc,wb,wc],0,1);weights/=sum(weights);n=weights@hn[ff[fi]]
+  else:n=np.array(fn)
+  n/=max(np.linalg.norm(n),1e-12);nbb=np.array([n[0],n[2],-n[1]]);t=nbb@M
+  if t[2]<0:stats['negative_tangent_z']+=1
+  t[1]*=-1;normal[ty+y,tx+x,:3]=t*.5+.5;stats['texels']+=1
+ if mi%500==0:print('texel bake',mi,'/',len(maps),'secs',round(time.time()-starttime),flush=True)
+out=bpy.data.images.new('DirectX per-texel source normal',width=2048,height=2048,alpha=True);out.colorspace_settings.name='Non-Color';out.pixels.foreach_set(normal[::-1].flatten());out.filepath_raw=str(R/'resource_pack/textures/entity/sculpture_normal_dx.png');out.file_format='PNG';out.save();out.filepath_raw=str(R/'resource_pack/textures/entity/sculpture_hybrid_normal_dx.png');out.save()
+stats.update({'method':'Source-part BVH ray projection, +/-4cm along target face normal, smooth barycentric evaluated-source normals at every covered texel','seconds':time.time()-starttime,'normal_convention':'DirectX green negative; exact VV entity tangent basis still untested','contains_baked_directional_light':False,'triangles_added':0})
+(R/'evidence/per-texel-normal-bake.json').write_text(json.dumps(stats,indent=2));print(stats,flush=True)

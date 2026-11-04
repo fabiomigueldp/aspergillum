@@ -1,0 +1,53 @@
+{
+  "method": "Per-triangle 3x2 deformation gradient from original V8 welded baseline; exact singular values measure intrinsic compression/stretch, independent of rigid face rotation. These are distortion metrics, not a collision or artistic certificate.",
+  "rows": {
+    "V8": {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/body_interface_v8/anatomy_fit/retained-anatomy.npz",
+      "sha256": "c1971f80ca5bd99a8d51461823a42e03ed6400282e31a18586602cd0216b4519",
+      "main_faces_measured": 1374,
+      "tiny_faces_excluded_ids": [
+        424,
+        1131
+      ],
+      "excluded_positions_unchanged": true,
+      "minimum_principal_stretch": 0.14718595596382938,
+      "minimum_stretch_triangle_id": 144,
+      "maximum_principal_stretch": 1.3658996225408093,
+      "maximum_stretch_triangle_id": 395,
+      "minimum_area_ratio": 0.136657506307197,
+      "maximum_anisotropy": 6.308131610647207,
+      "faces_with_min_stretch_below_0p9": 21,
+      "faces_with_max_stretch_above_1p1": 3,
+      "changed_face_count": 614,
+      "changed_min_stretch_p05_median": [
+        0.9484064160960478,
+        0.9929013504288413
+      ],
+      "changed_max_stretch_p95": 1.0097427578121605
+    },
+    "bounded097": {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/body_interface_v9/constrained_fit/bounded097-c30-iteration01.npz",
+      "sha256": "4d305b41a4ecd43cb6a2de45b700b7eed3e02aabf384b2ae70d6a94373027b04",
+      "main_faces_measured": 1374,
+      "tiny_faces_excluded_ids": [
+        424,
+        1131
+      ],
+      "excluded_positions_unchanged": true,
+      "minimum_principal_stretch": 0.8980169159591286,
+      "minimum_stretch_triangle_id": 549,
+      "maximum_principal_stretch": 1.232495450596781,
+      "maximum_stretch_triangle_id": 537,
+      "minimum_area_ratio": 0.9666608049302693,
+      "maximum_anisotropy": 1.320856089978829,
+      "faces_with_min_stretch_below_0p9": 1,
+      "faces_with_max_stretch_above_1p1": 7,
+      "changed_face_count": 640,
+      "changed_min_stretch_p05_median": [
+        0.9545045121992253,
+        0.9930800293144693
+      ],
+      "changed_max_stretch_p95": 1.046150028847478
+    }
+  }
+}

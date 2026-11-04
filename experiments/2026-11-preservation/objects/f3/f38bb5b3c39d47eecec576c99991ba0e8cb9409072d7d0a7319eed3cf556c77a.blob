@@ -1,0 +1,46 @@
+from pathlib import Path
+import numpy as np,json,sys,importlib.util
+sys.dont_write_bytecode=True
+from mathutils.bvhtree import BVHTree
+O=Path(__file__).resolve().parent;B=O.parent.parent
+args=sys.argv[sys.argv.index('--')+1:];path=Path(args[0]);tag=args[1];d=np.load(path);v=d['points'];f=d['triangles'];old=np.load(B/'body_interface_v8/anatomy_fit/retained-anatomy.npz');pairs=np.load(O/f'{tag}-review-arrays.npz');sh=np.load(B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz');ba=np.load(B/'shell_band_v5/retained_candidate/evidence/band-paired.npz');dirs=np.load(O/'ear-visibility-real-mask.npz')['directions'];vm=np.load(O/'allbody-vertex-contour-mask.npz')
+spec=importlib.util.spec_from_file_location('gate',B/'shell_band_v3/tools/independent_gate.py');gate=importlib.util.module_from_spec(spec);spec.loader.exec_module(gate)
+vv=np.r_[v,sh['points'],ba['points']];ff=np.r_[f,sh['triangles']+len(v),ba['triangles']+len(v)+len(sh['points'])];tree=BVHTree.FromPolygons(vv.tolist(),ff.tolist(),all_triangles=True,epsilon=0)
+rep={'input':str(path),'new_against':'V8','rows':{},'limitations':'Finite rays at crossing witnesses only; exposed is evidence of ray escape but none does not certify invisibility. Intersection chords are linear span within a triangle pair, not penetration depth, defect size or visual severity.'}
+for name,ob in [('shell',sh),('band',ba)]:
+ rows=[]
+ for i,j in pairs['v8_'+name+'_new_pairs']:
+  a=v[f[i]];b=ob['points'][ob['triangles'][j]];w=np.array(gate.strict_hits(a,b)+gate.strict_hits(b,a));dist=np.linalg.norm(w[:,None,:]-w[None,:,:],axis=-1);e=np.unravel_index(dist.argmax(),dist.shape);samples=np.array([w[e[0]],w[e[1]],w.mean(0)]);n1=np.cross(a[1]-a[0],a[2]-a[0]);n1/=np.linalg.norm(n1);n2=np.cross(b[1]-b[0],b[2]-b[0]);n2/=np.linalg.norm(n2)
+  escaping=[]
+  for si,q in enumerate(samples):
+   for di in np.flatnonzero((dirs@n1>-.01)&(dirs@n2>-.01)):
+    dr=dirs[di];h=tree.ray_cast(tuple(q+dr*2e-6),tuple(dr),2.)
+    if h[0] is None:escaping.append([si,int(di)]);break
+  rows.append({'body_face':int(i),'body_source_face':int(d['source_face_indices'][i]),'obstacle_face':int(j),'shell_part':int(ob['face_parts'][j]) if name=='shell' else None,'body_vertices':f[i].tolist(),'protected_vertices':int(old['protected_vertices'][f[i]].sum()),'ear_vertices':int(old['protected_ears'][f[i]].sum()),'baseline_face_interior_visible':bool(vm['face_interior_visible'][i]),'witness_centroid':w.mean(0).tolist(),'intersection_chord_mm':float(dist.max()*1000),'sample_escaping_camera_rays':escaping})
+ rep['rows'][name]=rows
+ rep[name+'_summary']={'new_pairs':len(rows),'with_ear_vertex':sum(x['ear_vertices']>0 for x in rows),'by_protected_vertex_count':{str(k):sum(x['protected_vertices']==k for x in rows) for k in range(4)},'ray_escape_pairs':sum(bool(x['sample_escaping_camera_rays']) for x in rows),'max_chord_mm':max(x['intersection_chord_mm'] for x in rows) if rows else 0}
+# All adjacent face pairs are explicitly tested, independent of BVH suppressions.
+vf=[[] for _ in range(len(v))]
+for i,tri in enumerate(f):
+ for x in tri:vf[x].append(i)
+adj=set()
+for rows in vf:
+ for k in range(len(rows)):
+  for l in range(k+1,len(rows)):adj.add(tuple(sorted((rows[k],rows[l]))))
+rows=sorted(adj);cross=[];common_edge_artifacts=[]
+def robust_hits(a,b):
+ out=[];e1=b[1]-b[0];e2=b[2]-b[0]
+ for k in range(3):
+  pp=a[k];dr=a[(k+1)%3]-pp;h=np.cross(dr,e2);det=np.dot(e1,h)
+  if abs(det)<=1e-12*np.linalg.norm(e1)*np.linalg.norm(e2)*np.linalg.norm(dr):continue
+  ss=pp-b[0];u=np.dot(ss,h)/det;q=np.cross(ss,e1);vv=np.dot(dr,q)/det;tt=np.dot(e2,q)/det
+  if 1e-8<tt<1-1e-8 and u>1e-8 and vv>1e-8 and u+vv<1-1e-8:out.append((pp+tt*dr).tolist())
+ return out
+for i,j in rows:
+ w=robust_hits(v[f[i]],v[f[j]])+robust_hits(v[f[j]],v[f[i]])
+ if w:cross.append({'faces':[i,j],'witnesses':w})
+ # Noncoplanar faces sharing an edge cannot intersect except on that edge.
+ oldw=gate.strict_hits(v[f[i]],v[f[j]])+gate.strict_hits(v[f[j]],v[f[i]])
+ if oldw and not w:common_edge_artifacts.append({'faces':[i,j],'shared_vertices':sorted(set(map(int,f[i]))&set(map(int,f[j]))),'raw_witnesses':oldw})
+rep['explicit_adjacent_face_test']={'pairs_checked':len(rows),'strict_crossing_pairs':len(cross),'crossings':cross,'scale_relative_parallel_tolerance':1e-12,'raw_absolute_tolerance_artifacts_removed':common_edge_artifacts,'limits':'Strict noncoplanar crossings; scale-relative parallel check prevents floating residual determinants on exactly shared edges. Opposed coplanar inherited pair still separately declared by topology gate.'}
+(O/f'{tag}-new-pair-classification.json').write_text(json.dumps(rep,indent=2));print(json.dumps({k:v for k,v in rep.items() if k!='rows'},indent=2),flush=True)

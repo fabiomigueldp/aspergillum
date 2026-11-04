@@ -1,0 +1,11 @@
+# Referências oficiais consultadas em 2026-11-03
+
+- [minecraft:loot](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/blockreference/examples/blockcomponents/minecraftblock_loot?view=minecraft-bedrock-stable): a ausência do componente usa o próprio bloco como drop. Não foi criada uma tabela redundante.
+- [Manifest do addon](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/addonsreference/packmanifest): identidades, versões e dependências entre packs.
+- [Notas 1.26.40](https://learn.microsoft.com/en-us/minecraft/creator/documents/update1.26.40?view=minecraft-bedrock-stable): a versão mínima existente é uma versão documentada, não um erro de digitação.
+- [Geometria de blocos maiores](https://learn.microsoft.com/en-us/minecraft/creator/documents/customblockoversized?view=minecraft-bedrock-stable): dimensões máximas de 30 unidades por eixo, limites absolutos e interseção com o bloco-base. O auditor usa uma prova conservadora da interseção por um cubo não rotacionado contido na base.
+- [minecraft:selection_box](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/blockreference/examples/blockcomponents/minecraftblock_selection_box?view=minecraft-bedrock-stable): a caixa de seleção fica contida no espaço normal de 16 unidades.
+- [minecraft:collision_box](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/blockreference/examples/blockcomponents/minecraftblock_collision_box?view=minecraft-bedrock-stable): versões recentes possuem suporte ampliado. Este projeto conserva o perfil anterior de 16 unidades; não presume migração automática nem equipara esse limite ao da seleção.
+- [Block traits](https://learn.microsoft.com/en-us/minecraft/creator/documents/intro-block-traits?view=minecraft-bedrock-stable): estado cardinal e transformações para as quatro orientações.
+
+Não foram usados schemas não oficiais para afirmar compatibilidade. A documentação não substitui importar e jogar com o pacote no cliente-alvo.

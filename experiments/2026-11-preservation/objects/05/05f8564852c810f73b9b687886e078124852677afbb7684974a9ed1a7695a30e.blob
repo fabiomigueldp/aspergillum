@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "reviewedAtUtc": "2026-11-03T07:11:19.973472+00:00",
+  "baselineCommit": "3eaf97b172a38dac794461b156b70864737875d6",
+  "version": "0.12.0",
+  "scope": "Independent review of Cruzeta geometry, persistent codec, contour repairs, prior asset compatibility, and original inlay art. No source edits by reviewer.",
+  "tests": {
+    "altareFullSuiteBeforeFinalDirectionFix": {
+      "passed": 107,
+      "failed": 0,
+      "command": "npm test (addons/altare)"
+    },
+    "afterDirectionFix": {
+      "passed": 14,
+      "failed": 0,
+      "command": "node --experimental-strip-types --test tests/crossbrace.node.ts tests/menu.node.ts tests/customization.node.ts"
+    },
+    "typecheck": "passed",
+    "gitDiffCheck": "passed"
+  },
+  "compatibility": {
+    "method": "Byte comparison of every old file under each category against a build of baseline HEAD. Snapshot before final rebuild; final source change only affects UI direction capability.",
+    "oldBlocksIdentical": 397,
+    "oldGeometriesIdentical": 4108,
+    "oldTextureFilesIdentical": 258,
+    "missingOldFiles": 0,
+    "changedOldFiles": 0,
+    "priorDecodedStatesIdentical": 78432
+  },
+  "newStateChecks": {
+    "newRecipes": 17,
+    "newStatesRoundTripped": 1568,
+    "arbitraryContourRepairsRoundTripped": 25088,
+    "geometryConditionMatchesPerState": 1,
+    "maximumCollisionBoxes": 5,
+    "allCollisionBoxesInsideCell": true,
+    "allNewBlocksLightDampening": 0
+  },
+  "stateBudget": {
+    "altare": 80000,
+    "altareDiagnosticLimit": 80000,
+    "altareHeadroom": 0,
+    "aspergillum": 9744,
+    "combined": 89744,
+    "combinedDiagnosticLimit": 90000,
+    "combinedHeadroom": 256,
+    "reference": 65536,
+    "aboveReference": true,
+    "scope": "Only the two local packs; other add-ons must be counted separately."
+  },
+  "art": {
+    "inlaySampledTexels": 4096,
+    "inlayAccentTexels": 436,
+    "allOpaque": true,
+    "metallicTexels": 0,
+    "invalidColorOrHeightSamples": 0,
+    "existingCpuPreviewsInspected": [
+      "crossbrace-detail.png",
+      "crossbrace-7x2-bare.png",
+      "crossbrace-7x2-linen.png",
+      "crossbrace-8x2-floral.png"
+    ],
+    "obviousVisualDefectsFound": false,
+    "previewCaveat": "Simplified CPU render of geometry/maps, not Minecraft parity evidence. No Chromium launched."
+  },
+  "findings": [
+    {
+      "severity": "minor",
+      "status": "fixed_and_retested",
+      "file": "src/domain/customization.ts",
+      "finding": "Bare symmetric Cruzeta exposed a front selector whose facing value was discarded on commit.",
+      "resolution": "directional=false for crossbrace/none; temporary facing intent retained in draft and restored for a later cloth; dedicated new test passed."
+    }
+  ],
+  "remainingValidation": "Final packaging/build validation is owned by the implementation task. In-game Minecraft import, appearance, collision feel, placement/breaking and Content Log still require native validation. No remaining review blocker found."
+}

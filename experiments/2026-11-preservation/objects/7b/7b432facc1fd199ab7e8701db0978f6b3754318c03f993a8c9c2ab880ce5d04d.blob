@@ -1,0 +1,25 @@
+import bpy,json,math
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V63-opposite-ankle-trial.blend',use_scripts=False);o=bpy.data.objects['Maria — anatomia feminina adaptada CC0'];dg=bpy.context.evaluated_depsgraph_get();old=[v.co.copy() for v in o.evaluated_get(dg).data.vertices]
+def sm(t):t=max(0,min(1,t));return t*t*(3-2*t)
+new=[];weights=[]
+for p in old:
+ w=sm((p.z-3.315)/.016)*(1-sm((p.z-3.38)/.04))*sm((-p.y-.355)/.04)*(1-sm((abs(p.x-.0135)-.028)/.035))*math.exp(-((p.z-3.35)/.033)**2);q=p.copy();q.y+=.012*w;new.append(q);weights.append(w)
+k=o.shape_key_add(name='TESTE68 — plano ponta nasal Maria');k.value=1
+for i,v in enumerate(k.data):v.co=o.data.vertices[i].co+new[i]-old[i]
+fs=[tuple(f.vertices) for f in o.data.polygons];bv=BVHTree.FromPolygons(new,fs);pairs=[(a,b) for a,b in bv.overlap(bv) if a<b and not set(fs[a])&set(fs[b])]
+def av(p,f):return sum(((p[f[j]]-p[f[0]]).cross(p[f[j+1]]-p[f[0]])*.5 for j in range(1,len(f)-1)),Vector())
+rat=[];flip=0
+for f in fs:
+ if not any(weights[i]>1e-8 for i in f):continue
+ a,b=av(old,f),av(new,f)
+ if a.length>1e-12:rat.append(b.length/a.length);flip+=a.dot(b)<0
+report={'source':'V63 retained, not failed sleeves','scope':'Only nasal tip/ala depth blend; eyes lips chin untouched by compact support','affected_vertices':sum(w>1e-8 for w in weights),'max_depth_change_m':max(weights)*.012,'self_intersections':len(pairs),'flipped_faces':flip,'area_ratios':[min(rat),max(rat)],'protected_eyes_lips_chin_max_delta':max((a-b).length for a,b in zip(old,new) if a.z>=3.42 or a.z<=3.315),'rollback':'TESTE68=0 restores V63','measurement_status':'Artistic study from photo, not exact photogrammetric dimension'};json.dump(report,open(r+'V68-nasal-verification.json','w'),indent=2)
+baseline=BVHTree.FromPolygons(old,fs);bp=[(a,b) for a,b in baseline.overlap(baseline) if a<b and not set(fs[a])&set(fs[b])];print('COLLISIONS',bp,pairs);report['baseline_self_intersections']=len(bp);report['new_self_intersections']=len(set(pairs)-set(bp));json.dump(report,open(r+'V68-nasal-verification.json','w'),indent=2);assert not (set(pairs)-set(bp)) and not flip
+bpy.ops.wm.save_as_mainfile(filepath=r+'V68-nasal-trial.blend');s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=600;s.render.resolution_y=800;s.render.resolution_percentage=100;c=s.camera
+for view,loc,targ,scale in [('face',(-1.6,-5,3.7),(0,-.08,3.43),.88),('profile',(-5,-.05,3.6),(0,-.15,3.4),1.05)]:
+ c.location=loc;c.rotation_euler=(Vector(targ)-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=scale
+ for version,value in [('V63',0),('V68',1)]:
+  k.value=value;s.render.filepath=r+version+'-nasal-'+view+'.png';bpy.ops.render.render(write_still=True)
+print(report)

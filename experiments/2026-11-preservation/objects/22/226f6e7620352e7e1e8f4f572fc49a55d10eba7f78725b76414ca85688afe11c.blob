@@ -1,0 +1,77 @@
+--- a/addons/altare/src/infrastructure/editor.ts
++++ b/addons/altare/src/infrastructure/editor.ts
+@@ -25,7 +25,12 @@
+     timer=system.runTimeout(()=>sessions.release(active),1200);
+     const selectedSlot=player.selectedSlotIndex;
+     const finish=await chooseFinish(player,before,face??before[0]!.facing,()=>sessions.isCurrent(active,system.currentTick),callback=>sessions.onRelease(active,callback));
+-    if(!finish)return;
++    if(!finish){
++      // Expiry closes the form like Cancel, but should explain why the draft
++      // disappeared. Earlier cancellation/invalidation keeps its old behavior.
++      if(system.currentTick>=active.expires)tell(player,'error.expired');
++      return;
++    }
+     const item=player.getComponent('minecraft:inventory')?.container?.getItem(selectedSlot);
+     if(!sessions.isCurrent(session,system.currentTick)||!allowed(player)||player.dimension.id!==dimension.id
+       ||player.selectedSlotIndex!==selectedSlot||item?.typeId!==TOOL
+--- /dev/null
++++ b/addons/altare/tests/editor-timeout.node.ts
+@@ -0,0 +1,58 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import {build} from 'esbuild';
++import {fileURLToPath} from 'node:url';
++
++// New, targeted infrastructure regression. The timer/session/edit path is real;
++// the UI adapter only models its documented close/undefined contract.
++const origin={x:0,y:0,z:0};
++const tile={position:origin,stone:0,cloth:0,frontal:0,facing:0,edges:15};
++let writes=0,nextTimer=1,view:any;
++const messages:string[]=[],timers=new Map<number,{callback:()=>void,delay:number}>();
++const system={currentTick:0,runTimeout(callback:()=>void,delay:number){const id=nextTimer++;timers.set(id,{callback,delay});return id;},clearRun(id:number){timers.delete(id);}};
++class Port {
++ read(p:any){return p.x===0&&p.y===0&&p.z===0?structuredClone(tile):null;}
++ reconcile(){}
++ prepare(){}
++ write(){writes++;}
++}
++async function chooseFinish(_player:any,_tiles:any,_facing:any,isCurrent:()=>boolean,onRelease:(callback:()=>void)=>()=>void){
++ let close!:()=>void;
++ const wait=new Promise<undefined>(resolve=>{close=()=>resolve(undefined);});
++ view={showing:true,isCurrent,close:()=>{view.showing=false;close();}};
++ const unsubscribe=onRelease(view.close);
++ try{return await wait;}finally{unsubscribe();}
++}
++(globalThis as any).__altareExpiryAdapter={system,GameMode:{Creative:'creative',Survival:'survival'},BedrockSurfacePort:Port,TOOL:'altare:finish_tool',chooseFinish,tell:(_player:any,key:string)=>messages.push(key)};
++const bundled=await build({entryPoints:[fileURLToPath(new URL('../src/infrastructure/editor.ts',import.meta.url))],bundle:true,format:'esm',platform:'node',write:false,plugins:[{
++ name:'expiry-adapters',setup(b){
++  b.onResolve({filter:/^@minecraft\/server$|^\.\/surface-port\.ts$|^\.\.\/presentation\/menu\.ts$/},args=>({path:args.path,namespace:'expiry'}));
++  b.onLoad({filter:/.*/,namespace:'expiry'},()=>({contents:'export const {system,GameMode,BedrockSurfacePort,TOOL,chooseFinish,tell}=globalThis.__altareExpiryAdapter;'}));
++ },
++}]});
++const {edit,sessions}=await import('data:text/javascript;base64,'+Buffer.from(bundled.outputFiles[0]!.text).toString('base64'));
++const player={id:'expiry-review',isValid:true,getGameMode:()=> 'creative'},dimension={id:'overworld'};
++function start(){messages.length=0;writes=0;system.currentTick=0;assert.equal(timers.size,0);return edit(player,dimension,origin);}
++
++test('scheduled expiry explains closure once without applying the draft or retaining a lock',async()=>{
++ const pending=start();assert.equal(view.showing,true);assert.deepEqual(messages,[]);
++ const timer=[...timers.values()][0]!;assert.equal(timer.delay,1200);
++ system.currentTick=1200;timer.callback();await pending;
++ assert.equal(view.showing,false);assert.deepEqual(messages,['error.expired']);assert.equal(writes,0);assert.equal(timers.size,0);
++ const replacement=sessions.acquire(player.id,dimension.id,['0,0,0'],1201);assert.ok(replacement);sessions.release(replacement);
++});
++
++test('a lease discovered expired by an interaction gets the same notice before the timer fires',async()=>{
++ const pending=start();system.currentTick=1200;assert.equal(view.isCurrent(),false);await pending;
++ assert.deepEqual(messages,['error.expired']);assert.equal(writes,0);assert.equal(timers.size,0);
++});
++
++test('voluntary cancellation before the deadline does not show an expiry warning',async()=>{
++ const pending=start();system.currentTick=100;view.close();await pending;
++ assert.deepEqual(messages,[]);assert.equal(writes,0);assert.equal(timers.size,0);
++});
++
++test('non-timeout invalidation before the deadline keeps its existing silent dismissal',async()=>{
++ const pending=start();system.currentTick=100;sessions.invalidate(dimension.id,'0,0,0');await pending;
++ assert.equal(view.showing,false);assert.deepEqual(messages,[]);assert.equal(writes,0);assert.equal(timers.size,0);
++});

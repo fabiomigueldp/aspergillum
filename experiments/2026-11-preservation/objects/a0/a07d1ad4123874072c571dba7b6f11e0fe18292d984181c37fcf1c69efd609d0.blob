@@ -1,0 +1,108 @@
+"""Independent V14 audit. Never imports the exporter or modifies its products.
+Exact pixel-cell / analytic triangle clipping assumes nearest sampling, no mips.
+"""
+from pathlib import Path
+import json,hashlib,gzip,math
+import numpy as np
+from PIL import Image
+OUT=Path(__file__).resolve().parent;V14=OUT.parent;B=V14.parent;W=V14/'export_work';RP=V14/'resource_pack';LEG=B/'pbr_normals_v2/resource_pack'
+G=RP/'models/entity/paz_v75_v14_lab_sculpture.geo.json'; OLDG=LEG/'models/entity/paz_v75_pbr_sculpture.geo.json'
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def save(n,x): (OUT/n).write_text(json.dumps(x,indent=2,allow_nan=False)+'\n')
+def quant(x):return dict(zip(['min','p50','p90','p99','max'],map(float,np.quantile(x,[0,.5,.9,.99,1]))))
+def rot(c):
+ x,y,z=np.radians(c['rotation'])*[-1,-1,1];cx,cy,cz=np.cos([x,y,z]);sx,sy,sz=np.sin([x,y,z])
+ return np.array([[cz,-sz,0],[sz,cz,0],[0,0,1]])@np.array([[cy,0,sy],[0,1,0],[-sy,0,cy]])@np.array([[1,0,0],[0,cx,-sx],[0,sx,cx]])
+def params(c):
+ s=np.array(c['size']);o=np.array(c['origin']);p=np.array(c['pivot'])*[-1,1,1];o=np.array([-o[0]-s[0],o[1],o[2]])
+ return s,o,p,rot(c)
+def bb(v):return v[:,[0,2,1]]*[16,16,-16]
+def clip(poly,coef):
+ if not len(poly):return []
+ out=[];a=poly[-1];da=coef[0]*a[0]+coef[1]*a[1]+coef[2]
+ for b in poly:
+  db=coef[0]*b[0]+coef[1]*b[1]+coef[2]
+  if (da>=0)!=(db>=0):
+   r=da/(da-db);out.append((a[0]+r*(b[0]-a[0]),a[1]+r*(b[1]-a[1])))
+  if db>=0:out.append(b)
+  a=b;da=db
+ return out
+def polyarea(p):
+ if len(p)<3:return 0.
+ return abs(sum(p[i][0]*p[(i+1)%len(p)][1]-p[(i+1)%len(p)][0]*p[i][1] for i in range(len(p))))*.5
+# Returns exact per-cell intersection area in texel^2, not center-count area.
+def cell_intersections(C,n):
+ yy,xx=np.mgrid[0:n,0:n];corn=np.stack([np.stack([xx,yy],-1),np.stack([xx+1,yy],-1),np.stack([xx+1,yy+1],-1),np.stack([xx,yy+1],-1)],axis=-2)
+ bc=corn@C[:,:2].T+C[:,2];full=(bc>=-1e-12).all(axis=(-1,-2));away=(bc<0).all(axis=-2).any(axis=-1);areas=full.astype(float)
+ for y,x in np.argwhere(~full&~away):
+  poly=[(x,y),(x+1,y),(x+1,y+1),(x,y+1)]
+  for coef in C:poly=clip(poly,coef)
+  areas[y,x]=polyarea(poly)
+ return areas
+
+def max_outside_distance(C,n,covered,scale):
+ y,x=np.nonzero(covered);p=np.concatenate([np.column_stack([x,y]),np.column_stack([x+1,y]),np.column_stack([x+1,y+1]),np.column_stack([x,y+1])]);bcs=p@C[:,:2].T+C[:,2];outside=(bcs< -1e-12).any(1)
+ if not outside.any():return 0.,None
+ p=p[outside];tri=np.linalg.solve(np.column_stack([C[:,:2],C[:,2]]),np.eye(3))[:2].T # C * [x,y,1] = barycentric vertex basis
+ # Above homogeneous solutions are the three vertex locations; all w=1 by barycentric sum.
+ a=p*scale;tri=tri*scale;dist=np.full(len(a),np.inf)
+ for j in range(3):
+  q=tri[j];d=tri[(j+1)%3]-q;t=np.clip((a-q)@d/(d@d),0,1);dist=np.minimum(dist,np.linalg.norm(a-(q+t[:,None]*d),axis=1))
+ i=int(np.argmax(dist));return float(dist[i]),p[i].tolist()
+
+gdoc=json.loads(G.read_text());g=gdoc['minecraft:geometry'][0];old=json.loads(OLDG.read_text())['minecraft:geometry'][0]
+records=[json.loads(l)for l in gzip.open(W/'transport_faces.jsonl.gz','rt')];arr=np.load(W/'transport_arrays.npz')
+colorpath=RP/'textures/entity/paz_v75_v14_lab_sculpture.png';normalpath=RP/'textures/entity/paz_v75_v14_lab_sculpture_normal_dx.png';color=np.asarray(Image.open(colorpath).convert('RGBA'));normal=np.asarray(Image.open(normalpath).convert('RGBA'))
+oldcolor=np.asarray(Image.open(LEG/'textures/entity/paz_v75_pbr_sculpture.png').convert('RGBA'));oldnormal=np.asarray(Image.open(LEG/'textures/entity/paz_v75_pbr_sculpture_normal_dx.png').convert('RGBA'))
+sources={0:np.load(B/'band_shell_v13/constrained_fit/retained-band.npz'),1:np.load(B/'ear_rim_v11/structural_rebuild/retained-shell.npz'),15:np.load(B/'body_interface_v9/constrained_fit/retained-anatomy.npz')}
+checks={'finite_json':True,'only_three_changed_bones':True,'source_face_mapping_complete_unique':True,'source_hashes_valid':True,'all_source_array_copies_exact':True,'record_maps_correct':True,'uv_nonoverlap':True,'all_new_south_only':True,'all_new_positive_width_height_zero_depth':True,'normal_placeholder_all_new':True}
+changed=[]
+for i,b in enumerate(g['bones']):
+ if b!=old['bones'][i]:changed.append(i)
+ if i not in sources:checks['only_three_changed_bones'] &= b==old['bones'][i]
+assert changed==[0,1,15]
+for part,d in sources.items():
+ recs=[r for r in records if r['part']==part];checks['source_face_mapping_complete_unique'] &= sorted(r['native_triangle_index']for r in recs)==list(range(len(d['triangles'])))
+ path=B/recs[0]['native_source'];checks['source_hashes_valid'] &= sha(path)==recs[0]['source_sha256']
+ frozen=np.load(W/f"source-{ {0:'band',1:'shell',15:'anatomy'}[part]}-frozen.npz")
+ checks['all_source_array_copies_exact'] &= frozen.files==d.files and all(np.array_equal(d[k],frozen[k],equal_nan=True)if d[k].dtype.kind in 'fc' else np.array_equal(d[k],frozen[k]) for k in d.files)
+occupancy=np.zeros(color.shape[:2],np.uint8);occupancy[:2048,:2048]=1
+per=[];maxplane=0.;maxround=0.;maxangle=0.;maxmap=0.;mindet=1.;alias=[]
+Y,X=np.mgrid[0:20,0:20];pix=np.stack([X+.5,Y+.5,np.ones_like(X)],-1)
+for ri,r in enumerate(records):
+ part=r['part'];fi=r['native_triangle_index'];d=sources[part];c=g['bones'][part]['cubes'][r['cube_index']];s,o,p,R=params(c)
+ checks['finite_json'] &= all(np.isfinite(c[k]).all()for k in ['origin','size','pivot','rotation'])
+ checks['all_new_south_only'] &= set(c['uv'])=={'south'}
+ checks['all_new_positive_width_height_zero_depth'] &= s[0]>0 and s[1]>0 and s[2]==0
+ idx=d['triangles'][fi];target=bb(d['points'][idx]);local=(target-p)@R+p-o
+ plane=float(np.abs(local[:,2]).max()/16);maxplane=max(maxplane,plane)
+ xy=np.column_stack([local[:,0]/s[0]*20,(1-local[:,1]/s[1])*20]);C=np.linalg.inv(np.column_stack([xy,np.ones(3)]).T)
+ # projected triangle transform derived directly from input positions and final JSON, not export metadata
+ reconstruction=(np.column_stack([local[:,:2],np.zeros(3)])+o-p)@R.T+p
+ rounderr=float(np.linalg.norm(reconstruction-target,axis=1).max()/16);maxround=max(maxround,rounderr)
+ nativeN=np.cross(target[1]-target[0],target[2]-target[0]);nativeN/=np.linalg.norm(nativeN);angle=float(np.degrees(np.arccos(np.clip(nativeN@R[:,2],-1,1))));maxangle=max(maxangle,angle)
+ maperr=float(np.max(np.abs(np.array(r['pixel_to_native_barycentric'])-C)));maxmap=max(maxmap,maperr)
+ checks['record_maps_correct'] &= r['native_triangle']==idx.tolist() and np.array_equal(d['points'][r['vertex_order']]@np.array([[16,0,0],[0,0,-16],[0,16,0]]),r['triangle_bb'])
+ tx,ty=c['uv']['south']['uv'];n,m=c['uv']['south']['uv_size'];assert n==m==20
+ checks['uv_nonoverlap'] &= not occupancy[ty:ty+n,tx:tx+n].any();occupancy[ty:ty+n,tx:tx+n]+=1
+ tile=color[ty:ty+n,tx:tx+n];covered=tile[:,:,3]>0
+ checks['normal_placeholder_all_new'] &= bool(np.all(normal[ty:ty+n,tx:tx+n]==[128,128,255,255]))
+ ia=cell_intersections(C,n);pixelarea=s[0]*s[1]/256/n**2;nativearea=np.linalg.norm(np.cross(target[1]-target[0],target[2]-target[0]))/512
+ retained=float(ia[covered].sum()*pixelarea);over=float((covered.sum()-ia[covered].sum())*pixelarea);under=float(ia[~covered].sum()*pixelarea)
+ assert abs(ia.sum()*pixelarea-nativearea)<max(1e-12,nativearea*1e-7),(ri,nativearea,ia.sum()*pixelarea)
+ dist,witness=max_outside_distance(C,n,covered,s[:2]/16/n)
+ centerbc=pix@C.T;inside=(centerbc>=-1e-10).all(2)
+ row={'transport_id':ri,'part':part,'face':fi,'plane_error_blocks':plane,'roundtrip_error_blocks':rounderr,'normal_orientation_error_degrees':angle,'area_blocks2':float(nativearea),'outside_alpha_area_blocks2':over,'missing_native_area_blocks2':under,'outside_fraction_native':over/nativearea,'missing_fraction_native':under/nativearea,'maximum_opaque_pixel_corner_extrapolation_mm':dist*1000,'extrapolation_witness_tile_xy':witness,'alpha_covered_pixels':int(covered.sum()),'inside_centers_lost':int((inside&~covered).sum()),'outside_centers_added':int((~inside&covered).sum()),'mask_barycentric_map_max_error':maperr,'triangle_tile_xy':xy.tolist(),'uv':[tx,ty]}
+ for key in ['face_parts','face_roles','v13_face_roles']:
+  if key in r:row[key]=r[key]
+ per.append(row)
+ if ri%2000==0:print('audited',ri,flush=True)
+# Legacy unchanged pixels imply unchanged pixel addressing, not tested filtering/mips.
+report={'status':'numerical and nearest-cell raster audit; not engine approval','checks':{k:bool(v)for k,v in checks.items()},'changed_bones':changed,'legacy_color_region_bit_exact':bool(np.array_equal(color[:2048,:2048],oldcolor)),'legacy_normal_region_bit_exact':bool(np.array_equal(normal[:2048,:2048],oldnormal)),'new_faces':len(records),'total_cubes':sum(len(b['cubes'])for b in g['bones']),'texture_size':list(color.shape[:2]),'max_plane_error_blocks':maxplane,'max_triangle_roundtrip_error_blocks':maxround,'max_normal_orientation_angle_degrees':maxangle,'max_raw_barycentric_map_error':maxmap,'alpha_values':np.unique(color[:,:,3]).tolist(),'inputs_outputs_sha256':{str(p.relative_to(B)):sha(p)for p in [G,OLDG,colorpath,normalpath,*[B/r['native_source']for r in [records[0],next(r for r in records if r['part']==1),records[-1]]]]},'parts':{},'limitations':['Exact cell clipping models nearest texture sampling at mip level0 only; not engine, bilinear, anisotropic or mip behavior.','Outside-cell footprints are diagnostic planar support beyond native triangles; they do not alone prove visible cross-component penetration.','Normals on new parts are placeholders unless later bake changes the output hash.']}
+for part in sources:
+ z=[r for r in per if r['part']==part];area=sum(r['area_blocks2']for r in z);report['parts'][str(part)]={'faces':len(z),'native_area_blocks2':area,'added_area_blocks2':sum(r['outside_alpha_area_blocks2']for r in z),'lost_area_blocks2':sum(r['missing_native_area_blocks2']for r in z),'max_extrapolation_mm':max(r['maximum_opaque_pixel_corner_extrapolation_mm']for r in z),'added_fraction_quantiles':quant([r['outside_fraction_native']for r in z]),'lost_fraction_quantiles':quant([r['missing_fraction_native']for r in z]),'extrapolation_mm_quantiles':quant([r['maximum_opaque_pixel_corner_extrapolation_mm']for r in z]),'fully_missing_faces':sum(r['alpha_covered_pixels']==0 for r in z),'worst_extrapolation':sorted(z,key=lambda x:x['maximum_opaque_pixel_corner_extrapolation_mm'],reverse=True)[:5]}
+save('transport-audit.json',report)
+with gzip.open(OUT/'raster-face-audit.jsonl.gz','wt')as f:
+ for r in per:f.write(json.dumps(r,allow_nan=False)+'\n')
+np.savez_compressed(OUT/'raster-audit-arrays.npz',**{k:np.array([r[k]for r in per])for k in ['part','face','area_blocks2','outside_alpha_area_blocks2','missing_native_area_blocks2','maximum_opaque_pixel_corner_extrapolation_mm','triangle_tile_xy']})
+print(json.dumps(report,indent=2))

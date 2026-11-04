@@ -1,0 +1,26 @@
+--- prototype-1.mjs
++++ prototype-2.mjs
+@@ -2,6 +2,7 @@
+ 
+ // Isolated visual study: global dimensions in sixteenths, never inferred from
+ // published contour states. It does not register or replace any block identity.
++// Study revision 2 balances the two depth shoulders of each capital.
+ const round=n=>Number(n.toFixed(7));
+ const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+ function member(origin,size,material='wood_horizontal'){
+@@ -52,7 +53,7 @@
+   add(`pedestal_${index}_shaft`,octagonalShaft(cx,p.shaftW,p.shaftD,2.2,8.5));
+   add(`pedestal_${index}_capital`,[
+    member([cx-(p.shaftW+.6)/2,10.7,-(p.shaftD+.6)/2],[p.shaftW+.6,.45,p.shaftD+.6]),
+-   member([cx-(p.shaftW+1.5)/2,11.15,-(p.shaftD+2)/2],[p.shaftW+1.5,.65,p.shaftD+2]),
++   member([cx-(p.shaftW+1.5)/2,11.15,-(p.shaftD+(p.capD-p.shaftD)*.5)/2],[p.shaftW+1.5,.65,p.shaftD+(p.capD-p.shaftD)*.5]),
+    member([cx-(p.capW-.6)/2,11.8,-(p.capD-.8)/2],[p.capW-.6,1.0,p.capD-.8]),
+    member([cx-p.capW/2,12.8,-p.capD/2],[p.capW,.6,p.capD]),
+    member([cx-(p.capW-.3)/2,13.4,-(p.capD-.3)/2],[p.capW-.3,.8,p.capD-.3]),
+@@ -65,5 +66,5 @@
+   b.cubes[i]=serializeCube(c);
+  }
+  const identifier=`geometry.altare.study_twin_pedestal_${width}x${depth}_${facing}`;
+- return {doc:{format_version:'1.16.0','minecraft:geometry':[{description:{identifier,texture_width:128,texture_height:128,visible_bounds_width:Math.max(width,depth)+1,visible_bounds_height:2,visible_bounds_offset:[0,.5,0]},bones}]},profile:p,prototype:true,unregistered:true};
++ return {doc:{format_version:'1.16.0','minecraft:geometry':[{description:{identifier,texture_width:128,texture_height:128,visible_bounds_width:Math.max(width,depth)+1,visible_bounds_height:2,visible_bounds_offset:[0,.5,0]},bones}]},profile:p,prototype:true,unregistered:true,studyRevision:2};
+ }

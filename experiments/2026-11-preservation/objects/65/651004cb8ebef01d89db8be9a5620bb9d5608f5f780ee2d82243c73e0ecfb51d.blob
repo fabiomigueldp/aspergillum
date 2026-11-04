@@ -1,0 +1,38 @@
+import numpy as np,json
+from scipy.optimize import linprog
+from scipy.sparse import lil_matrix
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';s=np.load(r+'neck-collar-exact-obstacles.npz');skin=s['skin_points'][s['skin_triangles']];yz=skin[:,:,1:];e1=yz[:,1]-yz[:,0];e2=yz[:,2]-yz[:,0];det=e1[:,0]*e2[:,1]-e1[:,1]*e2[:,0];valid=abs(det)>1e-14;lo=yz.min(1);hi=yz.max(1);curves={'cap':np.load(r+'cap-mantle-source-cap.npz')['points'][-112:][28:85],'mantle':np.load(r+'cap-mantle-source-mantle.npz')['points'][-80:]};reports={};output={}
+for name,C in curves.items():
+ n=len(C);k=15 if name=='cap' else 18;free=list(range(k))+list(range(n-k,n));index={v:i for i,v in enumerate(free)};rows=[];rhs=[];bad=[];radius=.0008 if name=='cap' else .0035
+ for j in list(range(k))+list(range(n-k-1,n-1)):
+  a=C[j];b=C[j+1];sgn=1 if j<k else -1;ids=np.where(valid &(hi>=np.minimum(a[1:],b[1:])-1e-10).all(1)&(lo<=np.maximum(a[1:],b[1:])+1e-10).all(1))[0]
+  for q in ids:
+   def bary(v):
+    z=v-yz[q,0];return np.array([(z[0]*e2[q,1]-z[1]*e2[q,0])/det[q],(e1[q,0]*z[1]-e1[q,1]*z[0])/det[q]])
+   u=bary(a[1:]);v=bary(b[1:]);f=np.r_[u,1-u.sum()];g=np.r_[v-u,-(v-u).sum()];left=0.;right=1.
+   for x,y in zip(f,g):
+    if abs(y)<1e-14:
+     if x<0:left=2;break
+    elif y>0:left=max(left,-x/y)
+    else:right=min(right,-x/y)
+   if left>right:continue
+   for t in [left,right]:
+    uv=u+t*(v-u);sx=skin[q,0,0]+uv[0]*(skin[q,1,0]-skin[q,0,0])+uv[1]*(skin[q,2,0]-skin[q,0,0]);cx=(1-t)*a[0]+t*b[0];need=radius+sgn*(sx-cx);row={}
+    for vi,w in [(j,1-t),(j+1,t)]:
+     if vi in index and w>1e-12:row[index[vi]]=w
+    if not row:
+     if need>1e-9:bad.append([j,float(t),float(need)])
+    else:rows.append(row);rhs.append(need)
+ A=lil_matrix((len(rows),len(free)))
+ for ri,row in enumerate(rows):
+  for ci,x in row.items():A[ri,ci]=-x
+ sol=linprog(np.ones(len(free)),A_ub=A.tocsr(),b_ub=-np.array(rhs),bounds=[(0,.04)]*len(free),method='highs');rp={'support_nodes':free,'constraints':len(rows),'fixed_infeasible':bad,'solver_success':bool(sol.success),'message':sol.message,'margin_with_halfthickness_m':radius,'max_allowed_shift_m':.04}
+ if sol.success and not bad:
+  Q=C.copy()
+  for v,i in index.items():Q[v,0]+=(1 if v<k else -1)*sol.x[i]
+  rp['max_shift_m']=float(sol.x.max());rp['nonzero_nodes']=int((sol.x>1e-8).sum());rp['max_constraint_residual_m']=float(np.max(A@sol.x+np.array(rhs)));output[name]=Q
+ if not sol.success:
+  from scipy.sparse import hstack,vstack,eye,csr_matrix
+  aa=vstack([hstack([A.tocsr(),csr_matrix((len(rows),1))]),hstack([eye(len(free)),-np.ones((len(free),1))])]).tocsr();bb=np.r_[-np.array(rhs),np.zeros(len(free))];zz=linprog(np.r_[np.zeros(len(free)),1.],A_ub=aa,b_ub=bb,bounds=[(0,None)]*(len(free)+1),method='highs');rp['unbounded_diagnostic_success']=bool(zz.success);rp['minimum_max_shift_if_bound_relaxed_m']=float(zz.x[-1]) if zz.success else None
+ reports[name]=rp
+json.dump(reports,open(r+'cap-mantle-endpoint-relaxation-proof.json','w'),indent=2);np.savez(r+'cap-mantle-endpoint-relaxation-proof.npz',**output);print(reports)

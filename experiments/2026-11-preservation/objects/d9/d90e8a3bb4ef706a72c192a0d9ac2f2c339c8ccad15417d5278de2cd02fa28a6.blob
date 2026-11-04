@@ -1,0 +1,770 @@
+{
+  "status": "numerical and nearest-cell raster audit; not engine approval",
+  "checks": {
+    "finite_json": true,
+    "only_three_changed_bones": true,
+    "source_face_mapping_complete_unique": true,
+    "source_hashes_valid": true,
+    "all_source_array_copies_exact": true,
+    "record_maps_correct": true,
+    "uv_nonoverlap": true,
+    "all_new_south_only": true,
+    "all_new_positive_width_height_zero_depth": true,
+    "normal_placeholder_all_new": true
+  },
+  "changed_bones": [
+    0,
+    1,
+    15
+  ],
+  "legacy_color_region_bit_exact": true,
+  "legacy_normal_region_bit_exact": true,
+  "new_faces": 18484,
+  "total_cubes": 23081,
+  "texture_size": [
+    4096,
+    4096
+  ],
+  "max_plane_error_blocks": 2.6645352591003757e-15,
+  "max_triangle_roundtrip_error_blocks": 2.6442193687558188e-15,
+  "max_normal_orientation_angle_degrees": 1.4787793334710982e-06,
+  "max_raw_barycentric_map_error": 2.7672877878082147e-10,
+  "alpha_values": [
+    0,
+    255
+  ],
+  "inputs_outputs_sha256": {
+    "assembly_transport_v14/resource_pack/models/entity/paz_v75_v14_lab_sculpture.geo.json": "60ca91b76eb9f8d4a1cb2bf4f69f6e7e5c97d17abc63db26883cee9d3fead00b",
+    "pbr_normals_v2/resource_pack/models/entity/paz_v75_pbr_sculpture.geo.json": "160d00c5489e618bdb093eb48a388b17f606ca9970f00de88b164758fa1c46cf",
+    "assembly_transport_v14/resource_pack/textures/entity/paz_v75_v14_lab_sculpture.png": "4793c77398d1e0301ccd8dfaef53a83ded9befbbcbb88571a9d1479b2a972ac7",
+    "assembly_transport_v14/resource_pack/textures/entity/paz_v75_v14_lab_sculpture_normal_dx.png": "eb689b64bc5da5720e66c77d2273ac94fede1326584e0842d9510f49e64a882b",
+    "band_shell_v13/constrained_fit/retained-band.npz": "aa27567ac125b12a298c283b0e9c99130fe222bf2ce3bdf9f22edf2908f4404b",
+    "ear_rim_v11/structural_rebuild/retained-shell.npz": "c79f296415d566db5f9c109389375e0d3ae112fbccbbc89c8628200939fbf81f",
+    "body_interface_v9/constrained_fit/retained-anatomy.npz": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db"
+  },
+  "parts": {
+    "0": {
+      "faces": 4444,
+      "native_area_blocks2": 0.03362153689119624,
+      "added_area_blocks2": 0.007405549643898254,
+      "lost_area_blocks2": 0.00017281653195177018,
+      "max_extrapolation_mm": 2.060547462772079,
+      "added_fraction_quantiles": {
+        "min": 0.17283955072618093,
+        "p50": 0.21616627134166916,
+        "p90": 0.22709599722965731,
+        "p99": 0.25947484328068565,
+        "max": 0.2901234567899142
+      },
+      "lost_fraction_quantiles": {
+        "min": 0.0,
+        "p50": 0.006684815135501808,
+        "p90": 0.00900060777035868,
+        "p99": 0.010432846854975095,
+        "max": 0.012072890731606107
+      },
+      "extrapolation_mm_quantiles": {
+        "min": 0.0038361865063321924,
+        "p50": 0.4304599180066099,
+        "p90": 0.8213265401157912,
+        "p99": 1.8410960674512689,
+        "max": 2.060547462772079
+      },
+      "fully_missing_faces": 0,
+      "worst_extrapolation": [
+        {
+          "transport_id": 125,
+          "part": 0,
+          "face": 125,
+          "plane_error_blocks": 0.0,
+          "roundtrip_error_blocks": 1.3877787807814457e-17,
+          "normal_orientation_error_degrees": 0.0,
+          "area_blocks2": 6.979984701190464e-05,
+          "outside_alpha_area_blocks2": 1.4449718496547938e-05,
+          "missing_native_area_blocks2": 6.620943954302472e-07,
+          "outside_fraction_native": 0.2070164780459115,
+          "missing_fraction_native": 0.009485613848370246,
+          "maximum_opaque_pixel_corner_extrapolation_mm": 2.060547462772079,
+          "extrapolation_witness_tile_xy": [
+            20,
+            20
+          ],
+          "alpha_covered_pixels": 194,
+          "inside_centers_lost": 0,
+          "outside_centers_added": 32,
+          "mask_barycentric_map_max_error": 1.0436096431476471e-14,
+          "triangle_tile_xy": [
+            [
+              18.999999999999996,
+              19.00000000000001
+            ],
+            [
+              3.070099120065399,
+              1.0000000000001807
+            ],
+            [
+              0.9999999999999987,
+              19.00000000000001
+            ]
+          ],
+          "uv": [
+            2508,
+            20
+          ],
+          "face_parts": 0,
+          "face_roles": 0,
+          "v13_face_roles": 0
+        },
+        {
+          "transport_id": 2185,
+          "part": 0,
+          "face": 2185,
+          "plane_error_blocks": 0.0,
+          "roundtrip_error_blocks": 7.850462293418876e-17,
+          "normal_orientation_error_degrees": 0.0,
+          "area_blocks2": 6.788584990209022e-05,
+          "outside_alpha_area_blocks2": 1.4080207188821811e-05,
+          "missing_native_area_blocks2": 6.706565908796137e-07,
+          "outside_fraction_native": 0.20741004508493718,
+          "missing_fraction_native": 0.009879180887429149,
+          "maximum_opaque_pixel_corner_extrapolation_mm": 2.0566363405796015,
+          "extrapolation_witness_tile_xy": [
+            0,
+            20
+          ],
+          "alpha_covered_pixels": 194,
+          "inside_centers_lost": 0,
+          "outside_centers_added": 33,
+          "mask_barycentric_map_max_error": 1.3766765505351941e-14,
+          "triangle_tile_xy": [
+            [
+              19.0,
+              19.0000000000007
+            ],
+            [
+              16.945409286244455,
+              1.000000000000274
+            ],
+            [
+              1.0000000000000022,
+              19.0000000000007
+            ]
+          ],
+          "uv": [
+            2908,
+            420
+          ],
+          "face_parts": 1,
+          "face_roles": 0,
+          "v13_face_roles": 0
+        },
+        {
+          "transport_id": 126,
+          "part": 0,
+          "face": 126,
+          "plane_error_blocks": 0.0,
+          "roundtrip_error_blocks": 1.3668035872266426e-16,
+          "normal_orientation_error_degrees": 0.0,
+          "area_blocks2": 2.7285722137259655e-05,
+          "outside_alpha_area_blocks2": 5.66847472557191e-06,
+          "missing_native_area_blocks2": 1.1027206797794186e-07,
+          "outside_fraction_native": 0.20774508723122265,
+          "missing_fraction_native": 0.004041383527370944,
+          "maximum_opaque_pixel_corner_extrapolation_mm": 2.051444486269687,
+          "extrapolation_witness_tile_xy": [
+            20,
+            20
+          ],
+          "alpha_covered_pixels": 195,
+          "inside_centers_lost": 0,
+          "outside_centers_added": 33,
+          "mask_barycentric_map_max_error": 2.1449508835758024e-13,
+          "triangle_tile_xy": [
+            [
+              0.9999999999999987,
+              19.000000000001048
+            ],
+            [
+              18.999999999999996,
+              19.000000000001048
+            ],
+            [
+              7.791470358014645,
+              1.0000000000037135
+            ]
+          ],
+          "uv": [
+            2528,
+            20
+          ],
+          "face_parts": 0,
+          "face_roles": 0,
+          "v13_face_roles": 1
+        },
+        {
+          "transport_id": 2190,
+          "part": 0,
+          "face": 2190,
+          "plane_error_blocks": 0.0,
+          "roundtrip_error_blocks": 7.850462293418876e-17,
+          "normal_orientation_error_degrees": 0.0,
+          "area_blocks2": 2.6653623465082272e-05,
+          "outside_alpha_area_blocks2": 5.537377799963344e-06,
+          "missing_native_area_blocks2": 1.079359829999303e-07,
+          "outside_fraction_native": 0.2077532837971399,
+          "missing_fraction_native": 0.004049580093353252,
+          "maximum_opaque_pixel_corner_extrapolation_mm": 2.047995468763128,
+          "extrapolation_witness_tile_xy": [
+            0,
+            20
+          ],
+          "alpha_covered_pixels": 195,
+          "inside_centers_lost": 0,
+          "outside_centers_added": 33,
+          "mask_barycentric_map_max_error": 1.0969003483296547e-13,
+          "triangle_tile_xy": [
+            [
+              1.0000000000000022,
+              19.00000000000039
+            ],
+            [
+              19.000000000000004,
+              19.00000000000039
+            ],
+            [
+              12.20971874115368,
+              1.000000000001886
+            ]
+          ],
+          "uv": [
+            3008,
+            420
+          ],
+          "face_parts": 1,
+          "face_roles": 0,
+          "v13_face_roles": 1
+        },
+        {
+          "transport_id": 914,
+          "part": 0,
+          "face": 914,
+          "plane_error_blocks": 0.0,
+          "roundtrip_error_blocks": 2.7755575615628914e-17,
+          "normal_orientation_error_degrees": 8.537736462515939e-07,
+          "area_blocks2": 6.742669653350274e-05,
+          "outside_alpha_area_blocks2": 1.4788611146472704e-05,
+          "missing_native_area_blocks2": 6.373291579648792e-07,
+          "outside_fraction_native": 0.21932872151202887,
+          "missing_fraction_native": 0.009452178302227892,
+          "maximum_opaque_pixel_corner_extrapolation_mm": 2.006687012408224,
+          "extrapolation_witness_tile_xy": [
+            20,
+            20
+          ],
+          "alpha_covered_pixels": 196,
+          "inside_centers_lost": 0,
+          "outside_centers_added": 33,
+          "mask_barycentric_map_max_error": 3.441691376337985e-14,
+          "triangle_tile_xy": [
+            [
+              19.0,
+              18.99999999999907
+            ],
+            [
+              2.7697870452326585,
+              0.9999999999993658
+            ],
+            [
+              1.000000000000001,
+              18.99999999999907
+            ]
+          ],
+          "uv": [
+            4008,
+            160
+          ],
+          "face_parts": 0,
+          "face_roles": 0,
+          "v13_face_roles": 0
+        }
+      ]
+    },
+    "1": {
+      "faces": 12664,
+      "native_area_blocks2": 5.405380952320983,
+      "added_area_blocks2": 1.025706183315269,
+      "lost_area_blocks2": 0.004501010897191222,
+      "max_extrapolation_mm": 40.47208770961175,
+      "added_fraction_quantiles": {
+        "min": 0.1728395117372826,
+        "p50": 0.21996559827265066,
+        "p90": 0.253426875056266,
+        "p99": 0.27781621841507526,
+        "max": 0.2901234567903764
+      },
+      "lost_fraction_quantiles": {
+        "min": 0.0,
+        "p50": 0.0010122777970919354,
+        "p90": 0.00782782460213287,
+        "p99": 0.011996623396018488,
+        "max": 0.01412232710950434
+      },
+      "extrapolation_mm_quantiles": {
+        "min": 0.010289086635532862,
+        "p50": 1.3177653688294715,
+        "p90": 15.354346423664373,
+        "p99": 39.830336766680304,
+        "max": 40.47208770961175
+      },
+      "fully_missing_faces": 0,
+      "worst_extrapolation": [
+        {
+          "transport_id": 12700,
+          "part": 1,
+          "face": 8256,
+          "plane_error_blocks": 1.1102230246251565e-16,
+          "roundtrip_error_blocks": 1.5700924586837752e-16,
+          "normal_orientation_error_degrees": 0.0,
+          "area_blocks2": 0.046734606897329355,
+          "outside_alpha_area_blocks2": 0.010727969396355116,
+          "missing_native_area_blocks2": 5.401596918733036e-05,
+          "outside_fraction_native": 0.2295508640935667,
+          "missing_fraction_native": 0.0011558023651722874,
+          "maximum_opaque_pixel_corner_extrapolation_mm": 40.47208770961175,
+          "extrapolation_witness_tile_xy": [
+            20,
+            20
+          ],
+          "alpha_covered_pixels": 199,
+          "inside_centers_lost": 0,
+          "outside_centers_added": 37,
+          "mask_barycentric_map_max_error": 1.1102230246251565e-15,
+          "triangle_tile_xy": [
+            [
+              0.9999999999999986,
+              19.000000000000014
+            ],
+            [
+              19.0,
+              18.999999999999982
+            ],
+            [
+              10.169862148801492,
+              1.000000000000003
+            ]
+          ],
+          "uv": [
+            3088,
+            2480
+          ],
+          "face_parts": 2,
+          "face_roles": 0
+        },
+        {
+          "transport_id": 12829,
+          "part": 1,
+          "face": 8385,
+          "plane_error_blocks": 2.220446049250313e-16,
+          "roundtrip_error_blocks": 2.220446049250313e-16,
+          "normal_orientation_error_degrees": 8.537736462515939e-07,
+          "area_blocks2": 0.04673460547625972,
+          "outside_alpha_area_blocks2": 0.010727969072852053,
+          "missing_native_area_blocks2": 5.40159702496264e-05,
+          "outside_fraction_native": 0.2295508641514403,
+          "missing_fraction_native": 0.0011558024230474242,
+          "maximum_opaque_pixel_corner_extrapolation_mm": 40.47208765251044,
+          "extrapolation_witness_tile_xy": [
+            20,
+            20
+          ],
+          "alpha_covered_pixels": 199,
+          "inside_centers_lost": 0,
+          "outside_centers_added": 37,
+          "mask_barycentric_map_max_error": 6.661338147750939e-16,
+          "triangle_tile_xy": [
+            [
+              1.0000000000000002,
+              18.999999999999982
+            ],
+            [
+              19.0,
+              18.999999999999982
+            ],
+            [
+              9.830137811898446,
+              0.9999999999999831
+            ]
+          ],
+          "uv": [
+            3628,
+            2500
+          ],
+          "face_parts": 2,
+          "face_roles": 0
+        },
+        {
+          "transport_id": 14611,
+          "part": 1,
+          "face": 10167,
+          "plane_error_blocks": 2.220446049250313e-16,
+          "roundtrip_error_blocks": 2.2887833992611187e-16,
+          "normal_orientation_error_degrees": 8.537736462515939e-07,
+          "area_blocks2": 0.045266955006590025,
+          "outside_alpha_area_blocks2": 0.010391110412044631,
+          "missing_native_area_blocks2": 5.236142905807551e-05,
+          "outside_fraction_native": 0.2295517869609714,
+          "missing_fraction_native": 0.0011567252325775537,
+          "maximum_opaque_pixel_corner_extrapolation_mm": 40.430790902390996,
+          "extrapolation_witness_tile_xy": [
+            0,
+            20
+          ],
+          "alpha_covered_pixels": 199,
+          "inside_centers_lost": 0,
+          "outside_centers_added": 37,
+          "mask_barycentric_map_max_error": 6.661338147750939e-16,
+          "triangle_tile_xy": [
+            [
+              10.17048298378052,
+              0.9999999999999942
+            ],
+            [
+              1.0,
+              18.99999999999999
+            ],
+            [
+              19.0,
+              18.99999999999999
+            ]
+          ],
+          "uv": [
+            2548,
+            2860
+          ],
+          "face_parts": 2,
+          "face_roles": 0
+        },
+        {
+          "transport_id": 14482,
+          "part": 1,
+          "face": 10038,
+          "plane_error_blocks": 2.220446049250313e-16,
+          "roundtrip_error_blocks": 2.3714374201337736e-16,
+          "normal_orientation_error_degrees": 0.0,
+          "area_blocks2": 0.045266943965445866,
+          "outside_alpha_area_blocks2": 0.010391107774814964,
+          "missing_native_area_blocks2": 5.2361313571185255e-05,
+          "outside_fraction_native": 0.2295517846918698,
+          "missing_fraction_native": 0.0011567229634753965,
+          "maximum_opaque_pixel_corner_extrapolation_mm": 40.43078423960997,
+          "extrapolation_witness_tile_xy": [
+            0,
+            20
+          ],
+          "alpha_covered_pixels": 199,
+          "inside_centers_lost": 0,
+          "outside_centers_added": 37,
+          "mask_barycentric_map_max_error": 4.440892098500626e-16,
+          "triangle_tile_xy": [
+            [
+              9.829518528647723,
+              1.0000000000000053
+            ],
+            [
+              0.9999999999999999,
+              18.999999999999986
+            ],
+            [
+              19.000000000000004,
+              18.999999999999986
+            ]
+          ],
+          "uv": [
+            4048,
+            2820
+          ],
+          "face_parts": 2,
+          "face_roles": 0
+        },
+        {
+          "transport_id": 13822,
+          "part": 1,
+          "face": 9378,
+          "plane_error_blocks": 5.551115123125783e-17,
+          "roundtrip_error_blocks": 1.1775693440128312e-16,
+          "normal_orientation_error_degrees": 0.0,
+          "area_blocks2": 0.00506673144617459,
+          "outside_alpha_area_blocks2": 0.0008757371283795249,
+          "missing_native_area_blocks2": 5.767312302333937e-09,
+          "outside_fraction_native": 0.17284064444361094,
+          "missing_fraction_native": 1.1382707695487373e-06,
+          "maximum_opaque_pixel_corner_extrapolation_mm": 39.83667578917629,
+          "extrapolation_witness_tile_xy": [
+            20,
+            20
+          ],
+          "alpha_covered_pixels": 190,
+          "inside_centers_lost": 0,
+          "outside_centers_added": 19,
+          "mask_barycentric_map_max_error": 8.854371282812984e-16,
+          "triangle_tile_xy": [
+            [
+              1.0000000000000007,
+              18.99999999999997
+            ],
+            [
+              19.0,
+              19.000000000000256
+            ],
+            [
+              1.0081799375623248,
+              1.000000000000012
+            ]
+          ],
+          "uv": [
+            3088,
+            2700
+          ],
+          "face_parts": 2,
+          "face_roles": 0
+        }
+      ]
+    },
+    "15": {
+      "faces": 1376,
+      "native_area_blocks2": 0.6268532339745587,
+      "added_area_blocks2": 0.15355475165922022,
+      "lost_area_blocks2": 0.0008632397673791533,
+      "max_extrapolation_mm": 11.449755887886708,
+      "added_fraction_quantiles": {
+        "min": 0.19756719839493098,
+        "p50": 0.24178584870560682,
+        "p90": 0.2716294309493601,
+        "p99": 0.2839518021874633,
+        "max": 0.2901234567901234
+      },
+      "lost_fraction_quantiles": {
+        "min": 0.0,
+        "p50": 0.0008186336718689624,
+        "p90": 0.0037035394501729905,
+        "p99": 0.006951941063186044,
+        "max": 0.00967070339439649
+      },
+      "extrapolation_mm_quantiles": {
+        "min": 1.3674795784078231e-05,
+        "p50": 2.5725371101714156,
+        "p90": 3.781965101384042,
+        "p99": 7.287381764249543,
+        "max": 11.449755887886708
+      },
+      "fully_missing_faces": 0,
+      "worst_extrapolation": [
+        {
+          "transport_id": 17507,
+          "part": 15,
+          "face": 399,
+          "plane_error_blocks": 5.551115123125783e-17,
+          "roundtrip_error_blocks": 1.0103182026100663e-16,
+          "normal_orientation_error_degrees": 8.537736462515939e-07,
+          "area_blocks2": 0.005425745942017951,
+          "outside_alpha_area_blocks2": 0.0012278703881513859,
+          "missing_native_area_blocks2": 2.214906770295797e-05,
+          "outside_fraction_native": 0.22630443837086753,
+          "missing_fraction_native": 0.004082216148646329,
+          "maximum_opaque_pixel_corner_extrapolation_mm": 11.449755887886708,
+          "extrapolation_witness_tile_xy": [
+            0,
+            20
+          ],
+          "alpha_covered_pixels": 198,
+          "inside_centers_lost": 0,
+          "outside_centers_added": 35,
+          "mask_barycentric_map_max_error": 2.886579864025407e-15,
+          "triangle_tile_xy": [
+            [
+              0.999999999999997,
+              19.00000000000007
+            ],
+            [
+              19.000000000000004,
+              19.00000000000007
+            ],
+            [
+              17.161174994880827,
+              1.0000000000000542
+            ]
+          ],
+          "uv": [
+            3348,
+            3420
+          ]
+        },
+        {
+          "transport_id": 17476,
+          "part": 15,
+          "face": 368,
+          "plane_error_blocks": 6.938893903907228e-17,
+          "roundtrip_error_blocks": 1.1796119636642288e-16,
+          "normal_orientation_error_degrees": 0.0,
+          "area_blocks2": 0.004527043889882994,
+          "outside_alpha_area_blocks2": 0.0010713724259435477,
+          "missing_native_area_blocks2": 9.473241896962361e-06,
+          "outside_fraction_native": 0.2366604901573504,
+          "missing_fraction_native": 0.002092588922792,
+          "maximum_opaque_pixel_corner_extrapolation_mm": 11.32699645065698,
+          "extrapolation_witness_tile_xy": [
+            0,
+            20
+          ],
+          "alpha_covered_pixels": 200,
+          "inside_centers_lost": 0,
+          "outside_centers_added": 34,
+          "mask_barycentric_map_max_error": 6.8833827526759706e-15,
+          "triangle_tile_xy": [
+            [
+              19.0,
+              18.999999999999947
+            ],
+            [
+              18.2886024919645,
+              0.9999999999998788
+            ],
+            [
+              0.9999999999999996,
+              18.999999999999947
+            ]
+          ],
+          "uv": [
+            2728,
+            3420
+          ]
+        },
+        {
+          "transport_id": 17972,
+          "part": 15,
+          "face": 864,
+          "plane_error_blocks": 1.3877787807814457e-17,
+          "roundtrip_error_blocks": 4.85722573273506e-17,
+          "normal_orientation_error_degrees": 0.0,
+          "area_blocks2": 0.004592690932898103,
+          "outside_alpha_area_blocks2": 0.0010410210740845588,
+          "missing_native_area_blocks2": 2.0423088996107068e-05,
+          "outside_fraction_native": 0.2266690899288641,
+          "missing_fraction_native": 0.00444686770664526,
+          "maximum_opaque_pixel_corner_extrapolation_mm": 11.207957828098968,
+          "extrapolation_witness_tile_xy": [
+            20,
+            20
+          ],
+          "alpha_covered_pixels": 198,
+          "inside_centers_lost": 0,
+          "outside_centers_added": 35,
+          "mask_barycentric_map_max_error": 2.220446049250313e-15,
+          "triangle_tile_xy": [
+            [
+              0.9999999999999999,
+              18.99999999999997
+            ],
+            [
+              19.0,
+              18.99999999999997
+            ],
+            [
+              2.667675855126452,
+              0.9999999999999587
+            ]
+          ],
+          "uv": [
+            2448,
+            3520
+          ]
+        },
+        {
+          "transport_id": 17978,
+          "part": 15,
+          "face": 870,
+          "plane_error_blocks": 5.898059818321144e-17,
+          "roundtrip_error_blocks": 1.0772060116306953e-16,
+          "normal_orientation_error_degrees": 8.537736462515939e-07,
+          "area_blocks2": 0.0022531461038727903,
+          "outside_alpha_area_blocks2": 0.0004946720233023981,
+          "missing_native_area_blocks2": 2.178950767479382e-05,
+          "outside_fraction_native": 0.2195472466042649,
+          "missing_fraction_native": 0.00967070339439649,
+          "maximum_opaque_pixel_corner_extrapolation_mm": 10.452957984722334,
+          "extrapolation_witness_tile_xy": [
+            0,
+            20
+          ],
+          "alpha_covered_pixels": 196,
+          "inside_centers_lost": 0,
+          "outside_centers_added": 33,
+          "mask_barycentric_map_max_error": 5.551115123125783e-15,
+          "triangle_tile_xy": [
+            [
+              1.000000000000003,
+              19.00000000000005
+            ],
+            [
+              19.000000000000007,
+              19.00000000000005
+            ],
+            [
+              18.099904585619743,
+              0.9999999999999076
+            ]
+          ],
+          "uv": [
+            2568,
+            3520
+          ]
+        },
+        {
+          "transport_id": 17474,
+          "part": 15,
+          "face": 366,
+          "plane_error_blocks": 2.7755575615628914e-17,
+          "roundtrip_error_blocks": 6.206335383118183e-17,
+          "normal_orientation_error_degrees": 0.0,
+          "area_blocks2": 0.0023466045418869953,
+          "outside_alpha_area_blocks2": 0.0004989202094178151,
+          "missing_native_area_blocks2": 2.0908173107491886e-05,
+          "outside_fraction_native": 0.2126136724412091,
+          "missing_fraction_native": 0.008909968737501385,
+          "maximum_opaque_pixel_corner_extrapolation_mm": 10.325719075122514,
+          "extrapolation_witness_tile_xy": [
+            0,
+            20
+          ],
+          "alpha_covered_pixels": 195,
+          "inside_centers_lost": 0,
+          "outside_centers_added": 33,
+          "mask_barycentric_map_max_error": 1.176836406102666e-14,
+          "triangle_tile_xy": [
+            [
+              17.93071715291505,
+              1.0000000000002118
+            ],
+            [
+              0.9999999999999998,
+              19.000000000000142
+            ],
+            [
+              19.0,
+              19.000000000000142
+            ]
+          ],
+          "uv": [
+            2688,
+            3420
+          ]
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "Exact cell clipping models nearest texture sampling at mip level0 only; not engine, bilinear, anisotropic or mip behavior.",
+    "Outside-cell footprints are diagnostic planar support beyond native triangles; they do not alone prove visible cross-component penetration.",
+    "Normals on new parts are placeholders unless later bake changes the output hash."
+  ]
+}

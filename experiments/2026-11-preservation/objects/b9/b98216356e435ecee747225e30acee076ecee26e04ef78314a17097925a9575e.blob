@@ -1,0 +1,14 @@
+import sys,json,numpy as np
+from pathlib import Path
+from mathutils.bvhtree import BVHTree
+from mathutils import Vector
+R=Path(__file__).resolve().parents[1];V4=R.parent/'shell_band_v4';P=Path(sys.argv[sys.argv.index('--')+1]);O=Path(sys.argv[sys.argv.index('--')+2]);base=np.load(V4/'curvature_candidate/evidence/cap-paired.npz');cand=np.load(P);fixed=np.load(V4/'evidence/review-fixed-points.npz');H=np.load(V4/'evidence/head-source.npz');head=BVHTree.FromPolygons(H['points'].tolist(),H['triangles'].tolist(),all_triangles=True);points=fixed['points'];high=fixed['high_signed_nearest_plane']
+def evaluate(d):
+ f=d['triangles'];outer=f[np.all(d['source_side'][f]==0,axis=1)];tree=BVHTree.FromPolygons(d['points'].tolist(),outer.tolist(),all_triangles=True);near=[tree.find_nearest(Vector(p)) for p in points];signed=[]
+ for p,_,_,_ in near:
+  q,n,_,_=head.find_nearest(p);signed.append((p-q).dot(n))
+ return np.array(signed),near,outer
+bs,bn,bf=evaluate(base);cs,cn,cf=evaluate(cand);br=(high>0)&(bs<-.0001);cr=(high>0)&(cs<-.0001);bad=np.where(cr&~br)[0];good=np.where(br&~cr)[0];triangles=[];restore=set();candidateids=set(cand['source_indices'].tolist())
+for i in bad:
+ t=base['source_indices'][bf[bn[i][2]]];triangles.append(t.tolist());restore.update(int(x) for x in t if int(x) not in candidateids)
+report={'candidate':str(P),'newly_degraded_fixed_point_ids':bad.tolist(),'recovered_fixed_point_ids':good.tolist(),'newly_degraded_count':len(bad),'recovered_count':len(good),'restore_outer_source_ids':sorted(restore),'protect_baseline_outer_source_triangles':triangles,'method':'Restore exact baseline source triangles underlying known newly-negative fixed reference probes; no coordinates moved. Requires separate holdout evaluation to avoid overclaiming generalization.'};O.write_text(json.dumps(report,indent=2));print({k:v for k,v in report.items() if not isinstance(v,list)},flush=True)

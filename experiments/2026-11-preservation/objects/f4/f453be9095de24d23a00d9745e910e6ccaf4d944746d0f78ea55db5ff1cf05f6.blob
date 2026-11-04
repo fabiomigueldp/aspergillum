@@ -1,0 +1,63 @@
+# Correção candidata do renderer: South UV e dimensão zero
+
+## Resultado
+
+Dois defeitos independentes foram reproduzidos por testes e corrigidos numa cópia isolada. O código compartilhado original, o trabalho Altare e a escultura não foram alterados. Não houve commit, push, release, instalação no Minecraft ou nova tentativa de Chromium.
+
+O arquivo de produção alterado é somente:
+
+`repo/viewer-3d/src/shared/bedrock-geometry.js`
+
+A candidata está em `south-zero-extent.patch`, acompanhada por testes e fixtures de referência. A base desse arquivo continua idêntica ao commit Aspergillum `3eaf97b172a38dac794461b156b70864737875d6` (SHA-256 anterior `24dbd8979e54bb33be799e578109d6a5444a9254d1ad0f4c25160241c3e17e11`). Para validação agregada foi feita uma cópia separada do workspace Altare atual; suas mudanças não fazem parte deste patch.
+
+## Diagnóstico reproduzido
+
+1. **South UV:** o Blockbench importa X refletido; U South cresce com X do Blockbench. Como o viewer mantém X Bedrock, U precisa diminuir com X do viewer. O defeito também existe em cubos de espessura positiva, não somente nos cubos planos.
+2. **Normal de dimensão zero:** o Three.js constrói a normal com uma escolha de sinal baseada em `depth > 0`. Zero cai no ramo negativo. A face positiva recebe normal oposta ao seu winding, embora os índices dos triângulos estejam corretos. Isso foi reproduzido nos três eixos.
+
+Fontes oficiais fixadas no Blockbench `ec0b2827104d0799c153bfb5f867579c0c44652f`:
+
+- https://github.com/JannisX11/blockbench/blob/ec0b2827104d0799c153bfb5f867579c0c44652f/js/formats/bedrock/bedrock.js
+- https://github.com/JannisX11/blockbench/blob/ec0b2827104d0799c153bfb5f867579c0c44652f/js/outliner/types/cube.js
+- https://github.com/JannisX11/blockbench/blob/ec0b2827104d0799c153bfb5f867579c0c44652f/js/util/three_custom.js
+
+`generate-reference.mjs` executa as funções oficiais parseCube, setShape e updateUV sem modificá-las, verificando os hashes Git dos três arquivos. Usa stubs mínimos de dados/UI; não executa o aplicativo completo. A referência mantém as normais da caixa unitária usada pelo Blockbench e deliberadamente não introduz o epsilon de 0,001 usado pelo preview do aplicativo para dimensões zero.
+
+## Escopo da correção
+
+- Somente modo `BEDROCK`, sem mirror.
+- U South é invertido somente para UV per-face, preservando os sinais originais de `uv_size`.
+- Normais das faces positivas East, Up e South são corrigidas somente quando a dimensão geométrica efetiva, após inflate, é zero.
+- Posições, extensão, espessura, índices/winding, pivôs, hierarquia, máscaras de faces e materiais não mudam.
+- `LEGACY_VIEWER` e casos com mirror permanecem intactos.
+- Coordenadas Box UV permanecem intactas. Normais de cubos Box UV degenerados também recebem a correção no modo BEDROCK sem mirror.
+- Outras faces UV, mirror, Box UV e `uv_rotation` não foram declarados conformes ao Blockbench; exigem auditoria própria.
+
+## Evidências
+
+- **Antes:** 11 testes novos falhavam (`before-tests.log`).
+- **Depois:** 95/95 testes da suíte completa do viewer passaram (`viewer-tests.log`).
+- **Referência oficial:** 8 fixtures cobrem profundidades 0/2 e quatro combinações de sinais UV, com rotação zero e sem inflate. Três testes adicionais verificam normal versus winding com rotação local, não equivalência oficial das rotações.
+- **Não regressão:** 432 combinações de bases, mirrors, tamanhos, inflate, rotações, UV per-face/assinado/Box UV. Posições, índices, grupos e matrizes mundiais permaneceram idênticos. Os 216 casos LEGACY e os 144 casos mirror ficaram byte-idênticos. Somente as alterações de atributos previstas ocorreram (`nonregression.json`).
+- **Check agregado:** `npm run check` passou na cópia isolada: TypeScript, 107 testes de domínio, 95 testes do viewer, documentação, geração/build e validadores de conteúdo, animação, áudio, VFX, inventário e prontidão (`full-check.log`).
+- **Build do viewer:** `npm run build` passou, incluindo novamente os 95 testes, sincronização de assets, validação do workspace e compilação Vite (`viewer-build.log`). Não executa o smoke visual em Chromium.
+- Revisão independente aprovou o escopo restrito e confirmou pessoalmente os 11 testes novos.
+
+## Limites
+
+Não é uma correção de todos os contratos do renderer. Não foi feito teste WebGL, de shader, normal mapping, desempenho ou Minecraft. A verificação anterior das posições da escultura permanece válida, mas não demonstrava correção de UVs ou normais.
+
+A revisão visual controlada offline foi concluída depois desta validação inicial. `visual/REVIEW.md` documenta 40 PNGs dos buffers reais, fixture assimétrica, asset sólido e faixa plana real, contra atributos oficiais Blockbench. O revisor independente concordou que há evidência suficiente para integrar o patch restrito. A comparação de atributos da faixa, com topologia anterior fixada, é pixel a pixel idêntica. O preview externo continua sem substituir o cliente Minecraft; a integração ainda não foi executada por esta tarefa.
+
+## Reprodução local
+
+1. `node generate-reference.mjs`
+2. Na pasta repo: `node --test viewer-3d/tests/*.node.mjs`
+3. `node audit-nonregression.mjs`
+4. Na pasta repo: `npm run check`
+
+Os scripts de auditoria estão fora da árvore do patch; as fixtures e o teste novo ficam dentro de viewer-3d/tests. O patch contém somente o módulo geométrico, o teste de regressão e sua fixture documentada.
+
+## Reconciliação final
+
+`RECONCILIATION.md` confirma aplicação limpa ao remoto `main` ainda em `3eaf97b`, compatibilidade com as mudanças locais do altar, preservação do workspace ativo e nova passagem de TypeScript, 107 testes de domínio e 95 testes do viewer. Não houve commit, push ou integração no workspace ativo; a candidata e as provas estão prontas para uma decisão de publicação separada.

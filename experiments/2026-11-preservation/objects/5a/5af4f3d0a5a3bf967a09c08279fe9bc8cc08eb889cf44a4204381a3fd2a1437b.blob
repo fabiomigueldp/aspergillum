@@ -1,0 +1,48 @@
+from pathlib import Path
+import json,hashlib,zipfile,py_compile,numpy as np
+R=Path(__file__).resolve().parents[1];B=R.parent
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+read=lambda p:json.loads((R/p).read_text())
+p=R/'constrained_fit/retained-band.npz';candidate=R/'constrained_fit/valley-source-c1-n4.npz'
+assert p.read_bytes()==candidate.read_bytes();assert sha(p)=='aa27567ac125b12a298c283b0e9c99130fe222bf2ce3bdf9f22edf2908f4404b'
+d=np.load(p);base=np.load(B/'band_ear_v12/structural_rebuild/retained-band.npz');assert np.array_equal(d['points'][:584],base['points'])
+inputs=read('evidence/input-hashes.json')
+legacy=read('evidence/factorial-low-low-render.json')
+inputs += [{'path':legacy['geometry_json'],'sha256':legacy['geometry_sha256']},{'path':legacy['texture_alpha'],'sha256':legacy['texture_sha256']}]
+for r in inputs:
+ r['current_sha256']=sha(Path(r['path']));r['unchanged']=r['current_sha256']==r['sha256'];assert r['unchanged']
+scene=read('evidence/frozen-scene-check.json')
+for v in scene.values():
+ if isinstance(v,dict):assert v['points_equal_expected_float32'] and v['triangles_exact'] and v['hash_metadata_matches']
+audit=read('constrained_fit/valley-source-c1-n4-local-audit.json');ind=read('independent_diagnosis/valley-source-c1-n4-independent-review.json');dom=read('independent_diagnosis/valley-source-c1-n4-source-domain-check.json')
+assert audit['self_test']['confirmed_strict_crossings']==0
+assert all(v['positive_area_pairs']==0 for v in audit['coplanar'].values())
+assert audit['contacts']['anatomy']['pairs']==189 and not audit['contacts']['anatomy']['mapped_parent_pairs_not_in_v12']
+assert ind['dense']['candidate_inversions']==0 and ind['dense']['new_inversions']==0 and ind['dense']['baseline_inversions_resolved']==1376
+assert ind['patch_wall_chords']['missing']==0 and ind['patch_wall_chords']['first_hit_part_histogram']=={'1':10752}
+assert dom['candidate_blend_max_error_m']==0 and dom['patch_wrong_uv_orientation']==0 and dom['patch_max_positive_pair_overlap_uv_area']==0
+assert read('evidence/connectivity-check.json')['components']==1
+assert (R/'independent_diagnosis/REVIEW_FINAL_V13.md').exists()
+review=(R/'evidence/review-visual-v13.md').read_text();assert 'n4' in review and 'retenção' in review
+compiled=[]
+for f in R.rglob('*.py'):py_compile.compile(str(f),doraise=True);compiled.append(str(f.relative_to(R)))
+images=[R/f'evidence/valley-c1-n4-{n}.png' for n in ['band-front','left-ear','right-ear']]+[R/f'evidence/valley-c1-n4-full-{n}.png' for n in ['full-front','head-front','junction-profile']]+[R/f'evidence/valley-c1-n4-extra-{n}.png' for n in ['junction-back','left-ear-oblique','right-ear-oblique','rear-open']]+[R/f'evidence/valley-c1-n4-neutral-{n}.png' for n in ['band-front','left-ear','right-ear']]
+assert all(f.exists() for f in images)
+status={'status':'RETAINED_LOCAL_TECHNICAL_RESEARCH','retained_band':str(p.relative_to(R)),'sha256':sha(p),'vertices':2224,'triangles':4444,'previous_v12_triangles':1164,'same_field_n8_triangles':13980,'source_files_unchanged':True,'complete_anatomy_frozen':True,'v11_shell_frozen':True,'all_584_v12_vertices_exact':True,'ridge_polylines_exact_despite_subdivision':True,'center_and_terminations_preserved':True,'modified_ancestral_faces':192,'modified_ancestral_surface_area_percent':31.876,'conformity_only_ancestral_faces':80,'literal_untouched_triangles':892,'one_closed_component':True,'euler':2,'native_self_crossings_confirmed':0,'coplanar_overlap_above_test_threshold':0,'dense_baseline_inversions_resolved':1376,'dense_new_inversions':0,'external_valley_crossing_pairs':0,'remaining_band_anatomy_pairs':189,'remaining_band_shell_pairs':1672,'remaining_shell_pairs_by_band_wall':{'external':414,'internal':1214,'v12_closures':44},'local_visual_review':{'color_views':10,'neutral_views':3,'favorable':True},'silhouette_exact_in_all_tested_views':False,'outline_changed_pixels_back':69,'outline_back_max_shift_mm':0.927734375,'global_interface_clean':False,'global_minimum_thickness_certified':False,'final_art_approved':False,'bedrock_exported':False,'minecraft_runtime_tested':False,'performance_tested':False,'published':False,'limits':['Residual upper-margin and ear-end contacts remain, including potentially visible source-order differences not proven to be new artistic defects.','Native research geometry; Bedrock geometry transport, texture baking and runtime checks remain undone.','C1 refers to the restoration weight, not differential continuity of a piecewise-triangle surface.','The 4,444-face band is still larger than the 1,164-face V12 baseline.','Nine frozen input files and all historical candidates remain preserved.']}
+(R/'STATUS.json').write_text(json.dumps(status,indent=2))
+validation={'status':status,'inputs':inputs,'retained_identical_to_reviewed':True,'frozen_scene':scene,'syntax_check':{'passed':True,'files':compiled},'final_images':[{'path':str(f.relative_to(R)),'sha256':sha(f),'bytes':f.stat().st_size} for f in images],'independent_geometry_review':'independent_diagnosis/REVIEW_FINAL_V13.md','independent_visual_review':'evidence/review-visual-v13.md','outline':read('evidence/valley-c1-n4-outline.json'),'geometry_audit':'constrained_fit/valley-source-c1-n4-local-audit.json','source_domain_audit':'independent_diagnosis/valley-source-c1-n4-source-domain-check.json','residual_visibility':'independent_diagnosis/valley-source-c1-n4-exterior-contact-visibility-summary.json'}
+(R/'evidence/final-validation.json').write_text(json.dumps(validation,indent=2))
+files=[];excluded=[]
+for f in sorted(R.rglob('*')):
+ if not f.is_file() or '__pycache__' in f.parts or f.suffix in ['.zip','.blend1'] or f.name in ['file-manifest.json','package-validation.json','finalize-package.log']:continue
+ keep=not(f.suffix=='.blend' and f.name!='retained-structural-diagnostic.blend');(files if keep else excluded).append(f)
+manifest={'included':[{'path':str(f.relative_to(R)),'bytes':f.stat().st_size,'sha256':sha(f)} for f in files],'omitted_intermediate_scenes_still_preserved_in_workspace':[str(f.relative_to(R)) for f in excluded]}
+(R/'file-manifest.json').write_text(json.dumps(manifest,indent=2));files.append(R/'file-manifest.json')
+out=R/'V75-V13-BAND-SHELL-RESEARCH-NOT-ADDON.zip';assert not out.exists()
+with zipfile.ZipFile(out,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+ for f in files:z.write(f,'band_shell_v13/'+str(f.relative_to(R)))
+with zipfile.ZipFile(out) as z:
+ assert z.testzip() is None
+ for f in files:assert z.read('band_shell_v13/'+str(f.relative_to(R)))==f.read_bytes()
+report={'file':out.name,'bytes':out.stat().st_size,'sha256':sha(out),'member_count':len(files),'crc_valid':True,'all_archived_bytes_match_workspace':True,'all_candidate_npz_files_included':True,'original_sources_not_duplicated_except_source_context':True,'not_standalone_addon':True}
+(R/'package-validation.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))

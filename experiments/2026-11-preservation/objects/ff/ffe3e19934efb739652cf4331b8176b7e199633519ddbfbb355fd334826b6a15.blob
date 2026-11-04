@@ -1,0 +1,40 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-cloth-obstacle-surface-trial.py').read().split('counts=collections.Counter')[0])
+loops=json.load(open(r+'neck-contour-projection-audit.json'))['ordered_loops'];loops.sort(key=lambda c:p[c,0].mean())
+def cross(a,b):return a[0]*b[1]-a[1]*b[0]
+def area(poly):return sum(cross(a,b) for a,b in zip(poly,np.roll(poly,-1,axis=0)))/2
+polys=[]
+for loop in loops:
+ v=p[loop,1:]
+ if area(v)<0:v=v[::-1]
+ polys.append(v)
+def clip(poly,a,b):
+ out=[];e=b-a
+ for u,v in zip(poly,np.roll(poly,-1,axis=0)):
+  du=cross(e,u-a);dv=cross(e,v-a)
+  if du>=-1e-12:out.append(u)
+  if (du<0)!=(dv<0):out.append(u+(v-u)*du/(du-dv))
+ return np.array(out)
+kernels=[];reports=[]
+for poly in polys:
+ ker=np.array([[-1,2],[1,2],[1,4],[-1,4]],float)
+ for a,b in zip(poly,np.roll(poly,-1,axis=0)):
+  if len(ker)<3:break
+  ker=clip(ker,a,b)
+ kernels.append(ker);reports.append({'polygon_area_yz':abs(area(poly)),'kernel_vertices':len(ker),'kernel_area':abs(area(ker)) if len(ker)>2 else 0})
+# Candidate common ray origin: interior average. Test all radial intersections, not only vertex ordering.
+center=np.mean(np.concatenate(polys),axis=0);raystats=[]
+for poly in polys:
+ counts=[]
+ for th in np.linspace(0,2*np.pi,720,endpoint=False):
+  direction=np.array([np.cos(th),np.sin(th)]);hits=[]
+  for a,b in zip(poly,np.roll(poly,-1,axis=0)):
+   e=b-a;det=cross(direction,e)
+   if abs(det)<1e-14:continue
+   t=cross(a-center,e)/det;u=cross(a-center,direction)/det
+   if t>0 and 0<=u<1:hits.append(float(t))
+  counts.append(len(hits))
+ raystats.append({'rays':720,'zero_hits':counts.count(0),'one_hit':counts.count(1),'multiple_hits':sum(c>1 for c in counts),'max_hits':max(counts)})
+# Compare nearest cross-layer boundary distance; not a thickness guarantee.
+A=p[loops[0]];B=p[loops[1]];distance=np.linalg.norm(A[:,None,:]-B[None,:,:],axis=2);nearest=distance.min(1);pair=np.argmin(distance,axis=1)
+report={'method':'Non-mutating feasibility: star-shaped kernel and720 radial rays for shared midsurface boundary correspondence','loops':reports,'candidate_center_yz':center.tolist(),'ray_checks':raystats,'nearest_cross_boundary_distance_m':[float(nearest.min()),float(np.median(nearest)),float(nearest.max())],'distinct_nearest_inner_vertices':len(set(map(int,pair))),'outer_vertices':len(A),'inner_vertices':len(B),'warning':'Nearest correspondence is not accepted, and two simple loops do not guarantee a nonfolding thick shell. No mesh modified or saved.'}
+json.dump(report,open(r+'neck-shell-correspondence-feasibility.json','w'),indent=2);print(report)

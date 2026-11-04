@@ -1,0 +1,6 @@
+import bpy,numpy as np,json,hashlib
+from pathlib import Path
+R=Path(__file__).resolve().parents[1];p=R/'structural_rebuild/retained-shell.npz';d=np.load(p)
+bpy.ops.wm.open_mainfile(filepath=str(R/'evidence/retained-structural-diagnostic.blend'),use_scripts=False)
+o=bpy.data.objects['V11 retained shell NATIVE research NOT Bedrock'];points=np.array([v.co[:] for v in o.data.vertices]);faces=np.array([poly.vertices[:] for poly in o.data.polygons]);expected=d['points'].astype(np.float32).astype(float)
+checks={'points_equal_expected_float32':bool(np.array_equal(points,expected)),'triangles_exact':bool(np.array_equal(faces,d['triangles'])),'vertex_count':len(points),'face_count':len(faces),'scene_hash_matches_retained':bpy.context.scene['retained_sha256']==hashlib.sha256(p.read_bytes()).hexdigest(),'minecraft_tested':bpy.context.scene['minecraft_tested'],'bedrock_exported':bpy.context.scene['bedrock_exported'],'published':bpy.context.scene['published']};assert checks['points_equal_expected_float32'] and checks['triangles_exact'] and checks['scene_hash_matches_retained'];(R/'evidence/frozen-scene-check.json').write_text(json.dumps(checks,indent=2));print(json.dumps(checks))

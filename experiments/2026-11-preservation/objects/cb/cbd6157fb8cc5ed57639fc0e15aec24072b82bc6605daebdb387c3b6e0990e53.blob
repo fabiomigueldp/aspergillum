@@ -1,0 +1,704 @@
+[
+  {
+    "resolution": 128,
+    "hashes": {
+      "opaque_transport_v15/shared_mask/shared_mask_128.geo.json": "2817fd3966c76e731292919afb44add520a6e4ec6c61227bf33fbf2780c60558",
+      "opaque_transport_v15/shared_mask/shared_mask_128.png": "8a7161f403a6cc7227e21c1588b9ee05b09d515dc85c24cd9ea30c8fdd7934b3",
+      "opaque_transport_v15/shared_mask/transport_faces.jsonl.gz": "e276cd5744b571e93773baf4f749287fd86e0af81f15608c14a75ed2cf3ccb56",
+      "opaque_transport_v15/shared_mask/transport_arrays.npz": "84d94c224af848fdb6b6558ce7f1d8f98fd4e8ee2ebea39b63560315f4461d7e"
+    },
+    "checks": {
+      "mask_exact_column_le_row": true,
+      "alpha_binary": true,
+      "legacy_rgba_exact": true,
+      "untouched_17_bones_exact": true,
+      "only_south_positive_width_height_zero_depth": true,
+      "expected_source_face_half_complete_unique": true,
+      "uv_exact_shared_origin_and_size": true,
+      "metadata_native_vertices_exact": true
+    },
+    "new_quads": 36968,
+    "max_child_coordinate_error_blocks": 5.084552525656844e-14,
+    "max_orientation_error_degrees": 1.4787793334710982e-06,
+    "max_plane_error_blocks": 8.014001156811847e-15,
+    "mask_opaque_pixels": 8256,
+    "mask_expected_opaque_pixels": 8256,
+    "parts": {
+      "0": {
+        "native_faces": 4444,
+        "child_quads": 8888,
+        "native_area_blocks2": 0.03362153689119624,
+        "independent_quad_half_area_sum_blocks2": 0.0336215368911963,
+        "max_per_native_face_split_area_error_blocks2": 4.7704895589362195e-18,
+        "max_coordinate_error_blocks": 1.8470855942954328e-14,
+        "ideal_added_area_blocks2": 0.0002626682569624711,
+        "ideal_missing_area_blocks2": 0,
+        "ideal_added_area_fraction_native": 0.0078125,
+        "max_perpendicular_edge_overhang_mm": 0.05439716331635478,
+        "overhang_mm_quantiles": [
+          3.5870222018108584e-06,
+          0.005686295472602392,
+          0.011518325251656667,
+          0.0407138643769292,
+          0.05439716331635478
+        ]
+      },
+      "1": {
+        "native_faces": 12664,
+        "child_quads": 25328,
+        "native_area_blocks2": 5.405380952320982,
+        "independent_quad_half_area_sum_blocks2": 5.405380952320984,
+        "max_per_native_face_split_area_error_blocks2": 7.979727989493313e-17,
+        "max_coordinate_error_blocks": 5.084552525656844e-14,
+        "ideal_added_area_blocks2": 0.04222953869000769,
+        "ideal_missing_area_blocks2": 0,
+        "ideal_added_area_fraction_native": 0.0078125,
+        "max_perpendicular_edge_overhang_mm": 0.9977327777458253,
+        "overhang_mm_quantiles": [
+          6.182009069098551e-06,
+          0.02321794899651708,
+          0.06904360585405367,
+          0.11147677997493408,
+          0.9977327777458253
+        ]
+      },
+      "15": {
+        "native_faces": 1376,
+        "child_quads": 2752,
+        "native_area_blocks2": 0.6268532339745587,
+        "independent_quad_half_area_sum_blocks2": 0.6268532339745589,
+        "max_per_native_face_split_area_error_blocks2": 1.3010426069826053e-17,
+        "max_coordinate_error_blocks": 4.0231465105840684e-15,
+        "ideal_added_area_blocks2": 0.004897290890426242,
+        "ideal_missing_area_blocks2": 0,
+        "ideal_added_area_fraction_native": 0.0078125,
+        "max_perpendicular_edge_overhang_mm": 0.4079203154582171,
+        "overhang_mm_quantiles": [
+          4.254214555047281e-08,
+          0.0951704528212742,
+          0.15858607669423097,
+          0.2168918516723674,
+          0.4079203154582171
+        ]
+      }
+    },
+    "bound_derivation": "Verified actual image is column<=row. Canonical right triangle has legs a,b and cell area ab/N\u00b2. N(N+1)/2 cells are opaque; triangle area ab/2. Entire triangle interior lies in these cells (except measure-zero float/border effects); extra=area/N, missing=0. Diagonal outer cell corners are at normalized x+y=1+1/N; maximum perpendicular overhang ab/(N sqrt(a\u00b2+b\u00b2)).",
+    "boundary_probes": {
+      "interior": {
+        "sample_count": 184840,
+        "transparent_or_outside_count": 0,
+        "outside_rect_count": 0,
+        "unique_halves_with_failed_probe": 0,
+        "max_recovered_coordinate_error": 7.837622595374683e-08,
+        "failure_parts": {
+          "0": 0,
+          "1": 0,
+          "15": 0
+        },
+        "first_failure_rows": []
+      },
+      "diagonal_texel_centers": {
+        "sample_count": 184840,
+        "transparent_or_outside_count": 0,
+        "outside_rect_count": 0,
+        "unique_halves_with_failed_probe": 0,
+        "max_recovered_coordinate_error": 5.39639574137496e-08,
+        "failure_parts": {
+          "0": 0,
+          "1": 0,
+          "15": 0
+        },
+        "first_failure_rows": []
+      },
+      "diagonal_lattice_vertices": {
+        "sample_count": 184840,
+        "transparent_or_outside_count": 39437,
+        "outside_rect_count": 0,
+        "unique_halves_with_failed_probe": 16279,
+        "max_recovered_coordinate_error": 5.375598621792932e-08,
+        "failure_parts": {
+          "0": 10454,
+          "1": 26138,
+          "15": 2845
+        },
+        "first_failure_rows": [
+          {
+            "part": 0,
+            "native_face": 1,
+            "half": 0
+          },
+          {
+            "part": 0,
+            "native_face": 3,
+            "half": 1
+          },
+          {
+            "part": 0,
+            "native_face": 5,
+            "half": 0
+          },
+          {
+            "part": 0,
+            "native_face": 5,
+            "half": 1
+          },
+          {
+            "part": 0,
+            "native_face": 8,
+            "half": 0
+          },
+          {
+            "part": 0,
+            "native_face": 8,
+            "half": 1
+          },
+          {
+            "part": 0,
+            "native_face": 11,
+            "half": 1
+          },
+          {
+            "part": 0,
+            "native_face": 12,
+            "half": 1
+          },
+          {
+            "part": 0,
+            "native_face": 13,
+            "half": 0
+          },
+          {
+            "part": 0,
+            "native_face": 16,
+            "half": 0
+          }
+        ]
+      },
+      "diagonal_lattice_inset_1e-10": {
+        "sample_count": 184840,
+        "transparent_or_outside_count": 7,
+        "outside_rect_count": 0,
+        "unique_halves_with_failed_probe": 3,
+        "max_recovered_coordinate_error": 5.375676748187175e-08,
+        "failure_parts": {
+          "0": 1,
+          "1": 0,
+          "15": 6
+        },
+        "first_failure_rows": [
+          {
+            "part": 0,
+            "native_face": 4126,
+            "half": 0
+          },
+          {
+            "part": 15,
+            "native_face": 424,
+            "half": 1
+          },
+          {
+            "part": 15,
+            "native_face": 424,
+            "half": 0
+          },
+          {
+            "part": 15,
+            "native_face": 424,
+            "half": 1
+          },
+          {
+            "part": 15,
+            "native_face": 424,
+            "half": 0
+          },
+          {
+            "part": 15,
+            "native_face": 424,
+            "half": 0
+          },
+          {
+            "part": 15,
+            "native_face": 424,
+            "half": 0
+          }
+        ]
+      }
+    },
+    "critical_shell_face4488_overhang_mm": 0.037029366163154276,
+    "limitations": "Exact planar cell-support proof assumes ideal nearest mip0 sampling. Discrete float64 boundary probes are separately reported, not silently covered by ideal proof. No float32 shader/mips/bilinear/runtime or PBR equivalence.",
+    "boundary_probe_sampling": "Initial probe uses local tile coordinates before adding atlas U origin; actual complete-atlas address arithmetic and inward-distance scales are tested separately in shared-2048-boundary-scale.json."
+  },
+  {
+    "resolution": 512,
+    "hashes": {
+      "opaque_transport_v15/shared_mask/shared_mask_512.geo.json": "6416535dc54ee895a724a674fa83777e38a9dba1c0f7fa6b750fb93a4f5a6b15",
+      "opaque_transport_v15/shared_mask/shared_mask_512.png": "5a94ea56e54f2f6771fddc81920dc0fdbe9edae438b19c970965855bc7b282f8",
+      "opaque_transport_v15/shared_mask/transport_faces.jsonl.gz": "e276cd5744b571e93773baf4f749287fd86e0af81f15608c14a75ed2cf3ccb56",
+      "opaque_transport_v15/shared_mask/transport_arrays.npz": "84d94c224af848fdb6b6558ce7f1d8f98fd4e8ee2ebea39b63560315f4461d7e"
+    },
+    "checks": {
+      "mask_exact_column_le_row": true,
+      "alpha_binary": true,
+      "legacy_rgba_exact": true,
+      "untouched_17_bones_exact": true,
+      "only_south_positive_width_height_zero_depth": true,
+      "expected_source_face_half_complete_unique": true,
+      "uv_exact_shared_origin_and_size": true,
+      "metadata_native_vertices_exact": true
+    },
+    "new_quads": 36968,
+    "max_child_coordinate_error_blocks": 5.084552525656844e-14,
+    "max_orientation_error_degrees": 1.4787793334710982e-06,
+    "max_plane_error_blocks": 8.014001156811847e-15,
+    "mask_opaque_pixels": 131328,
+    "mask_expected_opaque_pixels": 131328,
+    "parts": {
+      "0": {
+        "native_faces": 4444,
+        "child_quads": 8888,
+        "native_area_blocks2": 0.03362153689119624,
+        "independent_quad_half_area_sum_blocks2": 0.0336215368911963,
+        "max_per_native_face_split_area_error_blocks2": 4.7704895589362195e-18,
+        "max_coordinate_error_blocks": 1.8470855942954328e-14,
+        "ideal_added_area_blocks2": 6.566706424061777e-05,
+        "ideal_missing_area_blocks2": 0,
+        "ideal_added_area_fraction_native": 0.001953125,
+        "max_perpendicular_edge_overhang_mm": 0.013599290829088695,
+        "overhang_mm_quantiles": [
+          8.967555504527146e-07,
+          0.001421573868150598,
+          0.0028795813129141668,
+          0.0101784660942323,
+          0.013599290829088695
+        ]
+      },
+      "1": {
+        "native_faces": 12664,
+        "child_quads": 25328,
+        "native_area_blocks2": 5.405380952320982,
+        "independent_quad_half_area_sum_blocks2": 5.405380952320984,
+        "max_per_native_face_split_area_error_blocks2": 7.979727989493313e-17,
+        "max_coordinate_error_blocks": 5.084552525656844e-14,
+        "ideal_added_area_blocks2": 0.010557384672501922,
+        "ideal_missing_area_blocks2": 0,
+        "ideal_added_area_fraction_native": 0.001953125,
+        "max_perpendicular_edge_overhang_mm": 0.2494331944364563,
+        "overhang_mm_quantiles": [
+          1.5455022672746377e-06,
+          0.00580448724912927,
+          0.017260901463513417,
+          0.02786919499373352,
+          0.2494331944364563
+        ]
+      },
+      "15": {
+        "native_faces": 1376,
+        "child_quads": 2752,
+        "native_area_blocks2": 0.6268532339745587,
+        "independent_quad_half_area_sum_blocks2": 0.6268532339745589,
+        "max_per_native_face_split_area_error_blocks2": 1.3010426069826053e-17,
+        "max_coordinate_error_blocks": 4.0231465105840684e-15,
+        "ideal_added_area_blocks2": 0.0012243227226065604,
+        "ideal_missing_area_blocks2": 0,
+        "ideal_added_area_fraction_native": 0.001953125,
+        "max_perpendicular_edge_overhang_mm": 0.10198007886455428,
+        "overhang_mm_quantiles": [
+          1.0635536387618203e-08,
+          0.02379261320531855,
+          0.03964651917355774,
+          0.05422296291809185,
+          0.10198007886455428
+        ]
+      }
+    },
+    "bound_derivation": "Verified actual image is column<=row. Canonical right triangle has legs a,b and cell area ab/N\u00b2. N(N+1)/2 cells are opaque; triangle area ab/2. Entire triangle interior lies in these cells (except measure-zero float/border effects); extra=area/N, missing=0. Diagonal outer cell corners are at normalized x+y=1+1/N; maximum perpendicular overhang ab/(N sqrt(a\u00b2+b\u00b2)).",
+    "boundary_probes": {
+      "interior": {
+        "sample_count": 184840,
+        "transparent_or_outside_count": 0,
+        "outside_rect_count": 0,
+        "unique_halves_with_failed_probe": 0,
+        "max_recovered_coordinate_error": 7.837622595374683e-08,
+        "failure_parts": {
+          "0": 0,
+          "1": 0,
+          "15": 0
+        },
+        "first_failure_rows": []
+      },
+      "diagonal_texel_centers": {
+        "sample_count": 184840,
+        "transparent_or_outside_count": 0,
+        "outside_rect_count": 0,
+        "unique_halves_with_failed_probe": 0,
+        "max_recovered_coordinate_error": 5.4119935755103654e-08,
+        "failure_parts": {
+          "0": 0,
+          "1": 0,
+          "15": 0
+        },
+        "first_failure_rows": []
+      },
+      "diagonal_lattice_vertices": {
+        "sample_count": 184840,
+        "transparent_or_outside_count": 39303,
+        "outside_rect_count": 0,
+        "unique_halves_with_failed_probe": 16340,
+        "max_recovered_coordinate_error": 5.4067942900637433e-08,
+        "failure_parts": {
+          "0": 10403,
+          "1": 26068,
+          "15": 2832
+        },
+        "first_failure_rows": [
+          {
+            "part": 0,
+            "native_face": 1,
+            "half": 0
+          },
+          {
+            "part": 0,
+            "native_face": 3,
+            "half": 1
+          },
+          {
+            "part": 0,
+            "native_face": 4,
+            "half": 1
+          },
+          {
+            "part": 0,
+            "native_face": 5,
+            "half": 0
+          },
+          {
+            "part": 0,
+            "native_face": 5,
+            "half": 1
+          },
+          {
+            "part": 0,
+            "native_face": 6,
+            "half": 0
+          },
+          {
+            "part": 0,
+            "native_face": 7,
+            "half": 1
+          },
+          {
+            "part": 0,
+            "native_face": 8,
+            "half": 0
+          },
+          {
+            "part": 0,
+            "native_face": 8,
+            "half": 1
+          },
+          {
+            "part": 0,
+            "native_face": 12,
+            "half": 1
+          }
+        ]
+      },
+      "diagonal_lattice_inset_1e-10": {
+        "sample_count": 184840,
+        "transparent_or_outside_count": 8,
+        "outside_rect_count": 0,
+        "unique_halves_with_failed_probe": 4,
+        "max_recovered_coordinate_error": 5.4068138188867465e-08,
+        "failure_parts": {
+          "0": 0,
+          "1": 2,
+          "15": 6
+        },
+        "first_failure_rows": [
+          {
+            "part": 15,
+            "native_face": 424,
+            "half": 1
+          },
+          {
+            "part": 15,
+            "native_face": 424,
+            "half": 0
+          },
+          {
+            "part": 15,
+            "native_face": 424,
+            "half": 1
+          },
+          {
+            "part": 15,
+            "native_face": 424,
+            "half": 0
+          },
+          {
+            "part": 15,
+            "native_face": 424,
+            "half": 0
+          },
+          {
+            "part": 1,
+            "native_face": 5277,
+            "half": 1
+          },
+          {
+            "part": 1,
+            "native_face": 6278,
+            "half": 1
+          },
+          {
+            "part": 15,
+            "native_face": 424,
+            "half": 0
+          }
+        ]
+      }
+    },
+    "critical_shell_face4488_overhang_mm": 0.009257341540788569,
+    "limitations": "Exact planar cell-support proof assumes ideal nearest mip0 sampling. Discrete float64 boundary probes are separately reported, not silently covered by ideal proof. No float32 shader/mips/bilinear/runtime or PBR equivalence.",
+    "boundary_probe_sampling": "Initial probe uses local tile coordinates before adding atlas U origin; actual complete-atlas address arithmetic and inward-distance scales are tested separately in shared-2048-boundary-scale.json."
+  },
+  {
+    "resolution": 2048,
+    "hashes": {
+      "opaque_transport_v15/shared_mask/shared_mask_2048.geo.json": "7d316ce8c92b346095a73e9f1f540167146a4f4aad707491d53f20b7d427de72",
+      "opaque_transport_v15/shared_mask/shared_mask_2048.png": "71dae6b4e599fc6aa3505974d9be95d4b9f78bc64e528e8ca32ddb33539eb620",
+      "opaque_transport_v15/shared_mask/transport_faces.jsonl.gz": "e276cd5744b571e93773baf4f749287fd86e0af81f15608c14a75ed2cf3ccb56",
+      "opaque_transport_v15/shared_mask/transport_arrays.npz": "84d94c224af848fdb6b6558ce7f1d8f98fd4e8ee2ebea39b63560315f4461d7e"
+    },
+    "checks": {
+      "mask_exact_column_le_row": true,
+      "alpha_binary": true,
+      "legacy_rgba_exact": true,
+      "untouched_17_bones_exact": true,
+      "only_south_positive_width_height_zero_depth": true,
+      "expected_source_face_half_complete_unique": true,
+      "uv_exact_shared_origin_and_size": true,
+      "metadata_native_vertices_exact": true
+    },
+    "new_quads": 36968,
+    "max_child_coordinate_error_blocks": 5.084552525656844e-14,
+    "max_orientation_error_degrees": 1.4787793334710982e-06,
+    "max_plane_error_blocks": 8.014001156811847e-15,
+    "mask_opaque_pixels": 2098176,
+    "mask_expected_opaque_pixels": 2098176,
+    "parts": {
+      "0": {
+        "native_faces": 4444,
+        "child_quads": 8888,
+        "native_area_blocks2": 0.03362153689119624,
+        "independent_quad_half_area_sum_blocks2": 0.0336215368911963,
+        "max_per_native_face_split_area_error_blocks2": 4.7704895589362195e-18,
+        "max_coordinate_error_blocks": 1.8470855942954328e-14,
+        "ideal_added_area_blocks2": 1.6416766060154442e-05,
+        "ideal_missing_area_blocks2": 0,
+        "ideal_added_area_fraction_native": 0.00048828125,
+        "max_perpendicular_edge_overhang_mm": 0.003399822707272174,
+        "overhang_mm_quantiles": [
+          2.2418888761317865e-07,
+          0.0003553934670376495,
+          0.0007198953282285417,
+          0.002544616523558075,
+          0.003399822707272174
+        ]
+      },
+      "1": {
+        "native_faces": 12664,
+        "child_quads": 25328,
+        "native_area_blocks2": 5.405380952320982,
+        "independent_quad_half_area_sum_blocks2": 5.405380952320984,
+        "max_per_native_face_split_area_error_blocks2": 7.979727989493313e-17,
+        "max_coordinate_error_blocks": 5.084552525656844e-14,
+        "ideal_added_area_blocks2": 0.0026393461681254804,
+        "ideal_missing_area_blocks2": 0,
+        "ideal_added_area_fraction_native": 0.00048828125,
+        "max_perpendicular_edge_overhang_mm": 0.06235829860911408,
+        "overhang_mm_quantiles": [
+          3.863755668186594e-07,
+          0.0014511218122823175,
+          0.004315225365878354,
+          0.00696729874843338,
+          0.06235829860911408
+        ]
+      },
+      "15": {
+        "native_faces": 1376,
+        "child_quads": 2752,
+        "native_area_blocks2": 0.6268532339745587,
+        "independent_quad_half_area_sum_blocks2": 0.6268532339745589,
+        "max_per_native_face_split_area_error_blocks2": 1.3010426069826053e-17,
+        "max_coordinate_error_blocks": 4.0231465105840684e-15,
+        "ideal_added_area_blocks2": 0.0003060806806516401,
+        "ideal_missing_area_blocks2": 0,
+        "ideal_added_area_fraction_native": 0.00048828125,
+        "max_perpendicular_edge_overhang_mm": 0.02549501971613857,
+        "overhang_mm_quantiles": [
+          2.6588840969045507e-09,
+          0.005948153301329638,
+          0.009911629793389436,
+          0.013555740729522963,
+          0.02549501971613857
+        ]
+      }
+    },
+    "bound_derivation": "Verified actual image is column<=row. Canonical right triangle has legs a,b and cell area ab/N\u00b2. N(N+1)/2 cells are opaque; triangle area ab/2. Entire triangle interior lies in these cells (except measure-zero float/border effects); extra=area/N, missing=0. Diagonal outer cell corners are at normalized x+y=1+1/N; maximum perpendicular overhang ab/(N sqrt(a\u00b2+b\u00b2)).",
+    "boundary_probes": {
+      "interior": {
+        "sample_count": 184840,
+        "transparent_or_outside_count": 0,
+        "outside_rect_count": 0,
+        "unique_halves_with_failed_probe": 0,
+        "max_recovered_coordinate_error": 7.837622595374683e-08,
+        "failure_parts": {
+          "0": 0,
+          "1": 0,
+          "15": 0
+        },
+        "first_failure_rows": []
+      },
+      "diagonal_texel_centers": {
+        "sample_count": 184840,
+        "transparent_or_outside_count": 0,
+        "outside_rect_count": 0,
+        "unique_halves_with_failed_probe": 0,
+        "max_recovered_coordinate_error": 5.415893034044217e-08,
+        "failure_parts": {
+          "0": 0,
+          "1": 0,
+          "15": 0
+        },
+        "first_failure_rows": []
+      },
+      "diagonal_lattice_vertices": {
+        "sample_count": 184840,
+        "transparent_or_outside_count": 39217,
+        "outside_rect_count": 0,
+        "unique_halves_with_failed_probe": 16339,
+        "max_recovered_coordinate_error": 5.414593207131446e-08,
+        "failure_parts": {
+          "0": 10394,
+          "1": 26009,
+          "15": 2814
+        },
+        "first_failure_rows": [
+          {
+            "part": 0,
+            "native_face": 0,
+            "half": 1
+          },
+          {
+            "part": 0,
+            "native_face": 1,
+            "half": 0
+          },
+          {
+            "part": 0,
+            "native_face": 3,
+            "half": 1
+          },
+          {
+            "part": 0,
+            "native_face": 4,
+            "half": 1
+          },
+          {
+            "part": 0,
+            "native_face": 5,
+            "half": 0
+          },
+          {
+            "part": 0,
+            "native_face": 5,
+            "half": 1
+          },
+          {
+            "part": 0,
+            "native_face": 6,
+            "half": 0
+          },
+          {
+            "part": 0,
+            "native_face": 7,
+            "half": 1
+          },
+          {
+            "part": 0,
+            "native_face": 8,
+            "half": 0
+          },
+          {
+            "part": 0,
+            "native_face": 8,
+            "half": 1
+          }
+        ]
+      },
+      "diagonal_lattice_inset_1e-10": {
+        "sample_count": 184840,
+        "transparent_or_outside_count": 9,
+        "outside_rect_count": 0,
+        "unique_halves_with_failed_probe": 5,
+        "max_recovered_coordinate_error": 5.4145980921127546e-08,
+        "failure_parts": {
+          "0": 2,
+          "1": 1,
+          "15": 6
+        },
+        "first_failure_rows": [
+          {
+            "part": 0,
+            "native_face": 4126,
+            "half": 0
+          },
+          {
+            "part": 15,
+            "native_face": 424,
+            "half": 1
+          },
+          {
+            "part": 15,
+            "native_face": 424,
+            "half": 0
+          },
+          {
+            "part": 15,
+            "native_face": 424,
+            "half": 1
+          },
+          {
+            "part": 15,
+            "native_face": 424,
+            "half": 0
+          },
+          {
+            "part": 15,
+            "native_face": 424,
+            "half": 0
+          },
+          {
+            "part": 0,
+            "native_face": 4179,
+            "half": 1
+          },
+          {
+            "part": 1,
+            "native_face": 6278,
+            "half": 1
+          },
+          {
+            "part": 15,
+            "native_face": 424,
+            "half": 0
+          }
+        ]
+      }
+    },
+    "critical_shell_face4488_overhang_mm": 0.0023143353851971422,
+    "limitations": "Exact planar cell-support proof assumes ideal nearest mip0 sampling. Discrete float64 boundary probes are separately reported, not silently covered by ideal proof. No float32 shader/mips/bilinear/runtime or PBR equivalence.",
+    "boundary_probe_sampling": "Initial probe uses local tile coordinates before adding atlas U origin; actual complete-atlas address arithmetic and inward-distance scales are tested separately in shared-2048-boundary-scale.json."
+  }
+]

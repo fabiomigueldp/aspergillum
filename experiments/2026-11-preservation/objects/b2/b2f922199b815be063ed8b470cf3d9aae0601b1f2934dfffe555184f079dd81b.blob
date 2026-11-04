@@ -1,0 +1,60 @@
+from pathlib import Path
+import json, hashlib, collections
+ROOT=Path('/workspace/scratch/212c580ada5b'); OUT=ROOT/'paz-preservation-audit-20261104'
+LAB='paz-bedrock-v75-prototype-20261103'; CHECK='paz-refinement/gui-test/checkpoint-V75-20261102'; ADDON='paz-addon-audit-20261103'
+selected={}
+def add(p,group,reason):
+ p=Path(p);p=p if p.is_absolute() else ROOT/p
+ if not p.is_file():raise ValueError(f'Missing {p}')
+ selected[str(p.relative_to(ROOT))]={'group':group,'reason':reason}
+def walk(base,fn,group,reason):
+ for p in (ROOT/base).rglob('*'):
+  if p.is_file() and '__pycache__' not in p.parts and fn(p):add(p,group,reason)
+walk(CHECK,lambda p:True,'sculpture_v75','Complete editable retained checkpoint with own renders, assessments and operation records')
+walk(ADDON,lambda p:p.suffix not in ['.pyc','.log'],'addon_0_1_3','Original extracted addon, immutable baseline, deterministic builder, tests, unapproved evidence')
+for name in ['paz-refinement','paz-directed-v21','paz-sculpt-v22','paz-arm-chain','paz-sleeve-proxy']:
+ for p in (ROOT/name).rglob('*'):
+  if p.is_file() and '__pycache__' not in p.parts and p.suffix in ['.py','.md','.json'] and 'checkpoint-' not in str(p) and p.stat().st_size <= 1048576:
+   add(p,'sculpture_history','Operation source and assessment; historical binary prerequisites are not all included')
+add('paz-sleeve-proxy/cuff-open/P85-CUFF-TECHNICAL-RETAINED.blend','sculpture_p85','Retained technical separate sleeve control; not integrated with V75 and not approved as visual fidelity')
+for p in (ROOT/'paz-sleeve-proxy').rglob('*.png'):
+ if p.parent.name == 'cuff-open' or p.name.startswith('PROVISORIO-'):add(p,'sculpture_p85','Own diagnostic render documenting separate experimental proxy')
+for p in (ROOT/'paz-arm-chain').glob('*.png'):add(p,'sculpture_history','Paired own V75/V84 evidence recording rejected trial')
+walk(LAB,lambda p:p.suffix in ['.py','.mjs','.sh','.md','.lang'] or (p.suffix=='.json' and not p.name.endswith('.geo.json') and p.stat().st_size<=1048576),'lab_sources_and_reports','All authored tools and human-readable reports/status up to 1 MiB; larger generated numeric dumps excluded')
+for prefix in ['resource_pack','behavior_pack','pbr_normals_v2/resource_pack','pbr_normals_v2/behavior_pack','assembly_transport_v14/resource_pack']:
+ walk(f'{LAB}/{prefix}',lambda p:True,'lab_asset_inputs','Native pack sources and texture/geometry payloads needed for retained experiment lineage')
+extra=['evidence/source_meshes.npz','evidence/vertex_bake.npz','evidence/alpha-correspondence.npz','pbr_normals_v2/evidence/repaired_meshes.npz','pbr_normals_v2/evidence/part_normal_bake.npz','shell_band_v3/evidence/band-source.npz','shell_band_v3/evidence/band-source-parameters.npz','shell_band_v3/evidence/band-source-wall-classes.npz','body_interface_v9/constrained_fit/retained-anatomy.npz','ear_rim_v11/structural_rebuild/retained-shell.npz','band_shell_v13/constrained_fit/retained-band.npz','assembly_transport_v14/export_work/transport_arrays.npz','assembly_transport_v14/export_work/transport_faces.jsonl.gz','assembly_transport_v14/export_work/source-anatomy-frozen.npz','assembly_transport_v14/export_work/source-shell-frozen.npz','assembly_transport_v14/export_work/source-band-frozen.npz','assembly_transport_v14/export_work/legacy-color.png','assembly_transport_v14/export_work/legacy-normal-dx.png','assembly_transport_v14/export_work/legacy-geometry.geo.json','opaque_transport_v15/shared_mask/shared_mask_2048.geo.json','opaque_transport_v15/shared_mask/shared_mask_2048.png','opaque_transport_v15/shared_mask/transport_arrays.npz','opaque_transport_v15/shared_mask/transport_faces.jsonl.gz','opaque_transport_v15/shared_mask/source-anatomy-frozen.npz','opaque_transport_v15/shared_mask/source-band-frozen.npz','opaque_transport_v15/shared_mask/source-shell-frozen.npz','lit_surface_v16/transparent_trim/roi68-depth3.geo.json','lit_surface_v16/transparent_trim/roi68-depth3-restored-transparent.geo.json','lit_surface_v16/transparent_trim/shared_mask_2048.png']
+for r in extra:add(f'{LAB}/{r}','lab_reproduction_inputs','Explicit inputs or retained candidate/control outputs for V14/V15/V16')
+walk(f'{LAB}/lit_surface_v16/transparent_trim',lambda p:p.suffix in ['.npz','.gz'],'lab_reproduction_inputs','Compact trim provenance for exact geometry/control candidates')
+for p in (ROOT/LAB).rglob('*.png'):
+ if p.name.startswith('comparison') or p.name.startswith('composite') or (p.parent.name=='evidence' and p.name in ['roi68-depth1-band-front.png','roi68-depth2-band-front.png','roi68-depth3-band-front.png','roi68-depth3-restored-transparent-band-front.png']):add(p,'lab_visual_evidence','Own comparison render; offline laboratory evidence, not in-game screenshot')
+rows=[]
+for rel,meta in sorted(selected.items()):
+ p=ROOT/rel
+ rows.append({'source':rel,'repository_path':'research/nossa-senhora-da-paz/workspace/'+rel,'bytes':p.stat().st_size,'sha256':hashlib.file_digest(p.open('rb'),'sha256').hexdigest(),**meta})
+summary=collections.defaultdict(lambda:{'files':0,'bytes':0})
+for r in rows:summary[r['group']]['files']+=1;summary[r['group']]['bytes']+=r['bytes']
+manifest={'format_version':1,'generated_utc':'2026-11-04','status':'EXPERIMENTAL_ARCHIVE_NOT_RELEASE','root':str(ROOT),'destination_prefix':'research/nossa-senhora-da-paz/workspace','files':rows,'totals':{'files':len(rows),'bytes':sum(r['bytes'] for r in rows)},'groups':summary}
+(OUT/'recommended-selection.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
+(OUT/'recommended-files.txt').write_text('\n'.join(r['source'] for r in rows)+'\n')
+optional=[];seen={r['sha256']:r['source'] for r in rows};duplicate=[]
+for base in ['paz-arm-chain','paz-sleeve-proxy']:
+ for p in sorted((ROOT/base).rglob('*.blend')):
+  rel=str(p.relative_to(ROOT));h=hashlib.file_digest(p.open('rb'),'sha256').hexdigest()
+  if rel in selected:continue
+  row={'source':rel,'bytes':p.stat().st_size,'sha256':h,'status':'REJECTED_OR_DIAGNOSTIC_NOT_INTEGRATED'}
+  if h in seen:row['same_bytes_as']=seen[h];duplicate.append(row)
+  else:optional.append(row);seen[h]=rel
+(OUT/'optional-sculpture-checkpoints.json').write_text(json.dumps({'optional_unique':optional,'exact_duplicates':duplicate},indent=2)+'\n')
+excluded=[]
+for p in sorted((ROOT/LAB).rglob('*')):
+ if not p.is_file() or '__pycache__' in p.parts:continue
+ rel=str(p.relative_to(ROOT))
+ if rel in selected:continue
+ reason='Generated diagnostic/intermediate output, reproducible render or raw numeric array not in minimum archive'
+ if p.suffix in ['.zip','.mcaddon']:reason='Generated packaged copy; source assets selected separately'
+ elif p.suffix in ['.blend','.blend1']:reason='Generated reconstruction or scene cache; not the editable V75 source'
+ elif p.suffix=='.js':reason='Third-party Blockbench source snapshot; license file missing in workspace, preserve provenance in reports and obtain license before vendoring'
+ excluded.append({'source':rel,'bytes':p.stat().st_size,'sha256':hashlib.file_digest(p.open('rb'),'sha256').hexdigest(),'reason':reason})
+(OUT/'excluded-lab-inventory.json').write_text(json.dumps(excluded,indent=2)+'\n')
+print(json.dumps({'selection':manifest['totals'],'groups':summary,'optional_unique':optional,'duplicates':duplicate,'excluded_lab_files':len(excluded),'excluded_lab_bytes':sum(x['bytes'] for x in excluded)},indent=2))

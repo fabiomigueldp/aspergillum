@@ -1,0 +1,10 @@
+import bpy,json,collections
+from mathutils import Vector
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False);s=bpy.context.scene;names={'Maria — anatomia feminina adaptada CC0':(.05,.25,.7,1),'Maria — túnica e mangas integradas':(.85,.30,.035,1),'TESTE 34 — conexão de superfícies avaliadas':(.02,.5,.25,1)};report={}
+for name,col in names.items():
+ o=bpy.data.objects[name];m=bpy.data.materials.new('Diagnostic only '+name);m.use_nodes=True;m.node_tree.nodes['Principled BSDF'].inputs['Base Color'].default_value=col;m.node_tree.nodes['Principled BSDF'].inputs['Roughness'].default_value=.75;o.data.materials.clear();o.data.materials.append(m)
+ counts=collections.Counter(tuple(sorted((a,b))) for f in o.data.polygons for a,b in zip(f.vertices,list(f.vertices[1:])+[f.vertices[0]]));boundary=[e for e,n in counts.items() if n==1];report[name]={'diagnostic_color':col,'boundary_edge_count':len(boundary),'boundary_edges_near_neck':sum(1 for a,b in boundary if 3<o.data.vertices[a].co.z<3.4),'visible':not o.hide_render}
+s.cycles.samples=48;s.render.resolution_x=600;s.render.resolution_y=800;s.render.resolution_percentage=100;c=s.camera;c.data.type='ORTHO'
+for view,loc,targ,scale in [('profile',(-5,-.05,3.25),(0,-.05,3.2),.95),('oblique',(-2,-5,3.45),(0,-.05,3.2),.95)]:
+ c.location=loc;c.rotation_euler=(Vector(targ)-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=scale;s.render.filepath=r+'V75-neck-surface-attribution-'+view+'.png';bpy.ops.render.render(write_still=True)
+json.dump({'objects':report,'note':'Only diagnostic materials; no blend saved, no geometry changed.'},open(r+'neck-surface-attribution.json','w'),indent=2)

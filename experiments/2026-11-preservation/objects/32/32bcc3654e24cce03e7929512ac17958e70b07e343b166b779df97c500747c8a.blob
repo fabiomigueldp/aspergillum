@@ -1,0 +1,14 @@
+from audit_primary_rays import *
+g=dict(np.load(O/'primary-ray-grid.npz'));n=scene('native');q=scene('quads');hit=g['native_hit'];pt=np.einsum('ij,ijk->ik',g['native_bary'],n['triangles'][hit]);halves=np.full(len(hit),-1);minbary=np.full(len(hit),np.nan)
+for part in MAP:
+ for face in np.unique(n['native_face'][hit][n['part'][hit]==part]):
+  ix=np.flatnonzero((n['part'][hit]==part)&(n['native_face'][hit]==face));tc=np.flatnonzero((T['part']==part)&(T['native_face']==face));scores=[]
+  for ti in tc:
+   tr=T['triangle_source'][ti];e=tr[1]-tr[0];f=tr[2]-tr[0];de=pt[ix]-tr[0];ee=e@e;ef=e@f;ff=f@f;ed=de@e;fd=de@f;det=ee*ff-ef*ef;u=(ff*ed-ef*fd)/det;v=(ee*fd-ef*ed)/det;scores.append(np.minimum(np.minimum(u,v),1-u-v))
+  scores=np.array(scores);best=scores.argmax(0);halves[ix]=T['half'][tc[best]];minbary[ix]=scores[best,np.arange(len(ix))]
+g['native_source_half']=halves;g['native_half_min_bary']=minbary;np.savez_compressed(O/'primary-ray-grid.npz',**g);r=json.load(open(O/'primary-ray-report.json'));p=g['pixels'];roi=(p[:,0]>=490)&(p[:,0]<=570)&(p[:,1]>=440)&(p[:,1]<=480);diff=g['clip_minus_quad_mean_rgb'];qh=g['quads_hit'];mismatch=(q['half'][qh]!=halves)&(q['native_face'][qh]==n['native_face'][hit])&(q['part'][qh]==n['part'][hit]);stats={}
+for name,sel in [('central_strip',np.ones(len(p),bool)),('actual_scar_window',roi),('scar_dark_10',roi&(diff>=10)),('nearby_clean_abs3',roi&(np.abs(diff)<=3))]:stats[name]={'n':int(sel.sum()),'half_mismatch_same_native_face':int(np.sum(mismatch&sel)),'minimum_selected_half_barycentric':float(np.nanmin(minbary[sel]))}
+r['native_half_classification']={'method':'Saved native control uses full source triangles, not halves. Hit points projected into both exact source-half triangles; choose larger minimum barycentric component. This is source-half classification, not a native mesh primitive ID.','statistics':stats}
+for w in r['witnesses']:
+ ix=int(np.flatnonzero((p==w['pixel']).all(1))[0]);w['native']['source_half_classification']=int(halves[ix]);w['native']['source_half_min_barycentric']=float(minbary[ix])
+(O/'primary-ray-report.json').write_text(json.dumps(r,indent=2));print(json.dumps(stats,indent=2))

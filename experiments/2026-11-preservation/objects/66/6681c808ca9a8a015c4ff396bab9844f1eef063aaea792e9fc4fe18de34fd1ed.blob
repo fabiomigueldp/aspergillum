@@ -1,0 +1,463 @@
+import copy
+import io
+import json
+from pathlib import Path
+import sys
+import tempfile
+import unittest
+from zipfile import ZipFile, ZipInfo
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'tools'))
+import addon
+
+class AuditTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.baseline = addon.read_files(addon.ROOT/'source')
+        cls.lock = addon.strict_json((addon.ROOT/'baseline-lock.json').read_bytes())
+
+    def setUp(self):
+        self.files = self.baseline.copy()
+
+    def mutate(self, name, change):
+        doc = addon.strict_json(self.files[name])
+        change(doc)
+        self.files[name] = json.dumps(doc).encode()
+
+    def expect_blocked(self):
+        with self.assertRaises((addon.AuditError, KeyError, ValueError, TypeError)):
+            addon.audit(self.files, self.lock)
+
+    def test_baseline_passes_but_is_not_release(self):
+        report = addon.audit(self.files, self.lock)
+        self.assertEqual(report['geometry']['cube_count'], 46)
+        self.assertEqual(report['changed_files'], [])
+        self.assertEqual(report['runtime_status'], 'not_run')
+        self.assertFalse(report['release_eligible'])
+
+    def test_existing_upper_interaction_limit_is_reported(self):
+        report = addon.audit(self.files, self.lock)
+        self.assertAlmostEqual(report['geometry']['rotated_bounds_pixels']['size'][1], 27.59005)
+        self.assertTrue(any('upper part' in w for w in report['warnings']))
+
+    def test_reproducible_build(self):
+        first = addon.package_bytes(self.files)
+        second = addon.package_bytes(dict(reversed(list(self.files.items()))))
+        self.assertEqual(first, second)
+        with ZipFile(io.BytesIO(first)) as z:
+            self.assertEqual({n:z.read(n) for n in z.namelist()}, self.baseline)
+
+    def test_original_archive_unchanged(self):
+        original = addon.ROOT/self.lock['baseline_archive']
+        self.assertEqual(addon.digest(original.read_bytes()), self.lock['baseline_archive_sha256'])
+
+    def test_uuid_change_blocked(self):
+        self.mutate('Paz_BP/manifest.json', lambda d: d['header'].__setitem__('uuid', '1b72745c-1637-4b71-9428-6234a2675ed5'))
+        self.expect_blocked()
+
+    def test_module_identity_change_blocked(self):
+        self.mutate('Paz_BP/manifest.json', lambda d: d['modules'][0].__setitem__('type', 'script'))
+        self.expect_blocked()
+
+    def test_dependency_mismatch_blocked(self):
+        self.mutate('Paz_BP/manifest.json', lambda d: d['dependencies'][0].__setitem__('version', [0,1,2]))
+        self.expect_blocked()
+
+    def test_version_downgrade_blocked(self):
+        self.mutate('Paz_BP/manifest.json', lambda d: d['header'].__setitem__('version', [0,1,2]))
+        self.expect_blocked()
+
+    def test_engine_change_blocked(self):
+        self.mutate('Paz_RP/manifest.json', lambda d: d['header'].__setitem__('min_engine_version', [1,21,80]))
+        self.expect_blocked()
+
+    def test_block_id_change_blocked(self):
+        self.mutate(addon.BLOCK, lambda d: d['minecraft:block']['description'].__setitem__('identifier', 'other:imagem'))
+        self.expect_blocked()
+
+    def test_geometry_reference_change_blocked(self):
+        self.mutate(addon.BLOCK, lambda d: d['minecraft:block']['components']['minecraft:geometry'].__setitem__('identifier', 'geometry.other'))
+        self.expect_blocked()
+
+    def test_geometry_format_change_blocked(self):
+        self.mutate(addon.GEO, lambda d: d.__setitem__('format_version', '1.12.0'))
+        self.expect_blocked()
+
+    def test_extra_file_blocked(self):
+        self.files['Paz_BP/scripts/hidden.js'] = b'unknown'
+        self.expect_blocked()
+
+    def test_missing_texture_blocked(self):
+        del self.files[addon.PNG]
+        self.expect_blocked()
+
+    def test_corrupt_png_blocked(self):
+        self.files[addon.PNG] = self.files[addon.PNG][:-1]
+        self.expect_blocked()
+
+    def test_texture_reference_blocked(self):
+        self.mutate('Paz_RP/textures/terrain_texture.json', lambda d: d['texture_data']['paz_glicerio_imagem'].__setitem__('textures', ['textures/missing']))
+        self.expect_blocked()
+
+    def test_atlas_dimension_mismatch_blocked(self):
+        self.mutate(addon.GEO, lambda d: d['minecraft:geometry'][0]['description'].__setitem__('texture_width', 128))
+        self.expect_blocked()
+
+    def cube_mutation(self, change):
+        self.mutate(addon.GEO, lambda d: change(d['minecraft:geometry'][0]['bones'][0]['cubes'][0]))
+
+    def test_oversized_geometry_blocked(self):
+        self.cube_mutation(lambda c: c.__setitem__('size', [31,1,1]))
+        self.expect_blocked()
+
+    def test_absolute_geometry_bounds_blocked(self):
+        self.cube_mutation(lambda c: c.__setitem__('origin', [31,0,0]))
+        self.expect_blocked()
+
+    def test_zero_cube_blocked(self):
+        self.cube_mutation(lambda c: c.__setitem__('size', [1,0,1]))
+        self.expect_blocked()
+
+    def test_rotation_can_make_valid_unrotated_size_invalid(self):
+        d = addon.strict_json(self.files[addon.GEO])
+        d['minecraft:geometry'][0]['bones'][0]['cubes'].append({
+            'origin':[-15,0,-15], 'size':[30,1,30], 'pivot':[0,0,0], 'rotation':[0,45,0],
+            'uv':copy.deepcopy(d['minecraft:geometry'][0]['bones'][0]['cubes'][0]['uv'])})
+        with self.assertRaisesRegex(addon.AuditError, '30-unit'):
+            addon.geometry_audit(d, (64,64))
+
+    def test_single_axis_rotation_math(self):
+        point = addon.rotate([2,0,0], [1,0,0], [0,90,0])
+        self.assertAlmostEqual(point[0],1)
+        self.assertAlmostEqual(point[2],-1)
+
+    def test_uncertain_multiaxis_rotation_blocked(self):
+        self.cube_mutation(lambda c: c.__setitem__('rotation', [5,5,0]))
+        self.expect_blocked()
+
+    def test_unhandled_bone_transform_blocked(self):
+        self.mutate(addon.GEO, lambda d: d['minecraft:geometry'][0]['bones'][0].__setitem__('rotation',[0,45,0]))
+        self.expect_blocked()
+
+    def test_unhandled_inflation_blocked(self):
+        self.cube_mutation(lambda c: c.__setitem__('inflate',2))
+        self.expect_blocked()
+
+    def test_uv_overflow_blocked(self):
+        self.cube_mutation(lambda c: c['uv']['north'].__setitem__('uv',[63,63]))
+        self.expect_blocked()
+
+    def test_zero_uv_blocked(self):
+        self.cube_mutation(lambda c: c['uv']['north'].__setitem__('uv_size',[0,14]))
+        self.expect_blocked()
+
+    def test_negative_uv_spans_checked(self):
+        self.cube_mutation(lambda c: c['uv']['north'].__setitem__('uv_size',[-64,14]))
+        self.expect_blocked()
+
+    def test_missing_uv_face_blocked(self):
+        self.cube_mutation(lambda c: c['uv'].pop('up'))
+        self.expect_blocked()
+
+    def test_undersized_visible_bounds_blocked(self):
+        self.mutate(addon.GEO, lambda d: d['minecraft:geometry'][0]['description'].__setitem__('visible_bounds_height',0.1))
+        self.expect_blocked()
+
+    def test_outsize_selection_blocked(self):
+        self.mutate(addon.BLOCK, lambda d: d['minecraft:block']['components']['minecraft:selection_box'].__setitem__('size',[10,28,10]))
+        self.expect_blocked()
+
+    def test_drop_behavior_change_blocked(self):
+        self.mutate(addon.BLOCK, lambda d: d['minecraft:block']['components'].__setitem__('minecraft:loot', 'loot_tables/missing.json'))
+        self.expect_blocked()
+
+    def test_missing_direction_blocked(self):
+        self.mutate(addon.BLOCK, lambda d: d['minecraft:block']['permutations'].pop())
+        self.expect_blocked()
+
+    def test_repeated_direction_blocked(self):
+        self.mutate(addon.BLOCK, lambda d: d['minecraft:block']['permutations'].__setitem__(3, d['minecraft:block']['permutations'][0]))
+        self.expect_blocked()
+
+    def test_wrong_direction_rotation_blocked(self):
+        self.mutate(addon.BLOCK, lambda d: d['minecraft:block']['permutations'][0]['components']['minecraft:transformation'].__setitem__('rotation',[0,90,0]))
+        self.expect_blocked()
+
+    def test_missing_translation_blocked(self):
+        self.files['Paz_BP/texts/pt_BR.lang'] = b'pack.name=Paz\n'
+        self.expect_blocked()
+
+    def test_duplicate_json_key_blocked(self):
+        with self.assertRaises(addon.AuditError):
+            addon.strict_json('{"x":1,"x":2}')
+
+    def test_nonfinite_json_blocked(self):
+        for value in ('NaN','Infinity','-Infinity','1e999'):
+            with self.subTest(value=value), self.assertRaises(addon.AuditError):
+                addon.strict_json('{"x":'+value+'}')
+
+    def test_unsafe_archive_names_blocked(self):
+        for name in ('../escape','/tmp/escape','Paz_BP/../bad','Paz_BP\\bad'):
+            with self.subTest(name=name), self.assertRaises(addon.AuditError):
+                addon.safe_name(name)
+
+    def test_duplicate_zip_entries_blocked(self):
+        import warnings
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/'bad.zip'
+            with warnings.catch_warnings():
+                warnings.simplefilter('ignore')
+                with ZipFile(path, 'w') as z:
+                    z.writestr('same',b'one'); z.writestr('same',b'two')
+            with self.assertRaises(addon.AuditError):
+                addon.read_files(path)
+
+    def test_symlink_source_blocked(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp)/'link').symlink_to(addon.ROOT/'source')
+            with self.assertRaises(addon.AuditError):
+                addon.read_files(Path(tmp))
+
+    def test_release_requires_evidence(self):
+        report=addon.audit(self.files,self.lock)
+        with self.assertRaises(KeyError):
+            addon.release_gate(report,addon.package_bytes(self.files),{},addon.ROOT/'evidence')
+
+    def test_release_rejects_stale_source(self):
+        report=addon.audit(self.files,self.lock)
+        with self.assertRaisesRegex(addon.AuditError,'stale source'):
+            addon.release_gate(report,b'',{'source_fingerprint_sha256':'outdated'},addon.ROOT/'evidence')
+
+    def test_release_rejects_stale_package(self):
+        report=addon.audit(self.files,self.lock)
+        evidence={'source_fingerprint_sha256':report['source_fingerprint_sha256'],'package_sha256':'outdated'}
+        with self.assertRaisesRegex(addon.AuditError,'stale package'):
+            addon.release_gate(report,b'',evidence,addon.ROOT/'evidence')
+
+    def test_release_rejects_unapproved_art(self):
+        report=addon.audit(self.files,self.lock)
+        package=addon.package_bytes(self.files)
+        evidence={'source_fingerprint_sha256':report['source_fingerprint_sha256'],
+                  'package_sha256':addon.digest(package),'visual_approval':{'status':'not_approved'}}
+        with self.assertRaisesRegex(addon.AuditError,'visual approval'):
+            addon.release_gate(report,package,evidence,addon.ROOT/'evidence')
+
+    def test_art_change_tracked_never_automatically_approved(self):
+        self.cube_mutation(lambda c: c['origin'].__setitem__(0,-3.9))
+        report=addon.audit(self.files,self.lock)
+        self.assertIn(addon.GEO,report['changed_files'])
+        self.assertFalse(report['release_eligible'])
+
+
+    def synthetic_evidence(self, report, package, root):
+        # Synthetic unit-test data only. Never persisted as Minecraft evidence.
+        log = root/'synthetic-unit-test-only.log'
+        log.write_text('SYNTHETIC UNIT TEST. NO MINECRAFT RUN.\n')
+        return {'source_fingerprint_sha256': report['source_fingerprint_sha256'],
+                'package_sha256': addon.digest(package),
+                'visual_approval': {'status':'approved','reviewer':'synthetic test fixture',
+                                    'geometry_sha256':report['files_sha256'][addon.GEO]},
+                'minecraft_test': {'status':'passed','tester':'synthetic test fixture',
+                    'tested_at_utc':'synthetic test fixture', 'engine_version':[1,26,40],
+                    'disposable_world':True,
+                    'cases':{name:'passed' for name in addon.RUNTIME_CASES},
+                    'content_log':{'path':log.name,'sha256':addon.digest(log.read_bytes()),
+                                   'reviewed_no_addon_errors':True}}}
+
+    def test_gate_accepts_complete_synthetic_unit_fixture(self):
+        report=addon.audit(self.files,self.lock); package=addon.package_bytes(self.files)
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); evidence=self.synthetic_evidence(report,package,root)
+            addon.release_gate(report,package,evidence,root)
+
+    def test_gate_rejects_missing_runtime_case(self):
+        report=addon.audit(self.files,self.lock); package=addon.package_bytes(self.files)
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); evidence=self.synthetic_evidence(report,package,root)
+            evidence['minecraft_test']['cases']['save_reopen']='not_run'
+            with self.assertRaisesRegex(addon.AuditError,'cases incomplete'):
+                addon.release_gate(report,package,evidence,root)
+
+    def test_gate_rejects_missing_log(self):
+        report=addon.audit(self.files,self.lock); package=addon.package_bytes(self.files)
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); evidence=self.synthetic_evidence(report,package,root)
+            evidence['minecraft_test']['content_log']['path']='absent.log'
+            with self.assertRaisesRegex(addon.AuditError,'evidence absent'):
+                addon.release_gate(report,package,evidence,root)
+
+    def test_gate_rejects_changed_log(self):
+        report=addon.audit(self.files,self.lock); package=addon.package_bytes(self.files)
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); evidence=self.synthetic_evidence(report,package,root)
+            evidence['minecraft_test']['content_log']['sha256']='stale'
+            with self.assertRaisesRegex(addon.AuditError,'checksum mismatch'):
+                addon.release_gate(report,package,evidence,root)
+
+    def test_gate_rejects_unsafe_log_path(self):
+        report=addon.audit(self.files,self.lock); package=addon.package_bytes(self.files)
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); evidence=self.synthetic_evidence(report,package,root)
+            evidence['minecraft_test']['content_log']['path']='../outside.log'
+            with self.assertRaisesRegex(addon.AuditError,'unsafe'):
+                addon.release_gate(report,package,evidence,root)
+
+    def test_gate_rejects_changed_visual_asset(self):
+        report=addon.audit(self.files,self.lock); package=addon.package_bytes(self.files)
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); evidence=self.synthetic_evidence(report,package,root)
+            evidence['visual_approval']['geometry_sha256']='stale'
+            with self.assertRaisesRegex(addon.AuditError,'stale visual'):
+                addon.release_gate(report,package,evidence,root)
+
+    def test_gate_rejects_different_engine(self):
+        report=addon.audit(self.files,self.lock); package=addon.package_bytes(self.files)
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); evidence=self.synthetic_evidence(report,package,root)
+            evidence['minecraft_test']['engine_version']=[1,26,50]
+            with self.assertRaisesRegex(addon.AuditError,'minimum target'):
+                addon.release_gate(report,package,evidence,root)
+
+    def test_gate_rejects_non_disposable_world(self):
+        report=addon.audit(self.files,self.lock); package=addon.package_bytes(self.files)
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); evidence=self.synthetic_evidence(report,package,root)
+            evidence['minecraft_test']['disposable_world']=False
+            with self.assertRaisesRegex(addon.AuditError,'disposable'):
+                addon.release_gate(report,package,evidence,root)
+
+    def test_build_never_overwrites(self):
+        import contextlib
+        with tempfile.TemporaryDirectory() as tmp:
+            target=Path(tmp)/'existing.mcaddon'; target.write_bytes(b'preserve')
+            with contextlib.redirect_stderr(io.StringIO()):
+                result=addon.main(['build','--output',str(target),'--report',str(Path(tmp)/'audit.json')])
+            self.assertEqual(result,2)
+            self.assertEqual(target.read_bytes(),b'preserve')
+
+    def test_failed_release_creates_no_artifact(self):
+        import contextlib
+        with tempfile.TemporaryDirectory() as tmp:
+            target=Path(tmp)/'release.mcaddon'
+            with contextlib.redirect_stderr(io.StringIO()):
+                result=addon.main(['release','--output',str(target),'--evidence',str(Path(tmp)/'missing.json'),
+                                   '--report',str(Path(tmp)/'audit.json')])
+            self.assertEqual(result,2)
+            self.assertFalse(target.exists())
+
+
+    def test_custom_block_state_blocked(self):
+        self.mutate(addon.BLOCK, lambda d: d['minecraft:block']['description'].__setitem__('states',{'paz:new':[0,1]}))
+        self.expect_blocked()
+
+    def test_permutation_loot_blocked(self):
+        self.mutate(addon.BLOCK, lambda d: d['minecraft:block']['permutations'][0]['components'].__setitem__('minecraft:loot','loot_tables/missing.json'))
+        self.expect_blocked()
+
+    def test_permutation_selection_override_blocked(self):
+        self.mutate(addon.BLOCK, lambda d: d['minecraft:block']['permutations'][0]['components'].__setitem__('minecraft:selection_box',{'origin':[-5,0,-5],'size':[10,100,10]}))
+        self.expect_blocked()
+
+    def test_textual_mining_time_blocked(self):
+        self.mutate(addon.BLOCK, lambda d: d['minecraft:block']['components']['minecraft:destructible_by_mining'].__setitem__('seconds_to_destroy','invalid'))
+        self.expect_blocked()
+
+    def test_boolean_mining_time_blocked(self):
+        self.mutate(addon.BLOCK, lambda d: d['minecraft:block']['components']['minecraft:destructible_by_mining'].__setitem__('seconds_to_destroy',True))
+        self.expect_blocked()
+
+    def test_negative_explosion_resistance_blocked(self):
+        self.mutate(addon.BLOCK, lambda d: d['minecraft:block']['components']['minecraft:destructible_by_explosion'].__setitem__('explosion_resistance',-1))
+        self.expect_blocked()
+
+    def test_extra_trait_blocked(self):
+        self.mutate(addon.BLOCK, lambda d: d['minecraft:block']['description']['traits'].__setitem__('minecraft:multi_block',{}))
+        self.expect_blocked()
+
+    def test_extra_geometry_component_field_blocked(self):
+        self.mutate(addon.BLOCK, lambda d: d['minecraft:block']['components']['minecraft:geometry'].__setitem__('bone_visibility',{'root':False}))
+        self.expect_blocked()
+
+    def test_partial_visible_bounds_blocked(self):
+        def change(d):
+            desc=d['minecraft:geometry'][0]['description']; desc.pop('visible_bounds_width');desc['visible_bounds_height']=-99
+        self.mutate(addon.GEO,change)
+        self.expect_blocked()
+
+    def test_resource_block_mapping_wrong_identifier_blocked(self):
+        self.mutate('Paz_RP/blocks.json', lambda d: d.__setitem__('wrong:identifier',d.pop('paz_glicerio:imagem')))
+        self.expect_blocked()
+
+    def test_unknown_critical_png_chunk_blocked(self):
+        import struct,zlib
+        kind=b'ABCD'; payload=b'bad'
+        chunk=struct.pack('>I',len(payload))+kind+payload+struct.pack('>I',zlib.crc32(kind+payload)&0xffffffff)
+        png=self.files[addon.PNG]; self.files[addon.PNG]=png[:33]+chunk+png[33:]
+        self.expect_blocked()
+
+    def test_unknown_manifest_field_blocked(self):
+        self.mutate('Paz_BP/manifest.json', lambda d: d.__setitem__('capabilities',['script_eval']))
+        self.expect_blocked()
+
+    def test_unknown_material_field_blocked(self):
+        self.mutate(addon.BLOCK, lambda d: d['minecraft:block']['components']['minecraft:material_instances']['*'].__setitem__('unknown',True))
+        self.expect_blocked()
+
+    def test_invalid_material_shading_flag_blocked(self):
+        self.mutate(addon.BLOCK, lambda d: d['minecraft:block']['components']['minecraft:material_instances']['*'].__setitem__('face_dimming','yes'))
+        self.expect_blocked()
+
+    def test_invalid_bone_name_blocked(self):
+        self.mutate(addon.GEO,lambda d:d['minecraft:geometry'][0]['bones'][0].__setitem__('name',None))
+        self.expect_blocked()
+
+    def test_report_output_collision_blocked_before_writing(self):
+        import contextlib
+        with tempfile.TemporaryDirectory() as tmp:
+            target=Path(tmp)/'same.mcaddon'
+            with contextlib.redirect_stderr(io.StringIO()):
+                result=addon.main(['build','--output',str(target),'--report',str(target)])
+            self.assertEqual(result,2);self.assertFalse(target.exists())
+
+    def test_report_output_resolved_alias_collision_blocked(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); (root/'alias').symlink_to(root,target_is_directory=True)
+            with self.assertRaises(addon.AuditError):
+                addon.validate_destinations(addon.ROOT/'source',addon.ROOT/'baseline-lock.json',root/'evidence.json',root/'x.mcaddon',root/'alias/x.mcaddon','build')
+
+    def test_report_cannot_overwrite_input_paths(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); source=root/'source';source.mkdir(); (source/'block.json').write_text('{}')
+            lock=root/'lock.json';lock.write_text('{}');evidence=root/'evidence.json';evidence.write_text('{}')
+            for path in (source/'block.json',lock,evidence):
+                with self.subTest(path=path),self.assertRaises(addon.AuditError):
+                    addon.validate_destinations(source,lock,evidence,path,root/'build.mcaddon','audit')
+                self.assertEqual(path.read_text(),'{}')
+
+    def test_report_cannot_overwrite_existing_non_report(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); report=root/'archive.mcaddon';report.write_bytes(addon.package_bytes(self.files))
+            before=report.read_bytes()
+            with self.assertRaises(addon.AuditError):
+                addon.validate_destinations(addon.ROOT/'source',addon.ROOT/'baseline-lock.json',root/'evidence.json',report,root/'other.mcaddon','audit')
+            self.assertEqual(report.read_bytes(),before)
+
+    def test_report_can_refresh_identified_audit_report(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); report=root/'audit.json';report.write_text(json.dumps(addon.audit(self.files,self.lock)))
+            addon.validate_destinations(addon.ROOT/'source',addon.ROOT/'baseline-lock.json',root/'evidence.json',report,root/'other.mcaddon','audit')
+
+    def test_report_symlink_is_blocked(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); other=root/'other.json'; other.write_text('{}'); report=root/'audit.json'; report.symlink_to(other)
+            with self.assertRaises(addon.AuditError):
+                addon.validate_destinations(addon.ROOT/'source',addon.ROOT/'baseline-lock.json',root/'evidence.json',report,root/'build.mcaddon','audit')
+
+    def test_build_cannot_write_inside_source(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);source=root/'source';source.mkdir()
+            with self.assertRaises(addon.AuditError):
+                addon.validate_destinations(source,root/'lock.json',root/'evidence.json',root/'audit.json',source/'build.mcaddon','build')
+
+if __name__ == '__main__':
+    unittest.main(verbosity=2)

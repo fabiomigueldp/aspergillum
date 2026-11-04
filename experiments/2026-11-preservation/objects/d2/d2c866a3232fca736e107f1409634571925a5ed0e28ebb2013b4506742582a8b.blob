@@ -1,0 +1,19 @@
+from pathlib import Path
+import json,numpy as np,sys,os
+O=Path(__file__).resolve().parent;B=O.parent.parent
+args=sys.argv[1:];tag=args[0] if args else 'inward-0p5mm-iteration00';d=np.load(B/f'body_interface_v8/anatomy_fit/{tag}.npz');f=d['triangles'];base=json.loads((O/'baseline-review.json').read_text());rep=json.loads((O/(tag+'-review.json')).read_text());hits=rep['body_shell']['crossings'];bset={(x['body_face'],x['shell_face']) for x in base['body_shell']['crossings']};new=[h for h in hits if (h['body_face'],h['shell_face']) not in bset]
+rows={}
+checks={'all_vertices_immutable':lambda h:np.all(~d['active_vertices'][f[h['body_face']]]),'all_vertices_protected':lambda h:np.all(d['protected_vertices'][f[h['body_face']]]),'all_vertices_ear_protected':lambda h:np.all(d['protected_ears'][f[h['body_face']]]),'any_vertex_ear_protected':lambda h:np.any(d['protected_ears'][f[h['body_face']]]),'some_vertices_movable':lambda h:np.any(d['active_vertices'][f[h['body_face']]])}
+for name,pred in checks.items():
+ hh=[h for h in hits if pred(h)];w=np.array([w for h in hh for w in h['witnesses']]);rows[name]={'pairs':len(hh),'new_pairs':sum((h['body_face'],h['shell_face']) not in bset for h in hh),'body_faces':sorted(set(h['body_face'] for h in hh)),'shell_faces':sorted(set(h['shell_face'] for h in hh)),'by_shell_part':{str(i):sum(h['shell_part']==i for h in hh) for i in range(3)},'witness_bbox_xyz':[w.min(0).tolist(),w.max(0).tolist()] if len(w) else None,'negative_x_side_pairs':sum(np.mean(np.array(h['witnesses'])[:,0])<.04 for h in hh),'positive_x_side_pairs':sum(np.mean(np.array(h['witnesses'])[:,0])>=.04 for h in hh)}
+summary={'input':str(B/f'body_interface_v8/anatomy_fit/{tag}.npz'),'candidate_pairs':len(hits),'baseline_pairs':len(bset),'common_pairs':len(hits)-len(new),'new_pairs':len(new),'removed_pairs':len(bset)-(len(hits)-len(new)),'classification':rows,'new_crossings':new,'explanation':'Rows overlap. Fixed-triangle residuals are identical geometry to baseline, so cannot disappear while shell and these triangles remain fixed. Source x split at0.04 separates approximate sides only, not anatomy-aware labels.'}
+(O/(tag+'-residuals.json')).write_text(json.dumps(summary,indent=2,default=lambda x:x.item()));print(json.dumps({k:v for k,v in summary.items() if k not in ['classification','new_crossings']},indent=2));print(json.dumps({k:{kk:vv for kk,vv in v.items() if kk not in ['body_faces','shell_faces']} for k,v in rows.items()},indent=2,default=lambda x:x.item()))
+# Plot witness residuals as immutable/movable; baseline faint grey.
+os.environ['MPLCONFIGDIR']=str(O/'.mpl-cache');import matplotlib;matplotlib.use('Agg');import matplotlib.pyplot as plt
+fig,axs=plt.subplots(1,2,figsize=(12,7),layout='constrained');basew=np.array([w for h in base['body_shell']['crossings'] for w in h['witnesses']])
+for ax,dims in zip(axs,[(0,2),(1,2)]):
+ ax.scatter(basew[:,dims[0]],basew[:,dims[1]],s=.5,c='#999999',alpha=.25,label='baseline crossings')
+ for fixed,label,color in [(True,'immutable residual','#bb2233'),(False,'movable/transition residual','#e39a20')]:
+  w=np.array([w for h in hits if bool(np.all(~d['active_vertices'][f[h['body_face']]]))==fixed for w in h['witnesses']]);ax.scatter(w[:,dims[0]],w[:,dims[1]],s=3,c=color,label=label)
+ ax.set_aspect('equal');ax.grid(alpha=.2);ax.set_xlabel('X (m)' if dims[0]==0 else 'Y (m), negative = front');ax.set_ylabel('Z (m)')
+axs[0].legend(fontsize=8);fig.suptitle(f'{tag}: {len(hits)} residual pairs, not interface approval\nRed faces cannot change under current mask. Source world coordinates.');fig.savefig(O/(tag+'-RESIDUAL_LOCATIONS.png'),dpi=150);plt.close(fig)

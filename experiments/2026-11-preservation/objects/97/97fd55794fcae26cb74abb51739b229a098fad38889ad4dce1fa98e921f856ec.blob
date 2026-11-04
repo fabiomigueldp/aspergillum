@@ -1,0 +1,84 @@
+# Parecer geométrico V13: valley-source-mask-n8
+
+**Atualização: a primeira n8 foi rejeitada pela revisão visual por diagonais/degraus nas transições. Não reter.**
+
+O parecer geométrico abaixo foi favorável aos objetivos locais, condicionado à revisão visual que posteriormente não aprovou. A candidata resolve as ilhas do vale demonstradas pelo diagnóstico e preserva ambas as cristas, a anatomia, a casca, as terminações V12 e a região central sem defeito. Não recomendo aumentar a máscara superior nem tentar zerar todos os contatos com a casca.
+
+Candidata: `band_shell_v13/constrained_fit/valley-source-mask-n8.npz`.
+SHA-256: `ddb19dff25cf835ed8b983e4216446296f4772b80766ea026c0fa30edbfb3a3c`.
+
+A retenção não constitui aprovação artística global, exportação, integração com P85, addon, publicação ou evidência de Minecraft.
+
+## 1. O defeito visível foi resolvido geometricamente
+
+- Nos **17/17 raios** das quatro câmeras, a faixa agora vem antes da casca. Isso inclui os 14 raios que comprovavam casca azul sobre a faixa na V12.
+- A vantagem da faixa nesses raios fica em aproximadamente **0,456–1,879 mm** ao longo da câmera. Não é folga mínima global.
+- Na amostragem densa de 15.818 pontos, **as 1.376 inversões originais foram resolvidas, sem nova inversão detectada no vale**.
+- Dos 15.818 raios, 13.490 cruzam a casca localmente; os outros 2.328 já não cruzavam a casca na amostra baseline. Nenhum dos 1.376 testemunhos originais ficou sem comparação.
+- A menor separação entre exteriores nos raios com casca é **0,02218 mm**. É uma separação direcional amostrada, não clearance global entre sólidos: continuam existindo contatos internos.
+- Os pares de interseção completos do audit local, classificados separadamente por parede e posição, contêm **zero interseção casca × parede externa do vale** e zero nos triângulos externos do patch. Portanto a conclusão não depende apenas de fotografias, cor ou das amostras usadas na máscara.
+
+Arquivos: `valley-source-mask-n8-independent-review.json`, `valley-source-mask-n8-dense-review.npz`, `valley-source-mask-n8-remaining-contacts.json`.
+
+## 2. Preservação independente da região sem defeito e das cristas
+
+Comparei a candidata com a geometria congelada da V12, sem confiar só nos rótulos UV candidatos.
+
+- **584/584 vértices existentes** continuam bit a bit idênticos.
+- Só 70 faces ancestrais recebem deslocamento geométrico interior: 35 externas da máscara comprovada e as 35 internas correspondentes.
+- Para os **1.094 ancestrais não projetados**, todos os filhos estão nos planos/domínios originais: erro máximo de plano **9,89×10⁻¹⁷ m**, baricêntrico mínimo **−8,37×10⁻¹⁴** e erro máximo de área **2,72×10⁻²⁰ m²**. A triangulação pode mudar para conformidade, mas não a superfície geométrica desses ancestrais.
+- As **108 arestas fonte das cristas v=3/v=13**, em ambas as paredes, foram comparadas contra intervalos colineares reais das arestas candidatas. Lacuna total numérica **8,49×10⁻¹⁶ mm**, sem comprimento duplicado.
+- **Centro u80–96 sem patch projetado.** Não foi aplicada uma correção global ao envelope u35–140.
+- As terminações V12, a margem superior v<3 e os contatos da anatomia ficam fora do patch restaurado.
+
+Arquivos `valley-source-mask-n8-preservation.json`, `valley-source-mask-n8-nonpatch-domains.json`, `valley-source-mask-n8-ridge-intervals.json`.
+
+## 3. Parede dupla e topologia
+
+Verificação independente direta da candidata:
+
+- **3.122 vértices, 6.240 triângulos, 9.360 arestas, uma componente, Euler 2**.
+- Zero arestas abertas/não-manifold, orientação de aresta inconsistente, vértices sem uso ou faces duplicadas por índices.
+- Zero faces com área <10⁻¹⁶ m²; menor área **4,2573×10⁻¹⁰ m²**.
+- Float64→float32→float64: nenhum colapso de vértice, face degenerada ou inversão. Rotação máxima de normal **0,42894°**, que permanece compatível com o limite herdado da V12.
+
+Medi **15.680 cordas** em sete posições interiores por triângulo externo do patch, usando a normal física da face externa. Todas atingem primeiro uma face da parede interna; nenhuma volta à parede externa, termina num retorno ou deixa de atingir a faixa. Comprimento **0,32494–0,57696 mm**, mediana **0,49861 mm**. Isso não prova espessura mínima global. Difere legitimamente da distância entre pares de mesmo UV porque uma normal de uma face muito inclinada cruza a parede oposta obliquamente.
+
+O audit do implementador, conferido para o mesmo hash, reporta zero auto-interseções estritas depois de refinar 1.590 flags com 80 dígitos, incluindo adjacências, e zero sobreposição coplanar positiva em faixa/faixa, faixa/casca e faixa/anatomia. Esses resultados são atribuídos ao audit local; não são apresentados como uma segunda execução independente da bateria exata. A presente revisão independente cobre raios, paredes, preservação real, domínios, topologia e quantização. Os gates invariáveis dos inputs V11/V12 não foram repetidos.
+
+## 4. Contatos restantes: classificação prudente
+
+O total cresce de **1.360 para 2.116 pares** porque a tesselação mudou. Não se subtraem IDs de pares entre malhas diferentes. A soma dos comprimentos de segmentos, **sem união/deduplicação global**, cai de **3.778,693 para 3.403,498 mm**.
+
+- Parede externa: **358 pares, 1.132,304 mm**; antes 477 pares, 1.458,496 mm.
+- Parede interna: **1.714 pares, 2.265,332 mm**; antes 839 pares, 2.314,336 mm.
+- Fechamentos V12: **44 pares, 5,861 mm**, iguais ao baseline.
+- Retornos antigos: nenhum par nessa relação.
+
+No patch, restam **883 pares na parede interna**, soma 579,003 mm, e **nenhum na externa**. O aumento da contagem interna não demonstra maior profundidade nem pior aparência; o recuo do comprimento agregado também não certifica ausência de problema.
+
+Dos 358 pares externos restantes:
+
+- **217** pertencem à margem superior v<3, região onde a fonte confirma sobreposição/encaixe em parte das amostras. Isso sustenta compatibilidade regional, não prova que cada contato é intencional.
+- **141** são externos fora dessa categoria e continuam com visibilidade/intenção indeterminadas nesta revisão.
+- Os 44 pares dos fechamentos V12 também não recebem certificado de invisibilidade global.
+
+A anatomia mantém 189 pares segundo o audit local, todos fora do patch e de seus vizinhos de conformidade, sem novo contato nessa interface. Nenhuma anatomia foi deslocada para acomodar a faixa.
+
+### Por que não eliminar os contatos internos indiscriminadamente
+
+Nos **17/17 raios da fonte high/render**, a faixa externa vem à frente, mas a **parede interna da faixa está entre as duas paredes da casca**. Ela entra **0,05282–0,14724 mm** atrás da casca externa ao longo desses raios. Assim, o modelo fonte já combina uma aparência exterior íntegra com sobreposição interna.
+
+Isso é evidência geométrica de encaixe compatível, não inferência de intenção artística, nem prova de que cada um dos 1.714 pares internos atuais é invisível. Como o objetivo é corrigir defeitos comprovados preservando o relevo, não há justificativa para uma remoção global apenas para produzir contagem zero.
+
+Arquivo `source-internal-embedding-witnesses.json`.
+
+## 5. O que continua pendente
+
+- A candidata restaura interior de faces preservando seus vértices e fronteiras. Pode haver mudanças de inclinação acentuadas nas transições: o construtor reporta até cerca de 50,29° frente ao plano ancestral. Ausência de interseção não decide se o relevo localizado parece bom. A revisão visual precisa avaliar isso.
+- Os testemunhos de inversão na margem superior v≈1,65–2,7 continuam fora do patch. O revisor visual observou pequenos degraus, mas não separou com segurança todos eles da poligonalização normal. Recomenda-se não alisar ou reconstruir toda essa margem com a evidência atual.
+- Aumentou o custo geométrico da faixa: 1.164→6.240 triângulos. Nenhuma inferência de desempenho no jogo é permitida.
+- Raios/BVH têm precisão finita e medem direções específicas; zero cruzamento estrito ou amostras positivas não certificam tangências, espessura mínima ou clearance globais.
+- Não houve exportação, bake, JSON/cubos, shader, PBR, normalmap, mipmap, culling no jogo, FPS ou runtime Bedrock.
+
+A revisão visual posterior identificou uma falha concreta nas transições, então a n8 não deve ser retida. Os resultados geométricos positivos permanecem como evidência da técnica; as variantes suavizadas sin² e C1 precisam de revisão própria, sem herdar aprovação ou gates por semelhança.

@@ -1,0 +1,14 @@
+import numpy as np,json
+from pathlib import Path
+from scipy.sparse import coo_matrix
+from scipy.sparse.csgraph import connected_components
+R=Path(__file__).resolve().parents[1];a=np.load(R/'evidence/seam-source-inspection.npz');s=np.load(R.parent/'shell_band_v3/evidence/cap-source.npz');v=np.load(R.parent/'shell_band_v5/retained_candidate/evidence/cap-paired.npz');N=len(s['points']);p=a['points'];f=a['triangles'];typ=(f<N).sum(1)
+def canonical(t):return set(map(tuple,np.sort(t,axis=1)))
+def boundaries(t):
+ e=np.sort(np.concatenate([t[:,[0,1]],t[:,[1,2]],t[:,[2,0]]]),axis=1);u,c=np.unique(e,axis=0,return_counts=True);return u[c==1],u[c>2]
+def comps(e):
+ ids,inv=np.unique(e,return_inverse=True);ie=inv.reshape(-1,2);g=coo_matrix((np.ones(len(ie)*2),(np.r_[ie[:,0],ie[:,1]],np.r_[ie[:,1],ie[:,0]])),shape=(len(ids),len(ids))).tocsr();n,lab=connected_components(g);return [ids[lab==i] for i in range(n)]
+capf=f[typ==3];src=canonical(s['triangles']);cur=canonical(capf);missing=np.array(sorted(src-cur));added=np.array(sorted(cur-src));be,nm=boundaries(capf);loops=comps(be);mixed=f[(typ>0)&(typ<3)];cids=np.unique(mixed[mixed<N]);rids=np.unique(mixed[mixed>=N]);mb,mn=boundaries(missing)
+report={'cap_exact_coordinate_max':float(np.max(abs(p[:N]-s['points']))),'cap_source_missing_triangles':len(missing),'cap_extra_triangles':len(added),'cap_boundaries_edges':len(be),'cap_nonmanifold_edges':len(nm),'cap_boundary_components':[{'count':len(x),'min':int(x.min()),'max':int(x.max()),'bbox':np.array([p[x].min(0),p[x].max(0)]).tolist(),'v5_source_indices_present':int(np.isin(x,v['source_indices']).sum()),'degrees':np.unique(np.unique(be[np.isin(be,x).all(1)],return_counts=True)[1],return_counts=True)[0].tolist()} for x in loops],'mixed_cap_unique':len(cids),'mixed_rest_unique':len(rids),'missing_bbox':np.array([p[np.unique(missing)].min(0),p[np.unique(missing)].max(0)]).tolist(),'missing_boundary_edges':len(mb),'whole_boundaries':len(boundaries(f)[0]),'whole_nonmanifold':len(boundaries(f)[1]),'key_changed_ids_range':[(k,int(np.where(np.any(abs(a[k]-p)>1e-8,axis=1))[0].min()),int(np.where(np.any(abs(a[k]-p)>1e-8,axis=1))[0].max())) for k in a.files if k.startswith('key_') and np.any(abs(a[k]-p)>1e-8)]}
+np.savez_compressed(R/'evidence/seam-partitions.npz',cap_triangles=capf,mixed_triangles=mixed,rest_triangles=f[typ==0],missing_source_triangles=missing,cap_boundary_edges=be,cap_boundary_ids=cids,rest_boundary_ids=rids,missing_boundary_edges=mb,**{'cap_loop_'+str(i):x for i,x in enumerate(loops)})
+(R/'evidence/seam-topology-analysis.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))

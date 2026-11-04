@@ -1,0 +1,82 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
+export const COMBINED_STATE_REFERENCE = 65_536;
+const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+function requireValue(condition, message) {
+  if (!condition) throw new Error(`Block-state budget: ${message}`);
+}
+function readJson(file) {
+  try { return JSON.parse(fs.readFileSync(file, 'utf8')); }
+  catch (error) { throw new Error(`Block-state budget: cannot read JSON ${file}: ${error.message}`, {cause: error}); }
+}
+function jsonFiles(folder) {
+  let entries;
+  try { entries = fs.readdirSync(folder, {withFileTypes: true}); }
+  catch (error) { throw new Error(`Block-state budget: cannot read block directory ${folder}: ${error.message}`, {cause: error}); }
+  return entries.sort((a, b) => a.name.localeCompare(b.name)).flatMap(entry => {
+    const file = path.join(folder, entry.name);
+    requireValue(!entry.isSymbolicLink(), `symbolic link is not a verified emitted file: ${file}`);
+    return entry.isDirectory() ? jsonFiles(file) : entry.isFile() && /\.json$/i.test(entry.name) ? [file] : [];
+  });
+}
+function cardinality(values, context) {
+  if (Array.isArray(values)) {
+    requireValue(values.length > 0 && values.length <= 16, `${context}: expected 1..16 state values`);
+    const kind = typeof values[0];
+    requireValue(['boolean', 'number', 'string'].includes(kind) && values.every(value => typeof value === kind && (kind !== 'number' || Number.isSafeInteger(value))), `${context}: invalid or mixed state values`);
+    requireValue(new Set(values).size === values.length, `${context}: duplicate state values`);
+    return values.length;
+  }
+  requireValue(object(values) && Object.keys(values).length === 1 && object(values.values), `${context}: unsupported state domain`);
+  const range = values.values;
+  requireValue(Object.keys(range).length === 2 && Number.isSafeInteger(range.min) && Number.isSafeInteger(range.max) && range.max >= range.min, `${context}: invalid integer range`);
+  const count = range.max - range.min + 1;
+  requireValue(Number.isSafeInteger(count) && count > 0 && count <= 16, `${context}: expected 1..16 integer range values`);
+  return count;
+}
+
+/** Count the emitted pack, not a source catalog, assumed release or fallback. */
+export function readEmittedBlockStateBudget(addonRoot, namespace) {
+  const root = path.resolve(addonRoot), manifestFile = path.join(root, 'packs/behavior/manifest.json');
+  const manifest = readJson(manifestFile);
+  requireValue(object(manifest) && object(manifest.header) && typeof manifest.header.uuid === 'string' && manifest.header.uuid.length > 0 && Array.isArray(manifest.header.version) && manifest.header.version.length === 3 && manifest.header.version.every(Number.isSafeInteger) && Array.isArray(manifest.modules) && manifest.modules.some(module => module?.type === 'data'), `invalid behavior manifest: ${manifestFile}`);
+  const files = jsonFiles(path.join(root, 'packs/behavior/blocks'));
+  requireValue(files.length > 0, `no emitted block JSON files in ${root}`);
+  const ids = new Set();
+  let states = 0;
+  for (const file of files) {
+    const document = readJson(file), description = document?.['minecraft:block']?.description;
+    requireValue(object(description) && typeof description.identifier === 'string' && description.identifier.startsWith(`${namespace}:`) && description.identifier.length > namespace.length + 1, `invalid ${namespace} block description: ${file}`);
+    requireValue(!ids.has(description.identifier), `duplicate block identifier ${description.identifier}: ${file}`);
+    ids.add(description.identifier);
+    const domains = Object.hasOwn(description, 'states') ? description.states : {};
+    requireValue(object(domains), `${file}: states must be an object when present`);
+    let combinations = 1;
+    for (const [name, values] of Object.entries(domains)) {
+      combinations *= cardinality(values, `${file} state ${name}`);
+      requireValue(Number.isSafeInteger(combinations), `${file}: state count exceeds safe integer precision`);
+    }
+    states += combinations;
+    requireValue(Number.isSafeInteger(states), `${root}: total exceeds safe integer precision`);
+  }
+  return {states, blocks: ids.size, root, manifest: manifestFile, version: manifest.header.version};
+}
+
+/** The sibling is always resolved from this Altare copy, never the baseline. */
+export function readLocalCombinedStateBudget(altareRoot) {
+  const altare = readEmittedBlockStateBudget(altareRoot, 'altare');
+  const aspergillum = readEmittedBlockStateBudget(path.resolve(altareRoot, '../..'), 'aspergillum');
+  const combined = altare.states + aspergillum.states;
+  requireValue(Number.isSafeInteger(combined), 'combined count exceeds safe integer precision');
+  return {
+    altare: altare.states, aspergillum: aspergillum.states, combined,
+    reference: COMBINED_STATE_REFERENCE, combinedHeadroom: COMBINED_STATE_REFERENCE - combined,
+    sources: {altare, aspergillum},
+  };
+}
+
+export function assertCombinedStateBudget(budget) {
+  requireValue(budget.reference === COMBINED_STATE_REFERENCE && Number.isSafeInteger(budget.altare) && budget.altare > 0 && Number.isSafeInteger(budget.aspergillum) && budget.aspergillum > 0 && budget.combined === budget.altare + budget.aspergillum && Number.isSafeInteger(budget.combined), 'invalid combined budget');
+  requireValue(budget.combined <= COMBINED_STATE_REFERENCE, `known packs exceed ${COMBINED_STATE_REFERENCE}: Altare ${budget.altare} + Aspergillum ${budget.aspergillum} = ${budget.combined} (${budget.combined - COMBINED_STATE_REFERENCE} over)`);
+}

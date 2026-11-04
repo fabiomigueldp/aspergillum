@@ -1,0 +1,15 @@
+# Componente inteiro de auto-interseção — não é um remendo local seguro
+
+Auditada a geometria avaliada V75 com triangulação explícita Blender. Há 1808 pares de triângulos não adjacentes em interseção. Grafo: faces originais ligadas por interseção; acrescentada adjacência por aresta apenas entre faces que já participam de interseções. Não houve crescimento iterativo da máscara.
+
+O componente que contém as faces180902/180873 tem **1225 faces** e conecta-se à costura/calota:
+- 1106 faces tocam vértices da calota (índice inferior a160386).
+- 1112 faces não têm correspondência integral nas duas camadas recuperadas do manto.
+- 907 faces ultrapassam o limite regional estabelecido.
+- Bounds X[-0,11420,0,18621],Y[-0,24222,-0,03662],Z[3,28005,3,54436]m.
+
+Portanto não existe, sob a exigência de incluir esse componente inteiro e manter calota/regiões críticas intocadas, um domínio limitado ao recorte cervical autorizado. Não desenhei um anel artificial cortando o componente nem apresentei segmentos como certificados. A construção de um anel livre contra todo o tecido permanece não demonstrada. Nenhuma reconstrução foi iniciada, nenhuma posição mudou, V75 preservada.
+
+Isso não prova que toda cirurgia parcial seja impossível; demonstra que o método agora solicitado (componente inteiro, sem tocar áreas críticas) excede o suporte permitido. Para avançar estruturalmente seria preciso redesenhar também a união calota–manto em uma cópia, com um escopo novo de superfície comum, mantendo feições/faixa e verificando silhueta. Não recomendo continuar expandindo o patch local ou resolver com espessura/alisamento.
+
+Evidência reproduzível: `neck-self-intersection-component-audit.py/.json`.

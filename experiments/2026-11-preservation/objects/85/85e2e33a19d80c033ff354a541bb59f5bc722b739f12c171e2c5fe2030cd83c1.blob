@@ -1,0 +1,123 @@
+{
+  "method": "True paired-source midsurface displacement DOFs, fixed shared boundary, coupled3D sequential linear skin obstacles, squared-Laplacian displacement regularization; topology unchanged",
+  "free_mid_nodes": 234,
+  "boundary_mid_nodes": 290,
+  "history": [
+    {
+      "iteration": 0,
+      "success": true,
+      "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT; max primal violation=2.2660605582952575e-07",
+      "constraints": 1174,
+      "minimum_sample_signed_before": -0.008129897993057966,
+      "fixed_negative_samples": 0,
+      "step_max": 0.009249864776882742,
+      "max_displacement": 0.009249864776882742
+    },
+    {
+      "iteration": 1,
+      "success": true,
+      "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH; max primal violation=1.9363627469851357e-07",
+      "constraints": 632,
+      "minimum_sample_signed_before": 2.906281292780477e-05,
+      "fixed_negative_samples": 0,
+      "step_max": 0.0002492386826247451,
+      "max_displacement": 0.00925018810893052
+    },
+    {
+      "iteration": 2,
+      "success": true,
+      "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH; max primal violation=3.15277322738422e-09",
+      "constraints": 632,
+      "minimum_sample_signed_before": 4.9430629587732255e-05,
+      "fixed_negative_samples": 0,
+      "step_max": 0.00010939098105006048,
+      "max_displacement": 0.009249752311332635
+    },
+    {
+      "iteration": 3,
+      "success": true,
+      "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH; max primal violation=2.0335974173384987e-07",
+      "constraints": 632,
+      "minimum_sample_signed_before": 4.808350058738142e-05,
+      "fixed_negative_samples": 0,
+      "step_max": 0.00010776666643473267,
+      "max_displacement": 0.00924999415465875
+    },
+    {
+      "iteration": 4,
+      "success": true,
+      "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH; max primal violation=5.816962999282381e-09",
+      "constraints": 632,
+      "minimum_sample_signed_before": 4.952245308231795e-05,
+      "fixed_negative_samples": 0,
+      "step_max": 0.00010765873368128165,
+      "max_displacement": 0.009250134687129902
+    },
+    {
+      "iteration": 5,
+      "success": true,
+      "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH; max primal violation=3.169553419203608e-09",
+      "constraints": 632,
+      "minimum_sample_signed_before": 4.8289095502696e-05,
+      "fixed_negative_samples": 0,
+      "step_max": 0.00010783360367051524,
+      "max_displacement": 0.009249739436627975
+    },
+    {
+      "iteration": 6,
+      "success": true,
+      "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH; max primal violation=4.028512964621839e-09",
+      "constraints": 632,
+      "minimum_sample_signed_before": 4.931474086333765e-05,
+      "fixed_negative_samples": 0,
+      "step_max": 0.00010804791288722792,
+      "max_displacement": 0.009249984449728002
+    },
+    {
+      "iteration": 7,
+      "success": true,
+      "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT; max primal violation=7.850802651206135e-09",
+      "constraints": 632,
+      "minimum_sample_signed_before": 4.8360459913965315e-05,
+      "fixed_negative_samples": 0,
+      "step_max": 0.000107971824569756,
+      "max_displacement": 0.009249677270370306
+    },
+    {
+      "iteration": 8,
+      "success": true,
+      "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH; max primal violation=4.317243311128399e-07",
+      "constraints": 632,
+      "minimum_sample_signed_before": 4.946058925270336e-05,
+      "fixed_negative_samples": 0,
+      "step_max": 0.00010790936960700204,
+      "max_displacement": 0.009249836775985013
+    },
+    {
+      "iteration": 9,
+      "success": false,
+      "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH; max primal violation=1.6421225210805704e-06",
+      "constraints": 632,
+      "minimum_sample_signed_before": 4.809383062820416e-05,
+      "fixed_negative_samples": 0,
+      "step_max": 0.00010715023454511094,
+      "max_displacement": 0.00925222707376661
+    }
+  ],
+  "max_displacement": 0.009252227073766594,
+  "boundary_delta": 0.0,
+  "outside_patch_delta": 0.0,
+  "pair_vector_change_max": 7.757919228897728e-18,
+  "area_range": [
+    0.5697837974882077,
+    3.4548932876109095
+  ],
+  "flips": 0,
+  "new_self_pairs": 0,
+  "removed_self_pairs": 0,
+  "head_new_pairs": 477,
+  "head_removed_pairs": 499,
+  "patch_head_pairs_before": 529,
+  "patch_head_pairs_after": 507,
+  "new_self_pair_ids": []
+}

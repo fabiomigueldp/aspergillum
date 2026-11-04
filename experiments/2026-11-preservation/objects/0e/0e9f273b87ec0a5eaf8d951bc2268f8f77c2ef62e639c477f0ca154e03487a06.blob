@@ -1,0 +1,32 @@
+import bpy,numpy as np,json,math
+from mathutils.bvhtree import BVHTree
+from mathutils import Vector
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False);o=bpy.data.objects['Maria — túnica e mangas integradas'];dg=bpy.context.evaluated_depsgraph_get();em=o.evaluated_get(dg).to_mesh();p=np.array([v.co[:] for v in em.vertices]);fs=[tuple(f.vertices) for f in em.polygons];o.evaluated_get(dg).to_mesh_clear();q=p.copy();bv=BVHTree.FromPolygons(p.tolist(),fs)
+zs=np.linspace(.85,1.85,41);angles=np.linspace(0,2*np.pi,256,endpoint=False);rows=[]
+for z in zs:
+ rho=[]
+ for a in angles:
+  d=Vector((.32*math.cos(a),.215*math.sin(a),0));h,n,ix,dist=bv.ray_cast(Vector((.004,-.003,z)),d.normalized(),1);assert h is not None;rho.append(dist/d.length)
+ f=np.fft.rfft(rho);f[5:]=0;low=np.fft.irfft(f,n=256);rows.append(low-np.array(rho))
+rows=np.array(rows)
+def ss(t):
+ t=np.clip(t,0,1);return t*t*(3-2*t)
+for i,(x,y,z) in enumerate(p):
+ if not .85<z<1.85:continue
+ xx=(x-.004)/.32;yy=(y+.003)/.215;a=math.atan2(yy,xx)%(2*math.pi)
+ # Only observed anterolateral quadrant, feathered away from silhouette extrema.
+ if not math.pi<a<1.5*math.pi:continue
+ w=ss((a-math.pi)/.30)*ss((1.5*math.pi-a)/.30)*ss((z-.85)/.25)*ss((1.85-z)/.20)
+ zz=(z-.85)/1.*40;iz=min(39,int(zz));fz=zz-iz;aa=a/(2*math.pi)*256;ia=int(aa);fa=aa-ia
+ dr=(rows[iz,ia]*(1-fa)+rows[iz,(ia+1)%256]*fa)*(1-fz)+(rows[iz+1,ia]*(1-fa)+rows[iz+1,(ia+1)%256]*fa)*fz
+ dr*=.65*w;q[i,0]+=.32*math.cos(a)*dr;q[i,1]+=.215*math.sin(a)*dr
+tri=np.array([f[:3] for f in fs]);A=p[tri];B=q[tri];na=np.cross(A[:,1]-A[:,0],A[:,2]-A[:,0]);nb=np.cross(B[:,1]-B[:,0],B[:,2]-B[:,0]);area=np.linalg.norm(na,axis=1);ratio=np.linalg.norm(nb,axis=1)[area>1e-12]/area[area>1e-12]
+def pairs(v):
+ t=BVHTree.FromPolygons(v.tolist(),fs);return set((a,b) for a,b in t.overlap(t) if a<b and not set(fs[a])&set(fs[b]))
+base=pairs(p);now=pairs(q);d=np.linalg.norm(q-p,axis=1);report={'method':'65% attenuation of angular frequencies above4 in observed anterior-left quadrant only; not reconstruction of measured pleats','changed_vertices':int((d>1e-7).sum()),'maximum_delta_m':float(d.max()),'area_range':list(map(float,[ratio.min(),ratio.max()])),'flips':int(((na*nb).sum(axis=1)<-1e-15).sum()),'new_self_pairs':len(now-base),'z_delta_max':float(abs(q[:,2]-p[:,2]).max()),'upper_delta':float(d[p[:,2]>=1.85].max()),'hem_delta':float(d[p[:,2]<=.85].max()),'posterior_delta':float(d[p[:,1]>=-.003].max())};json.dump(report,open(r+'V76-fold-verification.json','w'),indent=2);assert report['flips']==0 and report['new_self_pairs']==0
+k=o.shape_key_add(name='TESTE76 — pregas anterolaterais atenuadas');k.value=1
+for i,v in enumerate(k.data):v.co=o.data.vertices[i].co+Vector(q[i]-p[i])
+bpy.ops.wm.save_as_mainfile(filepath=r+'V76-visible-fold-trial.blend')
+s=bpy.context.scene;s.cycles.samples=48;s.render.resolution_x=600;s.render.resolution_y=900;s.render.resolution_percentage=100;c=s.camera;c.data.type='ORTHO'
+for view,loc,targ,scale in [('lower-profile',(-5,0,1.4),(0,0,.98),1.5),('lower-front',(0,-5,1.4),(0,0,.98),1.5)]:
+ c.location=loc;c.rotation_euler=(Vector(targ)-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=scale;s.render.filepath=r+'V76-mantle-'+view+'.png';bpy.ops.render.render(write_still=True)

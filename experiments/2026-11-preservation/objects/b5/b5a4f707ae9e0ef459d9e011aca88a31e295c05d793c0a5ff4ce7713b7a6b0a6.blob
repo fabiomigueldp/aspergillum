@@ -1,0 +1,31 @@
+{
+  "samples": 15818,
+  "method": "Same original-face/UV query samples from independent dense map. Locate each UV in actual candidate child triangles and interpolate actual 3D positions. No nearest-vertex proxy.",
+  "position_difference_n4_vs_n8_mm_quantiles": [
+    0.0,
+    0.009792562369928742,
+    0.04191979581525967,
+    0.0592361173361147,
+    0.07399921604515133
+  ],
+  "max_witness": {
+    "row": 11952,
+    "old_face": 216,
+    "uv": [
+      64.8,
+      10.7
+    ],
+    "difference_mm": 0.07399921604515133,
+    "n4": [
+      -0.01875004470348359,
+      -0.4025322318077087,
+      3.587044286727905
+    ],
+    "n8": [
+      -0.01876200400292874,
+      -0.40260492563247685,
+      3.5870512485504147
+    ]
+  },
+  "limits": "Only independently sampled valley v5\u201311/y<\u22120.28; not a global Hausdorff or silhouette bound and not weighted by area."
+}

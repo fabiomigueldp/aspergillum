@@ -1,0 +1,121 @@
+{
+  "case": "direct-no-shadow-no-diffuse",
+  "variant": "masked",
+  "source_scene": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/opaque_transport_v15/evidence/shared-2048-diagnostic.blend",
+  "source_scene_sha256": "99f7e09562cd6c694312059aba998f996c4960e7663d9ff1cd479152a916dbbd",
+  "notes": [
+    "All nontransparent light-path bounces set0; direct lighting retained, transparent_max_bounces512.",
+    "Shadow visibility disabled only for three new parts; diagnostic, never a candidate correction.",
+    "Diffuse-ray visibility ALSO disabled for three new parts, camera visibility retained. Diagnostic only, not a valid correction."
+  ],
+  "position_checks": [
+    {
+      "object": "part_00 FROM JSON ONLY",
+      "positions_byte_equal": true,
+      "vertices": 35552
+    },
+    {
+      "object": "part_01 FROM JSON ONLY",
+      "positions_byte_equal": true,
+      "vertices": 101312
+    },
+    {
+      "object": "part_02 FROM JSON ONLY",
+      "positions_byte_equal": true,
+      "vertices": 1600
+    },
+    {
+      "object": "part_03 FROM JSON ONLY",
+      "positions_byte_equal": true,
+      "vertices": 3600
+    },
+    {
+      "object": "part_04 FROM JSON ONLY",
+      "positions_byte_equal": true,
+      "vertices": 480
+    },
+    {
+      "object": "part_05 FROM JSON ONLY",
+      "positions_byte_equal": true,
+      "vertices": 480
+    },
+    {
+      "object": "part_06 FROM JSON ONLY",
+      "positions_byte_equal": true,
+      "vertices": 24
+    },
+    {
+      "object": "part_07 FROM JSON ONLY",
+      "positions_byte_equal": true,
+      "vertices": 24
+    },
+    {
+      "object": "part_08 FROM JSON ONLY",
+      "positions_byte_equal": true,
+      "vertices": 24
+    },
+    {
+      "object": "part_09 FROM JSON ONLY",
+      "positions_byte_equal": true,
+      "vertices": 5200
+    },
+    {
+      "object": "part_10 FROM JSON ONLY",
+      "positions_byte_equal": true,
+      "vertices": 200
+    },
+    {
+      "object": "part_11 FROM JSON ONLY",
+      "positions_byte_equal": true,
+      "vertices": 2800
+    },
+    {
+      "object": "part_12 FROM JSON ONLY",
+      "positions_byte_equal": true,
+      "vertices": 472
+    },
+    {
+      "object": "part_13 FROM JSON ONLY",
+      "positions_byte_equal": true,
+      "vertices": 472
+    },
+    {
+      "object": "part_14 FROM JSON ONLY",
+      "positions_byte_equal": true,
+      "vertices": 200
+    },
+    {
+      "object": "part_15 FROM JSON ONLY",
+      "positions_byte_equal": true,
+      "vertices": 11008
+    },
+    {
+      "object": "part_16 FROM JSON ONLY",
+      "positions_byte_equal": true,
+      "vertices": 720
+    },
+    {
+      "object": "part_17 FROM JSON ONLY",
+      "positions_byte_equal": true,
+      "vertices": 720
+    },
+    {
+      "object": "part_18 FROM JSON ONLY",
+      "positions_byte_equal": true,
+      "vertices": 720
+    },
+    {
+      "object": "part_19 FROM JSON ONLY",
+      "positions_byte_equal": true,
+      "vertices": 720
+    }
+  ],
+  "render_seconds_observed_not_benchmark": 16.149249097012216,
+  "lighting": {
+    "max_bounces": 0,
+    "diffuse_bounces": 0,
+    "transparent_max_bounces": 512
+  },
+  "image_sha256": "f5a93663414f750b83294ff5d40b235ebbbc7ad5e633260417ecda51a9aca2df",
+  "external_Blender_only": true
+}

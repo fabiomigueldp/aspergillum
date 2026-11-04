@@ -1,0 +1,251 @@
+{
+  "purpose": "Describe three held-out local regressions without adapting geometry. Seed 20261104, 20000 fixed holdout samples.",
+  "new_negative_definition": "Source nearest-head-plane sign > 0; V5 sign < -0.0001; V4 did not satisfy sign < -0.0001. This threshold event does not necessarily mean V4 was outside.",
+  "units": "Blender coordinate units, interpreted as meters in the project.",
+  "ambiguity_test": "Outer closest-point barycentrics test whether projection is near a triangle edge (minimum < 1e-4). Head face near-ties queried within nearest distance + 1e-6 units; compare their proxy signs and normal angles. This is not a robust SDF or full nearest-feature uniqueness certificate.",
+  "samples": [
+    {
+      "sample_index": 319,
+      "source_point": [
+        0.12550674442463225,
+        -0.22051786267376627,
+        3.693129289950701
+      ],
+      "source_head_signed_proxy": 0.0001750537906892724,
+      "source_row_parameter": 2.760298231090382,
+      "distance_source_point_to_rim112_polyline": 0.19312729036114842,
+      "V4": {
+        "nearest_outer_point": [
+          0.1253599226474762,
+          -0.22051674127578735,
+          3.692896604537964
+        ],
+        "head_signed_nearest_plane": -9.988435694996411e-05,
+        "source_surface_error": 0.0002751460997387767,
+        "outer_triangle_source_indices": [
+          36613,
+          32886,
+          72635
+        ],
+        "outer_projection_barycentric_weights": [
+          0.14559018214905195,
+          0.3216880143608014,
+          0.5327218034901466
+        ],
+        "outer_projection_near_triangle_edge": false,
+        "outer_triangle_row_range": [
+          2.5,
+          3.0
+        ],
+        "nearest_head_triangle": 174277,
+        "head_nearest_distance": 9.988435340346768e-05,
+        "head_faces_within_nearest_distance_plus_1e_6": 1,
+        "head_near_tie_signed_proxy_range": [
+          -9.988435694996411e-05,
+          -9.988435694996411e-05
+        ],
+        "head_near_tie_max_normal_angle_degrees": 0.0,
+        "head_near_ties_disagree_on_sign": false
+      },
+      "V5": {
+        "nearest_outer_point": [
+          0.125359907746315,
+          -0.22051674127578735,
+          3.6928963661193848
+        ],
+        "head_signed_nearest_plane": -0.00010014877980157877,
+        "source_surface_error": 0.0002753557055257261,
+        "outer_triangle_source_indices": [
+          32886,
+          72635,
+          36613
+        ],
+        "outer_projection_barycentric_weights": [
+          0.3216980400409155,
+          0.5327249047682627,
+          0.14557705519082173
+        ],
+        "outer_projection_near_triangle_edge": false,
+        "outer_triangle_row_range": [
+          2.5,
+          3.0
+        ],
+        "nearest_head_triangle": 174277,
+        "head_nearest_distance": 0.00010014877625508234,
+        "head_faces_within_nearest_distance_plus_1e_6": 1,
+        "head_near_tie_signed_proxy_range": [
+          -0.00010014877980157877,
+          -0.00010014877980157877
+        ],
+        "head_near_tie_max_normal_angle_degrees": 0.0,
+        "head_near_ties_disagree_on_sign": false
+      },
+      "same_nearest_outer_source_triangle": true,
+      "interpretation": "Unchanged exact source triangle with cyclic order difference: threshold classification is sensitive to Blender BVH floating-point projection, not geometric displacement of this face.",
+      "V5_crossing_beyond_negative_threshold": 1.4877980157876412e-07,
+      "V4_margin_above_negative_threshold": 1.1564305003588995e-07
+    },
+    {
+      "sample_index": 804,
+      "source_point": [
+        0.0371662075533101,
+        -0.05697925341052756,
+        3.5587897154649797
+      ],
+      "source_head_signed_proxy": 0.00024549178681354533,
+      "source_row_parameter": 25.676286322837687,
+      "distance_source_point_to_rim112_polyline": 0.18074781700692544,
+      "V4": {
+        "nearest_outer_point": [
+          0.037178847938776016,
+          -0.057313598692417145,
+          3.55873966217041
+        ],
+        "head_signed_nearest_plane": -9.262307315793805e-05,
+        "source_surface_error": 0.0003383090370334685,
+        "outer_triangle_source_indices": [
+          2745,
+          95946,
+          96938
+        ],
+        "outer_projection_barycentric_weights": [
+          0.05275454197765528,
+          0.45933204060146166,
+          0.4879134174208831
+        ],
+        "outer_projection_near_triangle_edge": false,
+        "outer_triangle_row_range": [
+          24.0,
+          26.25
+        ],
+        "nearest_head_triangle": 156744,
+        "head_nearest_distance": 9.262315870728344e-05,
+        "head_faces_within_nearest_distance_plus_1e_6": 1,
+        "head_near_tie_signed_proxy_range": [
+          -9.262307315793805e-05,
+          -9.262307315793805e-05
+        ],
+        "head_near_tie_max_normal_angle_degrees": 0.028139902209106074,
+        "head_near_ties_disagree_on_sign": false
+      },
+      "V5": {
+        "nearest_outer_point": [
+          0.03717922419309616,
+          -0.057344064116477966,
+          3.5587360858917236
+        ],
+        "head_signed_nearest_plane": -0.00012326222559977396,
+        "source_surface_error": 0.00036896290839649737,
+        "outer_triangle_source_indices": [
+          16222,
+          2745,
+          95946
+        ],
+        "outer_projection_barycentric_weights": [
+          0.48654685810674164,
+          0.1505484264244294,
+          0.3629047154688289
+        ],
+        "outer_projection_near_triangle_edge": false,
+        "outer_triangle_row_range": [
+          24.0,
+          26.5
+        ],
+        "nearest_head_triangle": 156744,
+        "head_nearest_distance": 0.0001232622453244403,
+        "head_faces_within_nearest_distance_plus_1e_6": 1,
+        "head_near_tie_signed_proxy_range": [
+          -0.00012326222559977396,
+          -0.00012326222559977396
+        ],
+        "head_near_tie_max_normal_angle_degrees": 0.028139902209106074,
+        "head_near_ties_disagree_on_sign": false
+      },
+      "same_nearest_outer_source_triangle": false,
+      "interpretation": "Changed local triangulation. Both versions already have negative head-plane sign; V5 crosses the chosen -0.0001 threshold. This is a measurable local proxy regression.",
+      "V5_crossing_beyond_negative_threshold": 2.326222559977395e-05,
+      "V4_margin_above_negative_threshold": 7.376926842061953e-06
+    },
+    {
+      "sample_index": 17457,
+      "source_point": [
+        0.03929217933838106,
+        -0.05807017688223977,
+        3.5667209509353546
+      ],
+      "source_head_signed_proxy": 0.0002556149471786284,
+      "source_row_parameter": 24.826103901608462,
+      "distance_source_point_to_rim112_polyline": 0.18688314753671917,
+      "V4": {
+        "nearest_outer_point": [
+          0.039305463433265686,
+          -0.05842167139053345,
+          3.5666682720184326
+        ],
+        "head_signed_nearest_plane": -9.99824719656317e-05,
+        "source_surface_error": 0.0003556715091690421,
+        "outer_triangle_source_indices": [
+          2745,
+          95946,
+          96938
+        ],
+        "outer_projection_barycentric_weights": [
+          0.49658130138275247,
+          0.31217242478695817,
+          0.19124627383028933
+        ],
+        "outer_projection_near_triangle_edge": false,
+        "outer_triangle_row_range": [
+          24.0,
+          26.25
+        ],
+        "nearest_head_triangle": 156771,
+        "head_nearest_distance": 9.998247696785256e-05,
+        "head_faces_within_nearest_distance_plus_1e_6": 2,
+        "head_near_tie_signed_proxy_range": [
+          -9.998609311878681e-05,
+          -9.99824719656317e-05
+        ],
+        "head_near_tie_max_normal_angle_degrees": 0.07900853589811202,
+        "head_near_ties_disagree_on_sign": false
+      },
+      "V5": {
+        "nearest_outer_point": [
+          0.039305150508880615,
+          -0.05843372270464897,
+          3.5666675567626953
+        ],
+        "head_signed_nearest_plane": -0.00011194692723393018,
+        "source_surface_error": 0.00036767800338566303,
+        "outer_triangle_source_indices": [
+          16222,
+          2745,
+          95946
+        ],
+        "outer_projection_barycentric_weights": [
+          0.1906636474009321,
+          0.5349180598563141,
+          0.27441829274275376
+        ],
+        "outer_projection_near_triangle_edge": false,
+        "outer_triangle_row_range": [
+          24.0,
+          26.5
+        ],
+        "nearest_head_triangle": 156771,
+        "head_nearest_distance": 0.00011194697435712442,
+        "head_faces_within_nearest_distance_plus_1e_6": 2,
+        "head_near_tie_signed_proxy_range": [
+          -0.00011195060069901785,
+          -0.00011194692723393018
+        ],
+        "head_near_tie_max_normal_angle_degrees": 0.07900853589811202,
+        "head_near_ties_disagree_on_sign": false
+      },
+      "same_nearest_outer_source_triangle": false,
+      "interpretation": "Changed local triangulation. Both versions already have negative head-plane sign; V5 crosses the chosen -0.0001 threshold. This is a measurable local proxy regression.",
+      "V5_crossing_beyond_negative_threshold": 1.1946927233930178e-05,
+      "V4_margin_above_negative_threshold": 1.7528034368301877e-08
+    }
+  ]
+}

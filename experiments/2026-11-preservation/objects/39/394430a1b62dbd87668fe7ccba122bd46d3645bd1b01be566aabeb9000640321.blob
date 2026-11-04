@@ -1,0 +1,60 @@
+{
+  "format": "altare-snapshot-audit",
+  "schemaVersion": 1,
+  "sourceStateSchema": "altare-0.12.3",
+  "targetStateSchema": "altare-compact-v1",
+  "coverage": "selected-cells",
+  "totalCells": 4,
+  "convertedCells": 2,
+  "unchangedCells": 1,
+  "rejectedCells": 1,
+  "normalizationCount": 1,
+  "normalizationsAllowed": true,
+  "eligible": false,
+  "issues": [
+    {
+      "index": 3,
+      "code": "unrepresentable-pose",
+      "message": "This valid legacy pose has no lossless compact equivalent. No repair was applied.",
+      "id": "altare:a_ogive_marble_agnus_cross",
+      "dimension": "minecraft:overworld",
+      "position": {
+        "x": 3,
+        "y": 64,
+        "z": 0
+      },
+      "states": {
+        "altare:edges": 0,
+        "altare:facing": 0,
+        "altare:role": 1
+      }
+    }
+  ],
+  "normalizations": [
+    {
+      "index": 1,
+      "id": "altare:a_trestle_walnut_none_none",
+      "dimension": "minecraft:overworld",
+      "position": {
+        "x": 1,
+        "y": 64,
+        "z": 0
+      },
+      "code": "unused-role-cleared",
+      "previousRole": 2,
+      "targetLogicalRole": 0
+    }
+  ],
+  "limitations": [
+    "Selected-cell snapshot only, not a full world backup.",
+    "Export origin and world completeness cannot be authenticated by this tool.",
+    "No game, world, entity, inventory, chunk, or installed pack is read or modified.",
+    "Hashes require a separately trusted digest to resist coordinated tampering.",
+    "Use trusted canonical directories with no concurrent writers; hostile directory replacement is outside this tool guarantee.",
+    "This does not make loading an old world with a new state schema safe."
+  ],
+  "input": {
+    "bytes": 1364,
+    "sha256": "a3c2bdc2b29eb44600551f115e6fb306dd64575a73fc5c71988f1a8520de4413"
+  }
+}

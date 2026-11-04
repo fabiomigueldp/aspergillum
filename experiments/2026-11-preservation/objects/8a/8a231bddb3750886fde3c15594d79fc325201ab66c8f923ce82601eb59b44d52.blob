@@ -1,0 +1,14 @@
+from pathlib import Path
+import numpy as np,json,hashlib
+O=Path(__file__).resolve().parent;B=O.parents[1];L=B/'lit_surface_v16/lighting_research';D=B/'lit_surface_v16/transparent_trim';T=np.load(B/'opaque_transport_v15/shared_mask/transport_arrays.npz');source={(int(p),int(c)):(int(f),int(h))for p,c,f,h in zip(T['part'],T['cube_index'],T['native_face'],T['half'])};ref=np.load(L/'source-id-pixels.npz');clip=np.rint(ref['clip'][:,:,:3]*[65536,32,4]-1).astype(int);covref=np.load(L/'coverage48-source-id-pixels.npz')['clip'][:,:,:3];roi=(slice(40,81),slice(220,301));reports=[]
+for tag in ['roi68-depth1','roi68-depth2','roi68-depth3','roi68-depth3-restored-transparent']:
+ ar=np.load(L/(tag+'-identity-coverage.npz'));raw=ar['ids'][:,:,:3]*[65536,32,4]-1;ids=np.rint(raw).astype(int);cov=ar['coverage'][:,:,:3];m=np.load(D/(tag+'-cube-map.npz'));inputs=dict(np.load(O/(tag+'-renderer-inputs.npz')));g=json.load(open(D/(tag+'.geo.json')))['minecraft:geometry'][0];bones={int(b['name'].split('_')[1]):b for b in g['bones']};lookup={(int(p),int(ni)):int(oi)for p,ni,oi in zip(m['part'],m['new_cube_index'],m['original_cube_index'])};checked=0
+ for pi in [0,1,15]:
+  assert all(len(c['uv'])==1 for c in bones[pi]['cubes']);ix=np.flatnonzero(inputs['part']==pi)
+  for j in ix:
+   oi=lookup[pi,int(inputs['polygon'][j])];nf,h=source[pi,oi];assert nf==inputs['native_face'][j]and h==inputs['half'][j];checked+=1
+ mismatch=np.any(ids!=clip,axis=2);partmis=ids[:,:,1]!=clip[:,:,1];loss=covref[:,:,0]-cov[:,:,0];w=[]
+ for x,y in [[493,471],[559,449],[510,468],[500,471]]:
+  j,i=y-400,x-270;w.append({'pixel':[x,y],'actual_source_id':ids[j,i].tolist(),'clip_source_id':clip[j,i].tolist(),'band_fraction_48':float(cov[j,i,0]),'clip_band_fraction_48':float(covref[j,i,0])})
+ r={'tag':tag,'lineage_per_actual_loop_triangle_verified':checked,'source_ID_mismatches_3321':int(mismatch[roi].sum()),'part_mismatches_3321':int(partmis[roi].sum()),'mean_lost_band_fraction_3321':float(np.mean(loss[roi])),'band_loss_gt1percent_pixels':int(np.sum(loss[roi]>.01)),'band_gain_gt1percent_pixels':int(np.sum(loss[roi]<-.01)),'max_raw_ID_noninteger_error_roi':float(np.max(np.abs(raw[roi]-ids[roi]))),'witnesses':w};reports.append(r);print(json.dumps(r),flush=True)
+(O/'trim-rendered-ids-independent-verification.json').write_text(json.dumps({'scope':'Independent decode of researcher controls, plus independent cross-check from actual saved loop-triangle lineage to original transport contract. ID is1sampleBOX.01; coverage is48sampleBlackman-Harris1.5. These are renderer measurements, distinct from ideal source support.','reports':reports},indent=2))

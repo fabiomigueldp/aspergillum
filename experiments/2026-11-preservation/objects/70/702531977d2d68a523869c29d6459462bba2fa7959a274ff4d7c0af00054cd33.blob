@@ -1,0 +1,16 @@
+# Tangentes/curvatura — manter V55
+
+## V56 integral: rejeitada
+Estimativa de curvaturas das superfícies adjacentes, normais interpoladas e interpolação quintica do anel. Delta máximo2.748mm;0auto-interseções, mas3triângulos da costura superior invertem orientação. Faces21149/21161/21174, posições em V56-fold-location.json. Não promover.
+
+## V57 limitada: tecnicamente válida, ganho visual insuficiente
+Teste de amplitudes1/.85/.7/.55/.4/.25; apenas.25 satisfaz simultaneamente0inversões e área mínima>=.5 da original. Delta0.687mm, área0.534..1.076×,0interseções. Aumento radial máximo0.250mm/redução0.122mm; sem inflação volumétrica grande.
+O .blend final contém coordenadas da chave JÁ limitadas: TESTE57=1 mostra candidata limitada,0 restauraV55. Os dados integrais rejeitados não ficam acessíveis por aumentar slider até1. Arquivo V57-child-neck-trial.blend. Todos outros objetos/chaves/matrizes iguais aV55.
+Comparação lateral calibrada: V55-neck-side-balanced.png vs V57-neck-side-balanced.png. Close de mandíbula/colo, mesma luz/câmera. As imagens anteriores lateral-threequarter estavam superexpostas e não fundamentam avaliação. No par calibrado a faixa tipo colar permanece e não vejo ganho convincente; não promover como avanço artístico.
+
+## V58 projeção meridiana: rejeitada antes de salvar .blend
+Hipótese de componente azimutal das tangentes. Projeção integral ao plano de cada meridiano piorou para6inversões, áreas0.126..5.281×. Só relatório diagnóstico; nenhum .blendV58 salvo.
+
+## Causa e próximo método distinto
+A limitação concentra-se nos triângulos de interface entre os anéis regulares e a borda superior original irregular; não basta suavizar/interpolar interior com borda fixa. Para alteração substantiva segura, seria necessário recortar e reconstruir também a costura superior com correspondência regular e faixa de transição suficiente, mantendo região facial protegida. Não continuar microvariações de tangente/amplitude com a mesma costura.
+Todas fontes e versõesV50/V52/V55 preservadas. Nenhuma alteração em Maria/cuff.

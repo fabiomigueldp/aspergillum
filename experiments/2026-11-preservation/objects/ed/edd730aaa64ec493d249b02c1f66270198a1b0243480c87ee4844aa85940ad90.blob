@@ -1,0 +1,42 @@
+import bpy,json
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/'
+bpy.ops.wm.open_mainfile(filepath=r+'V42-articulated-hand-trial.blend',use_scripts=False);o=bpy.data.objects['Maria — mão ao peito anatômica'];m=o.data;dg=bpy.context.evaluated_depsgraph_get();before=[v.co.copy() for v in o.evaluated_get(dg).data.vertices];base=[v.co.copy() for v in m.vertices];delta=[p-q for p,q in zip(before,base)];adj=[set() for p in base]
+for e in m.edges:a,b=e.vertices;adj[a].add(b);adj[b].add(a)
+def smooth(t):t=max(0,min(1,t));return t*t*(3-2*t)
+# Smooth only displacement transition at thumb base, preserve distal anatomy.
+weights=[smooth((p.x-.112)/.02)*(1-smooth(abs(p.z-3.04)/.035)) for p in base]
+for iteration in range(12):
+ dd=[d.copy() for d in delta]
+ for i,nb in enumerate(adj):
+  if nb and weights[i]>0:dd[i]=delta[i].lerp(sum((delta[j] for j in nb),Vector())/len(nb),.5*weights[i])
+ delta=dd
+new=[p+d for p,d in zip(base,delta)]
+# Extend bottom of wrist into sleeve, keeping exposed palm/fingers unchanged.
+for i,p in enumerate(new):p+=Vector((.35,0,-.94))*(.014*(1-smooth((base[i].z-2.93)/.045)))
+bv=BVHTree.FromObject(bpy.data.objects['Maria — túnica e mangas integradas'],dg)
+shift=0
+for it in range(12):
+ need=0
+ for i,p in enumerate(new):
+  if base[i].z<=3.0:continue
+  q,n,_,dist=bv.find_nearest(p);signed=(p-q).dot(n)
+  if signed<.0012:need=max(need,(.0012-signed)/max(.2,-n.y))
+ if need<1e-7:break
+ shift+=need
+ for i,p in enumerate(new):p.y-=need*smooth((base[i].z-2.95)/.05)
+post=[]
+for i,p in enumerate(new):
+ if base[i].z>3.0:
+  q,n,_,dist=bv.find_nearest(p);post.append((p-q).dot(n))
+# Verify triangle intersections above wrist, not just vertex samples.
+upperfaces=[list(p.vertices) for p in m.polygons if all(base[i].z>3.0 for i in p.vertices)]
+hbv=BVHTree.FromPolygons(new,upperfaces,all_triangles=False);overlap=hbv.overlap(bv)
+k=o.shape_key_add(name='TESTE 43 — continuidade polegar e contato sem penetração');k.value=1
+for i,v in enumerate(k.data):v.co=m.vertices[i].co+(new[i]-before[i])
+json.dump({'method':'Thumb-root deformation-field blend only; rigid outward hand correction with wrist blend; lower wrist extended14mm into sleeve. Existing fingers not compressed.','outward_shift_m':shift,'min_signed_clearance_above_wrist':min(post),'negative_vertices_above_wrist':sum(x<0 for x in post),'triangle_intersections_above_wrist':len(overlap),'affected_vertices':sum((p-q).length>1e-7 for p,q in zip(new,before))},open(r+'V43-verification.json','w'),indent=2)
+bpy.ops.wm.save_as_mainfile(filepath=r+'V43-hand-contact-trial.blend')
+center=sum(base,Vector())/len(base);s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=600;s.render.resolution_y=800;s.render.resolution_percentage=100;c=s.camera
+for view,off in [('front',(0,-5,0)),('threequarter',(-3,-5,.2)),('profile',(5,0,0))]:
+ c.location=center+Vector(off);c.rotation_euler=(center-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=.48;s.render.filepath=r+'V43-hand-'+view+'.png';bpy.ops.render.render(write_still=True)

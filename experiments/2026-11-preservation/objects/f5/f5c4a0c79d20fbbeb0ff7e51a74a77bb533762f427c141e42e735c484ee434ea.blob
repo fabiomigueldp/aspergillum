@@ -1,0 +1,572 @@
+{
+  "status": "complete; no candidate globally approved",
+  "main_report": "REVIEW_PRIMARY_RAYS_V16.md",
+  "finding": "Actual renderer primary rays can skip intended band support and hit the shell. Transparent near-coincident geometry is implicated by exact-kept-buffer restoration control; ideal alpha coverage alone does not predict renderer traversal.",
+  "baseline_ideal_scar_window": {
+    "quads_vs_clip": {
+      "count": 3321,
+      "both_hit": 3321,
+      "part_mismatch": 0,
+      "native_face_mismatch": 0,
+      "half_mismatch_when_same_source": 0,
+      "depth_abs_mm_percentiles": {
+        "median": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "max": 0.0
+      },
+      "polygon_normal_angle_degrees_percentiles": {
+        "median": 0.00011286599782611387,
+        "p95": 0.001957894771105039,
+        "p99": 0.0033026341486298225,
+        "max": 0.01722077698301145
+      },
+      "interpolated_stored_corner_normal_angle_degrees_percentiles": {
+        "median": 0.000785529818679473,
+        "p95": 0.0034897074663526257,
+        "p99": 0.014723998577756404,
+        "max": 0.05542268535453903
+      },
+      "geometric_loop_triangle_normal_angle_degrees_percentiles": {
+        "median": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "max": 0.0
+      }
+    },
+    "quads_vs_native": {
+      "count": 3321,
+      "both_hit": 3321,
+      "part_mismatch": 0,
+      "native_face_mismatch": 0,
+      "half_mismatch_when_same_source": null,
+      "depth_abs_mm_percentiles": {
+        "median": 1.639566082900501e-05,
+        "p95": 7.126798129419853e-05,
+        "p99": 0.00010274631669915384,
+        "max": 0.00015398473030003856
+      },
+      "polygon_normal_angle_degrees_percentiles": {
+        "median": 0.0003043738719722747,
+        "p95": 0.0030132765604541987,
+        "p99": 0.005458597664609624,
+        "max": 0.008558520664973996
+      },
+      "interpolated_stored_corner_normal_angle_degrees_percentiles": {
+        "median": 0.001030292074467198,
+        "p95": 0.005085732983766244,
+        "p99": 0.010073551454047359,
+        "max": 0.03254228615241575
+      },
+      "geometric_loop_triangle_normal_angle_degrees_percentiles": {
+        "median": 0.0004541988535363981,
+        "p95": 0.0031779597150073365,
+        "p99": 0.005459475378176497,
+        "max": 0.018603644815311064
+      }
+    }
+  },
+  "baseline_actual_ID_summary": {
+    "mapping_assertion": true,
+    "roi_pixels": 3321,
+    "actual_source_ID_mismatch": 142,
+    "actual_part_mismatch": 141,
+    "clip_ID_vs_ideal_center_ray_mismatch": 2,
+    "masked_ID_vs_ideal_center_ray_mismatch": 144,
+    "max_raw_decoded_deviation_from_integer": {
+      "masked": 0.00048828125,
+      "clip": 0.00048828125
+    },
+    "dark_pixels": 301,
+    "actual_ID_mismatch_at_dark": 77,
+    "clean_pixels": 2737,
+    "actual_ID_mismatch_at_clean": 42
+  },
+  "trim_geometry_cost_support": [
+    {
+      "tag": "roi68-depth1",
+      "passed": true,
+      "original_cubes": 41565,
+      "output_cubes": 41701,
+      "unchanged_cubes_value_identical": 41497,
+      "selected_parents": 68,
+      "retained_children": 204,
+      "max_float64_child_corner_error_blocks": 6.304854800243424e-16,
+      "support_patterns": [
+        {
+          "parents": 68,
+          "retained_children_per_parent": 3,
+          "all_texels_checked": 4194304,
+          "opaque_texels": 2098176,
+          "removed_texels": 1048576,
+          "removed_opaque_texels": 0,
+          "overlapped_texels": 0
+        }
+      ],
+      "certificate_rows_independently_checked": 272,
+      "dropped_rectangles_all_alpha0": 68,
+      "atlas_bytes_unchanged": true,
+      "description_bones_non_geometry_fields_preserved": true,
+      "input_sha256": "fc00b96e8174108fbc0383220b49285f38b1e92c684f527f7604bbe9a50d9ead",
+      "qualification": "Ideal nearest/mip0 UV-support equality and float64 transform reconstruction. Does not prove float32 import/ray behavior or filtered runtime support."
+    },
+    {
+      "tag": "roi68-depth2",
+      "passed": true,
+      "original_cubes": 41565,
+      "output_cubes": 41973,
+      "unchanged_cubes_value_identical": 41497,
+      "selected_parents": 68,
+      "retained_children": 476,
+      "max_float64_child_corner_error_blocks": 9.602787394150765e-16,
+      "support_patterns": [
+        {
+          "parents": 68,
+          "retained_children_per_parent": 7,
+          "all_texels_checked": 4194304,
+          "opaque_texels": 2098176,
+          "removed_texels": 1572864,
+          "removed_opaque_texels": 0,
+          "overlapped_texels": 0
+        }
+      ],
+      "certificate_rows_independently_checked": 680,
+      "dropped_rectangles_all_alpha0": 204,
+      "atlas_bytes_unchanged": true,
+      "description_bones_non_geometry_fields_preserved": true,
+      "input_sha256": "447726952733be98c08f421106172c12eccfa00eeb2a8590fb4ccb9f5896baad",
+      "qualification": "Ideal nearest/mip0 UV-support equality and float64 transform reconstruction. Does not prove float32 import/ray behavior or filtered runtime support."
+    },
+    {
+      "tag": "roi68-depth3",
+      "passed": true,
+      "original_cubes": 41565,
+      "output_cubes": 42517,
+      "unchanged_cubes_value_identical": 41497,
+      "selected_parents": 68,
+      "retained_children": 1020,
+      "max_float64_child_corner_error_blocks": 9.305364597889227e-16,
+      "support_patterns": [
+        {
+          "parents": 68,
+          "retained_children_per_parent": 15,
+          "all_texels_checked": 4194304,
+          "opaque_texels": 2098176,
+          "removed_texels": 1835008,
+          "removed_opaque_texels": 0,
+          "overlapped_texels": 0
+        }
+      ],
+      "certificate_rows_independently_checked": 1496,
+      "dropped_rectangles_all_alpha0": 476,
+      "atlas_bytes_unchanged": true,
+      "description_bones_non_geometry_fields_preserved": true,
+      "input_sha256": "0836f7efac70df97dc57ea32a9ecfbc347521a8a699164ef209fb82fd5e3a37b",
+      "qualification": "Ideal nearest/mip0 UV-support equality and float64 transform reconstruction. Does not prove float32 import/ray behavior or filtered runtime support."
+    },
+    {
+      "tag": "roi68-depth3-restored-transparent",
+      "passed": true,
+      "original_cubes": 41565,
+      "output_cubes": 42993,
+      "unchanged_cubes_value_identical": 41497,
+      "selected_parents": 68,
+      "retained_children": 1496,
+      "max_float64_child_corner_error_blocks": 9.602787394150765e-16,
+      "support_patterns": [
+        {
+          "parents": 68,
+          "retained_children_per_parent": 22,
+          "all_texels_checked": 4194304,
+          "opaque_texels": 2098176,
+          "removed_texels": 0,
+          "removed_opaque_texels": 0,
+          "overlapped_texels": 0
+        }
+      ],
+      "certificate_rows_independently_checked": 1496,
+      "dropped_rectangles_all_alpha0": 0,
+      "atlas_bytes_unchanged": true,
+      "description_bones_non_geometry_fields_preserved": true,
+      "input_sha256": "510b3666805386a8652be83e1c515b411b6b0d7dd10b1f47da94895d4b9c7fb7",
+      "qualification": "Ideal nearest/mip0 UV-support equality and float64 transform reconstruction. Does not prove float32 import/ray behavior or filtered runtime support."
+    },
+    {
+      "tag": "all-band-depth1",
+      "passed": true,
+      "original_cubes": 41565,
+      "output_cubes": 59341,
+      "unchanged_cubes_value_identical": 32677,
+      "selected_parents": 8888,
+      "retained_children": 26664,
+      "max_float64_child_corner_error_blocks": 9.650801630464006e-16,
+      "support_patterns": [
+        {
+          "parents": 8888,
+          "retained_children_per_parent": 3,
+          "all_texels_checked": 4194304,
+          "opaque_texels": 2098176,
+          "removed_texels": 1048576,
+          "removed_opaque_texels": 0,
+          "overlapped_texels": 0
+        }
+      ],
+      "certificate_rows_independently_checked": 35552,
+      "dropped_rectangles_all_alpha0": 8888,
+      "atlas_bytes_unchanged": true,
+      "description_bones_non_geometry_fields_preserved": true,
+      "input_sha256": "f27077ca563efc82f987c22bcfdc587b8f9da856d3a3d9b770d0523918ec9263",
+      "qualification": "Ideal nearest/mip0 UV-support equality and float64 transform reconstruction. Does not prove float32 import/ray behavior or filtered runtime support."
+    }
+  ],
+  "trim_actual_renderer": {
+    "scope": "Independent decode of researcher controls, plus independent cross-check from actual saved loop-triangle lineage to original transport contract. ID is1sampleBOX.01; coverage is48sampleBlackman-Harris1.5. These are renderer measurements, distinct from ideal source support.",
+    "reports": [
+      {
+        "tag": "roi68-depth1",
+        "lineage_per_actual_loop_triangle_verified": 74208,
+        "source_ID_mismatches_3321": 107,
+        "part_mismatches_3321": 106,
+        "mean_lost_band_fraction_3321": 0.03417644649744034,
+        "band_loss_gt1percent_pixels": 850,
+        "band_gain_gt1percent_pixels": 2,
+        "max_raw_ID_noninteger_error_roi": 0.00048828125,
+        "witnesses": [
+          {
+            "pixel": [
+              493,
+              471
+            ],
+            "actual_source_id": [
+              134,
+              0,
+              1
+            ],
+            "clip_source_id": [
+              134,
+              0,
+              1
+            ],
+            "band_fraction_48": 0.7083333730697632,
+            "clip_band_fraction_48": 1.0
+          },
+          {
+            "pixel": [
+              559,
+              449
+            ],
+            "actual_source_id": [
+              111,
+              0,
+              0
+            ],
+            "clip_source_id": [
+              111,
+              0,
+              0
+            ],
+            "band_fraction_48": 0.9166666865348816,
+            "clip_band_fraction_48": 1.0
+          },
+          {
+            "pixel": [
+              510,
+              468
+            ],
+            "actual_source_id": [
+              2994,
+              1,
+              1
+            ],
+            "clip_source_id": [
+              894,
+              0,
+              1
+            ],
+            "band_fraction_48": 0.6041666865348816,
+            "clip_band_fraction_48": 1.0
+          },
+          {
+            "pixel": [
+              500,
+              471
+            ],
+            "actual_source_id": [
+              138,
+              0,
+              0
+            ],
+            "clip_source_id": [
+              138,
+              0,
+              0
+            ],
+            "band_fraction_48": 0.9583333730697632,
+            "clip_band_fraction_48": 1.0
+          }
+        ]
+      },
+      {
+        "tag": "roi68-depth2",
+        "lineage_per_actual_loop_triangle_verified": 74752,
+        "source_ID_mismatches_3321": 72,
+        "part_mismatches_3321": 72,
+        "mean_lost_band_fraction_3321": 0.019371671602129936,
+        "band_loss_gt1percent_pixels": 757,
+        "band_gain_gt1percent_pixels": 2,
+        "max_raw_ID_noninteger_error_roi": 0.00048828125,
+        "witnesses": [
+          {
+            "pixel": [
+              493,
+              471
+            ],
+            "actual_source_id": [
+              134,
+              0,
+              1
+            ],
+            "clip_source_id": [
+              134,
+              0,
+              1
+            ],
+            "band_fraction_48": 0.7916666865348816,
+            "clip_band_fraction_48": 1.0
+          },
+          {
+            "pixel": [
+              559,
+              449
+            ],
+            "actual_source_id": [
+              111,
+              0,
+              0
+            ],
+            "clip_source_id": [
+              111,
+              0,
+              0
+            ],
+            "band_fraction_48": 1.0,
+            "clip_band_fraction_48": 1.0
+          },
+          {
+            "pixel": [
+              510,
+              468
+            ],
+            "actual_source_id": [
+              894,
+              0,
+              1
+            ],
+            "clip_source_id": [
+              894,
+              0,
+              1
+            ],
+            "band_fraction_48": 0.9791666865348816,
+            "clip_band_fraction_48": 1.0
+          },
+          {
+            "pixel": [
+              500,
+              471
+            ],
+            "actual_source_id": [
+              138,
+              0,
+              0
+            ],
+            "clip_source_id": [
+              138,
+              0,
+              0
+            ],
+            "band_fraction_48": 0.9583333730697632,
+            "clip_band_fraction_48": 1.0
+          }
+        ]
+      },
+      {
+        "tag": "roi68-depth3",
+        "lineage_per_actual_loop_triangle_verified": 75840,
+        "source_ID_mismatches_3321": 39,
+        "part_mismatches_3321": 39,
+        "mean_lost_band_fraction_3321": 0.009798752143979073,
+        "band_loss_gt1percent_pixels": 607,
+        "band_gain_gt1percent_pixels": 16,
+        "max_raw_ID_noninteger_error_roi": 0.00048828125,
+        "witnesses": [
+          {
+            "pixel": [
+              493,
+              471
+            ],
+            "actual_source_id": [
+              134,
+              0,
+              1
+            ],
+            "clip_source_id": [
+              134,
+              0,
+              1
+            ],
+            "band_fraction_48": 0.8958333730697632,
+            "clip_band_fraction_48": 1.0
+          },
+          {
+            "pixel": [
+              559,
+              449
+            ],
+            "actual_source_id": [
+              111,
+              0,
+              0
+            ],
+            "clip_source_id": [
+              111,
+              0,
+              0
+            ],
+            "band_fraction_48": 1.0,
+            "clip_band_fraction_48": 1.0
+          },
+          {
+            "pixel": [
+              510,
+              468
+            ],
+            "actual_source_id": [
+              894,
+              0,
+              1
+            ],
+            "clip_source_id": [
+              894,
+              0,
+              1
+            ],
+            "band_fraction_48": 1.0,
+            "clip_band_fraction_48": 1.0
+          },
+          {
+            "pixel": [
+              500,
+              471
+            ],
+            "actual_source_id": [
+              138,
+              0,
+              0
+            ],
+            "clip_source_id": [
+              138,
+              0,
+              0
+            ],
+            "band_fraction_48": 0.875,
+            "clip_band_fraction_48": 1.0
+          }
+        ]
+      },
+      {
+        "tag": "roi68-depth3-restored-transparent",
+        "lineage_per_actual_loop_triangle_verified": 76792,
+        "source_ID_mismatches_3321": 242,
+        "part_mismatches_3321": 242,
+        "mean_lost_band_fraction_3321": 0.07005293667316437,
+        "band_loss_gt1percent_pixels": 1185,
+        "band_gain_gt1percent_pixels": 16,
+        "max_raw_ID_noninteger_error_roi": 0.00048828125,
+        "witnesses": [
+          {
+            "pixel": [
+              493,
+              471
+            ],
+            "actual_source_id": [
+              134,
+              0,
+              1
+            ],
+            "clip_source_id": [
+              134,
+              0,
+              1
+            ],
+            "band_fraction_48": 0.4583333432674408,
+            "clip_band_fraction_48": 1.0
+          },
+          {
+            "pixel": [
+              559,
+              449
+            ],
+            "actual_source_id": [
+              111,
+              0,
+              0
+            ],
+            "clip_source_id": [
+              111,
+              0,
+              0
+            ],
+            "band_fraction_48": 0.6041666865348816,
+            "clip_band_fraction_48": 1.0
+          },
+          {
+            "pixel": [
+              510,
+              468
+            ],
+            "actual_source_id": [
+              894,
+              0,
+              1
+            ],
+            "clip_source_id": [
+              894,
+              0,
+              1
+            ],
+            "band_fraction_48": 0.9583333730697632,
+            "clip_band_fraction_48": 1.0
+          },
+          {
+            "pixel": [
+              500,
+              471
+            ],
+            "actual_source_id": [
+              138,
+              0,
+              0
+            ],
+            "clip_source_id": [
+              138,
+              0,
+              0
+            ],
+            "band_fraction_48": 0.875,
+            "clip_band_fraction_48": 1.0
+          }
+        ]
+      }
+    ]
+  },
+  "restored_kept_JSON_exact": true,
+  "restored_kept_saved_Blender_buffers_bit_exact": true,
+  "all_original_scene_hashes_preserved": true,
+  "limits": [
+    "No exact Embree intersection-kernel or tie-order emulation.",
+    "No all-view float32/runtime/filtered-alpha/mipmap proof.",
+    "Remaining errors and new local regressions prevent global approval.",
+    "No PBR, Minecraft, mobile performance or artistic final-acceptance claim."
+  ]
+}

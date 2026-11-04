@@ -1,0 +1,35 @@
+import bpy,json,math
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V60-child-foot-trial.blend',use_scripts=False);dg=bpy.context.evaluated_depsgraph_get();base=bpy.data.objects['Laje'];footnames=['Menino — pé','Menino — pé.001'];baseold=[base.matrix_world@v.co for v in base.evaluated_get(dg).data.vertices];top=max(p.z for p in baseold);front=min(p.y for p in baseold);newfront=-.45
+if not base.data.shape_keys:base.shape_key_add(name='Basis')
+bk=base.shape_key_add(name='TESTE61 — extensão anterior inferida da laje');bk.value=1;inv=base.matrix_world.inverted()
+for i,v in enumerate(bk.data):
+ p=base.matrix_world@base.data.vertices[i].co
+ if p.y<base.location.y:p.y=base.location.y+(p.y-base.location.y)*(base.location.y-newfront)/(base.location.y-front)
+ v.co=inv@p
+keys=[bk];reports={}
+def sm(t):t=max(0,min(1,t));return t*t*(3-2*t)
+def plateau(y,a,b):return sm((y-(a-.01))/.01)*(1-sm((y-b)/.01))
+def av(p,f):return sum(((p[f[j]]-p[f[0]]).cross(p[f[j+1]]-p[f[0]])*.5 for j in range(1,len(f)-1)),Vector())
+for name in footnames:
+ o=bpy.data.objects[name];old=[o.matrix_world@v.co for v in o.evaluated_get(dg).data.vertices];drop=min(p.z for p in old)-top;new=[];height=.004 if name==footnames[0] else .018
+ for p in old:
+  q=p.copy();q.z-=drop;w=max(plateau(q.y,-.275,-.24),plateau(q.y,-.395,-.345));above=max(0,q.z-top);vertical=1-sm((above/height-.7)/.3);q.z-=above*w*vertical;new.append(q)
+ if not o.data.shape_keys:o.shape_key_add(name='Basis')
+ k=o.shape_key_add(name='TESTE61 — apoio plantar sem mudar pose XY');k.value=1;keys.append(k);inv=o.matrix_world.inverted()
+ for i,v in enumerate(k.data):v.co=o.data.vertices[i].co+(inv@new[i])-(inv@old[i])
+ fs=[tuple(f.vertices) for f in o.data.polygons];bv=BVHTree.FromPolygons(new,fs);pairs=[(i,j) for i,j in bv.overlap(bv) if i<j and not set(fs[i])&set(fs[j])];rat=[];flip=0
+ for f in fs:
+  a,b=av(old,f),av(new,f)
+  if a.length>1e-12:rat.append(b.length/a.length);flip+=a.dot(b)<0
+ reports[name]={'rigid_drop_m':drop,'max_additional_sole_change_m':max((a.z-drop)-b.z for a,b in zip(old,new)),'self_intersections':len(pairs),'flipped_faces':flip,'area_ratio_min':min(rat),'area_ratio_max':max(rat),'xy_max_delta_m':max(math.hypot(a.x-b.x,a.y-b.y) for a,b in zip(old,new)),'heel_min_gap_m':min(p.z-top for p in new if -.275<=p.y<=-.24),'forefoot_min_gap_m':min(p.z-top for p in new if -.395<=p.y<=-.345),'max_penetration_below_plane_m':max(0,top-min(p.z for p in new)),'anterior_margin_m':min(p.y for p in new)-newfront}
+leg=bpy.data.objects['Menino — perna'];copy=leg.copy();copy.data=leg.data.copy();copy.name='Menino — tornozelo afilado V61 reversível';bpy.context.collection.objects.link(copy);pt=copy.data.splines[0].bezier_points[-1];pt.co.z-=.015;pt.radius=.62;leg.hide_render=True;leg.hide_set(True)
+reports['base']={'old_anterior_y':front,'new_anterior_y':newfront,'top_z_unchanged':top,'dimension_status':'Inferred support study, not real measured plinth dimensions'};reports['ankle']={'only_visible_leg':True,'lower_control_z_delta_m':-.015,'lower_radius_before':.8,'lower_radius_after':.62,'control_point_XY_unchanged':True,'rollback':'Hide V61 ankle and unhide original leg'};json.dump(reports,open(r+'V61-support-verification.json','w'),indent=2);bpy.ops.wm.save_as_mainfile(filepath=r+'V61-foot-support-trial.blend')
+s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=700;s.render.resolution_y=700;s.render.resolution_percentage=100;c=s.camera;ct=Vector((-.04,-.32,.57));c.data.ortho_scale=.34
+for view,off in [('profile',(-3,0,0)),('threequarter',(-2,-3,0)),('front',(0,-3,0))]:
+ c.location=ct+Vector(off);c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler();s.render.filepath=r+'V61-foot-close-'+view+'.png';bpy.ops.render.render(write_still=True)
+for k in keys:k.value=0
+copy.hide_render=True;leg.hide_render=False
+c.location=ct+Vector((0,-3,0));c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler();s.render.filepath=r+'V60-foot-close-front.png';bpy.ops.render.render(write_still=True)
+print(reports)

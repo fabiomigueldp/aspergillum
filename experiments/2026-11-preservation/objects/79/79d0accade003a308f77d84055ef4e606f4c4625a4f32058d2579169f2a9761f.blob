@@ -1,0 +1,112 @@
+# Revisão visual independente V8 → V9
+
+Data: 2026-11-03. Estado: revisão concluída das sete vistas de `intrinsic097` e de `accumulated03`, com baseline V8 correspondente e controle rejeitado `bounded097`.
+
+**Parecer: `intrinsic097` pode ser mantida como candidata conservadora de pesquisa, sem regressão relevante identificada da anatomia exposta nas vistas examinadas. Não há melhora visual material das cavidades das orelhas; permanece uma mudança local de sombra sob a faixa. Não aprovar encaixe global, anatomia oculta, transporte ou entrega Minecraft. `accumulated03` não demonstra vantagem visual que justifique preferi-la.**
+
+As seções iniciais conservam o registro cronológico do baseline; a decisão detalhada está ao final.
+
+## Escopo
+
+Esta revisão compara aparência diretamente nos renders, sem usar contagens de contato ou resultados do solver para aprovar forma. As imagens são diagnósticos Blender: casca V7 e faixa V5 nativas, parte 15 reduzida nativa e demais partes do corpo reimportadas de JSON. Não são testes nem capturas de Minecraft, e não representam aprovação da exportação integral.
+
+Foram lidos `body_interface_v8/README.md` e `body_interface_v8/evidence/review-visual-v8.md`. Inspeção visual direta dos arquivos:
+
+- `body_interface_v8/evidence/fit-first-full-front.png`
+- `body_interface_v8/evidence/fit-first-junction-profile.png`
+- `body_interface_v8/evidence/fit-first-junction-back.png`
+- `body_interface_v8/evidence/fit-first-head-front.png`
+- `body_interface_v8/evidence/fit-first-nohalo-junction-back.png`
+
+As referências a esquerda/direita abaixo são lados da imagem, não identificação anatômica. As cores identificam casca azul, ponte vermelha e manto verde; o cinza exposto não deve ser interpretado automaticamente como vazamento. O halo cinza posterior é uma peça distinta que oclui superfícies.
+
+## Marcos visuais do baseline V8
+
+### Faixa ouro
+
+Na frontal próxima, a faixa forma um arco contínuo acima da testa, mas contém pequenos recortes azuis distribuídos sobretudo pela metade lateral de cada lado. O encontro com as têmporas é irregular: há extremidades afiladas/desniveladas e um pequeno ressalto claro na ponta à esquerda da imagem. No perfil, a faixa se alarga perto da têmpora e termina junto à parte superior da orelha; uma estreita superfície vermelha aparece nessa região. Esses sinais já pertencem ao baseline. Não classifico sua causa geométrica pelo render.
+
+A candidata não deverá limpar esses contatos aparentes apagando testa, retraindo têmpora exposta ou recolhendo a borda superior da orelha. A simples conservação da faixa, por ser uma peça congelada, não prova conservação da anatomia visível abaixo dela.
+
+### Orelhas
+
+A vista `head-front` mostra as duas orelhas expostas. A da direita da imagem tem contorno externo cinza relativamente amplo, com interior escuro e uma lâmina vermelha estreita junto à porção superior/interna. A da esquerda da imagem é muito mais estreita pela orientação da cabeça; parte do contorno fica quase de aresta e também há um pequeno trecho vermelho próximo ao topo. Essa assimetria de projeção é baseline, não defeito novo.
+
+No perfil, a orelha em primeiro plano tem margem externa cinza visível e lóbulo arredondado/facetado, com interior escuro. Há superfícies vermelha e azul aparentes próximas ao polo superior. A margem posterior da orelha se separa da cap azul e se aproxima da ponte vermelha abaixo. Uma correção que diminua a extensão externa da orelha, faça o lóbulo sumir ou transforme essa margem em franja/picos deverá ser rejeitada mesmo se diminuir contatos numéricos.
+
+As câmeras existentes não cobrem adequadamente a outra lateral nem todas as bordas. Para um parecer V9 sobre ambas as orelhas, serão necessários pares V8/V9 em câmeras laterais opostas e frontal mais adequada, com enquadramento, luz, material e representação iguais.
+
+### Nuca, face e pescoço
+
+A cap azul está visualmente contínua e sem grande rasgo cinza no topo. A ponte vermelha da nuca não mostra a antiga ilha cinza. A vista posterior sem halo confirma essa continuidade na superfície antes ocluída; ela não torna visível a anatomia que permanece coberta pela casca.
+
+A nuca tem uma transição curva azul–vermelha–verde sem novo volume destacado visível. Um pequeno recorte/ponta persiste no lado direito do encontro vermelho–verde. No perfil, a ponte desce em curva atrás da orelha até o manto. O pescoço anterior cinza conserva largura apreciável e alarga em direção aos ombros; sua leitura não deve ser afinada artificialmente pela correção. Feições, mandíbula, nariz e queixo são marcos de preservação, não áreas a esconder.
+
+A vista de corpo inteiro serve para proporção geral e silhueta. Não tem resolução suficiente para aprovar detalhes de faixa, orelhas ou nuca. As bordas recortadas dos ombros e a aparência facetada/granulada do corpo restante são características do baseline e não devem ser atribuídas automaticamente à V9.
+
+## Critérios da comparação pendente
+
+1. Comparar V9 com V8 na mesma representação nativa e com as mesmas câmeras; separar diferenças de geometria de diferenças de render/transportes.
+2. Verificar exposição e contorno externo das duas orelhas em vistas próprias, incluindo lóbulo, polo superior e relação com a faixa.
+3. Examinar testa/têmporas e a faixa ouro sem trocar desaparecimento de contato por perda da anatomia exposta.
+4. Examinar nuca com e sem halo, pescoço anterior e perfil facial; procurar retração artificial, franja, picos, furos ou novos recortes.
+5. Não aprovar uma zona que permanece encoberta. A ausência de um sinal visível não certifica folga ou não interseção.
+
+**Situação atual: aguardando candidata V9 e pares adicionais.** Nenhuma fonte, artigo ou exportação foi alterada por esta revisão; somente este relatório foi criado.
+
+## Ampliação do baseline: ambas as orelhas e traseira aberta
+
+Inspeção direta adicional dos arquivos `body_interface_v9/evidence/v8-control-left-ear.png`, `v8-control-right-ear.png` e `v8-control-nohalo-rear-open.png`.
+
+**As duas vistas laterais mostram superfície vermelha aparente dentro da cavidade das orelhas.** A associação à ponte decorre da continuidade da cor da peça na montagem; a imagem por si só não mede atravessamento nem profundidade.
+
+- Em `left-ear`, o vermelho forma uma lâmina longa dentro da cavidade, do alto para baixo, com uma ponta azul visível na região superior. A borda externa cinza circunda a cavidade e conserva extensão própria, incluindo o lóbulo. A faixa ouro termina perto do polo superior em vários pequenos segmentos afilados, com uma ponta cinza/azul próxima; esses recortes finos são herdados, não novidade da futura candidata.
+- Em `right-ear`, o vermelho ocupa a região superior interna e se prolonga como uma tira diagonal estreita para baixo. Uma ponta azul aparece no alto, próxima à borda. A margem cinza externa se projeta diante da cap e tem lóbulo íntegro. A faixa apresenta um recorte relativamente grande antes da extremidade junto à orelha, com uma lâmina vermelha fina próxima. Essa vista revela contato aparente que a frontal reduzia a um traço pequeno.
+- A vista `nohalo-rear-open` mostra as duas orelhas de costas nas laterais e a superfície posterior da casca aberta à inspeção. A cap azul e a ponte vermelha continuam visualmente preenchidas, sem ilha cinza ou buraco. A ponte tem faixas de faceta/sombreamento e transição inferior contínua para o manto. A anatomia atrás dessa casca permanece ocluída: esta imagem não certifica ausência de compressão da nuca coberta.
+
+O novo par lateral aumenta o grau de exigência: a leitura vermelha dentro de ambas as cavidades é uma pendência visual explícita do baseline V8. Uma candidata que apenas conserve essa aparência poderá ser retida no máximo como tentativa sem regressão, não apresentada como solução visual completa dessa interface. Uma candidata que diminua o contato aparente recolhendo a borda externa, lóbulo ou cavidade da orelha também não passará. A comparação deve preservar a anatomia exposta e distinguir superfície realmente ocultável de partes que são visíveis nestas câmeras.
+
+## Ensaio diagnóstico rejeitado: `bounded097`
+
+Foram examinados diretamente `bounded097-{head-front,junction-profile,left-ear,right-ear}.png`, comparados com as vistas V8 equivalentes. O responsável já havia rejeitado este ensaio por deformação intrínseca; as imagens foram recebidas apenas como controle diagnóstico. Este registro não revoga essa rejeição nem constitui candidata aprovada.
+
+Nessas quatro projeções não identifico melhora visual material da faixa ou dos interiores das orelhas. Permanecem a lâmina vermelha dentro de ambas as cavidades, as pequenas superfícies azuis junto aos polos superiores, os recortes azuis da faixa e suas terminações temporais irregulares. As bordas externas cinzas das orelhas, lóbulos, feições e largura aparente do pescoço não mostram retração perceptível nesta comparação. A cap e a ponte continuam visualmente preenchidas nas partes expostas das duas vistas gerais.
+
+A ausência de mudança perceptível não demonstra preservação intrínseca da anatomia: grande parte do domínio alterável permanece sob a casca. Portanto, nem a aparência montada semelhante nem um teste de área isolado autorizam aprovar forma da malha oculta. O ensaio permanece rejeitado; aguarda-se candidata distinta e sua revisão específica.
+
+## Comparação final: `intrinsic097` e `accumulated03`
+
+### Evidências e identidade
+
+Foram inspecionadas diretamente, para **cada uma** das duas candidatas, as sete imagens `full-front`, `junction-profile`, `junction-back`, `head-front`, `left-ear`, `right-ear` e `nohalo-rear-open`, com prefixos `intrinsic097-` e `accumulated03-` em `body_interface_v9/evidence/`.
+
+As quatro câmeras gerais foram comparadas às imagens `body_interface_v8/evidence/fit-first-*`; as três adicionais foram comparadas aos arquivos `v8-control-{left-ear,right-ear,nohalo-rear-open}.png`. A comparação principal é V8 → candidata, não candidata → ensaio `bounded097` rejeitado. Os manifestos de render identificam a casca V7 congelada, faixa V5 e parte 15 nativa reduzida, sem normalmap, em luz neutra equivalente. A checagem de identidade não foi usada para aprovar aparência.
+
+- `intrinsic097`: `body_interface_v9/constrained_fit/intrinsic097-c30-iteration00.npz`, SHA-256 `c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db`.
+- `accumulated03`: `body_interface_v9/constrained_fit/accumulated097-c30-iteration03.npz`, SHA-256 `b736287967143275c9cdf6ba0fc5e6b1ee3f683b301b9dde2da4c0ae60a2e0c7`.
+
+### `intrinsic097`: o que efetivamente muda e o que permanece
+
+**Faixa/testa.** A diferença mais perceptível é uma linha escura estreita e mais contínua sob a borda inferior da faixa. Ela aparece na frontal da cabeça e com clareza em `left-ear`; no outro perfil é mais discreta. Sua leitura visual é de sombra/ressalto de borda sobre a testa, não identifico uma abertura mostrando o fundo. Os PNGs não determinam se há folga real nem sua dimensão. A superfície da testa logo abaixo apresenta pequena alteração local na leitura das facetas, sem deformação perceptível das feições. Não é correto chamar essas imagens de idênticas à V8.
+
+Essa linha não forma franja, bico ou recorte acentuado e não torna a faixa aparentemente solta nas vistas examinadas. Não a considero, sozinha, regressão relevante de forma. Também não a classifico como melhora suficiente para aprovar a interface. Os recortes azuis dentro da faixa, as pontas junto às têmporas e os encontros irregulares com as orelhas permanecem visíveis.
+
+**Duas orelhas.** As laterais ampliadas conservam a extensão das margens externas cinzas, os polos superiores e os lóbulos. Não identifico orelha recolhida, diminuída ou apagada. Na frontal, permanece a exposição assimétrica de projeção já presente na V8. A lâmina vermelha longa e a ponta azul do interior de `left-ear` continuam; a superfície vermelha superior e diagonal do interior de `right-ear` também continua, assim como seu pequeno trecho azul. Portanto, a pendência visual explícita dessas cavidades não foi resolvida pela candidata.
+
+**Face, pescoço e nuca.** Nariz, boca, queixo, mandíbula e contorno lateral da face mantêm desenho perceptivelmente igual. O pescoço anterior conserva largura e transição até os ombros, sem afinamento artificial que eu consiga identificar nessas vistas. A cap permanece sem o grande rasgo cinza e a ponte sem a antiga ilha cinza. As vistas posterior com halo e posterior aberta não revelam nova ilha, furo, franja, pico, abaulamento ou estreitamento perceptível do contorno externo. O pequeno recorte da lateral da ponte e as interfaces recortadas dos ombros são herdados.
+
+A traseira sem halo melhora a visibilidade da **casca**, mas não mostra a superfície da anatomia situada sob ela. Por isso, esta revisão não aprova a deformação intrínseca da nuca escondida, mesmo quando o exterior está visualmente estável. Tampouco certifica clearance, tangência ou ausência de contatos em outras direções.
+
+**Corpo inteiro.** A proporção e a silhueta de cabeça, manto, corpo e halo permanecem perceptivelmente estáveis. Essa vista não acrescenta evidência de limpeza dos pequenos contatos laterais.
+
+### Alternativa `accumulated03`
+
+Nas mesmas sete vistas, não identifico vantagem visual material sobre `intrinsic097`. Ela conserva as lâminas vermelhas e pequenas áreas azuis dentro das duas orelhas, os recortes da faixa e a linha escura sob sua borda inferior. Os contornos expostos das orelhas, feições, pescoço e casca posterior permanecem visualmente comparáveis. Também não surge, nessas imagens, uma regressão nova clara que a diferencie por aparência.
+
+**Não existe justificativa visual demonstrada para escolher `accumulated03` em vez de `intrinsic097`.** Uma eventual redução adicional de contatos não é resultado desta revisão, não equivale a melhora de aparência e não justifica, por si, mais deformação de anatomia coberta. A escolha conservadora pode manter `intrinsic097` para os testes seguintes, mas não deve ser apresentada como vitória visual sobre V8 nem como interface resolvida.
+
+### Parecer e limites finais
+
+Reter `intrinsic097` **somente como candidata conservadora de pesquisa**, com a seguinte descrição honesta: aparência exposta essencialmente preservada; pequena mudança de sombra/facetas na testa sob a faixa; nenhuma regressão relevante de orelhas, feições ou pescoço identificada nas sete vistas; contatos aparentes dentro de ambas as orelhas e irregularidades da faixa ainda visíveis.
+
+A ausência de regressão visível não aprova deformação escondida, encaixe global, transporte JSON/alfa, culling, mipmaps, iluminação do jogo, normalmap, desempenho ou exportação completa Bedrock. Todos os renders são diagnósticos Blender. O ensaio `bounded097` permanece rejeitado. Esta revisão alterou somente `body_interface_v9/evidence/review-visual-v9.md`; não editou fontes, malhas candidatas, artigos ou exportações.

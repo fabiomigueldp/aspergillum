@@ -1,0 +1,11 @@
+import numpy as np,json
+from pathlib import Path
+R=Path(__file__).resolve().parents[1];sp=np.load(R/'evidence/seam-source-inspection.npz');key=next(k for k in sp.files if k.startswith('key_TESTE74'));p=sp[key];pr=np.load(R/'evidence/mantle-source-parameters.npz')['params'];pair=np.load(R/'evidence/mantle-pairing.npz');z=np.load(R/'evidence/bridge-boundary-parameters.npz');cc=[]
+for side in [0,1]:
+ ids=z['cap_ids'][z['cap_side']==side];t=z['cap_t'][z['cap_side']==side];ix=np.argsort(t);cc.append((t[ix],p[ids[ix]]))
+assert np.array_equal(cc[0][0],cc[1][0]);cv=cc[1][1]-cc[0][1];report={'coordinates':'Evaluated TESTE34: TESTE74 shape key at value1 (not Basis). cap source fixed. Mantle exact paired source rows; vectors interpolated along j/79 to cap boundary t.','rows':{}};samples={}
+for row in [7.,7.5,8.,9.]:
+ mask=np.isclose(pr[pair['outer'],0],row,atol=1e-8);o=pair['outer'][mask];i=pair['inner'][mask];j=pr[o,1];ix=np.argsort(j);o,i,j=o[ix],i[ix],j[ix];assert len(j)>0
+ # unique parameter pairs
+ unique=np.r_[True,np.diff(j)>1e-8];o,i,j=o[unique],i[unique],j[unique];m=p[160386+i]-p[160386+o];mt=j/79.;t=cc[0][0];mv=np.stack([np.interp(t,mt,m[:,k]) for k in range(3)],axis=1);dot=(cv*mv).sum(1)/(np.linalg.norm(cv,axis=1)*np.linalg.norm(mv,axis=1));basis=sp['points'];delta=np.linalg.norm(p[160386+o]-basis[160386+o],axis=1);report['rows'][str(row)]={'mantle_samples':len(o),'cap_samples':len(t),'source_j_range':[float(j.min()),float(j.max())],'negative_count':int((dot<0).sum()),'nonnegative_count':int((dot>=0).sum()),'strongly_opposed_below_minus_half':int((dot<-.5).sum()),'cosine_percentiles':{str(k):float(np.percentile(dot,k)) for k in [0,5,25,50,75,95,100]},'mantle_thickness_min_median_max':[float(np.min(np.linalg.norm(m,axis=1))),float(np.median(np.linalg.norm(m,axis=1))),float(np.max(np.linalg.norm(m,axis=1)))],'TESTE74_outer_row_max_displacement':float(delta.max()),'positive_t_intervals_samples':t[dot>=0].tolist()};samples['row_'+str(row)+'_cosine']=dot;samples['row_'+str(row)+'_mantle_outer']=o;samples['row_'+str(row)+'_mantle_inner']=i
+samples['cap_t']=cc[0][0];np.savez_compressed(R/'evidence/wall-direction-row-comparison.npz',**samples);(R/'evidence/wall-direction-row-comparison.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))

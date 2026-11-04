@@ -1,0 +1,95 @@
+# Revisão visual independente da faixa junto às orelhas V12
+
+Data: 2026-11-03. Estado: revisão concluída.
+
+**Parecer final: favorável à retenção técnica local de pesquisa de `band06` (`polygonal-pinna-0.6mm-clean.npz`). Ouro invasor deixa de aparecer nas cavidades examinadas sem perda aparente de anatomia, achatamento/estreitamento frontal ou nova grande abertura temporal. As terminações laterais foram realmente encurtadas. O parecer não aprova acabamento global, invisibilidade universal, interface sem contatos ou Minecraft. `band05` permanece não retida por rejeição geométrica informada.**
+
+## Escopo e referência
+
+A referência de preservação é a V11 retida: casca `ear_rim_v11/structural_rebuild/retained-shell.npz`, anatomia V9 e faixa V5. V9 isolada e V10 rejeitada não são baseline desta etapa. Foram lidos `ear_rim_v11/README.md` e `ear_rim_v11/evidence/review-visual-v11.md`.
+
+Foram examinados diretamente os nove PNGs V11:
+
+- Com halo: `ear_rim_v11/evidence/polygon05-{full-front,head-front,junction-profile,junction-back,left-ear,right-ear}.png`.
+- Sem halo: `ear_rim_v11/evidence/polygon05-nohalo-{left-ear-oblique,right-ear-oblique,rear-open}.png`.
+
+São renders diagnósticos externos do Blender, não capturas de Minecraft. Cabeça e halo continuam legados e reduzidos, sem highpoly. A revisão visual não certifica topologia, folga positiva, ausência universal de interseção ou desempenho/exportação Bedrock. Câmeras com halo não demonstram a superfície que ele oclui.
+
+## Baseline V11 observado
+
+- **Esquerda, lateral e oblíqua:** fragmento ouro relativamente amplo no alto/interior da cavidade, separado visualmente do corpo principal da faixa por anatomia cinza, e pequeno ponto ouro mais abaixo. Faixa larga chega à região anterior/superior da orelha, com degrau e extremidade local angulada. Pinna, margem e lóbulo têm extensão aparente. Há linha fina escura da casca no contorno superior/posterior, pequeno encontro escuro acima do polo superior e estreito vermelho temporal. Não aparece a antiga lâmina vermelha/azul central.
+- **Direita, lateral e oblíqua:** ouro no alto/interior, mais uma tira fina oblíqua abaixo. Há recorte cinza e vermelho no encontro temporal acima da extremidade da faixa e borda escura estreita sobre a orelha. A pinna, margem e lóbulo seguem expostos. Não aparece a antiga lâmina vermelha/azul central.
+- **Frente da cabeça:** faixa de largura aparente preservada de um lado a outro, com relevo e recortes azuis herdados. As duas cristas não são certificáveis em toda a extensão só por essa projeção; sua geometria precisa de verificação própria. Feições cinzas, projeção das orelhas e pescoço são marcos de preservação.
+- **Perfil/junção:** ouro continua claramente aparente no alto da cavidade. O arco amplo da calota e a transição posterior vermelha mantêm continuidade aparente.
+- **Traseira aberta:** cinza posterior das orelhas exposto localmente, exterior azul/vermelho/verde contínuo nas áreas examinadas, com pequenos pontos/linhas escuras junto aos polos superiores. Sem grande ilha cinza isolada na calota.
+- **Traseira com halo e corpo inteiro:** composição e contorno amplo registrados. O halo oclui extensa superfície posterior e a escala de corpo inteiro não resolve fragmentos pequenos.
+
+## Critérios para candidatas
+
+1. Retirar/reduzir ouro invasor das cavidades com mudança de geometria, mantendo o mesmo ouro em todas as faces, inclusive fechamentos novos. Recoloração não conta como limpeza.
+2. Preservar casca V11, anatomia V9, pinna, margem e lóbulo; não esconder o defeito retraindo/cobrindo a orelha.
+3. Preservar largura e relevo frontal e as duas cristas da faixa. Não aceitar achatamento, estreitamento relevante ou interrupção dessas cristas para limpar a região local.
+4. Não criar pontas, dentes, abas, aberturas, degraus severos ou piora do encontro temporal, especialmente à direita.
+5. Comparar câmeras, materiais e iluminação equivalentes. Não chamar fragmentos visíveis de ocultos nem inferir limpeza universal de imagens limitadas.
+
+## Limite de intervenção
+
+Nenhuma fonte, candidata, geometria ou exportação foi alterada. O único arquivo escrito por esta revisão é `band_ear_v12/evidence/review-visual-v12.md`.
+
+## Primeiro ensaio: `band05` (não retido)
+
+Inspeção direta de `band05-preview-head-front.png` com halo e `band05-nohalo-{left-ear-oblique,right-ear-oblique}.png` sem halo, comparadas aos respectivos controles V11.
+
+As duas oblíquas mostram retirada aparente do ouro do alto/interior e dos pequenos trechos inferiores das cavidades. As superfícies cinzas expostas conservam pinna, margem e lóbulo, sem recolhimento aparente dessas partes. A frente mantém largura e relevo aparente da faixa, feições e composição. A esquerda mantém relevos e degraus locais herdados junto à terminação; não surge ponta longa ou aba larga. À direita o recuo da extremidade da faixa é claro: fica cinza onde antes havia o pequeno trecho de ouro que alcançava o polo superior. O pequeno recorte cinza/vermelho temporal e a borda escura acima da orelha permanecem. Não vejo nova grande abertura temporal nessa imagem.
+
+Essas três vistas são favoráveis ao ganho visual local, mas não bastam para certificar a extensão completa das duas cristas. O responsável informou que o corte retira também trechos laterais da faixa e que `band05` foi rejeitada geometricamente por fechamentos coplanares com a casca V11. **A aparência não reabilita a candidata rejeitada.** Não foi reproduzido por esta revisão o teste geométrico. `band05` será apenas comparação secundária para a próxima candidata; o baseline de preservação continua sendo V11.
+
+
+## Candidata final: `band06`
+
+Foram inspecionadas diretamente as nove imagens finais em `band_ear_v12/evidence/`:
+
+- Com halo: `band06-{full-front,head-front,junction-profile,junction-back,left-ear,right-ear}.png`.
+- Sem halo: `band06-nohalo-{left-ear-oblique,right-ear-oblique,rear-open}.png`.
+
+A comparação primária continua sendo os nove PNGs V11 equivalentes, também copiados como `baseline-v11-*.png`; sua proveniência consta de `baseline-image-provenance.json`. A comparação secundária com `band05` cobre somente suas três câmeras disponíveis: frente da cabeça e duas oblíquas. A conclusão de `band06` veio de inspeção própria dessas imagens, não de presumir igualdade por pequena mudança numérica.
+
+Os manifestos `band06-render.json` e `band06-nohalo-render.json` identificam a candidata SHA-256 `1c293d8c5b35cca07cfc0e73d2b2e360cbbc3bea27688bb6e6373537ecf54c76`, a casca V11 e a anatomia V9. Registram luz neutra equivalente, Blender Cycles48, culling unilateral e todas as faces da faixa em ouro, inclusive fechamentos novos. As imagens mostram a faixa restante em ouro e anatomia cinza nos locais liberados. Não foi usada uma troca deliberada de cor para classificar ouro invasor como limpo; a auditoria do arquivo geométrico/material cabe aos testes próprios, não a inferência dos pixels.
+
+### Cavidade esquerda e terminação
+
+Nas vistas lateral e oblíqua, o fragmento ouro superior/interior e o pequeno ponto inferior V11 não aparecem mais. A cavidade apresenta anatomia cinza, mantendo contorno e extensão aparentes da pinna, margem externa e lóbulo. A ausência das lâminas vermelha/azul obtida na V11 também permanece.
+
+A faixa principal conserva corpo largo e relevo, incluindo as duas saliências reconhecíveis sob a luz desta vista. Sua ponta local foi recuada/recortada, e não deve ser descrita como geometricamente idêntica à V11. Há ainda degraus angulados herdados na borda superior e uma pequena terminação angular junto à anatomia. Não identifico novo bico longo, dente destacado ou aba ampla; isso não equivale a acabamento temporal totalmente suave. O estreito sinal vermelho e a pequena marca escura acima do polo superior permanecem visíveis.
+
+### Cavidade direita e terminação
+
+Nas vistas lateral e oblíqua, ouro do alto/interior e a fina tira descendente V11 deixam de aparecer. Pinna, margem e lóbulo conservam extensão aparente. A terminação da faixa recua visivelmente para a frente da orelha, liberando a região cinza superior que antes tinha ouro. Esse encurtamento é uma alteração real, não mera retirada de pontos microscópicos.
+
+O recorte cinza/vermelho acima da terminação e a linha escura sobre a orelha continuam presentes. Não observo uma nova grande ilha cinza na calota nem aumento grosseiro da abertura temporal, como ocorrera em ensaio V11 anteriormente rejeitado. A terminação continua angular, sem novo dente longo ou aba solta observado. A luz/superfície lateral direita não individualiza as duas cristas tão claramente quanto a esquerda; não é prova visual de interrupção nem certificação completa de sua conectividade.
+
+### Frente, perfil, costas e corpo inteiro
+
+- **Frente da cabeça:** largura, arqueamento e relevo aparentes da faixa são conservados; não observo achatamento, estreitamento frontal relevante ou intervalo novo atravessando o corpo principal. Recortes azuis permanecem distribuídos pela faixa. Feições, orelhas, pescoço e relação com o halo parecem preservados. As extremidades podem alterar pixels locais e não se afirma silhueta exatamente idêntica.
+- **Perfil da junção:** ouro não aparece mais no alto/interior da cavidade; a extremidade anterior à orelha permanece legível. O recorte vermelho/cinza temporal herdado e o arco posterior azul/vermelho permanecem. Não observo nova grande abertura, aba ou ombro posterior.
+- **Traseira aberta:** contorno amplo azul/vermelho/verde e extensão posterior das orelhas parecem preservados. O pequeno ouro que era visível junto ao polo de uma orelha no controle é reduzido/retirado; as pequenas marcas escuras superiores permanecem, sobretudo na outra lateral. Essa vista não aprova anatomia ocluída sob a casca.
+- **Traseira com halo:** preservação aparente da composição e continuidade nas áreas disponíveis; extensa oclusão posterior pelo halo permanece e limita a conclusão.
+- **Corpo inteiro:** sem mudança compositiva relevante observada. A escala não resolve fragmentos pequenos nem certifica espessura da faixa.
+
+### Comparação com `band05`
+
+Nas três câmeras comuns, `band06` conserva o ganho visual local de `band05`. Não identifico regressão visual adicional relevante no recuo das terminações, faixa frontal ou encontro temporal nas imagens recebidas. Não alego igualdade exata nem melhora visual adicional de `band06`; a justificativa de preferência técnica é a separação dos fechamentos e os testes geométricos independentes, que não foram reproduzidos nesta revisão.
+
+## Faixa dupla, preservação e limites de evidência
+
+As imagens sustentam que o corpo frontal não foi achatado/estreitado e que o relevo duplo reconhecível na esquerda não foi perdido. Não demonstram por si só duas curvas conectadas em toda a malha, sobretudo em trechos ocluídos. O responsável informou teste geométrico de duas cristas conectadas e 488 faces da guarda frontal exatas; essa evidência deve ser citada a partir do relatório geométrico independente, sem transformá-la em certificação por imagem. Da mesma forma, não se infere a identidade bit a bit de casca/anatomia apenas de sua aparência preservada.
+
+A retirada local libera as cavidades, mas o desenho das terminações muda e ainda conserva encontros angulados. Permanecem recortes azuis ao longo da faixa, degraus herdados, sinais vermelhos temporais/posteriores e bordas/pontos escuros junto aos polos superiores. Não há base para chamar toda a interface de finalizada, totalmente limpa ou perfeitamente natural. Esses limites não anulam a melhora local demonstrada nem, nas vistas examinadas, configuram regressão que impeça a retenção técnica de `band06`.
+
+## Conclusão e uso permitido
+
+**Favorável à retenção técnica local de pesquisa de `band06`, condicionada aos testes geométricos próprios e mantendo V11 como rollback.** A candidata retira das cavidades examinadas o ouro invasor que permanecia na V11, sem redução aparente das orelhas, sem achatamento/estreitamento frontal relevante e sem nova grande abertura temporal, bico longo ou aba ampla observado. A transformação inclui encurtamento real das terminações laterais e não deve ser apresentada como preservação exata da faixa inteira.
+
+Este parecer não aprova aparência artística global, ausência de todo contato/fragmento em qualquer direção, fechamento invisível, folga positiva global, anatomia ocluída, exportação/serialização, alfa/PBR/normalmap, desempenho, pacote, publicação ou execução no Minecraft. Renders são externos do Blender; cabeça/halo permanecem legados e reduzidos, sem highpoly.
+
+Nenhuma fonte, candidata, geometria ou exportação foi alterada. O único arquivo escrito por esta revisão é `band_ear_v12/evidence/review-visual-v12.md`.

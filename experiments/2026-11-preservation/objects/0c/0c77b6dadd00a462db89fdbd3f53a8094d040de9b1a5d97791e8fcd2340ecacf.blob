@@ -1,0 +1,42 @@
+✔ native editor binds every input as client writable, including disabled and hidden dropdowns (3.154004ms)
+✔ fixed dropdown values never authorize a finish change (0.859324ms)
+✔ native editor commits only on Apply, restores the opened altar and cleans subscriptions (0.965571ms)
+✔ invalid client selections are rejected and a released lease closes the view without a finish (3.967763ms)
+✔ native joinery controls show the actual material and never apply a suspended relief (0.467572ms)
+✔ one native cloth selector offers lace on every model and shows direction only for emblems (1.423636ms)
+✖ native editor dimensions follow the draft front and restore without changing world tiles (4.760843ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 6
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 272.746206
+
+✖ failing tests:
+
+test at addons/altare/tests/menu.node.ts:103:1
+✖ native editor dimensions follow the draft front and restore without changing world tiles (4.760843ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + ' · 7 × 2'
+  - ' · 2 × 7'
+        ^
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/212c580ada5b/altare-wood-20261103/addons/altare/tests/menu.node.ts:110:52)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ' · 7 × 2',
+    expected: ' · 2 × 7',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

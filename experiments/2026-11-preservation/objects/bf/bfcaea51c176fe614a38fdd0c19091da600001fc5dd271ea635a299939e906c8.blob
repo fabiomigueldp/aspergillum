@@ -1,0 +1,23 @@
+# Native twin-pedestal runtime contract
+
+The ninth model (`twin_pedestal`, editor index 8) is a separate native family. It does not extend `JOINERY_STRUCTURES` or reinterpret an existing ID. Seventeen recipe IDs cover the ten shared textiles and eight floral colors. Walnut is fixed, relief is unavailable, and logical facing remains directional even without cloth.
+
+## Global plans and persistence
+
+Apply validates a complete loaded rectangular selection of at most 128 cells, with both dimensions in 1..16 and at least one dimension at most 8. Width/depth are relative to the selected front; 16×8 physical cells facing east/west use logical dimensions 8×16. The versioned global plan supplies each cell's base pose by `(width, depth, facing, world-local x, world-local z)`. Supports are never inferred from edge bits.
+
+`Tile.nativePose` is part of equality and transaction snapshots. Native codecs preserve the recipe ID and encode this pose with `altare:pose`, `altare:bank`, and `altare:page`. Base recipes use radices 16×14×2 (448 states); centered textiles use 14×12×3 (504 states). Decoding recovers facing, edges and center role from the semantic table. Encoding rejects a pose whose metadata disagrees with the tile. Architectural center roles never imply classic Guadalupe.
+
+After breaking a native composition, surviving poses remain unchanged. Reconcile and ticks do not infer new supports or rewrite native poses. Only a successful explicit Apply on a complete loaded rectangle rebuilds the composition. Applying an older model removes native pose metadata.
+
+## Placement and editing
+
+An isolated explicit native item uses the codebook's 1×1/front0 default. Placing a native item next to any altar, or extending a native altar with a generic module, places a visibly plain provisional classic module and asks the player to reapply in the editor. No global pose is inherited and no extra native supports are silently created. Targeting a plain provisional cell reopens the single existing native recipe as the draft; a top-face interaction preserves its saved front, while an explicit side-face interaction can choose a new front. Unknown neighbors cancel this placement before inheritance; no chunks are forcibly loaded.
+
+The two-support invariant applies to a completed native composition, not a mixed provisional selection. Apply rebuilds the full selected rectangle transactionally. Opening the editor does not reconcile or write blocks. Cancel, Restore, timeout, invalid dimensions, unavailable states and concurrency conflicts do not publish a draft. Preflight resolves target and recovery permutations before the first write, and failed writes restore exact saved native poses where rollback remains possible.
+
+## Verification
+
+Focused tests live in `tests/native-pedestal.node.ts`, `tests/native-pedestal-runtime.node.ts`, and `tests/menu.node.ts`. They cover every oriented plan and recipe, all native codebook states, shifted coordinates, front preservation, suspended color/Guadalupe, native lifecycle freezing, provisional placement, unloaded neighbors, preflight rejection and rollback.
+
+Minecraft import, Content Log and physical gameplay remain separate manual gates. In an isolated diagnostic world: build 1×1, 7×2, 8×2 and 16×8; apply all fronts; compare bare, lace, Agnus and floral; break a support cell; cancel and reapply; extend and confirm the provisional warning; reopen and confirm the front; verify multiplayer locking and reload persistence.

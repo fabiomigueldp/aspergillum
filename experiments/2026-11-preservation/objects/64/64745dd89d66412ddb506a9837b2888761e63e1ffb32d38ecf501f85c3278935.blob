@@ -1,0 +1,55 @@
+import os
+os.environ['MPLCONFIGDIR']=os.path.dirname(os.path.abspath(__file__))+'/.mpl-cache'
+from pathlib import Path
+import numpy as np,json
+import matplotlib;matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from matplotlib.collections import LineCollection
+O=Path(__file__).resolve().parent;B=O.parent.parent
+a=np.load(B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz');src=np.load(O/'source-part1.npz');body=np.load(O/'source-part15.npz');low=np.load(O/'legacy-part15.npz')
+# Contacts, never rendering source shell as replacement geometry.
+cs=[np.load(O/n) for n in ['source_shell__source_body__contacts.npz','v7__source_body__contacts.npz','v7__legacy_body__contacts.npz']]
+fig,axs=plt.subplots(3,2,figsize=(14,15),layout='constrained');names=['Original TESTE34 × original anatomy','V7 shell × original anatomy','V7 shell × reduced anatomy'];col=['#2479b0','#c43e4b','#29936a'];pts=body['points'];pts=pts[(pts[:,2]>3.26)&(pts[:,2]<3.75)]
+for row,(c,name) in enumerate(zip(cs,names)):
+ cl=np.where((src['triangles']<160386).sum(1)==3,0,np.where((src['triangles']<160386).sum(1)==0,2,1)) if row==0 else a['face_parts'];parts=cl[c['pairs'][c['witness_pair'],0]];w=c['witnesses']
+ for j,(ax,dims,xlab) in enumerate(zip(axs[row],[(0,2),(1,2)],['world X (m)','world Y (m), negative = front'])):
+  ax.scatter(pts[::3,dims[0]],pts[::3,dims[1]],s=.08,c='#444444',alpha=.10,rasterized=True)
+  for part,label in enumerate(['cap','bridge / mixed original seam','mantle']):
+   q=w[parts==part];ax.scatter(q[:,dims[0]],q[:,dims[1]],s=1.5,c=col[part],alpha=.6,label=label,rasterized=True)
+  ax.set(xlabel=xlab,ylabel='world Z (m)',title=name+(' | front projection' if j==0 else ' | side projection'));ax.set_aspect('equal');ax.set_ylim(3.26,3.75);ax.grid(alpha=.2)
+  if j==0:ax.set_xlim(-.16,.23)
+  else:ax.set_xlim(-.46,.06);ax.axvline(-.33,c='black',ls='--',lw=.8);ax.text(-.328,3.742,'Y = −0.33',fontsize=8,va='top')
+axs[0,0].legend(fontsize=8,loc='lower right')
+fig.suptitle('Contact location audit | World coordinates verified against evaluated V75\nStrict intersections only; pair counts depend on tessellation. Not Minecraft.',fontsize=14)
+fig.savefig(O/'CONTACT_LOCATION_SOURCE_VS_REDUCED.png',dpi=150);plt.close(fig)
+
+def slice_segments(d,x):
+ tr=d['points'][d['triangles']];s=tr[:,:,0]-x;mask=(s.min(1)<0)&(s.max(1)>0);tr=tr[mask];s=s[mask];N=len(tr);hit=np.full((N,3,3),np.nan)
+ for k in range(3):
+  j=(k+1)%3;z=s[:,k]*s[:,j]<0;t=np.divide(-s[:,k],s[:,j]-s[:,k],out=np.zeros(N),where=(s[:,j]!=s[:,k]));hit[z,k]=tr[z,k]+t[z,None]*(tr[z,j]-tr[z,k])
+ valid=np.isfinite(hit[:,:,0]);out=[]
+ for p,v in zip(hit,valid):
+  q=p[v]
+  if len(q)==2 and q[:,2].max()>3.26:out.append(q[:,[1,2]])
+ return np.array(out)
+fig,axs=plt.subplots(1,3,figsize=(18,7),layout='constrained')
+for ax,x in zip(axs,[-.06,.04,.14]):
+ for mesh,color,lw,label in [(src,'#202020',1.0,'Original TESTE34'),(body,'#8a8a8a',1.1,'Original anatomy'),(low,'#d66c22',1.,'Reduced anatomy'),(a,'#245fd0',.8,'V7 shell')]:
+  seg=slice_segments(mesh,x);ax.add_collection(LineCollection(seg,colors=color,linewidths=lw,label=label))
+ ax.set(xlim=(-.46,.06),ylim=(3.26,3.75),xlabel='Y (m), negative = front',ylabel='Z (m)',title=f'Exact triangle slice at X = {x:+.2f} m');ax.set_aspect('equal');ax.grid(alpha=.2);ax.axvline(-.33,c='black',ls='--',lw=.5)
+axs[0].legend(fontsize=9);fig.suptitle('Independent world-space cross sections | No source geometry or V7 mutated',fontsize=14);fig.savefig(O/'HEAD_CROSS_SECTIONS.png',dpi=160);plt.close(fig)
+# Connected sets of affected shell faces; vertices shared provides conservative patch connectivity.
+c=cs[1];ids=np.unique(c['pairs'][:,0]);f=a['triangles'];adj={};par={int(i):int(i) for i in ids}
+def root(x):
+ while par[x]!=x:par[x]=par[par[x]];x=par[x]
+ return x
+for i in ids:
+ for v in f[i]:
+  if int(v) in adj:par[root(int(i))]=root(adj[int(v)])
+  else:adj[int(v)]=int(i)
+groups={}
+for i in ids:groups.setdefault(root(int(i)),[]).append(int(i))
+rows=[]
+for idx in sorted(groups.values(),key=len,reverse=True):
+ mask=np.isin(c['pairs'][c['witness_pair'],0],idx);w=c['witnesses'][mask];rows.append({'v7_faces':idx,'count':len(idx),'parts':{str(k):int((a['face_parts'][idx]==k).sum()) for k in range(3)},'witness_bbox_xyz':[w.min(0).tolist(),w.max(0).tolist()]})
+(O/'source-contact-components.json').write_text(json.dumps({'method':'Connected affected V7 faces through any shared vertex. Components are conservative patch connectivity, not counts of holes.','components':rows},indent=2));print([(r['count'],r['parts'],r['witness_bbox_xyz']) for r in rows[:10]])

@@ -1,0 +1,21 @@
+import bpy,numpy as np,json
+from mathutils.bvhtree import BVHTree
+from mathutils import Vector
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V74-mantle-hem-trial.blend',use_scripts=False)
+o=bpy.data.objects['Maria — túnica e mangas integradas'];p=np.array([v.co[:] for v in o.data.vertices]);q=p.copy();z0=p[:,2].min();support=.492500007+.001
+for i,(x,y,z) in enumerate(p):
+ if z>=.85:continue
+ t=np.clip((z-z0)/(.85-z0),0,1);w=t*t*(3-2*t);scale=.32+.68*w
+ q[i,2]=support+(z-z0)*scale+(z0-support)*w
+fs=[list(f.vertices) for f in o.data.polygons];a=p[np.array([f[:3] for f in fs])];b=q[np.array([f[:3] for f in fs])];na=np.cross(a[:,1]-a[:,0],a[:,2]-a[:,0]);nb=np.cross(b[:,1]-b[:,0],b[:,2]-b[:,0]);aa=np.linalg.norm(na,axis=1);ab=np.linalg.norm(nb,axis=1);rat=ab[aa>1e-12]/aa[aa>1e-12]
+def pairs(v):
+ t=BVHTree.FromPolygons(v.tolist(),fs);return set((a,b) for a,b in t.overlap(t) if a<b and not set(fs[a])&set(fs[b]))
+base=pairs(p);now=pairs(q);d=np.linalg.norm(q-p,axis=1);report={'method':'Monotonic vertical compression of lower tunic closure; no XY change','changed_vertices':int((d>1e-7).sum()),'max_delta_m':float(d.max()),'above_0_85_delta':float(d[p[:,2]>=.85].max()),'area_range':list(map(float,[rat.min(),rat.max()])),'flips':int(((na*nb).sum(axis=1)<-1e-15).sum()),'new_self_pairs':len(now-base),'baseline_self_pairs':len(base),'min_z_before':float(p[:,2].min()),'min_z_after':float(q[:,2].min()),'base_top_z':.492500007,'minimum_gap':float(q[:,2].min()-.492500007),'xy_max_delta':float(abs(q[:,:2]-p[:,:2]).max())}
+json.dump(report,open(r+'V75-tunic-verification.json','w'),indent=2);assert report['flips']==0 and report['new_self_pairs']==0
+if not o.data.shape_keys:o.shape_key_add(name='Basis')
+k=o.shape_key_add(name='TESTE75 — fechamento inferior da túnica');k.value=1
+for i,v in enumerate(k.data):v.co=q[i]
+bpy.ops.wm.save_as_mainfile(filepath=r+'V75-tunic-lower-trial.blend')
+s=bpy.context.scene;s.cycles.samples=48;s.render.resolution_x=600;s.render.resolution_y=900;s.render.resolution_percentage=100;c=s.camera;c.data.type='ORTHO'
+for view,loc,targ,scale in [('lower-profile',(-5,0,1.4),(0,0,.98),1.5),('lower-front',(0,-5,1.4),(0,0,.98),1.5),('lower-back',(0,5,1.4),(0,0,.98),1.5)]:
+ c.location=loc;c.rotation_euler=(Vector(targ)-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=scale;s.render.filepath=r+'V75-mantle-'+view+'.png';bpy.ops.render.render(write_still=True)

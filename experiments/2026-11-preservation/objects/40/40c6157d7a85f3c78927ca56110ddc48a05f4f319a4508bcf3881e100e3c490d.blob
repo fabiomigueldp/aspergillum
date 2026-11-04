@@ -1,0 +1,25 @@
+import bpy,json,hashlib,numpy as np
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';exclude={'Laje','Menino — pé','Menino — pé.001','Menino — tornozelo afilado V61 reversível'}
+def hashes():
+ d={}
+ for o in bpy.data.objects:
+  if o.name in exclude or o.type not in ['MESH','CURVE']:continue
+  h=hashlib.sha256();h.update(np.array(o.matrix_world,dtype=np.float32).tobytes())
+  if o.type=='MESH':
+   a=np.empty(len(o.data.vertices)*3,dtype=np.float32);o.data.vertices.foreach_get('co',a);h.update(a.tobytes())
+   if o.data.shape_keys:
+    for k in o.data.shape_keys.key_blocks:k.data.foreach_get('co',a);h.update(a.tobytes());h.update(str((k.name,k.value)).encode())
+  else:
+   for s in o.data.splines:
+    for p in s.bezier_points:h.update(str((list(p.co),list(p.handle_left),list(p.handle_right),p.radius)).encode())
+  d[o.name]=h.hexdigest()
+ return d
+bpy.ops.wm.open_mainfile(filepath=r+'V60-child-foot-trial.blend',use_scripts=False);before=hashes();bpy.ops.wm.open_mainfile(filepath=r+'V61-foot-support-trial.blend',use_scripts=False);after=hashes();dg=bpy.context.evaluated_depsgraph_get();base=bpy.data.objects['Laje'];m=base.evaluated_get(dg).data;bp=[base.matrix_world@v.co for v in m.vertices];bb=BVHTree.FromPolygons(bp,[tuple(f.vertices) for f in m.polygons]);d={'unrelated_meshes_curves_transforms_and_keys_identical':before==after,'changed_unrelated_objects':[n for n in before if before[n]!=after.get(n)],'evaluated_base_bounds':[[min(p[i] for p in bp),max(p[i] for p in bp)] for i in range(3)],'contacts':{}}
+for name in ['Menino — pé','Menino — pé.001']:
+ o=bpy.data.objects[name];p=[o.matrix_world@v.co for v in o.evaluated_get(dg).data.vertices];res={}
+ for label,lo,hi in [('heel',-.275,-.24),('forefoot',-.395,-.345)]:
+  candidates=[q for q in p if lo<=q.y<=hi];q=min(candidates,key=lambda q:q.z);loc,n,f,dist=bb.ray_cast(q+Vector((0,0,.05)),Vector((0,0,-1)),.2);res[label]={'point':list(q),'base_hit':loc is not None,'gap_m':q.z-loc.z if loc is not None else None,'contact_vertices_within_0_2mm':sum(abs(q.z-.492500007)<.0002 for q in candidates)}
+ d['contacts'][name]=res
+f=bpy.data.objects['Menino — pé'];fp=[f.matrix_world@v.co for v in f.evaluated_get(dg).data.vertices];fb=BVHTree.FromPolygons(fp,[tuple(p.vertices) for p in f.data.polygons]);l=bpy.data.objects['Menino — tornozelo afilado V61 reversível'];lm=bpy.data.meshes.new_from_object(l.evaluated_get(dg));lb=BVHTree.FromPolygons([l.matrix_world@v.co for v in lm.vertices],[tuple(p.vertices) for p in lm.polygons]);d['visible_ankle_foot_intersection_pairs']=len(fb.overlap(lb));d['ankle_joint_status']='Overlapping separate surfaces for sculptural assembly, not welded printable topology';json.dump(d,open(r+'V61-support-ray-and-scope.json','w'),indent=2);print(d)

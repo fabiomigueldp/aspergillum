@@ -1,0 +1,49 @@
+"""Independent V9 structural review; run Blender --python this.py -- INPUT TAG.
+Writes only this directory, does not alter or import solver code.
+"""
+from pathlib import Path
+import numpy as np, json, sys,hashlib,importlib.util
+sys.dont_write_bytecode=True
+O=Path(__file__).resolve().parent;B=O.parent.parent
+sys.path.insert(0,str(O));from contact_limits import contacts
+args=sys.argv[sys.argv.index('--')+1:];path=Path(args[0]);tag=args[1]
+spec=importlib.util.spec_from_file_location('gate',B/'shell_band_v3/tools/independent_gate.py');gate=importlib.util.module_from_spec(spec);spec.loader.exec_module(gate)
+base=np.load(B/'body_interface_v8/anatomy_fit/baseline-welded.npz');v8=np.load(B/'body_interface_v8/anatomy_fit/retained-anatomy.npz');cand=np.load(path);f=cand['triangles'];v=cand['points'];p0=base['points'];p8=v8['points'];sh=np.load(B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz');ba=np.load(B/'shell_band_v5/retained_candidate/evidence/band-paired.npz');oldpairs=np.load(O/'independent-baseline-v8-contacts.npz')
+rep={'input':str(path),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'invariants':{k:bool(np.array_equal(cand[k],base[k])) for k in ['triangles','source_indices','source_face_indices']},'masks':{},'metrics':{},'contacts':{},'other_parts':{},'limits':['Strict triangle crossings do not certify coplanarity, tangency, positive global clearance or alpha pixel footprint.','Comparisons preserve tessellation, so new pair IDs are real new local strict crossing pairs, but not numbers of holes.','Hybrid parts6/7/8/10/14 are proxies only; no engine/export validation.']}
+delta=v-p0;mag=np.linalg.norm(delta,axis=1)*1000;d8=np.linalg.norm(v-p8,axis=1)*1000
+for key in ['protected_vertices','protected_face','protected_ears','protected_lowneck']:
+ m=v8[key];rep['masks'][key]={'vertices':int(m.sum()),'bit_identical_to_baseline':bool(np.array_equal(v[m],p0[m])),'max_displacement_mm':float(mag[m].max())}
+m=~v8['active_vertices'];rep['masks']['v8_inactive']={'vertices':int(m.sum()),'bit_identical_to_baseline':bool(np.array_equal(v[m],p0[m])),'max_displacement_mm':float(mag[m].max())}
+p=v[f];pb=p0[f];p_8=p8[f];raw=np.cross(p[:,1]-p[:,0],p[:,2]-p[:,0]);raw0=np.cross(pb[:,1]-pb[:,0],pb[:,2]-pb[:,0]);area=np.linalg.norm(raw,axis=1)*.5;area0=np.linalg.norm(raw0,axis=1)*.5;valid=area0>1e-12;ratio=area/np.maximum(area0,1e-30);cos=np.einsum('ij,ij->i',raw,raw0)/np.maximum(4*area*area0,1e-30);angle=np.degrees(np.arccos(np.clip(cos,-1,1)));worst=int(np.flatnonzero(valid)[ratio[valid].argmin()]);edges=np.unique(np.sort(np.r_[f[:,[0,1]],f[:,[1,2]],f[:,[2,0]]],axis=1),axis=0);le=np.linalg.norm(v[edges[:,1]]-v[edges[:,0]],axis=1);le0=np.linalg.norm(p0[edges[:,1]]-p0[edges[:,0]],axis=1);er=le/np.maximum(le0,1e-30);edgevalid=le0>1e-8
+rep['metrics']={'moved_from_baseline':int((mag>1e-8).sum()),'moved_from_v8':int((d8>1e-8).sum()),'baseline_displacement_mm_percentiles_moved':np.percentile(mag[mag>1e-8],[0,25,50,75,95,100]).tolist(),'v8_displacement_mm_percentiles_changed':np.percentile(d8[d8>1e-8],[0,25,50,75,95,100]).tolist(),'minimum_area_ratio':float(ratio[valid].min()),'area_ratio_percentiles':np.percentile(ratio[valid],[0,1,5,50,95,99,100]).tolist(),'worst_area_face':worst,'worst_source_face':int(base['source_face_indices'][worst]),'worst_original_area_mm2':float(area0[worst]*1e6),'worst_final_area_mm2':float(area[worst]*1e6),'baseline_face144_ratio':float(ratio[144]),'max_face_rotation_degrees':float(angle[valid].max()),'inverted_faces':np.flatnonzero(valid&(cos<=0)).tolist(),'edge_ratio_min_max':list(map(float,[er[edgevalid].min(),er[edgevalid].max()]))}
+
+# Intrinsic triangle stretches: two nonzero singular values of 3D tangent map.
+e0=np.stack([pb[:,1]-pb[:,0],pb[:,2]-pb[:,0]],axis=2);e1=np.stack([p[:,1]-p[:,0],p[:,2]-p[:,0]],axis=2)
+sv=np.linalg.svd(e1@np.linalg.pinv(e0),compute_uv=False)[:,:2]
+rep['metrics']['intrinsic_stretch_min_max']=[float(sv[valid].min()),float(sv[valid].max())]
+rep['metrics']['intrinsic_stretch_ratio_max']=float((sv[valid,0]/sv[valid,1]).max())
+rep['metrics']['faces_with_intrinsic_stretch_outside_0p95_1p05']=np.flatnonzero(valid&((sv[:,1]<.95)|(sv[:,0]>1.05))).tolist()
+
+npzout={'displacement_mm':mag,'area_ratio':ratio,'normal_angle_degrees':angle,'intrinsic_stretches':sv}
+for name,ob in [('shell',sh),('band',ba)]:
+ cc=contacts(v,f,ob['points'],ob['triangles']);npzout[name+'_pairs']=cc;ss=set(map(tuple,cc));row={'pairs':len(cc),'anatomy_faces':int(len(np.unique(cc[:,0]))),'obstacle_faces':int(len(np.unique(cc[:,1]))),'protected_only_pairs':int(np.all(v8['protected_vertices'][f[cc[:,0]]],axis=1).sum()),'ear_only_pairs':int(np.all(v8['protected_ears'][f[cc[:,0]]],axis=1).sum())}
+ if name=='shell':row['by_part']={str(k):int((ob['face_parts'][cc[:,1]]==k).sum()) for k in range(3)}
+ for oldtag in ['baseline','v8']:
+  old=set(map(tuple,oldpairs[oldtag+'_'+name+'_pairs']));new=sorted(ss-old);removed=sorted(old-ss);npzout[oldtag+'_'+name+'_new_pairs']=np.array(new,int).reshape(-1,2);npzout[oldtag+'_'+name+'_removed_pairs']=np.array(removed,int).reshape(-1,2)
+  lengths=[];centers=[]
+  for i,j in new:
+   w=gate.strict_hits(v[f[i]],ob['points'][ob['triangles'][j]])+gate.strict_hits(ob['points'][ob['triangles'][j]],v[f[i]])
+   if len(w)>1:
+    w=np.array(w);ll=np.linalg.norm(w[:,None,:]-w[None,:,:],axis=-1).max();lengths.append(float(ll*1000));centers.append(w.mean(0).tolist())
+  row['versus_'+oldtag]={'new_pairs':len(new),'removed_pairs':len(removed),'common_pairs':len(ss&old),'new_pair_indices':new,'new_pair_intersection_chord_mm_percentiles':np.percentile(lengths,[0,25,50,75,95,100]).tolist() if lengths else [],'sum_new_intersection_chords_mm':sum(lengths),'new_pair_centroid_bbox':np.array([np.min(centers,axis=0),np.max(centers,axis=0)]).tolist() if centers else []}
+ rep['contacts'][name]=row;print(name,row['pairs'],{k:row[k] for k in ['versus_baseline','versus_v8'] if k in row and False},flush=True)
+# Independent original detector additionally checks adjacency/topology/coplanar defects.
+rep['self_gate']=gate.review(path)
+# Compare unchanged native intended legacy triangles of every other body part.
+mp=json.loads((B/'pbr_normals_v2/evidence/alpha-triangle-map.json').read_text());meta=json.loads((B/'evidence/source-export.json').read_text())
+for pi in list(range(2,15))+list(range(16,20)):
+ t=np.array([[q[k] for k in ['a','b','c']] for q in mp if q['part']==pi]);t=t[:,:,[0,2,1]]/16;t[:,:,1]*=-1;ov=t.reshape(-1,3);of=np.arange(len(ov)).reshape(-1,3);sets={}
+ for name,pts in [('baseline',p0),('v8',p8),('candidate',v)]:sets[name]=set(map(tuple,contacts(pts,f,ov,of)))
+ rep['other_parts'][str(pi)]={'name':meta['parts'][pi]['name'],'geometry_current_native_intended':pi not in [6,7,8,10,14],'baseline_pairs':len(sets['baseline']),'v8_pairs':len(sets['v8']),'candidate_pairs':len(sets['candidate']),'new_vs_baseline':sorted(sets['candidate']-sets['baseline']),'new_vs_v8':sorted(sets['candidate']-sets['v8'])}
+rep['input_hashes']={str(p.relative_to(B)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [B/'body_interface_v8/anatomy_fit/baseline-welded.npz',B/'body_interface_v8/anatomy_fit/retained-anatomy.npz',B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz',B/'shell_band_v5/retained_candidate/evidence/band-paired.npz']}
+np.savez_compressed(O/f'{tag}-review-arrays.npz',**npzout);(O/f'{tag}-review.json').write_text(json.dumps(rep,indent=2,default=lambda x:x.item() if isinstance(x,np.generic) else x.tolist() if isinstance(x,np.ndarray) else str(x)));print(json.dumps({k:rep[k] for k in ['input','sha256','invariants','masks','metrics']},indent=2),flush=True)

@@ -1,0 +1,34 @@
+import bpy,numpy as np,json,math
+from mathutils.bvhtree import BVHTree
+from mathutils import Vector
+from scipy.ndimage import gaussian_filter1d
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False);o=bpy.data.objects['TESTE 34 — conexão de superfícies avaliadas'];dg=bpy.context.evaluated_depsgraph_get();em=o.evaluated_get(dg).to_mesh();p=np.array([v.co[:] for v in em.vertices]);fs=[tuple(f.vertices) for f in em.polygons];o.evaluated_get(dg).to_mesh_clear();q=p.copy();bv=BVHTree.FromPolygons(p.tolist(),fs)
+zs=np.linspace(.85,2.85,61);angles=np.linspace(.04,math.pi-.04,181);rows=[]
+for z in zs:
+ rho=[]
+ for a in angles:
+  d=Vector((.348*math.cos(a),.273*math.sin(a),0));h,n,ix,dist=bv.ray_cast(Vector((0,.02,z)),d.normalized(),1);assert h is not None;rho.append(dist/d.length)
+ rows.append(gaussian_filter1d(rho,10,mode='nearest')-np.array(rho))
+rows=np.array(rows)
+def ss(t):
+ t=np.clip(t,0,1);return t*t*(3-2*t)
+for i in range(160386,len(p)):
+ x,y,z=p[i]
+ if not .85<z<2.85:continue
+ a=math.atan2((y-.02)/.273,x/.348)
+ if not 1.75<a<3.05:continue
+ w=ss((a-1.75)/.25)*ss((3.05-a)/.25)*ss((z-.85)/.35)*ss((2.85-z)/.25)
+ zz=(z-.85)/2*60;iz=min(59,int(zz));fz=zz-iz;aa=(a-.04)/(math.pi-.08)*180;ia=min(179,int(aa));fa=aa-ia
+ dr=(rows[iz,ia]*(1-fa)+rows[iz,ia+1]*fa)*(1-fz)+(rows[iz+1,ia]*(1-fa)+rows[iz+1,ia+1]*fa)*fz
+ dr*=.8*w;q[i,0]+=.348*math.cos(a)*dr;q[i,1]+=.273*math.sin(a)*dr
+tri=np.array([f[:3] for f in fs]);A=p[tri];B=q[tri];na=np.cross(A[:,1]-A[:,0],A[:,2]-A[:,0]);nb=np.cross(B[:,1]-B[:,0],B[:,2]-B[:,0]);area=np.linalg.norm(na,axis=1);ratio=np.linalg.norm(nb,axis=1)[area>1e-12]/area[area>1e-12]
+def pairs(v):
+ t=BVHTree.FromPolygons(v.tolist(),fs);return set((a,b) for a,b in t.overlap(t) if a<b and not set(fs[a])&set(fs[b]))
+base=pairs(p);now=pairs(q);d=np.linalg.norm(q-p,axis=1);report={'method':'80% attenuation of repeated narrow radial ridges only in visible lateral mantle; no new folds, not measured cloth reproduction','changed_vertices':int((d>1e-7).sum()),'maximum_delta_m':float(d.max()),'area_range':list(map(float,[ratio.min(),ratio.max()])),'flips':int(((na*nb).sum(axis=1)<-1e-15).sum()),'new_self_pairs':len(now-base),'baseline_self_pairs':len(base),'z_delta_max':float(abs(q[:,2]-p[:,2]).max()),'upper_delta':float(d[p[:,2]>=2.85].max()),'hem_delta':float(d[p[:,2]<=.85].max()),'opposite_side_delta':float(d[p[:,0]>=0].max()),'cap_delta':float(d[:160386].max())};json.dump(report,open(r+'V77-mantle-fall-verification.json','w'),indent=2);assert report['flips']==0 and report['new_self_pairs']==0
+k=o.shape_key_add(name='TESTE77 — queda lateral do manto');k.value=1
+for i,v in enumerate(k.data):v.co=o.data.vertices[i].co+Vector(q[i]-p[i])
+bpy.ops.wm.save_as_mainfile(filepath=r+'V77-mantle-fall-trial.blend')
+for tag,file in [('V75','V75-tunic-lower-trial.blend'),('V77','V77-mantle-fall-trial.blend')]:
+ bpy.ops.wm.open_mainfile(filepath=r+file,use_scripts=False);s=bpy.context.scene;s.cycles.samples=48;s.render.resolution_x=600;s.render.resolution_y=900;s.render.resolution_percentage=100;c=s.camera;c.data.type='ORTHO'
+ for view,loc,targ,scale in [('profile',(-5,0,2),(0,0,1.7),2.6),('front',(0,-5,2),(0,0,1.7),2.6)]:
+  c.location=loc;c.rotation_euler=(Vector(targ)-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=scale;s.render.filepath=r+tag+'-drapery-'+view+'.png';bpy.ops.render.render(write_still=True)

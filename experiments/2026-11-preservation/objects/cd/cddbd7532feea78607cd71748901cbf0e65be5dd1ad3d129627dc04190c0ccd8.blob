@@ -1,0 +1,15 @@
+import bpy,json
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+ROOT='/workspace/scratch/212c580ada5b/paz-directed-v21/'
+bpy.ops.wm.open_mainfile(filepath=ROOT+'input/Nossa-Senhora-da-Paz-V20-estudo-intermediario-nao-aprovado.blend')
+s=bpy.context.scene;cam=bpy.data.objects['Retrato comparativo'];s.camera=cam;s.render.resolution_x=600;s.render.resolution_y=800;s.render.resolution_percentage=100
+points={'eye_left_outer':[320,416],'eye_left_inner':[389,450],'eye_right_inner':[430,445],'eye_right_outer':[478,448],'nose_root':[417,420],'nose_tip':[424,498],'mouth_left':[359,525],'mouth_right':[414,544],'lower_lip':[393,548],'chin':[388,570]}
+target={'eye_left_outer':[222,297],'eye_left_inner':[283,314],'eye_right_inner':[344,333],'eye_right_outer':[397,352],'nose_root':[320,309],'nose_tip':[307,417],'mouth_left':[237,446],'mouth_right':[303,468],'lower_lip':[269,470],'chin':[265,526]}
+obj=bpy.data.objects['Maria — anatomia feminina adaptada CC0'];bvh=BVHTree.FromObject(obj,bpy.context.evaluated_depsgraph_get());R=cam.matrix_world.to_3x3();out={}
+for name,(x,y) in points.items():
+ local=Vector(((x/600-.5)*cam.data.ortho_scale*600/800,(.5-y/800)*cam.data.ortho_scale,0))
+ origin=cam.matrix_world@local;direction=R@Vector((0,0,-1));hit,n,idx,d=bvh.ray_cast(origin,direction,10)
+ if hit:out[name]={'source_pixel':[x,y],'target_pixel':target[name],'point':list(hit)}
+ else:print('MISS',name)
+json.dump({'points':out,'camera_matrix':[list(r) for r in cam.matrix_world],'scale':cam.data.ortho_scale},open(ROOT+'landmarks.json','w'),indent=2)

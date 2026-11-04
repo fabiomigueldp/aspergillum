@@ -1,0 +1,32 @@
+{
+  "scope": "First-opaque source/coverage emission using unchanged saved vertices, UV, alpha and backface. Exact sampling and filter are in records; binary coverage also uses a black diagnostic world. This is not an exact replay of adaptive lit paths.",
+  "channel_decode": "RGB=band,shell,other-part first-opaque coverage; black world=0",
+  "crop_origin_top_left": [
+    270,
+    400
+  ],
+  "records": [
+    {
+      "variant": "masked",
+      "source": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/opaque_transport_v15/evidence/shared-2048-diagnostic.blend",
+      "shape": [
+        200,
+        470,
+        4
+      ],
+      "filter": "BLACKMAN_HARRIS 1.5",
+      "samples": 48
+    },
+    {
+      "variant": "clip",
+      "source": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/opaque_transport_v15/evidence/shared-2048-analytic-clip-control-diagnostic.blend",
+      "shape": [
+        200,
+        470,
+        4
+      ],
+      "filter": "BLACKMAN_HARRIS 1.5",
+      "samples": 48
+    }
+  ]
+}

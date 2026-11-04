@@ -1,0 +1,10 @@
+import bpy,numpy as np,json
+from pathlib import Path
+R=Path(__file__).resolve().parents[1];src=R.parents[1]/'paz-refinement/gui-test/checkpoint-V75-20261102/V75-tunic-lower-trial.blend'
+bpy.ops.wm.open_mainfile(filepath=str(src),use_scripts=False)
+o=bpy.data.objects['TESTE 34 — conexão de superfícies avaliadas'];m=o.data;N=160386
+pts=np.array([v.co[:] for v in m.vertices]);edges=np.array([e.vertices[:] for e in m.edges]);m.calc_loop_triangles();tris=np.array([t.vertices[:] for t in m.loop_triangles]);typ=(tris<N).sum(1)
+keys={k.name:np.array([v.co[:] for v in k.data]) for k in m.shape_keys.key_blocks} if m.shape_keys else {}
+np.savez_compressed(R/'evidence/seam-source-inspection.npz',points=pts,edges=edges,triangles=tris,matrix=np.array(o.matrix_world),**{'key_'+k:v for k,v in keys.items()})
+report={'object':o.name,'vertices':len(pts),'edges':len(edges),'triangles':len(tris),'face_cap_counts':{str(i):int((typ==i).sum()) for i in range(4)},'mixed_triangles':tris[(typ>0)&(typ<3)].tolist(),'cross_edges':edges[(edges<N).sum(1)==1].tolist(),'keys':[{'name':k.name,'value':k.value,'relative_key':k.relative_key.name,'changed_vs_basis':int(np.any(abs(keys[k.name]-next(iter(keys.values())))>1e-8,axis=1).sum()),'cap_changed':int(np.any(abs(keys[k.name][:N]-next(iter(keys.values()))[:N])>1e-8,axis=1).sum())} for k in m.shape_keys.key_blocks] if keys else [],'modifiers':[{'name':x.name,'type':x.type,'show_viewport':x.show_viewport,'show_render':x.show_render} for x in o.modifiers],'visible_objects':[{'name':x.name,'type':x.type,'verts':len(x.data.vertices) if x.type=='MESH' else 0} for x in bpy.context.scene.objects if not x.hide_get() and not x.hide_render]}
+(R/'evidence/seam-source-inspection.json').write_text(json.dumps(report,ensure_ascii=False,indent=2));print(json.dumps({k:v for k,v in report.items() if k not in ['mixed_triangles','cross_edges']},ensure_ascii=False))

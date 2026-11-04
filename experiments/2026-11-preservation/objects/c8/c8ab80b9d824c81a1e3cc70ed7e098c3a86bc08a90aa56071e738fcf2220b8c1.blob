@@ -1,0 +1,56 @@
+import bpy,bmesh,json,math,numpy as np
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+from collections import Counter
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V63-opposite-ankle-trial.blend',use_scripts=False);d=json.load(open(r+'V66-sleeve-boundary-input.json'));p=[Vector(v) for v in d['p']];orig=[v.copy() for v in p];fs=[tuple(f) for f in d['keep']];U,L=sorted(d['loops'],key=lambda l:-sum(p[i].z for i in l)/len(l));centL=sum((p[i] for i in L),Vector())/len(L);delta=Vector((-.06,.08,-.10));oldbv=BVHTree.FromPolygons(p,[tuple(f.vertices) for f in bpy.data.objects['Maria — túnica e mangas integradas'].data.polygons]);lower=set(d['lower'])
+for i in lower:
+ p[i].x=centL.x+.8*(p[i].x-centL.x);p[i].y=centL.y+.8*(p[i].y-centL.y);p[i]+=delta
+centU=sum((p[i] for i in U),Vector())/len(U);centL+=delta
+
+def order(l,c):
+ l=list(l)
+ area=sum((p[l[i]].x-c.x)*(p[l[(i+1)%len(l)]].y-c.y)-(p[l[(i+1)%len(l)]].x-c.x)*(p[l[i]].y-c.y) for i in range(len(l)))
+ if area<0:l.reverse()
+ k=min(range(len(l)),key=lambda j:math.atan2(p[l[j]].y-c.y,p[l[j]].x-c.x)%(2*math.pi));l=l[k:]+l[:k]
+ lengths=[(p[l[(i+1)%len(l)]]-p[l[i]]).length for i in range(len(l))];total=sum(lengths);ang=[0]
+ for v in lengths[:-1]:ang.append(ang[-1]+v/total*2*math.pi)
+ return l,ang
+L,la=order(L,centL);U,ua=order(U,centU)
+def sample(ids,angs,a):
+ aa=angs+[angs[0]+2*math.pi];vv=ids+[ids[0]]
+ if a<aa[0]:a+=2*math.pi
+ i=min(len(ids)-1,int(np.searchsorted(aa,a,side='right'))-1);t=(a-aa[i])/(aa[i+1]-aa[i]);return p[vv[i]].lerp(p[vv[i+1]],t)
+N=128;K=20;angles=[i*2*math.pi/N for i in range(N)];rings=[]
+for j in range(1,K):
+ t=j/K;ring=[]
+ for a in angles:
+  lo=sample(L,la,a);up=sample(U,ua,a);diff=up-lo
+  # Controlled monotonic bridge; lower tangent follows near vertical sleeve direction.
+  tl=Vector((-.02,-.02,diff.z));un=oldbv.find_nearest(up)[1];tu=diff-un*diff.dot(un)
+  if tu.length:tu=tu.normalized()*diff.length
+  tu.z=max(tu.z,.30)
+  q=(2*t**3-3*t*t+1)*lo+(t**3-2*t*t+t)*tl+(-2*t**3+3*t*t)*up+(t**3-t*t)*tu;ring.append(len(p));p.append(q)
+ rings.append(ring)
+newfaces=[]
+def stitch(A,aa,B,ba):
+ i=j=0
+ while i<len(A) or j<len(B):
+  an=aa[(i+1)%len(A)]+(2*math.pi if i+1>=len(A) else 0) if i<len(A) else 1e9;bn=ba[(j+1)%len(B)]+(2*math.pi if j+1>=len(B) else 0) if j<len(B) else 1e9
+  if an<bn:newfaces.append((A[i%len(A)],A[(i+1)%len(A)],B[j%len(B)]));i+=1
+  else:newfaces.append((A[i%len(A)],B[(j+1)%len(B)],B[j%len(B)]));j+=1
+stitch(L,la,rings[0],angles)
+for A,B in zip(rings[:-1],rings[1:]):
+ for i in range(N):newfaces.append((A[i],A[(i+1)%N],B[(i+1)%N],B[i]))
+stitch(rings[-1],angles,U,ua);fs+=newfaces;used=sorted({i for f in fs for i in f});remap={i:j for j,i in enumerate(used)};pp=[p[i] for i in used];faces=[tuple(remap[i] for i in f) for f in fs];m=bpy.data.meshes.new('V66 distal sleeve regular bridge');m.from_pydata(pp,[],faces);m.update();bm=bmesh.new();bm.from_mesh(m);bmesh.ops.recalc_face_normals(bm,faces=list(bm.faces));bm.to_mesh(m);bm.free();origobj=bpy.data.objects['Maria — túnica e mangas integradas'];o=bpy.data.objects.new('Maria — túnica manga distal V66 reversível',m);bpy.context.collection.objects.link(o)
+for mat in origobj.data.materials:m.materials.append(mat)
+for f in m.polygons:f.use_smooth=True
+origobj.hide_render=True;origobj.hide_set(True)
+h=bpy.data.objects['Maria — mão protetora anatômica'];h.shape_key_add(name='Basis');key=h.shape_key_add(name='TESTE66 — punho e mão inferiores posteriores');key.value=1
+for v,b in zip(key.data,h.data.vertices):v.co=b.co+delta
+faces=[tuple(f.vertices) for f in m.polygons];bv=BVHTree.FromPolygons(pp,faces);pairs=[(a,b) for a,b in bv.overlap(bv) if a<b and not set(faces[a])&set(faces[b])];edge=Counter(tuple(sorted((f[i],f[(i+1)%len(f)]))) for f in faces for i in range(len(f)));areas=[f.area*1e6 for f in m.polygons[-len(newfaces):]];report={'source':'V63','loops':[len(U),len(L)],'removed_faces':d['removed_count'],'new_faces':len(newfaces),'nonmanifold_edges':sum(n!=2 for n in edge.values()),'self_intersections':len(pairs),'protected_original_vertex_delta_max':max((p[i]-orig[i]).length for i in used if i<len(orig) and i not in lower),'hand_rigid_translation':list(delta),'lower_cap_radial_scale':.8,'new_face_area_min_max_mm2':[min(areas),max(areas)],'rollback':'Hide V66 tunic, unhide original, TESTE66=0'};json.dump(report,open(r+'V66-reconstruction-verification.json','w'),indent=2)
+if pairs:print('PAIRS',[(a,b, [list(sum((pp[v] for v in faces[f]),Vector())/len(faces[f])) for f in [a,b]]) for a,b in pairs]);print('REJECT',report);raise RuntimeError('self intersections, no geometry saved')
+bpy.ops.wm.save_as_mainfile(filepath=r+'V66-protective-sleeve-trial.blend')
+s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=700;s.render.resolution_y=850;s.render.resolution_percentage=100;c=s.camera;ct=Vector((-.03,-.19,1.95));c.data.ortho_scale=.72
+for v,off in [('profile',(-3,0,0)),('front',(0,-3,0)),('threequarter',(-2,-3,0))]:
+ c.location=ct+Vector(off);c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler();s.render.filepath=r+'V66-protective-gesture-'+v+'.png';bpy.ops.render.render(write_still=True)
+print(report)

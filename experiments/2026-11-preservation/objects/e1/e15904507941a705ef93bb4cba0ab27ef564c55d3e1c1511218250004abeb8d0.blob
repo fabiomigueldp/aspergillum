@@ -1,0 +1,8 @@
+import bpy,json
+from mathutils import Vector,Matrix
+ROOT='/workspace/scratch/212c580ada5b/paz-directed-v21/'
+bpy.ops.wm.open_mainfile(filepath=ROOT+'input/Nossa-Senhora-da-Paz-V20-estudo-intermediario-nao-aprovado.blend')
+d=json.load(open(ROOT+'camera_fit.json'));R=Matrix(d['camera_rotation']);s=bpy.context.scene;c=bpy.data.objects['Retrato comparativo'];s.camera=c
+c.rotation_euler=R.to_euler();c.location=Vector(d['center'])+R@Vector(((463/2-d['pixel_center'][0])/d['scale_px'],(d['pixel_center'][1]-678/2)/d['scale_px'],5));c.data.ortho_scale=678/d['scale_px']
+s.render.resolution_x=463;s.render.resolution_y=678;s.render.resolution_percentage=100;s.cycles.samples=40;s.render.filepath=ROOT+'fit-baseline.png'
+bpy.ops.wm.save_as_mainfile(filepath=ROOT+'camera-aligned-baseline.blend');bpy.ops.render.render(write_still=True)

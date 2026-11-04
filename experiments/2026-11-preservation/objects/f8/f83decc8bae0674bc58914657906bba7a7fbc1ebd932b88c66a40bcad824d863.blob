@@ -1,0 +1,15 @@
+from pathlib import Path
+import sys,numpy as np,json
+from PIL import Image,ImageDraw,ImageFont
+R=Path(__file__).resolve().parents[1];candidate=Path(sys.argv[1]);out=Path(sys.argv[2]);base=np.load(R.parent/'integration_v6/evidence/seam-hermite-physical-7p5-assembly.npz');d=np.load(candidate);f=np.load(R/'evidence/offset-reach-field.npz');assert np.array_equal(base['source_indices'],d['source_indices']);wh={int(s):i for i,s in enumerate(d['source_indices'])};grid=np.zeros((7,57))
+for si in range(1,6):
+ for ti in range(57):
+  ids=f['generated_vertex_map'][(f['generated_vertex_map'][:,1]==si)&(f['generated_vertex_map'][:,2]==ti)&(f['generated_vertex_map'][:,3]<2),0].astype(int);assert len(ids)==2;i=[wh[int(x)] for x in ids];grid[si,ti]=np.linalg.norm(d['points'][i].mean(0)-base['points'][i].mean(0))*1000
+im=Image.new('RGB',(1400,540),'#20252b');dr=ImageDraw.Draw(im);font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',24);sm=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',18);dr.text((25,14),'V7 | deslocamento da superfície média contra V6 (mm)',font=font,fill='white');dr.text((25,48),'Mapa geométrico, não render Minecraft. Interfaces e faixa central permanecem fixas.',font=sm,fill='#dddddd');maxv=max(float(grid.max()),1e-12)
+for si in range(7):
+ for ti in range(57):
+  a=grid[si,ti]/maxv;color=tuple(int(x) for x in np.array([225,235,242])*(1-a)+np.array([210,54,28])*a);dr.rectangle((110+ti*21,102+si*44,130+ti*21,145+si*44),fill=color)
+ dr.text((15,112+si*44),f's={si/6:.3f}',font=sm,fill='white')
+for t in [0,.2,.5,.8,1]:
+ x=110+int(t*56)*21;dr.text((x-12,420),str(t),font=sm,fill='white')
+dr.text((650,449),'t: extremidade → centro → extremidade',font=sm,fill='white');dr.text((25,491),f'Máximo: {maxv:.3f} mm. Cor branca = sem deslocamento. Cor vermelha = maior deslocamento.',font=sm,fill='white');im.save(out);out.with_suffix('.json').write_text(json.dumps({'candidate':str(candidate),'reference':'V6 physical Hermite','grid_displacement_mm':grid.tolist(),'max_mm':maxv,'source_rows_fixed':bool(np.all(grid[[0,6]]==0)),'minecraft_screenshot':False},indent=2))

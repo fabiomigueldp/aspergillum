@@ -1,0 +1,68 @@
+✖ ornament identity never interprets an architectural centre role as Guadalupe (7.60146ms)
+✔ Guadalupe intent survives saved classic textiles, model switches, explicit choices and Restore (103.694449ms)
+✖ mixed altar keeps genuine Guadalupe but ignores unrelated architectural centres (2.03938ms)
+✖ explicit Guadalupe choice after an architectural transition is retained and Restore removes only that draft choice (0.710341ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 1
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 15250.046286
+
+✖ failing tests:
+
+test at addons/altare/tests/menu.node.ts:148:1
+✖ ornament identity never interprets an architectural centre role as Guadalupe (7.60146ms)
+  AssertionError [ERR_ASSERTION]: altare:a_pilaster_marble_none_none
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/212c580ada5b/altare-editor-review-20261103/addons/altare/tests/menu.node.ts:153:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at addons/altare/tests/menu.node.ts:172:1
+✖ mixed altar keeps genuine Guadalupe but ignores unrelated architectural centres (2.03938ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/212c580ada5b/altare-editor-review-20261103/addons/altare/tests/menu.node.ts:180:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at addons/altare/tests/menu.node.ts:184:1
+✖ explicit Guadalupe choice after an architectural transition is retained and Restore removes only that draft choice (0.710341ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/212c580ada5b/altare-editor-review-20261103/addons/altare/tests/menu.node.ts:192:9)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

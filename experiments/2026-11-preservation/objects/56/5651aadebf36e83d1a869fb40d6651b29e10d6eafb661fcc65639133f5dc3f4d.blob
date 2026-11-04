@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+import {pathToFileURL} from 'node:url';
+import {jsonBytes,SnapshotError} from './lib/snapshot-audit.mjs';
+import {auditFile,convertFile,verifyBundle,exportRollback,writeNewFile} from './lib/snapshot-bundle.mjs';
+export function runSnapshotCli(argv,{stdout=process.stdout,stderr=process.stderr}={}){
+ const print=(stream,value)=>stream.write(jsonBytes(value));let command='audit';
+ try{
+  const args=[...argv];if(args[0]&&!args[0].startsWith('--'))command=args.shift();
+  if(!['audit','convert','verify','rollback'].includes(command))throw new SnapshotError('usage','Commands: audit (default), convert, verify, rollback.');
+  const allowed={audit:['input','report','allow-unused-role-normalization'],convert:['input','out-dir','allow-unused-role-normalization'],verify:['bundle','expect-manifest-sha256','expect-source-sha256'],rollback:['bundle','output','expect-manifest-sha256','expect-source-sha256']}[command];
+  const options={};
+  while(args.length){const token=args.shift();if(!token.startsWith('--')||!allowed.includes(token.slice(2))||Object.hasOwn(options,token.slice(2)))throw new SnapshotError('usage','Unknown, duplicate, or misplaced option.');const key=token.slice(2);if(key==='allow-unused-role-normalization'){options[key]=true;continue;}const value=args.shift();if(!value||value.startsWith('--'))throw new SnapshotError('usage',`Missing value for ${token}.`);options[key]=value;}
+  const required={audit:['input'],convert:['input','out-dir'],verify:['bundle'],rollback:['bundle','output']}[command];
+  if(required.some(key=>!options[key]))throw new SnapshotError('usage',`Required options for ${command}: ${required.map(k=>'--'+k).join(', ')}.`);
+  const conversion={allowUnusedRoleNormalization:options['allow-unused-role-normalization']===true};
+  const verification={expectedManifestSha256:options['expect-manifest-sha256'],expectedSourceSha256:options['expect-source-sha256']};
+  if(command==='audit'){const {report}=auditFile(options.input,conversion);if(options.report)writeNewFile(options.report,jsonBytes(report));print(stdout,report);return report.eligible?0:2;}
+  if(command==='convert'){const result=convertFile(options.input,options['out-dir'],conversion);print(stdout,result);return result.created?0:2;}
+  if(command==='verify'){const {backupBytes,...result}=verifyBundle(options.bundle,verification);print(stdout,result);return 0;}
+  print(stdout,exportRollback(options.bundle,options.output,verification));return 0;
+ }catch(error){print(stderr,{ok:false,code:error.code??'operation-failed',message:error.message,worldModified:false});return ['verify','rollback'].includes(command)?3:1;}
+}
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)process.exitCode=runSnapshotCli(process.argv.slice(2));

@@ -1,0 +1,22 @@
+import bpy, json, time
+from pathlib import Path
+from mathutils import Vector
+R=Path('lit_surface_v16/lighting_research').resolve();bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
+s=bpy.context.scene;s.render.engine='CYCLES';s.cycles.samples=8;s.cycles.use_adaptive_sampling=False;s.cycles.transparent_max_bounces=512;s.cycles.use_denoising=False;s.render.threads_mode='FIXED';s.render.threads=2;s.render.resolution_x=s.render.resolution_y=200;s.render.resolution_percentage=100;s.render.image_settings.file_format='PNG';s.view_settings.view_transform='Standard';s.world.use_nodes=True;bg=s.world.node_tree.nodes.get('Background');bg.inputs['Color'].default_value=(0.3,0,0,1);bg.inputs['Strength'].default_value=1
+camdata=bpy.data.cameras.new('Ortho camera');cam=bpy.data.objects.new('Ortho camera',camdata);s.collection.objects.link(cam);s.camera=cam;cam.location=(0,0,3.5);camdata.type='ORTHO';camdata.ortho_scale=2.2
+mats=[]
+for i in range(2):
+ m=bpy.data.materials.new('Complement mask '+str(i));m.use_nodes=True;n=m.node_tree.nodes;n.clear();l=m.node_tree.links;out=n.new('ShaderNodeOutputMaterial');em=n.new('ShaderNodeEmission');em.inputs['Color'].default_value=(.5,.5,.5,1);tr=n.new('ShaderNodeBsdfTransparent');uv=n.new('ShaderNodeTexCoord');sep=n.new('ShaderNodeSeparateXYZ');l.new(uv.outputs['UV'],sep.inputs[0]);add=n.new('ShaderNodeMath');add.operation='ADD';l.new(sep.outputs['X'],add.inputs[0]);l.new(sep.outputs['Y'],add.inputs[1]);lt=n.new('ShaderNodeMath');lt.operation='LESS_THAN';lt.inputs[1].default_value=1;l.new(add.outputs[0],lt.inputs[0]);mask=lt.outputs[0]
+ if i:
+  inv=n.new('ShaderNodeMath');inv.operation='SUBTRACT';inv.inputs[0].default_value=1;l.new(mask,inv.inputs[1]);mask=inv.outputs[0]
+ mix=n.new('ShaderNodeMixShader');l.new(mask,mix.inputs[0]);l.new(tr.outputs[0],mix.inputs[1]);l.new(em.outputs[0],mix.inputs[2]);l.new(mix.outputs[0],out.inputs[0]);mats.append(m)
+vv=[(-1,-1,0),(1,-1,0),(1,1,0),(-1,1,0)]*2;me=bpy.data.meshes.new('Exact coplanar complementary quads');me.from_pydata(vv,[],[(0,1,2,3),(4,5,6,7)]);me.update();ob=bpy.data.objects.new(me.name,me);s.collection.objects.link(ob)
+for m in mats:me.materials.append(m)
+for i,p in enumerate(me.polygons):p.material_index=i
+uvl=me.uv_layers.new();uvs=[(0,0),(1,0),(1,1),(0,1)]*2
+for uv,xy in zip(uvl.data,uvs):uv.uv=xy
+records=[]
+for separation in [0,1e-7,1e-5]:
+ for i in range(4,8): me.vertices[i].co.z=separation
+ me.update();bpy.context.view_layer.update();s.render.filepath=str(R/f'coplanar-complement-separation-{separation:g}.png');t=time.time();bpy.ops.render.render(write_still=True);records.append({'separation':separation,'seconds':time.time()-t,'path':s.render.filepath})
+(R/'coplanar-reproducer.json').write_text(json.dumps({'version':bpy.app.version_string,'description':'Same object contains two overlapping unwelded quads with exactly complementary procedural binary alpha and identical emission. Mathematical projected union fills square at every tested separation. Lighting independent. No candidate asset edited.','records':records},indent=2))

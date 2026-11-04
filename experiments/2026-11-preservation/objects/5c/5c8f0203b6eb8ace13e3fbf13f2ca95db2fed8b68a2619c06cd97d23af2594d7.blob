@@ -1,0 +1,474 @@
+{
+  "kind": "implementation-derived-layout-simulation",
+  "minecraftRun": false,
+  "locales": [
+    "pt_BR",
+    "en_US"
+  ],
+  "displayLocale": "pt_BR",
+  "sources": [
+    {
+      "file": "src/presentation/menu.ts",
+      "sha256": "2e44c601abc44ce8d1682a8bed65663f1de08069ef3b3850d01e77933ad3a7ac"
+    },
+    {
+      "file": "assets-src/locales.mjs",
+      "sha256": "769842007aa67f20f09859079470f4e85c67c5368dfad989829e4c4702642d89"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "classic",
+      "name": "Clássico com Guadalupe",
+      "title": "Personalizar altar · 7 × 2",
+      "controls": [
+        {
+          "kind": "label",
+          "key": "altare.menu.scope",
+          "text": "Personalize o altar inteiro. Nada muda até aplicar."
+        },
+        {
+          "kind": "header",
+          "key": "altare.menu.structure",
+          "text": "Estrutura"
+        },
+        {
+          "kind": "dropdown",
+          "key": "altare.menu.model",
+          "text": "Modelo",
+          "value": "Clássico",
+          "options": [
+            "Clássico",
+            "Pilastras",
+            "Ogivas",
+            "Cavaletes",
+            "Arca",
+            "Balaústres",
+            "Colunata dourada",
+            "Cruzeta",
+            "Dois pedestais"
+          ]
+        },
+        {
+          "kind": "dropdown",
+          "key": "altare.menu.surface",
+          "text": "Material",
+          "value": "Mármore claro",
+          "options": [
+            "Mármore claro",
+            "Calcário quente",
+            "Pedra escura"
+          ]
+        },
+        {
+          "kind": "spacer"
+        },
+        {
+          "kind": "header",
+          "key": "altare.menu.cloth",
+          "text": "Toalha"
+        },
+        {
+          "kind": "dropdown",
+          "key": "altare.menu.pattern",
+          "text": "Desenho",
+          "value": "Bordada · longa",
+          "options": [
+            "Sem toalha",
+            "Linho · curta",
+            "Linho · longa",
+            "Bordada · curta",
+            "Bordada · longa",
+            "Branco e ouro · Cordeiro",
+            "Floral IHS",
+            "Branco e verde · IHS",
+            "Preto e prata · cruzes",
+            "Renda floral"
+          ]
+        },
+        {
+          "kind": "spacer"
+        },
+        {
+          "kind": "header",
+          "key": "altare.menu.frontal",
+          "text": "Frente e detalhes"
+        },
+        {
+          "kind": "toggle",
+          "key": "altare.menu.ornamental",
+          "text": "Imagem de Guadalupe",
+          "value": true
+        },
+        {
+          "kind": "dropdown",
+          "key": "altare.menu.front",
+          "text": "Frente",
+          "value": "Norte",
+          "options": [
+            "Norte",
+            "Leste",
+            "Sul",
+            "Oeste"
+          ],
+          "description": "A largura é medida de frente para este lado."
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "button",
+          "key": "altare.menu.apply",
+          "text": "Aplicar no altar"
+        },
+        {
+          "kind": "button",
+          "key": "altare.menu.restore",
+          "text": "Desfazer alterações",
+          "disabled": true
+        },
+        {
+          "kind": "button",
+          "key": "altare.menu.cancel",
+          "text": "Cancelar"
+        }
+      ]
+    },
+    {
+      "id": "twin",
+      "name": "Dois pedestais",
+      "title": "Personalizar altar · 7 × 2",
+      "controls": [
+        {
+          "kind": "label",
+          "key": "altare.menu.scope",
+          "text": "Personalize o altar inteiro. Nada muda até aplicar."
+        },
+        {
+          "kind": "header",
+          "key": "altare.menu.structure",
+          "text": "Estrutura"
+        },
+        {
+          "kind": "dropdown",
+          "key": "altare.menu.model",
+          "text": "Modelo",
+          "value": "Dois pedestais",
+          "options": [
+            "Clássico",
+            "Pilastras",
+            "Ogivas",
+            "Cavaletes",
+            "Arca",
+            "Balaústres",
+            "Colunata dourada",
+            "Cruzeta",
+            "Dois pedestais"
+          ]
+        },
+        {
+          "kind": "label",
+          "key": "altare.menu.material_walnut",
+          "text": "Material: nogueira"
+        },
+        {
+          "kind": "spacer"
+        },
+        {
+          "kind": "header",
+          "key": "altare.menu.cloth",
+          "text": "Toalha"
+        },
+        {
+          "kind": "dropdown",
+          "key": "altare.menu.pattern",
+          "text": "Desenho",
+          "value": "Floral IHS",
+          "options": [
+            "Sem toalha",
+            "Linho · curta",
+            "Linho · longa",
+            "Bordada · curta",
+            "Bordada · longa",
+            "Branco e ouro · Cordeiro",
+            "Floral IHS",
+            "Branco e verde · IHS",
+            "Preto e prata · cruzes",
+            "Renda floral"
+          ]
+        },
+        {
+          "kind": "dropdown",
+          "key": "altare.menu.color",
+          "text": "Cor",
+          "value": "Roxo",
+          "options": [
+            "Branco",
+            "Vermelho",
+            "Verde",
+            "Roxo",
+            "Róseo",
+            "Preto",
+            "Dourado · festivo",
+            "Prateado · festivo"
+          ]
+        },
+        {
+          "kind": "spacer"
+        },
+        {
+          "kind": "header",
+          "key": "altare.menu.frontal",
+          "text": "Frente e detalhes"
+        },
+        {
+          "kind": "dropdown",
+          "key": "altare.menu.front",
+          "text": "Frente",
+          "value": "Norte",
+          "options": [
+            "Norte",
+            "Leste",
+            "Sul",
+            "Oeste"
+          ],
+          "description": "A largura é medida de frente para este lado."
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "button",
+          "key": "altare.menu.apply",
+          "text": "Aplicar no altar"
+        },
+        {
+          "kind": "button",
+          "key": "altare.menu.restore",
+          "text": "Desfazer alterações",
+          "disabled": true
+        },
+        {
+          "kind": "button",
+          "key": "altare.menu.cancel",
+          "text": "Cancelar"
+        }
+      ]
+    },
+    {
+      "id": "relief",
+      "name": "Toalha com cor sem relevo",
+      "title": "Personalizar altar · 7 × 2",
+      "controls": [
+        {
+          "kind": "label",
+          "key": "altare.menu.scope",
+          "text": "Personalize o altar inteiro. Nada muda até aplicar."
+        },
+        {
+          "kind": "header",
+          "key": "altare.menu.structure",
+          "text": "Estrutura"
+        },
+        {
+          "kind": "dropdown",
+          "key": "altare.menu.model",
+          "text": "Modelo",
+          "value": "Ogivas",
+          "options": [
+            "Clássico",
+            "Pilastras",
+            "Ogivas",
+            "Cavaletes",
+            "Arca",
+            "Balaústres",
+            "Colunata dourada",
+            "Cruzeta",
+            "Dois pedestais"
+          ]
+        },
+        {
+          "kind": "dropdown",
+          "key": "altare.menu.surface",
+          "text": "Material",
+          "value": "Mármore claro",
+          "options": [
+            "Mármore claro",
+            "Calcário quente",
+            "Nogueira"
+          ]
+        },
+        {
+          "kind": "spacer"
+        },
+        {
+          "kind": "header",
+          "key": "altare.menu.cloth",
+          "text": "Toalha"
+        },
+        {
+          "kind": "dropdown",
+          "key": "altare.menu.pattern",
+          "text": "Desenho",
+          "value": "Floral IHS",
+          "options": [
+            "Sem toalha",
+            "Linho · curta",
+            "Linho · longa",
+            "Bordada · curta",
+            "Bordada · longa",
+            "Branco e ouro · Cordeiro",
+            "Floral IHS",
+            "Branco e verde · IHS",
+            "Preto e prata · cruzes",
+            "Renda floral"
+          ]
+        },
+        {
+          "kind": "dropdown",
+          "key": "altare.menu.color",
+          "text": "Cor",
+          "value": "Roxo",
+          "options": [
+            "Branco",
+            "Vermelho",
+            "Verde",
+            "Roxo",
+            "Róseo",
+            "Preto",
+            "Dourado · festivo",
+            "Prateado · festivo"
+          ]
+        },
+        {
+          "kind": "spacer"
+        },
+        {
+          "kind": "header",
+          "key": "altare.menu.frontal",
+          "text": "Frente e detalhes"
+        },
+        {
+          "kind": "label",
+          "key": "altare.menu.relief_limit",
+          "text": "Para usar relevo nesta toalha, escolha vermelho."
+        },
+        {
+          "kind": "dropdown",
+          "key": "altare.menu.front",
+          "text": "Frente",
+          "value": "Norte",
+          "options": [
+            "Norte",
+            "Leste",
+            "Sul",
+            "Oeste"
+          ],
+          "description": "A largura é medida de frente para este lado."
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "button",
+          "key": "altare.menu.apply",
+          "text": "Aplicar no altar"
+        },
+        {
+          "kind": "button",
+          "key": "altare.menu.restore",
+          "text": "Desfazer alterações"
+        },
+        {
+          "kind": "button",
+          "key": "altare.menu.cancel",
+          "text": "Cancelar"
+        }
+      ]
+    },
+    {
+      "id": "symmetric",
+      "name": "Colunata sem direção",
+      "title": "Personalizar altar · 7 × 2",
+      "controls": [
+        {
+          "kind": "label",
+          "key": "altare.menu.scope",
+          "text": "Personalize o altar inteiro. Nada muda até aplicar."
+        },
+        {
+          "kind": "header",
+          "key": "altare.menu.structure",
+          "text": "Estrutura"
+        },
+        {
+          "kind": "dropdown",
+          "key": "altare.menu.model",
+          "text": "Modelo",
+          "value": "Colunata dourada",
+          "options": [
+            "Clássico",
+            "Pilastras",
+            "Ogivas",
+            "Cavaletes",
+            "Arca",
+            "Balaústres",
+            "Colunata dourada",
+            "Cruzeta",
+            "Dois pedestais"
+          ]
+        },
+        {
+          "kind": "label",
+          "key": "altare.menu.material_marble",
+          "text": "Material: mármore claro"
+        },
+        {
+          "kind": "spacer"
+        },
+        {
+          "kind": "header",
+          "key": "altare.menu.cloth",
+          "text": "Toalha"
+        },
+        {
+          "kind": "dropdown",
+          "key": "altare.menu.pattern",
+          "text": "Desenho",
+          "value": "Renda floral",
+          "options": [
+            "Sem toalha",
+            "Linho · curta",
+            "Linho · longa",
+            "Bordada · curta",
+            "Bordada · longa",
+            "Branco e ouro · Cordeiro",
+            "Floral IHS",
+            "Branco e verde · IHS",
+            "Preto e prata · cruzes",
+            "Renda floral"
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "button",
+          "key": "altare.menu.apply",
+          "text": "Aplicar no altar"
+        },
+        {
+          "kind": "button",
+          "key": "altare.menu.restore",
+          "text": "Desfazer alterações",
+          "disabled": true
+        },
+        {
+          "kind": "button",
+          "key": "altare.menu.cancel",
+          "text": "Cancelar"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+"""Create the selected V12 local checkpoint after geometric and visual review.
+Selection: polygonal-pinna-0.6mm-clean, chosen 2026-11-03 after both reviewers
+favored limited technical retention. This is not an export or global approval.
+Refuses to overwrite the retained NPZ or identity.
+"""
+from pathlib import Path
+import hashlib, shutil, json
+O=Path(__file__).resolve().parent;src=O/'polygonal-pinna-0.6mm-clean.npz';dst=O/'retained-band.npz';identity=O/'retained-identity.json'
+if dst.exists() or identity.exists():raise FileExistsError('Retained checkpoint already exists')
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+shutil.copyfile(src,dst)
+assert src.read_bytes()==dst.read_bytes()
+r={'selected_candidate':src.name,'retained_copy':dst.name,'sha256':sha(dst),'byte_identical':True,'decision':'Limited local technical retention after independent geometry review and nine-view visual review.','date':'2026-11-03','geometry_review':'../independent_diagnosis/REVIEW_FINAL_V12.md','visual_review':'../evidence/review-visual-v12.md','limitations':['Actual shortening of lateral terminations; original full crest lengths are not preserved.','Front source region y<-0.28m is exact, not a claim of identical global silhouette.','Band/anatomy and band/shell contacts remain. No global minimum thickness or clearance certificate.','No Bedrock export, runtime test, final artistic approval, publication or addon replacement.']}
+identity.write_text(json.dumps(r,indent=2))
+(O/'STATUS.json').write_text(json.dumps({'status':'retained_technical_local','retained':dst.name,'sha256':r['sha256'],'rejected_first_trial':'polygonal-pinna-0.5mm-clean.npz: coplanar new termination overlap with V11 shell','next_scope':'Broader band/shell interface and other remaining contacts are still pending; Bedrock/export not performed.'},indent=2))
+print(json.dumps(r,indent=2))

@@ -1,0 +1,25 @@
+import bpy,math,json,numpy as np
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V61-foot-support-trial.blend',use_scripts=False);o=bpy.data.objects['Menino — pé.001'];dg=bpy.context.evaluated_depsgraph_get();old=[o.matrix_world@v.co for v in o.evaluated_get(dg).data.vertices];raw=[o.matrix_world@v.co for v in o.data.vertices];top=.4925000071525574;new=[]
+def sm(t):t=max(0,min(1,t));return t*t*(3-2*t)
+def plateau(y,a,b):return sm((y-(a-.01))/.01)*(1-sm((y-b)/.01))
+for p in raw:
+ z=max(-1,min(1,(p.z-.535)/.037));y=p.y;q=p.copy();width=.80+.20*math.exp(-((y+.37)/.042)**2);q.x=.09+(p.x-.09)*width
+ if z<=0:q.z=top+(.516-.498)*(1+z)**2
+ else:q.z=(.516-.0055)+z*(.025+.029*math.exp(-((y+.28)/.047)**2))
+ above=max(0,q.z-top);w=max(plateau(y,-.275,-.24),plateau(y,-.395,-.345));q.z-=above*w*(1-sm((above/.004-.7)/.3));new.append(q)
+k=o.shape_key_add(name='TESTE62 — volume contínuo pé oposto');k.value=1;inv=o.matrix_world.inverted()
+for i,q in enumerate(new):k.data[i].co=o.data.vertices[i].co+(inv@q)-(inv@old[i])
+fs=[tuple(f.vertices) for f in o.data.polygons];bb=BVHTree.FromPolygons(new,fs);pairs=[(i,j) for i,j in bb.overlap(bb) if i<j and not set(fs[i])&set(fs[j])]
+def av(p,f):return sum(((p[f[j]]-p[f[0]]).cross(p[f[j+1]]-p[f[0]])*.5 for j in range(1,len(f)-1)),Vector())
+rat=[];rawrat=[];flips=0
+for f in fs:
+ a,b,c=av(old,f),av(new,f),av(raw,f)
+ if a.length>1e-12:rat.append(b.length/a.length);flips+=a.dot(b)<0
+ if c.length>1e-12:rawrat.append(b.length/c.length)
+report={'source':'V61','scope':'Only opposite foot volume, basic heel/instep/forefoot, no individual toes','self_intersections':len(pairs),'flipped_faces':flips,'area_ratio_vs_V61':[min(rat),max(rat)],'area_ratio_vs_original_capsule':[min(rawrat),max(rawrat)],'max_delta_vs_V61_m':max((a-b).length for a,b in zip(old,new)),'heel_gap_m':min(q.z-top for q in new if -.275<=q.y<=-.24),'forefoot_gap_m':min(q.z-top for q in new if -.395<=q.y<=-.345),'below_plane_max_m':max(0,top-min(q.z for q in new)),'pose_y_max_delta_m':max(abs(a.y-b.y) for a,b in zip(old,new)),'rollback':'TESTE62=0 restores V61'};json.dump(report,open(r+'V62-opposite-foot-verification.json','w'),indent=2);bpy.ops.wm.save_as_mainfile(filepath=r+'V62-opposite-foot-trial.blend')
+s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=700;s.render.resolution_y=700;s.render.resolution_percentage=100;c=s.camera;ct=Vector((-.04,-.32,.57));c.data.ortho_scale=.34
+for view,off in [('front',(0,-3,0)),('threequarter',(-2,-3,0)),('profile',(-3,0,0))]:
+ c.location=ct+Vector(off);c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler();s.render.filepath=r+'V62-foot-close-'+view+'.png';bpy.ops.render.render(write_still=True)
+print(report)

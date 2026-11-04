@@ -1,0 +1,73 @@
+/** Compact block schema v2. Rotation is independent; no implicit legacy migration. */
+export const ASPERSORIUM_LAYOUT = {
+  keys: ["aspergillum:contents_a", "aspergillum:contents_b", "aspergillum:contents_c", "aspergillum:contents_d"],
+  radices: [2, 3, 7, 7],
+  semanticCount: 289,
+  packedCount: 294,
+} as const;
+export const TABLE_LAYOUT = {
+  keys: ["aspergillum:table_contents_a", "aspergillum:table_contents_b"],
+  radices: [2, 9],
+  semanticCount: 17,
+  packedCount: 18,
+} as const;
+export const LEGACY_CONTENTS_KEYS = [
+  "aspergillum:water_base", "aspergillum:water_offset", "aspergillum:has_aspergillum",
+  "aspergillum:cosmetic", "aspergillum:table_has_aspergillum", "aspergillum:table_cosmetic",
+] as const;
+export type BlockStates = Readonly<Record<string, boolean | number | string>>;
+export interface TableContents { cosmeticIndex: number | null }
+export interface AspersoriumContents extends TableContents { waterUnits: number }
+type Layout = typeof ASPERSORIUM_LAYOUT | typeof TABLE_LAYOUT;
+function integer(value: unknown, max: number, label: string): number {
+  if (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > max) {
+    throw new Error(`Invalid compact block ${label}: ${String(value)}`);
+  }
+  return value;
+}
+function occupancy(value: number | null): number {
+  return value === null ? 0 : integer(value, 15, "cosmetic index") + 1;
+}
+function encode(index: number, layout: Layout): Record<string, number> {
+  const result: Record<string, number> = {};
+  for (let i = 0; i < layout.keys.length; i++) {
+    const radix = layout.radices[i]!;
+    result[layout.keys[i]!] = index % radix;
+    index = Math.floor(index / radix);
+  }
+  return result;
+}
+function decode(states: BlockStates, layout: Layout): number {
+  if (LEGACY_CONTENTS_KEYS.some((key) => Object.hasOwn(states, key))) {
+    throw new Error("Legacy or mixed block contents require explicit offline migration");
+  }
+  let index = 0;
+  let multiplier = 1;
+  for (let i = 0; i < layout.keys.length; i++) {
+    const key = layout.keys[i]!;
+    const radix = layout.radices[i]!;
+    index += integer(states[key], radix - 1, key) * multiplier;
+    multiplier *= radix;
+  }
+  // Padding renders empty/dry in generated assets, but is never valid gameplay state.
+  if (index >= layout.semanticCount) throw new Error("Reserved compact block padding state");
+  return index;
+}
+export function compactStateDefinitions(layout: Layout): Record<string, number[]> {
+  return Object.fromEntries(layout.keys.map((key, i) => [key, Array.from({ length: layout.radices[i]! }, (_, n) => n)]));
+}
+export function encodeAspersoriumContents(contents: AspersoriumContents): Record<string, number> {
+  return encode(integer(contents.waterUnits, 16, "water units") * 17 + occupancy(contents.cosmeticIndex), ASPERSORIUM_LAYOUT);
+}
+export function decodeAspersoriumContents(states: BlockStates): AspersoriumContents {
+  const index = decode(states, ASPERSORIUM_LAYOUT);
+  const occupied = index % 17;
+  return { waterUnits: Math.floor(index / 17), cosmeticIndex: occupied === 0 ? null : occupied - 1 };
+}
+export function encodeTableContents(contents: TableContents): Record<string, number> {
+  return encode(occupancy(contents.cosmeticIndex), TABLE_LAYOUT);
+}
+export function decodeTableContents(states: BlockStates): TableContents {
+  const index = decode(states, TABLE_LAYOUT);
+  return { cosmeticIndex: index === 0 ? null : index - 1 };
+}

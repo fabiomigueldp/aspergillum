@@ -1,0 +1,9 @@
+import bpy,json,numpy as np
+from pathlib import Path
+R=Path(__file__).resolve().parents[1];S=R.parent.parent/'paz-refinement/gui-test/checkpoint-V75-20261102/V75-tunic-lower-trial.blend';bpy.ops.wm.open_mainfile(filepath=str(S),use_scripts=False)
+report={}
+for name in ['Maria — véu reconstruído de perfil','TESTE 29 — faixa embutida com terminação suave','TESTE 34 — conexão de superfícies avaliadas']:
+ o=bpy.data.objects[name];report[name]={'matrix':list(map(list,o.matrix_world)),'verts':len(o.data.vertices),'polys':len(o.data.polygons),'keys':[{ 'name':k.name,'value':k.value} for k in o.data.shape_keys.key_blocks] if o.data.shape_keys else [], 'mods':[{'name':m.name,'type':m.type,'levels':getattr(m,'levels',None),'render_levels':getattr(m,'render_levels',None)} for m in o.modifiers]}
+print(json.dumps(report,ensure_ascii=False,indent=2));(R/'evidence/source-objects.json').write_text(json.dumps(report,ensure_ascii=False,indent=2))
+for p in bpy.types.DecimateModifier.bl_rna.properties:
+ if 'vertex' in p.identifier:print(p.identifier,p.description)

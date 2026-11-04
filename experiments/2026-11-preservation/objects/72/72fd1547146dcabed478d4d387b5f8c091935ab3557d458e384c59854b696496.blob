@@ -1,0 +1,130 @@
+# Render Studio de altares
+
+Ferramenta local do 3D Workbench para compor e fotografar os altares reais do Altare. Renderer 2.3.0, construções revisão 4, montagem litúrgica revisão 3. Não modifica os packs, instalações ou mundos. O catálogo do Altare 0.12.0 inclui Cruzeta em nogueira, com marcenaria aberta e travessas cruzadas; Aspergillum permanece 1.2.5. Os modelos anteriores e as regras de personalização são preservados.
+
+## Abrir e usar
+
+Na raiz: `npm run studio:altare`. Também é possível abrir `viewer-3d/abrir-estudio.cmd`. A preparação registra o Altare no catálogo local quando necessário, sincroniza os assets, atualiza miniaturas ausentes ou de outra versão do renderer e abre a aba Render Studio. Usa as dependências já existentes da raiz e do viewer; requer Node.js 20.19+.
+
+1. Na aba Altar, escolher um dos oito modelos ou abrir Composições.
+2. Ajustar material, desenho, cor, relevo e dimensões na mesma aba. A altura permanece um bloco; frente de 1–16 e profundidade de 1–8 blocos. O padrão é 7 × 2.
+3. Na aba Cena, escolher ambiente, montagem, velas, ornamentação e iluminação. Arrastar para girar, botão direito para deslocar, roda para aproximar; as vistas prontas incluem frente, verso, bordado, jogador e ambiente.
+4. Na aba Imagem, escolher proporção e resolução, depois **Exportar PNG**. A opção 3840 gera 3840 × 2160 em 16:9; formatos verticais usam 3840 na maior dimensão. A interface não aparece na imagem.
+5. **Salvar cena** guarda composição e câmera em JSON. **Abrir cena** permite repetir o enquadramento. A última cena também permanece no armazenamento local do navegador.
+
+**Cruzeta em nogueira** fixa a madeira e não oferece aplique adicional. As composições Cruzeta em nogueira (5 × 2, sem toalha) e Cruzeta com linho (7 × 2, linho curto) mostram o novo modelo na capela. A família participa do salvamento/importação de cenas e do histórico Desfazer/Refazer.
+
+Um único seletor Desenho oferece as dez escolhas em qualquer modelo. O tecido acompanha a troca de estrutura; cor aparece para Floral IHS e Guadalupe continua independente no Clássico. Cenas novas usam schema 2; a importação de schema 1 preserva a antiga aparência de Clássico/Colunata. [Contrato universal](../addons/altare/docs/UNIVERSAL_TEXTILES_0.9.0.md).
+
+Desfazer/Refazer guardam até 40 configurações na sessão. As regras e escolhas temporariamente indisponíveis seguem o [domínio compartilhado do Altare](../addons/altare/docs/CUSTOMIZATION_0.5.0.md). As miniaturas de modelos são geradas por `scripts/capture-studio-models.mjs` e verificadas pelo hash das fontes.
+
+As treze composições são pontos de partida, não o limite do catálogo. A família Floral IHS disponibiliza as oito cores existentes no add-on. Na aba, o projeto fica fixo em Altare; os outros laboratórios continuam disponíveis. Alt+4 abre o estúdio.
+
+## Ambientes Minecraft
+
+Os três cenários usam a grade do jogo e oferecem construções diferentes:
+
+- Presbitério de quartzo: nave com bancos, corredor vermelho, degraus, abside, vitrais azuis e amarelos, pilares e teto com caixotões.
+- Capela de madeira: estrutura de carvalho escuro, paredes de arenito, vitrais, bancos, corredor verde, telhado inclinado e vigas aparentes.
+- Claustro com jardim: três arcadas conectadas, colunatas laterais, piso de pedra, árvores e cercas vivas de azaleia.
+
+Floreiras baixas ficam atrás das laterais do altar. Luminárias ficam embutidas nas paredes. Uma unidade do renderer equivale a um bloco; lajes têm meio bloco, carpetes 1/16 e painéis de vidro 2/16 de espessura. Escadas e arcos invertidos são montados com volumes de meio bloco. O piso elevado do presbitério coincide com y=0 do altar e se estende até a abside, com borda e degraus regulares; o piso da nave está em y=-1. A credência usa o mesmo plano de apoio do altar. Os UVs recortam as texturas na escala original, inclusive nas escadas, lajes, postes e vidros.
+
+A vista **Três quartos** enquadra as caixas reais dos objetos, sem incluir os cantos vazios de uma caixa única. A aproximação pelo lado da credência favorece a leitura dos vasos; velas sobre a mensa usam uma vista mais frontal. **Ambiente** inclui a arquitetura, corredor e bancos. **Superior** oculta o teto; **Verso** abre a parede da abside. Ao orbitar por fora de uma parede lateral ou acima da cobertura, o shell correspondente também é ocultado. A interface indica o corte, e o JSON registra as camadas ocultas. As outras vistas recompõem as paredes conforme a posição da câmera. **Jogador** coloca a câmera a 1,62 bloco sobre o piso da nave (y=0,62); o suporte do altar permanece em y=0. Os cenários ajustam largura e recuos às dimensões do altar. Continuam sendo cenários de apresentação com frente aberta para as câmeras, não mundos completos exportáveis.
+
+As 32 texturas vanilla, de 16 × 16 pixels, vêm do [repositório oficial Mojang/bedrock-samples](https://github.com/Mojang/bedrock-samples/tree/7844835b6baad4c0010f46901a4accf87413a022/resource_pack/textures/blocks). Revisão e hashes SHA-256 são fixados em `viewer-3d/assets-src/studio/vanilla-sources.json`. A sincronização usa um cache local verificado ou obtém exatamente essa revisão oficial. Um clone em `.research/` é apenas cache opcional e nunca define o conteúdo. Os PNGs sincronizados ficam em `viewer-3d/public/studio-vanilla/`, ignorados pelo Git; não entram no `.mcaddon`. O aviso de autoria/termos acompanha o cache.
+
+**Clássica** é o padrão: cores do jogo, pixels nítidos, sombreamento por direção das faces e oclusão nos encontros dos blocos. **Com sombras** acrescenta luz direcional, sombras e os normal/MER maps reais do add-on para apresentação. A direção da luz só afeta esse segundo modo. **Transparente** remove todo o cenário e preserva o alfa no PNG.
+
+O cenário é uma construção autoral com assets vanilla, não uma importação de um mundo existente. As imagens são renders externos, não screenshots do Minecraft. Luz por voxel, biome tint, culling, shaders proprietários e Vibrant Visuals não são reproduzidos integralmente; a grama usa uma tonalidade fixa. O modo com sombras não deve ser apresentado como equivalência com Vibrant Visuals. A confirmação final dos modelos no jogo continua nos gates do Altare.
+
+## Objetos locais e montagem litúrgica
+
+A biblioteca verificada reúne 23 modelos de nove packs: 3golden candelabras, Cruz e castiçal, Crucifixo de Altar, Conjuntorum Objetorum Liturgicorum Douradorum, Flowers 4 colors, imagens sacras, Nossa Senhora Aparecida, procissão jmj e Evangeliarium. As cenas usam castiçais individuais, crucifixo com a figura de Cristo, cálice, patena, âmbula, flores, Aparecida e o Evangeliário real do projeto. A credência usa a estrutura de cavaletes do Altare; corporal e pano da credência são malhas simples do cenário. Os outros modelos permanecem no catálogo para composição futura.
+
+Orientação: [IGMR 117–118, 299, 304–308 e 318](https://www.vatican.va/roman_curia/congregations/ccdds/documents/rc_con_ccdds_doc_20030317_ordinamento-messale_sp.html). As opções representam a Missa no rito romano:
+
+- **Antes da Missa:** Evangeliário na mesa e vasos na credência.
+- **Vasos sobre o corporal:** cálice, patena e âmbula sobre o corporal; no altar mínimo, a âmbula permanece na credência. É um estudo desses objetos: a biblioteca ainda não inclui missal, pala e purificatório. O Evangeliário não é usado como missal.
+- **Velas:** 2, 4 ou 6; 7 é opção explícita para o bispo diocesano. A contagem considera chamas, não braços decorativos.
+- **Ornamentação:** flores laterais, reduzidas no Advento e retiradas na Quaresma. Festa/Laetare permite flores. A estação é escolhida separadamente da cor da toalha.
+
+O crucifixo substitui a cruz de blocos. A imagem de Aparecida ocupa um pedestal junto a um nicho lateral. O centro da mesa e a passagem atrás do altar ficam livres. O padrão usa castiçais no chão, em grupos laterais. O seletor Castiçais oferece dourados baixos ou madeira esbelta. A cruz fica junto à abside; flores baixas em recipientes de bordas abertas e credência ocupam zonas laterais distintas. Ambão e cadeiras são construções autorais do cenário, com formas em múltiplos de 1/16 e texturas vanilla; não são modelos de um pack externo. Sem toalha, em **Só altar** ou com fundo transparente, a montagem fica desativada. A disposição não representa a planta completa de uma igreja ou todos os objetos de uma celebração.
+
+`assets-src/studio/props-sources.json` fixa UUIDs, versões, arquivos, SHA-256, identificadores e dimensões verificadas. `sync-studio-props.mjs` consulta o cache temporário do Minecraft, resource packs Shared e raízes opcionais em `STUDIO_PACK_ROOTS` (separadas por `;` no Windows). Copia apenas geometria/textura para o cache ignorado `public/studio-props/`, verifica os hashes e a escala, e não executa scripts dos packs. O cache persistente permite repetir renders após a limpeza do diretório temporário. Os assets mantêm autoria original e são usados somente na ferramenta local; não entram no `.mcaddon` nem são incluídos no Git.
+
+`node viewer-3d/scripts/capture-studio-props.mjs` gera vistas frontal/posterior, prancha e dimensões em `out/render-studio/prop-inspection/`. O adaptador preserva os UVs e a geometria, incluindo o formato legado 1.12; aplica apenas orientação e apoio na base, sem redimensionar. Animações, partículas e shaders específicos dos packs não são executados. A fonte chamada `pa_santamaria` é mantida com nome neutro no catálogo; não foi tratada como identificação iconográfica confiável.
+
+## Arquitetura e reuso
+
+- Mesmo Workbench, Three.js, Vite, Chromium/Playwright e adaptador `shared/bedrock-geometry.js`/`bedrock-uv.js` usados pelos laboratórios existentes.
+- `addons/altare/tools/studio-domain.ts` chama `planFinish` e `encodeTile` do domínio real. Cantos, extremidades e centros pares/ímpares não são recalculados por uma regra paralela.
+- `addons/altare/tools/sync-studio.mjs` emite um snapshot visual com blocos, permutações, atlas e domínio compilado; nenhum arquivo gerado é fonte autoritativa.
+- `altare-provider.js` resolve os modelos, UVs e bone visibility efetivos. Só depois das transformações agrupa as superfícies por material, preservando a malha visível.
+- `voxel-plan.js` define as construções; `voxel-blocks.js` concentra materiais e formas. `voxel-mesh.js` recorta faces ocultas por blocos parciais, remove superfícies internas das escadas, mantém a escala dos UVs e calcula oclusão nos cantos. Vidros preservam as faces opacas atrás deles. O teto usa uma camada própria para a vista superior. O cenário não altera geometrias do add-on.
+- `scene-layout.js` compartilha o traçado do presbitério entre construção e objetos. `camera-framing.js` ajusta perspectiva e ortográfica pelas caixas de cada peça. Superfícies cobertas por paredes removíveis são preservadas para os cortes; assentos das cadeiras usam uma passada de detalhes independente.
+- A exportação usa SSAA de quatro amostras e OutputPass; não aplica blur artístico, reconstrução por IA ou alteração das texturas. Modo rápido usa uma amostra.
+- A aba estaciona a árvore DOM ao trocar de ferramenta e renderiza sob demanda. A página autônoma `render-studio.html` expõe `window.__BEDROCK_STUDIO__` para o CLI e os testes.
+
+## Gerar uma coleção
+
+Na raiz:
+
+```powershell
+npm run render:altars -- --presets all --size 2560
+npm run render:altars -- --presets crossbrace,crossbrace-linen --size 2560
+npm run render:altars -- --presets guadalupe,trestle --size 3840 --output out/altar-renders/4k
+npm run render:altars -- --presets green --environment chapel --view player --size 2560
+npm run render:altars -- --presets trestle --environment transparent --size 2560
+npm run render:altars -- --presets guadalupe --dressing gifts --candles 6 --view wide --size 3840
+npm run render:altars -- --presets purple --season lent --candles 4 --size 3840
+```
+
+O CLI escreve PNGs, uma galeria HTML, JSON de cada cena e `render-manifest.json` com hashes dos assets, texturas vanilla, biblioteca de objetos, fontes do renderer, opções e câmera. O JSON registra também cada objeto, posição, dimensões, apoio e regras de montagem. Saída padrão: `out/altar-renders/<timestamp>/`, ignorada pelo Git. A coleção padrão também atualiza miniaturas descartáveis em `viewer-3d/public/studio-gallery/`. Para listar os argumentos: `npm run render:altars -- --help`.
+
+## Verificação
+
+```powershell
+npm run check
+npm --prefix viewer-3d run build
+npm --prefix viewer-3d run smoke:studio
+npm --prefix viewer-3d run smoke:studio -- --built
+```
+
+Os testes de domínio cobrem receitas reais, oito cores, dimensões e centros pares/ímpares. Os testes do cenário verificam grade, texturas fixadas, apoio sem interseções em 36 combinações de ambiente/dimensões, corredor livre, camada do teto, área e winding das superfícies, descarte parcial de faces e escala dos UVs. O smoke verifica edições sucessivas, cenários, alfa, modo com sombras, download PNG, salvamento/restauração JSON, navegação sem reload e layout móvel. Também captura altar mínimo 1 × 1, verso 16 × 8, superior vertical 16 × 8 e arquitetura da capela. Relatórios e screenshots ficam em `out/studio-smoke/`.
+
+Para comparação visual: usar a mesma cena JSON, resolução, modo de iluminação e hashes; inspecionar PNGs individuais. Nenhum resultado desta ferramenta substitui o Content Log ou o teste do pacote importado. Uma alteração exclusiva do estúdio não exige republicar o add-on nem mudar sua versão.
+
+A revisão 1.3.0 documenta as medidas e decisões de seleção em [Curadoria dos objetos](STUDIO_PROP_CURATION.md). O CLI também aceita `--furnishing gold|wood`.
+
+**Posição das velas** permite Chão/laterais ou Mesa/extremos voltados à nave, inspirada nas capturas do usuário. A composição na mesa reserva 1,30 bloco no centro e verifica as bases reais; dimensões insuficientes usam as laterais do chão com indicação no painel. CLI: `--candlePlacement floor|mensa`.
+
+## Revisão de ambientes 1.4.0
+
+Critérios: apoios contínuos em todas as dimensões; ausência de interseções entre ambão, cadeiras, altar, velas e credência; faixa de um bloco livre atrás da mensa; luzes no plano da parede; vasos acima da credência; buquê dentro do recipiente; e preservação de faces quando uma parede é ocultada. Testes projetam os cantos de cada objeto no enquadramento e cobrem proporções horizontais e verticais. O smoke gera também verso com montagem, claustro amplo e câmera na altura do jogador.
+
+O claustro também possui canteiros de cercas vivas com bordas de pedra, mantendo o acesso central livre. Evidência local desta revisão: `out/altar-renders/ambientes-1.4.0-2026-10-30/galeria.html` reúne 13 renders 4K; `collection-manifest.json` registra hashes conferidos, 107 testes do projeto, 71 do viewer e smoke dev/compilado.
+
+## Marcenaria 1.6.0
+
+Arca e Balaústres acrescentam duas miniaturas reais e duas composições. Usam nogueira e todos os tecidos; o material aparece fixo e o controle de relevo fica oculto. Pedra/relevo anteriores voltam ao trocar para uma estrutura compatível. Arquivos de cena permanecem schema 1, aceitando as novas famílias; o formato anterior continua abrindo.
+
+## Colunata 1.7.0
+
+Sétimo modelo e composição com mármore claro, douramento e renda vazada. O controle Toalha de renda substitui os tecidos incompatíveis; material/relevo anteriores retornam ao trocar para outra família. A colunata tem programa igual nos quatro lados.
+
+## Revisão 1.7.1
+
+Atualiza os modelos e materiais da colunata do Altare 0.7.1 e suas miniaturas; controles e cenas permanecem iguais. A comparação usa enquadramentos idênticos entre arquivos de release.
+
+## Revisão 1.8.1
+
+Integra a Colunata reconstruída do Altare 0.8.1, com molduras em volume, fustes facetados e perfis de base/cornija. Atualiza miniaturas e preserva os controles e cenas. [Construção, comparação e reteste](../addons/altare/docs/COLONNADE_REBUILD_0.8.1.md).
+
+## Revisão 1.8.2
+
+Integra a Colunata com fustes octogonais e apoios de três níveis, miniaturas atualizadas e a mesma interface. [Detalhes e reteste](../addons/altare/docs/COLONNADE_DETAIL_0.8.2.md).
+
+## Revisão 1.8.3
+
+Atualiza linho, dobra e renda da Colunata, com costuras de quina e retornos sem sobreposição. O hash das miniaturas inclui o novo perfil têxtil. [Encaixe e reteste](../addons/altare/docs/COLONNADE_CLOTH_0.8.3.md).

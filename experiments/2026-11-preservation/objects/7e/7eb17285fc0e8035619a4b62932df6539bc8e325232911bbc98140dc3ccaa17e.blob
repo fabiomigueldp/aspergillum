@@ -1,0 +1,20 @@
+# V49 child hand — contact audit
+
+V49 remains a reversible candidate. This audit does not change geometry and does not assert global fidelity or print-ready manifold union.
+
+## Pair-level evidence
+World-space evaluated BVHs include the child tunic object translation. V48 has 59 hand/tunic overlapping polygon pairs and V49 has 61; 13 added and 11 removed are individually listed in `V49-root-contact-detail.json`.
+
+All added pairs involve hand faceset 24 at original hand z = 1.178067–1.183981 m. Removed pairs occupy z = 1.178420–1.183419 m. All 61 current intersection pairs span z = 1.177471–1.184386 m. The original hand ends at z = 1.187042 m, so the crossings are confined to the proximal wrist insertion, not digits or distal palm.
+
+## Volume inclusion, not just face labels
+The evaluated tunic is a closed two-manifold mesh (zero boundary/nonmanifold edges). Three distinct oblique ray directions agree for every hand vertex: 128 vertices inside, zero ambiguous classifications. All enclosed vertices lie at original z = 1.180323–1.187042 m. No distal vertex (original z < 1.17 m) is enclosed. The 2843 distal vertices have minimum unsigned clearance 12.672 mm.
+
+Nearest-surface depth of the inserted wrist changes from maximum 5.325 mm (V48, 130 enclosed vertices) to 5.665 mm (V49, 128). This is a 0.340 mm depth change at the wrist, consistent with the 10% root scaling. It is not a newly intersecting finger or a palm crossing the sleeve.
+
+## Interpretation and limits
+The source model uses separate closed meshes: the wrist intentionally enters the closed sleeve end to prevent a floating seam. Pair changes are relocation of this existing proximal joining contour as wrist circumference grows. Such overlap is acceptable as the current sculptural assembly representation, but is not a real hollow garment or a Boolean-unified printable mesh. Do not claim zero intersection globally.
+
+Inspect `V49-root-contact-front.png`, `V49-root-contact-underside.png`, and the existing exact-profile `V49-hand-close-after.png`. The posterior camera was occluded by the torso and is not evidence of the seam; an inferior oblique view replaces it. No geometric correction has been made merely to reduce pair counts, since moving the wrist out would create a seam while not improving pose. Independent visual review remains required before promotion.
+
+Rollback: set `TESTE49 — escala mão e queda delicada dos dedos` to zero to restore V48. All other mesh geometry, transforms, and shape keys remain identical to V48 as proved by `V49-scope-verification.json`.

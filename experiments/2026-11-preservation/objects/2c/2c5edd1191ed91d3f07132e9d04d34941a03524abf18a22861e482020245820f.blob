@@ -1,0 +1,351 @@
+{
+  "method": "Reuses the exact frozen V14 201x201 ray-offset grid and native float64 first-hit arrays around protected sample7442. Candidate actual JSON planes/UV/PNG are independently decoded. Affine t/u/v interval extrema over the entire square conservatively discard impossible quads; each surviving face is evaluated on all40401 grid points. Eleven direct traces against every candidate face cross-check bounds/evaluation.",
+  "rows": [
+    {
+      "resolution": 128,
+      "geometry_sha256": "2817fd3966c76e731292919afb44add520a6e4ec6c61227bf33fbf2780c60558",
+      "texture_sha256": "8a7161f403a6cc7227e21c1588b9ee05b09d515dc85c24cd9ea30c8fdd7934b3",
+      "candidate_faces_after_conservative_affine_window_bounds": 5,
+      "samples": 40401,
+      "grid_size": [
+        201,
+        201
+      ],
+      "square_width_mm": 0.4,
+      "sample_pitch_mm": 0.002,
+      "changed_component_samples": 0,
+      "native_band_to_candidate_shell_samples": 0,
+      "V14_native_band_to_shell_samples": 4048,
+      "native_hit_to_missing": 0,
+      "depth_delta_mm_quantiles": [
+        -3.469446951953614e-15,
+        0.0,
+        2.6020852139652106e-14,
+        2.6020852139652106e-14,
+        2.7755575615628914e-14
+      ],
+      "maximum_shell_ahead_native_mm": 0,
+      "direct_unfiltered_spot_checks": [
+        {
+          "grid_xy": [
+            0,
+            0
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 1.2967404927621828e-13
+        },
+        {
+          "grid_xy": [
+            200,
+            0
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 8.348877145181177e-14
+        },
+        {
+          "grid_xy": [
+            0,
+            200
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 1.0480505352461478e-13
+        },
+        {
+          "grid_xy": [
+            200,
+            200
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 1.4566126083082054e-13
+        },
+        {
+          "grid_xy": [
+            100,
+            100
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 0.0
+        },
+        {
+          "grid_xy": [
+            150,
+            50
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 6.217248937900877e-14
+        },
+        {
+          "grid_xy": [
+            50,
+            150
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 7.638334409421077e-14
+        },
+        {
+          "grid_xy": [
+            0,
+            100
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 1.9539925233402755e-14
+        },
+        {
+          "grid_xy": [
+            100,
+            0
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 1.0658141036401503e-13
+        },
+        {
+          "grid_xy": [
+            100,
+            200
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 1.2612133559741778e-13
+        },
+        {
+          "grid_xy": [
+            200,
+            100
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 2.1316282072803006e-14
+        }
+      ]
+    },
+    {
+      "resolution": 512,
+      "geometry_sha256": "6416535dc54ee895a724a674fa83777e38a9dba1c0f7fa6b750fb93a4f5a6b15",
+      "texture_sha256": "5a94ea56e54f2f6771fddc81920dc0fdbe9edae438b19c970965855bc7b282f8",
+      "candidate_faces_after_conservative_affine_window_bounds": 5,
+      "samples": 40401,
+      "grid_size": [
+        201,
+        201
+      ],
+      "square_width_mm": 0.4,
+      "sample_pitch_mm": 0.002,
+      "changed_component_samples": 0,
+      "native_band_to_candidate_shell_samples": 0,
+      "V14_native_band_to_shell_samples": 4048,
+      "native_hit_to_missing": 0,
+      "depth_delta_mm_quantiles": [
+        -3.469446951953614e-15,
+        0.0,
+        2.6020852139652106e-14,
+        2.6020852139652106e-14,
+        2.7755575615628914e-14
+      ],
+      "maximum_shell_ahead_native_mm": 0,
+      "direct_unfiltered_spot_checks": [
+        {
+          "grid_xy": [
+            0,
+            0
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 1.2967404927621828e-13
+        },
+        {
+          "grid_xy": [
+            200,
+            0
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 8.348877145181177e-14
+        },
+        {
+          "grid_xy": [
+            0,
+            200
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 1.0480505352461478e-13
+        },
+        {
+          "grid_xy": [
+            200,
+            200
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 1.4566126083082054e-13
+        },
+        {
+          "grid_xy": [
+            100,
+            100
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 0.0
+        },
+        {
+          "grid_xy": [
+            150,
+            50
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 6.217248937900877e-14
+        },
+        {
+          "grid_xy": [
+            50,
+            150
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 7.638334409421077e-14
+        },
+        {
+          "grid_xy": [
+            0,
+            100
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 1.9539925233402755e-14
+        },
+        {
+          "grid_xy": [
+            100,
+            0
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 1.0658141036401503e-13
+        },
+        {
+          "grid_xy": [
+            100,
+            200
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 1.2612133559741778e-13
+        },
+        {
+          "grid_xy": [
+            200,
+            100
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 2.1316282072803006e-14
+        }
+      ]
+    },
+    {
+      "resolution": 2048,
+      "geometry_sha256": "7d316ce8c92b346095a73e9f1f540167146a4f4aad707491d53f20b7d427de72",
+      "texture_sha256": "71dae6b4e599fc6aa3505974d9be95d4b9f78bc64e528e8ca32ddb33539eb620",
+      "candidate_faces_after_conservative_affine_window_bounds": 5,
+      "samples": 40401,
+      "grid_size": [
+        201,
+        201
+      ],
+      "square_width_mm": 0.4,
+      "sample_pitch_mm": 0.002,
+      "changed_component_samples": 0,
+      "native_band_to_candidate_shell_samples": 0,
+      "V14_native_band_to_shell_samples": 4048,
+      "native_hit_to_missing": 0,
+      "depth_delta_mm_quantiles": [
+        -3.469446951953614e-15,
+        0.0,
+        2.6020852139652106e-14,
+        2.6020852139652106e-14,
+        2.7755575615628914e-14
+      ],
+      "maximum_shell_ahead_native_mm": 0,
+      "direct_unfiltered_spot_checks": [
+        {
+          "grid_xy": [
+            0,
+            0
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 1.2967404927621828e-13
+        },
+        {
+          "grid_xy": [
+            200,
+            0
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 8.348877145181177e-14
+        },
+        {
+          "grid_xy": [
+            0,
+            200
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 1.0480505352461478e-13
+        },
+        {
+          "grid_xy": [
+            200,
+            200
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 1.4566126083082054e-13
+        },
+        {
+          "grid_xy": [
+            100,
+            100
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 0.0
+        },
+        {
+          "grid_xy": [
+            150,
+            50
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 6.217248937900877e-14
+        },
+        {
+          "grid_xy": [
+            50,
+            150
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 7.638334409421077e-14
+        },
+        {
+          "grid_xy": [
+            0,
+            100
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 1.9539925233402755e-14
+        },
+        {
+          "grid_xy": [
+            100,
+            0
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 1.0658141036401503e-13
+        },
+        {
+          "grid_xy": [
+            100,
+            200
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 1.2612133559741778e-13
+        },
+        {
+          "grid_xy": [
+            200,
+            100
+          ],
+          "part_matches_full_unpruned_trace": true,
+          "depth_delta_mm": 2.1316282072803006e-14
+        }
+      ]
+    }
+  ],
+  "limitations": "Known dense-window failure neighborhood only. Finite grid, nearest mip0/front-facing surfaces, three retained parts, no engine or continuous-area claim."
+}

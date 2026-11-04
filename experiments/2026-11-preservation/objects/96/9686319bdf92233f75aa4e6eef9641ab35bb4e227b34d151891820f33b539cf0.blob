@@ -1,0 +1,93 @@
+# V75 · V7 · reconstrução lateral da junção
+
+**A casca calota–ponte–manto passou no gate geométrico independente. O modelo completo e o addon ainda não estão aprovados.**
+
+Candidata selecionada: `adaptive_patch/adaptive-consistent-assembly.npz`.
+
+SHA-256: `712a550fbbb56090ae700e30e4e21153d04c16139062ebcd2a72e818f3e34f7b`.
+
+O ensaio mantém os mesmos **12.484 triângulos e 6.244 vértices** da montagem V6, com orientação do manto restaurada. Passou de **172 cruzamentos estritos detectados para zero na casca**. Só vértices gerados da ponte foram alterados: interfaces fonte, cap, manto e conectividade foram preservados. Não houve aumento de triângulos, novo normalmap, publicação ou substituição de versões anteriores.
+
+## Hipótese nova, com evidência
+
+A dificuldade não estava nas tampas laterais. O diagnóstico independente encontrou:
+
+- Na triangulação média, 30 faces do conjunto completo tinham direções de espessura empurrando seus vértices para lados opostos da mesma face. Na grade resumida 7×57, eram 29. São dois escopos de malha, não contagens contraditórias.
+- Projetar essas direções no cone positivo das normais incidentes, alterando 16 pares de vértices, eliminou o problema de sinais e reduziu 172 cruzamentos para 56.
+- Reduzir somente a espessura lateral depois disso continuou falhando: fatores 0,5 / 0,25 / 0,1 deram 53 / 32 / 28 pares. O último chegava a parede pareada de 0,094 mm e foi rejeitado.
+- Nos resíduos, havia pares de superfícies médias separados por apenas 0,181–0,242 mm, com normais quase antiparalelas, chegando a 178,3°. Era uma dobra geométrica quase fechada, não apenas erro de direção ou falta de amostras.
+- Os contatos finais com o manto estavam em sete faces locais de sua região superior. O centro do patch precisava ser reconstruído e sua saída precisava respeitar essa superfície.
+
+## Reconstrução aplicada
+
+Uma minimização restrita da energia de curvatura moveu somente **120 centros laterais**, mantendo as interfaces fonte e a faixa central t=0,2…0,8 fixas. A regularização penaliza curvatura em s, t e na derivada mista, com penalidade adicional de deslocamento em relação à V6.
+
+Depois da reconstrução, os diretores de espessura foram obtidos da malha discreta e mantidos no cone positivo das faces incidentes. A espessura pareada original foi preservada. Restrições de interfaces impedem a dobra nos endpoints; três planos de faces reais do manto limitam dois pares gerados perto da saída.
+
+A revisão independente identificou que uma versão intermediária não mantinha o alvo de distância após atualizar os diretores. Essa versão foi preservada e substituída por uma cópia consistente: as **seis restrições medidas na geometria final** agora são satisfeitas, com mínimo de **0,212302 mm**. Isso se refere a seis distâncias assinadas a planos locais, **não a uma distância mínima global**.
+
+A continuação de fidelidade reduziu o deslocamento máximo da primeira solução de aproximadamente 24 mm para **19,458 mm na casca**, ou **19,024 mm nos centros**. Um peso de fidelidade maior voltou a criar cruzamentos e foi rejeitado. A candidata é a amostra aprovada de menor deslocamento nesta família testada, não um ótimo global demonstrado.
+
+## Validação independente final
+
+Relatórios: `evidence/adaptive-consistent-independent-gate.json` e `evidence/adaptive-consistent-independent-invariants.json`.
+
+- Zero cruzamentos estritos detectados nas 12.484 faces.
+- Malha fechada; Euler=2; sem winding inconsistente, arestas não-manifold, links inválidos, vértices soltos, triângulos degenerados ou candidatos coplanares adjacentes opostos do teste aplicado.
+- Fonte, cap, manto, endpoints, orientação e conectividade preservados.
+- Quinze hashes V6/V7, incluindo fontes V75/V5 e texturas, conferidos.
+- Espessura dos pares gerados: **0,937–5,049 mm**, preservada com erro numérico máximo de 1,74×10⁻¹⁶ unidade.
+- Faixa central preservada numericamente; diferença residual de **6,94×10⁻¹⁵ mm**. Não chamar essa comparação de igualdade bit a bit de todos os arrays.
+- Zero sinais mistos e zero produtos não positivos entre diretores e normais das faces médias. Cosseno mínimo global, incluindo endpoints: 0,094585.
+- Máximo deslocamento de 19,458 mm: mudança de forma material, sujeita à revisão visual. O mapa `evidence/ADAPTIVE_DISPLACEMENT_VS_V6.png` mostra onde ela ocorre.
+
+O gate usa BVH Blender e interseções estritas de segmentos/triângulos em precisão dupla. Não certifica tangência, coplanaridade geral, distância mínima global nem execução de engine.
+
+## Fidelidade à escultura fonte
+
+Dez mil amostras por área da ponte final, contra a superfície TESTE74 avaliada:
+
+- Mediana da distância: 2,508 mm.
+- p95: 8,566 mm.
+- Máximo amostrado: 11,312 mm.
+
+É distância unilateral amostrada, não Hausdorff exato. A fonte original também contém cruzamentos e manto invertido; esses números medem desvio, não aprovação artística. As normais de aparência não foram usadas para esconder os defeitos.
+
+## Limite importante: corpo antigo
+
+**Zero vale para a casca, não para a escultura completa.**
+
+O teste separado da ponte contra os 1.376 triângulos pretendidos da parte 15 antiga encontrou:
+
+- V6: 928 pares de cruzamento.
+- V7 final: 916 pares.
+- 716 pares comuns; 200 novos e 212 removidos.
+
+Pares não correspondem a números de furos ou regiões independentes. O corpo antigo já atravessava a região; a ligeira redução agregada não aprova o encaixe, nem permite ignorar os novos pares locais. O teste usa os triângulos do exportador, não a cobertura expandida dos pixels alfa, e não cobre todas as peças do corpo.
+
+Os renders continuam mostrando contatos cinzas na cap/ponte e defeitos do corpo reduzido. Portanto esta etapa entrega uma **candidata técnica da casca**, não um addon pronto. A interface com o corpo antigo e o transporte final para faces/texturas Bedrock permanecem pendentes.
+
+## Imagens e revisão visual
+
+As imagens `adaptive-consistent-*` são diagnósticos Blender, não capturas Minecraft. Cap azul, ponte vermelha, manto verde e faixa ouro são malhas nativas estruturais, com normais planas e culling. O corpo cinza contém as 18 partes antigas reimportadas do JSON e alfa, sem normalmap. Cabeça e halo não são referências highpoly acrescentadas para melhorar a imagem.
+
+O controle V6, a correção apenas de diretores e a reconstrução final usam as mesmas câmeras, iluminação e materiais. A revisão visual independente recomenda reter a candidata como evolução técnica local: as quatro vistas preservam a silhueta e reduzem pregas atrás da orelha, sem nova regressão relevante identificada. Permanecem a mancha cinza na nuca, uma ponta lateral e áreas ocultas pelo halo; não há aprovação global. O parecer está em `evidence/review-visual.md`. Imagens de corpo inteiro ajudam a comparar composição, mas não aprovam a junção pequena ou oculta pelo halo.
+
+## Arquivos principais
+
+- `adaptive_patch/adaptive-consistent-assembly.npz`: candidata final congelada.
+- `adaptive_patch/adaptive-consistent-build.json`: método e seis medidas finais.
+- `adaptive_patch/adaptive-consistent-source-distance.json`: desvio amostrado à fonte.
+- `evidence/adaptive-consistent-independent-gate.json`: gate repetido independentemente.
+- `evidence/adaptive-consistent-independent-invariants.json`: invariantes e limites.
+- `evidence/legacy-interface-consistent.json` e `legacy-interface-final-delta.json`: interface com corpo antigo.
+- `evidence/INDEPENDENT_LATERAL_DIAGNOSIS.md`: causa lateral e testes que sustentaram a mudança.
+- `evidence/residual-0p1-analysis.json`: dobra residual que rejeitou a redução de espessura.
+- `adaptive_patch/README.md`: reprodução e histórico de candidatas preservadas.
+
+Scripts e dados dependem dos diretórios irmãos V3–V6 e do Blender V75 preservado. O arquivo de pesquisa não é instalável. Não foram produzidos novos arquivos `.mcaddon`, publicados assets ou alterados normalmaps. Sem teste de Content Log, shader, culling/alpha no jogo, mipmaps, PBR ou desempenho.
+
+
+## Pacote de pesquisa
+
+`V75-V7-LATERAL-SHELL-RESEARCH-NOT-ADDON.zip` reúne scripts, candidatas, relatórios e imagens desta etapa. Os três arquivos de cena `.blend` gerados e caches Python ficam apenas no workspace e são excluídos do ZIP; os scripts e hashes dos renders permanecem incluídos. Dependências V3–V6 e a fonte V75 não são duplicadas. `file-manifest.json` registra tamanho e SHA-256 dos arquivos incluídos. O ZIP é material de pesquisa, não um addon instalável.

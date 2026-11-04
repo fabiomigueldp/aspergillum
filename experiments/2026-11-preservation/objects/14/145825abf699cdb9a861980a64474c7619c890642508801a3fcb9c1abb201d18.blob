@@ -1,0 +1,70 @@
+from pathlib import Path
+import json,hashlib,numpy as np
+from PIL import Image
+W=Path(__file__).resolve().parent;B=W.parents[1]
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+src=B/'band_shell_v13/constrained_fit/retained-band.npz';source=np.load(src);v14=B/'assembly_transport_v14/resource_pack/models/entity/paz_v75_v14_lab_sculpture.geo.json';old=json.loads(v14.read_text())['minecraft:geometry'][0];rows=[]
+for D in sorted(W.glob('budget-*')):
+ z=np.load(D/'band.npz');p=z['points'];f=z['triangles'];t=p[f];volume=np.einsum('ij,ij->i',t[:,0],np.cross(t[:,1],t[:,2])).reshape(-1,12).sum(1)/6;boxes=np.prod(z['cube_sizes'],axis=1)
+ g=json.loads((D/'band.geo.json').read_text())['minecraft:geometry'][0];comb=json.loads((D/'combined-v14.geo.json').read_text())['minecraft:geometry'][0];pruned=json.loads((D/'pruned/combined-v14.geo.json').read_text())['minecraft:geometry'][0];line=json.loads((D/'lineage.json').read_text());me=json.loads((D/'metrics.json').read_text());cert=json.loads((D/'pruned/containment-certificate.json').read_text());si=json.loads((D/'silhouette-metrics.json').read_text())
+ assert np.isfinite(p).all() and np.isfinite(z['cube_sizes']).all() and (z['cube_sizes']>0).all();assert np.all(volume>0);assert np.allclose(volume,boxes,rtol=1e-7,atol=1e-15)
+ assert comb['bones'][1:]==old['bones'][1:];assert all(set(c['uv'])=={'north','south','east','west','up','down'}for c in g['bones'][0]['cubes']);assert all(all(v['uv']==[4093,4093]for v in c['uv'].values())for c in comb['bones'][0]['cubes'])
+ assert set(j for r in line['cube_records']for j in r['native_triangle_indices'])==set(range(len(source['triangles'])))
+ stats={'tag':D.name,'cubes':len(z['cube_centers']),'unpruned_band_quads':len(z['cube_centers'])*6,'unpruned_band_triangles':len(f),'pruned_band_quads':cert['retained_quads'],'pruned_band_triangles':cert['retained_triangles'],'combined_cubes':sum(len(b['cubes'])for b in comb['bones']),'combined_unpruned_quads':sum(len(c['uv'])for b in comb['bones']for c in b['cubes']),'combined_pruned_quads':sum(len(c['uv'])for b in pruned['bones']for c in b['cubes']),'sampled_exposed_nearest_native_surface_mm':me['exposed_cube_to_native_actual_triangle_distance_mm'],'all_native_triangles_represented_in_lineage':True,'all_cube_meshes_outward_positive_volume':True,'all_unpruned_faces_opaque':True,'unchanged_other_v14_bones':True,'json_decode_max_mm':line['json_decode_corner_error_mm'],'silhouette_metrics_path':str((D/'silhouette-metrics.json').relative_to(W)),'metrics_path':str((D/'metrics.json').relative_to(W)),'pruning_certificate_path':str((D/'pruned/containment-certificate.json').relative_to(W)),'combined_geometry_sha256':sha(D/'combined-v14.geo.json'),'native_candidate_sha256':sha(D/'band.npz')}
+ stats['native_sample_coverage']=json.loads((D/'source-sample-coverage.json').read_text()) if (D/'source-sample-coverage.json').exists() else None
+ rows.append(stats)
+texture=np.array(Image.open(W/'combined-v14-opaque.png').convert('RGBA'));legacy=np.array(Image.open(B/'assembly_transport_v14/resource_pack/textures/entity/paz_v75_v14_lab_sculpture.png').convert('RGBA'));change=np.any(texture!=legacy,axis=2);assert np.count_nonzero(change)==16 and np.all(change[4092:4096,4092:4096]);assert np.all(texture[4092:4096,4092:4096,3]==255)
+report={'status':'FEASIBILITY_EXPERIMENT_NOT_RETAINED_AS_FAITHFUL_TRANSPORT','method':'Adaptive UV domain partition with mandatory v0/v3/v13/v16 boundaries and longitudinal endpoint/front partitions. Clip every V13 native triangle to the leaf UV rectangle, fit positive-depth oriented box enclosing both walls/returns/closed ends. Orientation uses area-weighted exterior normal and fitted UV longitudinal tangent. Binary subdivision greedily reduces bounding-box volume excess proxy. Export six opaque faces per box, then separate whole-face containment-certified pruning.','source_band':str(src.relative_to(B)),'source_band_sha256':sha(src),'source_band_unchanged_matches_retained_v13':sha(src)=='aa27567ac125b12a298c283b0e9c99130fe222bf2ce3bdf9f22edf2908f4404b','unchanged_v14_source_geo_sha256':sha(v14),'v14_combined_cube_count':sum(len(b['cubes'])for b in old['bones']),'v14_combined_quad_count':sum(len(c['uv'])for b in old['bones']for c in b['cubes']),'v14_band_cube_quad_count':len(old['bones'][0]['cubes']),'v14_source_pixels_changed_in_copy':16,'source_atlas_modified':False,'opaque_band_is_alpha_independent':True,'whole_assembly_is_opaque':False,'all_trials':rows,'acceptance':'No budget is accepted by this builder as faithful V13 transport. Native shapes are untouched, but candidate crest/end surfaces are approximate. 1400 has sampled1.611mm endpoint deviation and more drawn faces than V14 even after certified pruning. 300/700 remain approximate cost experiments, subject to independent shape/contact/render reviews.','not_claimed':['Exact double crest or endpoint shape preservation','Global minimum clearance or exact Hausdorff bound','Boolean-union watertight tessellation or zero overlaps','PBR improvement','Minecraft support/performance/appearance','Release, deployment or publication'],'remaining_reviews':'Independent critical rays/silhouettes/surface/pruning audit and parent renders under opaque_transport_v15/independent_validation and evidence are external to this builder; consult them before using outputs.'}
+(W/'experiment-summary.json').write_text(json.dumps(report,indent=2)+'\n')
+readme='''# V15 opaque band cuboid feasibility experiment
+
+Status: isolated, not retained as faithful transport. No Minecraft, addon, deployment or publication. Only this directory is written by these scripts; native V13, shell and anatomy stay unchanged.
+
+## Technique
+
+The actual V13 outer/inner/return/trim triangles are clipped to an adaptive UV partition, then enclosed by positive-depth oriented cuboids. Cuboid orientation follows the local UV longitudinal tangent and area-weighted outward normal. Greedy binary subdivision reduces a box-volume-excess allocation proxy. Mandatory v3 and v13 boundaries respect where the double crest should be sampled, but do **not** prove that the crest geometry remains exact. Likewise clipping before fitting avoids using the untrimmed source ends, but a rectangular box still extends beyond the actual trimmed shape.
+
+All six band faces use solid RGB stone. No transparent triangular masks, zero-depth planes or poly_mesh. This is a geometrically approximate volume, not tolerance-zero alpha transport. Other parts in the combined assembly remain V14 and may still use alpha.
+
+## Actual geometry and cost
+
+| Band cubes | Band quads | Pruned band quads | Exposed-sample distance p95/max mm | Combined unpruned/pruned quads |
+|---:|---:|---:|---:|---:|
+'''
+for r in rows:
+ d=r['sampled_exposed_nearest_native_surface_mm'];readme+=f"| {r['cubes']} | {r['unpruned_band_quads']} | {r['pruned_band_quads']} | {d['p95']:.3f}/{d['max']:.3f} | {r['combined_unpruned_quads']}/{r['combined_pruned_quads']} |\n"
+readme+='''
+V14 baseline has 4,444 band quads and 23,098 total assembly quads. The 1,400-cube candidate reduces cube objects but increases drawn faces. Safe hidden-face removal saves only 32/57/196 quads; no camera assumptions were used. The unchanged 1.611 mm worst exposed witness at 700 and 1400 is near the left trimmed termination. The present volume-error allocation does not converge that endpoint merely by doubling the global budget.
+
+At 1400, crest-vertex outward normal rays reach 0.382 mm and 0.811 mm beyond the native v3/v13 samples. These are directional samples, not nearest-surface distances. Therefore neither double crest nor endpoints are claimed preserved exactly.
+
+## Deliverables
+
+Each budget-0300, budget-0700 and budget-1400 folder contains:
+- band.geo.json: standalone opaque band Bedrock geometry.
+- band.npz: actual triangles reconstructed from the delivered JSON, plus cube centers, bases, sizes and per-triangle cube IDs.
+- lineage.json: UV rectangle and native V13 source-face support for every cube; source hash and explicit approximation contract.
+- combined-v14.geo.json: complete V14 assembly with only part_00 replaced.
+- combination.json: exact preservation assertion for other bones and original atlas pixels.
+- metrics.json / metrics-samples.npz: nearest actual native triangle distances, exposed face samples, normal rays, crest samples and caveats.
+- silhouette-metrics.json / coverage-*.png:2048px fixed-view band-only and frozen-native-three-part union coverage differences.
+- pruned/: separate geometry and mesh, with full four-corner positive-clearance containment witnesses for every removed face. Original variants remain untouched.
+
+Standalone texture: opaque-white.png. Combined texture: combined-v14-opaque.png. The combined copy changes only a previously transparent unused 4x4 corner region at 4092..4095 and samples its solid center texel. Every original pixel elsewhere, including all legacy 2048x2048 pixels, remains equal. Sources themselves are not edited.
+
+## Interpretation and limitations
+
+The surface metric uses Blender BVH closest points on actual native triangles, not nearest vertices. It samples 7x7 points per box face and removes samples strictly inside another box. Quantiles are sample quantiles rather than uniform-area percentiles; the finite samples are not a Hausdorff certificate. Overlapping cuboids are intentional, and union volume or watertight Boolean topology was not certified.
+
+Normal rays start 20 mm outside the native sample and use analytical box slabs. Some ray directions meet nearby overfill nearly tangentially. Raw offset from the source sample is not a geometric distance. Native first-hit baseline correction is included separately; large directional deviations still do not equal nearest-surface deviation.
+
+Raster boundary distance includes interior-hole topology. Use added-coverage reach and hole-filled outer boundary metrics, where provided, rather than calling every raw boundary maximum an outer silhouette shift. Tiny negative raster coverage can arise from polygon rasterization; no continuous missing-surface claim follows from it alone.
+
+The standalone band meshes and source lineage provide research artifacts, not a finished asset. Rendered images and independent geometric/contact/pruning checks live in the parent V15 evidence/independent_validation directories and are not substituted by the builder's metrics.
+
+## Reproduce
+
+Run build_opaque_band.py; combine_v14.py; Blender background measure_opaque_band.py; Blender background correct_normal_ray_baseline.py; measure_silhouettes.py; clarify_silhouette_metrics.py; prune_hidden_faces.py; check_native_coverage.py; finalize_experiment.py. Python needs NumPy/SciPy/Pillow. Measurement scripts require Blender mathutils BVH. All write only this directory. A rerun intentionally replaces this isolated experiment's outputs, never native source files.
+'''
+(W/'README.md').write_text(readme)
+print(json.dumps({'status':report['status'],'source_band_unchanged':report['source_band_unchanged_matches_retained_v13'],'trials':len(rows)},indent=2))

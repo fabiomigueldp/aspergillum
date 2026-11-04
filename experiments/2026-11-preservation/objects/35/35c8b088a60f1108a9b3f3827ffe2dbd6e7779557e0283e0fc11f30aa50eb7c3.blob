@@ -1,0 +1,52 @@
+"""Replace inefficient flat cap tessellation with lower-cost documented cube faces.
+Base blocks lose tiny source bevels. Halo front/back ellipse texture keeps PCA outline.
+No edits to original blend or previously generated alpha variant.
+"""
+from pathlib import Path
+from PIL import Image
+from scipy.spatial.transform import Rotation
+import numpy as np,json,math
+ROOT=Path(__file__).resolve().parents[1]
+g=json.load(open(ROOT/'resource_pack/models/entity/sculpture.geo.json'));bones=g['minecraft:geometry'][0]['bones']
+atlas=np.array(Image.open(ROOT/'resource_pack/textures/entity/sculpture.png'))
+d=np.load(ROOT/'evidence/repaired_meshes.npz');meta=json.load(open(ROOT.parent/'evidence/source-export.json'))
+v=d['low_v'];bbv=np.column_stack((v[:,0],v[:,2],-v[:,1]))*16
+
+def encode(origin,sz,pivot,R,uv):
+ e=Rotation.from_matrix(R).as_euler('xyz',degrees=True)
+ return {'origin':[-float(origin[0]+sz[0]),float(origin[1]),float(origin[2])],'size':[float(x) for x in sz],'pivot':[-float(pivot[0]),float(pivot[1]),float(pivot[2])],'rotation':[-float(e[0]),-float(e[1]),float(e[2])],'uv':uv}
+
+def srgb(x):return np.where(x<=.0031308,12.92*x,1.055*x**(1/2.4)-.055)
+# Unused atlas footer begins at y1760, safely after the8312 triangles.
+for j,pi in enumerate([6,7,8]):
+ part=meta['parts'][pi];p=bbv[part['vertex_start']:part['vertex_start']+part['vertex_count']];lo=p.min(0);hi=p.max(0)
+ col=np.round(srgb(np.array(part['color'][:3])*.82)*255).astype(np.uint8)
+ tx=1200+j*24;ty=1760;atlas[ty:ty+16,tx:tx+16,:3]=col;atlas[ty:ty+16,tx:tx+16,3]=255
+ uv={face:{'uv':[tx,ty],'uv_size':[16,16]} for face in ['north','south','east','west','up','down']}
+ bones[pi]['cubes']=[encode(lo,hi-lo,(lo+hi)*.5,np.eye(3),uv)]
+for j,pi in enumerate([10,14]):
+ part=meta['parts'][pi];p=bbv[part['vertex_start']:part['vertex_start']+part['vertex_count']];center=p.mean(0)
+ eig,W=np.linalg.eigh(np.cov((p-center).T));N=W[:,0]
+ if N[2]<0:N=-N
+ V=np.array([0.,1.,0.]);V-=np.dot(V,N)*N;V/=np.linalg.norm(V);U=np.cross(V,N);R=np.column_stack((U,V,N))
+ local=(p-center)@R;lo=local.min(0);hi=local.max(0);offset=(lo+hi)*.5;center=center+R@offset;size=hi-lo
+ #512px exact ellipse, two independent cap faces, opaque48-quad edge band.
+ T=256;tx=j*T;ty=1760;yy,xx=np.mgrid[:T,:T];nx=(xx+.5)/T*2-1;ny=(yy+.5)/T*2-1;radius=np.sqrt(nx*nx+ny*ny)
+ color=np.array(part['color'][:3]);sh=.83+np.clip((radius-.90)/.10,0,1)*.07
+ atlas[ty:ty+T,tx:tx+T,:3]=np.round(srgb(np.clip(sh[:,:,None]*color,0,1))*255).astype(np.uint8);atlas[ty:ty+T,tx:tx+T,3]=(radius<=1).astype(np.uint8)*255
+ cube=encode(center-size/2,size,center,R,{'south':{'uv':[tx,ty],'uv_size':[T,T]},'north':{'uv':[tx+T,ty],'uv_size':[-T,T]}})
+ cubes=[cube];solid_x=1300+j*24;solid_y=1780;atlas[solid_y:solid_y+16,solid_x:solid_x+16,:3]=np.round(srgb(color*.65)*255).astype(np.uint8);atlas[solid_y:solid_y+16,solid_x:solid_x+16,3]=255
+ for k in range(48):
+  aa=k/48*2*math.pi;bb=(k+1)/48*2*math.pi
+  p0=center+U*(math.cos(aa)*size[0]/2)+V*(math.sin(aa)*size[1]/2)-N*size[2]/2
+  p1=center+U*(math.cos(bb)*size[0]/2)+V*(math.sin(bb)*size[1]/2)-N*size[2]/2
+  x=(p1-p0);width=np.linalg.norm(x);x/=width;y=N;z=np.cross(x,y)
+  M=np.column_stack((x,y,z));cubes.append(encode(p0,np.array([width,size[2],0]),p0,M,{'south':{'uv':[solid_x,solid_y],'uv_size':[16,16]}}))
+ bones[pi]['cubes']=cubes
+geo=g['minecraft:geometry'][0];geo['description']['identifier']='geometry.paz_v75_prototype.hybrid'
+(ROOT/'resource_pack/models/entity/sculpture_hybrid.geo.json').write_text(json.dumps(g,separators=(',',':')))
+Image.fromarray(atlas).save(ROOT/'resource_pack/textures/entity/sculpture_hybrid.png',optimize=True)
+import shutil
+shutil.copy2(ROOT/'resource_pack/textures/entity/sculpture_normal_dx.png',ROOT/'resource_pack/textures/entity/sculpture_hybrid_normal_dx.png')
+report={'cube_count':sum(len(b['cubes']) for b in bones),'faces':sum(len(c['uv']) for b in bones for c in b['cubes']),'changed_parts':['base inferior, pedestal, laje: regular opaque bounding cuboids; tiny bevel omitted','Maria and child halos: PCA-oriented elliptical alpha caps plus48 opaque edge quads each'],'unchanged':'All remaining V75 decimated triangle geometry and texture atlas retained exactly','is_minecraft_test':False,'quality_gate':'Research prototype; not approved for release'}
+(ROOT/'evidence/hybrid-build.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))

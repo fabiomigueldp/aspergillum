@@ -1,0 +1,27 @@
+from pathlib import Path
+import numpy as np, json
+from mathutils.bvhtree import BVHTree
+O=Path(__file__).resolve().parent; B=O.parent.parent
+S=np.load(B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz');V=S['points'];F=S['triangles'];SID=S['source_indices'];P=V[F];N=np.cross(P[:,1]-P[:,0],P[:,2]-P[:,0]);N/=np.linalg.norm(N,axis=1)[:,None]
+c=np.load(B/'shell_band_v5/retained_candidate/evidence/cap-paired.npz');field=np.load(B/'lateral_v7/evidence/offset-reach-field.npz');mid=np.load(B/'lateral_v7/evidence/director-cone-midfield.npz');mantle=np.load(B/'integration_v6/evidence/mantle-cut-7p5-restored-orientation.npz')
+# The V7 names outer/inner encode topological pairing, not physical inside of assembled shell.
+# cap source_side 0 and bridge outer_source_ids face the head cavity; restored mantle class1 is inward.
+inner_ids=set(c['source_indices'][c['source_side']==0].tolist())|set(field['cap_source_side0'].tolist())|set(mid['outer_source_ids'].tolist())
+inner=np.zeros(len(F),bool);inner[(S['face_parts']<2)&np.all(np.isin(SID[F],list(inner_ids)),axis=1)]=True;inner[S['face_parts']==2]=mantle['wall_class']==1
+I=np.flatnonzero(inner);tree=BVHTree.FromPolygons(V.tolist(),F[I].tolist(),all_triangles=True,epsilon=0)
+r=np.load(B/'pbr_normals_v2/evidence/repaired_meshes.npz');mp=json.loads((B/'pbr_normals_v2/evidence/alpha-triangle-map.json').read_text());mp=[m for m in mp if m['part']==15];ff0=r['low_f'][[m['cube'] for m in mp]];uids=np.unique(ff0);rev={int(s):i for i,s in enumerate(uids)};ff=np.array([[rev[int(x)] for x in f] for f in ff0]);v=r['low_v'][uids];a=v[ff];raw=np.cross(a[:,1]-a[:,0],a[:,2]-a[:,0]);vn=np.zeros_like(v)
+for k in range(3):np.add.at(vn,ff[:,k],raw)
+vn/=np.maximum(np.linalg.norm(vn,axis=1)[:,None],1e-20)
+# Winding and global vertex/triangle identities are original exporter identities.
+near=[tree.find_nearest(tuple(p)) for p in v];q=np.array([x[0] for x in near]);face=I[[x[2] for x in near]];sd=np.sum((v-q)*N[face],axis=1);dist=np.linalg.norm(v-q,axis=1);alignment=np.sum(vn*N[face],axis=1)
+rays=[]
+for p,n in zip(v,vn):
+ out=[]
+ for sign in [-1,1]:
+  rr=tree.ray_cast(tuple(p),tuple(n*sign),.08)
+  out.append([rr[2] if rr[2] is not None else -1,rr[3] if rr[3] is not None else -1,np.dot(n,rr[1]) if rr[1] is not None else 0])
+ rays.append(out)
+np.savez_compressed(O/'baseline-welded.npz',points=v,triangles=ff,normals=vn,source_indices=uids,source_face_indices=np.array([m['cube'] for m in mp]),part15_local_source_indices=uids-4820)
+np.savez_compressed(O/'inner-shell-and-baseline-inspection.npz',inner_shell_face_indices=I,nearest_points=q,nearest_face_indices=face,nearest_distance=dist,signed_cavity_distance=sd,normal_alignment=alignment,rays=np.array(rays))
+print('baseline',len(v),len(ff),'inner_shell',len(I),'bbox',v.min(0),v.max(0));print('nearest distance',np.percentile(dist*1000,[0,25,50,75,95,100]));print('sd',np.percentile(sd*1000,[0,25,50,75,95,100]));print('negative within10mm',sum((sd<0)&(dist<.01)),'aligned',sum((sd<0)&(dist<.01)&(alignment<-.2)))
+print('cavity inner by part',[(int(k),int(sum(S['face_parts'][I]==k))) for k in [0,1,2]])

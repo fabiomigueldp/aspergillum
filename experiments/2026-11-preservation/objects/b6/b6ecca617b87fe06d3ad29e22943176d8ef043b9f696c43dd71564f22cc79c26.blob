@@ -1,0 +1,47 @@
+import {LEGACY_ID,ATELIER_DESIGNS,designById,SURFACES,TEXTILE_VALUES,compactLayout} from './catalog.ts';
+import {decodeClassicTextile,encodeClassicTextile} from './classic-textile-layout.ts';
+import type {Position,Tile} from './surface.ts';
+import {decodePalette,encodePalette} from './palette-layout.ts';
+import {decodeClassic,encodeClassic} from './classic-layout.ts';
+const atelierIds=new Set(ATELIER_DESIGNS.map(d=>d.id));
+const bounded=(value:unknown,max:number):value is number=>typeof value==='number'&&Number.isInteger(value)&&value>=0&&value<=max;
+// Reject old or mixed snapshots explicitly. Do not silently turn a legacy role
+// into a default pose; callers must use the pure, opt-in migration utilities.
+function requireSchema(states:Record<string,unknown>,fields:Record<string,number>):void {
+ if(!states||typeof states!=='object'||Array.isArray(states)||Object.keys(states).length!==Object.keys(fields).length||!Object.entries(fields).every(([key,max])=>Object.hasOwn(states,key)&&bounded(states[key],max)))throw Error('configuration');
+}
+export function decodeTile(id:string,position:Position,states:Record<string,unknown>):Tile|null {
+ const design=designById(id);
+ if(atelierIds.has(id))requireSchema(states,design?.codec==='edges'?{'altare:edges':15,'altare:facing':3}:{'altare:shape':6,'altare:detail':3,'altare:facing':3});
+ if(id===LEGACY_ID)requireSchema(states,{'altare:shape':9,'altare:detail':4,'altare:facing':3,'altare:stone':2,'altare:cloth':4});
+ if(design?.codec==='classic_textile')return {position:{...position},design:id,cloth:TEXTILE_VALUES.indexOf(design.textile),...decodeClassicTextile(states)};
+ if(design?.codec==='symmetric'){
+  const edges=Number(states['altare:edges']);if(!Number.isInteger(edges)||edges<0||edges>15)throw Error('configuration');
+  return {position:{...position},design:id,stone:SURFACES.indexOf(design.surface),cloth:TEXTILE_VALUES.indexOf(design.textile),frontal:0,facing:0,edges};
+ }
+ if(design&&compactLayout(design))return {position:{...position},design:id,stone:SURFACES.indexOf(design.surface),cloth:TEXTILE_VALUES.indexOf(design.textile),...decodePalette(states)};
+ if(design?.codec==='edges'){
+  const edges=states['altare:edges'],facing=states['altare:facing'];if(!bounded(edges,15)||!bounded(facing,3))throw Error('configuration');
+  return {position:{...position},design:id,stone:SURFACES.indexOf(design.surface),cloth:TEXTILE_VALUES.indexOf(design.textile),frontal:0,facing,edges};
+ }
+ if(design)return {position:{...position},design:id,stone:SURFACES.indexOf(design.surface),cloth:TEXTILE_VALUES.indexOf(design.textile),frontal:Number(states['altare:role']),facing:Number(states['altare:facing']),edges:Number(states['altare:edges'])};
+ if(id!==LEGACY_ID)return null;
+ return {position:{...position},...decodeClassic(states)};
+}
+export function encodeTile(tile:Tile):{id:string;states:Record<string,number>} {
+ if(tile.design){
+  const design=designById(tile.design);if(!design)throw Error('configuration');
+  if(design.codec==='classic_textile')return {id:tile.design,states:encodeClassicTextile(tile)};
+  if(design.codec==='symmetric'){
+   if(tile.facing!==0||tile.frontal!==0||!Number.isInteger(tile.edges)||tile.edges<0||tile.edges>15)throw Error('configuration');
+   return {id:tile.design,states:{'altare:edges':tile.edges}};
+  }
+  if(compactLayout(design))return {id:tile.design,states:encodePalette(tile)};
+  if(design.codec==='edges'){
+   if(tile.frontal!==0||!bounded(tile.edges,15)||!bounded(tile.facing,3))throw Error('configuration');
+   return {id:tile.design,states:{'altare:edges':tile.edges,'altare:facing':tile.facing}};
+  }
+  return {id:tile.design,states:{'altare:edges':tile.edges,'altare:facing':tile.facing,'altare:role':tile.frontal}};
+ }
+ return {id:LEGACY_ID,states:encodeClassic(tile)};
+}

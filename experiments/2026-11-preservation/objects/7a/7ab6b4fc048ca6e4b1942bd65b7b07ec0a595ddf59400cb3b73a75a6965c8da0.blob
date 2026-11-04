@@ -1,0 +1,76 @@
+import json,itertools, pathlib, numpy as np
+from scipy import ndimage
+from PIL import Image
+import sys
+ROOT=pathlib.Path(__file__).parent
+H=int(sys.argv[1]) if len(sys.argv)>1 else 96
+D=ROOT/f'H{H}';D.mkdir(exist_ok=True)
+s=np.load(ROOT.parent/'evidence/source_meshes.npz');meta=json.loads((ROOT.parent/'evidence/source-export.json').read_text())
+v=s['high_v'].astype(float);f=s['high_f'];lo=v.min(0);hi=v.max(0);pitch=(hi[2]-lo[2])/H
+shape=np.ceil((hi-lo)/pitch).astype(int)+2
+occ=np.zeros(shape,dtype=np.uint8)
+# A half-voxel barycentric sampling lattice, with max edge length controlling subdivision.
+# Colors assigned from high triangle ranges in same exported part order.
+start=0;samples=0
+for part in meta['parts']:
+ count=part['high_triangles']; ts=v[f[start:start+count]];start+=count
+ col=2 if part['name'] in ('Base inferior','Pedestal') else 1
+ edges=np.maximum.reduce([np.linalg.norm(ts[:,1]-ts[:,0],axis=1),np.linalg.norm(ts[:,2]-ts[:,0],axis=1),np.linalg.norm(ts[:,2]-ts[:,1],axis=1)])
+ ns=np.maximum(1,np.ceil(edges/(pitch*.45)).astype(int))
+ for n in np.unique(ns):
+  tri=ts[ns==n]
+  for a in range(n+1):
+   for b in range(n-a+1):
+    p=tri[:,0]+(tri[:,1]-tri[:,0])*(a/n)+(tri[:,2]-tri[:,0])*(b/n)
+    ix=np.floor((p-lo)/pitch).astype(int)+1;ix=np.minimum(ix,shape-1)
+    occ[ix[:,0],ix[:,1],ix[:,2]]=col;samples+=len(p)
+print('samples',samples,'surface voxels',np.count_nonzero(occ),flush=True)
+filled=ndimage.binary_fill_holes(occ>0);new=filled&(occ==0)
+if new.any():
+ inds=ndimage.distance_transform_edt(occ==0,return_distances=False,return_indices=True)
+ occ[new]=occ[tuple(inds[:,new])]
+# Remove padding; top boundary sample can produce a 97th layer. Fold to 96-cell extent.
+occ=occ[1:-1,1:-1,1:H+1].copy()
+
+def greedy(order):
+ a=np.transpose(occ,order).copy(); boxes=[]
+ for pos in np.argwhere(a>0):
+  x,y,z=map(int,pos);c=int(a[x,y,z])
+  if not c:continue
+  X=x+1
+  while X<a.shape[0] and a[X,y,z]==c:X+=1
+  Y=y+1
+  while Y<a.shape[1] and np.all(a[x:X,Y,z]==c):Y+=1
+  Z=z+1
+  while Z<a.shape[2] and np.all(a[x:X,y:Y,Z]==c):Z+=1
+  a[x:X,y:Y,z:Z]=0
+  p=np.empty(3,dtype=int);q=p.copy();p[list(order)]=[x,y,z];q[list(order)]=[X,Y,Z]
+  boxes.append((p,q,c))
+ return boxes
+variants=[(o,greedy(o)) for o in itertools.permutations(range(3))]
+order,boxes=min(variants,key=lambda a:len(a[1]));print('greedy counts',[(o,len(b)) for o,b in variants],flush=True)
+# Assert exact disjoint reconstruction of the chosen voxel field.
+rec=np.zeros_like(occ)
+for p,q,c in boxes:
+ sl=tuple(slice(int(p[i]),int(q[i])) for i in range(3));assert not rec[sl].any();rec[sl]=c
+assert np.array_equal(rec,occ)
+unit=pitch*16
+# Blender XYZ -> Bedrock (-X,Z,-Y), center X/Y at source bounding center.
+center=np.zeros(3)
+cubes=[]
+for p,q,c in boxes:
+ a=lo+p*pitch;b=lo+q*pitch
+ orig=[-(b[0]-center[0])/pitch*unit,(a[2]-lo[2])/pitch*unit,-(b[1]-center[1])/pitch*unit]
+ size=[(q[0]-p[0])*unit,(q[2]-p[2])*unit,(q[1]-p[1])*unit]
+ uv={face:{'uv':[2 if c==1 else 10,2],'uv_size':[4,4]} for face in ('north','south','east','west','up','down')}
+ cubes.append({'origin':[round(float(x),6) for x in orig],'size':[round(float(x),6) for x in size],'uv':uv})
+geo={'format_version':'1.14.0','minecraft:geometry':[{'description':{'identifier':f'geometry.paz_v75_voxel_opaque_h{H}','texture_width':16,'texture_height':8,'visible_bounds_width':3,'visible_bounds_height':5,'visible_bounds_offset':[0,1.9,0]},'bones':[{'name':'root','pivot':[0,0,0],'cubes':cubes}]}]}
+(D/'paz_v75_voxel.geo.json').write_text(json.dumps(geo,separators=(',',':')))
+# Flat opaque swatches, manually sRGB encoding source linear base colors.
+colors=[]
+for lin in ([.63,.62,.59],[.47,.45,.41]):
+ arr=np.array(lin);colors.append(tuple(map(int,np.rint(np.where(arr<=.0031308,arr*12.92,1.055*arr**(1/2.4)-.055)*255))))
+im=Image.new('RGBA',(16,8));im.paste((*colors[0],255),(0,0,8,8));im.paste((*colors[1],255),(8,0,16,8));im.save(D/'paz_v75_voxel.png')
+np.savez_compressed(D/'voxel_grid.npz',occupancy=occ,source_min=lo,pitch=pitch)
+report={'source_sha256':meta['sha256'],'source_triangles':len(f),'surface_samples':samples,'sampling':'barycentric lattice max edge step <= 0.45 voxel; sampled shell with enclosed-cavity fill, not exact conservative triangle-box intersection','resolution_xyz':list(map(int,occ.shape)),'height_voxels':H,'source_pitch':pitch,'target_height_blocks':float(hi[2]-lo[2]),'model_units_per_voxel':unit,'axis_mapping':'Blender(x,y,z) -> Bedrock(-x,z,-y), original X/Z preserved; bottom Y=0','occupied_voxels':int(np.count_nonzero(occ)),'enclosed_voxels_filled_before_crop':int(new.sum()),'cuboids':len(boxes),'emitted_faces':6*len(boxes),'greedy_order':order,'greedy_variants':[{ 'order':o,'cuboids':len(bs)} for o,bs in variants],'reconstruction_exact_to_voxel_grid':True,'texture_rgba':[16,8],'palette_srgb':colors,'bounds_model_units':{'min':np.min([c['origin'] for c in cubes],axis=0).tolist(),'max':np.max([np.array(c['origin'])+c['size'] for c in cubes],axis=0).tolist()},'limitations':['No Minecraft runtime validation.','Voxel stair stepping, lost subvoxel details, possible small surface sampling gaps.','Closed holes filled; genuinely open meshes remain hollow.','All six cuboid faces emitted; internal faces add cost.','Offline renders are geometry reconstruction only, not in-game screenshots.','Thousands of cuboids are not a performance guarantee; 50-cube guidance applies to blocks, not a proven entity ceiling.']}
+(D/'metrics.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))

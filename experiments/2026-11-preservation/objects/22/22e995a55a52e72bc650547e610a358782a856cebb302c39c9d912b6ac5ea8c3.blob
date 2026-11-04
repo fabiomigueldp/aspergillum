@@ -1,0 +1,265 @@
+{
+  "status": {
+    "status": "RETAINED_LOCAL_TECHNICAL_RESEARCH",
+    "retained_shell": "structural_rebuild/retained-shell.npz",
+    "sha256": "c79f296415d566db5f9c109389375e0d3ae112fbccbbc89c8628200939fbf81f",
+    "source_files_unchanged": true,
+    "complete_anatomy_frozen": true,
+    "band_frozen": true,
+    "native_closed_shell_screen_passed": true,
+    "independent_visual_retention": "local_only_nine_views",
+    "global_interface_clean": false,
+    "final_art_approved": false,
+    "bedrock_exported": false,
+    "minecraft_runtime_tested": false,
+    "published": false,
+    "vertices": 6334,
+    "triangles": 12664,
+    "baseline_surviving_vertices_exact": 6084,
+    "native_self_crossings_confirmed": 0,
+    "remaining_shell_anatomy_pairs": 98,
+    "remaining_shell_band_pairs": 1339,
+    "silhouette_exact_in_every_tested_view": false,
+    "limits": [
+      "Residual anatomy and band contacts.",
+      "Visible gold fragments, temporal red and small dark ear edges.",
+      "Small frontal raster contour difference.",
+      "No global clearance/thickness or engine certification.",
+      "New cut triangles still need Bedrock transport and bake validation."
+    ]
+  },
+  "inputs": [
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz",
+      "sha256": "712a550fbbb56090ae700e30e4e21153d04c16139062ebcd2a72e818f3e34f7b",
+      "bytes": 230433,
+      "current_sha256": "712a550fbbb56090ae700e30e4e21153d04c16139062ebcd2a72e818f3e34f7b",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/body_interface_v9/constrained_fit/retained-anatomy.npz",
+      "sha256": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+      "bytes": 47106,
+      "current_sha256": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/shell_band_v5/retained_candidate/evidence/band-paired.npz",
+      "sha256": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647",
+      "bytes": 34942,
+      "current_sha256": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/pbr_normals_v2/resource_pack/models/entity/paz_v75_pbr_sculpture.geo.json",
+      "sha256": "160d00c5489e618bdb093eb48a388b17f606ca9970f00de88b164758fa1c46cf",
+      "bytes": 6242831,
+      "current_sha256": "160d00c5489e618bdb093eb48a388b17f606ca9970f00de88b164758fa1c46cf",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/pbr_normals_v2/resource_pack/textures/entity/paz_v75_pbr_sculpture.png",
+      "sha256": "9547dffd84fdc399535c97f88cf8694ade2af98e82de0ec71ec7117473eb7856",
+      "bytes": 1050958,
+      "current_sha256": "9547dffd84fdc399535c97f88cf8694ade2af98e82de0ec71ec7117473eb7856",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-refinement/gui-test/checkpoint-V75-20261102/V75-tunic-lower-trial.blend",
+      "sha256": "2c14fbc7566217ad350ef926abc1dc4a1bc41f457eaab8f10351e90b1f4777d9",
+      "bytes": 59672216,
+      "current_sha256": "2c14fbc7566217ad350ef926abc1dc4a1bc41f457eaab8f10351e90b1f4777d9",
+      "unchanged": true
+    }
+  ],
+  "frozen_scene": {
+    "points_equal_expected_float32": true,
+    "triangles_exact": true,
+    "vertex_count": 6334,
+    "face_count": 12664,
+    "scene_hash_matches_retained": true,
+    "minecraft_tested": false,
+    "bedrock_exported": false,
+    "published": false
+  },
+  "retained_identical_to_reviewed": true,
+  "syntax_check": {
+    "passed": true,
+    "files": [
+      "tools/render_rim_fit.py",
+      "tools/inspect_frozen_scene.py",
+      "tools/finalize_package.py",
+      "tools/compare_shell_outline.py",
+      "tools/freeze_diagnostic_scene.py",
+      "independent_diagnosis/resolve_predicate_witnesses.py",
+      "independent_diagnosis/measure_contact_traces.py",
+      "independent_diagnosis/check_patch_domains.py",
+      "independent_diagnosis/review_rebuilt_rim.py",
+      "independent_diagnosis/check_hull_scope.py",
+      "independent_diagnosis/measure_exact_rim_chords.py",
+      "independent_diagnosis/check_float32_transport.py",
+      "independent_diagnosis/map_envelope_limits.py",
+      "independent_diagnosis/measure_rim_lips.py",
+      "independent_diagnosis/check_retriangulated_domains.py",
+      "structural_rebuild/build_extruded_envelopes.py",
+      "structural_rebuild/build_convex_envelopes.py",
+      "structural_rebuild/build_pinna_envelopes.py",
+      "structural_rebuild/finalize_rebuild_report.py",
+      "structural_rebuild/measure_rim_spans.py",
+      "structural_rebuild/audit_rebuild.py",
+      "structural_rebuild/build_boolean_rim_v2.py",
+      "structural_rebuild/build_boolean_rim.py",
+      "structural_rebuild/retriangulate_inherited_patches.py",
+      "structural_rebuild/build_polygonal_pinna.py"
+    ]
+  },
+  "final_images": [
+    {
+      "path": "evidence/polygon05-full-front.png",
+      "sha256": "f759fcc19f84bfd0073e399881fbae010eeca621d92b32a393a078337ac45669",
+      "bytes": 1194273
+    },
+    {
+      "path": "evidence/polygon05-head-front.png",
+      "sha256": "c47efd70e6130d4e7f9da9e87f76a0d4220d7f5fa9c89647649d111ed4c4bf7f",
+      "bytes": 982952
+    },
+    {
+      "path": "evidence/polygon05-junction-profile.png",
+      "sha256": "9f1ce5f9f3739c8a560b02a3ec3a8717387ba7530d08c23d96205867bd69455d",
+      "bytes": 1190488
+    },
+    {
+      "path": "evidence/polygon05-junction-back.png",
+      "sha256": "048bd6b5a0c3b14a347cbfbc749ddd2077dba7a1ab1cd3a6986b52efa26f3842",
+      "bytes": 1072740
+    },
+    {
+      "path": "evidence/polygon05-left-ear.png",
+      "sha256": "7289bf0adeca0738e00a03020ace31e7ca15fbee38eac680913783415e8d3304",
+      "bytes": 1381503
+    },
+    {
+      "path": "evidence/polygon05-right-ear.png",
+      "sha256": "cd2b22b1c3641a6d1a17c0d6c9e755515d398b859d1d6fcb541629d3e782fbda",
+      "bytes": 1339436
+    },
+    {
+      "path": "evidence/polygon05-nohalo-left-ear-oblique.png",
+      "sha256": "9c349324a1f5cc510850758813e1cec3598e6adb16030120f549ab5b550d709b",
+      "bytes": 1199691
+    },
+    {
+      "path": "evidence/polygon05-nohalo-right-ear-oblique.png",
+      "sha256": "bfc4ed6e5d91641f0b39868e06e7f8faaf4fc7bcd5ce8de6bff0b82898accf5d",
+      "bytes": 1185258
+    },
+    {
+      "path": "evidence/polygon05-nohalo-rear-open.png",
+      "sha256": "27b7ef57639bc529001e227076c83267dd1bec592c4633bce4b8b033ee305fba",
+      "bytes": 1101024
+    }
+  ],
+  "independent_geometry_review": "independent_diagnosis/REVIEW_FINAL_V11.md",
+  "independent_visual_review": "evidence/review-visual-v11.md",
+  "outline": {
+    "method": "2048px orthographic binary union of candidate native shell, frozen V5 band and frozen V9 part15 triangles; no halo or other pieces, no alpha expansion, lighting or normals. Red=removed coverage, blue=added. Horizontal scanline shift can overstate near-horizontal contour movement; bidirectional nearest boundary distance is also reported. Both are view-limited and raster-quantized, not a 3D silhouette guarantee.",
+    "inputs": [
+      {
+        "path": "paz-bedrock-v75-prototype-20261103/lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz",
+        "sha256": "712a550fbbb56090ae700e30e4e21153d04c16139062ebcd2a72e818f3e34f7b"
+      },
+      {
+        "path": "paz-bedrock-v75-prototype-20261103/ear_rim_v11/structural_rebuild/polygonal-pinna-0.5mm-clean.npz",
+        "sha256": "c79f296415d566db5f9c109389375e0d3ae112fbccbbc89c8628200939fbf81f"
+      }
+    ],
+    "views": {
+      "front": {
+        "boundary_bidirectional_nearest_max_pixels": 3.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 1.2451171875,
+        "xor_coverage_pixels": 16,
+        "coverage_pixels_before": 1266757,
+        "coverage_pixels_after": 1266751,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 3.0,
+        "pixel_world_size_mm": 0.4150390625,
+        "max_outer_edge_shift_mm": 1.2451171875
+      },
+      "profile": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 1433373,
+        "coverage_pixels_after": 1433373,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.390625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "back": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 1382130,
+        "coverage_pixels_after": 1382130,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.4638671875,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "left-ear": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 2761990,
+        "coverage_pixels_after": 2761990,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "right-ear": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 2842914,
+        "coverage_pixels_after": 2842914,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "left-oblique": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 2585138,
+        "coverage_pixels_after": 2585138,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "right-oblique": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 2601673,
+        "coverage_pixels_after": 2601673,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 0.0
+      }
+    },
+    "minecraft_test": false
+  }
+}

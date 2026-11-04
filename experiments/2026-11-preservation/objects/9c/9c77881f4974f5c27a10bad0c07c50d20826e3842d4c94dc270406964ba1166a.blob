@@ -1,0 +1,5 @@
+# Quarentena: exemplos sintéticos
+
+Doze entradas e relatórios do protótipo offline. Nenhuma coleta de mundo ou mutação de jogo. Todas as saídas mantêm quarentena e efeitos vazios. `human-review-proposal.json` é somente um registro de revisão, sem autorização/execução. Os JSONs de entrada são compactos, sem newline final, conforme o contrato conservador.
+
+Reproduzir: `node tools/recovery-quarantine-scenarios.mjs`. Inspecionar uma entrada: `node tools/recovery-quarantine.mjs --input out/state-compaction/quarantine-proposal/one_exact_item.input.json`.

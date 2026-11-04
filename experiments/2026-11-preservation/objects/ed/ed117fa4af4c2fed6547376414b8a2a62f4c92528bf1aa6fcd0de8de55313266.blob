@@ -1,0 +1,60 @@
+"""Replace only defective triangulations of clipped source triangles.
+All boundary vertices and all positions stay exact. A source triangle clipped by
+cutter has a planar polygon boundary; Blender float32 may triangulate consecutive
+collinear boundary points into zero-area ears. This script re-triangulates that
+same polygon in double precision, preserving its oriented boundary exactly.
+It never removes a visible region or hides a face. Multi-loop cases are rejected.
+"""
+from pathlib import Path
+import sys,json,numpy as np
+from collections import defaultdict,Counter
+O=Path(__file__).resolve().parent;tag=sys.argv[1];dsttag=sys.argv[2];src=O/(tag+'.npz');dst=O/(dsttag+'.npz')
+if dst.exists():raise FileExistsError(dst)
+d=np.load(src);p=d['points'];f=d['triangles'];parent=d['baseline_face_indices'];parts=d['face_parts'];role=d['face_roles'];cutpar=d['cutter_face_indices'];raw=np.cross(p[f[:,1]]-p[f[:,0]],p[f[:,2]]-p[f[:,0]]);ar=np.linalg.norm(raw,axis=1)/2
+bad=np.flatnonzero(ar<1e-15);groups=np.unique(parent[bad]);records=[];replace={};rem=[]
+if (groups<0).any():raise RuntimeError('Degenerate new rim faces need separate surface-patch rebuild')
+def cross(a,b):return a[0]*b[1]-a[1]*b[0]
+for j in groups:
+ ids=np.flatnonzero(parent==j);edges=Counter(tuple(sorted((int(t[k]),int(t[(k+1)%3])))) for t in f[ids] for k in range(3));directed=[(int(t[k]),int(t[(k+1)%3])) for t in f[ids] for k in range(3) if edges[tuple(sorted((int(t[k]),int(t[(k+1)%3]))))]==1]
+ nxt={x:y for x,y in directed}
+ if len(nxt)!=len(directed):raise RuntimeError(f'Non-simple boundary source face {j}')
+ left=set(nxt);loops=[]
+ while left:
+  first=min(left);loop=[];cur=first
+  while cur not in loop:
+   loop.append(cur);left.remove(cur);cur=nxt[cur]
+  if cur!=first:raise RuntimeError('Broken boundary cycle')
+  loops.append(loop)
+ if len(loops)!=1:raise RuntimeError(f'Multi-loop source face {j}: {list(map(len,loops))}')
+ loop=loops[0];nn=raw[ids].sum(0);nn/=np.linalg.norm(nn);basis=p[loop[1]]-p[loop[0]];basis/=np.linalg.norm(basis);u=basis;v=np.cross(nn,u);xy={i:np.array([(p[i]-p[loop[0]])@u,(p[i]-p[loop[0]])@v]) for i in loop};scale=max(np.linalg.norm(xy[i]) for i in loop);tol=max(scale*scale*1e-10,1e-20);poly=list(loop);tri=[]
+ while len(poly)>3:
+  options=[]
+  for k,b in enumerate(poly):
+   a=poly[k-1];c=poly[(k+1)%len(poly)];aa,bb,cc=xy[a],xy[b],xy[c];area=cross(bb-aa,cc-aa)
+   if area<=tol:continue
+   contains=False
+   for x in poly:
+    if x in [a,b,c]:continue
+    xx=xy[x]
+    if min(cross(bb-aa,xx-aa),cross(cc-bb,xx-bb),cross(aa-cc,xx-cc))>=-tol:contains=True;break
+   if not contains:
+    edges2=[np.linalg.norm(bb-aa),np.linalg.norm(cc-bb),np.linalg.norm(aa-cc)];quality=area/(sum(e*e for e in edges2)+1e-30);options.append((quality,k,[a,b,c]))
+  if not options:raise RuntimeError(f'No nondegenerate ear source {j}, remaining {poly}')
+  _,k,t=max(options,key=lambda z:z[0]);tri.append(t);poly.pop(k)
+ aa,bb,cc=[xy[i] for i in poly]
+ if cross(bb-aa,cc-aa)<=tol:raise RuntimeError(f'Degenerate last triangle source{j}')
+ tri.append(poly);tri=np.array(tri,int)
+ # Exact oriented boundary test; every original patch boundary edge survives.
+ newcounts=Counter(tuple(sorted((int(t[k]),int(t[(k+1)%3])))) for t in tri for k in range(3));newbound={(int(t[k]),int(t[(k+1)%3])) for t in tri for k in range(3) if newcounts[tuple(sorted((int(t[k]),int(t[(k+1)%3]))))]==1}
+ if newbound!=set(directed):raise RuntimeError('Boundary changed')
+ used=set(f[ids].flatten());newused=set(tri.flatten())
+ if used!=newused:raise RuntimeError(f'Patch has interior vertices needing retention {used-newused}')
+ replace[int(ids.min())]=(tri,int(j),int(parts[ids[0]]));rem.extend(ids.tolist());records.append({'baseline_face':int(j),'old_candidate_faces':ids.tolist(),'new_triangles':tri.tolist(),'oriented_boundary':directed,'old_triangles':len(ids),'new_triangle_count':len(tri),'old_area_m2':float(ar[ids].sum()),'new_area_m2':float((np.linalg.norm(np.cross(p[tri[:,1]]-p[tri[:,0]],p[tri[:,2]]-p[tri[:,0]]),axis=1)/2).sum()),'all_patch_vertices_retained':True,'oriented_boundary_bit_identical':True})
+rem=set(rem);nf=[];npar=[];npart=[];nrole=[];ncut=[]
+for i,t in enumerate(f):
+ if i in replace:
+  ts,j,part=replace[i];nf.extend(ts.tolist());npar.extend([j]*len(ts));npart.extend([part]*len(ts));nrole.extend([1]*len(ts));ncut.extend([-1]*len(ts))
+ elif i not in rem:nf.append(t.tolist());npar.append(int(parent[i]));npart.append(int(parts[i]));nrole.append(int(role[i]));ncut.append(int(cutpar[i]))
+f=np.array(nf,int);raw=np.cross(p[f[:,1]]-p[f[:,0]],p[f[:,2]]-p[f[:,0]]);norm=np.zeros_like(p)
+for k in range(3):np.add.at(norm,f[:,k],raw)
+norm/=np.maximum(np.linalg.norm(norm,axis=1)[:,None],1e-30);metadata=json.loads(str(d['provenance']));metadata['triangulation_cleanup']={'input':src.name,'same_positions':True,'same_oriented_patch_boundaries':True,'affected_baseline_faces':groups.tolist(),'method':'Double-precision constrained ear triangulation of the existing planar source polygon; no area removed and no source/new vertex moved or removed.'};vals={k:d[k] for k in d.files};vals.update(triangles=f,normals=norm,baseline_face_indices=np.array(npar),face_parts=np.array(npart),face_roles=np.array(nrole),cutter_face_indices=np.array(ncut),provenance=np.array(json.dumps(metadata)));np.savez_compressed(dst,**vals);(O/(dsttag+'-retriangulation.json')).write_text(json.dumps(records,indent=2));print(json.dumps({'candidate':str(dst),'retriangulated_source_faces':groups.tolist(),'vertices':len(p),'triangles_before':len(d['triangles']),'triangles_after':len(f),'min_area_m2':float(np.linalg.norm(raw,axis=1).min()/2),'all_points_bit_exact':bool(np.array_equal(p,d['points']))},indent=2))

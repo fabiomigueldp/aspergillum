@@ -1,0 +1,11 @@
+import numpy as np,json
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';skin=np.load(r+'neck-collar-exact-obstacles.npz');P=skin['skin_points'];T=skin['skin_triangles'];tree=BVHTree.FromPolygons(P.tolist(),T.tolist(),all_triangles=True);curves={'mantle':np.load(r+'cap-mantle-contour-exterior-proof.npz')['mantle']};out={}
+for name,C in curves.items():
+ hits=[]
+ for i in range(len(C)-1):
+  a=Vector(C[i]);v=Vector(C[i+1])-a;length=v.length;point,normal,tri,dist=tree.ray_cast(a,v.normalized(),length)
+  if point is not None and 1e-8<dist<length-1e-8:hits.append({'edge':[i,i+1],'skin_triangle':int(tri),'segment_t':dist/length,'point':list(point),'skin_triangle_vertices':T[tri].tolist()})
+ out[name]={'segment_count':len(C)-1,'strict_triangle_crossings':hits}
+json.dump(out,open(r+'cap-mantle-exterior-curve-segment-check.json','w'),indent=2);print(out)

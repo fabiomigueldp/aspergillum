@@ -1,0 +1,541 @@
+{
+  "baseline": {
+    "vertices": 692,
+    "triangles": 1376,
+    "legacy_coordinate_match_max_cyclic_error": 0.0,
+    "source_indices_are_global_repaired_low_v": true,
+    "source_face_indices_are_global_repaired_low_f": true,
+    "source_face_order_is_alpha_triangle_map_part15_order": true,
+    "part15_local_vertex_index": "source_indices - 4820",
+    "tiny_component": "Three vertices/two triangles retained exactly; original source double area about 1e-14. Two collapsed12-triangle components were already excluded by intended export; no additional deletion here."
+  },
+  "fixed_mask": {
+    "explicit_protected": 280,
+    "nonactive": 410,
+    "changed": 274,
+    "unchanged": 418,
+    "protected_exact": true,
+    "nonactive_exact": true,
+    "connectivity_exact": true,
+    "source_indices_exact": true
+  },
+  "variants": {
+    "inward-0p5mm": [
+      {
+        "crossings": 670,
+        "by_shell_part": {
+          "0": 260,
+          "1": 410,
+          "2": 0
+        },
+        "body_crossed_faces": 96,
+        "fixed_only_crossings": 465,
+        "protected_only_crossings": 462,
+        "self_crossings": 0,
+        "face_normal_dot_min": 0.7414495409148861,
+        "face_flips": 0,
+        "min_double_area": 1.013652469562605e-14,
+        "changed_vertices": 274,
+        "displacement_mm": {
+          "max": 9.75558717352379,
+          "p95_changed": 2.884627778280219,
+          "median_changed": 0.9709776978053246
+        },
+        "protected_exact": true,
+        "iteration": 0,
+        "solver_success": true,
+        "lower_bounds_at_max": 0,
+        "min_main_component_area_ratio": 0.13665750630719703,
+        "protected_bitwise_exact": true
+      },
+      {
+        "crossings": 568,
+        "by_shell_part": {
+          "0": 209,
+          "1": 359,
+          "2": 0
+        },
+        "body_crossed_faces": 71,
+        "fixed_only_crossings": 465,
+        "protected_only_crossings": 462,
+        "self_crossings": 0,
+        "face_normal_dot_min": 0.5445551058515823,
+        "face_flips": 0,
+        "min_double_area": 1.013652469562605e-14,
+        "changed_vertices": 274,
+        "displacement_mm": {
+          "max": 14.982711225120418,
+          "p95_changed": 6.417155259890814,
+          "median_changed": 1.1342573406367342
+        },
+        "protected_exact": true,
+        "iteration": 1,
+        "solver_success": true,
+        "lower_bounds_at_max": 0,
+        "min_main_component_area_ratio": 0.01654163768415045,
+        "protected_bitwise_exact": true
+      }
+    ],
+    "inward-0p3mm-max5": [
+      {
+        "crossings": 902,
+        "by_shell_part": {
+          "0": 307,
+          "1": 502,
+          "2": 93
+        },
+        "body_crossed_faces": 129,
+        "fixed_only_crossings": 465,
+        "protected_only_crossings": 462,
+        "self_crossings": 0,
+        "face_normal_dot_min": 0.8142865443183388,
+        "face_flips": 0,
+        "min_double_area": 1.013652469562605e-14,
+        "changed_vertices": 274,
+        "displacement_mm": {
+          "max": 5.00000000000015,
+          "p95_changed": 2.682772167150276,
+          "median_changed": 0.7753744286970781
+        },
+        "protected_exact": true,
+        "iteration": 0,
+        "solver_success": true,
+        "lower_bounds_at_max": 7,
+        "min_main_component_area_ratio": 0.3266845528748349,
+        "protected_bitwise_exact": true
+      },
+      {
+        "crossings": 769,
+        "by_shell_part": {
+          "0": 211,
+          "1": 465,
+          "2": 93
+        },
+        "body_crossed_faces": 98,
+        "fixed_only_crossings": 465,
+        "protected_only_crossings": 462,
+        "self_crossings": 0,
+        "face_normal_dot_min": 0.4015623331681743,
+        "face_flips": 0,
+        "min_double_area": 1.013652469562605e-14,
+        "changed_vertices": 274,
+        "displacement_mm": {
+          "max": 5.00000000000015,
+          "p95_changed": 4.999999999999972,
+          "median_changed": 0.9330293575897836
+        },
+        "protected_exact": true,
+        "iteration": 1,
+        "solver_success": true,
+        "lower_bounds_at_max": 18,
+        "min_main_component_area_ratio": 0.3843782568862642,
+        "protected_bitwise_exact": true
+      },
+      {
+        "crossings": 769,
+        "by_shell_part": {
+          "0": 211,
+          "1": 465,
+          "2": 93
+        },
+        "body_crossed_faces": 98,
+        "fixed_only_crossings": 465,
+        "protected_only_crossings": 462,
+        "self_crossings": 0,
+        "face_normal_dot_min": 0.4015623331681743,
+        "face_flips": 0,
+        "min_double_area": 1.013652469562605e-14,
+        "changed_vertices": 274,
+        "displacement_mm": {
+          "max": 5.00000000000015,
+          "p95_changed": 4.999999999999972,
+          "median_changed": 0.9330293575897836
+        },
+        "protected_exact": true,
+        "iteration": 2,
+        "solver_success": true,
+        "lower_bounds_at_max": 18,
+        "min_main_component_area_ratio": 0.3843785187850903,
+        "protected_bitwise_exact": true
+      },
+      {
+        "crossings": 769,
+        "by_shell_part": {
+          "0": 211,
+          "1": 465,
+          "2": 93
+        },
+        "body_crossed_faces": 98,
+        "fixed_only_crossings": 465,
+        "protected_only_crossings": 462,
+        "self_crossings": 0,
+        "face_normal_dot_min": 0.4015623331681743,
+        "face_flips": 0,
+        "min_double_area": 1.013652469562605e-14,
+        "changed_vertices": 274,
+        "displacement_mm": {
+          "max": 5.00000000000015,
+          "p95_changed": 4.999999999999972,
+          "median_changed": 0.9330293575897836
+        },
+        "protected_exact": true,
+        "iteration": 3,
+        "solver_success": true,
+        "lower_bounds_at_max": 18,
+        "min_main_component_area_ratio": 0.38438052367134984,
+        "protected_bitwise_exact": true
+      }
+    ],
+    "inward-0p5mm-max10": [
+      {
+        "crossings": 670,
+        "by_shell_part": {
+          "0": 260,
+          "1": 410,
+          "2": 0
+        },
+        "body_crossed_faces": 96,
+        "fixed_only_crossings": 465,
+        "protected_only_crossings": 462,
+        "self_crossings": 0,
+        "face_normal_dot_min": 0.7414495409148861,
+        "face_flips": 0,
+        "min_double_area": 1.013652469562605e-14,
+        "changed_vertices": 274,
+        "displacement_mm": {
+          "max": 9.75558717352379,
+          "p95_changed": 2.884627778280219,
+          "median_changed": 0.9709776978053246
+        },
+        "protected_exact": true,
+        "iteration": 0,
+        "solver_success": true,
+        "lower_bounds_at_max": 0,
+        "min_main_component_area_ratio": 0.13665750630719703,
+        "protected_bitwise_exact": true
+      },
+      {
+        "crossings": 568,
+        "by_shell_part": {
+          "0": 209,
+          "1": 359,
+          "2": 0
+        },
+        "body_crossed_faces": 71,
+        "fixed_only_crossings": 465,
+        "protected_only_crossings": 462,
+        "self_crossings": 0,
+        "face_normal_dot_min": 0.5445551136064479,
+        "face_flips": 0,
+        "min_double_area": 1.013652469562605e-14,
+        "changed_vertices": 274,
+        "displacement_mm": {
+          "max": 10.000000000000016,
+          "p95_changed": 6.417155259890814,
+          "median_changed": 1.1331272735077542
+        },
+        "protected_exact": true,
+        "iteration": 1,
+        "solver_success": true,
+        "lower_bounds_at_max": 4,
+        "min_main_component_area_ratio": 0.016541641883088178,
+        "protected_bitwise_exact": true
+      }
+    ]
+  },
+  "scope_caveat": "Mask is a conservative coordinate-feature region plus cavity coverage criterion, not a hand-labeled anatomical segmentation or formal camera-visible-silhouette certificate. Parent renderer must visually validate.",
+  "exploratory_broad_mask": {
+    "definition": "face y<-.28,z<3.565; ears (x<-.08 or x>.16),-.26<y<-.145,3.405<z<3.55; lowerneck z<3.28",
+    "protected_vertices": 362,
+    "all_fixed_contact_body_faces": 53,
+    "face_ids": [
+      21,
+      53,
+      171,
+      172,
+      173,
+      174,
+      180,
+      181,
+      182,
+      198,
+      199,
+      200,
+      212,
+      215,
+      218,
+      219,
+      220,
+      553,
+      562,
+      671,
+      672,
+      675,
+      678,
+      679,
+      680,
+      681,
+      682,
+      683,
+      685,
+      686,
+      771,
+      895,
+      898,
+      899,
+      900,
+      903,
+      906,
+      922,
+      924,
+      928,
+      1327,
+      1328,
+      1333,
+      1336,
+      1346,
+      1349,
+      1350,
+      1355,
+      1356,
+      1357,
+      1358,
+      1359,
+      1362
+    ],
+    "source_face_ids": [
+      6237,
+      6269,
+      6387,
+      6388,
+      6389,
+      6390,
+      6396,
+      6397,
+      6398,
+      6414,
+      6415,
+      6416,
+      6428,
+      6431,
+      6434,
+      6435,
+      6436,
+      6781,
+      6790,
+      6899,
+      6900,
+      6903,
+      6906,
+      6907,
+      6908,
+      6909,
+      6910,
+      6911,
+      6913,
+      6914,
+      6999,
+      7123,
+      7126,
+      7127,
+      7128,
+      7131,
+      7134,
+      7150,
+      7152,
+      7156,
+      7567,
+      7568,
+      7573,
+      7576,
+      7586,
+      7589,
+      7590,
+      7595,
+      7596,
+      7597,
+      7598,
+      7599,
+      7602
+    ],
+    "bbox": [
+      [
+        -0.1097746267914772,
+        -0.35964101552963257,
+        3.4321303367614746
+      ],
+      [
+        0.19114068150520325,
+        -0.1705915331840515,
+        3.559638023376465
+      ]
+    ],
+    "not_current_mask": true
+  },
+  "initial_candidate_residual": {
+    "crossing_pairs": 670,
+    "all_fixed_pairs": 465,
+    "all_protected_pairs": 462,
+    "all_fixed_body_faces": 51,
+    "all_protected_body_faces": 49,
+    "map": "initial-candidate-residual-map.json"
+  },
+  "largest_displacements": [
+    {
+      "welded_vertex": 139,
+      "source_vertex": 4959,
+      "source_xyz": [
+        -0.06986480206251144,
+        -0.00823748204857111,
+        3.305816650390625
+      ],
+      "displacement_mm": 9.75558717352379
+    },
+    {
+      "welded_vertex": 172,
+      "source_vertex": 4992,
+      "source_xyz": [
+        -0.023962536826729774,
+        -0.05341799557209015,
+        3.373457193374634
+      ],
+      "displacement_mm": 6.5814092894017975
+    },
+    {
+      "welded_vertex": 95,
+      "source_vertex": 4915,
+      "source_xyz": [
+        -0.08360617607831955,
+        -0.03484420105814934,
+        3.311192035675049
+      ],
+      "displacement_mm": 6.558837735328519
+    },
+    {
+      "welded_vertex": 96,
+      "source_vertex": 4916,
+      "source_xyz": [
+        -0.07145052403211594,
+        -0.03298536315560341,
+        3.3246803283691406
+      ],
+      "displacement_mm": 6.54011938407918
+    },
+    {
+      "welded_vertex": 168,
+      "source_vertex": 4988,
+      "source_xyz": [
+        -0.04479797184467316,
+        -0.06960872560739517,
+        3.3687756061553955
+      ],
+      "displacement_mm": 6.500606006809382
+    },
+    {
+      "welded_vertex": 140,
+      "source_vertex": 4960,
+      "source_xyz": [
+        -0.05236151069402695,
+        -0.0064545366913080215,
+        3.3197312355041504
+      ],
+      "displacement_mm": 6.350943808404781
+    },
+    {
+      "welded_vertex": 461,
+      "source_vertex": 5281,
+      "source_xyz": [
+        0.0810379832983017,
+        -0.059666600078344345,
+        3.352400302886963
+      ],
+      "displacement_mm": 5.337518882555876
+    },
+    {
+      "welded_vertex": 501,
+      "source_vertex": 5337,
+      "source_xyz": [
+        0.09085212647914886,
+        -0.07299262285232544,
+        3.3499581813812256
+      ],
+      "displacement_mm": 4.693466862980156
+    },
+    {
+      "welded_vertex": 292,
+      "source_vertex": 5112,
+      "source_xyz": [
+        -0.029509207233786583,
+        0.016543114557862282,
+        3.3083584308624268
+      ],
+      "displacement_mm": 4.561589509966457
+    },
+    {
+      "welded_vertex": 94,
+      "source_vertex": 4914,
+      "source_xyz": [
+        -0.08743690699338913,
+        -0.029582815244793892,
+        3.291391372680664
+      ],
+      "displacement_mm": 4.453785624843849
+    },
+    {
+      "welded_vertex": 602,
+      "source_vertex": 5438,
+      "source_xyz": [
+        0.07807426154613495,
+        -0.29254385828971863,
+        3.700007200241089
+      ],
+      "displacement_mm": 3.9702448335810936
+    },
+    {
+      "welded_vertex": 388,
+      "source_vertex": 5208,
+      "source_xyz": [
+        0.059850629419088364,
+        -0.05140640586614609,
+        3.3654239177703857
+      ],
+      "displacement_mm": 3.8762451943058402
+    },
+    {
+      "welded_vertex": 585,
+      "source_vertex": 5421,
+      "source_xyz": [
+        0.04962499439716339,
+        -0.25919395685195923,
+        3.7135303020477295
+      ],
+      "displacement_mm": 3.2999621862070083
+    },
+    {
+      "welded_vertex": 603,
+      "source_vertex": 5439,
+      "source_xyz": [
+        0.08099090307950974,
+        -0.2593885362148285,
+        3.7096519470214844
+      ],
+      "displacement_mm": 3.2399849319628964
+    },
+    {
+      "welded_vertex": 175,
+      "source_vertex": 4995,
+      "source_xyz": [
+        -0.03459186479449272,
+        -0.0414251945912838,
+        3.350878953933716
+      ],
+      "displacement_mm": 2.69328161860496
+    }
+  ],
+  "inputs_sha256": {
+    "lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz": "712a550fbbb56090ae700e30e4e21153d04c16139062ebcd2a72e818f3e34f7b",
+    "pbr_normals_v2/evidence/repaired_meshes.npz": "27dd26d77077d1482993e33fd1d78d0eaa18929b724e3368988a298fd0ef5f65",
+    "pbr_normals_v2/evidence/alpha-triangle-map.json": "5782b46be1b3eaf9e5025e8b0eba719a9147b49fef4d93549aacea0dae56d35c",
+    "body_interface_v8/independent_diagnosis/legacy-part15.npz": "95f0d669cc71f2479c834ce3adfa0c80dbddb40bbe2ccd1c7101a51dfc2523d5"
+  }
+}

@@ -1,0 +1,660 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+ RUN  v3.2.7 /workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103
+
+ ❯ tests/application/recovery-snapshot-authority.test.ts (21 tests | 14 failed) 136ms
+   × recovery never invents an item without an authoritative snapshot > refuses aspersorium undock with absent storage before any write 22ms
+     → expected ItemStack{ …(5) } to be undefined
+   × recovery never invents an item without an authoritative snapshot > refuses aspersorium break recovery with absent storage, including delayed replay 11ms
+     → expected [ …(2) ] to have a length of +0 but got 2
+   × recovery never invents an item without an authoritative snapshot > refuses aspersorium undock with empty storage before any write 5ms
+     → expected ItemStack{ …(5) } to be undefined
+   × recovery never invents an item without an authoritative snapshot > refuses aspersorium break recovery with empty storage, including delayed replay 3ms
+     → expected [ …(2) ] to have a length of +0 but got 2
+   × recovery never invents an item without an authoritative snapshot > refuses aspersorium undock with neighbor storage before any write 7ms
+     → expected ItemStack{ …(5) } to be undefined
+   × recovery never invents an item without an authoritative snapshot > refuses aspersorium break recovery with neighbor storage, including delayed replay 6ms
+     → expected [ …(2) ] to have a length of +0 but got 2
+   × recovery never invents an item without an authoritative snapshot > refuses table undock with absent storage before any write 6ms
+     → expected "spy" to not be called at all, but actually been called 2 times
+
+Received: 
+
+  1st spy call:
+
+    Array [
+      "Mainhand",
+      ItemStack {
+        "amount": 1,
+        "lore": Array [
+          Object {
+            "translate": "item.aspergillum.lore.charges",
+            "with": Array [
+              "0",
+              "4",
+            ],
+          },
+          Object {
+            "rawtext": Array [
+              Object {
+                "translate": "item.aspergillum.lore.profile",
+              },
+              Object {
+                "translate": "ui.aspergillum.profile.standard.name",
+              },
+            ],
+          },
+          Object {
+            "rawtext": Array [
+              Object {
+                "translate": "item.aspergillum.lore.appearance",
+              },
+              Object {
+                "translate": "ui.aspergillum.metal.silver.name",
+              },
+              Object {
+                "translate": "item.aspergillum.lore.grip",
+              },
+              Object {
+                "translate": "ui.aspergillum.grip.chestnut.name",
+              },
+            ],
+          },
+          Object {
+            "translate": "item.aspergillum.lore.instructions",
+          },
+          Object {
+            "translate": "item.aspergillum.lore.docking",
+          },
+          Object {
+            "translate": "item.aspergillum.lore.creative",
+          },
+        ],
+        "nameTag": undefined,
+        "properties": Map {
+          "aspergillum:charges" => 0,
+          "aspergillum:schema_version" => 3,
+          "aspergillum:instance_id" => "ag-k9-h-1aishr16cdu",
+          "aspergillum:cosmetic_id" => "classic",
+          "aspergillum:spray_profile_id" => "standard",
+        },
+        "typeId": "aspergillum:aspergillum",
+      },
+    ]
+
+  2nd spy call:
+
+    Array [
+      "Mainhand",
+      undefined,
+    ]
+
+
+Number of calls: 2
+
+   × recovery never invents an item without an authoritative snapshot > refuses table break recovery with absent storage, including delayed replay 4ms
+     → expected [ …(2) ] to have a length of +0 but got 2
+   × recovery never invents an item without an authoritative snapshot > refuses table undock with empty storage before any write 5ms
+     → expected "spy" to not be called at all, but actually been called 2 times
+
+Received: 
+
+  1st spy call:
+
+    Array [
+      "Mainhand",
+      ItemStack {
+        "amount": 1,
+        "lore": Array [
+          Object {
+            "translate": "item.aspergillum.lore.charges",
+            "with": Array [
+              "0",
+              "4",
+            ],
+          },
+          Object {
+            "rawtext": Array [
+              Object {
+                "translate": "item.aspergillum.lore.profile",
+              },
+              Object {
+                "translate": "ui.aspergillum.profile.standard.name",
+              },
+            ],
+          },
+          Object {
+            "rawtext": Array [
+              Object {
+                "translate": "item.aspergillum.lore.appearance",
+              },
+              Object {
+                "translate": "ui.aspergillum.metal.silver.name",
+              },
+              Object {
+                "translate": "item.aspergillum.lore.grip",
+              },
+              Object {
+                "translate": "ui.aspergillum.grip.chestnut.name",
+              },
+            ],
+          },
+          Object {
+            "translate": "item.aspergillum.lore.instructions",
+          },
+          Object {
+            "translate": "item.aspergillum.lore.docking",
+          },
+          Object {
+            "translate": "item.aspergillum.lore.creative",
+          },
+        ],
+        "nameTag": undefined,
+        "properties": Map {
+          "aspergillum:charges" => 0,
+          "aspergillum:schema_version" => 3,
+          "aspergillum:instance_id" => "ag-qj-m-24r8z54gn2y",
+          "aspergillum:cosmetic_id" => "classic",
+          "aspergillum:spray_profile_id" => "standard",
+        },
+        "typeId": "aspergillum:aspergillum",
+      },
+    ]
+
+  2nd spy call:
+
+    Array [
+      "Mainhand",
+      undefined,
+    ]
+
+
+Number of calls: 2
+
+   × recovery never invents an item without an authoritative snapshot > refuses table break recovery with empty storage, including delayed replay 4ms
+     → expected [ …(2) ] to have a length of +0 but got 2
+   × recovery never invents an item without an authoritative snapshot > refuses table undock with neighbor storage before any write 8ms
+     → expected "spy" to not be called at all, but actually been called 2 times
+
+Received: 
+
+  1st spy call:
+
+    Array [
+      "Mainhand",
+      ItemStack {
+        "amount": 1,
+        "lore": Array [
+          Object {
+            "translate": "item.aspergillum.lore.charges",
+            "with": Array [
+              "0",
+              "4",
+            ],
+          },
+          Object {
+            "rawtext": Array [
+              Object {
+                "translate": "item.aspergillum.lore.profile",
+              },
+              Object {
+                "translate": "ui.aspergillum.profile.standard.name",
+              },
+            ],
+          },
+          Object {
+            "rawtext": Array [
+              Object {
+                "translate": "item.aspergillum.lore.appearance",
+              },
+              Object {
+                "translate": "ui.aspergillum.metal.silver.name",
+              },
+              Object {
+                "translate": "item.aspergillum.lore.grip",
+              },
+              Object {
+                "translate": "ui.aspergillum.grip.chestnut.name",
+              },
+            ],
+          },
+          Object {
+            "translate": "item.aspergillum.lore.instructions",
+          },
+          Object {
+            "translate": "item.aspergillum.lore.docking",
+          },
+          Object {
+            "translate": "item.aspergillum.lore.creative",
+          },
+        ],
+        "nameTag": undefined,
+        "properties": Map {
+          "aspergillum:charges" => 0,
+          "aspergillum:schema_version" => 3,
+          "aspergillum:instance_id" => "ag-wt-r-fyzwb0h9ew",
+          "aspergillum:cosmetic_id" => "classic",
+          "aspergillum:spray_profile_id" => "standard",
+        },
+        "typeId": "aspergillum:aspergillum",
+      },
+    ]
+
+  2nd spy call:
+
+    Array [
+      "Mainhand",
+      undefined,
+    ]
+
+
+Number of calls: 2
+
+   × recovery never invents an item without an authoritative snapshot > refuses table break recovery with neighbor storage, including delayed replay 7ms
+     → expected [ …(2) ] to have a length of +0 but got 2
+   ✓ recovery never invents an item without an authoritative snapshot > does not adopt a aspersorium snapshot that appears after a refused dispatch 3ms
+   ✓ recovery never invents an item without an authoritative snapshot > does not adopt a table snapshot that appears after a refused dispatch 2ms
+   × recovery never invents an item without an authoritative snapshot > does not fabricate a second aspersorium item after a successful break consumed its snapshot 17ms
+     → expected [ …(2) ] to have a length of 1 but got 2
+   × recovery never invents an item without an authoritative snapshot > does not fabricate a second table item after a successful break consumed its snapshot 6ms
+     → expected [ …(2) ] to have a length of 1 but got 2
+   ✓ recovery never invents an item without an authoritative snapshot > retains real aspersorium zero-charge snapshot retrieval for supported V1 4ms
+   ✓ recovery never invents an item without an authoritative snapshot > retains real aspersorium zero-charge snapshot retrieval for supported V2 2ms
+   ✓ recovery never invents an item without an authoritative snapshot > retains real table zero-charge snapshot retrieval for supported V1 2ms
+   ✓ recovery never invents an item without an authoritative snapshot > retains real table zero-charge snapshot retrieval for supported V2 3ms
+   ✓ recovery never invents an item without an authoritative snapshot > refuses a table form's retrieval if its snapshot disappears after opening 3ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 14 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/application/recovery-snapshot-authority.test.ts > recovery never invents an item without an authoritative snapshot > refuses aspersorium undock with absent storage before any write
+ FAIL  tests/application/recovery-snapshot-authority.test.ts > recovery never invents an item without an authoritative snapshot > refuses aspersorium undock with empty storage before any write
+ FAIL  tests/application/recovery-snapshot-authority.test.ts > recovery never invents an item without an authoritative snapshot > refuses aspersorium undock with neighbor storage before any write
+AssertionError: expected ItemStack{ …(5) } to be undefined
+
+- Expected: 
+undefined
+
++ Received: 
+ItemStack {
+  "amount": 1,
+  "lore": [
+    {
+      "translate": "item.aspergillum.lore.charges",
+      "with": [
+        "0",
+        "4",
+      ],
+    },
+    {
+      "rawtext": [
+        {
+          "translate": "item.aspergillum.lore.profile",
+        },
+        {
+          "translate": "ui.aspergillum.profile.standard.name",
+        },
+      ],
+    },
+    {
+      "rawtext": [
+        {
+          "translate": "item.aspergillum.lore.appearance",
+        },
+        {
+          "translate": "ui.aspergillum.metal.silver.name",
+        },
+        {
+          "translate": "item.aspergillum.lore.grip",
+        },
+        {
+          "translate": "ui.aspergillum.grip.chestnut.name",
+        },
+      ],
+    },
+    {
+      "translate": "item.aspergillum.lore.instructions",
+    },
+    {
+      "translate": "item.aspergillum.lore.docking",
+    },
+    {
+      "translate": "item.aspergillum.lore.creative",
+    },
+  ],
+  "nameTag": undefined,
+  "properties": Map {
+    "aspergillum:charges" => 0,
+    "aspergillum:schema_version" => 3,
+    "aspergillum:instance_id" => "ag-1f-2-g9p3ia4wh3",
+    "aspergillum:cosmetic_id" => "classic",
+    "aspergillum:spray_profile_id" => "standard",
+  },
+  "typeId": "aspergillum:aspergillum",
+}
+
+ ❯ Object.noDelivery tests/application/recovery-snapshot-authority.test.ts:39:25
+     37|   const dispatchBreak = () => (kind === "aspersorium" ? handleAspersor…
+     38|   const noDelivery = () => {
+     39|     expect(player.hand).toBeUndefined(); expect(player.inventory).toHa…
+       |                         ^
+     40|     expect(player.equipment.setEquipment).not.toHaveBeenCalled(); expe…
+     41|     expect(dimension.spawnItem).not.toHaveBeenCalled(); expect(block.s…
+ ❯ tests/application/recovery-snapshot-authority.test.ts:55:9
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/14]⎯
+
+ FAIL  tests/application/recovery-snapshot-authority.test.ts > recovery never invents an item without an authoritative snapshot > refuses aspersorium break recovery with absent storage, including delayed replay
+ FAIL  tests/application/recovery-snapshot-authority.test.ts > recovery never invents an item without an authoritative snapshot > refuses aspersorium break recovery with empty storage, including delayed replay
+ FAIL  tests/application/recovery-snapshot-authority.test.ts > recovery never invents an item without an authoritative snapshot > refuses aspersorium break recovery with neighbor storage, including delayed replay
+ FAIL  tests/application/recovery-snapshot-authority.test.ts > recovery never invents an item without an authoritative snapshot > refuses table break recovery with absent storage, including delayed replay
+ FAIL  tests/application/recovery-snapshot-authority.test.ts > recovery never invents an item without an authoritative snapshot > refuses table break recovery with empty storage, including delayed replay
+ FAIL  tests/application/recovery-snapshot-authority.test.ts > recovery never invents an item without an authoritative snapshot > refuses table break recovery with neighbor storage, including delayed replay
+AssertionError: expected [ …(2) ] to have a length of +0 but got 2
+
+- Expected
++ Received
+
+- 0
++ 2
+
+ ❯ Object.noDelivery tests/application/recovery-snapshot-authority.test.ts:39:108
+     37|   const dispatchBreak = () => (kind === "aspersorium" ? handleAspersor…
+     38|   const noDelivery = () => {
+     39|     expect(player.hand).toBeUndefined(); expect(player.inventory).toHa…
+       |                                                                                                            ^
+     40|     expect(player.equipment.setEquipment).not.toHaveBeenCalled(); expe…
+     41|     expect(dimension.spawnItem).not.toHaveBeenCalled(); expect(block.s…
+ ❯ tests/application/recovery-snapshot-authority.test.ts:64:9
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/14]⎯
+
+ FAIL  tests/application/recovery-snapshot-authority.test.ts > recovery never invents an item without an authoritative snapshot > refuses table undock with absent storage before any write
+AssertionError: expected "spy" to not be called at all, but actually been called 2 times
+
+Received: 
+
+  1st spy call:
+
+    Array [
+      "Mainhand",
+      ItemStack {
+        "amount": 1,
+        "lore": Array [
+          Object {
+            "translate": "item.aspergillum.lore.charges",
+            "with": Array [
+              "0",
+              "4",
+            ],
+          },
+          Object {
+            "rawtext": Array [
+              Object {
+                "translate": "item.aspergillum.lore.profile",
+              },
+              Object {
+                "translate": "ui.aspergillum.profile.standard.name",
+              },
+            ],
+          },
+          Object {
+            "rawtext": Array [
+              Object {
+                "translate": "item.aspergillum.lore.appearance",
+              },
+              Object {
+                "translate": "ui.aspergillum.metal.silver.name",
+              },
+              Object {
+                "translate": "item.aspergillum.lore.grip",
+              },
+              Object {
+                "translate": "ui.aspergillum.grip.chestnut.name",
+              },
+            ],
+          },
+          Object {
+            "translate": "item.aspergillum.lore.instructions",
+          },
+          Object {
+            "translate": "item.aspergillum.lore.docking",
+          },
+          Object {
+            "translate": "item.aspergillum.lore.creative",
+          },
+        ],
+        "nameTag": undefined,
+        "properties": Map {
+          "aspergillum:charges" => 0,
+          "aspergillum:schema_version" => 3,
+          "aspergillum:instance_id" => "ag-k9-h-1aishr16cdu",
+          "aspergillum:cosmetic_id" => "classic",
+          "aspergillum:spray_profile_id" => "standard",
+        },
+        "typeId": "aspergillum:aspergillum",
+      },
+    ]
+
+  2nd spy call:
+
+    Array [
+      "Mainhand",
+      undefined,
+    ]
+
+
+Number of calls: 2
+
+ ❯ Object.noDelivery tests/application/recovery-snapshot-authority.test.ts:40:47
+     38|   const noDelivery = () => {
+     39|     expect(player.hand).toBeUndefined(); expect(player.inventory).toHa…
+     40|     expect(player.equipment.setEquipment).not.toHaveBeenCalled(); expe…
+       |                                               ^
+     41|     expect(dimension.spawnItem).not.toHaveBeenCalled(); expect(block.s…
+     42|   };
+ ❯ tests/application/recovery-snapshot-authority.test.ts:55:9
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/14]⎯
+
+ FAIL  tests/application/recovery-snapshot-authority.test.ts > recovery never invents an item without an authoritative snapshot > refuses table undock with empty storage before any write
+AssertionError: expected "spy" to not be called at all, but actually been called 2 times
+
+Received: 
+
+  1st spy call:
+
+    Array [
+      "Mainhand",
+      ItemStack {
+        "amount": 1,
+        "lore": Array [
+          Object {
+            "translate": "item.aspergillum.lore.charges",
+            "with": Array [
+              "0",
+              "4",
+            ],
+          },
+          Object {
+            "rawtext": Array [
+              Object {
+                "translate": "item.aspergillum.lore.profile",
+              },
+              Object {
+                "translate": "ui.aspergillum.profile.standard.name",
+              },
+            ],
+          },
+          Object {
+            "rawtext": Array [
+              Object {
+                "translate": "item.aspergillum.lore.appearance",
+              },
+              Object {
+                "translate": "ui.aspergillum.metal.silver.name",
+              },
+              Object {
+                "translate": "item.aspergillum.lore.grip",
+              },
+              Object {
+                "translate": "ui.aspergillum.grip.chestnut.name",
+              },
+            ],
+          },
+          Object {
+            "translate": "item.aspergillum.lore.instructions",
+          },
+          Object {
+            "translate": "item.aspergillum.lore.docking",
+          },
+          Object {
+            "translate": "item.aspergillum.lore.creative",
+          },
+        ],
+        "nameTag": undefined,
+        "properties": Map {
+          "aspergillum:charges" => 0,
+          "aspergillum:schema_version" => 3,
+          "aspergillum:instance_id" => "ag-qj-m-24r8z54gn2y",
+          "aspergillum:cosmetic_id" => "classic",
+          "aspergillum:spray_profile_id" => "standard",
+        },
+        "typeId": "aspergillum:aspergillum",
+      },
+    ]
+
+  2nd spy call:
+
+    Array [
+      "Mainhand",
+      undefined,
+    ]
+
+
+Number of calls: 2
+
+ ❯ Object.noDelivery tests/application/recovery-snapshot-authority.test.ts:40:47
+     38|   const noDelivery = () => {
+     39|     expect(player.hand).toBeUndefined(); expect(player.inventory).toHa…
+     40|     expect(player.equipment.setEquipment).not.toHaveBeenCalled(); expe…
+       |                                               ^
+     41|     expect(dimension.spawnItem).not.toHaveBeenCalled(); expect(block.s…
+     42|   };
+ ❯ tests/application/recovery-snapshot-authority.test.ts:55:9
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/14]⎯
+
+ FAIL  tests/application/recovery-snapshot-authority.test.ts > recovery never invents an item without an authoritative snapshot > refuses table undock with neighbor storage before any write
+AssertionError: expected "spy" to not be called at all, but actually been called 2 times
+
+Received: 
+
+  1st spy call:
+
+    Array [
+      "Mainhand",
+      ItemStack {
+        "amount": 1,
+        "lore": Array [
+          Object {
+            "translate": "item.aspergillum.lore.charges",
+            "with": Array [
+              "0",
+              "4",
+            ],
+          },
+          Object {
+            "rawtext": Array [
+              Object {
+                "translate": "item.aspergillum.lore.profile",
+              },
+              Object {
+                "translate": "ui.aspergillum.profile.standard.name",
+              },
+            ],
+          },
+          Object {
+            "rawtext": Array [
+              Object {
+                "translate": "item.aspergillum.lore.appearance",
+              },
+              Object {
+                "translate": "ui.aspergillum.metal.silver.name",
+              },
+              Object {
+                "translate": "item.aspergillum.lore.grip",
+              },
+              Object {
+                "translate": "ui.aspergillum.grip.chestnut.name",
+              },
+            ],
+          },
+          Object {
+            "translate": "item.aspergillum.lore.instructions",
+          },
+          Object {
+            "translate": "item.aspergillum.lore.docking",
+          },
+          Object {
+            "translate": "item.aspergillum.lore.creative",
+          },
+        ],
+        "nameTag": undefined,
+        "properties": Map {
+          "aspergillum:charges" => 0,
+          "aspergillum:schema_version" => 3,
+          "aspergillum:instance_id" => "ag-wt-r-fyzwb0h9ew",
+          "aspergillum:cosmetic_id" => "classic",
+          "aspergillum:spray_profile_id" => "standard",
+        },
+        "typeId": "aspergillum:aspergillum",
+      },
+    ]
+
+  2nd spy call:
+
+    Array [
+      "Mainhand",
+      undefined,
+    ]
+
+
+Number of calls: 2
+
+ ❯ Object.noDelivery tests/application/recovery-snapshot-authority.test.ts:40:47
+     38|   const noDelivery = () => {
+     39|     expect(player.hand).toBeUndefined(); expect(player.inventory).toHa…
+     40|     expect(player.equipment.setEquipment).not.toHaveBeenCalled(); expe…
+       |                                               ^
+     41|     expect(dimension.spawnItem).not.toHaveBeenCalled(); expect(block.s…
+     42|   };
+ ❯ tests/application/recovery-snapshot-authority.test.ts:55:9
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/14]⎯
+
+ FAIL  tests/application/recovery-snapshot-authority.test.ts > recovery never invents an item without an authoritative snapshot > does not fabricate a second aspersorium item after a successful break consumed its snapshot
+ FAIL  tests/application/recovery-snapshot-authority.test.ts > recovery never invents an item without an authoritative snapshot > does not fabricate a second table item after a successful break consumed its snapshot
+AssertionError: expected [ …(2) ] to have a length of 1 but got 2
+
+- Expected
++ Received
+
+- 1
++ 2
+
+ ❯ tests/application/recovery-snapshot-authority.test.ts:78:31
+     76|     expect(f.dimension.drops).toHaveLength(1); expect(captureDockedAsp…
+     77|     world.setDynamicProperty.mockClear(); advanceTicks(10); f.dispatch…
+     78|     expect(f.dimension.drops).toHaveLength(1); expect(world.setDynamic…
+       |                               ^
+     79|   });
+     80|   for (const kind of kinds) for (const version of [1, 2] as const) {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/14]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  14 failed | 7 passed (21)
+   Start at  21:35:37
+   Duration  1.68s (transform 620ms, setup 0ms, collect 781ms, tests 136ms, environment 0ms, prepare 161ms)
+

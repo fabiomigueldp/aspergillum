@@ -1,0 +1,16 @@
+import bpy,hashlib
+from pathlib import Path
+from mathutils import Vector
+R=Path(__file__).resolve().parents[1];B=R.parent
+band=R/'constrained_fit/retained-band.npz';assert band.exists()
+shell=B/'ear_rim_v11/structural_rebuild/retained-shell.npz';body=B/'body_interface_v9/constrained_fit/retained-anatomy.npz'
+bpy.ops.wm.open_mainfile(filepath=str(R/'evidence/valley-c1-n4-full-diagnostic.blend'),use_scripts=False)
+s=bpy.context.scene;s['research_scope']='V13 source-restored band NATIVE local retention; frozen V11 shell and V9 anatomy NATIVE. Other pieces legacy JSON. No Bedrock export or global art approval.'
+for key,p in [('retained_band_sha256',band),('frozen_shell_sha256',shell),('frozen_anatomy_sha256',body)]:s[key]=hashlib.sha256(p.read_bytes()).hexdigest()
+s['bedrock_exported']=False;s['minecraft_tested']=False;s['published']=False;s['remaining_limits']='Proven frontal valley order inversions repaired; residual contacts outside that scope remain. Original V12 terminations, source ridge polylines, shell V11 and anatomy V9 remain fixed. Small view-limited silhouette change. No global clearance/thickness or engine certificate.'
+for o in bpy.data.objects:
+ if o.name.startswith('Candidate assembly'):o.name='Frozen V11 shell NATIVE research'
+ if o.name.startswith('Band native,'):o.name='V13 retained band NATIVE local research'
+ if o.name.startswith('Part15 native geometry override'):o.name='Frozen V9 anatomy NATIVE research'
+cam=s.camera;cam.location=(0,-8,1.9);cam.rotation_euler=(Vector((0,-.03,1.88))-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.ortho_scale=4.3;s.render.resolution_x=900;s.render.resolution_y=1200
+bpy.ops.wm.save_as_mainfile(filepath=str(R/'evidence/retained-structural-diagnostic.blend'))

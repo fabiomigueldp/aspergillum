@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+B=paz-bedrock-v75-prototype-20261103
+R=$B/band_shell_v13
+body=$B/body_interface_v9/constrained_fit/retained-anatomy.npz
+low_shell=$B/ear_rim_v11/structural_rebuild/retained-shell.npz
+high_shell=$R/source_context/original-high-shell.npz
+low_band=$B/band_ear_v12/structural_rebuild/retained-band.npz
+high_band=$R/source_context/original-render-high-band.npz
+if [[ ${1:-color} == color ]]; then
+ for kind in low-low low-high high-low high-high; do
+  shell=$low_shell; band=$low_band
+  [[ $kind == high-* ]] && shell=$high_shell
+  [[ $kind == *-high ]] && band=$high_band
+  BAND_OVERRIDE_PATH=$band GEOMETRY_PURPOSE='Source-factorial geometry diagnostic, not candidate or Minecraft' blender -b -t 6 --python "$R/tools/render_contact_diagnostic.py" -- "$shell" "factorial-$kind" "$body" band-front no-halo > "$R/evidence/render-factorial-$kind.log" 2>&1
+ done
+else
+ for kind in low-low high-high; do
+  shell=$low_shell; band=$low_band
+  [[ $kind == high-* ]] && shell=$high_shell
+  [[ $kind == *-high ]] && band=$high_band
+  NEUTRAL_SHELL_BAND=1 BAND_OVERRIDE_PATH=$band GEOMETRY_PURPOSE='Neutral source-material-color comparison, not candidate or Minecraft' blender -b -t 6 --python "$R/tools/render_contact_diagnostic.py" -- "$shell" "neutral-$kind" "$body" band-front no-halo > "$R/evidence/render-neutral-$kind.log" 2>&1
+ done
+fi

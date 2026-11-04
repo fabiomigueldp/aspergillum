@@ -1,0 +1,51 @@
+{
+  "scope": "Independent V15 candidate audit. Inputs and existing V14 findings reused without rerunning completed source/viewer tests. All writes restricted to independent_validation.",
+  "frozen_sha256": {
+    "band_shell_v13/constrained_fit/retained-band.npz": "aa27567ac125b12a298c283b0e9c99130fe222bf2ce3bdf9f22edf2908f4404b",
+    "ear_rim_v11/structural_rebuild/retained-shell.npz": "c79f296415d566db5f9c109389375e0d3ae112fbccbbc89c8628200939fbf81f",
+    "body_interface_v9/constrained_fit/retained-anatomy.npz": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+    "pbr_normals_v2/resource_pack/models/entity/paz_v75_pbr_sculpture.geo.json": "160d00c5489e618bdb093eb48a388b17f606ca9970f00de88b164758fa1c46cf",
+    "pbr_normals_v2/resource_pack/textures/entity/paz_v75_pbr_sculpture.png": "9547dffd84fdc399535c97f88cf8694ade2af98e82de0ec71ec7117473eb7856",
+    "pbr_normals_v2/resource_pack/textures/entity/paz_v75_pbr_sculpture_normal_dx.png": "b09802ad642c4d3cbc88f0a7b734a9a3c45336f38fb09716bfd585627e2a1e17",
+    "assembly_transport_v14/independent_validation/critical-ray-alpha-comparison.json": "cf28b952a0323412c871b839be5a6e0412d9d99ca1f6ccd834beafd1e5acddfb",
+    "assembly_transport_v14/independent_validation/critical-ray-center-only-trial.json": "8ac91dde7fc081d634beca4b4f2d5ebcf0da164f85c75d9f65a7a03b61e89e57",
+    "assembly_transport_v14/independent_validation/raster-audit-arrays.npz": "f158aa923d9f3af134e0dd2658bb3447c684d74176648a8f7de3150bb3bbb3da",
+    "assembly_transport_v14/independent_validation/source-preservation-final.json": "0b4e7b97674f85490e9fda7191f0213b5bc315be3e110aa616e2170038ce0c3b",
+    "band_shell_v13/independent_diagnosis/visible-blue-ray-witnesses.json": "ddc024c570c5d056e5219b52f278bb319c0757e9f9779f55bb0569e48e1e6595",
+    "band_shell_v13/independent_diagnosis/valley-dense-map.npz": "a7d867ad5f1ce56d546b0c90b6d254849868299168b2a0d842dcb9058fc1c97e"
+  },
+  "native_hashes_match_V14": [
+    {
+      "file": "band_shell_v13/constrained_fit/retained-band.npz",
+      "matches_V14_frozen": true
+    },
+    {
+      "file": "ear_rim_v11/structural_rebuild/retained-shell.npz",
+      "matches_V14_frozen": true
+    },
+    {
+      "file": "body_interface_v9/constrained_fit/retained-anatomy.npz",
+      "matches_V14_frozen": true
+    },
+    {
+      "file": "pbr_normals_v2/resource_pack/models/entity/paz_v75_pbr_sculpture.geo.json",
+      "matches_V14_frozen": true
+    },
+    {
+      "file": "pbr_normals_v2/resource_pack/textures/entity/paz_v75_pbr_sculpture.png",
+      "matches_V14_frozen": true
+    },
+    {
+      "file": "pbr_normals_v2/resource_pack/textures/entity/paz_v75_pbr_sculpture_normal_dx.png",
+      "matches_V14_frozen": true
+    }
+  ],
+  "contracts": {
+    "critical_rays": "Reuse exact 18 central rays and tangent-plane 5x5 offsets from the frozen V14 report, 450 total. Independently intersect candidate JSON faces and nearest mip0 actual alpha. Compare native first part, missing hits, extra hits, and depth deltas. Preserve front-face test.",
+    "geometry_uv": "Independently reconstruct actual JSON face corners with explicit matrices, verify finite values, orientation and retained source mapping where supplied. Compare unrelated bones against frozen legacy and/or V14 context. Test only documented math, not runtime behavior.",
+    "full_band": "Sample all native band face interiors and relevant exterior/return roles, not merely critical points. Measure support and offsets using actual candidate faces/alpha. Use fixed orthographic silhouette support scans with declared resolution and bounded view coverage where feasible.",
+    "cost": "Count actual cubes, mapped faces and implied raster triangles; file and decoded RGBA sizes. These are costs, not engine limits or performance.",
+    "preservation": "Rehash frozen inputs at end; all candidate claims bound to exact output hashes.",
+    "exclusions": "No Minecraft/engine tests, no performance claims, no source geometry edits, no exporter edits, no pack promotion, saves or services."
+  }
+}

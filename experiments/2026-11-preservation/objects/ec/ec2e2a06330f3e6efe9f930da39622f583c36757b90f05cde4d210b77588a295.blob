@@ -1,0 +1,150 @@
+{
+  "reference": "V15 analytic clip, not Bedrock candidate",
+  "method": "Same imported geometry camera/lights as V15; ordinary48-sample renders. Threshold is observational image metric, not per-pixel geometric identity or engine criterion. Adaptive sampling/noise can affect counts; renderer ID controls are separate.",
+  "candidates": [
+    {
+      "candidate": "roi68-depth1",
+      "image_sha256": "6790018fe509345808ede2c6953ca7a2dc7414b0c00b63dc78bf83496bed8c41",
+      "regions": {
+        "scar_ROI": {
+          "bounds_xy_exclusive": [
+            490,
+            440,
+            571,
+            481
+          ],
+          "pixels": 3321,
+          "baseline_darker_than_clip_ge10": 301,
+          "candidate_darker_than_clip_ge10": 228,
+          "baseline_dark_resolved": 149,
+          "new_dark_vs_baseline": 76,
+          "mean_abs_RGB_diff_to_clip": 2.18970189701897,
+          "mean_signed_gray_diff_clip_minus_candidate": 1.7866104586971794
+        },
+        "band_context": {
+          "bounds_xy_exclusive": [
+            175,
+            365,
+            825,
+            705
+          ],
+          "pixels": 221000,
+          "baseline_darker_than_clip_ge10": 1314,
+          "candidate_darker_than_clip_ge10": 1219,
+          "baseline_dark_resolved": 178,
+          "new_dark_vs_baseline": 83,
+          "mean_abs_RGB_diff_to_clip": 1.2891779788838613,
+          "mean_signed_gray_diff_clip_minus_candidate": 0.1482790346907994
+        }
+      }
+    },
+    {
+      "candidate": "roi68-depth2",
+      "image_sha256": "c1bdb9c53a66777f21fada176a0e6f24e7b17818467723dd24b9db25e5fad064",
+      "regions": {
+        "scar_ROI": {
+          "bounds_xy_exclusive": [
+            490,
+            440,
+            571,
+            481
+          ],
+          "pixels": 3321,
+          "baseline_darker_than_clip_ge10": 301,
+          "candidate_darker_than_clip_ge10": 102,
+          "baseline_dark_resolved": 247,
+          "new_dark_vs_baseline": 48,
+          "mean_abs_RGB_diff_to_clip": 1.2909766134698384,
+          "mean_signed_gray_diff_clip_minus_candidate": 0.9181973301214492
+        },
+        "band_context": {
+          "bounds_xy_exclusive": [
+            175,
+            365,
+            825,
+            705
+          ],
+          "pixels": 221000,
+          "baseline_darker_than_clip_ge10": 1314,
+          "candidate_darker_than_clip_ge10": 1080,
+          "baseline_dark_resolved": 345,
+          "new_dark_vs_baseline": 111,
+          "mean_abs_RGB_diff_to_clip": 1.2731206636500754,
+          "mean_signed_gray_diff_clip_minus_candidate": 0.13261085972850678
+        }
+      }
+    },
+    {
+      "candidate": "roi68-depth3",
+      "image_sha256": "72f8a40fcd30e62ef376bc8bc5742cab4e60f3663911058e2baec9dc5353e65f",
+      "regions": {
+        "scar_ROI": {
+          "bounds_xy_exclusive": [
+            490,
+            440,
+            571,
+            481
+          ],
+          "pixels": 3321,
+          "baseline_darker_than_clip_ge10": 301,
+          "candidate_darker_than_clip_ge10": 25,
+          "baseline_dark_resolved": 287,
+          "new_dark_vs_baseline": 11,
+          "mean_abs_RGB_diff_to_clip": 0.8037739636655625,
+          "mean_signed_gray_diff_clip_minus_candidate": 0.4564890093345378
+        },
+        "band_context": {
+          "bounds_xy_exclusive": [
+            175,
+            365,
+            825,
+            705
+          ],
+          "pixels": 221000,
+          "baseline_darker_than_clip_ge10": 1314,
+          "candidate_darker_than_clip_ge10": 977,
+          "baseline_dark_resolved": 418,
+          "new_dark_vs_baseline": 81,
+          "mean_abs_RGB_diff_to_clip": 1.2623303167420814,
+          "mean_signed_gray_diff_clip_minus_candidate": 0.12262895927601809
+        }
+      }
+    },
+    {
+      "candidate": "roi68-depth3-restored-transparent",
+      "image_sha256": "24b5e3da1ca4f06904e297f64658bc0baf6f04d66934a218922e11a230a99996",
+      "regions": {
+        "scar_ROI": {
+          "bounds_xy_exclusive": [
+            490,
+            440,
+            571,
+            481
+          ],
+          "pixels": 3321,
+          "baseline_darker_than_clip_ge10": 301,
+          "candidate_darker_than_clip_ge10": 441,
+          "baseline_dark_resolved": 81,
+          "new_dark_vs_baseline": 221,
+          "mean_abs_RGB_diff_to_clip": 4.212385827561979,
+          "mean_signed_gray_diff_clip_minus_candidate": 3.7442537388336845
+        },
+        "band_context": {
+          "bounds_xy_exclusive": [
+            175,
+            365,
+            825,
+            705
+          ],
+          "pixels": 221000,
+          "baseline_darker_than_clip_ge10": 1314,
+          "candidate_darker_than_clip_ge10": 1588,
+          "baseline_dark_resolved": 154,
+          "new_dark_vs_baseline": 428,
+          "mean_abs_RGB_diff_to_clip": 1.33705580693816,
+          "mean_signed_gray_diff_clip_minus_candidate": 0.1960090497737557
+        }
+      }
+    }
+  ]
+}

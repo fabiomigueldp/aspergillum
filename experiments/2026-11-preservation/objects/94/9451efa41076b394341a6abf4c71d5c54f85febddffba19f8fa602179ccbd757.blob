@@ -1,0 +1,78 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {JOINERY_DESIGNS,JOINERY_STRUCTURES,designFor,liturgicalDesign} from '../src/domain/catalog.ts';
+import {planFinish,withEdges,positionKey,type Tile,type Position} from '../src/domain/surface.ts';
+import {encodeTile,decodeTile} from '../src/domain/block-codec.ts';
+import {customizationFromFinish,customizationFinish,changeCustomization,customizationCapabilities} from '../src/domain/customization.ts';
+import {commitFinish} from '../src/application/finish.ts';
+import {atelierGeometry,structureCollision} from '../assets-src/atelier/geometry.mjs';
+import {joineryRails} from '../assets-src/atelier/joinery.mjs';
+const grid=(w:number,d:number):Tile[]=>Array.from({length:w*d},(_,i)=>({position:{x:i%w,y:4,z:Math.floor(i/w)},stone:0,cloth:1,frontal:0,facing:0,edges:15}));
+
+test('new joinery recipes persist all rectangular centres and repair arbitrary contour changes',()=>{
+ for(const design of JOINERY_DESIGNS)for(const width of [1,2,3,7,8,16])for(const depth of [1,2,8])for(let facing=0;facing<4;facing++){
+  const tiles=planFinish(grid(facing%2?depth:width,facing%2?width:depth),{stone:0,cloth:0,ornamental:false,facing,design:design.id});
+  assert.equal(tiles.filter(t=>t.frontal>0).length,design.textile==='none'?0:width%2?1:2);
+  for(const tile of tiles){
+   const encoded=encodeTile(tile);assert.deepEqual(decodeTile(encoded.id,tile.position,encoded.states),tile);
+   for(const edges of [0,5,10,15]){const repaired=withEdges(tile,edges),p=encodeTile(repaired);assert.deepEqual(decodeTile(p.id,tile.position,p.states),repaired);}
+  }
+ }
+});
+
+test('new models preserve all textile choices and suspend only stone and applied relief',()=>{
+ const original=customizationFromFinish({stone:0,cloth:0,ornamental:false,facing:0,design:designFor('ogive','limestone','ruby','cross').id});
+ for(const model of JOINERY_STRUCTURES){
+  const draft=changeCustomization(original,{model});
+  assert.equal(customizationCapabilities(draft).material,false);assert.equal(customizationCapabilities(draft).relief,false);
+  assert.equal(customizationFinish(draft).design,designFor(model,'walnut','ruby','none').id);
+  assert.deepEqual(customizationFinish(changeCustomization(draft,{model:'ogive'})),customizationFinish(original));
+  for(const color of ['white','red','green','purple','rose','black','gold','silver'] as const){
+   assert.equal(customizationFinish(changeCustomization(draft,{color})).design,liturgicalDesign(model,'walnut',color).id);
+  }
+ }
+});
+
+test('wood members retain their dimensions under textiles, respect the cell and keep full-height support',()=>{
+ for(const structure of JOINERY_STRUCTURES)for(let facing=0;facing<4;facing++){
+  const bare=atelierGeometry(structure,'none','none',facing).doc['minecraft:geometry'][0];
+  const members=(g:any)=>g.bones.filter((b:any)=>/^(case_|baluster_|joinery_|crossbrace_)/.test(b.name));
+  for(const textile of ['none','agnus','ruby','verdant','requiem']){
+   const g=atelierGeometry(structure,textile,'none',facing).doc['minecraft:geometry'][0];
+   assert.deepEqual(members(g),members(bare));assert.ok(g.bones.flatMap((b:any)=>b.cubes).length<=50);
+   assert.equal(g.bones.find((b:any)=>b.name==='top').cubes[0].origin[1]+g.bones.find((b:any)=>b.name==='top').cubes[0].size[1],16);
+  }
+ }
+});
+
+test('balaustraded tables have an open centre, supported perimeter bays and bounded multipart collisions',()=>{
+ for(let edges=0;edges<16;edges++)for(let facing=0;facing<4;facing++){
+  const boxes=structureCollision('baluster',edges,facing);
+  assert.ok(Array.isArray(boxes)&&boxes.length<=13);
+  const contains=(p:number[])=>boxes.some((b:any)=>p.every((v,i)=>v>=b.origin[i]&&v<=b.origin[i]+b.size[i]));
+  assert.equal(contains([0,7,0]),false);assert.equal(contains([0,15,0]),true);
+  for(const b of boxes)assert.ok(b.origin.every((v:number,i:number)=>v>=[-8,0,-8][i]!&&v+b.size[i]<=[8,16,8][i]!+1e-6));
+  for(const [i,p] of [[0,[0,5,-6]],[1,[6,5,0]],[2,[0,5,6]],[3,[-6,5,0]]] as const)assert.equal(contains([...p]),!!(edges&(1<<i)));
+ }
+ const {visibility}=atelierGeometry('baluster','none','none',0);
+ const tiles=planFinish(grid(7,2),{stone:0,cloth:0,ornamental:false,facing:0,design:designFor('baluster','walnut','none','none').id});
+ const count=tiles.reduce((n,t)=>n+Object.entries(visibility).filter(([name,expr])=>name.startsWith('baluster_')&&Function('q','math',`return ${expr}`)({block_state:()=>t.edges},{floor:Math.floor,mod:(a:number,b:number)=>a%b})).length,0);
+ assert.equal(count,18,'seven front and rear posts plus two at each end; no unsupported seven-block span');
+});
+
+test('conversion to joinery rolls back original IDs and every state after a partial write',()=>{
+ const before=planFinish(grid(7,2),{stone:1,cloth:3,ornamental:true,facing:2});
+ const after=planFinish(before,{stone:0,cloth:0,ornamental:false,facing:1,design:liturgicalDesign('baluster','walnut','green').id});
+ const world=new Map(before.map(t=>[positionKey(t.position),t]));let writes=0;
+ assert.throws(()=>commitFinish({read:(p:Position)=>world.get(positionKey(p))??null,write:(t:Tile)=>{world.set(positionKey(t.position),t);if(++writes===8)throw Error('injected');}},before,after),/rolled back/);
+ assert.deepEqual([...world.values()],before);
+});
+
+test('return rails meet in butt joints and reach every internal module boundary',()=>{
+ const low=joineryRails(0,15)[1],side=joineryRails(1,15)[1];
+ assert.equal(low.origin[0],-6.5);assert.equal(low.origin[0]+low.size[0],6.5);
+ assert.equal(side.origin[0],-5.5);assert.equal(side.origin[0]+side.size[0],5.5);
+ for(let i=0;i<4;i++){
+  for(const rail of joineryRails(i,1<<i)){assert.equal(rail.origin[0],-8);assert.equal(rail.origin[0]+rail.size[0],8);}
+ }
+});

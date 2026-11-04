@@ -1,0 +1,99 @@
+{
+  "nativeCompact": {
+    "altare": 59840,
+    "aspergillum": 5008,
+    "combined": 64848,
+    "reference": 65536,
+    "combinedHeadroom": 688,
+    "sources": {
+      "altare": {
+        "states": 59840,
+        "blocks": 431,
+        "root": "/workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103/addons/altare",
+        "manifest": "/workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103/addons/altare/packs/behavior/manifest.json",
+        "version": [
+          0,
+          13,
+          0
+        ]
+      },
+      "aspergillum": {
+        "states": 5008,
+        "blocks": 18,
+        "root": "/workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103",
+        "manifest": "/workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103/packs/behavior/manifest.json",
+        "version": [
+          2,
+          0,
+          0
+        ]
+      }
+    },
+    "decision": "passed"
+  },
+  "nativeLegacy": {
+    "altare": 59840,
+    "aspergillum": 9744,
+    "combined": 69584,
+    "reference": 65536,
+    "combinedHeadroom": -4048,
+    "sources": {
+      "altare": {
+        "states": 59840,
+        "blocks": 431,
+        "root": "/workspace/scratch/212c580ada5b/altare-two-pillars-integration-20261103/addons/altare",
+        "manifest": "/workspace/scratch/212c580ada5b/altare-two-pillars-integration-20261103/addons/altare/packs/behavior/manifest.json",
+        "version": [
+          0,
+          13,
+          0
+        ]
+      },
+      "aspergillum": {
+        "states": 9744,
+        "blocks": 18,
+        "root": "/workspace/scratch/212c580ada5b/altare-two-pillars-integration-20261103",
+        "manifest": "/workspace/scratch/212c580ada5b/altare-two-pillars-integration-20261103/packs/behavior/manifest.json",
+        "version": [
+          1,
+          2,
+          5
+        ]
+      }
+    },
+    "decision": "rejected",
+    "reason": "Block-state budget: known packs exceed 65536: Altare 59840 + Aspergillum 9744 = 69584 (4048 over)"
+  },
+  "historicalLegacy": {
+    "altare": 51608,
+    "aspergillum": 9744,
+    "combined": 61352,
+    "reference": 65536,
+    "combinedHeadroom": 4184,
+    "sources": {
+      "altare": {
+        "states": 51608,
+        "blocks": 414,
+        "root": "/workspace/scratch/212c580ada5b/altare-catalog-compaction-20261103/addons/altare",
+        "manifest": "/workspace/scratch/212c580ada5b/altare-catalog-compaction-20261103/addons/altare/packs/behavior/manifest.json",
+        "version": [
+          0,
+          12,
+          3
+        ]
+      },
+      "aspergillum": {
+        "states": 9744,
+        "blocks": 18,
+        "root": "/workspace/scratch/212c580ada5b/altare-catalog-compaction-20261103",
+        "manifest": "/workspace/scratch/212c580ada5b/altare-catalog-compaction-20261103/packs/behavior/manifest.json",
+        "version": [
+          1,
+          2,
+          5
+        ]
+      }
+    },
+    "decision": "passed"
+  }
+}

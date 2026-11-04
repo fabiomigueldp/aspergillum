@@ -1,0 +1,170 @@
+{
+  "candidate_sha256": "b33c3aa451fe8956d18dd0f1ed54aaea7ffacdabc5c6387970e66e78a749a0bb",
+  "vertices": 6244,
+  "triangles": 12484,
+  "all_source_ids_identical": true,
+  "all_triangles_identical": true,
+  "all_face_parts_identical": true,
+  "all_source_positions_bitwise_identical": true,
+  "all_source_normals_bitwise_identical": true,
+  "parts": [
+    {
+      "part": "cap",
+      "faces": 5866,
+      "source_face_indices_identical": true,
+      "positions_bitwise_identical": true,
+      "normals_bitwise_identical": true
+    },
+    {
+      "part": "mantle",
+      "faces": 4322,
+      "source_face_indices_identical": true,
+      "positions_bitwise_identical": true,
+      "normals_bitwise_identical": true
+    }
+  ],
+  "central_wall_vertices": 330,
+  "central_wall_positions_bitwise_identical": false,
+  "central_wall_max_displacement_mm": 6.938893903907228e-15,
+  "original_half_thickness_max_error": 1.7672495411513722e-16,
+  "full_thickness_generated_min_max_mm": [
+    0.9367844656692518,
+    5.049497780673556
+  ],
+  "center_matches_midfield_max_error": 0.0,
+  "director_matches_midfield_max_error": 3.391731340229853e-13,
+  "shell_max_displacement_mm": 23.956493746705604,
+  "shell_max_displacement_source_id": 186128,
+  "center_max_displacement_mm": 23.50732908401969,
+  "generated_director_angle_change_max_degrees": 167.4953048149837,
+  "mixed_director_faces": 0,
+  "nonpositive_director_products": 0,
+  "min_director_face_cosine": 0.13105697182441112,
+  "obstacle_support_constraints": [
+    {
+      "mantle_face": 10958,
+      "generated_outer_source_id": 186439,
+      "final_signed_support_distance_mm": 0.021579149196853605,
+      "meets_requested_0p2mm": false
+    },
+    {
+      "mantle_face": 10958,
+      "generated_outer_source_id": 186440,
+      "final_signed_support_distance_mm": 2.639865259758278,
+      "meets_requested_0p2mm": true
+    },
+    {
+      "mantle_face": 10959,
+      "generated_outer_source_id": 186439,
+      "final_signed_support_distance_mm": 0.4016196089106989,
+      "meets_requested_0p2mm": true
+    },
+    {
+      "mantle_face": 10959,
+      "generated_outer_source_id": 186440,
+      "final_signed_support_distance_mm": 2.911918259861766,
+      "meets_requested_0p2mm": true
+    },
+    {
+      "mantle_face": 10976,
+      "generated_outer_source_id": 186439,
+      "final_signed_support_distance_mm": 0.37800001535518285,
+      "meets_requested_0p2mm": true
+    },
+    {
+      "mantle_face": 10976,
+      "generated_outer_source_id": 186440,
+      "final_signed_support_distance_mm": 2.900316036728924,
+      "meets_requested_0p2mm": true
+    }
+  ],
+  "limits": [
+    "Strict-crossing gate is not a tangency, coplanar-overlap, minimum-clearance or geometric fidelity certificate.",
+    "This review includes whole 12484-face cap/bridge/mantle assembly, not other head/body objects or game export.",
+    "Obstacle support constraints use prior directors in the solver; final margins must be checked after director update."
+  ],
+  "source_file_locks": [
+    {
+      "path": "integration_v6/evidence/seam-hermite-physical-7p5-assembly.npz",
+      "match": true,
+      "sha256": "12b2639a68210dd24118605fd7df48bc273e7e0651d856e5ae51fad1babba4c6"
+    },
+    {
+      "path": "integration_v6/evidence/bridge-hermite-physical-7p5.npz",
+      "match": true,
+      "sha256": "a648d4f98fb8fe887f9b6d35f39e4fbd34bf36bd1af33f2f7b58b159a20ee878"
+    },
+    {
+      "path": "integration_v6/evidence/mantle-cut-7p5-restored-orientation.npz",
+      "match": true,
+      "sha256": "dd7c2cf135e57951df76965994aea6857f1eb25219255d8cc48fb57e9356be71"
+    },
+    {
+      "path": "integration_v6/evidence/cap-open.npz",
+      "match": true,
+      "sha256": "fdeed9089532f4baffd3e6213ae709ee86c7aa44393a7739ae2670c36fd9a812"
+    },
+    {
+      "path": "shell_band_v5/retained_candidate/evidence/band-paired.npz",
+      "match": true,
+      "sha256": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647"
+    },
+    {
+      "path": "pbr_normals_v2/resource_pack/models/entity/paz_v75_pbr_sculpture.geo.json",
+      "match": true,
+      "sha256": "160d00c5489e618bdb093eb48a388b17f606ca9970f00de88b164758fa1c46cf"
+    },
+    {
+      "path": "pbr_normals_v2/resource_pack/textures/entity/paz_v75_pbr_sculpture.png",
+      "match": true,
+      "sha256": "9547dffd84fdc399535c97f88cf8694ade2af98e82de0ec71ec7117473eb7856"
+    },
+    {
+      "path": "pbr_normals_v2/resource_pack/textures/entity/paz_v75_pbr_sculpture_normal_dx.png",
+      "match": true,
+      "sha256": "b09802ad642c4d3cbc88f0a7b734a9a3c45336f38fb09716bfd585627e2a1e17"
+    },
+    {
+      "path": "shell_band_v5/retained_candidate/evidence/cap-paired.npz",
+      "match": true,
+      "sha256": "24223e9e9fa576e802bfc99a92628bf345507e515ec7e351d0f32280c9cf7d55"
+    },
+    {
+      "path": "shell_band_v5/retained_candidate/evidence/band-paired.npz",
+      "match": true,
+      "sha256": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647"
+    },
+    {
+      "path": "shell_band_v5/retained_candidate/resource_pack/textures/entity/paired_cap_band_normal_dx.png",
+      "match": true,
+      "sha256": "6187b27f8900cd951c7a47f2083c8e2c91398f87863458a5e38afb45c523ef24"
+    },
+    {
+      "path": "shell_band_v5/retained_candidate/resource_pack/textures/entity/paired_cap_band.png",
+      "match": true,
+      "sha256": "1043d45b27e2ec2788b981612ff34c3fa9fec68848cf5ad623d1d2321e70bd77"
+    },
+    {
+      "path": "shell_band_v5/retained_candidate/resource_pack/textures/entity/paired_cap_band_normal_per_wall_dx.png",
+      "match": true,
+      "sha256": "948e6b4868981bda79ce19017fdf457ffc619da5ce43039ccc87ec2523d53312"
+    },
+    {
+      "path": "shell_band_v5/retained_candidate/resource_pack/textures/entity/paired_cap_band.texture_set.json",
+      "match": true,
+      "sha256": "d39336b1c5162c02afc5525bf7b626fff6c0a066323bef78deca537e58889fa3"
+    },
+    {
+      "path": "shell_band_v5/retained_candidate/resource_pack/models/entity/paired_cap_band.geo.json",
+      "match": true,
+      "sha256": "4ffbcd17bc25da7ecdce28a49fdf393924fdd6bdab2277d25731eabc1791abdd"
+    }
+  ],
+  "all_source_file_locks_match": true,
+  "external_contact_scope_note": {
+    "source": "Parent agent report, not rerun in this independent review",
+    "baseline_V6_bridge_vs_legacy_part15_strict_pairs": 928,
+    "clearance_bridge_vs_legacy_part15_strict_pairs": 942,
+    "interpretation": "Zero applies only to cap+bridge+mantle shell. Existing legacy-body overlaps remain and pair-count change is not a classification of new geometric regions."
+  }
+}

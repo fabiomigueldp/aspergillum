@@ -1,0 +1,32 @@
+import type { Block } from "@minecraft/server";
+import { readAspersoriumContents, readTableContents } from "../infrastructure/compact-block-state";
+import { ASPERSORIUM_BLOCK, SACRISTAN_TABLE_BLOCK } from "../infrastructure/constants";
+import { getDockedSnapshot } from "../infrastructure/docked-item-registry";
+
+export type BlockDestructionRisk = "occupied" | "orphaned" | "unreadable";
+
+/** Read-only guard shared by cancellable destruction routes, never recovery. */
+export function blockDestructionRisk(block: Block): BlockDestructionRisk | undefined {
+  let kind: "aspersorium" | "table";
+  try {
+    const id = block.typeId;
+    if (id === ASPERSORIUM_BLOCK) kind = "aspersorium";
+    else if (id === SACRISTAN_TABLE_BLOCK) kind = "table";
+    else return undefined;
+  } catch {
+    // Unknown ownership is not permission to change another pack's behavior.
+    return undefined;
+  }
+
+  try {
+    if (!block.isValid) return "unreadable";
+    const contents = kind === "aspersorium" ? readAspersoriumContents(block.permutation) : readTableContents(block.permutation);
+    if (contents.cosmeticIndex !== null) return "occupied";
+    if (getDockedSnapshot(block.dimension.id, block.location) !== undefined) return "orphaned";
+    return undefined;
+  } catch {
+    // Once ownership is established, uncertainty preserves the block and raw
+    // registry rather than triggering a non-atomic destruction/recovery path.
+    return "unreadable";
+  }
+}

@@ -1,0 +1,17 @@
+# Revisão visual independente V4 → V5
+
+Parecer: reter tecnicamente V5 como redução de custo, sem regressão visual relevante identificada nos diagnósticos examinados. Isso não é aprovação artística, global ou de runtime Minecraft.
+
+- Paired, três vistas: silhueta, extremidades e contato com a cabeça visualmente equivalentes. Sem novas pontas ou abertura aparente.
+- Perwall frontal: faixa e encontro nas têmporas permanecem equivalentes. Pequenas diferenças de granulação/sombreamento na calota, principalmente lado direito da imagem, sem novo defeito estrutural perceptível.
+- Perwall três quartos: contorno e faixa preservados. Marca escura acima da orelha, aproximadamente x575–595/y420–445, já existe em V4; não atribuir a V5.
+- Perwall perfil: melhoria local perceptível: risco escuro curto de V4 em aproximadamente x434–453/y258–263 deixa de ser visível em V5. Persistem a marca junto à orelha, x395–432/y415–444, e a linha posterior descendo até a nuca, ambas anteriores.
+- Não foram identificados novos furos nem perda da faixa dupla ou de contato. O aspecto frontal de dois contornos e a segmentação dos paired são preexistentes.
+
+Fontes: bedrock-perwall-{front,threequarter,profile}.png e paired-{front,threequarter,profile}.png em shell_band_v4/curvature_candidate/evidence/ e shell_band_v5/retained_candidate/evidence/. Coordenadas aproximadas em imagens de 900×900.
+
+Controle auxiliar relatado pelo revisor: diferença média absoluta RGB dos perwall de 0,047/0,081/0,081 níveis em escala 0–255 (frente/três quartos/perfil), não usada como prova de qualidade. A faixa byte-idêntica em malha/cubos/tiles é consistente com a equivalência visual.
+
+Limites: diagnósticos externos Blender, reimportando JSON/cutout/normal. Cabeça e halo highpoly são contexto, não conversão validada. As imagens não excluem defeitos subpixel, áreas ocultas ou diferenças no Minecraft. Não foram alterados arquivos pelo revisor nem repetido bake.
+
+Revisão recebida em 2026-11-03 por avaliação visual separada da implementação.

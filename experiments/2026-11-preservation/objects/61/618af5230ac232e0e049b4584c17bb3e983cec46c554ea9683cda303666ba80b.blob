@@ -1,0 +1,20 @@
+import bpy,json,math
+from mathutils import Vector
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/'
+bpy.ops.wm.open_mainfile(filepath=r+'cuff-manual-mask-visible.blend',use_scripts=False)
+o=bpy.data.objects['Maria — túnica e mangas integradas'];m=o.data;weights=[v.value for v in m.attributes['.sculpt_mask'].data];orig=[v.co.copy() for v in m.vertices];delta=Vector((0,.005,0));o.shape_key_add(name='Basis');key=o.shape_key_add(name='DIAGNÓSTICO — cuff 5 mm posterior, NÃO PROMOVER')
+for i,v in enumerate(key.data):v.co=orig[i]+delta*weights[i]
+key.value=1
+ratios=[];jumps=[]
+for e in m.edges:
+ i,j=e.vertices;l=(orig[i]-orig[j]).length
+ if l>1e-9 and max(weights[i],weights[j])>0:
+  ratio=(key.data[i].co-key.data[j].co).length/l;ratios.append(ratio);jumps.append(abs(weights[i]-weights[j]))
+report={'purpose':'Diagnostic only, not accepted','translation_full_weight_m':list(delta),'changed_vertices':sum(w>0 for w in weights),'max_displacement_m':max(weights)*delta.length,'posterior_vertices_changed':sum(orig[i].y>=0 and w>0 for i,w in enumerate(weights)),'edge_ratio_min':min(ratios),'edge_ratio_max':max(ratios),'edges_over_20pct_stretch':sum(t>1.2 or t<.8 for t in ratios),'max_adjacent_weight_jump':max(jumps),'rollback':'Set diagnostic shape key value to 0; original baseline untouched'}
+json.dump(report,open(r+'cuff-diagnostic-displacement.json','w'),indent=2);print(report)
+bpy.ops.wm.save_as_mainfile(filepath=r+'cuff-diagnostic-displacement.blend')
+h=bpy.data.objects['Maria — mão ao peito anatômica'];center=sum((v.co for v in h.data.vertices),Vector())/len(h.data.vertices);s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=600;s.render.resolution_y=800;s.render.resolution_percentage=100;c=s.camera
+for val,label in [(0,'before'),(1,'after')]:
+ key.value=val
+ for view,off in [('front',(0,-5,0)),('threequarter',(-3,-5,.2)),('profile',(5,0,0)),('reverse',(-5,0,0))]:
+  c.location=center+Vector(off);c.rotation_euler=(center-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=.48;s.render.filepath=r+'cuff-diagnostic-'+label+'-'+view+'.png';bpy.ops.render.render(write_still=True)

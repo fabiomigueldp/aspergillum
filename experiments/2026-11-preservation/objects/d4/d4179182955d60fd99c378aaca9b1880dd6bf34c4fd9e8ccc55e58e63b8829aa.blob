@@ -1,0 +1,64 @@
+# Parecer independente final V10
+
+**Nenhuma candidata V10 aprovada ou retida. As tentativas permanecem como pesquisa.** A melhora de contagem não satisfaz simultaneamente forma, contorno, fechamento sem cruzamentos e relação visual com as orelhas. A anatomia V9 e a faixa V5 seguem congeladas; não foram recolhidas para esconder lâminas.
+
+Este parecer não prova impossibilidade de uma solução estrutural. Ele registra a falha das famílias efetivamente testadas, com seus alvos suaves e restrições. Nenhuma fonte, versão anterior ou candidata foi alterada pela revisão. Não houve exportação, publicação ou teste Minecraft.
+
+## 1. Diagnóstico confirmado na origem
+
+- Casca V7 × anatomia V9: 607 pares, sendo 207 calota e 400 ponte. Uma alteração limitada a vértices gerados da ponte não remove os 207 pares da calota.
+- Entre os 400 pares da ponte, **16 contêm arestas fonte congeladas atravessando o interior de faces anatômicas congeladas**. Mover apenas o terceiro vértice da face não remove a aresta atravessada. A barreira fica no limite s=0, junto à calota, em t≈0,027–0,080 e 0,920–0,978.
+- Os 32 vértices fonte dessas arestas, as 16 faces anatômicas e toda a calota correspondem à geometria original nas comparações registradas. O defeito local de relação espacial é anterior à V8/V9.
+- As lâminas vermelhas/azuis são visíveis nas cavidades nos renders Blender V9. Não se demonstrou que poderiam ser descartadas como geometria oculta.
+
+Evidências: `bridge-contact-map.npz`, `bridge-contact-details.json`, `source-provenance-proof.json` e `DIAGNOSIS_BRIDGE_EAR.md`.
+
+## 2. Boundary posterior 30 mm: melhora de contatos, custo alto
+
+Arquivo: `../structural_fit/boundary-posterior-30mm.npz`.
+
+A revisão completa confirma zero cruzamentos próprios e topologia fechada válida, inclusive nos 91.602 pares adjacentes. A espessura pareada é preservada. Casca × anatomia cai de 607 para 212, mas há **185 pares novos**. Casca × faixa cai de 2.004 para 866, com **44 novos**. Há raios de exposição para 91 dos novos pares anatômicos e 17 dos novos pares da faixa no teste nativo limitado.
+
+A candidata move 1.496 vértices, incluindo 1.188 vértices fonte da calota em sua cópia; fontes no disco não mudam. O deslocamento máximo/p95 é 30 mm. A ponte tem área mínima 31,943% da V7 e stretches 0,300657–6,791944. A rotação de normal chega a 91,055° em relação à V7, sem que isso sozinho signifique inversão topológica. Há novos contatos com o proxy do halo, não uma certificação do halo híbrido real.
+
+Portanto não é uma limpeza local de custo geométrico desprezível. O parecer visual pareado e o contorno são necessários além desses números. Detalhes em `REVIEW_BOUNDARY_POSTERIOR_30MM.md`.
+
+## 3. Último checkpoint com máscara de contorno: rejeição confirmada
+
+Arquivo: `../structural_fit/relax075-continuation-iteration05.npz`.
+
+SHA-256: `5aaf825d37ba30a858ac67f36c57fcd459ff6eed617e7efdff99f7bad9496906`.
+
+- **42 cruzamentos próprios**: 25 calota–calota, 13 calota–ponte, 3 ponte–manto e 1 ponte–ponte. Quarenta pares não compartilham vértices; dois compartilham um vértice. O teste explícito de adjacência confirma esses dois, já incluídos nos 42, sem somá-los outra vez.
+- Os dois pares adjacentes são faces 7423/7426 e 7426/10976. A extensão dos testemunhos entre os pares próprios chega a 28,463 mm; isso é extensão de interseção, não profundidade de penetração.
+- Casca × anatomia: **607 → 513**, com 316 novos e 410 removidos; 181 calota + 332 ponte.
+- Casca × faixa: **2.004 → 1.430**, com 413 novos e 987 removidos. Os **797 pares faixa × anatomia** permanecem congelados e são outra relação.
+- Os 1.027 vértices da máscara de contorno de sete vistas estão bit a bit iguais à V7. Essa afirmação é sobre a máscara, não uma prova de silhueta universal: outras faces poderiam ultrapassar um contorno. A projeção visual é examinada separadamente pelo trabalho de contorno.
+- Espessura pareada preservada, sem diretores mistos. Cosseno mínimo diretor/normal 0,07035: o alvo suave de 0,08 não foi atingido integralmente. Isso não impede os cruzamentos medidos.
+- Ponte: área mínima 64,783% da V7; stretches 0,653821–1,499378; rotação máxima 64,710°. Os alvos suaves de strain não equivalem a restrições satisfeitas.
+- 1.182 vértices movidos; máximo 16,327 mm, p95 10,487 mm e mediana 4,043 mm. Posições do manto são exatas, mas suas normais armazenadas foram recalculadas na candidata. Nada foi exportado.
+- Não há novos contatos com outras peças nos testes aplicados. Proxies de peças híbridas continuam não certificados. Todos os inputs congelados conferidos antes/depois permanecem intactos.
+
+**Rejeitado por auto-interseção**, ainda que preserve a máscara de contorno e melhore parte dos indicadores. Não foi feita uma varredura de visibilidade adicional sobre esse checkpoint já rejeitado.
+
+Evidências: `relax075-continuation-iteration05-review.json`, `-review-arrays.npz`, `-adjacent-check.json`, `-contour-mask-check.json` e `-self-crossing-summary.json`.
+
+## 4. Controle da alternativa relaxada sem cruzamentos próprios
+
+Arquivo: `../structural_fit/relax065-t2-iteration03.npz`.
+
+SHA-256: `b3444dccbbecb44a16ba193dcd43149a19a3d6c05ce4fa2220f5fc832447ae83`.
+
+O controle independente direcionado confirma zero cruzamentos próprios no gate e em 91.602 pares adjacentes, mas **6 faces centrais têm diretores de sinais mistos**: índices centrais 51, 395, 740, 746, 752 e 754. São 6 produtos não positivos; mínimo −0,137193. A espessura pareada por distância não elimina essa falha de transversabilidade. Um resíduo numérico do predicado absoluto na aresta comum 7147/7388 desaparece com a tolerância relativa; não foi contado como cruzamento real.
+
+Este controle não repete todos os testes de contatos/contorno/visibilidade da alternativa nem a aprova. Ele confirma por que “self zero” e espessura pareada constante não bastam. Evidência: `relax065-t2-iteration03-targeted-check.json`.
+
+## 5. Por que não simplesmente excluir as lâminas
+
+A casca é **uma única componente conexa fechada**, 6.244 vértices / 12.484 faces, Euler 2. Calota–ponte compartilham 456 vértices e ponte–manto 640. As peças coloridas são regiões dessa mesma superfície, não componentes fechadas independentes certificadas invisíveis. Excluir um subconjunto próprio de faces cria bordas abertas sem uma reconstrução explícita do fechamento.
+
+A anatomia congelada tem separadamente uma componente principal de 689 vértices / 1.374 faces e um defeito microscópico herdado de 3 vértices / 2 faces opostas (v437–439, f424/1131). Esse defeito permanece fora do escopo e não foi removido. Não deve ser confundido com lâminas da casca. Evidência: `component-connectivity.json`.
+
+## Limites do parecer
+
+Testes estritos não certificam tangências, coplanaridade geral, folga positiva global ou espessura mínima global. Amostragem de raios não prova invisibilidade universal. Projeções e renders não são transporte Bedrock nem testes de alfa, normalmap, PBR, culling/mipmaps e desempenho no jogo. A V9 anterior permanece com suas pendências conhecidas; não foi reclassificada como interface limpa porque nenhuma V10 passou.

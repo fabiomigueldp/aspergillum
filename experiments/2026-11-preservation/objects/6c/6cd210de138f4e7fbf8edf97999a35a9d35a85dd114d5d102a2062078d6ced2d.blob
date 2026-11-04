@@ -1,0 +1,8 @@
+import numpy as np,json
+from pathlib import Path
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+R=Path(__file__).resolve().parents[1];V4=R.parent/'shell_band_v4';d=np.load(V4/'curvature_candidate/evidence/cap-paired.npz');H=np.load(V4/'evidence/head-source.npz');tree=BVHTree.FromPolygons(H['points'].tolist(),H['triangles'].tolist(),all_triangles=True);n=len(d['points'])//2;points=d['points'][:n];normal=[];signed=[]
+for p in points:
+ q,no,_,_=tree.find_nearest(Vector(p));normal.append(no[:]);signed.append((Vector(p)-q).dot(no))
+np.savez_compressed(R/'evidence/baseline-vertex-contact.npz',source_indices=d['source_indices'][:n],signed=np.array(signed),head_normals=np.array(normal));print('Prepared',n)

@@ -1,0 +1,14 @@
+import bpy,json,numpy as np,hashlib
+from mathutils import Vector,Quaternion
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-sleeve-proxy/'
+bpy.ops.wm.open_mainfile(filepath=r+'V85-PROXY-MANGA-NAO-INTEGRADA.blend',use_scripts=False)
+def coords(n):return np.array([v.co[:] for v in bpy.data.objects[n].data.vertices])
+oldh=coords('PROXY85 mão rígida — dedos originais');olds=coords('PROXY85 manga de controle');oldbody=coords('Maria — túnica e mangas integradas')
+bpy.ops.wm.open_mainfile(filepath=r+'cuff-open/P85-CUFF-TECHNICAL-TRIAL.blend',use_scripts=False)
+report={'hand_max_vertex_delta_m':float(np.abs(coords('PROXY85 mão rígida — dedos originais')-oldh).max()),'original_cage_vertices_max_delta_m':float(np.abs(coords('PROXY85 manga de controle')[:len(olds)]-olds).max()),'torso_max_vertex_delta_m':float(np.abs(coords('Maria — túnica e mangas integradas')-oldbody).max())}
+arm=bpy.data.objects['PROXY85 controles'];arm.pose.bones['cotovelo_punho'].rotation_mode='QUATERNION';arm.pose.bones['cotovelo_punho'].rotation_quaternion=Quaternion(Vector((1,0,0)),.1);bpy.context.view_layer.update();dg=bpy.context.evaluated_depsgraph_get()
+def geom(n):
+ o=bpy.data.objects[n];e=o.evaluated_get(dg);m=e.to_mesh();p=[v.co.copy() for v in m.vertices];f=[tuple(z.vertices) for z in m.polygons];e.to_mesh_clear();return p,f
+p,f=geom('PROXY85 manga de controle');hp,hf=geom('PROXY85 mão rígida — dedos originais');t=BVHTree.FromPolygons(p,f);ht=BVHTree.FromPolygons(hp,hf);report['pose_test_rad']=.1;report['pose_hand_sleeve_pairs']=len(t.overlap(ht));report['pose_self_intersections']=sum(a<b and not set(f[a])&set(f[b]) for a,b in t.overlap(t));report['note']='Pose test not saved. Existing cage vertices, hand and torso unchanged in rest geometry.'
+json.dump(report,open(r+'cuff-open/scope-and-rig.json','w'),indent=2);print(report)

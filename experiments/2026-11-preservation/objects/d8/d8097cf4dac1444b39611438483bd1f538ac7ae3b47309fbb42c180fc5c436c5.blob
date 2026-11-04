@@ -1,0 +1,39 @@
+{
+  "output": "/workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103/out/state-compaction/recovery-analysis",
+  "coverage": {
+    "rows": 54,
+    "injectedFaults": 51,
+    "successfulPaths": 3,
+    "modes": [
+      "throw-before",
+      "throw-after",
+      "interrupt-after"
+    ],
+    "steps": {
+      "dock": [
+        "prepare",
+        "mark-ambiguous",
+        "registry",
+        "remove-hand",
+        "occupy",
+        "complete"
+      ],
+      "undock": [
+        "prepare",
+        "mark-ambiguous",
+        "clear-block",
+        "delete-registry",
+        "deliver",
+        "complete"
+      ],
+      "break": [
+        "prepare",
+        "mark-ambiguous",
+        "deliver",
+        "delete-registry",
+        "complete"
+      ]
+    }
+  },
+  "successfulAssertions": true
+}

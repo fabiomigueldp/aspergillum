@@ -1,0 +1,15 @@
+from pathlib import Path
+import numpy as np,json
+O=Path(__file__).resolve().parent;B=O.parent.parent;d=np.load(B/'body_interface_v8/anatomy_fit/retained-anatomy.npz');band=np.load(B/'shell_band_v5/retained_candidate/evidence/band-paired.npz');r=json.loads((O/'retained-anatomy-other-contacts.json').read_text())['rows']['band']
+def hit(a,b):
+ out=[];e1=b[1]-b[0];e2=b[2]-b[0]
+ for k in range(3):
+  p=a[k];dr=a[(k+1)%3]-p;h=np.cross(dr,e2);det=np.dot(e1,h)
+  if abs(det)<1e-20:continue
+  s=p-b[0];u=np.dot(s,h)/det;q=np.cross(s,e1);v=np.dot(dr,q)/det;t=np.dot(e2,q)/det
+  if 1e-8<t<1-1e-8 and u>1e-8 and v>1e-8 and u+v<1-1e-8:out.append((p+t*dr).tolist())
+ return out
+hh=[]
+for i,j in r['new_pairs']:
+ a=d['points'][d['triangles'][i]];b=band['points'][band['triangles'][j]];w=hit(a,b)+hit(b,a);hh.append({'body_face':i,'body_source_face':int(d['source_face_indices'][i]),'band_face':j,'witnesses':w})
+w=np.array([w for h in hh for w in h['witnesses']]);out={'candidate':'retained-anatomy.npz','native_band':'shell_band_v5/retained_candidate/evidence/band-paired.npz','new_pairs':len(hh),'body_faces':sorted(set(h['body_face'] for h in hh)),'band_faces':sorted(set(h['band_face'] for h in hh)),'witness_bbox_xyz':[w.min(0).tolist(),w.max(0).tolist()],'crossings':hh};(O/'band-retained-localization.json').write_text(json.dumps(out,indent=2));print({k:v for k,v in out.items() if k not in ['crossings','body_faces','band_faces']})

@@ -1,0 +1,12 @@
+# Independent Cruzeta review
+
+- Baseline: `3eaf97b172a38dac794461b156b70864737875d6`.
+- Altare suite: **107/107 passed** before final direction fix. Focused recheck after the fix: **14/14 passed**. Typecheck and `git diff --check` passed.
+- Prior outputs are byte-identical: **397 block files, 4,108 geometries, 258 texture files**. No old file changed or disappeared in the reviewed snapshot.
+- Exhaustive compatibility: **78,432 prior states decode identically**. All **1,568 new states round-trip**, plus **25,088 arbitrary contour repairs**. Exactly one geometry permutation matches each new state. Collisions remain inside the cell, at most five boxes.
+- Budget: **80,000 Altare states**, no remaining Altare allowance; **89,744 combined** with Aspergillum, 256 below the 90,000 diagnostic ceiling. This remains above the 65,536 reference and is not a claim of unrestricted pack compatibility.
+- Original inlay: all **4,096 samples** valid, opaque and nonmetallic, with 436 light-wood accent samples.
+- Inspected existing CPU previews: detail 1×1, bare/linen 7×2, floral 8×2. No obvious visual defect found. These are simplified CPU diagnostics, not Minecraft captures or parity evidence. No Chromium launched.
+- Found one minor issue: the front selector was visible on bare symmetric Cruzeta although its value was discarded. The implementation now hides it only for this symmetric finish and preserves the draft direction for later cloth. The added regression test passed.
+
+No remaining code-review blocker found. Final package/build checks remain with the implementation task. Native Minecraft import, appearance, collision feel, placement/breaking and Content Log still need validation.

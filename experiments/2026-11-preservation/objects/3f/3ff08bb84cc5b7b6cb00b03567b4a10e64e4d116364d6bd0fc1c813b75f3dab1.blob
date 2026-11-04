@@ -1,0 +1,27 @@
+# Altare: dois pedestais de nogueira, estudo 2
+
+Geometria real gerada para avaliação visual sobre a base 0.12.3. **Não é um .mcaddon e ainda não está integrada ao editor.** A Cruzeta anterior e o pacote 0.12.3 permanecem preservados.
+
+## Imagens
+
+- `renders/01-two-pedestals-3x2.png`: apresentação 3×2.
+- `renders/02-two-pedestals-front-3x2.png`: frontal baixa.
+- `renders/03-two-pedestals-detail-3x2.png`: detalhe do pedestal.
+- `renders/04-two-pedestals-7x2.png`: versão longa.
+- `comparison/`: capitel antes/depois, na mesma câmera.
+
+As quatro imagens finais representam a mesma revisão geométrica. Foram renderizadas offline em Blender Cycles CPU, com os triângulos exportados pelo adaptador do Studio e os mapas de madeira reais. Piso, luzes e câmera são externos de apresentação. **Não são capturas do Minecraft.**
+
+## Reprodução da apresentação
+
+Requer Blender com Cycles CPU. A partir desta pasta:
+
+`blender --background --factory-startup --disable-autoexec --python render.py -- scenes/two-pedestal-3x2.scene.json rerender.png hero`
+
+Os modos são `hero`, `front`, `detail`, `hero_low` e `back`. As texturas são locais e a renderização não depende de rede. O padrão usa 96 amostras, sem denoiser. `ALTARE_RENDER_THREADS` controla a quantidade de threads.
+
+## Fonte e validação
+
+`geometry/` contém seis documentos Bedrock. `source/` contém a geometria paramétrica, primitivas, exportador e testes para aplicar à base do projeto; os testes e o exportador dependem do checkout completo Altare/Studio 0.12.3. `qa/` contém quatro testes aprovados, revisões e logs. `provenance.json` registra hashes.
+
+A revisão 2 modifica apenas os cursos intermediários dos dois capitéis, suavizando a expansão transversal. Permanecem dois apoios, 42 cubos e 304 triângulos. Foram testadas 512 combinações de dimensão/frente, com conferência independente. Não houve teste de colocação, colisão, persistência ou aparência no Minecraft. Os limites de escala e a integração pendente estão em `docs/TWO_PEDESTAL_STUDY.md`.

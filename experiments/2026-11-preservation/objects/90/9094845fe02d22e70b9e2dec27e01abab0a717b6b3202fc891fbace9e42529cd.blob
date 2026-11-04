@@ -1,0 +1,26 @@
+{
+  "hypothesis": "Constrained thin-plate minimization removes near-antiparallel lateral center folds before offsetting. Fixed source interfaces and unaffected central strip; preserve original paired wall thickness.",
+  "method": "Linear least squares anisotropic thin-plate, physical step ratio3, displacement regularizer0.01; area-weighted directors projected into incident normal cone with requested margin0.1.",
+  "center_moved_vertices": 120,
+  "center_displacement_max_mm": 23.507331347659782,
+  "center_displacement_p95_mm": 11.120964874900663,
+  "shell_displacement_max_mm": 23.95649620541173,
+  "mixed_director_faces": 0,
+  "nonpositive_director_products": 0,
+  "cone_failures": [],
+  "cone_margin_min": 0.4098145050482894,
+  "source_vertices_exact": true,
+  "central_center_exact": true,
+  "thickness_min_mm": 0.9367844656692647,
+  "thickness_max_mm": 5.049497780673556,
+  "triangles": 12484,
+  "provenance": {
+    "input": "lateral_v7/evidence/director-cone-assembly.npz",
+    "source_geometry": "integration_v6/evidence/seam-hermite-physical-7p5-assembly.npz",
+    "only_generated_vertices_moved": true,
+    "connectivity_preserved": true,
+    "source_orientation_preserved": true,
+    "face_parts": "0 cap;1 bridge;2 restored mantle",
+    "source_indices_preserved": true
+  }
+}

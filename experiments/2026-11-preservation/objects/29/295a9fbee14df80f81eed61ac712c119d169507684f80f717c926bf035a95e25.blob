@@ -1,0 +1,42 @@
+import json, pathlib, shutil, hashlib
+ROOT=pathlib.Path('/workspace/scratch/212c580ada5b')
+WORK=ROOT/'paz-workbench-validation-20261103'
+SRC=ROOT/'paz-bedrock-v75-prototype-20261103/pbr_normals_v2/resource_pack'
+OUT=WORK/'source/viewer-3d/public/asset-library'
+P=OUT/'projects/paz-v75-pbr'
+P.mkdir(parents=True,exist_ok=True)
+geo_rel='models/entity/paz_v75_pbr_sculpture.geo.json'
+tex_stem='textures/entity/paz_v75_pbr_sculpture'
+paths=[geo_rel,tex_stem+'.png',tex_stem+'.texture_set.json',tex_stem+'_normal_dx.png','entity/sculpture.entity.json','render_controllers/pbr.render_controllers.json','manifest.json']
+hashes={}
+for path in paths:
+    f=SRC/path
+    dest=P/path
+    dest.parent.mkdir(parents=True,exist_ok=True)
+    shutil.copyfile(f,dest)
+    hashes[path]=hashlib.sha256(f.read_bytes()).hexdigest()
+    if path.endswith('.texture_set.json'):
+        dest=P/'pack'/path
+        dest.parent.mkdir(parents=True,exist_ok=True)
+        shutil.copyfile(f,dest)
+doc=json.loads((SRC/geo_rel).read_text()); g=doc['minecraft:geometry'][0]; d=g['description']; bones=g['bones']; cubes=[c for b in bones for c in b.get('cubes',[])]
+uv={'boxUvCubes':0,'perFaceUvCubes':0,'unsafeSubtexelBoxUvCubes':0,'intentionallyOmittedFaces':0,'invalidOrCollapsedFaces':0,'missingOrCollapsedFaces':0}
+for c in cubes:
+    if isinstance(c.get('uv'),list):
+        uv['boxUvCubes']+=1
+        uv['unsafeSubtexelBoxUvCubes']+=int(any(x<1 for x in c['size']))
+    else:
+        uv['perFaceUvCubes']+=1
+        for name in ['north','east','south','west','up','down']:
+            f=c.get('uv',{}).get(name)
+            if f is None: uv['intentionallyOmittedFaces']+=1
+            elif len(f.get('uv_size',[]))!=2 or any(abs(x)<1 for x in f['uv_size']):
+                uv['invalidOrCollapsedFaces']+=1;uv['missingOrCollapsedFaces']+=1
+summary={'index':0,'identifier':d['identifier'],'formatVersion':doc['format_version'],'textureWidth':d['texture_width'],'textureHeight':d['texture_height'],'visibleBounds':{'width':d.get('visible_bounds_width'),'height':d.get('visible_bounds_height'),'offset':d.get('visible_bounds_offset')},'boneCount':len(bones),'cubeCount':len(cubes),'locatorCount':sum(len(b.get('locators',{})) for b in bones),'boneNames':[b['name'] for b in bones],'uvSafety':uv}
+project={'id':'paz-v75-pbr','displayName':'Nossa Senhora da Paz V75 PBR LAB','currentLabel':'PBR V2 - não validado no Minecraft'}
+cap={'pbr':True,'attachables':False,'animations':False,'animationControllers':False,'cosmetics':False,'equipment':False,'avatar':False,'advancedAvatarProfile':None}
+manifest={'version':4,'project':project,'source':str(SRC),'models':[{'id':'entity__paz_v75_pbr_sculpture','label':'V75 PBR V2 (arquivos exportados reais)','source':geo_rel,'sourceLabel':str(SRC/geo_rel),'type':'Bedrock Geometry','category':'direct-geometry','texture':tex_stem+'.png','renderPaths':[],'geometries':[summary]}],'equipment':[],'cosmetics':[{'id':'default','label':'Textura do pack','textures':{}}],'compositions':{},'textureCount':2,'runtime':{'attachables':[],'renderControllers':[],'animations':[],'animationControllers':[],'textureSets':[tex_stem+'.texture_set.json']},'capabilities':cap}
+(P/'manifest.json').write_text(json.dumps(manifest,indent=2))
+(OUT/'workspace.json').write_text(json.dumps({'version':1,'defaultProjectId':project['id'],'projects':[{**project,'manifest':'projects/paz-v75-pbr/manifest.json','modelCount':1,'equipmentCount':0,'textureCount':2,'capabilities':cap}]},indent=2))
+(WORK/'input-provenance.json').write_text(json.dumps({'source':str(SRC),'hashes':hashes,'note':'Copies only. Manual isolated catalog follows original sync-assets schema; no source mesh, pack or renderer edits. Client entity is retained as evidence but not resolved by generic direct-geometry renderer.','summary':summary},indent=2))
+print(json.dumps(summary,indent=2))

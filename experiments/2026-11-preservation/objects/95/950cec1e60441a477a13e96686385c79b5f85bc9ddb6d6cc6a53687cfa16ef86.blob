@@ -1,0 +1,25 @@
+{
+  "passed": [
+    "Unique fresh RP/BP UUIDs and matching dependency",
+    "All geometry parses, no poly_mesh, finite non-negative cubes, bounded UVs",
+    "All three entity IDs, behavior/client/geometry/PNG/render-controller links resolve",
+    "ZIP integrity passed and every packed byte equals completed RP/BP files",
+    "Original V75 blend SHA256 unchanged",
+    "New pack identities differ from original addon; original block identifier not claimed"
+  ],
+  "entity_identifiers": [
+    "paz_v75_lab:voxel192",
+    "paz_v75_lab:hybrid",
+    "paz_v75_lab:alpha"
+  ],
+  "archive_sha256": "5e1d7f3b1d8fe19c98bb67a381bac172010956cfbf67af6027b16853c6a9e94e",
+  "not_run": [
+    "Minecraft import and Content Log",
+    "Actual Bedrock render/culling/mipmaps",
+    "Touch controls / selection / spawn positioning",
+    "Performance on target hardware",
+    "Save load/unload persistence",
+    "Production gameplay integration"
+  ],
+  "release_approved": false
+}

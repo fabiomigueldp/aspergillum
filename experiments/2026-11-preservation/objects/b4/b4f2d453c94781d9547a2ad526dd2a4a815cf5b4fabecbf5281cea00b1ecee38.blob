@@ -1,0 +1,23 @@
+from pathlib import Path
+from PIL import Image,ImageDraw,ImageFont
+import hashlib,json
+R=Path(__file__).resolve().parents[1];E=R/'evidence';V=R.parent/'assembly_transport_v14/evidence'
+f='/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf';F=lambda s:ImageFont.truetype(f,s)
+records=[]
+def sheet(name,items,crop=None,cols=2,scale=1):
+ ims=[]
+ for label,path in items:
+  im=Image.open(path).convert('RGB')
+  if crop: im=im.crop(crop)
+  if scale!=1:im=im.resize((round(im.width*scale),round(im.height*scale)),Image.Resampling.LANCZOS)
+  ims.append((label,im,path))
+ w=max(im.width for _,im,_ in ims);h=max(im.height for _,im,_ in ims);pad=16;header=74;caption=52
+ out=Image.new('RGB',(cols*w+(cols+1)*pad,header+((len(ims)+cols-1)//cols)*(h+caption+pad)+pad),'#e9ecef');draw=ImageDraw.Draw(out)
+ draw.text((pad,12),'V15 · Comparação externa Blender, material flat',font=F(24),fill='#15222c');draw.text((pad,43),'Mesmas câmeras e luz. Sem teste Minecraft ou aprovação de acabamento.',font=F(17),fill='#33434f')
+ for k,(label,im,path) in enumerate(ims):
+  x=pad+(k%cols)*(w+pad);y=header+(k//cols)*(h+caption+pad);draw.text((x,y),label,font=F(18),fill='#15222c');out.paste(im,(x,y+caption))
+ p=E/name;out.save(p);records.append({'file':name,'sources':[{'label':a,'path':str(p.relative_to(R.parent)),'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}for a,_,p in ims],'crop_pixels':crop,'display_scale':scale,'pixel_edits':'none; identical crop/resizing and labels only','sha256':hashlib.sha256(p.read_bytes()).hexdigest()})
+sheet('comparison-band.png',[('Controle nativo (não Bedrock)',V/'native-flat-focus-band-front.png'),('V14 · recorte alfa por triângulo',V/'json-flat-focus-band-front.png'),('V15 · 1.400 peças opacas na faixa',E/'opaque-1400-band-front.png'),('V15 · máscara compartilhada 2048',E/'shared-2048-band-front.png')],crop=(175,365,825,705))
+sheet('comparison-whole.png',[('Controle nativo (três partes)',V/'native-flat-whole-threequarter.png'),('V14 · JSON reimportado',V/'json-flat-whole-threequarter.png'),('V15 · JSON compartilhado 2048',E/'shared-2048-threequarter.png')],cols=3,scale=.6)
+sheet('comparison-causal-controls.png',[('Controle nativo (não Bedrock)',V/'native-flat-focus-band-front.png'),('V15 · máscara compartilhada 2048',E/'shared-2048-band-front.png'),('Recorte analítico · não é cube Bedrock',E/'shared-2048-analytic-clip-control-band-front.png'),('Sombras desligadas · não é correção',E/'shared-2048-no-shadow-control-band-front.png')],crop=(175,365,825,705))
+(E/'comparison-provenance.json').write_text(json.dumps(records,indent=2,ensure_ascii=False)+'\n')

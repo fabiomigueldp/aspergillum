@@ -1,0 +1,51 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-cloth-obstacle-surface-trial.py').read().split('counts=collections.Counter')[0])
+patch=set(json.load(open(r+'neck-paired-boundary-feasibility-growth.json'))['patch_faces']);original=set(patch);D=json.load(open(r+'neck-paired-collar-proof.json'));N=len(D['ordered_primary_loop']);loop=D['ordered_primary_loop'];pairlist=np.load(r+'neck-source-layer-pairs.npz')['pairs']+160386;pairmap={int(a):int(b) for a,b in pairlist for a,b in [(a,b),(b,a)]};lookup={tuple(sorted(f)):fi for fi,f in enumerate(fs)};vf=collections.defaultdict(set)
+for fi,f in enumerate(fs):
+ for v in f:vf[v].add(fi)
+culprittri={a for a,b in D['skin_pairs_all']}|{a for a,b in D['outside_pairs_all']};boundary_source=set()
+for a in culprittri:
+ j=(a%(2*N))//2;boundary_source.update((loop[j],loop[(j+1)%N]));boundary_source.update(pairmap[v] for v in (loop[j],loop[(j+1)%N]))
+extra=set().union(*(vf[v] for v in boundary_source));foldfaces={D['outside_source_face_indices'][b] for a,b in D['outside_pairs_all']};extra|=foldfaces;steps=[];blocked=None
+# Expand only faces causally touched by collision neighborhoods, with exact opposite-layer closure.
+def paired_expand(extra):
+ global blocked
+ for fi in list(extra):
+  f=fs[fi]
+  if not all(v in pairmap for v in f):blocked='Required faces touch unpaired rim/cap';return None
+  match=lookup.get(tuple(sorted(pairmap[v] for v in f)))
+  if match is None:blocked='Required face has no exact partner';return None
+  extra.add(match)
+ pts=p[list({v for fi in extra for v in fs[fi]})]
+ if pts[:,2].min()<3.22 or pts[:,2].max()>3.42 or pts[:,0].max()>.025:blocked='Expansion leaves bounded posterior neck';return None
+ return extra
+expanded=paired_expand(extra)
+if expanded is not None:patch|=expanded
+skinpairs=set(hb.overlap(BVHTree.FromPolygons(p.tolist(),fs)))
+for it in range(60):
+ if blocked:break
+ counts=collections.Counter(tuple(sorted((a,b))) for fi in patch for a,b in zip(fs[fi],fs[fi][1:]+fs[fi][:1]));edges=[e for e,n in counts.items() if n==1];boundary={v for e in edges for v in e};adj=collections.defaultdict(set);bad=set();badedges=0
+ for a,b in edges:
+  adj[a].add(b);adj[b].add(a);u=Vector(p[a]);v=Vector(p[b]);e=v-u;h,_,_,_=hb.ray_cast(u,e.normalized(),e.length);invalid=h is not None
+  for t in [0,.25,.5,.75,1]:
+   pt=u.lerp(v,t);near,nor,_,_=hb.find_nearest(pt)
+   if (pt-near).dot(nor)<.0001:invalid=True
+  if invalid:bad.update((a,b));badedges+=1
+ frozen={fi for fi in patch if all(v in boundary for v in fs[fi])};frozenhits=[(a,b) for a,b in skinpairs if b in frozen]
+ for a,b in frozenhits:bad.update(fs[b])
+ seen=set();loops=[]
+ for v in adj:
+  if v in seen:continue
+  todo=[v];seen.add(v);comp=[]
+  while todo:
+   a=todo.pop();comp.append(a)
+   for b in adj[a]:
+    if b not in seen:seen.add(b);todo.append(b)
+  loops.append(comp)
+ row={'step':it,'faces':len(patch),'boundary_loop_sizes':[len(c) for c in loops],'bad_degrees':sum(len(n)!=2 for n in adj.values()),'bad_edges':badedges,'frozen_skin_pairs':len(frozenhits)};steps.append(row)
+ if not bad:
+  if len(loops)!=2 or row['bad_degrees']:blocked='Expansion does not retain two simple layer boundaries'
+  break
+ extra=set().union(*(vf[v] for v in bad))-patch;expanded=paired_expand(extra)
+ if expanded is None:break
+ patch|=expanded
+pts=p[list({v for fi in patch for v in fs[fi]})];cp=p[list(boundary_source)];report={'baseline_patch_faces':len(original),'colliding_collar_triangles':len(culprittri),'culprit_source_boundary_vertices':len(boundary_source),'culprit_bounds':[cp.min(0).tolist(),cp.max(0).tolist()],'outside_fold_source_faces':sorted(foldfaces),'steps':steps,'blocked':blocked,'expanded_faces':len(patch),'added_faces':len(patch-original),'expanded_bounds':[pts.min(0).tolist(),pts.max(0).tolist()],'patch_faces':sorted(patch),'scope':'No geometry moved; exact paired source face expansion within X<=.025,Z3.22..3.42; source cap/rim forbidden'};json.dump(report,open(r+'neck-collar-targeted-expansion-audit.json','w'),indent=2);print({k:v for k,v in report.items() if k!='patch_faces'})

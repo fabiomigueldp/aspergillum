@@ -1,0 +1,9 @@
+# V65 — auditoria de máscara e viabilidade, sem alteração salva
+
+A ponta da manga protetora pode ser isolada por conectividade até corte Z=2,11m: 2107 vértices, região inferior lateral, sem torso. Em Z=2,12m o componente salta para 73360 vértices e inclui corpo. Portanto não é seguro estender automaticamente o campo acima disso. Imagens diagnósticas mostram seleção da ponta em perfil e frente; a vista traseira é ocluída pelo corpo e não constitui prova isolada. A separação por conectividade e limites geométricos sustentam a exclusão de torso e manga superior.
+
+Prova numérica em memória, sem criar blend: campo contínuo com núcleo até Z2,015 e zero em2,11; deslocamento punho/mão proposto (0,+0,08,-0,10)m. Resultado REJEITADO: 202 novas auto-interseções e razões de aresta até2,898× (p95 2,561×). Não aplicar essa deformação ao checkpoint V63. A aproximação posterior causa intrusão local e a zona curta estica o tecido.
+
+Limitação exata: o volume integrado da manga se funde ao torso imediatamente acima da ponta; a transição necessária ao gesto exige remodelação estrutural do segmento, não deslocamento curto da ponta nem rotação isolada da mão. Próximo método possível é reconstrução local da manga distal com contorno compartilhado conhecido, preservando torso; precisa verificar se há espaço físico para posição alvo antes de produzir outra versão.
+
+Arquivos: V65-mask-upper-limit-audit.json, V65-field-feasibility.json, audit-protective-sleeve-mask.py, test-protective-sleeve-field.py e V65-mask-audit-{profile,front,back}.png. V63 permanece intacta e persistida.

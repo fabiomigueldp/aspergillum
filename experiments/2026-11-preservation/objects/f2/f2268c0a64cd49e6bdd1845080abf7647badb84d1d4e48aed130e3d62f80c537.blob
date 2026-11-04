@@ -1,0 +1,11 @@
+import bpy,numpy as np,json
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False)
+o=bpy.data.objects['Maria — túnica e mangas integradas'];bv=BVHTree.FromObject(o,bpy.context.evaluated_depsgraph_get());rows=[]
+for z in [.9,1.2,1.5,1.7]:
+ rho=[]
+ for a in np.linspace(0,2*np.pi,256,endpoint=False):
+  d=Vector((.32*np.cos(a),.215*np.sin(a),0));h,n,ix,dist=bv.ray_cast(Vector((.004,-.003,z)),d.normalized(),1);rho.append(dist/d.length if h else 0)
+ f=np.fft.rfft(rho)/256;rows.append({'z':z,'radius_min_max':list(map(float,[min(rho),max(rho)])),'spectrum_relative_amplitudes':[float(2*abs(v)) for v in f[:17]],'samples':rho})
+json.dump(rows,open(r+'tunic-fold-spectrum.json','w'),indent=2);print([(x['z'],x['spectrum_relative_amplitudes']) for x in rows])

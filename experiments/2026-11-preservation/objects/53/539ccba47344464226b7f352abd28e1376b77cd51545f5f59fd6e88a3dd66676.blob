@@ -1,0 +1,96 @@
+# V15 independent comparison
+
+All audit writes are confined to this directory. Candidate exporters were not imported or changed. Frozen V13 band, V11 shell, V9 anatomy and legacy files remain unchanged; new shared frozen NPZ copies preserve every array. Existing V14 source, viewer and raster findings were reused, not repeated as new evidence. No Minecraft, runtime, performance, PBR fidelity or release approval is claimed.
+
+## Finding
+
+The shared canonical-mask construction is the strongest tested preservation candidate. It retains the native planes and every native source triangle via two right-triangle halves, and removes the known V14 first-component failure in both the 450-ray set and the denser 40,401-ray window. It remains finite conservative alpha sampling and increases geometry count materially.
+
+Opaque adaptive cuboids preserve sampled native-band coverage but swell the band silhouette. Their lower-budget success on the local component test partly masks the old shell-alpha problem by advancing the band surface. Keeping fewer cubes is therefore not evidence of greater fidelity.
+
+## Frozen inputs and actual JSON
+
+- All three source SHA256 hashes match the original V14 freeze.
+- Shared candidates contain 36,968 new half-triangle quads: 8,888 band, 25,328 shell and 2,752 anatomy. No omitted halves. All 17 contextual bones and original 2048-square decoded RGBA pixels remain exact.
+- Independently reconstructed child-coordinate error is at most 5.085e-14 block. Maximum native-plane residual is 8.015e-15 block. The source-to-child area sums agree per source face within 8e-17 block².
+- Actual UVs are the official, previously checked south convention: U increases local +X, image V decreases local +Y. Every shared tile origin/extent and every binary alpha cell match the claimed integer column<=row rule.
+- Opaque combined candidates change only part_00 versus V14. All other bones are identical, and only the previously unused 4x4 texture square changes. Every new band face samples its fully opaque texel.
+
+## Exact cell-support bound and precision qualification
+
+For canonical legs a,b and resolution N, actual alpha has N(N+1)/2 opaque cells. The native right triangle occupies N²/2 cell areas. At ideal nearest mip0, this proves extra area = native area/N and zero positive-area missing support. Maximum perpendicular overhang is ab/(N sqrt(a²+b²)). The two halves partition each original triangle, so the bound sums over all source faces. These are accumulated face areas, not surface-union area or visibility.
+
+| N | Added/native area | Band max overhang | Shell max overhang | Anatomy max overhang |
+|---:|---:|---:|---:|---:|
+|128|0.78125%|0.054397 mm|0.997733 mm|0.407920 mm|
+|512|0.1953125%|0.013599 mm|0.249433 mm|0.101980 mm|
+|2048|0.048828125%|0.003400 mm|0.062358 mm|0.025495 mm|
+
+All 184,840 interior probes and 184,840 diagonal texel-center probes pass at each tier. Exact source-derived points at diagonal lattice crossings are sensitive to projection roundoff. The initial local-tile test and a second actual-atlas-address test deliberately record this separately. In the actual N2048 atlas test, 41,077/184,840 exact-edge probes select transparent neighboring cells; the maximum computed perpendicular outside error is only 6.383e-11 mm. At normalized inset 1e-10, nine probes fail, with maximum intended inward distance 2.709e-13 mm. Insets 1e-8, 1e-7 and 1e-6 each have zero failures. These arithmetic-sensitive boundary probes do not show visible holes, and equally do not justify a crack-free claim. Engine float arithmetic/filtering remains untested.
+
+## Critical first-hit evidence
+
+| Candidate | Changed components /450 | Central changes /18 | Depth observation |
+|---|---:|---:|---|
+|V14 original|1|0|Known shell-alpha support leak|
+|V14 center-only trial|26|2|Erosion exposes shell|
+|Opaque300|0|0|Band advances up to0.599mm|
+|Opaque700|0|0|Band advances ahead of native|
+|Opaque1400|1|0|Band advances up to0.145mm; one old shell leak remains|
+|Shared128|0|0|At most4.515e-6mm same-component advance|
+|Shared512|0|0|At most4.515e-6mm same-component advance|
+|Shared2048|0|0|Depth differences <=1.365e-12mm on this sample set|
+
+The exact frozen 201x201 critical window covers0.4x0.4mm at0.002mm pitch. V14 had4,048 native-band→shell substitutions. All three shared tiers have zero changed components, zero lost hits and zero substitutions in40,401 samples. Conservative affine t/u/v bounds retain five actual JSON faces; eleven direct full-face traces cross-check the result. This removes the known sampled failure, not every possible failure in the model.
+
+## Entire band support and silhouette
+
+Opaque candidates all contain all31,108 native interior sample points (seven points on every source triangle), within the declared1e-10-block inclusion tolerance; the largest uncontained numerical residual is under1.1e-12mm. Along source normals, the area-weighted median outward union endpoint is0.1088/0.0475/0.0239mm at300/700/1400. Interval maxima6.059/5.422/5.422mm are not nearest-surface distances: connected overlapping boxes and endcaps can extend the line far beyond a local patch. Do not relabel them as geometric Hausdorff error or visible penetration.
+
+Six fixed1024² front/back/left/right/oblique projected-support masks cover the entire band:
+
+| Candidate | Extra sampled projected support / native | Lost sampled pixels |
+|---|---:|---:|
+|Opaque300|1.37–2.07%|0|
+|Opaque700|0.71–1.03%|0|
+|Opaque1400|0.49–0.76%|0|
+|Shared128|0.019–0.050%|0|
+|Shared512|0.004–0.015%|0|
+|Shared2048|0–0.004%|0|
+
+Opaque maximum added-pixel distance to the native mask is1.77/1.59/1.27mm. The masks' pixel pitch is roughly0.24–0.32mm, so a shared-mask difference of one pixel is not a measured0.3mm continuous overhang; use the analytic bound above. Zero difference on one view means no sampled pixel difference, not exact continuous equivalence. Diagnostic PNGs use gray for common support, red for added support and blue for loss. They are mathematical masks, not game screenshots or complete-sculpture renders.
+
+## Actual geometry/storage counts
+
+| Combined candidate | Cubes | Mapped quads | Raster triangles if split | One color atlas RGBA8 |
+|---|---:|---:|---:|---:|
+|V14|23,081|23,098|46,196|64MiB|
+|Opaque300|18,937|20,454|40,908|64MiB|
+|Opaque700|19,337|22,854|45,708|64MiB|
+|Opaque1400|20,037|27,054|54,108|64MiB|
+|Opaque300 pruned|18,937|20,422|40,844|64MiB|
+|Opaque700 pruned|19,337|22,797|45,594|64MiB|
+|Opaque1400 pruned|20,037|26,858|53,716|64MiB|
+|Shared all tiers|41,565|41,582|83,164|32MiB|
+
+Shared JSON is about12.45–12.52MB versus V14's6.73MB; color PNG about1.29MB versus1.91MB. Shared assembly atlas is4096x2048, half V14's decoded color size. A shared uniform tile is not equivalent to transferred color/normal/PBR detail. None of these counts/estimates establishes engine limits, draw calls, GPU allocation or frame time.
+
+## Exact internal-face pruning
+
+Independent corner/halfspace tests verify32/57/196 removals for300/700/1400. All four corners of each removed face are strictly inside one other original convex opaque cuboid. Minimum clearances are2.690/1.185/1.004 micrometres. Every remaining transform and UV is unchanged; combined files remove exactly the same certified faces.
+
+This preserves the outer boundary of the union of original opaque solids for an observer outside them, rather than relying on selected camera visibility. It does not remove partially covered faces or certify runtime material behavior. Savings are modest, and1400 still has more triangles than V14.
+
+## Evidence and reproduction
+
+- `test-contract-and-input-hashes.json`, `source-preservation-final.json`, `final-validation.json`.
+- `shared-independent-geometry.json`, `shared-2048-boundary-scale.json` and scripts of corresponding names.
+- `*-critical-rays.json`, `shared-dense-window.json`, corresponding frozen result arrays and scripts.
+- `*-silhouette.json`, support PNGs/NPZ, `*-full-band-surface.json`/NPZ.
+- `costs-and-integrity.json`, `opaque-pruning-independent.json`.
+
+All claims are tied to input/output hashes. New scripts import only this independent helper, not candidate exporters. Full scripts and logs are retained. No saves, services, published packs or original geometry were altered.
+
+## Subsequent saved-renderer confound audit
+
+The saved shared-mask render shows scars, while the analytic-clipped control is cleaner. This prevents visual approval despite the numerical support results above. `REVIEW_BLENDER_NORMAL_CONFOUND.md` and `blender-normal-confound.json` test whether changing quad normals to triangle normals explains that control: it does not show a broad normal-error improvement. The few large band errors are at thin endpoints and persist in the clipped control; central-scar-region normal changes are small. Exact alpha/geometry/ray/lighting causality remains unresolved. No source edit, normal correction, or additional render was made.

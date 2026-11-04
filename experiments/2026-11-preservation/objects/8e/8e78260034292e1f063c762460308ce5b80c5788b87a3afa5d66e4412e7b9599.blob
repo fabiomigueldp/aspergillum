@@ -1,0 +1,33 @@
+import bpy,json,math
+from mathutils import Vector,Matrix
+from collections import defaultdict
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/'
+bpy.ops.wm.open_mainfile(filepath=r+'V40-mouthplane-verified.blend',use_scripts=False)
+o=bpy.data.objects['Maria — mão ao peito anatômica'];m=o.data;pp=[v.co.copy() for v in m.vertices];sets=defaultdict(set)
+for p,a in zip(m.polygons,m.attributes['.sculpt_face_set'].data):sets[a.value].update(p.vertices)
+groups=[('little',[11,12,13],13,13),('ring',[5,14,17],17,7),('middle',[4,15,18],18,0),('index',[3,16,19],19,-10),('thumb',[21,22,23],23,-15)]
+centers={n:sum((pp[i] for i in sets[ss[0]]),Vector())/len(sets[ss[0]]) for n,ss,_,_ in groups}
+mem={n:set().union(*(sets[s] for s in ss)) for n,ss,_,_ in groups}
+for i in sets[10]:mem[min(centers,key=lambda n:(pp[i]-centers[n]).length)].add(i)
+new=[p.copy() for p in pp];report=[]
+def smooth(t):t=max(0,min(1,t));return t*t*(3-2*t)
+for n,ss,prox,ang in groups:
+ ids=mem[n];rootids=sorted(sets[prox],key=lambda i:pp[i].z)[:max(8,len(sets[prox])//8)];pivot=sum((pp[i] for i in rootids),Vector())/len(rootids)
+ for i in ids:
+  w=smooth((pp[i].z-pivot.z)/.016)
+  new[i]=pivot+Matrix.Rotation(math.radians(ang)*w,3,'Y')@(pp[i]-pivot)
+ distal=sorted(sets[ss[0]]);a=distal[0];b=max(distal,key=lambda i:(pp[i]-pp[a]).length)
+ report.append({'finger':n,'angle_degrees':ang,'root':list(pivot),'distal_span_original':(pp[a]-pp[b]).length,'distal_span_after_adduction':(new[a]-new[b]).length})
+pivot=Vector((.112,-.185,2.95))
+for i,p in enumerate(new):
+ w=smooth((pp[i].z-2.935)/.045)
+ new[i]=pivot+Matrix.Rotation(math.radians(-16)*w,3,'X')@(p-pivot)
+if not m.shape_keys:o.shape_key_add(name='Base mão preservada')
+k=o.shape_key_add(name='TESTE 42 — articulação rígida dos dedos e punho');k.value=1
+for v,p in zip(k.data,new):v.co=p
+deltas=[(p-q).length for p,q in zip(pp,new)]
+json.dump({'method':'Rigid finger adduction by existing phalange face sets with smooth MCP-root transition; wrist rotation -16deg with transition limited below palm. No radial Grab.','fingers':report,'affected_vertices':sum(x>1e-7 for x in deltas),'max_delta':max(deltas)},open(r+'V42-verification.json','w'),indent=2)
+bpy.ops.wm.save_as_mainfile(filepath=r+'V42-articulated-hand-trial.blend')
+center=sum(pp,Vector())/len(pp);s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=600;s.render.resolution_y=800;s.render.resolution_percentage=100;c=s.camera
+for view,off in [('front',(0,-5,0)),('threequarter',(-3,-5,.2)),('profile',(5,0,0))]:
+ c.location=center+Vector(off);c.rotation_euler=(center-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=.48;s.render.filepath=r+'V42-hand-'+view+'.png';bpy.ops.render.render(write_still=True)

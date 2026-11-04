@@ -1,0 +1,68 @@
+import bpy, math, json, numpy as np
+from mathutils import Vector, Quaternion
+from mathutils.bvhtree import BVHTree
+from collections import Counter
+ROOT='/workspace/scratch/212c580ada5b/';OUT=ROOT+'paz-sleeve-proxy/'
+bpy.ops.wm.open_mainfile(filepath=ROOT+'paz-refinement/gui-test/V75-tunic-lower-trial.blend',use_scripts=False)
+scene=bpy.context.scene
+col=bpy.data.collections.new('PROXY85 — hipótese de manga NÃO INTEGRADA');scene.collection.children.link(col)
+def link(o):
+ for c in list(o.users_collection):c.objects.unlink(o)
+ col.objects.link(o)
+mat=bpy.data.materials.new('Proxy amber — geometria interpretativa');mat.diffuse_color=(.62,.23,.045,1);mat.use_nodes=True;mat.node_tree.nodes['Principled BSDF'].inputs['Base Color'].default_value=(.62,.23,.045,1);mat.node_tree.nodes['Principled BSDF'].inputs['Roughness'].default_value=.65
+# Independent smooth centreline; all positions are study controls, not survey coordinates.
+P=[Vector(v) for v in [(-.27,0,3.02),(-.37,-.01,2.80),(-.34,-.035,2.24),(-.256,-.125,1.90)]]
+N=28;M=32
+verts=[];faces=[];centers=[];frames=[];tangents=[]
+prev=Vector((1,0,0))
+for j in range(N+1):
+ t=j/N;c=(1-t)**3*P[0]+3*(1-t)**2*t*P[1]+3*(1-t)*t*t*P[2]+t**3*P[3]
+ tangent=(3*(1-t)**2*(P[1]-P[0])+6*(1-t)*t*(P[2]-P[1])+3*t*t*(P[3]-P[2])).normalized()
+ # Parallel-transport-like minimal frame: reproject previous normal, never Frenet.
+ u=(prev-tangent*prev.dot(tangent)).normalized();v=tangent.cross(u).normalized();prev=u;centers.append(c);frames.append((u,v));tangents.append(tangent)
+ rx=.112*(1-t)+.052*t;ry=.122*(1-t)+.050*t
+ for i in range(M):
+  a=2*math.pi*i/M;verts.append(c+rx*math.cos(a)*u+ry*math.sin(a)*v)
+for j in range(N):
+ for i in range(M):
+  a=j*M+i;b=j*M+(i+1)%M;faces.append((a,b,b+M,a+M))
+faces.append(tuple(reversed(range(M))));faces.append(tuple(N*M+i for i in range(M)))
+mesh=bpy.data.meshes.new('Manga proxy — cage regular');mesh.from_pydata(verts,[],faces);mesh.update();o=bpy.data.objects.new('PROXY85 manga de controle',mesh);col.objects.link(o);o.data.materials.append(mat)
+for p in mesh.polygons:p.use_smooth=True
+# Armature provides true independent shoulder/elbow controls for next sculpt, not integrated claim.
+armdata=bpy.data.armatures.new('Proxy shoulder elbow wrist');arm=bpy.data.objects.new('PROXY85 controles',armdata);col.objects.link(arm);bpy.context.view_layer.objects.active=arm;arm.select_set(True);bpy.ops.object.mode_set(mode='EDIT')
+b1=armdata.edit_bones.new('ombro_cotovelo');b1.head=centers[0];b1.tail=centers[N//2];b2=armdata.edit_bones.new('cotovelo_punho');b2.head=b1.tail;b2.tail=centers[-1];b2.parent=b1;b2.use_connect=True;bpy.ops.object.mode_set(mode='OBJECT');arm.show_in_front=True
+vg1=o.vertex_groups.new(name=b1.name if False else 'ombro_cotovelo');vg2=o.vertex_groups.new(name='cotovelo_punho')
+for j in range(N+1):
+ t=j/N;w=max(0,min(1,(t-.35)/.30));w=w*w*(3-2*w);ids=list(range(j*M,(j+1)*M));vg1.add(ids,1-w,'REPLACE');vg2.add(ids,w,'REPLACE')
+mod=o.modifiers.new('Cadeia independente','ARMATURE');mod.object=arm;sub=o.modifiers.new('Superfície de estudo','SUBSURF');sub.levels=2;sub.render_levels=2
+# Rigid hand copy. Existing fingers unchanged; orientation is explicit exploratory estimate.
+source=bpy.data.objects['Maria — mão protetora anatômica'];h=source.copy();h.data=source.data.copy();h.name='PROXY85 mão rígida — dedos originais';col.objects.link(h);h.data.materials.clear();h.data.materials.append(mat)
+root=Vector((-.226,-.205,1.992));target=P[-1];rot=Quaternion(Vector((1,0,0)),math.radians(-15))
+for v in h.data.vertices:v.co=target+rot@(v.co-root)
+# Store editable inputs, show originals as ghost only in diagnostic material state.
+json.dump({'centerline_bezier':[list(x) for x in P],'cage':[N+1,M],'hand_root_source':list(root),'hand_rotation_x_degrees':-15,'hand_target':list(target),'note':'Exploratory controls, NOT measured original. Neither torso surgery nor integration performed.'},open(OUT+'controls.json','w'),indent=2)
+# Audit evaluated smooth proxy, not only cage.
+bpy.context.view_layer.update();dg=bpy.context.evaluated_depsgraph_get()
+def geom(x):
+ ev=x.evaluated_get(dg);m=ev.to_mesh();ps=[x.matrix_world@v.co for v in m.vertices];fs=[tuple(f.vertices) for f in m.polygons];ev.to_mesh_clear();return ps,fs
+ps,fs=geom(o);tree=BVHTree.FromPolygons(ps,fs);pairs=set((a,b) for a,b in tree.overlap(tree) if a<b and not set(fs[a])&set(fs[b]));edge=Counter(tuple(sorted((f[i],f[(i+1)%len(f)]))) for f in fs for i in range(len(f)))
+hp,hf=geom(h);ht=BVHTree.FromPolygons(hp,hf);contacts={}
+for x in bpy.data.objects:
+ if x.type=='MESH' and not x.hide_render and (x.name.startswith('Menino') or x.name=='Maria — túnica e mangas integradas'):
+  xp,xf=geom(x);xt=BVHTree.FromPolygons(xp,xf);contacts[x.name]={'proxy_sleeve':len(tree.overlap(xt)),'proxy_hand':len(ht.overlap(xt))}
+json.dump({'evaluated_vertices':len(ps),'faces':len(fs),'nonmanifold_edges':sum(v!=2 for v in edge.values()),'self_intersections':len(pairs),'sleeve_hand_pairs':len(tree.overlap(ht)),'context_contacts':contacts,'interpretation':'Original sleeve overlap is intentional diagnostic comparison, NOT resolved integration. Shoulder and cuff are provisional closed caps.'},open(OUT+'audit.json','w'),indent=2)
+o['status']='PROVISÓRIO NÃO INTEGRADO: hipótese de silhueta, não gêmeo fiel';h['status']='Cópia rígida; ângulo interpretativo15graus; dedos preservados'
+# Save before diagnostic transparency; source checkpoint is never saved over.
+bpy.ops.wm.save_as_mainfile(filepath=OUT+'V85-PROXY-MANGA-NAO-INTEGRADA.blend')
+ghost=bpy.data.materials.new('Diagnostic ghost original');ghost.use_nodes=True;nt=ghost.node_tree;nt.nodes.clear();out=nt.nodes.new('ShaderNodeOutputMaterial');mix=nt.nodes.new('ShaderNodeMixShader');mix.inputs[0].default_value=.83;diff=nt.nodes.new('ShaderNodeBsdfDiffuse');diff.inputs[0].default_value=(.35,.42,.48,1);trans=nt.nodes.new('ShaderNodeBsdfTransparent');nt.links.new(diff.outputs[0],mix.inputs[1]);nt.links.new(trans.outputs[0],mix.inputs[2]);nt.links.new(mix.outputs[0],out.inputs[0])
+for x in bpy.data.objects:
+ if x.type=='MESH' and x not in (o,h):
+  x.data=x.data.copy();x.data.materials.clear();x.data.materials.append(ghost)
+s=scene;s.render.engine='CYCLES';s.cycles.samples=48;s.render.resolution_x=650;s.render.resolution_y=950;s.render.resolution_percentage=100;s.cycles.transparent_max_bounces=16
+c=s.camera;c.data.type='ORTHO';c.data.ortho_scale=1.95;target=Vector((-.14,-.05,2.35))
+for name,off in [('profile',(-8,0,0)),('front',(0,-8,0)),('threequarter',(-5,-8,0))]:
+ c.location=target+Vector(off);c.rotation_euler=(target-c.location).to_track_quat('-Z','Y').to_euler();s.render.filepath=OUT+'PROVISORIO-'+name+'.png';bpy.ops.render.render(write_still=True)
+for x in bpy.data.objects:
+ if x.type=='MESH' and x not in (o,h):x.hide_render=True
+c.location=target+Vector((-5,-8,0));c.rotation_euler=(target-c.location).to_track_quat('-Z','Y').to_euler();s.render.filepath=OUT+'PROVISORIO-isolated.png';bpy.ops.render.render(write_still=True)

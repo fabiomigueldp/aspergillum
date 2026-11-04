@@ -1,0 +1,25 @@
+# Auditoria estrutural da prega adjacente — máscara limitada viável
+
+V75 não foi alterado. Não gerei novo colar nem preenchi centro nesta etapa; isto é uma decisão de escopo baseada em geometria, não aprovação de reconstrução.
+
+## Estrutura encontrada
+As faces remanescentes180881/180886 pertencem a uma dobra abrupta na camada interna, não a uma superfície lisa indiferenciada. A face180881 encontra vizinhas com diédricos~150°,84° e76°. Arestas medem~1,1–1,5mm versus~36mm, relações de24–34×; a área de180881 é4,64e-6m². Isso explica por que a direção do colar baseada em vizinho interior pode atravessar a prega.
+
+Não defini o escopo perseguindo apenas os três pares remanescentes. Tracei o componente conectado de arestas com mudança de normal:
+- limiar45° ou60°: mesmo núcleo de5faces;
+- limiar30°: envoltória de8faces, área7,733e-5m², completamente dentro do pescoço delimitado.
+A estabilidade do núcleo e inclusão da envoltória fundamentam um componente geométrico, embora o nome “prega” não afirme que esse detalhe seja fiel à escultura real.
+
+## Integração proposta e máscara verificada
+Componente inteiro de8faces + um anel de faces vizinhas para transição, com fechamento pela correspondência real da outra camada:40faces de suporte.20delas ainda não estavam no recorte atual; total proposto800→820faces.
+
+Bounds do suporte: X[-.103922,-.091028], Y[-.117569,-.018867], Z[3.255730,3.404492]. Não sai dos limites do pescoço, não toca capuz/borda física, não exige mudar Maria ou outros objetos. Todas as faces possuem contraparte exata.
+
+Auditoria do novo contorno: dois loops302+302; todos os vértices com grau2; zero segmentos inválidos contra pele; zero pares pele–faces inteiramente congeladas. Nenhuma posição de vértice foi movida. Dados em neck-whole-fold-mask-audit.json.
+
+## Decisão
+É demonstrável uma **máscara de intervenção limitada e coerente com a estrutura inteira**, em vez de ampliação face a face. Isso NÃO demonstra que o novo colar/reconstrução passará; o componente contém curvatura severa que terá de ser reconstruída, não mantida como uma dobra escondida.
+
+Próximo método: usar essa máscara para uma prova independente de dois colares, preservando anéis externos e vetores de espessura herdados, e conferir ambas camadas contra pele e todas as pregas fora do recorte. Só prosseguir ao centro se zero colisões/degenerescências e transição aceitável. Se falhar, não aumentar novamente sem nova causa estrutural.
+
+Evidências: neck-adjacent-fold-structure-audit.json; neck-fold-continuity-audit.json; neck-fold-feature-component-audit.json; neck-whole-fold-mask-audit.json. Nenhum blend novo.

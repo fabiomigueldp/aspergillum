@@ -1,0 +1,71 @@
+{
+  "source_zip": "/workspace/scratch/212c580ada5b/altare-wood-20261103/addons/altare/out/editor-dimensions/Altare-Cruzeta-0.12.2-fontes.zip",
+  "bytes": 221736,
+  "sha256": "4273808131756dd157c00aeeb1995bcf116f73a0e4203834b5f5527d84ab75b5",
+  "base_commit": "3eaf97b172a38dac794461b156b70864737875d6",
+  "source_files": [
+    "CHANGELOG.md",
+    "addons/altare/CHANGELOG.md",
+    "addons/altare/README.md",
+    "addons/altare/assets-src/atelier/crossbrace-model.mjs",
+    "addons/altare/assets-src/atelier/geometry.mjs",
+    "addons/altare/assets-src/atelier/materials.mjs",
+    "addons/altare/assets-src/locales.mjs",
+    "addons/altare/docs/ARCHITECTURE.md",
+    "addons/altare/docs/CROSSBRACE_0.12.0.md",
+    "addons/altare/docs/CROSSBRACE_0.12.1.md",
+    "addons/altare/docs/EDITOR_DIMENSIONS_0.12.2.md",
+    "addons/altare/docs/TESTING.md",
+    "addons/altare/package.json",
+    "addons/altare/src/domain/block-codec.ts",
+    "addons/altare/src/domain/catalog.ts",
+    "addons/altare/src/domain/customization.ts",
+    "addons/altare/src/presentation/menu.ts",
+    "addons/altare/tests/catalog.node.ts",
+    "addons/altare/tests/crossbrace.node.ts",
+    "addons/altare/tests/joinery.node.ts",
+    "addons/altare/tests/menu.node.ts",
+    "addons/altare/tests/universal-textiles.node.ts",
+    "addons/altare/tools/capture-cpu.mjs",
+    "addons/altare/tools/capture.mjs",
+    "addons/altare/tools/catalog-pack.mjs",
+    "addons/altare/tools/cpu-rasterize.py",
+    "addons/altare/tools/universal-pack.mjs",
+    "docs/PROJECT_STATUS.md",
+    "docs/RENDER_STUDIO.md",
+    "viewer-3d/README.md",
+    "viewer-3d/package-lock.json",
+    "viewer-3d/package.json",
+    "viewer-3d/render-studio.html",
+    "viewer-3d/scripts/capture-studio-models.mjs",
+    "viewer-3d/scripts/render-altars.mjs",
+    "viewer-3d/scripts/smoke-studio.mjs",
+    "viewer-3d/src/render-studio/main.js",
+    "viewer-3d/src/shared/studio-contract.js",
+    "viewer-3d/tests/studio-contract.node.mjs",
+    "viewer-3d/tests/studio-customization.node.mjs"
+  ],
+  "delta_files": [
+    "CHANGELOG.md",
+    "addons/altare/CHANGELOG.md",
+    "addons/altare/README.md",
+    "addons/altare/docs/EDITOR_DIMENSIONS_0.12.2.md",
+    "addons/altare/docs/TESTING.md",
+    "addons/altare/package.json",
+    "addons/altare/src/presentation/menu.ts",
+    "addons/altare/tests/menu.node.ts",
+    "docs/PROJECT_STATUS.md"
+  ],
+  "patch_checks": [
+    {
+      "kind": "full",
+      "passed": true,
+      "files": 40
+    },
+    {
+      "kind": "delta",
+      "passed": true,
+      "files": 9
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+from pathlib import Path
+import json,uuid,shutil,zipfile,hashlib
+ROOT=Path(__file__).resolve().parents[1];RP=ROOT/'resource_pack';BP=ROOT/'behavior_pack'
+def write(path,obj):path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps(obj,indent=2))
+def uid(s):return str(uuid.uuid5(uuid.NAMESPACE_URL,'https://local.invalid/paz-v75-research-20261103/'+s))
+write(RP/'manifest.json',{'format_version':2,'header':{'name':'Paz V75 LAB - RP - NOT RELEASE','description':'Independent V75 conversion experiments. No Minecraft runtime QA. Use only a disposable test world.','uuid':uid('rp-header'),'version':[0,0,1],'min_engine_version':[1,21,80]},'modules':[{'type':'resources','uuid':uid('rp-module'),'version':[0,0,1]}]})
+write(BP/'manifest.json',{'format_version':2,'header':{'name':'Paz V75 LAB - BP - NOT RELEASE','description':'Three static sculpture entity experiments. Does not replace paz_glicerio:imagem or modify saves.','uuid':uid('bp-header'),'version':[0,0,1],'min_engine_version':[1,21,80]},'modules':[{'type':'data','uuid':uid('bp-module'),'version':[0,0,1]}],'dependencies':[{'uuid':uid('rp-header'),'version':[0,0,1]}]})
+shutil.copy2(ROOT/'voxel_alternative/H192/paz_v75_voxel.geo.json',RP/'models/entity/sculpture_voxel192.geo.json');shutil.copy2(ROOT/'voxel_alternative/H192/paz_v75_voxel.png',RP/'textures/entity/sculpture_voxel192.png')
+variants=[('alpha','geometry.paz_v75_prototype.sculpture','sculpture','entity_alphatest'),('hybrid','geometry.paz_v75_prototype.hybrid','sculpture_hybrid','entity_alphatest'),('voxel192','geometry.paz_v75_voxel_opaque_h192','sculpture_voxel192','entity_alphatest')]
+for key,geo,tex,material in variants:
+ identifier='paz_v75_lab:'+key
+ client={'format_version':'1.10.0','minecraft:client_entity':{'description':{'identifier':identifier,'materials':{'default':material},'textures':{'default':'textures/entity/'+tex},'geometry':{'default':geo},'render_controllers':['controller.render.paz_v75_lab'],'spawn_egg':{'base_color':'#c9c6ba','overlay_color':'#778a9c'}}}}
+ write(RP/'entity'/f'{key}.entity.json',client)
+ entity={'format_version':'1.21.80','minecraft:entity':{'description':{'identifier':identifier,'is_spawnable':True,'is_summonable':True,'is_experimental':False},'components':{'minecraft:type_family':{'family':['paz_v75_lab','inanimate']},'minecraft:collision_box':{'width':.97,'height':3.77},'minecraft:health':{'value':20,'max':20},'minecraft:physics':{'has_gravity':False,'has_collision':False},'minecraft:pushable':{'is_pushable':False,'is_pushable_by_piston':False},'minecraft:persistent':{}}}}
+ write(BP/'entities'/f'{key}.json',entity)
+write(RP/'render_controllers/sculpture.render_controllers.json',{'format_version':'1.8.0','render_controllers':{'controller.render.paz_v75_lab':{'geometry':'Geometry.default','materials':[{'*':'Material.default'}],'textures':['Texture.default']}}})
+for base in [RP,BP]:
+ write(base/'texts/languages.json',['en_US','pt_BR'])
+ for lang in ['en_US','pt_BR']:
+  (base/'texts'/f'{lang}.lang').write_text('\n'.join(f'entity.paz_v75_lab:{key}.name=Paz V75 LAB {key} (TESTE)' for key,*_ in variants)+'\n')
+# Preserve original addon identity and all originals byte-for-byte, use fully separate namespaces and UUIDs.
+archive=ROOT/'Paz-V75-LAB-INDEPENDENT-NOT-RELEASE.mcaddon'
+with zipfile.ZipFile(archive,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+ for pack in (RP,BP):
+  for p in sorted(pack.rglob('*')):
+   if p.is_file():z.write(p,('PazV75Lab_RP' if pack==RP else 'PazV75Lab_BP')+'/'+str(p.relative_to(pack)))
+files=[]
+for p in sorted(RP.rglob('*'))+sorted(BP.rglob('*')):
+ if p.is_file():files.append({'path':str(p.relative_to(ROOT)),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'bytes':p.stat().st_size})
+write(ROOT/'evidence/pack-inventory.json',{'archive':archive.name,'archive_sha256':hashlib.sha256(archive.read_bytes()).hexdigest(),'archive_bytes':archive.stat().st_size,'files':files,'runtime_tested':False,'release_approved':False})
+print(archive,archive.stat().st_size)

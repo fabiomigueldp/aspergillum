@@ -1,0 +1,37 @@
+"""Read-only feasibility map: compare V12 source-UV planes with evaluated source.
+No geometry candidate is generated. All outputs remain in this directory.
+"""
+from pathlib import Path
+import numpy as np,json,hashlib
+O=Path(__file__).resolve().parent; B=O.parents[1]
+SOURCE=B/'shell_band_v3/evidence/band-source.npz'
+PARAM=B/'shell_band_v3/evidence/band-source-parameters.npz'
+WALL=B/'shell_band_v3/evidence/band-source-wall-classes.npz'
+BAND=B/'band_ear_v12/structural_rebuild/retained-band.npz'
+SHELL=B/'ear_rim_v11/structural_rebuild/retained-shell.npz'
+BODY=B/'body_interface_v9/constrained_fit/retained-anatomy.npz'
+class SourceSampler:
+ def __init__(self):
+  self.d=dict(np.load(SOURCE));self.uv=np.load(PARAM)['uv'];self.classes=np.load(WALL)['wall_class'];self.cells=[]
+  for side in [0,1]:
+   fs=np.flatnonzero(self.classes==side);xy=self.uv[self.d['triangles'][fs]];cell=np.floor(xy.mean(1)*4).astype(int);idx=cell[:,0]*64+cell[:,1];order=np.argsort(idx,kind='stable');fs=fs[order];ix=idx[order];assert np.array_equal(ix,np.repeat(np.arange(704*64),2));self.cells.append(fs.reshape(704*64,2))
+ def sample(self,query,side):
+  query=np.asarray(query);cell=np.floor(np.clip(query,[0,0],[176-1e-9,16-1e-9])*4).astype(int);fi=self.cells[side][cell[:,0]*64+cell[:,1]];t=self.uv[self.d['triangles'][fi]];e=np.stack([t[:,:,1]-t[:,:,0],t[:,:,2]-t[:,:,0]],axis=-1);uv=np.linalg.solve(e,(query[:,None]-t[:,:,0])[...,None])[...,0];bary=np.concatenate([1-uv.sum(-1,keepdims=True),uv],axis=-1);best=np.argmax(bary.min(-1),axis=1);selected=fi[np.arange(len(fi)),best];bc=bary[np.arange(len(fi)),best];assert bc.min()>-1e-8,(bc.min(),query[bc.min(-1).argmin()]);points=(self.d['points'][self.d['triangles'][selected]]*bc[:,:,None]).sum(1);return points,selected,bc
+
+def main():
+ paths=[SOURCE,PARAM,WALL,BAND,SHELL,BODY];hashes={str(p.relative_to(B)):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths};sampler=SourceSampler();band=np.load(BAND);shell=np.load(SHELL);bp=band['points'];bf=band['triangles'];uv=band['source_uv'];parts=band['face_parts'];rows=[];centroid=[]
+ for side in [0,1]:
+  ids=np.flatnonzero(parts==side);qs=uv[bf[ids]].mean(1);xyz=bp[bf[ids]].mean(1);ref,srcf,srcb=sampler.sample(qs,side);raw=np.cross(bp[bf[ids,1]]-bp[bf[ids,0]],bp[bf[ids,2]]-bp[bf[ids,0]]);normal=raw/np.linalg.norm(raw,axis=1)[:,None];delta=ref-xyz
+  for i,j in enumerate(ids):centroid.append({'face':int(j),'side':side,'uv':qs[i].tolist(),'delta_mm':(delta[i]*1000).tolist(),'norm_mm':float(np.linalg.norm(delta[i])*1000),'signed_own_normal_mm':float(delta[i]@normal[i]*1000),'source_face':int(srcf[i])})
+ witnesses=json.loads((B/'band_ear_v12/independent_diagnosis/polygonal-pinna-0.6mm-clean-candidate-shell-segments.json').read_text())
+ for w in witnesses:
+  j=w['band_face'];side=int(parts[j]);
+  if side not in [0,1]:continue
+  q=np.array(w['segment']).mean(0);tri=bp[bf[j]];aa=np.stack([tri[1]-tri[0],tri[2]-tri[0]],axis=1);bc=np.linalg.lstsq(aa,q-tri[0],rcond=None)[0];bc=np.r_[1-bc.sum(),bc];param=bc@uv[bf[j]];ref,srcf,srcb=sampler.sample(param[None],side);delta=ref[0]-q;st=shell['points'][shell['triangles'][w['obstacle_face']]];n=np.cross(st[1]-st[0],st[2]-st[0]);n/=np.linalg.norm(n);rows.append({'band_face':j,'shell_face':w['obstacle_face'],'side':side,'point':q.tolist(),'uv':param.tolist(),'delta_mm':(delta*1000).tolist(),'norm_mm':float(np.linalg.norm(delta)*1000),'signed_shell_normal_mm':float(delta@n*1000),'source_face':int(srcf[0]),'source_barycentric':srcb[0].tolist()})
+ report={'status':'feasibility only; no geometry candidate','inputs_sha256':hashes,'evaluated_band_source_triangles':len(sampler.d['triangles']),'method':'Source UV grid cells (0.25 spacing), exact source triangle barycentric evaluation. Original V12 walls only; no projection assumed for returns or new termination caps.','centroid_by_side':{},'witness_by_side':{},'limitations':['Delta from source is not proof of defect, clearance, thickness or artistic intent.','Source curve restoration may alter original reduced edges unless those edges are explicitly constrained.','Geometry remains unchanged pending independent visibility/source diagnosis.']}
+ for side in [0,1]:
+  r=[x for x in centroid if x['side']==side];report['centroid_by_side'][str(side)]={'count':len(r),'delta_norm_quantiles_mm':np.quantile([x['norm_mm'] for x in r],[0,.5,.9,.99,1]).tolist(),'signed_own_normal_quantiles_mm':np.quantile([x['signed_own_normal_mm'] for x in r],[0,.5,.9,.99,1]).tolist()}
+  r=[x for x in rows if x['side']==side];report['witness_by_side'][str(side)]={'count':len(r),'delta_norm_quantiles_mm':np.quantile([x['norm_mm'] for x in r],[0,.5,.9,.99,1]).tolist()}
+ assert hashes=={str(p.relative_to(B)):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
+ (O/'source-restoration-feasibility.json').write_text(json.dumps(report,indent=2));(O/'source-restoration-centroids.json').write_text(json.dumps(centroid,indent=2));(O/'source-restoration-contact-witnesses.json').write_text(json.dumps(rows,indent=2));print(json.dumps(report,indent=2))
+if __name__=='__main__':main()

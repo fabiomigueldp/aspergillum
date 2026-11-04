@@ -1,0 +1,123 @@
+# V8 · teste local de encaixe da anatomia 15
+
+**Retida como melhora técnica localizada, sem aprovação global.** A anatomia foi reencaixada sob a casca V7 congelada. Não houve exclusão adicional de faces, máscara alfa, troca pela referência highpoly, alteração da casca ou publicação.
+
+Candidata: `retained-anatomy.npz`.
+
+SHA-256: `c1971f80ca5bd99a8d51461823a42e03ed6400282e31a18586602cd0216b4519`.
+
+O arquivo é cópia byte a byte de `inward-0p5mm-iteration00.npz`. A primeira solução foi retida por reduzir os contatos com menor deformação que as etapas posteriores. A revisão visual coordenada pelo agente principal informou desaparecimento das marcas maiores na nuca/topo e ausência de mudança perceptível de rosto/orelhas. Isso não substitui o gate geométrico independente nem valida o addon ou o jogo.
+
+## Resultado retido
+
+| Medida | Baseline pretendido | Candidata retida |
+|---|---:|---:|
+| Vértices soldados | 692 | 692 |
+| Triângulos | 1.376 | 1.376 |
+| Pares de cruzamento estrito com V7 | 4.169 | 670 |
+| Cap / ponte / manto | 2.917 / 916 / 336 | 260 / 410 / 0 |
+| Faces do corpo em cruzamento | 498 | 96 |
+| Auto-interseções estritas não adjacentes | 0 | 0 |
+| Vértices movidos | 0 | 274 |
+| Máximo deslocamento | 0 | 9,755587 mm |
+| p95 / mediana dos vértices movidos | 0 | 2,884628 / 0,970978 mm |
+| Vértices fora do domínio ativo preservados | 410 | 410, igualdade exata |
+| Vértices explicitamente protegidos | 280 | 280, igualdade exata |
+
+Há **670 pares residuais**, não 670 furos. Destes, **465 pares envolvem 51 triângulos inteiramente fixos**. Em 462 desses pares, os 49 triângulos são inteiramente compostos de vértices explicitamente protegidos. Esses pares não podem desaparecer por movimentar apenas os vértices ativos mantendo V7 fixa. Os outros 205 pares não são classificados como geometricamente inevitáveis por este teste. Não foram perseguidos à custa de deformação maior.
+
+O mapa completo é `initial-candidate-residual-map.json`: índices dos dois triângulos, parte da casca, classificação do congelamento, índices fonte, contagem de vértices protegidos/movidos e centroide. Os pares numéricos estão em `inward-0p5mm-iteration00-contacts.npz`.
+
+O máximo de 9,756 mm ocorre em `source_indices=4959`, na nuca em XYZ=(-0,069865; -0,008237; 3,305817), sob ponte/manto. Os maiores deslocamentos ficam na nuca. O maior deslocamento identificado no topo da cap é 3,970 mm. Isso é uma alteração geométrica real, não correção apenas de normais. O cosseno mínimo das normais de face contra o baseline é 0,741450 (rotação máxima aproximada de 42,1°), sem inversões. Há compressão local: a face fonte 6360, na nuca, passa de área 72,996 para 9,975 mm² (13,666% da área original), sem degeneração. Essa alteração deve entrar no julgamento de invasividade.
+
+## Baseline e preservação
+
+`baseline-welded.npz` reconstrói exatamente a conectividade dos 1.376 triângulos da parte 15 presentes no mapa do exportador. Cada ponto coincide exatamente com o `low_v` reparado; a ordem dos triângulos coincide com a ordem filtrada de `alpha-triangle-map.json`. Comparado ao `legacy-part15.npz`, o erro máximo dos vértices por triângulo é **zero**, admitindo somente permutação cíclica da ordem dos três vértices.
+
+- `source_indices`: índice global original em `repaired_meshes.npz:low_v`.
+- `source_face_indices`: índice global original em `repaired_meshes.npz:low_f`.
+- Índice local do vértice da parte 15: `source_indices - 4820`.
+- `triangles`: os mesmos índices soldados e a mesma orientação do baseline.
+- `normals`: recalculadas por área na geometria resultante, sem normalmap.
+- `displacement`, `changed_vertices`, `active_vertices` e as quatro máscaras `protected_*` tornam o escopo explícito.
+
+A fonte reduzida possui 708 vértices/1.400 faces. Os 24 triângulos de área zero, em duas componentes colapsadas, já estavam omitidos no exportador anterior. Não são deletados por este ensaio. A pequena componente adicional de 3 vértices/2 triângulos, com área aproximadamente 10⁻¹⁴, está nos 1.376 triângulos e permanece intocada. Ela é um defeito herdado, não criado pelo encaixe. Os 689 vértices da componente principal têm normais unitárias; os 3 da componente microscópica de faces opostas têm normal média zero, tanto no baseline como na retida. Não tratar o array completo como 692 normais unitárias válidas.
+
+## Hipótese e método
+
+A casca interior estabelece obstáculos locais. Só se desloca a anatomia na direção negativa de sua normal original. Uma energia quadrática combina fidelidade de posição e suavidade das amplitudes entre vizinhos da malha. A máscara de proteção é uma restrição rígida.
+
+1. Reconstruir o baseline soldado e as identidades fonte.
+2. Selecionar a superfície física voltada para a cavidade da cabeça: **cap `source_side=0`, ponte `outer_source_ids`, manto restaurado `wall_class=1`**. Os nomes `outer/inner` da ponte descrevem o pareamento do gerador, não a posição física na montagem final. A seleção reúne 5.756 faces interiores: 2.874 cap, 1.100 ponte, 1.782 manto.
+3. Definir o domínio que tem cobertura da casca por raio ao longo da normal (até 80 mm), ou superfície interior próxima (até 25 mm), com orientação oposta. Retirar as regiões protegidas.
+4. Para cada vértice ativo, transformar a distância assinada ao ponto interior mais próximo em um limite inferior para o recuo ao longo da normal. Alvo local: 0,5 mm. Penalidade de suavidade: 0,25.
+5. Resolver a energia com limites; computar a geometria e medir cruzamentos/áreas/orientação/deslocamentos. O primeiro resultado é a candidata retida.
+6. Como ensaios preservados, acumular restrições dos planos dos triângulos interiores ainda em cruzamento. Essas etapas não foram adotadas: melhoram contagens, mas aumentam deformação e afetam maior área.
+
+Não há uma certificação de folga global de 0,5 mm. O alvo vale para restrições pontuais/planos locais; triângulos grandes, bordas, concavidades e regiões fixas continuam em contato.
+
+## Regiões protegidas
+
+Coordenadas Blender world XYZ; +Z para cima; observador frontal em Y negativo. Uma unidade corresponde a um bloco; relatórios usam unidade×1.000 para mm.
+
+- Rosto: Y < -0,270 e Z < 3,50, 153 vértices.
+- Orelhas: (X < -0,080 ou X > 0,160), -0,260 < Y < -0,145 e 3,405 < Z < 3,55, 88 vértices.
+- Pescoço inferior: Z < 3,20, 39 vértices.
+
+Total explícito: 280 vértices. Domínio ativo: 282 vértices. Destes, 274 realmente se movem; 8 permanecem numericamente fixos. Outros 410 vértices ficam fora do domínio e são preservados exatamente. O total inalterado é 418.
+
+Essa é uma máscara conservadora de regiões por coordenadas combinada com cobertura da casca, **não uma segmentação anatômica manual nem prova formal de preservação de toda silhueta visível**. A confirmação visual cabe ao renderer independente. `retained-displacement-and-protection.png` mostra o domínio e deslocamentos, sem aparência highpoly.
+
+Uma máscara exploratória mais ampla congelava 362 vértices e deixava 53 faces inteiramente fixas atravessando a casca. A hipótese foi documentada em `audit-summary.json:exploratory_broad_mask`, com todos os IDs e bounding box, antes de limitar a proteção às feições atuais. Não confundir essas 53 faces com as 51 faces fixas da candidata atual.
+
+## Tentativas preservadas
+
+| Tentativa | Iteração | Pares cap/ponte/manto | Total | Máximo | p95 movidos |
+|---|---:|---:|---:|---:|---:|
+| Alvo0,5 mm, teto20 mm | 0, retida | 260/410/0 | 670 | 9,756 mm | 2,885 mm |
+| Alvo0,5 mm, teto20 mm | 1, não retida | 209/359/0 | 568 | 14,983 mm | 6,417 mm |
+| Alvo0,3 mm, teto5 mm | 0, não retida | 307/502/93 | 902 | 5 mm | 2,683 mm |
+| Alvo0,3 mm, teto5 mm | 1–3, não retida | 211/465/93 | 769 | 5 mm | 5 mm |
+| Alvo0,5 mm, teto10 mm | 1, não retida | 209/359/0 | 568 | 10 mm | 6,417 mm |
+
+Todas preservaram a máscara rígida e apresentaram zero inversões de face/auto-interseções estritas nos testes deste diretório. Nenhuma tem contato global zero. O relatório registra limite da caixa saturado e sucesso do solver; atingir um teto não significa satisfazer as restrições de folga que foram limitadas por esse teto.
+
+## Reprodução
+
+A partir da raiz V75:
+
+```sh
+blender -b --factory-startup -t 2 --python body_interface_v8/anatomy_fit/inspect_geometry.py
+blender -b --factory-startup -t 2 --python body_interface_v8/anatomy_fit/fit_inward.py -- inward-0p5mm 0.5 0.25 20
+blender -b --factory-startup -t 2 --python body_interface_v8/anatomy_fit/fit_inward.py -- inward-0p3mm-max5 0.3 0.25 5
+blender -b --factory-startup -t 2 --python body_interface_v8/anatomy_fit/fit_inward.py -- inward-0p5mm-max10 0.5 0.25 10
+python body_interface_v8/anatomy_fit/document_results.py
+python body_interface_v8/anatomy_fit/plot_results.py
+```
+
+Os scripts escrevem somente neste diretório. A candidata retida não é sobrescrita automaticamente pelos scripts de ensaio. `retained-manifest.json` registra a seleção e hash; `audit-summary.json` registra hashes das entradas e preservação; os arquivos `*-report.json` contêm cada etapa.
+
+## Limites do gate local
+
+BVH Blender epsilon=0, seguido de teste estrito de segmento–triângulo em dupla precisão, nos dois sentidos, com tolerância 10⁻⁸ nos baricêntricos/extremos. Auto-interseção exclui faces que compartilham vértice. Esse teste não certifica tangência, coplanaridade geral, sobreposição entre faces adjacentes, espessura mínima ou distância global. O resíduo microscópico coplanar herdado é preservado e declarado.
+
+Não foi feito novo export Bedrock, jogo, Content Log, shader, alpha, mipmap, PBR, desempenho ou instalação por este trabalho. Qualquer transporte diagnóstico e render posterior são etapas separadas do agente principal. Nenhum arquivo V7/fonte foi modificado.
+
+## Limites adicionais encontrados fora deste ensaio
+
+A revisão independente posterior, com outras peças, encontrou contatos entre a anatomia e a faixa V5 nativa: **1.210 pares no baseline e 1.115 na retida**, com **111 novos e 206 removidos**. A faixa não integrou o conjunto de obstáculos cap/ponte/manto deste solver. Esse resultado impede tratar a melhora da casca como aprovação da interface completa. A túnica parte9 permanece em 60 pares, sem novos. A candidata retida não foi alterada para esconder ou tentar apagar esses resultados.
+
+O transporte JSON diagnóstico feito separadamente pelo agente principal mostra 2–3 pequenos pontos cinza na cap em perfil que não aparecem no render nativo. Isso aponta para o footprint dos pixels alfa das faces Bedrock, que este teste de triângulos pretendidos não mede. Não foi alterada a máscara anatômica em resposta a esse sintoma. O teste de transporte e de pixels opacos pertence ao relatório do agente principal.
+
+O log histórico da primeira execução contém um mínimo de cosseno artificialmente baixo causado por piso numérico na divisão aplicada à componente microscópica herdada. O cálculo foi corrigido no script e recomputado nos relatórios JSON (0,741450 para a retida); a geometria e a classificação de zero inversões não mudaram.
+
+## Revisão independente
+
+O gate do agente independente reproduziu os 670 pares com a casca, a preservação dos índices/conectividade/regiões congeladas e zero auto-interseções estritas. Relatórios externos a este diretório:
+
+- `../independent_diagnosis/REVIEW_RETAINED_ANATOMY.md`
+- `../independent_diagnosis/retained-anatomy-review.json`
+- `../independent_diagnosis/retained-anatomy-other-contacts.json`
+- `../independent_diagnosis/inward-0p5mm-iteration00-residuals.json`
+
+A revisão da faixa continua sendo uma ressalva separada, não um obstáculo aprovado por este resultado.

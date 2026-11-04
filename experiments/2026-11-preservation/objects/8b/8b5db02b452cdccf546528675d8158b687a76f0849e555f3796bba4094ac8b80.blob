@@ -1,0 +1,17 @@
+from pathlib import Path
+import os
+os.environ.setdefault('MPLCONFIGDIR','/tmp/paz-v8-matplotlib')
+import numpy as np,matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from matplotlib.collections import PolyCollection
+from matplotlib.lines import Line2D
+O=Path(__file__).resolve().parent;d=np.load(O/'retained-anatomy.npz');b=np.load(O/'baseline-welded.npz');v=b['points'];f=b['triangles'];dis=np.linalg.norm(d['points']-v,axis=1)*1000
+fig,axs=plt.subplots(2,3,figsize=(16,11));axes=[(0,2),(1,2),(0,1)];titles=['Frente: X × Z','Perfil: Y × Z','Topo: X × Y'];col=np.full(len(v),'#222222',dtype=object);col[d['active_vertices']]='#d99514';col[d['protected_face']]='#b23646';col[d['protected_ears']]='#3667b2';col[d['protected_lowneck']]='#4d9364'
+for j,(ij,title) in enumerate(zip(axes,titles)):
+ for a in axs[:,j]:
+  a.add_collection(PolyCollection(v[f][:,:,ij],facecolors='none',edgecolors='#cccccc',lw=.35));a.autoscale();a.set_aspect('equal');a.set_xlabel('XYZ'[ij[0]]);a.set_ylabel('XYZ'[ij[1]])
+ axs[0,j].scatter(v[:,ij[0]],v[:,ij[1]],c=col,s=9);axs[0,j].set_title(title+' · proteção')
+ ss=axs[1,j].scatter(v[:,ij[0]],v[:,ij[1]],c=dis,s=10,cmap='magma',vmin=0,vmax=10);axs[1,j].set_title(title+' · deslocamento (mm)')
+legend=[Line2D([0],[0],color=c,marker='o',ls='',label=t) for c,t in [('#b23646','Rosto fixo'),('#3667b2','Orelhas fixas'),('#4d9364','Pescoço inferior fixo'),('#d99514','Domínio ativo'),('#222222','Outros fixos')]]
+fig.legend(handles=legend,loc='upper center',ncol=5,bbox_to_anchor=(.5,.95));fig.suptitle('Anatomia 15: baseline nativo e domínio da candidata retida\n692 vértices / 1.376 triângulos · frente em Y negativo · sem highpoly',fontsize=14);fig.subplots_adjust(top=.89,bottom=.07,right=.91,wspace=.25,hspace=.23);fig.colorbar(ss,cax=fig.add_axes([.935,.10,.012,.31]),label='mm');fig.savefig(O/'retained-displacement-and-protection.png',dpi=150)

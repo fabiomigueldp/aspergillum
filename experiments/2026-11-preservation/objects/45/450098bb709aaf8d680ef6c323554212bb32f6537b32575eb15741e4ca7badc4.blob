@@ -1,0 +1,20 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {twinPedestalFamilyGeometry as model} from '../../addons/altare/assets-src/atelier/twin-pedestal-family-study.mjs';
+import {serializeCube,rotateCube} from '../../addons/altare/assets-src/block-primitives.mjs';
+import {digest} from '../../addons/altare/tools/native-pedestal-poses.mjs';
+const options={alignToEndCell:true,regularWidth:7,maxSupportDepth:12,depthCap:2};
+function candidate(w,d,f){const m=model(w,1,f,options),axis=f%2?0:2,delta=(d-1)*16;for(const b of m.doc['minecraft:geometry'][0].bones)if(b.name==='mensa')for(const c of b.cubes){c.origin[axis]-=delta/2;c.size[axis]+=delta;}m.profile.D=d*16;return m;}
+let plans=0,metadataBoundsMismatch=0;
+for(let w=1;w<=16;w++)for(let d=1;d<=16;d++){if(Math.min(w,d)>8)continue;for(let f=0;f<4;f++){
+ const actual=candidate(w,d,f),g=actual.doc['minecraft:geometry'][0],independent=candidate(w,d,0),expected=model(w,d,f,options).doc['minecraft:geometry'][0],depth1=model(w,1,f,options).doc['minecraft:geometry'][0];
+ for(const b of independent.doc['minecraft:geometry'][0].bones)for(let i=0;i<b.cubes.length;i++){const c=serializeCube(b.cubes[i]),r=rotateCube(c,f);if(c.rotation){const[x,y,z]=c.rotation;r.rotation=f===1?[-z,y,x]:f===2?[-x,y,-z]:f===3?[z,y,-x]:[x,y,z];}b.cubes[i]=serializeCube(r);}
+ // Numerical tolerance is needed for a few repeated floating-point additions.
+ const rounded=v=>Array.isArray(v)?v.map(rounded):v&&typeof v==='object'?Object.fromEntries(Object.entries(v).map(([k,x])=>[k,rounded(x)])):typeof v==='number'?Number(v.toFixed(7)):v;
+ assert.equal(digest(rounded(g.bones)),digest(rounded(independent.doc['minecraft:geometry'][0].bones)));
+ for(const b of g.bones)if(b.name==='mensa'){const e=expected.bones.find(x=>x.name===b.name);b.cubes.forEach((c,i)=>{assert.deepEqual(rounded(c.origin),rounded(e.cubes[i].origin));assert.deepEqual(rounded(c.size),rounded(e.cubes[i].size));});}else assert.deepEqual(b,depth1.bones.find(x=>x.name===b.name));
+ assert(g.bones.some(b=>b.name==='pedestal_0_shaft'));assert(g.bones.some(b=>b.name==='pedestal_1_shaft'));
+ if(g.description.visible_bounds_width!==Math.max(w,d)+1)metadataBoundsMismatch++;
+ plans++;
+}}
+const report={plans,allFacingsRotationEquivalent:true,allTabletopDimensionsCorrect:true,bothSupportsRetained:true,nonTabletopEqualsDepth1:true,metadataBoundsMismatch,note:'The forceDepth1 wrapper leaves source identifier and visible_bounds_width at depth1 values. These do not enter cell hashes/collision; cell geometries get their own bounds and identifiers. Any adoptable source generator must correct these metadata fields. family.depth=1 is intentional.'};console.log(JSON.stringify(report,null,2));fs.writeFileSync(new URL('audit-depth1.json',import.meta.url),JSON.stringify(report,null,2)+'\n');

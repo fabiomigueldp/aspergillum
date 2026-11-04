@@ -1,0 +1,19 @@
+import bpy,json,collections
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V64-protective-gesture-trial.blend',use_scripts=False);dg=bpy.context.evaluated_depsgraph_get();o=bpy.data.objects['Maria — mão protetora anatômica'];old=[v.co.copy() for v in o.data.vertices];new=[v.co.copy() for v in o.evaluated_get(dg).data.vertices];fs=[tuple(f.vertices) for f in o.data.polygons];tun=bpy.data.objects['Maria — túnica e mangas integradas'];e=tun.evaluated_get(dg);tp=[tun.matrix_world@v.co for v in e.data.vertices];tf=[tuple(f.vertices) for f in e.data.polygons];tree=BVHTree.FromPolygons(tp,tf);attr=o.data.attributes['.sculpt_face_set'];results={}
+for ver,ps in [('V63',old),('V64',new)]:
+ pairs=BVHTree.FromPolygons(ps,fs).overlap(tree);hfaces=set(a for a,b in pairs);vs=set(v for f in hfaces for v in fs[f]);inside=[];amb=[];dirs=[Vector((1,.173,.379)).normalized(),Vector((-.271,1,.113)).normalized(),Vector((.31,.17,1)).normalized()]
+ for i,p in enumerate(ps):
+  votes=[]
+  for d in dirs:
+   q=p.copy();count=0
+   for j in range(100):
+    hit,_,_,_=tree.ray_cast(q,d)
+    if hit is None:break
+    count+=1;q=hit+d*1e-6
+   votes.append(count%2)
+  if len(set(votes))>1:amb.append(i)
+  elif votes[0]:inside.append(i)
+ results[ver]={'contact_hand_face_sets':dict(collections.Counter(attr.data[i].value for i in hfaces)),'contact_original_z_range':[min(old[i].z for i in vs),max(old[i].z for i in vs)],'inside_count':len(inside),'inside_original_z_range':[min(old[i].z for i in inside),max(old[i].z for i in inside)] if inside else None,'inside_max_depth_m':max((tree.find_nearest(ps[i])[3] for i in inside),default=0),'ambiguous_inside_count':len(amb),'distal_original_z_under_1_96_inside':sum(old[i].z<1.96 for i in inside)}
+json.dump(results,open(r+'V64-contact-audit.json','w'),indent=2);print(results)

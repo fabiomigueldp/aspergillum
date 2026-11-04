@@ -1,0 +1,634 @@
+--- a/addons/altare/src/presentation/menu.ts
++++ b/addons/altare/src/presentation/menu.ts
+@@ -19,10 +19,9 @@
+   const values={} as Record<keyof typeof fields,ObservableNumber>;
+   for(const key of Object.keys(fields) as (keyof typeof fields)[])values[key]=new ObservableNumber((fields[key] as readonly (string|number)[]).indexOf(draft[key]),{clientWritable:true});
+   const ornamental=new ObservableBoolean(draft.ornamental,{clientWritable:true});
+-  const classic=new ObservableBoolean(false),architectural=new ObservableBoolean(false),color=new ObservableBoolean(false),relief=new ObservableBoolean(false),unavailable=new ObservableBoolean(false),material=new ObservableBoolean(false),joinery=new ObservableBoolean(false),ornate=new ObservableBoolean(false),directional=new ObservableBoolean(true);
+-  // Dropdown values must be client writable even when the control is disabled or hidden.
+-  // This display-only selection has no subscription and never enters the finish draft.
+-  const none=new ObservableNumber(0,{clientWritable:true}),cleanups:(()=>void)[]=[];
++  const classic=new ObservableBoolean(false),color=new ObservableBoolean(false),relief=new ObservableBoolean(false),unavailable=new ObservableBoolean(false),material=new ObservableBoolean(false),joinery=new ObservableBoolean(false),ornate=new ObservableBoolean(false),directional=new ObservableBoolean(true);
++  // Fixed materials and unavailable choices are read-only labels, not inputs.
++  const unchanged=new ObservableBoolean(true),cleanups:(()=>void)[]=[];
+   const titleFor=(front:number):UIRawMessage=>({rawtext:[tr('menu.title'),{text:` · ${front%2?b.maxZ-b.minZ+1:b.maxX-b.minX+1} × ${front%2?b.maxX-b.minX+1:b.maxZ-b.minZ+1}`}]});
+   // Dimensions follow the draft front; a temporarily hidden front stays in
+   // the draft for the next directional cloth, just like its control value.
+@@ -34,47 +33,55 @@
+     try{
+       const c=customizationCapabilities(draft);
+       if(draft.facing!==titleFacing){title.setData(titleFor(draft.facing));titleFacing=draft.facing;}
+-      classic.setData(!c.architectural);architectural.setData(c.architectural&&!c.ornate);color.setData(c.color);relief.setData(c.relief);unavailable.setData(c.architectural&&!c.relief&&!c.joinery&&!c.ornate);material.setData(c.material);joinery.setData(c.joinery);ornate.setData(c.ornate);directional.setData(c.directional);
++      classic.setData(!c.architectural);color.setData(c.color);relief.setData(c.relief);unavailable.setData(c.architectural&&!c.relief&&!c.joinery&&!c.ornate);material.setData(c.material);joinery.setData(c.joinery);ornate.setData(c.ornate);directional.setData(c.directional);
+       for(const key of Object.keys(fields) as (keyof typeof fields)[])values[key].setData((fields[key] as readonly (string|number)[]).indexOf(draft[key]));
+       ornamental.setData(draft.ornamental);
++      unchanged.setData((Object.keys(initial) as (keyof Customization)[]).every(key=>draft[key]===initial[key]));
+     }finally{updating=false;}
+   }
++  const close=()=>{alive=false;if(form.isShowing())form.close();};
++  const editable=()=>{
++    if(!alive||!form.isShowing())return false;
++    if(!isCurrent()){close();return false;}
++    return true;
++  };
+   const update=(patch:Partial<Customization>)=>{
+-    if(updating||!alive)return;
+-    if(!isCurrent()){if(form.isShowing())form.close();return;}
++    if(updating||!editable())return;
+     try{draft=changeCustomization(draft,patch);}catch{/* Invalid client values never enter the draft. */}
+     refresh();
+   };
+   for(const key of Object.keys(fields) as (keyof typeof fields)[]){
+     const value=values[key],callback=value.subscribe(index=>{
++      if(updating||!editable())return;
+       const item=(fields[key] as readonly (string|number)[])[index];
+       if(item===undefined){refresh();return;}update({[key]:item});
+     });cleanups.push(()=>value.unsubscribe(callback));
+   }
+   const onOrnamental=ornamental.subscribe(value=>update({ornamental:value}));cleanups.push(()=>ornamental.unsubscribe(onOrnamental));
+-  form.header(tr('menu.structure'))
++  form.label(tr('menu.scope')).header(tr('menu.structure'))
+     .dropdown(tr('menu.model'),values.model,labels(MODELS,'structure'))
+     .dropdown(tr('menu.surface'),values.surface,labels(SURFACES,'surface'),{visible:material})
+-    .dropdown(tr('menu.surface'),none,labels(['walnut'],'surface'),{visible:joinery,disabled:true})
+-    .dropdown(tr('menu.surface'),none,labels(['marble'],'surface'),{visible:ornate,disabled:true})
++    .label(tr('menu.material_walnut'),{visible:joinery})
++    .label(tr('menu.material_marble'),{visible:ornate})
+     .dropdown(tr('menu.surface'),values.stone,labels(['marble','limestone','basalt'],'stone'),{visible:classic})
+     .spacer().header(tr('menu.cloth'))
+     .dropdown(tr('menu.pattern'),values.textile,labels(CLOTHS,'textile'))
+     .dropdown(tr('menu.color'),values.color,labels(LITURGICAL_COLORS,'color'),{visible:color})
+-    .spacer().header(tr('menu.frontal'),{visible:directional})
++    .spacer({visible:directional}).header(tr('menu.frontal'),{visible:directional})
+     .dropdown(tr('menu.applique'),values.relief,labels(FRONTALS,'applique'),{visible:relief})
+-    .dropdown(tr('menu.applique'),none,labels(['none'],'applique'),{visible:unavailable,disabled:true,description:tr('menu.relief_limit')})
++    .label(tr('menu.relief_limit'),{visible:unavailable})
+     .toggle(tr('menu.ornamental'),ornamental,{visible:classic})
+-    .dropdown(tr('menu.front'),values.facing,labels(['0','1','2','3'],'facing'),{visible:directional})
++    .dropdown(tr('menu.front'),values.facing,labels(['0','1','2','3'],'facing'),{visible:directional,description:tr('menu.front_help')})
+     .divider().button(tr('menu.apply'),()=>{
+-      if(!alive||!isCurrent()){if(form.isShowing())form.close();return;}
+-      selected=customizationFinish(draft);form.close();
++      if(!editable())return;
++      selected=customizationFinish(draft);close();
+     })
+-    .button(tr('menu.restore'),()=>{if(!alive||!isCurrent())return;draft=initial;refresh();})
+-    .button(tr('menu.cancel'),()=>form.close());
++    // Apply stays enabled: reapplying also recentres an altar after placement.
++    .button(tr('menu.restore'),()=>{if(!editable())return;draft=initial;refresh();},{disabled:unchanged})
++    .button(tr('menu.cancel'),()=>{if(alive)close();});
+   refresh();
+   if(!isCurrent()){alive=false;for(const cleanup of cleanups)cleanup();return undefined;}
+-  const unsubscribe=onRelease(()=>{alive=false;if(form.isShowing())form.close();});
++  const unsubscribe=onRelease(close);
+   try{await form.show();return isCurrent()?selected:undefined;}
+   finally{alive=false;unsubscribe();for(const cleanup of cleanups)cleanup();}
+ }
+--- a/addons/altare/assets-src/locales.mjs
++++ b/addons/altare/assets-src/locales.mjs
+@@ -1,9 +1,12 @@
+ export const locales={
+  pt_BR:{
++  'altare.menu.scope':'Personalize o altar inteiro. Nada muda até aplicar.',
++  'altare.menu.material_walnut':'Material: nogueira','altare.menu.material_marble':'Material: mármore claro',
++  'altare.menu.front_help':'A largura é medida de frente para este lado.',
+   'altare.structure.twin_pedestal':'Dois pedestais','altare.placement.pending':'Módulo provisório. Reaplique no editor para recompor os dois pedestais.',
+   'pack.name':'Altare {version} · Diagnóstico', 'pack.description':'Altar modular, toalhas integradas e frontal cerimonial. Validação em jogo pendente.',
+   'tile.altare:mensa.name':'Módulo de altar', 'item.altare:finish_tool.name':'Acabamento do altar',
+-  'altare.menu.title':'Personalizar altar','altare.menu.model':'Modelo','altare.menu.pattern':'Desenho','altare.menu.frontal':'Frontal','altare.menu.restore':'Restaurar escolhas','altare.menu.cancel':'Cancelar','altare.menu.relief_limit':'Relevo disponível no floral vermelho.','altare.textile.floral':'Floral IHS','altare.menu.size':'Superfície: %s × %s. Clique uma lateral para escolher a frente.',
++  'altare.menu.title':'Personalizar altar','altare.menu.model':'Modelo','altare.menu.pattern':'Desenho','altare.menu.frontal':'Frente e detalhes','altare.menu.restore':'Desfazer alterações','altare.menu.cancel':'Cancelar','altare.menu.relief_limit':'Para usar relevo nesta toalha, escolha vermelho.','altare.textile.floral':'Floral IHS','altare.menu.size':'Superfície: %s × %s. Clique uma lateral para escolher a frente.',
+   'altare.menu.collection':'Estrutura do altar','altare.menu.collection_help':'Escolha a estrutura. Depois combine material, toalha e frontal para o altar inteiro.',
+   'altare.structure.classic':'Clássico','altare.structure.pilaster':'Pilastras','altare.structure.ogive':'Ogivas','altare.structure.trestle':'Cavaletes','altare.structure.crossbrace':'Cruzeta','altare.structure.coffer':'Arca','altare.structure.baluster':'Balaústres','altare.structure.colonnade':'Colunata dourada','altare.menu.lace':'Toalha de renda',
+   'altare.menu.surface':'Material','altare.menu.applique':'Relevo',
+@@ -11,12 +14,12 @@
+   'altare.color.white':'Branco','altare.color.red':'Vermelho','altare.color.green':'Verde','altare.color.purple':'Roxo','altare.color.rose':'Róseo','altare.color.black':'Preto','altare.color.gold':'Dourado · festivo','altare.color.silver':'Prateado · festivo',
+   'altare.surface.marble':'Mármore claro','altare.surface.limestone':'Calcário quente','altare.surface.walnut':'Nogueira',
+   'altare.textile.lace':'Renda floral','altare.textile.linen_short':'Linho · curta','altare.textile.linen_long':'Linho · longa','altare.textile.gold_short':'Bordada · curta','altare.textile.gold_long':'Bordada · longa','altare.textile.none':'Sem toalha','altare.textile.agnus':'Branco e ouro · Cordeiro','altare.textile.ruby':'Veludo rubi · IHS','altare.textile.verdant':'Branco e verde · IHS','altare.textile.requiem':'Preto e prata · cruzes',
+-  'altare.applique.none':'Sem aplique','altare.applique.cross':'Cruz dourada esculpida','altare.applique.agnus':'Medalhão do Cordeiro',
+-  'altare.menu.stone':'Pedra','altare.menu.cloth':'Toalha','altare.menu.ornamental':'Guadalupe','altare.menu.front':'Frente','altare.menu.apply':'Aplicar',
++  'altare.applique.none':'Sem relevo','altare.applique.cross':'Cruz dourada esculpida','altare.applique.agnus':'Medalhão do Cordeiro',
++  'altare.menu.stone':'Pedra','altare.menu.cloth':'Toalha','altare.menu.ornamental':'Imagem de Guadalupe','altare.menu.front':'Frente','altare.menu.apply':'Aplicar no altar',
+   'altare.stone.marble':'Mármore claro','altare.stone.limestone':'Calcário quente','altare.stone.basalt':'Pedra escura',
+   'altare.cloth.none':'Sem toalha','altare.cloth.linen_short':'Linho · queda curta','altare.cloth.linen_long':'Linho · queda longa',
+   'altare.cloth.gold_short':'Linho bordado · queda curta','altare.cloth.gold_long':'Linho bordado · queda longa',
+-  'altare.facing.0':'Frente: norte','altare.facing.1':'Frente: leste','altare.facing.2':'Frente: sul','altare.facing.3':'Frente: oeste',
++  'altare.facing.0':'Norte','altare.facing.1':'Leste','altare.facing.2':'Sul','altare.facing.3':'Oeste',
+   'altare.success':'§rAcabamento aplicado.',
+   'altare.error.busy':'§rEste altar já está sendo editado.',
+   'altare.error.unloaded':'§rAproxime-se do altar inteiro e tente novamente.',
+@@ -27,10 +30,13 @@
+   'altare.error.write':'§rNão foi possível concluir. Confira o altar e o Content Log antes de repetir.',
+  },
+  en_US:{
++  'altare.menu.scope':'Customize the whole altar. Nothing changes until you apply.',
++  'altare.menu.material_walnut':'Material: walnut','altare.menu.material_marble':'Material: pale marble',
++  'altare.menu.front_help':'Width is measured when facing this side.',
+   'altare.structure.twin_pedestal':'Twin pedestals','altare.placement.pending':'Temporary module. Apply in the editor to rebuild the twin pedestals.',
+   'pack.name':'Altare {version} · Diagnostic','pack.description':'Modular altars, integrated cloth and ceremonial frontals. In-game validation pending.',
+   'tile.altare:mensa.name':'Altar module','item.altare:finish_tool.name':'Altar finishing tool',
+-  'altare.menu.title':'Customize altar','altare.menu.model':'Model','altare.menu.pattern':'Pattern','altare.menu.frontal':'Frontal','altare.menu.restore':'Restore choices','altare.menu.cancel':'Cancel','altare.menu.relief_limit':'Relief is available with red floral cloth.','altare.textile.floral':'Floral IHS','altare.menu.size':'Surface: %s × %s. Click a side to choose the front.',
++  'altare.menu.title':'Customize altar','altare.menu.model':'Model','altare.menu.pattern':'Pattern','altare.menu.frontal':'Front and details','altare.menu.restore':'Undo changes','altare.menu.cancel':'Cancel','altare.menu.relief_limit':'To use relief with this cloth, choose red.','altare.textile.floral':'Floral IHS','altare.menu.size':'Surface: %s × %s. Click a side to choose the front.',
+   'altare.menu.collection':'Altar structure','altare.menu.collection_help':'Choose the structure, then combine material, cloth and frontal for the entire altar.',
+   'altare.structure.classic':'Classic','altare.structure.pilaster':'Pilasters','altare.structure.ogive':'Ogives','altare.structure.trestle':'Trestles','altare.structure.crossbrace':'Cross-braced walnut','altare.structure.coffer':'Panelled chest','altare.structure.baluster':'Balusters','altare.structure.colonnade':'Gilded colonnade','altare.menu.lace':'Lace cloth',
+   'altare.menu.surface':'Material','altare.menu.applique':'Relief',
+@@ -38,12 +44,12 @@
+   'altare.color.white':'White','altare.color.red':'Red','altare.color.green':'Green','altare.color.purple':'Violet','altare.color.rose':'Rose','altare.color.black':'Black','altare.color.gold':'Gold · festive','altare.color.silver':'Silver · festive',
+   'altare.surface.marble':'Pale marble','altare.surface.limestone':'Warm limestone','altare.surface.walnut':'Walnut',
+   'altare.textile.lace':'Floral lace','altare.textile.linen_short':'Linen · short','altare.textile.linen_long':'Linen · long','altare.textile.gold_short':'Embroidered · short','altare.textile.gold_long':'Embroidered · long','altare.textile.none':'No cloth','altare.textile.agnus':'White and gold · Lamb','altare.textile.ruby':'Ruby velvet · IHS','altare.textile.verdant':'White and green · IHS','altare.textile.requiem':'Black and silver · crosses',
+-  'altare.applique.none':'No applique','altare.applique.cross':'Raised gold cross','altare.applique.agnus':'Lamb medallion',
+-  'altare.menu.stone':'Stone','altare.menu.cloth':'Cloth','altare.menu.ornamental':'Guadalupe','altare.menu.front':'Front','altare.menu.apply':'Apply',
++  'altare.applique.none':'No relief','altare.applique.cross':'Raised gold cross','altare.applique.agnus':'Lamb medallion',
++  'altare.menu.stone':'Stone','altare.menu.cloth':'Cloth','altare.menu.ornamental':'Guadalupe image','altare.menu.front':'Front','altare.menu.apply':'Apply to altar',
+   'altare.stone.marble':'Pale marble','altare.stone.limestone':'Warm limestone','altare.stone.basalt':'Dark stone',
+   'altare.cloth.none':'No cloth','altare.cloth.linen_short':'Linen · short drop','altare.cloth.linen_long':'Linen · long drop',
+   'altare.cloth.gold_short':'Embroidered linen · short drop','altare.cloth.gold_long':'Embroidered linen · long drop',
+-  'altare.facing.0':'Front: north','altare.facing.1':'Front: east','altare.facing.2':'Front: south','altare.facing.3':'Front: west',
++  'altare.facing.0':'North','altare.facing.1':'East','altare.facing.2':'South','altare.facing.3':'West',
+   'altare.success':'§rFinish applied.',
+   'altare.error.busy':'§rThis altar is already being edited.','altare.error.unloaded':'§rMove closer to the entire altar and try again.',
+   'altare.error.limit':'§rStudy limit: 16 × 8 modules, in either orientation.','altare.error.rectangle':'§rComplete a rectangle without gaps before applying the finish.',
+--- a/addons/altare/tests/menu.node.ts
++++ b/addons/altare/tests/menu.node.ts
+@@ -1,77 +1,33 @@
+ import test from 'node:test';
+ import assert from 'node:assert/strict';
+-import {build} from 'esbuild';
+ import {EditSessions} from '../src/application/sessions.ts';
+ import {DESIGNS} from '../src/domain/catalog.ts';
+ import {planFinish} from '../src/domain/surface.ts';
+ import {encodeTile,decodeTile} from '../src/domain/block-codec.ts';
+ 
+-// Exercise the real presentation with a minimal native UI adapter. This proves
+-// draft/commit and lifecycle behavior, not Bedrock layout or controller parity.
+-class Observable<T> {
+-  callbacks=new Set<(v:T)=>void>();
+-  value:T;
+-  readonly clientWritable:boolean;
+-  constructor(value:T,options?:{clientWritable:boolean}){this.value=value;this.clientWritable=options?.clientWritable===true;}
+-  getData(){return this.value;}
+-  setData(value:T){if(value===this.value)return;this.value=value;for(const callback of this.callbacks)callback(value);}
+-  subscribe(callback:(v:T)=>void){this.callbacks.add(callback);return callback;}
+-  unsubscribe(callback:(v:T)=>void){return this.callbacks.delete(callback);}
+-}
+-let current:any;
+-function requireClientWritable(value:Observable<unknown>,binding:string){
+-  if(!value.clientWritable){
+-    const error=new Error(`Expect '${binding}' observable to be client writable.`);
+-    error.name='InvalidObservableError';throw error;
+-  }
+-}
+-class Form {
+-  controls:any[]=[]; showing=false; resolve:(value:unknown)=>void=()=>{};
+-  title:any;
+-  constructor(_player?:unknown,title?:any){this.title=title;current=this;}
+-  header(){return this;} spacer(){return this;} divider(){return this;}
+-  dropdown(label:any,value:any,items:any,options:any={}){requireClientWritable(value,'dropdown value');this.controls.push({kind:'dropdown',label:label.translate,value,items,options});return this;}
+-  toggle(label:any,value:any,options:any={}){requireClientWritable(value,'toggle value');this.controls.push({kind:'toggle',label:label.translate,value,options});return this;}
+-  button(label:any,callback:()=>void){this.controls.push({kind:'button',label:label.translate,callback});return this;}
+-  isShowing(){return this.showing;}
+-  show(){this.showing=true;return new Promise(resolve=>{this.resolve=resolve;});}
+-  close(){this.showing=false;this.resolve(undefined);}
+-}
+-(globalThis as any).__altareTestUI={CustomForm:Form,ObservableBoolean:Observable,ObservableNumber:Observable,ObservableUIRawMessage:Observable};
+-const bundled=await build({entryPoints:[new URL('../src/presentation/menu.ts',import.meta.url).pathname.replace(/^\/(.:)/,'$1')],bundle:true,format:'esm',platform:'node',write:false,plugins:[{
+- name:'native-ui-double',setup(b){b.onResolve({filter:/^@minecraft\/server-ui$/},()=>({path:'ui',namespace:'test'}));b.onLoad({filter:/.*/,namespace:'test'},()=>({contents:'export const {CustomForm,ObservableBoolean,ObservableNumber,ObservableUIRawMessage}=globalThis.__altareTestUI;'}));},
+-}]});
+-const {chooseFinish}=await import('data:text/javascript;base64,'+Buffer.from(bundled.outputFiles[0]!.text+'\n//# sourceURL=altare-menu-test.mjs').toString('base64'));
++import {current,chooseFinish} from './helpers/native-ui.ts';
++import {locales} from '../assets-src/locales.mjs';
+ const tiles=[{position:{x:0,y:0,z:0},stone:0,cloth:1,frontal:0,facing:0,edges:15,design:'altare:a_ogive_marble_ruby_cross'}];
+ const field=(name:string)=>current.controls.find((c:any)=>c.label===`altare.${name}`&&c.options?.visible?.getData()!==false);
+ const click=(name:string)=>field(name).callback();
+ 
+-test('native editor binds every input as client writable, including disabled and hidden dropdowns',async()=>{
+- const result=chooseFinish({},tiles,0);
+- const form=current;
+- if(form.isShowing())click('menu.cancel');
+- assert.equal(await result,undefined);
++test('native editor uses client-writable choices and read-only information without fake dropdowns',async()=>{
++ const result=chooseFinish({},tiles,0),form=current;
++ assert.equal(form.controls[0].label,'altare.menu.scope');
++ assert.equal(form.controls[0].kind,'label');
+  const inputs=form.controls.filter((c:any)=>c.value);
+  assert.ok(inputs.every((c:any)=>c.value.clientWritable));
+- const fixed=inputs.filter((c:any)=>c.options.disabled===true);
+- assert.equal(fixed.length,3);
+- assert.ok(fixed.every((c:any)=>c.items.length===1&&c.value.getData()===0));
+- assert.ok(fixed.some((c:any)=>c.options.visible.getData()===false));
++ assert.equal(inputs.filter((c:any)=>c.options.disabled===true).length,0);
+  assert.ok(inputs.filter((c:any)=>c.options.visible).every((c:any)=>!c.options.visible.clientWritable));
++ click('menu.cancel');assert.equal(await result,undefined);
+  assert.ok(inputs.every((c:any)=>c.value.callbacks.size===0));
+-});
+-
+-test('fixed dropdown values never authorize a finish change',async()=>{
+- const result=chooseFinish({},tiles,0);
+- for(const control of current.controls.filter((c:any)=>c.options?.disabled===true))control.value.setData(999);
+- click('menu.apply');assert.equal((await result).design,tiles[0]!.design);
+ });
+ 
+ test('native editor commits only on Apply, restores the opened altar and cleans subscriptions',async()=>{
+  let result=chooseFinish({},tiles,0);field('menu.color').value.setData(3);click('menu.cancel');assert.equal(await result,undefined);
+  assert.ok(current.controls.filter((c:any)=>c.value).every((c:any)=>c.value.callbacks.size===0));
+  result=chooseFinish({},tiles,0);field('menu.color').value.setData(3);click('menu.restore');click('menu.apply');assert.equal((await result).design,tiles[0]!.design);
+- result=chooseFinish({},tiles,0);field('menu.color').value.setData(3);assert.equal(field('menu.applique').options.disabled,true);
++ result=chooseFinish({},tiles,0);field('menu.color').value.setData(3);assert.equal(field('menu.applique'),undefined);assert.equal(field('menu.relief_limit').kind,'label');
+  field('menu.model').value.setData(3);click('menu.apply');assert.equal((await result).design,'altare:l_trestle_marble_purple');
+ });
+ test('invalid client selections are rejected and a released lease closes the view without a finish',async()=>{
+@@ -85,8 +41,8 @@
+ test('native joinery controls show the actual material and never apply a suspended relief',async()=>{
+  const result=chooseFinish({},tiles,0);
+  field('menu.model').value.setData(4);
+- assert.equal(field('menu.surface').options.disabled,true);
+- assert.equal(field('menu.surface').items[0].label.translate,'altare.surface.walnut');
++ assert.equal(field('menu.surface'),undefined);
++ assert.equal(field('menu.material_walnut').kind,'label');
+  assert.equal(field('menu.applique'),undefined);
+  field('menu.color').value.setData(3);
+  field('menu.model').value.setData(5);click('menu.apply');
+@@ -95,7 +51,7 @@
+ 
+ test('one native cloth selector offers lace on every model and shows direction only for emblems',async()=>{
+  const result=chooseFinish({},tiles,3);field('menu.model').value.setData(6);
+- assert.equal(field('menu.surface').items[0].label.translate,'altare.surface.marble');
++ assert.equal(field('menu.surface'),undefined);assert.equal(field('menu.material_marble').kind,'label');
+  assert.equal(field('menu.pattern').items.length,10);assert.ok(field('menu.front'));
+  const lace=field('menu.pattern').items.findIndex((i:any)=>i.label.translate==='altare.textile.lace');field('menu.pattern').value.setData(lace);
+  assert.equal(field('menu.front'),undefined);assert.equal(field('menu.lace'),undefined);
+@@ -196,8 +152,8 @@
+  const layout=savedLayout(undefined,true,0,16);
+  const result=chooseFinish({},layout,0),snapshot=structuredClone(layout);
+  field('menu.model').value.setData(8);
+- assert.equal(field('menu.surface').options.disabled,true);
+- assert.equal(field('menu.surface').items[0].label.translate,'altare.surface.walnut');
++ assert.equal(field('menu.surface'),undefined);
++ assert.equal(field('menu.material_walnut').kind,'label');
+  assert.equal(field('menu.pattern').items.length,10);
+  field('menu.pattern').value.setData(6);field('menu.color').value.setData(3);
+  field('menu.pattern').value.setData(0);field('menu.front').value.setData(1);
+@@ -207,3 +163,93 @@
+  field('menu.model').value.setData(8);click('menu.apply');
+  const finish=await result;assert.equal(finish.design,'altare:n_twin_floral_purple');assert.equal(finish.facing,1);assert.deepEqual(layout,snapshot);
+ });
++
++
++test('Undo changes follows the whole draft while Apply remains available for recomposition',async()=>{
++ const result=chooseFinish({},tiles,0);
++ const undo=field('menu.restore'),apply=field('menu.apply');
++ assert.equal(undo.options.disabled.getData(),true);
++ assert.equal(undo.options.disabled.clientWritable,false);
++ assert.notEqual(apply.options.disabled,true);
++ field('menu.color').value.setData(3);
++ assert.equal(undo.options.disabled.getData(),false);
++ field('menu.model').value.setData(6);field('menu.pattern').value.setData(9);
++ assert.equal(field('menu.color'),undefined);
++ assert.equal(undo.options.disabled.getData(),false);
++ click('menu.restore');assert.equal(undo.options.disabled.getData(),true);
++ assert.equal(field('menu.color').value.getData(),1);
++ click('menu.apply');assert.equal((await result).design,tiles[0]!.design);
++});
++
++test('unavailable relief explains the compatible color and retains the chosen relief',async()=>{
++ const result=chooseFinish({},tiles,0);
++ const relief=field('menu.applique').value.getData();
++ field('menu.color').value.setData(3);
++ assert.equal(field('menu.applique'),undefined);
++ assert.equal(field('menu.relief_limit').kind,'label');
++ field('menu.color').value.setData(1);
++ assert.equal(field('menu.relief_limit'),undefined);
++ assert.equal(field('menu.applique').value.getData(),relief);
++ click('menu.cancel');assert.equal(await result,undefined);
++});
++
++test('symmetric models hide the front spacer along with its section',async()=>{
++ const result=chooseFinish({},tiles,0);
++ const frontHeader=current.controls.findIndex((c:any)=>c.label==='altare.menu.frontal');
++ const spacer=current.controls[frontHeader-1];
++ assert.equal(spacer.kind,'spacer');assert.equal(spacer.options.visible.getData(),true);
++ field('menu.model').value.setData(6);field('menu.pattern').value.setData(9);
++ assert.equal(spacer.options.visible.getData(),false);assert.equal(field('menu.frontal'),undefined);
++ field('menu.pattern').value.setData(6);
++ assert.equal(spacer.options.visible.getData(),true);assert.ok(field('menu.frontal'));
++ click('menu.cancel');await result;
++});
++
++test('rapid or stale action callbacks cannot close twice or turn Cancel into Apply',async()=>{
++ for(const action of ['menu.apply','menu.cancel']){
++  const result=chooseFinish({},tiles,0),form=current;
++  const apply=field('menu.apply').callback,cancel=field('menu.cancel').callback,undo=field('menu.restore').callback;
++  const color=field('menu.color').value;
++  click(action);
++  assert.doesNotThrow(()=>{apply();cancel();undo();color.setData(3);});
++  assert.equal(form.showing,false);
++  const finish=await result;
++  assert.equal(finish?.design,action==='menu.apply'?tiles[0]!.design:undefined);
++  assert.equal(color.callbacks.size,0);
++ }
++ const result=chooseFinish({},tiles,0),apply=field('menu.apply').callback;
++ current.close();assert.doesNotThrow(apply);assert.equal(await result,undefined);
++});
++
++
++test('every displayed control, option and hint resolves in both shipped locales',async()=>{
++ const result=chooseFinish({},tiles,0);
++ assert.deepEqual(Object.keys(locales.pt_BR).sort(),Object.keys(locales.en_US).sort());
++ for(const entries of Object.values(locales)){
++  for(const control of current.controls){
++   if(control.label)assert.ok(entries[control.label],control.label);
++   for(const item of control.items??[])assert.ok(entries[item.label.translate],item.label.translate);
++   const description=control.options?.description?.translate;
++   if(description)assert.ok(entries[description],description);
++  }
++ }
++ assert.equal(locales.en_US['altare.menu.ornamental'],'Guadalupe image');
++ assert.equal(locales.pt_BR['altare.applique.none'],'Sem relevo');
++ click('menu.cancel');await result;
++});
++
++test('every model and cloth exposes one honest material and no empty front section',async()=>{
++ const result=chooseFinish({},tiles,0);
++ const models=field('menu.model'),cloths=field('menu.pattern');
++ for(const model of models.items)for(const cloth of cloths.items){
++  models.value.setData(model.value);cloths.value.setData(cloth.value);
++  for(const color of [0,1,3]){
++   field('menu.color')?.value.setData(color);
++   const material=current.controls.filter((c:any)=>['altare.menu.surface','altare.menu.material_walnut','altare.menu.material_marble'].includes(c.label)&&c.options.visible.getData());
++   assert.equal(material.length,1,`${model.label.translate}/${cloth.label.translate}`);
++   assert.equal(Boolean(field('menu.frontal')),Boolean(field('menu.front')));
++   assert.ok(!field('menu.relief_limit')||!field('menu.applique'));
++  }
++ }
++ click('menu.cancel');assert.equal(await result,undefined);
++});
+--- /dev/null
++++ b/addons/altare/tests/helpers/native-ui.ts
+@@ -0,0 +1,40 @@
++import {build} from 'esbuild';
++// Exercise the real presentation with a minimal native UI adapter. This proves
++// draft/commit and lifecycle behavior, not Bedrock layout or controller parity.
++class Observable<T> {
++  callbacks=new Set<(v:T)=>void>();
++  value:T;
++  readonly clientWritable:boolean;
++  constructor(value:T,options?:{clientWritable:boolean}){this.value=value;this.clientWritable=options?.clientWritable===true;}
++  getData(){return this.value;}
++  setData(value:T){if(value===this.value)return;this.value=value;for(const callback of this.callbacks)callback(value);}
++  subscribe(callback:(v:T)=>void){this.callbacks.add(callback);return callback;}
++  unsubscribe(callback:(v:T)=>void){return this.callbacks.delete(callback);}
++}
++export let current:any;
++function requireClientWritable(value:Observable<unknown>,binding:string){
++  if(!value.clientWritable){
++    const error=new Error(`Expect '${binding}' observable to be client writable.`);
++    error.name='InvalidObservableError';throw error;
++  }
++}
++class Form {
++  controls:any[]=[]; showing=false; resolve:(value:unknown)=>void=()=>{};
++  title:any;
++  constructor(_player?:unknown,title?:any){this.title=title;current=this;}
++  header(text:any,options:any={}){this.controls.push({kind:'header',label:text.translate,options});return this;}
++  label(text:any,options:any={}){this.controls.push({kind:'label',label:text.translate,options});return this;}
++  spacer(options:any={}){this.controls.push({kind:'spacer',options});return this;}
++  divider(){this.controls.push({kind:'divider'});return this;}
++  dropdown(label:any,value:any,items:any,options:any={}){requireClientWritable(value,'dropdown value');this.controls.push({kind:'dropdown',label:label.translate,value,items,options});return this;}
++  toggle(label:any,value:any,options:any={}){requireClientWritable(value,'toggle value');this.controls.push({kind:'toggle',label:label.translate,value,options});return this;}
++  button(label:any,callback:()=>void,options:any={}){this.controls.push({kind:'button',label:label.translate,callback,options});return this;}
++  isShowing(){return this.showing;}
++  show(){this.showing=true;return new Promise(resolve=>{this.resolve=resolve;});}
++  close(){if(!this.showing)throw Error('FormVisibilityError');this.showing=false;this.resolve(undefined);}
++}
++(globalThis as any).__altareTestUI={CustomForm:Form,ObservableBoolean:Observable,ObservableNumber:Observable,ObservableUIRawMessage:Observable};
++const bundled=await build({entryPoints:[new URL('../../src/presentation/menu.ts',import.meta.url).pathname.replace(/^\/(.:)/,'$1')],bundle:true,format:'esm',platform:'node',write:false,plugins:[{
++ name:'native-ui-double',setup(b){b.onResolve({filter:/^@minecraft\/server-ui$/},()=>({path:'ui',namespace:'test'}));b.onLoad({filter:/.*/,namespace:'test'},()=>({contents:'export const {CustomForm,ObservableBoolean,ObservableNumber,ObservableUIRawMessage}=globalThis.__altareTestUI;'}));},
++}]});
++export const {chooseFinish}=await import('data:text/javascript;base64,'+Buffer.from(bundled.outputFiles[0]!.text+'\n//# sourceURL=altare-menu-test.mjs').toString('base64'));
+--- /dev/null
++++ b/addons/altare/tools/capture-native-ui.mjs
+@@ -0,0 +1,70 @@
++import fs from 'node:fs';
++import path from 'node:path';
++import crypto from 'node:crypto';
++import {spawnSync} from 'node:child_process';
++import {fileURLToPath} from 'node:url';
++import {current,chooseFinish} from '../tests/helpers/native-ui.ts';
++import {locales} from '../assets-src/locales.mjs';
++import {planFinish} from '../src/domain/surface.ts';
++
++// This captures the actual form's declared controls and reactive choices.
++// It does not run Minecraft or imitate its unverified layout, font or focus.
++const root=fileURLToPath(new URL('../',import.meta.url));
++const output=path.join(root,'out/native-ui');fs.mkdirSync(output,{recursive:true});
++const translations=locales.pt_BR;
++const data=value=>value?.getData?value.getData():value;
++const text=message=>{
++ message=data(message);
++ if(typeof message==='string')return message;
++ if(message?.translate){const translated=translations[message.translate];if(!translated)throw Error(`Missing translation ${message.translate}`);return translated;}
++ return message?.text??message?.rawtext?.map(text).join('')??'';
++};
++const visible=c=>data(c.options?.visible)!==false;
++const field=key=>current.controls.find(c=>c.label===`altare.${key}`&&visible(c));
++const select=(key,choice)=>{const c=field(key);c.value.setData(c.items.find(i=>i.label.translate===`altare.${choice}`).value);};
++const cells=Array.from({length:14},(_,i)=>({position:{x:i%7,y:0,z:Math.floor(i/7)},stone:0,cloth:0,frontal:0,facing:0,edges:15}));
++const scenarios=[
++ {id:'classic',name:'Clássico com Guadalupe',finish:{stone:0,cloth:4,ornamental:true,facing:0}},
++ {id:'twin',name:'Dois pedestais',finish:{stone:0,cloth:0,ornamental:false,facing:0,design:'altare:n_twin_floral_purple'}},
++ {id:'relief',name:'Toalha com cor sem relevo',finish:{stone:0,cloth:0,ornamental:false,facing:0,design:'altare:a_ogive_marble_ruby_cross'},change:()=>select('menu.color','color.purple')},
++ {id:'symmetric',name:'Colunata sem direção',finish:{stone:0,cloth:0,ornamental:false,facing:0,design:'altare:s_colonnade_lace'}},
++];
++const snapshots=[];
++for(const scenario of scenarios){
++ const tiles=planFinish(cells,scenario.finish),before=JSON.stringify(tiles);
++ const pending=chooseFinish({},tiles,scenario.finish.facing);scenario.change?.();
++ snapshots.push({id:scenario.id,name:scenario.name,title:text(current.title),controls:current.controls.filter(visible).map(c=>({
++  kind:c.kind,...(c.label?{key:c.label,text:text({translate:c.label})}:{}),
++  ...(c.kind==='dropdown'?{value:text(c.items.find(i=>i.value===c.value.getData()).label),options:c.items.map(i=>text(i.label))}:{}),
++  ...(c.kind==='toggle'?{value:c.value.getData()}:{}),
++  ...(c.options?.description?{description:text(c.options.description)}:{}),
++  ...(data(c.options?.disabled)===true?{disabled:true}:{}),
++ }))});
++ field('menu.cancel').callback();if(await pending!==undefined||JSON.stringify(tiles)!==before)throw Error('Capture modified the draft result or world input');
++}
++const escape=value=>String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
++const render=c=>{
++ const title=escape(c.text??'');
++ switch(c.kind){
++  case 'header':return `<h3>${title}</h3>`;
++  case 'label':return `<p class="hint">${title}</p>`;
++  case 'spacer':return '<div class="spacer"></div>';
++  case 'divider':return '<hr>';
++  case 'dropdown':return `<div class="field"><label>${title}</label><div class="select">${escape(c.value)}<span>⌄</span></div>${c.description?`<small>${escape(c.description)}</small>`:''}</div>`;
++  case 'toggle':return `<div class="toggle"><span>${title}</span><span class="switch ${c.value?'on':''}">${c.value?'✓':'○'}</span></div>`;
++  case 'button':return `<div class="button ${c.disabled?'disabled':''}">${title}</div>`;
++  default:throw Error(`Unsupported control ${c.kind}`);
++ }
++};
++const html=`<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>Altare · estrutura do editor</title><style>
++*{box-sizing:border-box}body{margin:0;padding:36px;background:#e8e7e2;color:#20251f;font:16px/1.4 Arial,sans-serif}header{max-width:1100px;margin-bottom:25px}h1{font-size:30px;margin:0 0 10px}header p{margin:5px 0;color:#4e554b}.badge{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.09em;color:#446346;margin-bottom:10px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;align-items:start}.scenario{font-size:14px;margin:0 0 10px;color:#4b5448}.panel{background:#fafbf8;border:1px solid #b5bbae;padding:20px;box-shadow:0 4px 12px #1c29130b}h2{font-size:18px;line-height:1.3;margin:0 0 14px}h3{font-size:16px;margin:12px 0 10px}.hint,small{font-size:13px;color:#565f50;line-height:1.4}.hint{margin:8px 0 12px}label{display:block;font-size:13px;margin:0 0 5px}.field{margin:0 0 12px}.select{min-height:39px;background:white;border:1px solid #abb3a5;padding:8px 12px;font-size:14px;display:flex;justify-content:space-between;gap:8px}.select span{color:#5a6554}.spacer{height:4px}small{display:block;margin-top:5px}hr{border:0;border-top:1px solid #d7dbd2;margin:18px 0 14px}.button{border:1px solid #abb3a5;background:#eef1e9;text-align:center;padding:9px;margin:8px 0;font-size:14px}.button.disabled{color:#7d8577;background:#f1f3ee;border-color:#d6dbcf}.toggle{display:flex;align-items:center;justify-content:space-between;gap:14px;font-size:14px;margin:14px 0}.switch{padding:2px 12px;background:#dce3d5;color:#36482f}.switch.on{background:#d1dec7}.footnote{margin:25px 0 0;color:#5a6254;font-size:13px}
++</style><header><span class="badge">SIMULAÇÃO DOCUMENTAL · SEM MINECRAFT</span><h1>Altare · personalização mais clara</h1><p>Textos, valores, ordem, visibilidade e estado dos botões extraídos do editor implementado.</p><p>Esta apresentação não representa a aparência final do Bedrock. Tipografia, cores, espaçamento e foco dependem do jogo.</p></header><div class="grid">${snapshots.map(s=>`<section><p class="scenario">${escape(s.name)}</p><div class="panel"><h2>${escape(s.title)}</h2>${s.controls.map(render).join('')}</div></section>`).join('')}</div><p class="footnote">Sem prévia no mundo: Aplicar confirma o rascunho. Desfazer alterações recupera as escolhas de abertura; Cancelar descarta a edição.</p></html>`;
++fs.writeFileSync(path.join(output,'native-ui.html'),html);
++fs.writeFileSync(path.join(output,'native-ui.json'),JSON.stringify({kind:'implementation-derived-layout-simulation',minecraftRun:false,locales:['pt_BR','en_US'],displayLocale:'pt_BR',sources:['src/presentation/menu.ts','assets-src/locales.mjs'].map(file=>({file,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex')})),scenarios:snapshots},null,2)+'\n');
++if(process.argv.includes('--png')){
++ // A documentary diagram avoids inventing native Bedrock rendering evidence.
++ const rendered=spawnSync(process.env.PYTHON??'python3',[path.join(root,'tools/render-native-ui.py'),output],{stdio:'inherit'});
++ if(rendered.error)throw rendered.error;
++ if(rendered.status!==0)throw Error(`UI diagram render failed: ${rendered.status}`);
++}
++console.log(`Implementation-derived UI simulation: ${output}`);
+--- /dev/null
++++ b/addons/altare/tools/render-native-ui.py
+@@ -0,0 +1,92 @@
++"""Draw an implementation-derived UI contact sheet, not a Bedrock screenshot."""
++import json
++from pathlib import Path
++import sys
++from PIL import Image, ImageDraw, ImageFont
++
++root = Path(sys.argv[1])
++data = json.loads((root / 'native-ui.json').read_text())
++font_root = Path('/usr/share/fonts/truetype/dejavu')
++font = lambda size, bold=False: ImageFont.truetype(str(font_root / ('DejaVuSans-Bold.ttf' if bold else 'DejaVuSans.ttf')), size)
++regular, small, bold, title_font = font(18), font(16), font(19, True), font(23, True)
++ink, muted, border = '#253121', '#586650', '#bcc6b5'
++width, margin, gap, col = 1880, 40, 20, 435
++canvas = Image.new('RGB', (width, 1600), '#e9ece5')
++draw = ImageDraw.Draw(canvas)
++
++def lines(text, f, maximum):
++    out, row = [], ''
++    for word in str(text).split():
++        trial = (row + ' ' + word).strip()
++        if row and draw.textlength(trial, font=f) > maximum:
++            out.append(row)
++            row = word
++        else:
++            row = trial
++    if row:
++        out.append(row)
++    return out
++
++def paragraph(text, x, y, maximum, f=regular, color=ink, leading=26):
++    for row in lines(text, f, maximum):
++        draw.text((x, y), row, font=f, fill=color)
++        y += leading
++    return y
++
++draw.text((margin, 30), 'SIMULAÇÃO DOCUMENTAL · SEM MINECRAFT', font=font(16, True), fill='#527548')
++draw.text((margin, 65), 'Altare · personalização mais clara', font=font(34, True), fill=ink)
++paragraph('Textos, valores, ordem, visibilidade e botões extraídos do editor implementado.', margin, 122, width - 2 * margin, regular)
++paragraph('A aparência final depende do Bedrock. Esta prancha não comprova tipografia, cores, espaçamento ou foco no jogo.', margin, 155, width - 2 * margin, regular, muted)
++bottom = 0
++for i, scenario in enumerate(data['scenarios']):
++    x = margin + i * (col + gap)
++    draw.text((x, 214), scenario['name'], font=small, fill=muted)
++    # Render each panel to a temporary sheet, so its background is sized to content.
++    top = 247
++    draw.rectangle((x, top, x + col, 1550), fill='#fcfdf9')
++    content_x, available = x + 22, col - 44
++    y = paragraph(scenario['title'], content_x, top + 21, available, title_font, leading=31) + 12
++    for control in scenario['controls']:
++        kind, text = control['kind'], control.get('text', '')
++        if kind == 'header':
++            y += 11
++            y = paragraph(text, content_x, y, available, bold, leading=27) + 10
++        elif kind == 'label':
++            y = paragraph(text, content_x, y, available, small, muted, 23) + 10
++        elif kind == 'spacer':
++            y += 8
++        elif kind == 'divider':
++            y += 8
++            draw.line((content_x, y, content_x + available, y), fill=border, width=1)
++            y += 16
++        elif kind == 'dropdown':
++            y = paragraph(text, content_x, y, available, small, leading=23) + 4
++            value_lines = lines(control['value'], regular, available - 48)
++            box_height = max(44, len(value_lines) * 26 + 16)
++            draw.rectangle((content_x, y, content_x + available, y + box_height), fill='white', outline=border, width=1)
++            paragraph(control['value'], content_x + 12, y + 8, available - 48)
++            arrow_x, arrow_y = content_x + available - 22, y + box_height // 2
++            draw.line((arrow_x - 5, arrow_y - 2, arrow_x, arrow_y + 3, arrow_x + 5, arrow_y - 2), fill=muted, width=2)
++            y += box_height + 7
++            if control.get('description'):
++                y = paragraph(control['description'], content_x, y, available, small, muted, 23) + 3
++            y += 9
++        elif kind == 'toggle':
++            y = paragraph(text, content_x, y + 4, available - 70, regular, leading=26)
++            draw.rectangle((content_x + available - 55, y - 30, content_x + available, y), fill='#d4e3c9', outline=border)
++            draw.text((content_x + available - 41, y - 29), '✓' if control['value'] else '○', font=font(22, True), fill='#45633a')
++            y += 15
++        elif kind == 'button':
++            color = '#8a9382' if control.get('disabled') else ink
++            fill = '#f0f3ec' if control.get('disabled') else '#e7eddf'
++            draw.rectangle((content_x, y, content_x + available, y + 44), fill=fill, outline=border)
++            draw.text((content_x + available / 2, y + 11), text, font=regular, fill=color, anchor='mt')
++            y += 54
++    y += 11
++    draw.rectangle((x, y, x + col, 1550), fill='#e9ece5')
++    draw.rectangle((x, top, x + col, y), outline=border, width=1)
++    bottom = max(bottom, y)
++footer = 'Aplicar confirma o rascunho. Desfazer alterações recupera as escolhas de abertura. Cancelar descarta a edição.'
++bottom = paragraph(footer, margin, bottom + 28, width - margin * 2, small, muted, 24) + 28
++canvas.crop((0, 0, width, bottom)).save(root / 'native-ui.png')
++print(root / 'native-ui.png')
+--- /dev/null
++++ b/addons/altare/docs/NATIVE_EDITOR_UX.md
+@@ -0,0 +1,47 @@
++# Revisão do editor nativo
++
++Revisão de trabalho sobre Altare 0.13.0, em cópia isolada. Nenhum pacote foi instalado ou publicado; versão de distribuição e validação física permanecem pendentes. Esta mudança não torna a base compactada compatível com saves 0.12.x.
++
++## Problemas e mudanças
++
++- O formulário não explicava o alcance da aplicação. Uma frase inicial agora informa que a edição cobre o altar inteiro e só muda o mundo ao aplicar.
++- Materiais fixos e relevo indisponível usavam dropdowns desabilitados com uma opção, aparentando escolhas. Material fixo agora é texto. A restrição de relevo indica a ação possível: selecionar vermelho nessa toalha. A escolha de relevo continua no rascunho e retorna ao restaurar uma combinação compatível.
++- A seção Frontal podia conter somente orientação. Agora se chama **Frente e detalhes**, e seu espaçador desaparece junto com os controles quando não há direção.
++- **Desfazer alterações** substitui **Restaurar escolhas**. Fica indisponível até haver uma mudança no rascunho, inclusive numa escolha temporariamente escondida. Restaura o rascunho de abertura, que pode incluir a frente escolhida pela lateral clicada e o acabamento usado como referência de um conjunto misto. Não promete retornar a um padrão global.
++- **Aplicar no altar** permanece habilitado sem mudanças: reaplicar também recompõe centros e módulos provisórios. Cancelar nunca retorna um acabamento.
++- **Sem relevo**, **Imagem de Guadalupe** e Norte/Leste/Sul/Oeste eliminam termos inconsistentes e rótulos repetidos. Os textos existem em pt_BR e en_US.
++- A descrição de Frente esclarece como ler a largura no título. As dimensões continuam seguindo o rascunho, sem escrever no mundo.
++
++## Correção de fechamento
++
++O adaptador passou a reproduzir `FormVisibilityError` ao fechar uma tela já fechada, conforme o contrato da API. Na versão anterior, callbacks rápidos de Aplicar/Cancelar podiam fechar duas vezes. Um callback de Aplicar recebido após fechar a tela, antes da continuação da Promise, também podia produzir um acabamento.
++
++O fechamento agora invalida imediatamente os callbacks. Cada escolha e ação exige tela ainda aberta e sessão válida. A primeira ação de fechamento prevalece. Os testes exercitam Aplicar repetido, Cancelar seguido de Aplicar, fechamento nativo seguido de Aplicar, callbacks atrasados e limpeza das inscrições. Nenhum contrato de commit, lock ou prazo foi alterado.
++
++## Limites nativos
++
++O formulário usa somente `label`, `header`, `dropdown`, `toggle`, `spacer`, `divider`, `button` e observables já disponíveis nos tipos estáveis instalados de `@minecraft/server-ui` 2.1.0. Valores editáveis continuam `clientWritable`; estado e visibilidade são controlados pelo servidor.
++
++Não há HTML, CSS, abas, miniaturas ou prévia 3D dentro do jogo. A documentação corrente também expõe APIs em pré-lançamento, como `multiButtonRow`; elas não foram usadas. Tamanho, cores, foco e rolagem reais pertencem ao Bedrock e exigem inspeção no jogo.
++
++Fontes primárias consultadas em 04/11/2026: [CustomForm](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server-ui/customform?view=minecraft-bedrock-stable), tipos locais `@minecraft/server-ui` 2.1.0.
++
++## Verificação
++
++- Os testes novos falharam antes da alteração, incluindo reprodução do fechamento duplicado.
++- `npm run check` terminou com exit 0: tipos, 210 testes aprovados, build e validação estrutural/localização. Quatro comparações históricas opcionais foram puladas, pois os caminhos de baseline não foram fornecidos. Uma matriz adicional de UI foi executada depois: 23/23 testes focados de menu/ciclo de vida aprovados.
++- Revisão independente sem bloqueios, incluindo três probes adicionais de expiração em Aplicar, liberação entre Aplicar e a continuação, e restauração de escolhas ocultas. Não foi executado Minecraft, instalação, publicação ou validação Creator Tools nesta revisão.
++- O adaptador de teste importa e executa o menu real. Não simula o commit de blocos nem demonstra paridade de layout ou input no Bedrock.
++- `node --experimental-strip-types tools/capture-native-ui.mjs` produz HTML e JSON dos controles reais em quatro estados: Clássico/Guadalupe, dois pedestais, relevo suspenso e Colunata simétrica. `--png` desenha uma prancha documental com Pillow a partir do mesmo JSON, sem navegador nem renderer do jogo.
++- A imagem leva a identificação **Simulação documental · sem Minecraft**. Textos, valores, ordem, visibilidade e estado dos botões vêm do código; fontes, cores, espaçamento e foco não são evidência nativa.
++
++## Reteste pelo usuário
++
++1. Numa cópia descartável compatível com a base 0.13.0, abrir 7×2 e 8×2 em pt_BR/en_US. Conferir títulos, quebra dos textos e rolagem na escala de UI usada.
++2. Em mouse, controle e toque, conferir a ordem de foco e que materiais fixos não entram na sequência como campos editáveis. Não pode haver seção/espaço vazio ao escolher Colunata/Renda ou Cruzeta/Sem toalha.
++3. Escolher relevo no Floral IHS vermelho, mudar para roxo e voltar. O aviso deve aparecer só na combinação indisponível, e o relevo escolhido deve retornar.
++4. Alternar Clássico/Guadalupe, madeira e dois pedestais, incluindo cor e frente. **Desfazer alterações** deve restaurar o rascunho de abertura; **Cancelar** ou fechar descarta tudo.
++5. Reaplicar sem editar após acrescentar um módulo provisório. Aplicar não pode estar bloqueado por ausência de mudanças.
++6. Repetir cliques rápidos em Aplicar/Cancelar e fechar pela interface nativa. Invalidar a sessão e exceder 1.200 ticks. Sem acabamento após Cancelar/fechar, sem `FormVisibilityError`, sem lock retido e sem novos erros do add-on no Content Log.
++
++Geometrias, materiais, modelos, colisões, IDs, estados, codecs e dados dos mundos não são alterados por esta revisão de UI.
+--- a/addons/altare/docs/TESTING.md
++++ b/addons/altare/docs/TESTING.md
+@@ -1,3 +1,7 @@
++# Editor nativo: clareza e fechamento
++
++A revisão de UI tem [contrato, testes e roteiro de reteste](NATIVE_EDITOR_UX.md). Simulações externas não substituem o teste de input/layout no Minecraft.
++
+ # QA do Altare
+ 
+ ## Compactação pré-lançamento do catálogo

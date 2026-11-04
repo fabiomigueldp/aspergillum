@@ -1,0 +1,2 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-directed-v21/landmarks.py').read().split('points=')[0])
+print('frame',[list(v) for v in cam.data.view_frame(scene=s)])

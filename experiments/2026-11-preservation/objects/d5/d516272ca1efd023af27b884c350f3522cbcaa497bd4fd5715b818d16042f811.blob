@@ -1,0 +1,92 @@
+# V15: alternativas de transporte, laboratório isolado
+
+Esta pasta compara duas representações contra os ativos V14 e a malha nativa congelada V11/V13/V9. Não é versão final, addon publicado, screenshot Minecraft ou ensaio de desempenho no jogo.
+
+## Hipóteses sob teste
+
+1. **Peças opacas orientadas na faixa.** Cubóides com espessura real, ajustados em patches do domínio UV. Busca reduzir o número de cubes da faixa e eliminar seu recorte alfa, aceitando que superfícies e silhueta serão aproximadas. A fronteira efetiva cortada nas orelhas e as duas cristas são restrições explícitas.
+2. **Máscara compartilhada de triângulo retângulo.** Cada triângulo nativo é dividido pela altura até a maior aresta. Os dois triângulos retângulos são transportados em planos de cube e compartilham uma única máscara de alta resolução. Não há tolerância de dilatação em unidades do modelo. A quantização de pixels continua causando cobertura extra e será medida. O teste troca mais geometria por menos armazenamento de textura, não promete redução simultânea de ambos.
+
+A comparação visual principal é flat, com o mesmo material, luz e câmeras da V14. Isso isola transporte/cobertura e não representa preservação de todos os detalhes de cor ou normalmap experimentais.
+
+## Escopo e limites
+
+- Fontes V75, V11, V13, V9 e V14 permanecem intactas.
+- A técnica opaca substitui somente a faixa. Os outros componentes do modelo combinado continuam no transporte V14, portanto defeitos desses componentes podem permanecer.
+- A máscara compartilhada afeta os três componentes substituídos V11/V13/V9, mantendo os outros 17 bones.
+- Testes de alfa se referem a nearest em mip0. Filtragem, mipmaps, precisão GPU, culling e shaders reais no Minecraft não são certificados.
+- Contagens de cubes/triângulos, bytes e tempos de processos locais podem ser medidos. Estimativas de armazenamento RGBA não são uso de VRAM observado nem FPS.
+- Os candidatos só serão considerados úteis dentro do escopo demonstrado. Uma redução de custo não compensa regressões visuais não declaradas.
+
+Resultados, parecer independente e caminhos serão acrescentados ao final dos testes.
+
+## Resultado
+
+**Nenhuma alternativa foi aprovada como acabamento fiel ou versão final.** A máscara compartilhada é a melhor candidata geométrica deste ensaio e foi conservada como pesquisa. As peças opacas não preservaram a faixa com fidelidade suficiente. As duas famílias e todos os controles continuam separados.
+
+### Peças opacas: economia depende do orçamento, mas há alteração de forma
+
+- 300 / 700 / 1.400 cuboides orientados mantêm todos os 31.108 pontos de superfície nativa amostrados dentro da união. Isso é cobertura, não precisão da superfície.
+- Distâncias amostradas da superfície exposta ao triângulo nativo mais próximo, p95/máximo: 0,696/2,013 mm; 0,364/1,611 mm; 0,211/1,611 mm.
+- O desvio de 1,611 mm na terminação esquerda permanece nos dois maiores orçamentos. As cristas continuam legíveis, mas não permanecem geometricamente idênticas.
+- A revisão visual observa plaquetas e degraus na faixa, fortes com 300, menores com 700 e mais finos com 1.400. A melhora não transforma nenhuma delas em transporte exato. Face, calota e manto ainda usam V14 nesses combinados.
+- Seis varreduras independentes da projeção da faixa não perdem pixels nativos amostrados, mas acrescentam 1,37–2,07%, 0,71–1,03% e 0,49–0,76% de cobertura, respectivamente.
+- A ausência de troca de componente em 450 raios com 300/700 decorre em parte do engrossamento. Com 1.400, ainda aparece a invasão da face 4488 da casca V14 no encontro conhecido. Isso não deve ser interpretado como piora monotônica com mais resolução.
+
+### Poda comprovada, sem supor que faces estão escondidas
+
+A variante `pruned/` só remove uma face quando seus quatro cantos estão estritamente dentro de um outro cuboide opaco, com folga mínima requerida de 0,001 mm. Convexidade certifica o interior da face inteiro. O auditor conferiu os transforms, os certificados e todos os UVs/faces sobreviventes. Isso preserva a fronteira da união para observação exterior; não usa uma câmera favorável nem supõe ocultação pela escultura.
+
+Foram removidos apenas 32 / 57 / 196 quads. A economia é modesta: não torna a variante de 1.400 peças mais barata que V14 em faces.
+
+### Máscara compartilhada: avanço geométrico real, custo diferente
+
+A divisão de cada triângulo pela altura à maior aresta gera dois triângulos retângulos com a mesma superfície. Cada um usa um plano de cube, com os catetos exatamente nas bordas do quad, e a mesma máscara canônica. A diagonal inclui as células de borda por regra inteira, sem tolerância adicional em unidades do mundo.
+
+- Os 18.484 triângulos nativos geram 36.968 planos, sem descartar metades. Os outros 17 bones e seus UVs em pixels permanecem iguais. O quadrante de cor legado é preservado pixel a pixel.
+- O auditor independente confirma todas as áreas, orientações, frames, máscara e procedência. Sob **nearest em mip0 e aritmética ideal**, não há perda de área positiva; o excesso acumulado por face é exatamente 1/N da área nativa. Isso não significa geometria triangular exata, área de união ou ausência universal de costuras.
+- Em N2048, o excesso é 0,048828% da área acumulada. A maior distância perpendicular de excesso por face é 3,400 µm na faixa, 62,358 µm na casca e 25,495 µm na anatomia. Na face 4488 da casca, é 2,314 µm.
+- Todos os tiers 128/512/2048 preservam o primeiro componente nos 450 raios congelados. Na janela original de 201² raios, caem de **4.048 trocas V14 para zero em 40.401**. Esse resultado cobre a falha conhecida, não toda visão ou iluminação possível.
+- Em seis direções, a faixa N2048 tem zero pixels nativos perdidos e 0–0,004% de pixels extras no raster amostrado.
+- Pontos exatamente nas interseções de diagonal e grade de texels são sensíveis à aritmética. O maior erro numérico de saída medido nesse teste foi cerca de 6,38×10⁻¹¹ mm; todos os 184.840 pontos com recuo normalizado de 1e−8 passam. Esses testes de borda de medida zero não provam furos visíveis nem autorizam dizer que o resultado é livre de fissuras.
+
+### Aparência e controles causais
+
+Foram produzidos 27 renders novos, com o renderer/câmeras/luz flat V14, além das comparações preservadas. São reconstruções externas, nunca screenshots do jogo.
+
+- A máscara compartilhada limpa bastante os serrilhados da testa/face. A linha horizontal inferior do manto V14 deixa de ser discernível no close observado.
+- Permanecem riscos/cicatrizes na faixa, na calota e em parte do manto sob a iluminação do diagnóstico. N512 e N2048 parecem próximos nas vistas examinadas. O ganho de cobertura não basta para aprovação artística.
+- `shared-2048-analytic-clip-control-*` recorta os quads aos triângulos analíticos e dispensa alfa. Fica visualmente próximo do nativo, mas **não é representação suportada por cubes nem candidata**. Esse controle também altera a normal calculada de quad para triângulo.
+- `shared-2048-no-shadow-control-*` desliga sombras dos três componentes apenas para diagnóstico. Os riscos atenuam, mas persistem; o restante da aparência muda. **Não é correção nem resultado retido.**
+- Uma auditoria adicional das normais salvas não sustenta uma correção ampla de Newell: na faixa, erro quad/fonte mediano 0,000929°, p99 0,05157°; o controle triangular não é em geral melhor, p99 0,07375°. Ambos compartilham os maiores outliers de 7,9°. Na faixa central marcada, o erro p99/máximo é 0,00929°/0,13158° nos quads e 0,01177°/0,25282° no recorte. Os três erros acima de1° ficam em terminações finas. Isso não encerra toda interação entre alfa, precisão e iluminação. O mecanismo residual e sua ocorrência no Minecraft continuam não determinados.
+
+O ensaio compartilhado usa material uniforme flat. Como faces diferentes compartilham UVs, ele **não conserva normalmaps ou cores diferentes por face das três partes novas**. A demonstração não substitui o PBR experimental. Não foi escondida essa perda apresentando um render highpoly ou um controle sem sombras como candidato.
+
+## Custo conferido no JSON
+
+Comparação color-only flat; armazenamento RGBA8 é estimativa explícita sem mipmaps, não VRAM observada:
+
+| Representação completa | Cubes | Triângulos raster | Cor RGBA8 |
+| --- | ---: | ---: | ---: |
+| V14 | 23.081 | 46.196 | 64 MiB |
+| Opaca 300, com poda | 18.937 | 40.844 | 64 MiB |
+| Opaca 700, com poda | 19.337 | 45.594 | 64 MiB |
+| Opaca 1.400, com poda | 20.037 | 53.716 | 64 MiB |
+| Compartilhada, todos os tiers | 41.565 | 83.164 | 32 MiB |
+
+A máscara compartilhada reduz pela metade o atlas de cor, mas aumenta em aproximadamente 80% os triângulos raster. O builder registrou 230,2 s para a construção dos três tiers neste ambiente. Esse tempo local não é benchmark comparativo nem desempenho Minecraft. Nenhum FPS, uso real de VRAM ou tempo de carregamento no jogo foi medido.
+
+## Arquivos para revisão
+
+- `evidence/comparison-band.png`: faixa nativa, V14, opaca 1.400 e compartilhada 2048, com recorte idêntico.
+- `evidence/comparison-whole.png`: modelo inteiro, controle nativo de três partes, V14 e V15 compartilhada.
+- `evidence/comparison-causal-controls.png`: controles explicitamente não candidatos.
+- `evidence/review-visual-v15.md`: revisão visual independente.
+- `independent_validation/REVIEW_INDEPENDENT_V15.md`, `final-validation.json`: testes independentes de geometria, cobertura, custos e preservação.
+- `evidence/V15-SHARED-MASK-DIAGNOSTIC-NOT-APPROVED.blend`: cena compartilhada 2048 salva e reaberta, com 20 objetos vindos do JSON e atlas empacotado. `frozen-scene-check.json` confere posições/UVs/índices float32 e bytes da imagem, sem geometria highpoly escondida.
+- `shared_mask/`: três tiers, máscaras, fontes congeladas e rastreio de cada metade à face nativa.
+- `opaque_band/`: três orçamentos e suas podas certificadas, geometrias reconstruídas, métricas e procedência.
+
+## Decisão e limite da próxima etapa
+
+Conservar a máscara compartilhada como candidata de cobertura de baixo uso de textura, não promover a versão a addon. Não substituir a faixa pelas peças opacas testadas. Um próximo ensaio útil precisa primeiro resolver a diferença entre superfície mascarada e controle analítico sob iluminação e verificar o material no runtime de destino, ou desenvolver uma retopologia artística com orçamento e detalhes essenciais explicitamente aceitos. Repetir aumento de resolução, esconder sombras ou descartar feições não está justificado por estes resultados.

@@ -1,0 +1,71 @@
+import numpy as np,json,collections
+from pathlib import Path
+R=Path(__file__).resolve().parents[1];cap=np.load(R/'evidence/cap-open.npz');man=np.load(R/'evidence/mantle-cut-7p5.npz');src=np.load(R/'evidence/seam-source-inspection.npz');P=src[next(k for k in src.files if k.startswith('key_TESTE74'))];z=np.load(R/'evidence/bridge-boundary-parameters.npz');params=np.load(R/'evidence/mantle-source-parameters.npz')['params'];pair=np.load(R/'evidence/mantle-pairing.npz');pp={int(s):p for a in [cap,man] for s,p in zip(a['source_indices'],a['points'])};nn={int(s):n for a in [cap,man] for s,n in zip(a['source_indices'],a['normals'])};faces=[];nextid=len(P)
+def row(r):
+ mask=np.isclose(params[pair['outer'],0],r);o=pair['outer'][mask];i=pair['inner'][mask];t=params[o,1]/79.;ix=np.argsort(t);return [o[ix]+160386,i[ix]+160386],t[ix]
+def interp(points,old,new):return np.stack([np.interp(new,old,points[:,k]) for k in range(3)],axis=1)
+def unit(x):return x/np.maximum(np.linalg.norm(x,axis=-1,keepdims=True),1e-15)
+cids=[]
+for side in [0,1]:
+ ids=z['cap_ids'][z['cap_side']==side];t=z['cap_t'][z['cap_side']==side];ix=np.argsort(t);cids.append(ids[ix])
+ct=np.sort(z['cap_t'][z['cap_side']==0]);mids,mt=row(7.5);prev,pt=row(7.0);t=np.linspace(0,1,57);c0=interp((P[cids[0]]+P[cids[1]])/2,ct,t);c1=interp((P[mids[0]]+P[mids[1]])/2,mt,t);v0=interp(P[cids[1]]-P[cids[0]],ct,t);v1=interp(P[mids[1]]-P[mids[0]],mt,t);prcap=(P[np.arange(4844,4901)]+P[np.arange(4844,4901)+5040])/2;prman=interp((P[prev[0]]+P[prev[1]])/2,pt,t);length=np.linalg.norm(c1-c0,axis=1,keepdims=True);d0=unit(c0-prcap)*length;d1=unit(prman-c1)*length
+us=np.linspace(0,1,7);cent=[];tang=[]
+for u in us:
+ cent.append((2*u**3-3*u*u+1)*c0+(u**3-2*u*u+u)*d0+(-2*u**3+3*u*u)*c1+(u**3-u*u)*d1)
+ tang.append((6*u*u-6*u)*c0+(3*u*u-4*u+1)*d0+(-6*u*u+6*u)*c1+(3*u*u-2*u)*d1)
+cent=np.array(cent);tang=np.array(tang);cross=np.cross(np.gradient(cent,t,axis=1),tang);rawnorm=unit(cross);sgn=1 if np.median((rawnorm[0]*v0).sum(1))>=0 else -1;norm=rawnorm*sgn
+# Retrieve exact short lateral arcs from the two source boundaries.
+def boundary(a):
+ f=a['triangles'];e=np.sort(np.concatenate([f[:,[0,1]],f[:,[1,2]],f[:,[2,0]]]),axis=1);ue,c=np.unique(e,axis=0,return_counts=True);return a['source_indices'][ue[c==1]]
+def arc(e,start,end):
+ adj=collections.defaultdict(list)
+ for x,y in e:adj[int(x)].append(int(y));adj[int(y)].append(int(x))
+ ps=[]
+ for x in adj[int(start)]:
+  q=[int(start),x]
+  while q[-1]!=end:q.append(next(k for k in adj[q[-1]] if k!=q[-2]))
+  ps.append(q)
+ return min(ps,key=len)
+def layer(ids,ts,a):return {'sides':ids,'t':ts,'ends':[arc(boundary(a),ids[0][k],ids[1][k]) for k in [0,-1]]}
+layers=[layer(cids,ct,cap)]
+def add(p,n):
+ global nextid
+ sid=nextid;nextid+=1;pp[sid]=p;nn[sid]=n;return sid
+for j,u in enumerate(us[1:-1],1):
+ thick=(1-u)*np.linalg.norm(v0,axis=1)+u*np.linalg.norm(v1,axis=1);outer=cent[j]-norm[j]*thick[:,None]/2;inner=cent[j]+norm[j]*thick[:,None]/2;ids=[np.array([add(p,-n) for p,n in zip(outer,norm[j])]),np.array([add(p,n) for p,n in zip(inner,norm[j])])];ends=[]
+ for k in [0,-1]:ends.append([int(ids[0][k])]+[add(outer[k]*(1-fr)+inner[k]*fr,unit(np.gradient(cent[j],axis=0)[k])) for fr in [.25,.5,.75]]+[int(ids[1][k])])
+ layers.append({'sides':ids,'t':t,'ends':ends})
+layers.append(layer(mids,mt,man))
+def strip(a,b,ta,tb):
+ i=j=0
+ while i<len(a)-1 or j<len(b)-1:
+  if i<len(a)-1 and (j==len(b)-1 or ta[i+1]<=tb[j+1]+1e-12):faces.append([int(a[i]),int(a[i+1]),int(b[j])]);i+=1
+  else:faces.append([int(a[i]),int(b[j+1]),int(b[j])]);j+=1
+for a,b in zip(layers,layers[1:]):
+ for side in [0,1]:strip(a['sides'][side],b['sides'][side],a['t'],b['t'])
+ for k in [0,1]:strip(a['ends'][k],b['ends'][k],np.linspace(0,1,len(a['ends'][k])),np.linspace(0,1,len(b['ends'][k])))
+# Orient connected bridge from unchanged cap, propagating face signs.
+edges=collections.defaultdict(list)
+for i,f in enumerate(faces):
+ for x,y in zip(f,f[1:]+f[:1]):edges[tuple(sorted((x,y)))].append((i,x,y))
+sign={};queue=[]
+for f in cap['source_indices'][cap['triangles']]:
+ for x,y in zip(f,np.roll(f,-1)):
+  es=edges.get(tuple(sorted((int(x),int(y)))),[])
+  if len(es)==1:
+   i,a,b=es[0];sg=-1 if (a,b)==(x,y) else 1
+   if i in sign:assert sign[i]==sg
+   sign[i]=sg;queue.append(i)
+while queue:
+ i=queue.pop();f=faces[i]
+ for x,y in zip(f,f[1:]+f[:1]):
+  for j,a,b in edges[tuple(sorted((x,y)))]:
+   if i==j:continue
+   sg=sign[i]*(-1 if (a,b)==(x,y) else 1)
+   if j in sign:assert sign[j]==sg
+   else:sign[j]=sg;queue.append(j)
+assert len(sign)==len(faces);faces=[f if sign[i]==1 else f[::-1] for i,f in enumerate(faces)]
+def save(name,fs,parts):
+ ids=np.unique(fs);mp={int(s):i for i,s in enumerate(ids)};tris=np.array([[mp[int(s)] for s in f] for f in fs]);np.savez_compressed(R/('evidence/'+name+'.npz'),points=np.array([pp[int(s)] for s in ids]),normals=np.array([nn[int(s)] for s in ids]),triangles=tris,source_indices=ids,generated_vertices=ids>=len(P),face_parts=parts)
+save('bridge-hermite-7p5',np.array(faces),np.ones(len(faces),int));allf=np.concatenate([cap['source_indices'][cap['triangles']],np.array(faces),man['source_indices'][man['triangles']]]);save('seam-hermite-7p5-assembly',allf,np.r_[np.zeros(len(cap['triangles']),int),np.ones(len(faces),int),np.full(len(man['triangles']),2)])
+report={'method':'Single Hermite center-surface candidate, endpoint continuation tangents, derivative-cross normal and interpolated positive thickness. Five interior sections,57 longitudinal samples. Exact source endpoints, no source face flips.','bridge_triangles':len(faces),'generated_vertices':nextid-len(P),'curve_normal_endpoint_cosine_min_median_max':[[float(x) for x in [np.min(d),np.median(d),np.max(d)]] for d in [(norm[0]*unit(v0)).sum(1),(norm[-1]*unit(v1)).sum(1)]],'minimum_center_derivative_length':float(np.linalg.norm(tang,axis=2).min()),'minimum_normal_cross_magnitude':float(np.linalg.norm(cross,axis=2).min())};(R/'evidence/bridge-hermite-7p5-build.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))

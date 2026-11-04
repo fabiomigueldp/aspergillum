@@ -1,0 +1,2713 @@
+{
+  "candidate": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/ear_rim_v11/structural_rebuild/polygonal-pinna-0.5mm-clean.npz",
+  "method": "Independent source-triangle intersection with both convex cutter volumes gives retained area budget. Check every trimmed child against cutter volumes and sibling coplanar overlap. Rim faces tested against their exact cutter-triangle parent and all spatially near coplanar rim pairs.",
+  "trimmed_parent_groups": 212,
+  "max_clipped_source_area_budget_error_m2": 7.617248710045307e-16,
+  "sum_clipped_source_area_budget_error_m2": 4.537917763844916e-15,
+  "sum_inherited_child_area_inside_cutter_m2": 6.1703963685845e-17,
+  "overlap_candidates_above_1e_17_m2": [],
+  "rim_vertex_cutter_plane_max_mm": 6.367870184453856e-13,
+  "rim_vertex_parent_cutter_triangle_barycentric_min": -3.8326877961887324e-06,
+  "rim_faces_not_oppositely_oriented_to_cutter": [],
+  "source_area_budgets": [
+    {
+      "baseline_face": 33,
+      "candidate_faces": [
+        33,
+        12293
+      ],
+      "original_area_m2": 4.2681317080123334e-05,
+      "cut_area_m2": 4.54508005908954e-06,
+      "remaining_expected_m2": 3.81362370210338e-05,
+      "candidate_child_area_m2": 3.81362370210363e-05,
+      "absolute_budget_error_m2": 2.5004412602946946e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 57,
+      "candidate_faces": [
+        56,
+        12294,
+        12295
+      ],
+      "original_area_m2": 0.00011268756868911465,
+      "cut_area_m2": 2.1223759186618007e-05,
+      "remaining_expected_m2": 9.146380950249665e-05,
+      "candidate_child_area_m2": 9.146380950249492e-05,
+      "absolute_budget_error_m2": 1.734723475976807e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 59,
+      "candidate_faces": [
+        58
+      ],
+      "original_area_m2": 0.00013140899980966853,
+      "cut_area_m2": 0.00011718317327170481,
+      "remaining_expected_m2": 1.4225826537963716e-05,
+      "candidate_child_area_m2": 1.4225826537965895e-05,
+      "absolute_budget_error_m2": 2.1785687403380605e-18,
+      "child_area_inside_cutter_m2": 1.4162613436592293e-18
+    },
+    {
+      "baseline_face": 68,
+      "candidate_faces": [
+        67,
+        12296,
+        12297
+      ],
+      "original_area_m2": 0.00021270271678418008,
+      "cut_area_m2": 3.927882223274528e-05,
+      "remaining_expected_m2": 0.0001734238945514348,
+      "candidate_child_area_m2": 0.0001734238945514351,
+      "absolute_budget_error_m2": 2.981555974335137e-19,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 123,
+      "candidate_faces": [
+        122,
+        12298,
+        12299
+      ],
+      "original_area_m2": 0.00018604416359746845,
+      "cut_area_m2": 5.3226517780289e-05,
+      "remaining_expected_m2": 0.00013281764581717944,
+      "candidate_child_area_m2": 0.0001328176458171844,
+      "absolute_budget_error_m2": 4.960224939121183e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 124,
+      "candidate_faces": [
+        123
+      ],
+      "original_area_m2": 9.701568409878443e-05,
+      "cut_area_m2": 7.208595819641205e-05,
+      "remaining_expected_m2": 2.4929725902372382e-05,
+      "candidate_child_area_m2": 2.492972590236968e-05,
+      "absolute_budget_error_m2": 2.7037291676357267e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 176,
+      "candidate_faces": [
+        175
+      ],
+      "original_area_m2": 4.157409589022253e-05,
+      "cut_area_m2": 3.122042750425704e-05,
+      "remaining_expected_m2": 1.0353668385965492e-05,
+      "candidate_child_area_m2": 1.035366838596209e-05,
+      "absolute_budget_error_m2": 3.40168431617327e-18,
+      "child_area_inside_cutter_m2": 4.972497255298522e-19
+    },
+    {
+      "baseline_face": 189,
+      "candidate_faces": [
+        187
+      ],
+      "original_area_m2": 4.8786107451678553e-05,
+      "cut_area_m2": 3.503237810843795e-05,
+      "remaining_expected_m2": 1.3753729343240603e-05,
+      "candidate_child_area_m2": 1.3753729343240259e-05,
+      "absolute_budget_error_m2": 3.4389537658524594e-19,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 192,
+      "candidate_faces": [
+        190,
+        12300
+      ],
+      "original_area_m2": 4.3710727313609736e-05,
+      "cut_area_m2": 4.0794423626259975e-07,
+      "remaining_expected_m2": 4.3302783077347134e-05,
+      "candidate_child_area_m2": 4.330278307734672e-05,
+      "absolute_budget_error_m2": 4.1335207826009857e-19,
+      "child_area_inside_cutter_m2": 1.4574242309561924e-19
+    },
+    {
+      "baseline_face": 193,
+      "candidate_faces": [
+        191
+      ],
+      "original_area_m2": 4.8024711203058e-05,
+      "cut_area_m2": 3.321643635280357e-05,
+      "remaining_expected_m2": 1.4808274850254431e-05,
+      "candidate_child_area_m2": 1.4808274850253335e-05,
+      "absolute_budget_error_m2": 1.0960606337470646e-18,
+      "child_area_inside_cutter_m2": 7.263236235303585e-19
+    },
+    {
+      "baseline_face": 207,
+      "candidate_faces": [
+        205
+      ],
+      "original_area_m2": 0.00022165708790241768,
+      "cut_area_m2": 0.0002197931432031714,
+      "remaining_expected_m2": 1.863944699246272e-06,
+      "candidate_child_area_m2": 1.8639446992475552e-06,
+      "absolute_budget_error_m2": 1.283254915090265e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 208,
+      "candidate_faces": [
+        206,
+        12301,
+        12302,
+        12303,
+        12304
+      ],
+      "original_area_m2": 0.00022116844481776362,
+      "cut_area_m2": 0.00015048905282952059,
+      "remaining_expected_m2": 7.067939198824303e-05,
+      "candidate_child_area_m2": 7.067939198824505e-05,
+      "absolute_budget_error_m2": 2.019326546254252e-18,
+      "child_area_inside_cutter_m2": 4.378612017761349e-18
+    },
+    {
+      "baseline_face": 279,
+      "candidate_faces": [
+        275
+      ],
+      "original_area_m2": 0.00020583737826754457,
+      "cut_area_m2": 0.0001704838708440677,
+      "remaining_expected_m2": 3.5353507423476865e-05,
+      "candidate_child_area_m2": 3.535350742348139e-05,
+      "absolute_budget_error_m2": 4.526544070126981e-18,
+      "child_area_inside_cutter_m2": 1.1137468457347462e-18
+    },
+    {
+      "baseline_face": 280,
+      "candidate_faces": [
+        276,
+        12305
+      ],
+      "original_area_m2": 9.452146530136939e-05,
+      "cut_area_m2": 2.6651280205778383e-05,
+      "remaining_expected_m2": 6.787018509559101e-05,
+      "candidate_child_area_m2": 6.787018509560269e-05,
+      "absolute_budget_error_m2": 1.168227840853131e-17,
+      "child_area_inside_cutter_m2": 1.107982925835205e-18
+    },
+    {
+      "baseline_face": 281,
+      "candidate_faces": [
+        277,
+        12306,
+        12307
+      ],
+      "original_area_m2": 0.00011179683039194028,
+      "cut_area_m2": 1.4446984696751878e-05,
+      "remaining_expected_m2": 9.73498456951884e-05,
+      "candidate_child_area_m2": 9.7349845695188e-05,
+      "absolute_budget_error_m2": 4.0657581468206416e-19,
+      "child_area_inside_cutter_m2": 1.3785000537218013e-18
+    },
+    {
+      "baseline_face": 318,
+      "candidate_faces": [
+        314,
+        12308,
+        12309
+      ],
+      "original_area_m2": 0.0002109990810446751,
+      "cut_area_m2": 9.558089203146899e-06,
+      "remaining_expected_m2": 0.0002014409918415282,
+      "candidate_child_area_m2": 0.00020144099184151384,
+      "absolute_budget_error_m2": 1.4365678785432934e-17,
+      "child_area_inside_cutter_m2": 2.0954945290301485e-18
+    },
+    {
+      "baseline_face": 319,
+      "candidate_faces": [
+        315,
+        12310,
+        12311,
+        12312,
+        12313
+      ],
+      "original_area_m2": 0.0003355336866302309,
+      "cut_area_m2": 9.006970250686104e-05,
+      "remaining_expected_m2": 0.0002454639841233699,
+      "candidate_child_area_m2": 0.0002454639841233687,
+      "absolute_budget_error_m2": 1.1926223897340549e-18,
+      "child_area_inside_cutter_m2": 2.622606226984051e-18
+    },
+    {
+      "baseline_face": 434,
+      "candidate_faces": [
+        430,
+        12314
+      ],
+      "original_area_m2": 4.961362396355699e-05,
+      "cut_area_m2": 2.838154116466676e-07,
+      "remaining_expected_m2": 4.932980855191032e-05,
+      "candidate_child_area_m2": 4.9329808551918115e-05,
+      "absolute_budget_error_m2": 7.792703114739563e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 435,
+      "candidate_faces": [
+        431
+      ],
+      "original_area_m2": 2.4946008837784882e-05,
+      "cut_area_m2": 1.0011032051261135e-05,
+      "remaining_expected_m2": 1.4934976786523747e-05,
+      "candidate_child_area_m2": 1.493497678652219e-05,
+      "absolute_budget_error_m2": 1.556846557053404e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 437,
+      "candidate_faces": [
+        433
+      ],
+      "original_area_m2": 4.44363333904149e-05,
+      "cut_area_m2": 1.5248227347732668e-05,
+      "remaining_expected_m2": 2.918810604268223e-05,
+      "candidate_child_area_m2": 2.9188106042683436e-05,
+      "absolute_budget_error_m2": 1.2061749168901237e-18,
+      "child_area_inside_cutter_m2": 1.901481828970604e-18
+    },
+    {
+      "baseline_face": 461,
+      "candidate_faces": [
+        456,
+        12315,
+        12316,
+        12317
+      ],
+      "original_area_m2": 0.00020019958733978778,
+      "cut_area_m2": 9.745136084632556e-05,
+      "remaining_expected_m2": 0.00010274822649346222,
+      "candidate_child_area_m2": 0.00010274822649345802,
+      "absolute_budget_error_m2": 4.20128341838133e-18,
+      "child_area_inside_cutter_m2": 1.0692062764940737e-20
+    },
+    {
+      "baseline_face": 462,
+      "candidate_faces": [
+        457,
+        12318
+      ],
+      "original_area_m2": 0.00017448254519680735,
+      "cut_area_m2": 6.705076588520124e-05,
+      "remaining_expected_m2": 0.00010743177931160611,
+      "candidate_child_area_m2": 0.00010743177931161254,
+      "absolute_budget_error_m2": 6.423897871976614e-18,
+      "child_area_inside_cutter_m2": 3.741592726205087e-18
+    },
+    {
+      "baseline_face": 601,
+      "candidate_faces": [
+        593
+      ],
+      "original_area_m2": 0.00010891394282339186,
+      "cut_area_m2": 0.00010087449235689347,
+      "remaining_expected_m2": 8.039450466498395e-06,
+      "candidate_child_area_m2": 8.039450466500099e-06,
+      "absolute_budget_error_m2": 1.7042302898756523e-18,
+      "child_area_inside_cutter_m2": 5.308248512562703e-19
+    },
+    {
+      "baseline_face": 802,
+      "candidate_faces": [
+        782,
+        12319
+      ],
+      "original_area_m2": 2.2198990263753003e-05,
+      "cut_area_m2": 2.3870388165605426e-06,
+      "remaining_expected_m2": 1.981195144719246e-05,
+      "candidate_child_area_m2": 1.9811951447198002e-05,
+      "absolute_budget_error_m2": 5.5429836068321414e-18,
+      "child_area_inside_cutter_m2": 4.1082372992146463e-19
+    },
+    {
+      "baseline_face": 806,
+      "candidate_faces": [
+        785,
+        12320
+      ],
+      "original_area_m2": 4.88948104691706e-05,
+      "cut_area_m2": 3.405831517386576e-05,
+      "remaining_expected_m2": 1.4836495295304843e-05,
+      "candidate_child_area_m2": 1.4836495295302667e-05,
+      "absolute_budget_error_m2": 2.1751806085490433e-18,
+      "child_area_inside_cutter_m2": 7.265952843299452e-19
+    },
+    {
+      "baseline_face": 2683,
+      "candidate_faces": [
+        2662,
+        12321
+      ],
+      "original_area_m2": 4.3122050980839286e-05,
+      "cut_area_m2": 4.5027027831181075e-06,
+      "remaining_expected_m2": 3.8619348197721176e-05,
+      "candidate_child_area_m2": 3.8619348197724144e-05,
+      "absolute_budget_error_m2": 2.9680034471790684e-18,
+      "child_area_inside_cutter_m2": 5.710974322537144e-19
+    },
+    {
+      "baseline_face": 2707,
+      "candidate_faces": [
+        2685,
+        12322,
+        12323
+      ],
+      "original_area_m2": 0.00011275443807867644,
+      "cut_area_m2": 1.937092506007865e-05,
+      "remaining_expected_m2": 9.338351301859779e-05,
+      "candidate_child_area_m2": 9.338351301860273e-05,
+      "absolute_budget_error_m2": 4.946672411965114e-18,
+      "child_area_inside_cutter_m2": 3.158683264146053e-20
+    },
+    {
+      "baseline_face": 2709,
+      "candidate_faces": [
+        2687
+      ],
+      "original_area_m2": 0.00013906176496389255,
+      "cut_area_m2": 0.00012353030974753947,
+      "remaining_expected_m2": 1.553145521635308e-05,
+      "candidate_child_area_m2": 1.5531455216351848e-05,
+      "absolute_budget_error_m2": 1.2332799712022613e-18,
+      "child_area_inside_cutter_m2": 1.68875650794953e-18
+    },
+    {
+      "baseline_face": 2718,
+      "candidate_faces": [
+        2696,
+        12324,
+        12325
+      ],
+      "original_area_m2": 0.00021071184492353257,
+      "cut_area_m2": 3.5467570745190656e-05,
+      "remaining_expected_m2": 0.00017524427417834191,
+      "candidate_child_area_m2": 0.00017524427417833386,
+      "absolute_budget_error_m2": 8.05020113070487e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 2773,
+      "candidate_faces": [
+        2751,
+        12326,
+        12327
+      ],
+      "original_area_m2": 0.00018233447680719855,
+      "cut_area_m2": 5.092026056655248e-05,
+      "remaining_expected_m2": 0.00013141421624064608,
+      "candidate_child_area_m2": 0.00013141421624064776,
+      "absolute_budget_error_m2": 1.6805133673525319e-18,
+      "child_area_inside_cutter_m2": 3.1253847570843466e-18
+    },
+    {
+      "baseline_face": 2774,
+      "candidate_faces": [
+        2752
+      ],
+      "original_area_m2": 9.981144686930877e-05,
+      "cut_area_m2": 7.341653906244079e-05,
+      "remaining_expected_m2": 2.6394907806867973e-05,
+      "candidate_child_area_m2": 2.6394907806869145e-05,
+      "absolute_budget_error_m2": 1.1722935989999517e-18,
+      "child_area_inside_cutter_m2": 1.6997604172183724e-18
+    },
+    {
+      "baseline_face": 2826,
+      "candidate_faces": [
+        2804
+      ],
+      "original_area_m2": 4.437214339768457e-05,
+      "cut_area_m2": 3.343717664520529e-05,
+      "remaining_expected_m2": 1.093496675247928e-05,
+      "candidate_child_area_m2": 1.0934966752476018e-05,
+      "absolute_budget_error_m2": 3.2610768469290563e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 2839,
+      "candidate_faces": [
+        2816
+      ],
+      "original_area_m2": 4.775394336520358e-05,
+      "cut_area_m2": 3.342970155004153e-05,
+      "remaining_expected_m2": 1.4324241815162052e-05,
+      "candidate_child_area_m2": 1.43242418151644e-05,
+      "absolute_budget_error_m2": 2.3479753297889205e-18,
+      "child_area_inside_cutter_m2": 1.4732318607250563e-19
+    },
+    {
+      "baseline_face": 2842,
+      "candidate_faces": [
+        2819,
+        12328
+      ],
+      "original_area_m2": 4.393726135405374e-05,
+      "cut_area_m2": 3.0663831005643347e-07,
+      "remaining_expected_m2": 4.36306230439973e-05,
+      "candidate_child_area_m2": 4.3630623044002506e-05,
+      "absolute_budget_error_m2": 5.204170427930421e-18,
+      "child_area_inside_cutter_m2": 2.563221680417841e-19
+    },
+    {
+      "baseline_face": 2843,
+      "candidate_faces": [
+        2820
+      ],
+      "original_area_m2": 4.840086772132744e-05,
+      "cut_area_m2": 3.297377199895259e-05,
+      "remaining_expected_m2": 1.542709572237485e-05,
+      "candidate_child_area_m2": 1.5427095722377222e-05,
+      "absolute_budget_error_m2": 2.371692252312041e-18,
+      "child_area_inside_cutter_m2": 1.6080764035397075e-18
+    },
+    {
+      "baseline_face": 2857,
+      "candidate_faces": [
+        2834
+      ],
+      "original_area_m2": 0.000212876686076327,
+      "cut_area_m2": 0.00021091164578840947,
+      "remaining_expected_m2": 1.9650402879175187e-06,
+      "candidate_child_area_m2": 1.965040287918158e-06,
+      "absolute_budget_error_m2": 6.390863587033696e-19,
+      "child_area_inside_cutter_m2": 5.214335060863309e-19
+    },
+    {
+      "baseline_face": 2858,
+      "candidate_faces": [
+        2835,
+        12329,
+        12330,
+        12331,
+        12332
+      ],
+      "original_area_m2": 0.00021992270110599474,
+      "cut_area_m2": 0.00014661471505953084,
+      "remaining_expected_m2": 7.33079860464639e-05,
+      "candidate_child_area_m2": 7.330798604646369e-05,
+      "absolute_budget_error_m2": 2.168404344971009e-19,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 2929,
+      "candidate_faces": [
+        2904
+      ],
+      "original_area_m2": 0.00019480634651657672,
+      "cut_area_m2": 0.00016140514657373068,
+      "remaining_expected_m2": 3.340119994284604e-05,
+      "candidate_child_area_m2": 3.3401199942847e-05,
+      "absolute_budget_error_m2": 9.622294280808852e-19,
+      "child_area_inside_cutter_m2": 2.24420527618366e-18
+    },
+    {
+      "baseline_face": 2930,
+      "candidate_faces": [
+        2905,
+        12333
+      ],
+      "original_area_m2": 9.416149286311545e-05,
+      "cut_area_m2": 2.505604154222846e-05,
+      "remaining_expected_m2": 6.910545132088699e-05,
+      "candidate_child_area_m2": 6.910545132089035e-05,
+      "absolute_budget_error_m2": 3.3610267347050637e-18,
+      "child_area_inside_cutter_m2": 8.591792421431068e-19
+    },
+    {
+      "baseline_face": 2931,
+      "candidate_faces": [
+        2906,
+        12334,
+        12335
+      ],
+      "original_area_m2": 0.00011180483707824396,
+      "cut_area_m2": 1.3490448338141041e-05,
+      "remaining_expected_m2": 9.831438874010291e-05,
+      "candidate_child_area_m2": 9.831438874013314e-05,
+      "absolute_budget_error_m2": 3.0222135558033436e-17,
+      "child_area_inside_cutter_m2": 1.2002287418229885e-18
+    },
+    {
+      "baseline_face": 2968,
+      "candidate_faces": [
+        2943,
+        12336,
+        12337
+      ],
+      "original_area_m2": 0.00020916890021611197,
+      "cut_area_m2": 8.570755532304647e-06,
+      "remaining_expected_m2": 0.00020059814468380733,
+      "candidate_child_area_m2": 0.00020059814468378307,
+      "absolute_budget_error_m2": 2.4259023609363162e-17,
+      "child_area_inside_cutter_m2": 1.990017170890327e-18
+    },
+    {
+      "baseline_face": 2969,
+      "candidate_faces": [
+        2944,
+        12338,
+        12339,
+        12340,
+        12341
+      ],
+      "original_area_m2": 0.0003339848995260211,
+      "cut_area_m2": 8.89464593637641e-05,
+      "remaining_expected_m2": 0.000245038440162257,
+      "candidate_child_area_m2": 0.00024503844016226107,
+      "absolute_budget_error_m2": 4.065758146820642e-18,
+      "child_area_inside_cutter_m2": 4.843263203170093e-18
+    },
+    {
+      "baseline_face": 3084,
+      "candidate_faces": [
+        3059,
+        12342
+      ],
+      "original_area_m2": 4.8966357143655746e-05,
+      "cut_area_m2": 1.1920447487004171e-07,
+      "remaining_expected_m2": 4.88471526687857e-05,
+      "candidate_child_area_m2": 4.884715266865147e-05,
+      "absolute_budget_error_m2": 1.3423100521728348e-16,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 3085,
+      "candidate_faces": [
+        3060
+      ],
+      "original_area_m2": 2.4681148829572614e-05,
+      "cut_area_m2": 8.825419103333912e-06,
+      "remaining_expected_m2": 1.58557297262387e-05,
+      "candidate_child_area_m2": 1.585572972623627e-05,
+      "absolute_budget_error_m2": 2.4292904927253334e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 3087,
+      "candidate_faces": [
+        3062
+      ],
+      "original_area_m2": 4.416170344985169e-05,
+      "cut_area_m2": 1.4621437950378397e-05,
+      "remaining_expected_m2": 2.9540265499473296e-05,
+      "candidate_child_area_m2": 2.9540265499471944e-05,
+      "absolute_budget_error_m2": 1.3518645838178633e-18,
+      "child_area_inside_cutter_m2": 1.9122845530736223e-18
+    },
+    {
+      "baseline_face": 3111,
+      "candidate_faces": [
+        3085,
+        12343,
+        12344
+      ],
+      "original_area_m2": 0.00019331385056543666,
+      "cut_area_m2": 9.144525458820661e-05,
+      "remaining_expected_m2": 0.00010186859597723004,
+      "candidate_child_area_m2": 0.00010186859597723381,
+      "absolute_budget_error_m2": 3.767602549387128e-18,
+      "child_area_inside_cutter_m2": 1.0684411533713242e-19
+    },
+    {
+      "baseline_face": 3112,
+      "candidate_faces": [
+        3086,
+        12345,
+        12346
+      ],
+      "original_area_m2": 0.00017407843705966822,
+      "cut_area_m2": 6.614051284180483e-05,
+      "remaining_expected_m2": 0.0001079379242178634,
+      "candidate_child_area_m2": 0.00010793792421786399,
+      "absolute_budget_error_m2": 5.963111948670274e-19,
+      "child_area_inside_cutter_m2": 1.6848721797593274e-18
+    },
+    {
+      "baseline_face": 3251,
+      "candidate_faces": [
+        3222
+      ],
+      "original_area_m2": 0.00010574308378791054,
+      "cut_area_m2": 9.700497455589278e-05,
+      "remaining_expected_m2": 8.738109232017755e-06,
+      "candidate_child_area_m2": 8.738109232020933e-06,
+      "absolute_budget_error_m2": 3.178067618098135e-18,
+      "child_area_inside_cutter_m2": 5.446453223982637e-19
+    },
+    {
+      "baseline_face": 3452,
+      "candidate_faces": [
+        3411,
+        12347
+      ],
+      "original_area_m2": 2.2518664175492684e-05,
+      "cut_area_m2": 2.3373089714524965e-06,
+      "remaining_expected_m2": 2.0181355204040188e-05,
+      "candidate_child_area_m2": 2.0181355204035363e-05,
+      "absolute_budget_error_m2": 4.824699667560495e-18,
+      "child_area_inside_cutter_m2": 4.095453607951447e-19
+    },
+    {
+      "baseline_face": 3456,
+      "candidate_faces": [
+        3414,
+        12348
+      ],
+      "original_area_m2": 5.215916086205051e-05,
+      "cut_area_m2": 3.6106035117911735e-05,
+      "remaining_expected_m2": 1.6053125744138772e-05,
+      "candidate_child_area_m2": 1.6053125744140507e-05,
+      "absolute_budget_error_m2": 1.734723475976807e-18,
+      "child_area_inside_cutter_m2": 1.58172138037014e-18
+    },
+    {
+      "baseline_face": 5418,
+      "candidate_faces": [
+        5376
+      ],
+      "original_area_m2": 1.0506670965282752e-05,
+      "cut_area_m2": 8.897813822421662e-06,
+      "remaining_expected_m2": 1.60885714286109e-06,
+      "candidate_child_area_m2": 1.6088571428614847e-06,
+      "absolute_budget_error_m2": 3.9471735342050396e-19,
+      "child_area_inside_cutter_m2": 7.847641771676881e-20
+    },
+    {
+      "baseline_face": 5419,
+      "candidate_faces": [
+        5377,
+        12349
+      ],
+      "original_area_m2": 1.146279773881706e-05,
+      "cut_area_m2": 8.981183015327361e-06,
+      "remaining_expected_m2": 2.481614723489699e-06,
+      "candidate_child_area_m2": 2.4816147234852557e-06,
+      "absolute_budget_error_m2": 4.4431113248224324e-18,
+      "child_area_inside_cutter_m2": 3.481009006338462e-20
+    },
+    {
+      "baseline_face": 5420,
+      "candidate_faces": [
+        5378
+      ],
+      "original_area_m2": 1.1267172690297426e-05,
+      "cut_area_m2": 6.892047705182874e-06,
+      "remaining_expected_m2": 4.375124985114552e-06,
+      "candidate_child_area_m2": 4.375124985121663e-06,
+      "absolute_budget_error_m2": 7.110841592199851e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 5421,
+      "candidate_faces": [
+        5379,
+        12350
+      ],
+      "original_area_m2": 1.025254184456642e-05,
+      "cut_area_m2": 1.6019772386951787e-06,
+      "remaining_expected_m2": 8.650564605871242e-06,
+      "candidate_child_area_m2": 8.65056460586985e-06,
+      "absolute_budget_error_m2": 1.3925221652860698e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 5434,
+      "candidate_faces": [
+        5380,
+        12351
+      ],
+      "original_area_m2": 1.0170822567109085e-05,
+      "cut_area_m2": 7.443734251489988e-06,
+      "remaining_expected_m2": 2.727088315619097e-06,
+      "candidate_child_area_m2": 2.727088315617862e-06,
+      "absolute_budget_error_m2": 1.2349740370967699e-18,
+      "child_area_inside_cutter_m2": 1.4046242668717352e-19
+    },
+    {
+      "baseline_face": 5435,
+      "candidate_faces": [
+        5381
+      ],
+      "original_area_m2": 1.1018599630912864e-05,
+      "cut_area_m2": 1.0817331997720773e-05,
+      "remaining_expected_m2": 2.0126763319209086e-07,
+      "candidate_child_area_m2": 2.012676331938537e-07,
+      "absolute_budget_error_m2": 1.762834381913809e-18,
+      "child_area_inside_cutter_m2": 5.735398731404066e-20
+    },
+    {
+      "baseline_face": 5610,
+      "candidate_faces": [
+        5554,
+        12352
+      ],
+      "original_area_m2": 5.148339502019293e-06,
+      "cut_area_m2": 2.5318354446343696e-07,
+      "remaining_expected_m2": 4.895155957555856e-06,
+      "candidate_child_area_m2": 4.895155957558894e-06,
+      "absolute_budget_error_m2": 3.0383071818011753e-18,
+      "child_area_inside_cutter_m2": 4.248823964696379e-20
+    },
+    {
+      "baseline_face": 5611,
+      "candidate_faces": [
+        5555,
+        12353
+      ],
+      "original_area_m2": 5.152528283185809e-06,
+      "cut_area_m2": 7.75666809691718e-08,
+      "remaining_expected_m2": 5.074961602216637e-06,
+      "candidate_child_area_m2": 5.0749616022143594e-06,
+      "absolute_budget_error_m2": 2.2776715951668136e-18,
+      "child_area_inside_cutter_m2": 8.203442492305569e-21
+    },
+    {
+      "baseline_face": 5612,
+      "candidate_faces": [
+        5556,
+        12354
+      ],
+      "original_area_m2": 5.190900211043305e-06,
+      "cut_area_m2": 3.8098802056297594e-08,
+      "remaining_expected_m2": 5.152801408987008e-06,
+      "candidate_child_area_m2": 5.152801408985035e-06,
+      "absolute_budget_error_m2": 1.9727397341552655e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 5613,
+      "candidate_faces": [
+        5557,
+        12355
+      ],
+      "original_area_m2": 5.221861534685326e-06,
+      "cut_area_m2": 2.2828485574604533e-08,
+      "remaining_expected_m2": 5.199033049110722e-06,
+      "candidate_child_area_m2": 5.199033049108213e-06,
+      "absolute_budget_error_m2": 2.5089115897672376e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 5617,
+      "candidate_faces": [
+        5558,
+        12356
+      ],
+      "original_area_m2": 5.244654519933461e-06,
+      "cut_area_m2": 3.144320313415767e-06,
+      "remaining_expected_m2": 2.1003342065176936e-06,
+      "candidate_child_area_m2": 2.100334206516048e-06,
+      "absolute_budget_error_m2": 1.6457850165151056e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 5631,
+      "candidate_faces": [
+        5560,
+        12357
+      ],
+      "original_area_m2": 7.4335971176743e-06,
+      "cut_area_m2": 8.990896142205183e-07,
+      "remaining_expected_m2": 6.5345075034537815e-06,
+      "candidate_child_area_m2": 6.5345075034035406e-06,
+      "absolute_budget_error_m2": 5.024091223344157e-17,
+      "child_area_inside_cutter_m2": 3.7840644912584195e-19
+    },
+    {
+      "baseline_face": 5632,
+      "candidate_faces": [
+        5561
+      ],
+      "original_area_m2": 7.637526011322762e-06,
+      "cut_area_m2": 3.9663894337249475e-06,
+      "remaining_expected_m2": 3.671136577597815e-06,
+      "candidate_child_area_m2": 3.671136577647396e-06,
+      "absolute_budget_error_m2": 4.958107356753047e-17,
+      "child_area_inside_cutter_m2": 3.57746820016073e-19
+    },
+    {
+      "baseline_face": 5633,
+      "candidate_faces": [
+        5562
+      ],
+      "original_area_m2": 6.244256312607202e-06,
+      "cut_area_m2": 4.427357792020789e-06,
+      "remaining_expected_m2": 1.8168985205864128e-06,
+      "candidate_child_area_m2": 1.8168985205889054e-06,
+      "absolute_budget_error_m2": 2.4926062055325923e-18,
+      "child_area_inside_cutter_m2": 1.791601342205585e-19
+    },
+    {
+      "baseline_face": 5646,
+      "candidate_faces": [
+        5575,
+        12358
+      ],
+      "original_area_m2": 1.108662413620868e-05,
+      "cut_area_m2": 1.6140984704286104e-06,
+      "remaining_expected_m2": 9.47252566578007e-06,
+      "candidate_child_area_m2": 9.472525665779809e-06,
+      "absolute_budget_error_m2": 2.608861477543245e-19,
+      "child_area_inside_cutter_m2": 8.659288629487901e-20
+    },
+    {
+      "baseline_face": 5647,
+      "candidate_faces": [
+        5576
+      ],
+      "original_area_m2": 1.2251755453791419e-05,
+      "cut_area_m2": 7.4098264099563995e-06,
+      "remaining_expected_m2": 4.841929043835019e-06,
+      "candidate_child_area_m2": 4.841929043740121e-06,
+      "absolute_budget_error_m2": 9.489818327858279e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 5648,
+      "candidate_faces": [
+        5577,
+        12359
+      ],
+      "original_area_m2": 1.2540062288364772e-05,
+      "cut_area_m2": 9.843756036267766e-06,
+      "remaining_expected_m2": 2.6963062520970066e-06,
+      "candidate_child_area_m2": 2.69630625219056e-06,
+      "absolute_budget_error_m2": 9.355351847481659e-17,
+      "child_area_inside_cutter_m2": 6.199522555126695e-20
+    },
+    {
+      "baseline_face": 5649,
+      "candidate_faces": [
+        5578
+      ],
+      "original_area_m2": 1.1530630472627037e-05,
+      "cut_area_m2": 9.816523796282287e-06,
+      "remaining_expected_m2": 1.7141066763447504e-06,
+      "candidate_child_area_m2": 1.7141066763462843e-06,
+      "absolute_budget_error_m2": 1.533976667477538e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 5664,
+      "candidate_faces": [
+        5579
+      ],
+      "original_area_m2": 1.0913971418829508e-05,
+      "cut_area_m2": 1.0601184670986208e-05,
+      "remaining_expected_m2": 3.1278674784330017e-07,
+      "candidate_child_area_m2": 3.1278674784386514e-07,
+      "absolute_budget_error_m2": 5.649709758186183e-19,
+      "child_area_inside_cutter_m2": 7.32279355127747e-20
+    },
+    {
+      "baseline_face": 5665,
+      "candidate_faces": [
+        5580,
+        12360
+      ],
+      "original_area_m2": 1.0246381279410708e-05,
+      "cut_area_m2": 7.242503477549281e-06,
+      "remaining_expected_m2": 3.003877801861427e-06,
+      "candidate_child_area_m2": 3.0038778018578e-06,
+      "absolute_budget_error_m2": 3.626995080142914e-18,
+      "child_area_inside_cutter_m2": 1.3279531473222383e-19
+    },
+    {
+      "baseline_face": 5838,
+      "candidate_faces": [
+        5753,
+        12361
+      ],
+      "original_area_m2": 5.397749406338172e-06,
+      "cut_area_m2": 1.0081202021933656e-08,
+      "remaining_expected_m2": 5.3876682043162384e-06,
+      "candidate_child_area_m2": 5.38766820448318e-06,
+      "absolute_budget_error_m2": 1.6694172357435005e-16,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 5839,
+      "candidate_faces": [
+        5754,
+        12362
+      ],
+      "original_area_m2": 5.3237232839055886e-06,
+      "cut_area_m2": 1.6801152976481666e-08,
+      "remaining_expected_m2": 5.306922130929107e-06,
+      "candidate_child_area_m2": 5.306922130895127e-06,
+      "absolute_budget_error_m2": 3.397957371205351e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 5840,
+      "candidate_faces": [
+        5755,
+        12363
+      ],
+      "original_area_m2": 5.229015836222879e-06,
+      "cut_area_m2": 3.422911457860319e-08,
+      "remaining_expected_m2": 5.1947867216442755e-06,
+      "candidate_child_area_m2": 5.1947867216474925e-06,
+      "absolute_budget_error_m2": 3.2170311336718327e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 5841,
+      "candidate_faces": [
+        5756,
+        12364
+      ],
+      "original_area_m2": 5.163607127483672e-06,
+      "cut_area_m2": 1.1367793414131023e-07,
+      "remaining_expected_m2": 5.0499291933423614e-06,
+      "candidate_child_area_m2": 5.049929193339843e-06,
+      "absolute_budget_error_m2": 2.518228952187035e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 5842,
+      "candidate_faces": [
+        5757,
+        12365
+      ],
+      "original_area_m2": 5.20724119353444e-06,
+      "cut_area_m2": 2.5289808894262662e-06,
+      "remaining_expected_m2": 2.678260304108174e-06,
+      "candidate_child_area_m2": 2.678260304110017e-06,
+      "absolute_budget_error_m2": 1.8431436932253575e-18,
+      "child_area_inside_cutter_m2": 8.57312478150556e-20
+    },
+    {
+      "baseline_face": 5858,
+      "candidate_faces": [
+        5758
+      ],
+      "original_area_m2": 7.254649589865473e-06,
+      "cut_area_m2": 5.1312537903976775e-06,
+      "remaining_expected_m2": 2.1233957994677955e-06,
+      "candidate_child_area_m2": 2.12339579947092e-06,
+      "absolute_budget_error_m2": 3.1242810259474868e-18,
+      "child_area_inside_cutter_m2": 2.128651066664312e-19
+    },
+    {
+      "baseline_face": 5859,
+      "candidate_faces": [
+        5759
+      ],
+      "original_area_m2": 8.629444703046946e-06,
+      "cut_area_m2": 4.4749650347992615e-06,
+      "remaining_expected_m2": 4.1544796682476844e-06,
+      "candidate_child_area_m2": 4.15447966817489e-06,
+      "absolute_budget_error_m2": 7.279401148703457e-17,
+      "child_area_inside_cutter_m2": 4.1217414179742237e-19
+    },
+    {
+      "baseline_face": 5860,
+      "candidate_faces": [
+        5760,
+        12366
+      ],
+      "original_area_m2": 8.352471491005764e-06,
+      "cut_area_m2": 1.023327529876118e-06,
+      "remaining_expected_m2": 7.329143961129646e-06,
+      "candidate_child_area_m2": 7.329143961200183e-06,
+      "absolute_budget_error_m2": 7.053666868260186e-17,
+      "child_area_inside_cutter_m2": 4.250839057801798e-19
+    },
+    {
+      "baseline_face": 5866,
+      "candidate_faces": [
+        5766,
+        12367
+      ],
+      "original_area_m2": 2.196093538381104e-05,
+      "cut_area_m2": 3.3422831139861867e-06,
+      "remaining_expected_m2": 1.8618652269824853e-05,
+      "candidate_child_area_m2": 1.861865226980819e-05,
+      "absolute_budget_error_m2": 1.6662832138386596e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 5867,
+      "candidate_faces": [
+        5767,
+        12368
+      ],
+      "original_area_m2": 2.0196683820344528e-05,
+      "cut_area_m2": 4.131592696622291e-06,
+      "remaining_expected_m2": 1.606509112372224e-05,
+      "candidate_child_area_m2": 1.606509112374444e-05,
+      "absolute_budget_error_m2": 2.220242761342972e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 5868,
+      "candidate_faces": [
+        5768,
+        12369
+      ],
+      "original_area_m2": 2.0386074303687397e-05,
+      "cut_area_m2": 6.226675738554733e-06,
+      "remaining_expected_m2": 1.4159398565132664e-05,
+      "candidate_child_area_m2": 1.4159398565125532e-05,
+      "absolute_budget_error_m2": 7.132017415881209e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 5869,
+      "candidate_faces": [
+        5769,
+        12370
+      ],
+      "original_area_m2": 2.2234472905675402e-05,
+      "cut_area_m2": 1.1742125883511127e-05,
+      "remaining_expected_m2": 1.0492347022164275e-05,
+      "candidate_child_area_m2": 1.0492347022166821e-05,
+      "absolute_budget_error_m2": 2.546181039446427e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 5870,
+      "candidate_faces": [
+        5770
+      ],
+      "original_area_m2": 7.302322510602239e-05,
+      "cut_area_m2": 7.23053982696765e-05,
+      "remaining_expected_m2": 7.178268363458915e-07,
+      "candidate_child_area_m2": 7.178268363457594e-07,
+      "absolute_budget_error_m2": 1.3213713977167085e-19,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 5871,
+      "candidate_faces": [
+        5771
+      ],
+      "original_area_m2": 2.9553059244739966e-05,
+      "cut_area_m2": 2.8785583000624048e-05,
+      "remaining_expected_m2": 7.674762441159187e-07,
+      "candidate_child_area_m2": 7.674762441156442e-07,
+      "absolute_budget_error_m2": 2.744386749103933e-19,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 5890,
+      "candidate_faces": [
+        5772,
+        12371
+      ],
+      "original_area_m2": 6.40462801178686e-05,
+      "cut_area_m2": 4.563081883481803e-05,
+      "remaining_expected_m2": 1.8415461283050574e-05,
+      "candidate_child_area_m2": 1.841546128304972e-05,
+      "absolute_budget_error_m2": 8.538092108323347e-19,
+      "child_area_inside_cutter_m2": 5.008159882623527e-19
+    },
+    {
+      "baseline_face": 5891,
+      "candidate_faces": [
+        5773
+      ],
+      "original_area_m2": 3.511924099104664e-05,
+      "cut_area_m2": 2.505343154082787e-05,
+      "remaining_expected_m2": 1.0065809450218766e-05,
+      "candidate_child_area_m2": 1.0065809450226605e-05,
+      "absolute_budget_error_m2": 7.838442893891295e-18,
+      "child_area_inside_cutter_m2": 7.155443293226655e-20
+    },
+    {
+      "baseline_face": 5892,
+      "candidate_faces": [
+        5774
+      ],
+      "original_area_m2": 2.7501639994070614e-05,
+      "cut_area_m2": 1.4768647206261555e-05,
+      "remaining_expected_m2": 1.2732992787809059e-05,
+      "candidate_child_area_m2": 1.2732992787815027e-05,
+      "absolute_budget_error_m2": 5.9681941463538e-18,
+      "child_area_inside_cutter_m2": 9.336549117657504e-20
+    },
+    {
+      "baseline_face": 5893,
+      "candidate_faces": [
+        5775,
+        12372
+      ],
+      "original_area_m2": 2.3140722185812076e-05,
+      "cut_area_m2": 3.5809794682409946e-06,
+      "remaining_expected_m2": 1.9559742717571083e-05,
+      "candidate_child_area_m2": 1.9559742717557636e-05,
+      "absolute_budget_error_m2": 1.3447495070609272e-17,
+      "child_area_inside_cutter_m2": 4.893519967930043e-19
+    },
+    {
+      "baseline_face": 6116,
+      "candidate_faces": [
+        5998,
+        12373
+      ],
+      "original_area_m2": 2.2743442833409416e-05,
+      "cut_area_m2": 5.994228208149597e-07,
+      "remaining_expected_m2": 2.2144020012594456e-05,
+      "candidate_child_area_m2": 2.2144020012611597e-05,
+      "absolute_budget_error_m2": 1.7140558720638022e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6117,
+      "candidate_faces": [
+        5999
+      ],
+      "original_area_m2": 2.6398364400467073e-05,
+      "cut_area_m2": 6.460778897910155e-06,
+      "remaining_expected_m2": 1.993758550255692e-05,
+      "candidate_child_area_m2": 1.9937585502542258e-05,
+      "absolute_budget_error_m2": 1.466044625107743e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6118,
+      "candidate_faces": [
+        6000
+      ],
+      "original_area_m2": 3.400782428012322e-05,
+      "cut_area_m2": 1.447640359421563e-05,
+      "remaining_expected_m2": 1.9531420685907588e-05,
+      "candidate_child_area_m2": 1.9531420685902573e-05,
+      "absolute_budget_error_m2": 5.014435047745458e-18,
+      "child_area_inside_cutter_m2": 6.019922041997525e-20
+    },
+    {
+      "baseline_face": 6119,
+      "candidate_faces": [
+        6001
+      ],
+      "original_area_m2": 4.672039333074716e-05,
+      "cut_area_m2": 2.556746109507737e-05,
+      "remaining_expected_m2": 2.1152932235669787e-05,
+      "candidate_child_area_m2": 2.1152932235677125e-05,
+      "absolute_budget_error_m2": 7.338693455011258e-18,
+      "child_area_inside_cutter_m2": 6.440884679019046e-20
+    },
+    {
+      "baseline_face": 6120,
+      "candidate_faces": [
+        6002,
+        12374
+      ],
+      "original_area_m2": 8.058286454866701e-05,
+      "cut_area_m2": 1.816335213266283e-05,
+      "remaining_expected_m2": 6.241951241600419e-05,
+      "candidate_child_area_m2": 6.241951241600073e-05,
+      "absolute_budget_error_m2": 3.4558944247975454e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6121,
+      "candidate_faces": [
+        6003
+      ],
+      "original_area_m2": 4.8157196709573604e-05,
+      "cut_area_m2": 4.225326153065359e-05,
+      "remaining_expected_m2": 5.903935178920015e-06,
+      "candidate_child_area_m2": 5.903935178880008e-06,
+      "absolute_budget_error_m2": 4.0007060164715114e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6122,
+      "candidate_faces": [
+        6004
+      ],
+      "original_area_m2": 5.187492497712638e-05,
+      "cut_area_m2": 4.7187548919019966e-05,
+      "remaining_expected_m2": 4.687376058106412e-06,
+      "candidate_child_area_m2": 4.687376058151424e-06,
+      "absolute_budget_error_m2": 4.501133081709352e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6123,
+      "candidate_faces": [
+        6005
+      ],
+      "original_area_m2": 4.46519387382277e-05,
+      "cut_area_m2": 4.15864367739548e-05,
+      "remaining_expected_m2": 3.065501964272901e-06,
+      "candidate_child_area_m2": 3.0655019642646674e-06,
+      "absolute_budget_error_m2": 8.233583763785426e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6124,
+      "candidate_faces": [
+        6006
+      ],
+      "original_area_m2": 2.8216875065192185e-05,
+      "cut_area_m2": 2.6723154809664797e-05,
+      "remaining_expected_m2": 1.4937202555273874e-06,
+      "candidate_child_area_m2": 1.4937202555348063e-06,
+      "absolute_budget_error_m2": 7.418949826763603e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6125,
+      "candidate_faces": [
+        6007
+      ],
+      "original_area_m2": 7.691524148982445e-05,
+      "cut_area_m2": 6.838930774304524e-05,
+      "remaining_expected_m2": 8.525933746779215e-06,
+      "candidate_child_area_m2": 8.52593374677546e-06,
+      "absolute_budget_error_m2": 3.754050022231059e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6138,
+      "candidate_faces": [
+        6008
+      ],
+      "original_area_m2": 4.975497154148526e-05,
+      "cut_area_m2": 4.901346448834039e-05,
+      "remaining_expected_m2": 7.415070531448719e-07,
+      "candidate_child_area_m2": 7.4150705314119e-07,
+      "absolute_budget_error_m2": 3.681946342596037e-18,
+      "child_area_inside_cutter_m2": 4.351634892470646e-19
+    },
+    {
+      "baseline_face": 6139,
+      "candidate_faces": [
+        6009,
+        12375
+      ],
+      "original_area_m2": 4.3751351153244986e-05,
+      "cut_area_m2": 3.699100713040535e-05,
+      "remaining_expected_m2": 6.760344022839638e-06,
+      "candidate_child_area_m2": 6.760344022847618e-06,
+      "absolute_budget_error_m2": 7.980744429030018e-18,
+      "child_area_inside_cutter_m2": 1.0903749547787131e-18
+    },
+    {
+      "baseline_face": 6140,
+      "candidate_faces": [
+        6010
+      ],
+      "original_area_m2": 9.393842509807617e-05,
+      "cut_area_m2": 9.198942489535115e-05,
+      "remaining_expected_m2": 1.9490002027250212e-06,
+      "candidate_child_area_m2": 1.94900020272404e-06,
+      "absolute_budget_error_m2": 9.81287669394107e-19,
+      "child_area_inside_cutter_m2": 1.6506764067918279e-19
+    },
+    {
+      "baseline_face": 6141,
+      "candidate_faces": [
+        6011,
+        12376
+      ],
+      "original_area_m2": 3.0301261152676436e-05,
+      "cut_area_m2": 1.8549887262616227e-05,
+      "remaining_expected_m2": 1.1751373890060209e-05,
+      "candidate_child_area_m2": 1.1751373890064291e-05,
+      "absolute_budget_error_m2": 4.082698805765728e-18,
+      "child_area_inside_cutter_m2": 2.9421639923108537e-19
+    },
+    {
+      "baseline_face": 6142,
+      "candidate_faces": [
+        6012,
+        12377,
+        12378
+      ],
+      "original_area_m2": 2.595747108385898e-05,
+      "cut_area_m2": 1.2704886220507917e-05,
+      "remaining_expected_m2": 1.3252584863351063e-05,
+      "candidate_child_area_m2": 1.3252584863345869e-05,
+      "absolute_budget_error_m2": 5.19400603256337e-18,
+      "child_area_inside_cutter_m2": 1.3360084450049075e-19
+    },
+    {
+      "baseline_face": 6143,
+      "candidate_faces": [
+        6013,
+        12379
+      ],
+      "original_area_m2": 2.594872721530892e-05,
+      "cut_area_m2": 1.0261304755397833e-05,
+      "remaining_expected_m2": 1.5687422459911086e-05,
+      "candidate_child_area_m2": 1.568742245991055e-05,
+      "absolute_budget_error_m2": 5.353248226647178e-19,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6144,
+      "candidate_faces": [
+        6014,
+        12380
+      ],
+      "original_area_m2": 2.9936414100137982e-05,
+      "cut_area_m2": 9.969808050161898e-06,
+      "remaining_expected_m2": 1.9966606049976085e-05,
+      "candidate_child_area_m2": 1.996660604998428e-05,
+      "absolute_budget_error_m2": 8.19589079763261e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6145,
+      "candidate_faces": [
+        6015
+      ],
+      "original_area_m2": 9.20085569615456e-05,
+      "cut_area_m2": 6.496233918311116e-05,
+      "remaining_expected_m2": 2.7046217778434444e-05,
+      "candidate_child_area_m2": 2.7046217778431314e-05,
+      "absolute_budget_error_m2": 3.130633773051894e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6146,
+      "candidate_faces": [
+        6016,
+        12381
+      ],
+      "original_area_m2": 2.1510354285373512e-05,
+      "cut_area_m2": 3.249242755955648e-06,
+      "remaining_expected_m2": 1.8261111529417863e-05,
+      "candidate_child_area_m2": 1.826111152943043e-05,
+      "absolute_budget_error_m2": 1.25665808054648e-17,
+      "child_area_inside_cutter_m2": 6.903087378265419e-20
+    },
+    {
+      "baseline_face": 6147,
+      "candidate_faces": [
+        6017,
+        12382
+      ],
+      "original_area_m2": 1.9522291549751488e-05,
+      "cut_area_m2": 3.9564553058578785e-06,
+      "remaining_expected_m2": 1.5565836243893607e-05,
+      "candidate_child_area_m2": 1.5565836243877954e-05,
+      "absolute_budget_error_m2": 1.565316886525947e-17,
+      "child_area_inside_cutter_m2": 8.501172406776702e-20
+    },
+    {
+      "baseline_face": 6148,
+      "candidate_faces": [
+        6018,
+        12383
+      ],
+      "original_area_m2": 1.9449287399571555e-05,
+      "cut_area_m2": 5.86870236366186e-06,
+      "remaining_expected_m2": 1.3580585035909695e-05,
+      "candidate_child_area_m2": 1.3580585035908343e-05,
+      "absolute_budget_error_m2": 1.3518645838178633e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6149,
+      "candidate_faces": [
+        6019,
+        12384
+      ],
+      "original_area_m2": 2.1091110680845394e-05,
+      "cut_area_m2": 1.0958261376275887e-05,
+      "remaining_expected_m2": 1.0132849304569507e-05,
+      "candidate_child_area_m2": 1.013284930457156e-05,
+      "absolute_budget_error_m2": 2.053207864144424e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6150,
+      "candidate_faces": [
+        6020
+      ],
+      "original_area_m2": 6.894407018433475e-05,
+      "cut_area_m2": 6.818543083217171e-05,
+      "remaining_expected_m2": 7.586393521630448e-07,
+      "candidate_child_area_m2": 7.586393521644881e-07,
+      "absolute_budget_error_m2": 1.4433441421213278e-18,
+      "child_area_inside_cutter_m2": 1.1790560789208011e-19
+    },
+    {
+      "baseline_face": 6151,
+      "candidate_faces": [
+        6021
+      ],
+      "original_area_m2": 2.8214608183802586e-05,
+      "cut_area_m2": 2.738879165462332e-05,
+      "remaining_expected_m2": 8.258165291792651e-07,
+      "candidate_child_area_m2": 8.258165291795382e-07,
+      "absolute_budget_error_m2": 2.7306224637110507e-19,
+      "child_area_inside_cutter_m2": 1.9593897876431954e-19
+    },
+    {
+      "baseline_face": 6170,
+      "candidate_faces": [
+        6022,
+        12385
+      ],
+      "original_area_m2": 6.919969748287393e-05,
+      "cut_area_m2": 4.538509774497438e-05,
+      "remaining_expected_m2": 2.3814599737899553e-05,
+      "candidate_child_area_m2": 2.3814599737904466e-05,
+      "absolute_budget_error_m2": 4.912791094074942e-18,
+      "child_area_inside_cutter_m2": 2.943759763429881e-19
+    },
+    {
+      "baseline_face": 6171,
+      "candidate_faces": [
+        6023
+      ],
+      "original_area_m2": 3.4643590648867727e-05,
+      "cut_area_m2": 2.310915683963915e-05,
+      "remaining_expected_m2": 1.1534433809228575e-05,
+      "candidate_child_area_m2": 1.1534433809237032e-05,
+      "absolute_budget_error_m2": 8.456776945386935e-18,
+      "child_area_inside_cutter_m2": 7.390478156592095e-20
+    },
+    {
+      "baseline_face": 6172,
+      "candidate_faces": [
+        6024
+      ],
+      "original_area_m2": 2.6886024221360665e-05,
+      "cut_area_m2": 1.2870514179771935e-05,
+      "remaining_expected_m2": 1.401551004158873e-05,
+      "candidate_child_area_m2": 1.4015510041564344e-05,
+      "absolute_budget_error_m2": 2.4386078551451307e-17,
+      "child_area_inside_cutter_m2": 9.20444453363701e-20
+    },
+    {
+      "baseline_face": 6173,
+      "candidate_faces": [
+        6025,
+        12386
+      ],
+      "original_area_m2": 2.2429645889779372e-05,
+      "cut_area_m2": 2.5458937380199815e-06,
+      "remaining_expected_m2": 1.988375215175939e-05,
+      "candidate_child_area_m2": 1.988375215177441e-05,
+      "absolute_budget_error_m2": 1.5019588220713254e-17,
+      "child_area_inside_cutter_m2": 3.129829101064281e-19
+    },
+    {
+      "baseline_face": 6396,
+      "candidate_faces": [
+        6248,
+        12387
+      ],
+      "original_area_m2": 2.1605735203436624e-05,
+      "cut_area_m2": 3.8048064334532255e-07,
+      "remaining_expected_m2": 2.1225254560091303e-05,
+      "candidate_child_area_m2": 2.122525456007039e-05,
+      "absolute_budget_error_m2": 2.0911549401814167e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6397,
+      "candidate_faces": [
+        6249
+      ],
+      "original_area_m2": 2.5416174780879313e-05,
+      "cut_area_m2": 5.548291511956937e-06,
+      "remaining_expected_m2": 1.9867883268922376e-05,
+      "candidate_child_area_m2": 1.9867883268933042e-05,
+      "absolute_budget_error_m2": 1.066583887182615e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6398,
+      "candidate_faces": [
+        6250
+      ],
+      "original_area_m2": 3.330695134833253e-05,
+      "cut_area_m2": 1.3276064183003121e-05,
+      "remaining_expected_m2": 2.003088716532941e-05,
+      "candidate_child_area_m2": 2.003088716530614e-05,
+      "absolute_budget_error_m2": 2.326968912697014e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6399,
+      "candidate_faces": [
+        6251
+      ],
+      "original_area_m2": 4.6305118764343674e-05,
+      "cut_area_m2": 2.4158486460819148e-05,
+      "remaining_expected_m2": 2.2146632303524526e-05,
+      "candidate_child_area_m2": 2.2146632303559722e-05,
+      "absolute_budget_error_m2": 3.519591302431069e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6400,
+      "candidate_faces": [
+        6252,
+        12388
+      ],
+      "original_area_m2": 8.280560673425945e-05,
+      "cut_area_m2": 1.6574330204088086e-05,
+      "remaining_expected_m2": 6.623127653017136e-05,
+      "candidate_child_area_m2": 6.62312765301647e-05,
+      "absolute_budget_error_m2": 6.6542908336297835e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6401,
+      "candidate_faces": [
+        6253
+      ],
+      "original_area_m2": 4.83746268741147e-05,
+      "cut_area_m2": 4.11125225116305e-05,
+      "remaining_expected_m2": 7.262104362484196e-06,
+      "candidate_child_area_m2": 7.262104363245921e-06,
+      "absolute_budget_error_m2": 7.617248710045307e-16,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6402,
+      "candidate_faces": [
+        6254
+      ],
+      "original_area_m2": 5.222574696776811e-05,
+      "cut_area_m2": 4.638894729305706e-05,
+      "remaining_expected_m2": 5.836799674711049e-06,
+      "candidate_child_area_m2": 5.8367996739589715e-06,
+      "absolute_budget_error_m2": 7.520771657353043e-16,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6403,
+      "candidate_faces": [
+        6255
+      ],
+      "original_area_m2": 4.504956019643963e-05,
+      "cut_area_m2": 4.1199522260843814e-05,
+      "remaining_expected_m2": 3.850037935595819e-06,
+      "candidate_child_area_m2": 3.8500379355879125e-06,
+      "absolute_budget_error_m2": 7.90620552967164e-18,
+      "child_area_inside_cutter_m2": 2.683869445568513e-20
+    },
+    {
+      "baseline_face": 6404,
+      "candidate_faces": [
+        6256
+      ],
+      "original_area_m2": 2.8425181298993213e-05,
+      "cut_area_m2": 2.6544783820557222e-05,
+      "remaining_expected_m2": 1.880397478435991e-06,
+      "candidate_child_area_m2": 1.8803974784418287e-06,
+      "absolute_budget_error_m2": 5.837751072476638e-18,
+      "child_area_inside_cutter_m2": 1.8134737125262804e-20
+    },
+    {
+      "baseline_face": 6405,
+      "candidate_faces": [
+        6257
+      ],
+      "original_area_m2": 9.696284000200571e-05,
+      "cut_area_m2": 8.415275046088648e-05,
+      "remaining_expected_m2": 1.2810089541119224e-05,
+      "candidate_child_area_m2": 1.281008954111757e-05,
+      "absolute_budget_error_m2": 1.6534083130403943e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6418,
+      "candidate_faces": [
+        6258
+      ],
+      "original_area_m2": 4.839452407117534e-05,
+      "cut_area_m2": 4.76973557501887e-05,
+      "remaining_expected_m2": 6.971683209866419e-07,
+      "candidate_child_area_m2": 6.971683209836499e-07,
+      "absolute_budget_error_m2": 2.992038007057409e-18,
+      "child_area_inside_cutter_m2": 4.1622765730905465e-19
+    },
+    {
+      "baseline_face": 6419,
+      "candidate_faces": [
+        6259,
+        12389
+      ],
+      "original_area_m2": 4.211009034680167e-05,
+      "cut_area_m2": 3.5649919142435405e-05,
+      "remaining_expected_m2": 6.460171204366265e-06,
+      "candidate_child_area_m2": 6.460171204371279e-06,
+      "absolute_budget_error_m2": 5.013588014798204e-18,
+      "child_area_inside_cutter_m2": 7.164380043217389e-19
+    },
+    {
+      "baseline_face": 6420,
+      "candidate_faces": [
+        6260
+      ],
+      "original_area_m2": 8.642007896651923e-05,
+      "cut_area_m2": 8.463840319405765e-05,
+      "remaining_expected_m2": 1.781675772461578e-06,
+      "candidate_child_area_m2": 1.7816757724636836e-06,
+      "absolute_budget_error_m2": 2.1057239068741906e-18,
+      "child_area_inside_cutter_m2": 2.9137572755752026e-19
+    },
+    {
+      "baseline_face": 6421,
+      "candidate_faces": [
+        6261,
+        12390
+      ],
+      "original_area_m2": 2.828320487644299e-05,
+      "cut_area_m2": 1.7319515617758652e-05,
+      "remaining_expected_m2": 1.0963689258684338e-05,
+      "candidate_child_area_m2": 1.0963689258683492e-05,
+      "absolute_budget_error_m2": 8.453388813597917e-19,
+      "child_area_inside_cutter_m2": 5.590551409807708e-19
+    },
+    {
+      "baseline_face": 6422,
+      "candidate_faces": [
+        6262,
+        12391,
+        12392
+      ],
+      "original_area_m2": 2.433305254672551e-05,
+      "cut_area_m2": 1.1850545499054617e-05,
+      "remaining_expected_m2": 1.2482507047670894e-05,
+      "candidate_child_area_m2": 1.2482507047665355e-05,
+      "absolute_budget_error_m2": 5.539595475043124e-18,
+      "child_area_inside_cutter_m2": 6.326313612882736e-20
+    },
+    {
+      "baseline_face": 6423,
+      "candidate_faces": [
+        6263,
+        12393
+      ],
+      "original_area_m2": 2.4895294172332277e-05,
+      "cut_area_m2": 9.782605450050837e-06,
+      "remaining_expected_m2": 1.511268872228144e-05,
+      "candidate_child_area_m2": 1.5112688722288722e-05,
+      "absolute_budget_error_m2": 7.281095214597966e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6424,
+      "candidate_faces": [
+        6264,
+        12394
+      ],
+      "original_area_m2": 2.92750839582553e-05,
+      "cut_area_m2": 9.69438169296378e-06,
+      "remaining_expected_m2": 1.9580702265291518e-05,
+      "candidate_child_area_m2": 1.958070226527018e-05,
+      "absolute_budget_error_m2": 2.1338454007230334e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6425,
+      "candidate_faces": [
+        6265
+      ],
+      "original_area_m2": 8.804367136755444e-05,
+      "cut_area_m2": 6.204324190922539e-05,
+      "remaining_expected_m2": 2.6000429458329055e-05,
+      "candidate_child_area_m2": 2.6000429458345894e-05,
+      "absolute_budget_error_m2": 1.683901499141549e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6426,
+      "candidate_faces": [
+        6266,
+        12395
+      ],
+      "original_area_m2": 2.1176800349852427e-06,
+      "cut_area_m2": 2.873660577559793e-07,
+      "remaining_expected_m2": 1.8303139772292635e-06,
+      "candidate_child_area_m2": 1.830313977231175e-06,
+      "absolute_budget_error_m2": 1.9115416037161423e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6427,
+      "candidate_faces": [
+        6267
+      ],
+      "original_area_m2": 4.100350780608398e-06,
+      "cut_area_m2": 2.4737226851690014e-06,
+      "remaining_expected_m2": 1.6266280954393964e-06,
+      "candidate_child_area_m2": 1.6266280954371139e-06,
+      "absolute_budget_error_m2": 2.282542034613526e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6428,
+      "candidate_faces": [
+        6268,
+        12396
+      ],
+      "original_area_m2": 1.8256291522264113e-06,
+      "cut_area_m2": 2.5079533107276717e-07,
+      "remaining_expected_m2": 1.574833821153644e-06,
+      "candidate_child_area_m2": 1.5748338211464278e-06,
+      "absolute_budget_error_m2": 7.216297194133012e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6429,
+      "candidate_faces": [
+        6269
+      ],
+      "original_area_m2": 4.083305356826104e-06,
+      "cut_area_m2": 2.4684380006686467e-06,
+      "remaining_expected_m2": 1.6148673561574577e-06,
+      "candidate_child_area_m2": 1.6148673561736049e-06,
+      "absolute_budget_error_m2": 1.614720083174554e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6430,
+      "candidate_faces": [
+        6270,
+        12397
+      ],
+      "original_area_m2": 1.935343544637331e-06,
+      "cut_area_m2": 2.653970602204078e-07,
+      "remaining_expected_m2": 1.6699464844169235e-06,
+      "candidate_child_area_m2": 1.6699464844009563e-06,
+      "absolute_budget_error_m2": 1.5967206330454002e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6431,
+      "candidate_faces": [
+        6271
+      ],
+      "original_area_m2": 4.100150797313705e-06,
+      "cut_area_m2": 2.470216078090763e-06,
+      "remaining_expected_m2": 1.6299347192229417e-06,
+      "candidate_child_area_m2": 1.6299347192275104e-06,
+      "absolute_budget_error_m2": 4.5686839592528825e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6432,
+      "candidate_faces": [
+        6272,
+        12398
+      ],
+      "original_area_m2": 2.412390836921021e-06,
+      "cut_area_m2": 3.2567449608353554e-07,
+      "remaining_expected_m2": 2.0867163408374855e-06,
+      "candidate_child_area_m2": 2.0867163408396293e-06,
+      "absolute_budget_error_m2": 2.143840389500634e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6433,
+      "candidate_faces": [
+        6273
+      ],
+      "original_area_m2": 4.150924276631563e-06,
+      "cut_area_m2": 2.479064103106593e-06,
+      "remaining_expected_m2": 1.6718601735249697e-06,
+      "candidate_child_area_m2": 1.671860173527138e-06,
+      "absolute_budget_error_m2": 2.1681925867341953e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6434,
+      "candidate_faces": [
+        6274,
+        12399
+      ],
+      "original_area_m2": 2.08350814973736e-06,
+      "cut_area_m2": 2.4056551142819264e-07,
+      "remaining_expected_m2": 1.842942638309167e-06,
+      "candidate_child_area_m2": 1.842942638304248e-06,
+      "absolute_budget_error_m2": 4.919143841179349e-18,
+      "child_area_inside_cutter_m2": 8.60614541458095e-22
+    },
+    {
+      "baseline_face": 6435,
+      "candidate_faces": [
+        6275
+      ],
+      "original_area_m2": 4.4624948048318976e-06,
+      "cut_area_m2": 2.527152679579353e-06,
+      "remaining_expected_m2": 1.9353421252525447e-06,
+      "candidate_child_area_m2": 1.935342125257416e-06,
+      "absolute_budget_error_m2": 4.871286479659481e-18,
+      "child_area_inside_cutter_m2": 6.419630100597943e-21
+    },
+    {
+      "baseline_face": 6436,
+      "candidate_faces": [
+        6276,
+        12400
+      ],
+      "original_area_m2": 1.9791044536833576e-06,
+      "cut_area_m2": 2.3138039811926916e-07,
+      "remaining_expected_m2": 1.7477240555640885e-06,
+      "candidate_child_area_m2": 1.747724055579368e-06,
+      "absolute_budget_error_m2": 1.527941557728351e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6437,
+      "candidate_faces": [
+        6277
+      ],
+      "original_area_m2": 4.445484683573235e-06,
+      "cut_area_m2": 2.5230868255295955e-06,
+      "remaining_expected_m2": 1.9223978580436396e-06,
+      "candidate_child_area_m2": 1.9223978580182697e-06,
+      "absolute_budget_error_m2": 2.5369907319687177e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6438,
+      "candidate_faces": [
+        6278,
+        12401
+      ],
+      "original_area_m2": 2.039068031055939e-06,
+      "cut_area_m2": 2.380787344648154e-07,
+      "remaining_expected_m2": 1.8009892965911239e-06,
+      "candidate_child_area_m2": 1.8009892965541162e-06,
+      "absolute_budget_error_m2": 3.7007716498487636e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6439,
+      "candidate_faces": [
+        6279
+      ],
+      "original_area_m2": 4.462759848437748e-06,
+      "cut_area_m2": 2.524673323713764e-06,
+      "remaining_expected_m2": 1.9380865247239844e-06,
+      "candidate_child_area_m2": 1.938086524761129e-06,
+      "absolute_budget_error_m2": 3.7144512319469206e-17,
+      "child_area_inside_cutter_m2": 6.425001985465346e-21
+    },
+    {
+      "baseline_face": 6440,
+      "candidate_faces": [
+        6280,
+        12402
+      ],
+      "original_area_m2": 2.29819819305542e-06,
+      "cut_area_m2": 2.6436280782237813e-07,
+      "remaining_expected_m2": 2.033835385233042e-06,
+      "candidate_child_area_m2": 2.033835385236055e-06,
+      "absolute_budget_error_m2": 3.0128961933835463e-18,
+      "child_area_inside_cutter_m2": 1.6273514629292233e-21
+    },
+    {
+      "baseline_face": 6441,
+      "candidate_faces": [
+        6281
+      ],
+      "original_area_m2": 4.5144423141314725e-06,
+      "cut_area_m2": 2.532017894426143e-06,
+      "remaining_expected_m2": 1.9824244197053294e-06,
+      "candidate_child_area_m2": 1.9824244197121404e-06,
+      "absolute_budget_error_m2": 6.810991928871829e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6447,
+      "candidate_faces": [
+        6282
+      ],
+      "original_area_m2": 3.588573514051761e-05,
+      "cut_area_m2": 3.41041885641985e-05,
+      "remaining_expected_m2": 1.7815465763191122e-06,
+      "candidate_child_area_m2": 1.7815465763187046e-06,
+      "absolute_budget_error_m2": 4.0763460586613204e-19,
+      "child_area_inside_cutter_m2": 1.1527671590871935e-19
+    },
+    {
+      "baseline_face": 6448,
+      "candidate_faces": [
+        6283
+      ],
+      "original_area_m2": 3.085204664198536e-05,
+      "cut_area_m2": 2.8642243442564123e-05,
+      "remaining_expected_m2": 2.209803199421238e-06,
+      "candidate_child_area_m2": 2.209803199421342e-06,
+      "absolute_budget_error_m2": 1.0418505251227894e-19,
+      "child_area_inside_cutter_m2": 1.3205252677843895e-19
+    },
+    {
+      "baseline_face": 6449,
+      "candidate_faces": [
+        6284,
+        12403
+      ],
+      "original_area_m2": 3.0324961254138577e-05,
+      "cut_area_m2": 4.1731287217876324e-06,
+      "remaining_expected_m2": 2.6151832532350944e-05,
+      "candidate_child_area_m2": 2.615183253235631e-05,
+      "absolute_budget_error_m2": 5.366800753803247e-18,
+      "child_area_inside_cutter_m2": 1.750898137631213e-19
+    },
+    {
+      "baseline_face": 6450,
+      "candidate_faces": [
+        6285,
+        12404
+      ],
+      "original_area_m2": 4.794957871427571e-05,
+      "cut_area_m2": 4.634958692738743e-06,
+      "remaining_expected_m2": 4.3314620021536966e-05,
+      "candidate_child_area_m2": 4.331462002153679e-05,
+      "absolute_budget_error_m2": 1.7618285302889447e-19,
+      "child_area_inside_cutter_m2": 1.7780393102735516e-19
+    },
+    {
+      "baseline_face": 6544,
+      "candidate_faces": [
+        6379,
+        12405
+      ],
+      "original_area_m2": 5.835658120986607e-05,
+      "cut_area_m2": 5.121160741147639e-06,
+      "remaining_expected_m2": 5.323542046871843e-05,
+      "candidate_child_area_m2": 5.323542046871826e-05,
+      "absolute_budget_error_m2": 1.6940658945086007e-19,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6545,
+      "candidate_faces": [
+        6380,
+        12406
+      ],
+      "original_area_m2": 5.254231529090711e-05,
+      "cut_area_m2": 2.634335131609511e-06,
+      "remaining_expected_m2": 4.99079801592976e-05,
+      "candidate_child_area_m2": 4.990798015929765e-05,
+      "absolute_budget_error_m2": 4.743384504624082e-20,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6546,
+      "candidate_faces": [
+        6381
+      ],
+      "original_area_m2": 5.7052694071152645e-05,
+      "cut_area_m2": 3.894524226681256e-05,
+      "remaining_expected_m2": 1.8107451804340083e-05,
+      "candidate_child_area_m2": 1.810745180433981e-05,
+      "absolute_budget_error_m2": 2.744386749103933e-19,
+      "child_area_inside_cutter_m2": 1.0614229168677102e-19
+    },
+    {
+      "baseline_face": 6547,
+      "candidate_faces": [
+        6382,
+        12407
+      ],
+      "original_area_m2": 5.18936746583902e-05,
+      "cut_area_m2": 2.495905928246137e-05,
+      "remaining_expected_m2": 2.6934615375928833e-05,
+      "candidate_child_area_m2": 2.693461537592862e-05,
+      "absolute_budget_error_m2": 2.1345230270808369e-19,
+      "child_area_inside_cutter_m2": 2.2192979776308185e-19
+    },
+    {
+      "baseline_face": 6548,
+      "candidate_faces": [
+        6383
+      ],
+      "original_area_m2": 7.094526200350006e-05,
+      "cut_area_m2": 7.007111950139104e-05,
+      "remaining_expected_m2": 8.741425021090225e-07,
+      "candidate_child_area_m2": 8.741425021103008e-07,
+      "absolute_budget_error_m2": 1.278278596525146e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6549,
+      "candidate_faces": [
+        6384
+      ],
+      "original_area_m2": 5.832368305843404e-05,
+      "cut_area_m2": 5.703333994880554e-05,
+      "remaining_expected_m2": 1.290343109628494e-06,
+      "candidate_child_area_m2": 1.290343109628184e-06,
+      "absolute_budget_error_m2": 3.1001405869507392e-19,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6559,
+      "candidate_faces": [
+        6385
+      ],
+      "original_area_m2": 3.5044881827827704e-05,
+      "cut_area_m2": 3.251102696523994e-05,
+      "remaining_expected_m2": 2.533854862587766e-06,
+      "candidate_child_area_m2": 2.5338548625886552e-06,
+      "absolute_budget_error_m2": 8.893845946170154e-19,
+      "child_area_inside_cutter_m2": 2.1311888990956425e-19
+    },
+    {
+      "baseline_face": 6560,
+      "candidate_faces": [
+        6386
+      ],
+      "original_area_m2": 3.486570574008093e-05,
+      "cut_area_m2": 3.118815539910331e-05,
+      "remaining_expected_m2": 3.6775503409776226e-06,
+      "candidate_child_area_m2": 3.6775503409780973e-06,
+      "absolute_budget_error_m2": 4.747619669360353e-19,
+      "child_area_inside_cutter_m2": 2.9219483249106404e-19
+    },
+    {
+      "baseline_face": 6561,
+      "candidate_faces": [
+        6387,
+        12408
+      ],
+      "original_area_m2": 3.348934187146929e-05,
+      "cut_area_m2": 3.2213200107792757e-06,
+      "remaining_expected_m2": 3.026802186069001e-05,
+      "candidate_child_area_m2": 3.0268021860687325e-05,
+      "absolute_budget_error_m2": 2.6867885086906407e-18,
+      "child_area_inside_cutter_m2": 1.3771489273728292e-19
+    },
+    {
+      "baseline_face": 6562,
+      "candidate_faces": [
+        6388,
+        12409
+      ],
+      "original_area_m2": 5.031217431959379e-05,
+      "cut_area_m2": 3.4563038122838777e-06,
+      "remaining_expected_m2": 4.685587050730991e-05,
+      "candidate_child_area_m2": 4.685587050731147e-05,
+      "absolute_budget_error_m2": 1.5585406229479126e-18,
+      "child_area_inside_cutter_m2": 1.5216700068390228e-19
+    },
+    {
+      "baseline_face": 6656,
+      "candidate_faces": [
+        6482,
+        12410
+      ],
+      "original_area_m2": 6.96954318219737e-05,
+      "cut_area_m2": 5.468134700412603e-06,
+      "remaining_expected_m2": 6.42272971215611e-05,
+      "candidate_child_area_m2": 6.422729712155619e-05,
+      "absolute_budget_error_m2": 4.9060148304969076e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6657,
+      "candidate_faces": [
+        6483,
+        12411
+      ],
+      "original_area_m2": 5.6170942148636755e-05,
+      "cut_area_m2": 2.574303755130537e-06,
+      "remaining_expected_m2": 5.359663839350622e-05,
+      "candidate_child_area_m2": 5.359663839350889e-05,
+      "absolute_budget_error_m2": 2.676624113323589e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6658,
+      "candidate_faces": [
+        6484
+      ],
+      "original_area_m2": 4.869116512973752e-05,
+      "cut_area_m2": 3.245977482170167e-05,
+      "remaining_expected_m2": 1.623139030803585e-05,
+      "candidate_child_area_m2": 1.6231390308030044e-05,
+      "absolute_budget_error_m2": 5.807257886375483e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6659,
+      "candidate_faces": [
+        6485,
+        12412
+      ],
+      "original_area_m2": 5.7907185297060796e-05,
+      "cut_area_m2": 2.6487894526886475e-05,
+      "remaining_expected_m2": 3.141929077017432e-05,
+      "candidate_child_area_m2": 3.1419290770179376e-05,
+      "absolute_budget_error_m2": 5.0550926292136644e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6660,
+      "candidate_faces": [
+        6486
+      ],
+      "original_area_m2": 6.131147857820762e-05,
+      "cut_area_m2": 6.0297875076168464e-05,
+      "remaining_expected_m2": 1.0136035020391534e-06,
+      "candidate_child_area_m2": 1.0136035020386877e-06,
+      "absolute_budget_error_m2": 4.656563627530516e-19,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6661,
+      "candidate_faces": [
+        6487
+      ],
+      "original_area_m2": 6.011535705823049e-05,
+      "cut_area_m2": 5.8308179653833176e-05,
+      "remaining_expected_m2": 1.807177404397316e-06,
+      "candidate_child_area_m2": 1.8071774044006991e-06,
+      "absolute_budget_error_m2": 3.3830495913336756e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6683,
+      "candidate_faces": [
+        6488
+      ],
+      "original_area_m2": 2.6624645197284916e-05,
+      "cut_area_m2": 2.2877926040857953e-05,
+      "remaining_expected_m2": 3.7467191564269627e-06,
+      "candidate_child_area_m2": 3.7467191564244856e-06,
+      "absolute_budget_error_m2": 2.4771478542452013e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6684,
+      "candidate_faces": [
+        6489
+      ],
+      "original_area_m2": 2.0880187159592335e-05,
+      "cut_area_m2": 1.8739522654070347e-05,
+      "remaining_expected_m2": 2.1406645055219883e-06,
+      "candidate_child_area_m2": 2.140664505525039e-06,
+      "absolute_budget_error_m2": 3.0505891595363627e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6685,
+      "candidate_faces": [
+        6490,
+        12413,
+        12414
+      ],
+      "original_area_m2": 2.0493840134651967e-05,
+      "cut_area_m2": 3.810314028011116e-06,
+      "remaining_expected_m2": 1.668352610664085e-05,
+      "candidate_child_area_m2": 1.668352610664076e-05,
+      "absolute_budget_error_m2": 9.147955830346444e-20,
+      "child_area_inside_cutter_m2": 6.919747844502958e-20
+    },
+    {
+      "baseline_face": 6686,
+      "candidate_faces": [
+        6491,
+        12415
+      ],
+      "original_area_m2": 1.7590250583831574e-05,
+      "cut_area_m2": 4.033935763620242e-06,
+      "remaining_expected_m2": 1.3556314820211331e-05,
+      "candidate_child_area_m2": 1.3556314820212007e-05,
+      "absolute_budget_error_m2": 6.759322919089317e-19,
+      "child_area_inside_cutter_m2": 9.471132641099408e-20
+    },
+    {
+      "baseline_face": 6788,
+      "candidate_faces": [
+        6593,
+        12416
+      ],
+      "original_area_m2": 3.910264851253204e-05,
+      "cut_area_m2": 7.127739925491742e-06,
+      "remaining_expected_m2": 3.19749085870403e-05,
+      "candidate_child_area_m2": 3.197490858707039e-05,
+      "absolute_budget_error_m2": 3.009338655005078e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6789,
+      "candidate_faces": [
+        6594,
+        12417
+      ],
+      "original_area_m2": 4.554061451870416e-05,
+      "cut_area_m2": 3.876620081383167e-06,
+      "remaining_expected_m2": 4.166399443732099e-05,
+      "candidate_child_area_m2": 4.166399443729581e-05,
+      "absolute_budget_error_m2": 2.518059545597584e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6790,
+      "candidate_faces": [
+        6595
+      ],
+      "original_area_m2": 4.5629717631261795e-05,
+      "cut_area_m2": 3.25540756765813e-05,
+      "remaining_expected_m2": 1.3075641954680494e-05,
+      "candidate_child_area_m2": 1.3075641954679022e-05,
+      "absolute_budget_error_m2": 1.472143262327974e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6791,
+      "candidate_faces": [
+        6596,
+        12418
+      ],
+      "original_area_m2": 5.122932169260274e-05,
+      "cut_area_m2": 2.2759880291774154e-05,
+      "remaining_expected_m2": 2.8469441400828585e-05,
+      "candidate_child_area_m2": 2.846944140082741e-05,
+      "absolute_budget_error_m2": 1.1756817307889689e-18,
+      "child_area_inside_cutter_m2": 8.613988598887102e-20
+    },
+    {
+      "baseline_face": 6792,
+      "candidate_faces": [
+        6597
+      ],
+      "original_area_m2": 5.0946251235317994e-05,
+      "cut_area_m2": 4.945263635157795e-05,
+      "remaining_expected_m2": 1.493614883740042e-06,
+      "candidate_child_area_m2": 1.4936148837390727e-06,
+      "absolute_budget_error_m2": 9.692174498957332e-19,
+      "child_area_inside_cutter_m2": 2.215335748637874e-20
+    },
+    {
+      "baseline_face": 6793,
+      "candidate_faces": [
+        6598
+      ],
+      "original_area_m2": 5.727845181560069e-05,
+      "cut_area_m2": 5.323545646266424e-05,
+      "remaining_expected_m2": 4.042995352936452e-06,
+      "candidate_child_area_m2": 4.042995352928429e-06,
+      "absolute_budget_error_m2": 8.023096076392733e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6795,
+      "candidate_faces": [
+        6599,
+        12419
+      ],
+      "original_area_m2": 2.3195811458137e-05,
+      "cut_area_m2": 1.9146507147857766e-05,
+      "remaining_expected_m2": 4.049304310279234e-06,
+      "candidate_child_area_m2": 4.0493043102848226e-06,
+      "absolute_budget_error_m2": 5.588723385983874e-18,
+      "child_area_inside_cutter_m2": 7.093505834686576e-20
+    },
+    {
+      "baseline_face": 6796,
+      "candidate_faces": [
+        6600
+      ],
+      "original_area_m2": 1.3798995014626654e-05,
+      "cut_area_m2": 1.2022509514328492e-05,
+      "remaining_expected_m2": 1.7764855002981617e-06,
+      "candidate_child_area_m2": 1.77648550017731e-06,
+      "absolute_budget_error_m2": 1.2085169629892818e-16,
+      "child_area_inside_cutter_m2": 4.959474014375627e-20
+    },
+    {
+      "baseline_face": 6797,
+      "candidate_faces": [
+        6601,
+        12420
+      ],
+      "original_area_m2": 2.2246936686701737e-05,
+      "cut_area_m2": 3.4262124539450424e-06,
+      "remaining_expected_m2": 1.8820724232756695e-05,
+      "candidate_child_area_m2": 1.882072423287002e-05,
+      "absolute_budget_error_m2": 1.1332623207904735e-16,
+      "child_area_inside_cutter_m2": 8.897394784740674e-20
+    },
+    {
+      "baseline_face": 6798,
+      "candidate_faces": [
+        6602,
+        12421
+      ],
+      "original_area_m2": 1.8279146556176265e-05,
+      "cut_area_m2": 3.493107445424064e-06,
+      "remaining_expected_m2": 1.4786039110752201e-05,
+      "candidate_child_area_m2": 1.478603911075509e-05,
+      "absolute_budget_error_m2": 2.888382350137164e-18,
+      "child_area_inside_cutter_m2": 8.55116612180453e-20
+    },
+    {
+      "baseline_face": 6900,
+      "candidate_faces": [
+        6704,
+        12422
+      ],
+      "original_area_m2": 3.579947266693723e-05,
+      "cut_area_m2": 5.765380064131106e-06,
+      "remaining_expected_m2": 3.003409260280612e-05,
+      "candidate_child_area_m2": 3.003409260277415e-05,
+      "absolute_budget_error_m2": 3.197041156116631e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6901,
+      "candidate_faces": [
+        6705,
+        12423
+      ],
+      "original_area_m2": 5.124948510174802e-05,
+      "cut_area_m2": 3.8278215555401855e-06,
+      "remaining_expected_m2": 4.742166354620783e-05,
+      "candidate_child_area_m2": 4.7421663546227356e-05,
+      "absolute_budget_error_m2": 1.9522415368317114e-17,
+      "child_area_inside_cutter_m2": 1.704798457965808e-20
+    },
+    {
+      "baseline_face": 6902,
+      "candidate_faces": [
+        6706
+      ],
+      "original_area_m2": 3.6212203744612895e-05,
+      "cut_area_m2": 2.5005956138264736e-05,
+      "remaining_expected_m2": 1.1206247606348159e-05,
+      "candidate_child_area_m2": 1.1206247606361166e-05,
+      "absolute_budget_error_m2": 1.3007037938037036e-17,
+      "child_area_inside_cutter_m2": 5.157552739437214e-20
+    },
+    {
+      "baseline_face": 6903,
+      "candidate_faces": [
+        6707,
+        12424
+      ],
+      "original_area_m2": 5.2478738983185735e-05,
+      "cut_area_m2": 2.165527882908794e-05,
+      "remaining_expected_m2": 3.0823460154097795e-05,
+      "candidate_child_area_m2": 3.082346015409595e-05,
+      "absolute_budget_error_m2": 1.8431436932253575e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6904,
+      "candidate_faces": [
+        6708
+      ],
+      "original_area_m2": 3.966832934903581e-05,
+      "cut_area_m2": 3.8132305601942156e-05,
+      "remaining_expected_m2": 1.536023747093654e-06,
+      "candidate_child_area_m2": 1.5360237470964943e-06,
+      "absolute_budget_error_m2": 2.8403132303804826e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6905,
+      "candidate_faces": [
+        6709
+      ],
+      "original_area_m2": 5.57359891702977e-05,
+      "cut_area_m2": 5.053791257366466e-05,
+      "remaining_expected_m2": 5.1980765966330416e-06,
+      "candidate_child_area_m2": 5.198076596626628e-06,
+      "absolute_budget_error_m2": 6.413733476609562e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 6922,
+      "candidate_faces": [
+        6710,
+        12425
+      ],
+      "original_area_m2": 1.587949339855504e-05,
+      "cut_area_m2": 9.742979924776921e-07,
+      "remaining_expected_m2": 1.4905195406077348e-05,
+      "candidate_child_area_m2": 1.4905195406084246e-05,
+      "absolute_budget_error_m2": 6.898236322439022e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 7032,
+      "candidate_faces": [
+        6820,
+        12426
+      ],
+      "original_area_m2": 4.534972375578462e-05,
+      "cut_area_m2": 3.22841847056937e-06,
+      "remaining_expected_m2": 4.212130528521525e-05,
+      "candidate_child_area_m2": 4.212130528518301e-05,
+      "absolute_budget_error_m2": 3.224146210428769e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 7033,
+      "candidate_faces": [
+        6821,
+        12427
+      ],
+      "original_area_m2": 5.2272688196918313e-05,
+      "cut_area_m2": 1.4198022101431559e-06,
+      "remaining_expected_m2": 5.085288598677516e-05,
+      "candidate_child_area_m2": 5.0852885986814154e-05,
+      "absolute_budget_error_m2": 3.899739689158799e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 7034,
+      "candidate_faces": [
+        6822,
+        12428
+      ],
+      "original_area_m2": 1.9457318063544944e-05,
+      "cut_area_m2": 8.603814281866225e-07,
+      "remaining_expected_m2": 1.8596936635358323e-05,
+      "candidate_child_area_m2": 1.859693663535129e-05,
+      "absolute_budget_error_m2": 7.03376159399971e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 7144,
+      "candidate_faces": [
+        6932,
+        12429
+      ],
+      "original_area_m2": 4.5076728150845704e-05,
+      "cut_area_m2": 2.382869742015756e-06,
+      "remaining_expected_m2": 4.2693858408829945e-05,
+      "candidate_child_area_m2": 4.2693858408849786e-05,
+      "absolute_budget_error_m2": 1.984089975648473e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 7145,
+      "candidate_faces": [
+        6933,
+        12430
+      ],
+      "original_area_m2": 5.907001302714786e-05,
+      "cut_area_m2": 1.221288243481772e-06,
+      "remaining_expected_m2": 5.784872478366609e-05,
+      "candidate_child_area_m2": 5.784872478365814e-05,
+      "absolute_budget_error_m2": 7.948557177034354e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 7146,
+      "candidate_faces": [
+        6934
+      ],
+      "original_area_m2": 9.209338267905868e-06,
+      "cut_area_m2": 2.5247397416916975e-06,
+      "remaining_expected_m2": 6.68459852621417e-06,
+      "candidate_child_area_m2": 6.68459852620869e-06,
+      "absolute_budget_error_m2": 5.480303168735323e-18,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 7147,
+      "candidate_faces": [
+        6935,
+        12431
+      ],
+      "original_area_m2": 1.1715711848378085e-05,
+      "cut_area_m2": 2.4758199737596223e-07,
+      "remaining_expected_m2": 1.1468129851002122e-05,
+      "candidate_child_area_m2": 1.1468129850933106e-05,
+      "absolute_budget_error_m2": 6.901624454228039e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 7148,
+      "candidate_faces": [
+        6936
+      ],
+      "original_area_m2": 9.209125300480113e-06,
+      "cut_area_m2": 2.4408242019041556e-06,
+      "remaining_expected_m2": 6.7683010985759574e-06,
+      "candidate_child_area_m2": 6.768301098718195e-06,
+      "absolute_budget_error_m2": 1.4223716063473113e-16,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 7149,
+      "candidate_faces": [
+        6937,
+        12432
+      ],
+      "original_area_m2": 1.1715506201814846e-05,
+      "cut_area_m2": 2.2978276386176222e-07,
+      "remaining_expected_m2": 1.1485723437953083e-05,
+      "candidate_child_area_m2": 1.1485723437937596e-05,
+      "absolute_budget_error_m2": 1.5487150407597627e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 7150,
+      "candidate_faces": [
+        6938
+      ],
+      "original_area_m2": 9.208919346228374e-06,
+      "cut_area_m2": 2.3565714057982933e-06,
+      "remaining_expected_m2": 6.85234794043008e-06,
+      "candidate_child_area_m2": 6.8523479403684274e-06,
+      "absolute_budget_error_m2": 6.165298713179876e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 7151,
+      "candidate_faces": [
+        6939,
+        12433
+      ],
+      "original_area_m2": 1.1715306068279093e-05,
+      "cut_area_m2": 2.1268349263467208e-07,
+      "remaining_expected_m2": 1.150262257564442e-05,
+      "candidate_child_area_m2": 1.1502622575757884e-05,
+      "absolute_budget_error_m2": 1.1346345141650255e-16,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 7152,
+      "candidate_faces": [
+        6940
+      ],
+      "original_area_m2": 9.208720405621329e-06,
+      "cut_area_m2": 2.2719839321975346e-06,
+      "remaining_expected_m2": 6.936736473423795e-06,
+      "candidate_child_area_m2": 6.936736473354379e-06,
+      "absolute_budget_error_m2": 6.941604409338442e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 7153,
+      "candidate_faces": [
+        6941,
+        12434
+      ],
+      "original_area_m2": 1.171511144805341e-05,
+      "cut_area_m2": 1.96279797462552e-07,
+      "remaining_expected_m2": 1.1518831650590857e-05,
+      "candidate_child_area_m2": 1.1518831650553928e-05,
+      "absolute_budget_error_m2": 3.6928942434392986e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 7154,
+      "candidate_faces": [
+        6942
+      ],
+      "original_area_m2": 9.812070358544986e-06,
+      "cut_area_m2": 3.3543389492730355e-06,
+      "remaining_expected_m2": 6.45773140927195e-06,
+      "candidate_child_area_m2": 6.457731409335171e-06,
+      "absolute_budget_error_m2": 6.322084511716647e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 7155,
+      "candidate_faces": [
+        6943,
+        12435
+      ],
+      "original_area_m2": 1.248622474997916e-05,
+      "cut_area_m2": 4.311472892061148e-07,
+      "remaining_expected_m2": 1.2055077460773045e-05,
+      "candidate_child_area_m2": 1.205507746073596e-05,
+      "absolute_budget_error_m2": 3.708479649668778e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 7156,
+      "candidate_faces": [
+        6944
+      ],
+      "original_area_m2": 9.812897054957728e-06,
+      "cut_area_m2": 3.2612072590694186e-06,
+      "remaining_expected_m2": 6.551689795888309e-06,
+      "candidate_child_area_m2": 6.551689795862177e-06,
+      "absolute_budget_error_m2": 2.613181345574242e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 7157,
+      "candidate_faces": [
+        6945,
+        12436
+      ],
+      "original_area_m2": 1.248709015478103e-05,
+      "cut_area_m2": 4.044724706162833e-07,
+      "remaining_expected_m2": 1.2082617684164746e-05,
+      "candidate_child_area_m2": 1.2082617684181581e-05,
+      "absolute_budget_error_m2": 1.6835626859626474e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 7158,
+      "candidate_faces": [
+        6946
+      ],
+      "original_area_m2": 9.813769029502506e-06,
+      "cut_area_m2": 3.167394505052008e-06,
+      "remaining_expected_m2": 6.646374524450498e-06,
+      "candidate_child_area_m2": 6.646374524435896e-06,
+      "absolute_budget_error_m2": 1.4602000977716884e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 7159,
+      "candidate_faces": [
+        6947,
+        12437
+      ],
+      "original_area_m2": 1.2487991136423164e-05,
+      "cut_area_m2": 3.786462429717541e-07,
+      "remaining_expected_m2": 1.210934489345141e-05,
+      "candidate_child_area_m2": 1.2109344893421736e-05,
+      "absolute_budget_error_m2": 2.967325820821265e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 7160,
+      "candidate_faces": [
+        6948
+      ],
+      "original_area_m2": 9.814686270111103e-06,
+      "cut_area_m2": 3.0728990035870325e-06,
+      "remaining_expected_m2": 6.741787266524071e-06,
+      "candidate_child_area_m2": 6.741787266505991e-06,
+      "absolute_budget_error_m2": 1.807991825914304e-17,
+      "child_area_inside_cutter_m2": 0.0
+    },
+    {
+      "baseline_face": 7161,
+      "candidate_faces": [
+        6949,
+        12438
+      ],
+      "original_area_m2": 1.2488927687205662e-05,
+      "cut_area_m2": 3.5366881685860316e-07,
+      "remaining_expected_m2": 1.2135258870347059e-05,
+      "candidate_child_area_m2": 1.2135258870387052e-05,
+      "absolute_budget_error_m2": 3.9993507637559045e-17,
+      "child_area_inside_cutter_m2": 0.0
+    }
+  ],
+  "limits": [
+    "Double precision area budget and coplanar projected clipping, tolerance1e-17m\u00b2; not a symbolic global certificate.",
+    "Source faces outside the affected region are checked separately for exact preservation.",
+    "Cutter-defined domain can be geometrically valid yet visually inappropriate; image review remains separate."
+  ],
+  "rim_vertices_convex_envelope_halfspace_violation_mm_by_side": [
+    4.440892098500626e-13,
+    4.440892098500626e-13
+  ]
+}

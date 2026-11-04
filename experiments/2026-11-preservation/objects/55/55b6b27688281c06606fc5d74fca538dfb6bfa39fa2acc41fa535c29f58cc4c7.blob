@@ -1,0 +1,30 @@
+# Mathematical support map, NOT a renderer screenshot.
+from pathlib import Path
+O=Path(__file__).resolve().parent
+prefix=(O/'audit_critical_rays.py').read_text().split("raw=json.loads")[0]
+exec(compile(prefix,str(O/'audit_critical_rays.py'),'exec'))
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
+Z=json.loads((O/'critical-ray-alpha-comparison.json').read_text());r=Z['central_rays'][-1];origin=np.array(r['origin']);direction=np.array(r['direction']);direction/=np.linalg.norm(direction);U=np.cross(direction,[0,0,1.]);U/=np.linalg.norm(U);Vv=np.cross(direction,U);nd=n@direction;t0=np.einsum('ij,ij->i',tri[:,0]-origin,n)/nd;tx=-(n@U)/nd;ty=-(n@Vv)/nd
+p0=origin+t0[:,None]*direction;pxd=U+tx[:,None]*direction;pyd=Vv+ty[:,None]*direction
+# affine barycentrics and texture-pixel coordinates per ray-plane intersection
+D=p0-tri[:,0];a=(D*e0).sum(1);b=(D*e1).sum(1);b10=(d11*a-d01*b)/den;b20=(d00*b-d01*a)/den
+D=pxd;a=(D*e0).sum(1);b=(D*e1).sum(1);b1x=(d11*a-d01*b)/den;b2x=(d00*b-d01*a)/den
+D=pyd;a=(D*e0).sum(1);b=(D*e1).sum(1);b1y=(d11*a-d01*b)/den;b2y=(d00*b-d01*a)/den
+BB=p0[:,[0,2,1]]*[16,16,-16];L=np.einsum('ni,nij->nj',BB-pivot,R)+pivot-o
+BBx=pxd[:,[0,2,1]]*[16,16,-16];Lx=np.einsum('ni,nij->nj',BBx,R);BBy=pyd[:,[0,2,1]]*[16,16,-16];Ly=np.einsum('ni,nij->nj',BBy,R)
+q0=np.column_stack([L[:,0]/s[:,0]*20,(1-L[:,1]/s[:,1])*20]);qx=np.column_stack([Lx[:,0]/s[:,0]*20,-Lx[:,1]/s[:,1]*20]);qy=np.column_stack([Ly[:,0]/s[:,0]*20,-Ly[:,1]/s[:,1]*20]);half=.0002
+qext=(abs(qx)+abs(qy))*half;ids=np.flatnonzero((nd<0)&(t0>0)&(t0<.04)&((q0+qext)>=0).all(1)&((q0-qext)<20).all(1));N=201;step=2*half/(N-1);Yg,Xg=np.mgrid[:N,:N];Xg=(Xg-(N-1)/2)*step;Yg=(Yg-(N-1)/2)*step;nativeDepth=np.full((N,N),np.inf);alphaDepth=nativeDepth.copy();nativePart=np.full((N,N),-1,int);alphaPart=nativePart.copy();nativeFace=nativePart.copy();alphaFace=nativePart.copy()
+for i in ids:
+ t=t0[i]+tx[i]*Xg+ty[i]*Yg;b1=b10[i]+b1x[i]*Xg+b1y[i]*Yg;b2=b20[i]+b2x[i]*Xg+b2y[i]*Yg;valid=(t>=0)&(t<.04);inside=valid&(b1>=-1e-9)&(b2>=-1e-9)&(b1+b2<=1+1e-9);win=inside&(t<nativeDepth);nativeDepth[win]=t[win];nativePart[win]=parts[i];nativeFace[win]=faces[i]
+ q=q0[i]+Xg[...,None]*qx[i]+Yg[...,None]*qy[i];inside=valid&(q>=0).all(2)&(q<20).all(2);pixels=np.floor(q[inside]).astype(int);opaque=np.zeros((N,N),bool);opaque[inside]=atlas[uv[i,1]+pixels[:,1],uv[i,0]+pixels[:,0],3]>0;win=opaque&(t<alphaDepth);alphaDepth[win]=t[win];alphaPart[win]=parts[i];alphaFace[win]=faces[i]
+reg=(nativePart==0)&(alphaPart==1);different=nativePart!=alphaPart;depthDelta=(alphaDepth-nativeDepth)*1000;allfinite=np.isfinite(depthDelta);depthDelta[~allfinite]=0;np.savez_compressed(O/'critical-gap-plane-sampling.npz',native_part=nativePart,alpha_part=alphaPart,native_face=nativeFace,alpha_face=alphaFace,native_depth_blocks=nativeDepth,alpha_depth_blocks=alphaDepth,offset_x_blocks=Xg,offset_y_blocks=Yg)
+summary={'center':'V13 protected minimum-gap sample7442, source UV82.8,8','square_width_mm':.4,'grid_size':[N,N],'sample_pitch_mm':step*1000,'candidates':len(ids),'samples':N*N,'native_band_to_alpha_shell_samples':int(reg.sum()),'changed_component_samples':int(different.sum()),'regression_fraction':float(reg.mean()),'maximum_shell_ahead_of_native_band_mm':float((-depthDelta[reg]).max())if reg.any()else 0,'regression_bounds_offset_mm':[np.column_stack([Xg[reg],Yg[reg]]).min(0).tolist(),np.column_stack([Xg[reg],Yg[reg]]).max(0).tolist()]if reg.any()else None,'sample_area_estimate_mm2':float(reg.sum()*(step*1000)**2),'limitations':'Grid estimate not exact continuous area; rays normal to protected surface, not camera pixels. No engine filtering, mips, lighting, material or legacy context.'}
+if summary['regression_bounds_offset_mm']:summary['regression_bounds_offset_mm']=(np.array(summary['regression_bounds_offset_mm'])*1000).tolist()
+(O/'critical-gap-plane-sampling.json').write_text(json.dumps(summary,indent=2));
+fig,axs=plt.subplots(1,3,figsize=(13,4.5),constrained_layout=True);extent=[-.2,.2,-.2,.2];cm=ListedColormap(['#e6b94b','#57a9d2','#d792a5']);
+for ax,data,title in [(axs[0],nativePart,'Native triangles: first front-facing surface'),(axs[1],alphaPart,'V14 alpha cells (nearest, mip0)')]:
+ z=np.where(data==15,2,data);ax.imshow(z,origin='lower',extent=extent,cmap=cm,vmin=0,vmax=2,interpolation='nearest');ax.set_title(title,fontsize=10);ax.set_xlabel('Tangential offset U (mm)');ax.set_ylabel('Tangential offset V (mm)');ax.scatter([-.1],[.1],marker='x',s=45,c='red')
+axs[2].imshow(reg,origin='lower',extent=extent,cmap=ListedColormap(['#eeeeee','#d82b35']),interpolation='nearest');axs[2].set_title('Red: shell replaces native band in front',fontsize=10);axs[2].set_xlabel('Tangential offset U (mm)');axs[2].set_ylabel('Tangential offset V (mm)');fig.suptitle('Analytic ray-support diagnostic, NOT Minecraft or a screen render\nGold = band; blue = shell; red cross = independently found witness',fontsize=12);fig.savefig(O/'critical-gap-alpha-regression.png',dpi=180);plt.close(fig);print(json.dumps(summary,indent=2))

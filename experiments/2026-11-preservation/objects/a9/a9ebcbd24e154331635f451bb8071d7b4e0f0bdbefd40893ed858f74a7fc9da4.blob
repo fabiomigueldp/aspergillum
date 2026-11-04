@@ -1,0 +1,52 @@
+# Altare: estudo de dois pedestais de nogueira
+
+Revisão 2 do protótipo isolado sobre a base 0.12.3. Não é uma versão instalável nem uma nova opção já registrada no editor.
+
+## Construção
+
+- Exatamente dois pedestais, simétricos e próximos das extremidades da largura orientada.
+- Ambos ficam no centro exato da profundidade, independentemente do número de módulos.
+- Sapatas transversais escalonadas, fustes de oito faces com cantos chanfrados, colares e capitéis em degraus.
+- Uma pequena marchetaria clara por face principal do capitel. Não há metal.
+- Travessa longitudinal discreta sob o tampo, sem travessa baixa, diagonais, pilares intermediários ou pés de canto.
+- Tampo em três cursos, com perfil inferior recuado e cota superior de 16/16 de bloco.
+- Os veios dos fustes são verticais; os das travessas, tampo e molduras são horizontais.
+
+Os perfis principais de apresentação são 3×2 e 7×2. O 1×1 tem apoios compactos separados. Em 1×3 e 2×3, os apoios seguem os eixos orientados de largura e profundidade, não automaticamente o maior eixo. Em dimensões extremas, especialmente 16×8 com altura fixa de um bloco, o balanço do tampo é uma estilização: este estudo não certifica estabilidade física.
+
+## Recursos reais e imagens
+
+A fonte gera documentos Bedrock 1.16.0. O mesmo adaptador geométrico do Studio converte os cubos e suas UVs em 304 triângulos. As imagens Cycles usam esses triângulos, as texturas de nogueira existentes e seus mapas normal/MER. Não foi acrescentada escultura por geração de imagem.
+
+O piso, as luzes e a câmera das apresentações Cycles são elementos externos de estúdio. Iluminação, cor e resposta dos materiais não comprovam paridade com Minecraft. As prévias técnicas CPU usam sombreamento simplificado. Nenhuma imagem desta pasta é uma captura do jogo.
+
+## Validação
+
+- Quatro testes automatizados, cobrindo 16 larguras × oito profundidades × quatro frentes: 512 combinações.
+- Exatamente dois fustes e duas bases, centro inferior livre, 42 cubos por conjunto e altura invariável.
+- Cursos da base, fuste, capitel e tampo sem intervalo vertical.
+- UVs válidas, coordenadas finitas e perfis separados.
+- Revisão independente de vértices transformados: equivalência de rotação em seis dimensões × quatro frentes, com erro máximo de 2,23×10⁻¹⁵ bloco.
+- Revisão independente de contorno dos fustes: erro máximo entre extremidades adjacentes de 1,36×10⁻⁸ bloco, sem abertura significativa e com normais voltadas para fora.
+
+Não foram testados colisão, seleção, salvamento ou colocação do novo protótipo no Minecraft. O arquivo 0.12.3 existente permanece inalterado.
+
+## Refinamento do capitel
+
+A revisão 2 amplia somente o curso intermediário de cada capitel em profundidade. No 3×2 ele passa de 9 para 15,5 unidades, dividindo um ombro de 7,1 unidades por lado em dois avanços de aproximadamente 3,9 unidades. A fórmula interpola entre fuste e capitel em cada dimensão, inclusive no 1×1.
+
+A comparação independente confirmou exatamente dois cubos modificados por conjunto e os demais 40 idênticos. Bases, fustes, tampo, travessa, marchetarias, pegadas no chão, centros e cotas de contato foram preservados. A folga local junto ao curso superior é menor, como esperado; o vão inferior permanece igual. A comparação técnica e Cycles usou o mesmo enquadramento. Não foram acrescentados ornamentos nem cubos.
+
+## Limite de integração
+
+O catálogo atual já ocupa 80.000 estados. As máscaras locais de contorno não determinam o centro global da profundidade: linhas internas diferentes podem ter a mesma máscara; profundidades pares exigem metades complementares. Substituir simplesmente os cubos da Cruzeta repetiria apoios e não cumpriria o pedido de apenas dois pedestais.
+
+Este protótipo por isso usa dimensões globais explícitas e identificadores de estudo próprios. Não altera IDs, estados, versões, manifests ou geometrias publicados. A integração futura precisa definir papéis globais de suporte e orçamento de estados, ou outra representação compatível, antes de registrar uma nova família. Não deve sobrescrever a Cruzeta nem aumentar silenciosamente o teto.
+
+## Reprodução no checkout isolado
+
+1. `node addons/altare/tools/export-pedestal-prototype.mjs`
+2. `node --experimental-strip-types --test addons/altare/tests/twin-pedestal-prototype.node.ts`
+3. `blender --background --factory-startup --disable-autoexec --python addons/altare/tools/render-pedestal-blender.py -- addons/altare/out/two-pedestal-refined-study/two-pedestal-3x2.scene.json addons/altare/out/two-pedestal-refined-study/render.png hero`
+
+O Blender é executado offline em Cycles CPU, com 96 amostras e sem denoiser. A instalação disponível não suporta OpenImageDenoise. Não houve uso de Chromium ou contorno da restrição anterior.

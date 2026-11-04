@@ -1,0 +1,18 @@
+import numpy as np,json,sys
+from pathlib import Path
+r=Path('lit_surface_v16/lighting_research')
+def load(tag):
+ z=np.load(r/f'fullframe-{tag}-ids.npz')['ids'][:,:,:3]*[65536,32,4]-1;q=np.rint(z).astype(np.int32);valid=(abs(z-q).max(2)<.02);q[~valid]=-1;return q
+base=load('baseline');clip=load('clip');H,W=base.shape[:2];ones=np.ones((H,W),bool);roi=np.zeros((H,W),bool);roi[440:481,490:571]=1;rect=np.zeros_like(roi);rect[400:701,200:801]=1;report={};masks={};tags=sys.argv[1:] or ['roi68-depth1','roi68-depth2','roi68-depth3']
+for tag in tags:
+ a=load(tag);band=(base[:,:,1]==0)|(clip[:,:,1]==0)|(a[:,:,1]==0);regions={'whole_view':ones,'central3321':roi,'band_bounding_rect':rect,'visible_band_union':band,'visible_band_outside_central':band&~roi};entry={}
+ kinds={'component':lambda a:(a[:,:,1]!=clip[:,:,1]),'source_face_or_component':lambda a:np.any(a[:,:,:2]!=clip[:,:,:2],2),'half_only_with_same_source':lambda a:(np.all(a[:,:,:2]==clip[:,:,:2],2)&(a[:,:,2]!=clip[:,:,2])),'any_identity':lambda a:np.any(a!=clip,2)}
+ for kind,fn in kinds.items():
+  before=fn(base);after=fn(a);resolved=before&~after;new=~before&after;still=before&after
+  entry[kind]={label:{'pixels':int(m.sum()),'baseline_mismatches':int((before&m).sum()),'candidate_mismatches':int((after&m).sum()),'resolved_baseline':int((resolved&m).sum()),'still_mismatched':int((still&m).sum()),'new_regressions':int((new&m).sum())} for label,m in regions.items()}
+  if kind=='source_face_or_component':
+   masks[tag+'-resolved']=resolved;masks[tag+'-new']=new
+   yy,xx=np.where(new&band);entry['new_source_mismatch_witnesses']=[{'x':int(x),'y':int(y),'baseline':base[y,x].tolist(),'candidate':a[y,x].tolist(),'clip':clip[y,x].tolist()} for y,x in list(zip(yy,xx))[:30]]
+ report[tag]=entry
+(r/'fullframe-identity-comparison.json').write_text(json.dumps({'scope':'Actual first-source emission; 1 sample BOX0.01. Component, source-face, and half counted separately. Baseline/clip/candidates use source-contract IDs; maps verified. Full-view mismatch vs clip includes unchanged legacy masking failures. Resolved and new defined against the same frozen clip reference.','regions':{'central_inclusive_xy':[490,440,570,480],'band_bounding_inclusive_xy':[200,400,800,700],'visible_band_union':'pixels where baseline,clip or current candidate reports part0'},'results':report},indent=2));np.savez_compressed(r/'fullframe-regression-masks.npz',**masks)
+print(json.dumps({tag:{k:entry[k] for k in ['component','source_face_or_component']} for tag,entry in report.items()},indent=2))

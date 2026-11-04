@@ -1,0 +1,39 @@
+import numpy as np,json,bmesh,bpy
+from pathlib import Path
+R=Path(__file__).resolve().parents[1];B=R.parent
+Vs=[];Fs=[];Ns=[];Ms=[];report={}
+for part,N,W in [('cap',5040,112),('band',3009,17)]:
+ d=np.load(B/f'evidence/{part}-paired.npz');src=np.load(B/f'evidence/{part}-source.npz');oldv=d['points'];oldf=d['triangles'];oldix=d['source_indices'];nv=len(oldv)//2;ix=oldix[:nv].tolist();faces=[list(f) for f in oldf if max(f)<nv]
+ additions=([r*W+c for r in [42,43] for c in range(78,84)] if part=='cap' else [r*W+c for r in list(range(0,3))+list(range(168,177)) for c in range(17)])
+ original_set=set(ix);added=[];missing=[]
+ for si in additions:
+  if si in ix:continue
+  p=np.array([si//W,si%W],float);candidates=[]
+  for k,f in enumerate(faces):
+   uv=np.array([[ix[t]//W,ix[t]%W] for t in f],float)
+   if np.ptp(uv[:,1])>W/2:continue # periodic seam cannot contain local target regions
+   mat=np.column_stack([uv[1]-uv[0],uv[2]-uv[0]])
+   if abs(np.linalg.det(mat))<1e-10:continue
+   bc=np.linalg.solve(mat,p-uv[0]);weights=np.array([1-bc.sum(),*bc])
+   if min(weights)>=-1e-9:candidates.append((k,f,weights))
+  if not candidates:missing.append(si);continue
+  q=len(ix);ix.append(si);added.append(si);newfaces=[];replace=set()
+  for k,f,w in candidates:
+   replace.add(k);zeros=np.where(abs(w)<1e-8)[0]
+   if len(zeros)==0:newfaces.extend([[f[0],f[1],q],[f[1],f[2],q],[f[2],f[0],q]])
+   elif len(zeros)==1:
+    c=int(zeros[0]);a=(c+1)%3;b=(c+2)%3;newfaces.extend([[f[a],q,f[c]],[q,f[b],f[c]]])
+   else:raise RuntimeError(('duplicate UV should not exist',part,si))
+  faces=[f for k,f in enumerate(faces) if k not in replace]+newfaces
+ # Rebuild paired shell with identical subdivision on each wall.
+ edge={}
+ for f in faces:
+  for a,b in zip(f,f[1:]+f[:1]):
+   key=tuple(sorted([a,b]));edge.setdefault(key,[]).append((a,b))
+ boundary=[v[0] for v in edge.values() if len(v)==1]
+ nv=len(ix);ix=np.array(ix);v=np.concatenate([src['points'][ix],src['points'][ix+N]]);norm=np.concatenate([src['normals'][ix],src['normals'][ix+N]]);fs=faces+[[t+nv for t in reversed(f)] for f in faces]
+ for a,b in boundary:fs.extend([[b,a,a+nv],[b,a+nv,b+nv]])
+ me=bpy.data.meshes.new('locally refined '+part);me.from_pydata(v.tolist(),[],fs);me.update();bm=bmesh.new();bm.from_mesh(me);bmesh.ops.recalc_face_normals(bm,faces=bm.faces);boundary_count=sum(e.is_boundary for e in bm.edges);nonman=sum(len(e.link_faces)!=2 for e in bm.edges);bm.to_mesh(me);bm.free();me.calc_loop_triangles();f=np.array([x.vertices[:] for x in me.loop_triangles])
+ np.savez_compressed(R/f'evidence/{part}-paired.npz',points=v,triangles=f,normals=norm,source_indices=np.concatenate([ix,ix+N]),source_side=np.concatenate([np.zeros(nv,int),np.ones(nv,int)]));report[part]={'added_source_samples':added,'added_count':len(added),'missed_requested_samples':missing,'triangles_before':len(oldf),'triangles_after':len(f),'boundary_edges':boundary_count,'edges_not_two_faces':nonman,'source_coordinate_changes':0,'scope':'Local face splits at independently identified wall crossings only; paired walls share the same new topology.'}
+ off=sum(len(x) for x in Vs);Vs.append(v);Fs.append(f+off);Ns.append(norm);Ms.extend([len(Vs)-1]*len(f));print(part,report[part],flush=True)
+np.savez_compressed(R/'evidence/paired-shells.npz',points=np.concatenate(Vs),triangles=np.concatenate(Fs),normals=np.concatenate(Ns),parts=np.array(Ms));(R/'evidence/local-refinement.json').write_text(json.dumps(report,indent=2))

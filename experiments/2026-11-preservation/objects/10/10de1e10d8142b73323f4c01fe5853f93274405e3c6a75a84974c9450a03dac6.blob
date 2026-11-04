@@ -1,0 +1,40 @@
+from pathlib import Path
+import numpy as np,json,hashlib
+from collections import Counter,defaultdict
+from scipy.spatial import cKDTree
+O=Path(__file__).resolve().parent;B=O.parents[1]
+b=np.load(B/'band_ear_v12/structural_rebuild/retained-band.npz');sh=np.load(B/'ear_rim_v11/structural_rebuild/retained-shell.npz')
+r=json.loads((B/'band_ear_v12/independent_diagnosis/polygonal-pinna-0.6mm-clean-candidate-shell-segments.json').read_text());s=np.array([q['segment'] for q in r]);p=s.reshape(-1,3);pairs=cKDTree(p).query_pairs(1e-8);par=np.arange(len(p))
+def find(x):
+ while par[x]!=x:par[x]=par[par[x]];x=par[x]
+ return x
+for i,j in pairs:par[find(i)]=find(j)
+adj=defaultdict(set)
+for k in range(len(r)):
+ a,c=find(2*k),find(2*k+1);adj[a].add(c);adj[c].add(a)
+seen=set();cs=[]
+for a in adj:
+ if a in seen:continue
+ stack=[a];co=set()
+ while stack:
+  c=stack.pop()
+  if c in co:continue
+  co.add(c);seen.add(c);stack.extend(adj[c]-co)
+ ids=[k for k in range(len(r)) if find(2*k) in co];pts=s[ids].reshape(-1,3)
+ cs.append({'segment_indices':ids,'count':len(ids),'length_mm_sum':sum(r[k]['length_mm'] for k in ids),'bounds_m':[pts.min(0).tolist(),pts.max(0).tolist()],'band_parts':dict(Counter(r[k]['band_part'] for k in ids)),'endpoint_valences':dict(Counter(len(adj[i]) for i in co))})
+cs.sort(key=lambda c:-c['length_mm_sum'])
+for i,c in enumerate(cs):c['component_id']=i
+for q in r:
+ tri=b['points'][b['triangles'][q['band_face']]];v=np.asarray(q['segment']).mean(0)-tri[0];ab=tri[1]-tri[0];ac=tri[2]-tri[0];x=np.linalg.lstsq(np.stack([ab,ac],1),v,rcond=None)[0];bc=np.r_[1-x.sum(),x];q['band_uv_midpoint']=(bc@b['source_uv'][b['triangles'][q['band_face']]]).tolist();q['shell_part']=int(sh['face_parts'][q['obstacle_face']]);q['band_face_role']=int(b['face_roles'][q['band_face']])
+rep={'inputs':{k:{'path':str(B/v),'sha256':hashlib.sha256((B/v).read_bytes()).hexdigest()} for k,v in {'band':'band_ear_v12/structural_rebuild/retained-band.npz','shell':'ear_rim_v11/structural_rebuild/retained-shell.npz','anatomy':'body_interface_v9/constrained_fit/retained-anatomy.npz'}.items()},'method':'Cached exact-hash V12 intersection segments. Components join segment endpoints within 1e-8 m. This only groups curves and does not merge overlapping segments/union spatial length or infer visibility/artistic intent. UV interpolated geometrically on each unchanged triangle.','total_segments':len(r),'length_mm_sum':sum(q['length_mm'] for q in r),'by_band_part':{str(i):{'count':sum(q['band_part']==i for q in r),'length_mm_sum':sum(q['length_mm'] for q in r if q['band_part']==i),'uv_v_range':[min(q['band_uv_midpoint'][1] for q in r if q['band_part']==i),max(q['band_uv_midpoint'][1] for q in r if q['band_part']==i)]} for i in [0,1,2,3] if any(q['band_part']==i for q in r)},'by_shell_part':dict(Counter(q['shell_part'] for q in r)),'front_guard_y_lt_minus028':{'segment_midpoint_count':int((s.mean(1)[:,1]<-.28).sum()),'length_mm_sum':sum(q['length_mm'] for q in r if np.mean(q['segment'],0)[1]<-.28)},'curve_components':cs}
+(O/'contact-map.json').write_text(json.dumps(rep,indent=2));(O/'contact-segments-with-uv.json').write_text(json.dumps(r,indent=2));print(json.dumps({k:v for k,v in rep.items() if k not in ['curve_components','inputs']},indent=2))
+# Plot diagnostic only, no modified mesh.
+import matplotlib;matplotlib.use('Agg');import matplotlib.pyplot as plt
+from matplotlib.collections import LineCollection
+fig,axs=plt.subplots(1,3,figsize=(18,6));cmap={0:'#d99b16',1:'#9b4a91',2:'#555555',3:'#14a6a6'}
+for ax,dims,label in zip(axs,[(0,2),(0,1),(1,2)],['Frente XZ','Topo XY','Perfil YZ']):
+ for part in [0,1,2,3]:
+  ids=[i for i,q in enumerate(r) if q['band_part']==part]
+  if ids:ax.add_collection(LineCollection(s[ids][:,:,dims]*1000,colors=cmap[part],linewidths=.7,label={0:'parede externa',1:'parede interna',2:'retorno',3:'fechamento V12'}[part]))
+ ax.autoscale();ax.set_aspect('equal');ax.set_title(label);ax.set_xlabel('XYZ'[dims[0]]+' (mm)');ax.set_ylabel('XYZ'[dims[1]]+' (mm)');ax.grid(alpha=.2)
+axs[0].legend(fontsize=8);fig.suptitle('V13 diagnóstico: 1360 segmentos de cruzamento faixa V12 × casca V11\nSoma sem união/deduplicação; cruzamento não implica visibilidade ou intenção');fig.tight_layout();fig.savefig(O/'contact-map-projections.png',dpi=150)

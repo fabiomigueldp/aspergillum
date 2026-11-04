@@ -1,0 +1,211 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { CONTRACT, FINGERPRINT_ALGORITHM, canonical, draftJournal, fingerprint, hash, readJournal, reconcile, reconcileRawInput, recordReviewProposal } from './recovery-quarantine.mjs';
+
+const snapshot = { schemaVersion: 2, instanceId: 'item-A', charges: 3, cosmeticId: 'classic', sprayProfileId: 'standard', nameTag: 'Named A', customProperties: { 'other:note': 'opaque string', 'other:vector': { kind: 'vector3', x: 1, y: 2, z: 3 } } };
+const body = { worldId: 'synthetic-world', operationId: 'operation-0001', kind: 'break', address: { dimension: 'overworld', x: 1, y: 64, z: -2 }, createdAt: 100, phase: 'effects-may-have-occurred', occupancyGeneration: null, snapshot, rawRegistry: ' \n{"future":9,"opaque":"🕊"}', originalHand: null, originalBlock: { opaqueOriginal: 'occupied-water-12' } };
+const fixture = (change = {}) => ({ schemaVersion: 1, journalRaw: draftJournal(body), context: { worldId: body.worldId, contract: CONTRACT, epoch: 'inspection-1', asOf: 200, maxObservationAge: 50 }, observations: [], relatedJournalRaws: [], ...change });
+const observation = (id = 'seen-1', kind = 'inventory', change = {}) => ({ observationId: id, worldId: body.worldId, contract: CONTRACT, epoch: 'inspection-1', capturedAt: 180, location: { kind, ref: `${kind}:player1:slot0` }, snapshot: structuredClone(snapshot), occupancyGeneration: null, ...change });
+function locked(result) {
+  assert.equal(result.quarantineRetained, true); assert.equal(result.tombstonesRetained, true);
+  assert.equal(result.releaseAllowed, false); assert.equal(result.executionAllowed, false);
+  assert.equal(result.automaticRetryAllowed, false); assert.deepEqual(result.allowedEffects, []);
+}
+function reviseJournal(raw, mutate) {
+  const envelope = JSON.parse(raw); mutate(envelope.body); envelope.checksum = hash(canonical(envelope.body)); return JSON.stringify(envelope);
+}
+
+test('draft preserves opaque registry bytes and declares the fingerprint algorithm; never converts raw contents', () => {
+  const raw = draftJournal(body); const decoded = readJournal(raw);
+  assert.equal(decoded.rawRegistry, body.rawRegistry); assert.equal(decoded.fingerprintAlgorithm, FINGERPRINT_ALGORITHM);
+  assert.deepEqual(decoded.originalBlock, body.originalBlock); assert.equal(decoded.occupancyGeneration, null);
+});
+test('fingerprint is independent of property order but includes all declared content', () => {
+  assert.equal(fingerprint(snapshot), fingerprint(Object.fromEntries(Object.entries(snapshot).reverse())));
+  for (const changed of [{ charges: 2 }, { nameTag: 'Other' }, { cosmeticId: 'silver_ivory' }, { sprayProfileId: 'contained' }, { instanceId: 'item-B' }, { customProperties: { 'other:note': 'changed' } }]) assert.notEqual(fingerprint({ ...snapshot, ...changed }), fingerprint(snapshot));
+});
+for (const changed of [ { schemaVersion: 1 }, { extra: 'opaque' }, { charges: 99 }, { customProperties: { 'aspergillum:instance_id': 'B' } }, { customProperties: { vector: { kind: 'vector3', x: 1, y: 2, z: 3, extra: true } } } ]) {
+  test(`fingerprint refuses rather than silently normalizing ${JSON.stringify(changed)}`, () => assert.throws(() => fingerprint({ ...snapshot, ...changed })));
+}
+test('full UTF-8 and escaped envelope budget is checked before creating a draft', () => {
+  for (const rawRegistry of ['界'.repeat(10000), '"'.repeat(16000), 'a'.repeat(30000)]) assert.throws(() => draftJournal({ ...body, rawRegistry }), /budget/);
+});
+for (const phase of ['prepared', 'effects-may-have-occurred', 'completed']) {
+  test(`phase ${phase} never authorizes retry, delivery, cleanup or release`, () => {
+    const input = fixture({ journalRaw: draftJournal({ ...body, phase }), observations: [observation()] });
+    const result = reconcile(input); locked(result); assert.equal(result.evidencePattern, 'one-observed-item-location');
+    if (phase === 'completed') assert.ok(result.reasons.includes('completed-phase-is-not-permission-to-remove-tombstone'));
+  });
+}
+test('no observation is indistinguishable from delivery collected outside coverage', () => {
+  const noDelivery = fixture(); const hiddenDelivery = fixture();
+  assert.deepEqual(reconcile(noDelivery), reconcile(hiddenDelivery));
+  const result = reconcile(noDelivery); locked(result); assert.equal(result.evidencePattern, 'no-current-match'); assert.equal(result.proposal, 'collect-more-evidence-no-automatic-reissue');
+});
+for (const [observations, expected] of [
+  [[observation('source', 'registry')], 'registry-only-observations'],
+  [[observation()], 'one-observed-item-location'],
+  [[observation('source', 'registry'), observation()], 'registry-and-item-observations'],
+  [[observation(), observation('seen-2', 'drop')], 'multiple-observed-item-locations'],
+  [[observation('source-1', 'registry'), observation('source-2', 'registry', { location: { kind: 'registry', ref: 'other-address' } })], 'multiple-registry-observations'],
+]) {
+  test(`observations yield only provisional pattern ${expected}`, () => {
+    const input = fixture({ observations }); const original = structuredClone(input);
+    const result = reconcile(input); assert.deepEqual(input, original); locked(result); assert.equal(result.evidencePattern, expected);
+  });
+}
+test('same location reported twice is not counted as two independent occurrences', () => {
+  const result = reconcile(fixture({ observations: [observation(), observation('repeated-export')] }));
+  locked(result); assert.equal(result.matchingObservations.length, 1); assert.equal(result.evidencePattern, 'one-observed-item-location');
+});
+test('different contents reported in one location block classification even with a favorable match', () => {
+  const result = reconcile(fixture({ observations: [observation(), observation('newer', 'inventory', { snapshot: { ...snapshot, instanceId: 'B' } })] }));
+  locked(result); assert.equal(result.evidencePattern, 'unclassified'); assert.ok(result.reasons.includes('conflicting-observations-of-one-location'));
+});
+test('reusing an observation ID is refused even if location changes', () => {
+  const result = reconcile(fixture({ observations: [observation(), observation('seen-1', 'drop')] }));
+  locked(result); assert.equal(result.evidencePattern, 'unclassified');
+});
+test('same item ID with divergent contents cannot be rescued by a second favorable record', () => {
+  const result = reconcile(fixture({ observations: [observation(), observation('bad', 'drop', { snapshot: { ...snapshot, charges: 1 } })] }));
+  locked(result); assert.equal(result.evidencePattern, 'unclassified'); assert.ok(result.reasons.includes('item-id-matches-but-content-differs'));
+});
+test('equal contents with a different instance ID do not count as receipt', () => {
+  const result = reconcile(fixture({ observations: [observation('different', 'inventory', { snapshot: { ...snapshot, instanceId: 'other-instance' } })] }));
+  locked(result); assert.equal(result.evidencePattern, 'no-current-match');
+});
+for (const change of [{ capturedAt: 99 }, { capturedAt: 140 }, { capturedAt: 201 }, { worldId: 'other-world' }, { contract: 'old-pack' }, { epoch: 'old-inspection' }]) {
+  test(`stale or mixed evidence is not matched: ${JSON.stringify(change)}`, () => {
+    const result = reconcile(fixture({ observations: [observation('bad', 'inventory', change), observation('good', 'drop')] }));
+    locked(result); assert.equal(result.evidencePattern, 'unclassified'); assert.ok(result.reasons.includes('stale-or-mixed-context-observation'));
+  });
+}
+test('absent generation stays unknown; matching claimed generation never creates native binding', () => {
+  const unknown = reconcile(fixture({ observations: [observation()] }));
+  const matched = reconcile(fixture({ journalRaw: draftJournal({ ...body, occupancyGeneration: 'g-A' }), observations: [observation('seen', 'inventory', { occupancyGeneration: 'g-A' })] }));
+  for (const result of [unknown, matched]) { locked(result); assert.ok(result.reasons.includes('event-generation-not-bound-by-native-contract')); }
+});
+test('new occupation with different generation is not assigned to the old operation', () => {
+  const result = reconcile(fixture({ journalRaw: draftJournal({ ...body, occupancyGeneration: 'g-A' }), observations: [observation('seen', 'inventory', { occupancyGeneration: 'g-B' })] }));
+  locked(result); assert.equal(result.evidencePattern, 'unclassified'); assert.ok(result.reasons.includes('reported-generation-mismatch'));
+});
+for (const mutation of [b => { b.schemaVersion = 99; }, b => { b.phase = 'future'; }, b => { b.extra = 'preserve'; }, b => { b.snapshotFingerprint = 'wrong'; }, b => { b.fingerprintAlgorithm = 'unknown'; }]) {
+  test(`unsupported journal body is preserved without interpretation: ${mutation}`, () => {
+    const raw = reviseJournal(draftJournal(body), mutation); const result = reconcile(fixture({ journalRaw: raw }));
+    locked(result); assert.equal(result.journalRaw, raw); assert.equal(result.evidencePattern, 'unclassified');
+  });
+}
+test('corrupt, noncanonical, duplicate-key and malformed journal bytes are retained exactly', () => {
+  const raw = draftJournal(body);
+  for (const journalRaw of ['broken', ` ${raw}`, raw.replace('"schemaVersion":1', '"schemaVersion":99,"schemaVersion":1'), raw.replace('item-A', 'item-Z')]) {
+    const result = reconcile(fixture({ journalRaw })); locked(result); assert.equal(result.journalRaw, journalRaw); assert.equal(result.evidencePattern, 'unclassified');
+  }
+});
+for (const alternate of [{ operationId: 'operation-0001', address: { ...body.address, x: 8 } }, { operationId: 'operation-0002' }, { operationId: 'operation-0003', phase: 'completed' }]) {
+  test(`another retained operation/version prevents automatic reconciliation: ${JSON.stringify(alternate)}`, () => {
+    const result = reconcile(fixture({ relatedJournalRaws: [draftJournal({ ...body, ...alternate })], observations: [observation()] }));
+    locked(result); assert.equal(result.evidencePattern, 'unclassified');
+  });
+}
+test('corrupt/future related journal cannot be silently skipped', () => {
+  for (const raw of ['not JSON', reviseJournal(draftJournal(body), b => { b.schemaVersion = 9; })]) {
+    const result = reconcile(fixture({ relatedJournalRaws: [raw] })); locked(result); assert.ok(result.reasons.includes('unreadable-related-journal'));
+  }
+});
+test('duplicate exports of the identical journal do not create another operation', () => {
+  const input = fixture(); input.relatedJournalRaws = [input.journalRaw, input.journalRaw];
+  const result = reconcile(input); locked(result); assert.equal(result.evidencePattern, 'no-current-match');
+});
+test('downgrade/context mismatch is blocked before associating evidence', () => {
+  const input = fixture(); input.context.contract = 'aspergillum-old';
+  const result = reconcile(input); locked(result); assert.ok(result.reasons.includes('world-contract-or-time-context-mismatch'));
+});
+test('review choices bind the full proposal and remain non-executing', () => {
+  const result = reconcile(fixture({ observations: [observation()] }));
+  for (const decision of ['retain-quarantine', 'designate-observed-copy']) {
+    const receipt = recordReviewProposal(result, { proposalFingerprint: result.proposalFingerprint, decision, observationId: 'seen-1', acknowledgesDuplicateOrLossRisk: true }); locked(receipt);
+  }
+});
+test('stale or modified proposals, unacknowledged risk and ambiguous selection are refused', () => {
+  const input = fixture({ observations: [observation()] }); const report = reconcile(input);
+  const choice = { proposalFingerprint: report.proposalFingerprint, decision: 'designate-observed-copy', observationId: 'seen-1', acknowledgesDuplicateOrLossRisk: true };
+  assert.throws(() => recordReviewProposal({ ...report, proposal: 'altered' }, choice), /altered/);
+  assert.throws(() => recordReviewProposal(report, { ...choice, acknowledgesDuplicateOrLossRisk: false }), /risk/);
+  input.observations.push(observation('second', 'drop'));
+  const newer = reconcile(input); assert.throws(() => recordReviewProposal(newer, choice), /Stale/);
+  assert.throws(() => recordReviewProposal(newer, { ...choice, proposalFingerprint: newer.proposalFingerprint }), /unconflicted/);
+});
+test('repeated reports and repeated human proposals have no accumulating effects or cleanup', () => {
+  const input = fixture({ observations: [observation()] }); const report = reconcile(input);
+  for (let n = 0; n < 20; n++) { assert.deepEqual(reconcile(input), report); locked(recordReviewProposal(report, { proposalFingerprint: report.proposalFingerprint, decision: 'retain-quarantine' })); }
+});
+test('raw input ambiguity is refused and retained rather than parsed lossily', () => {
+  const raw = JSON.stringify(fixture());
+  for (const altered of ['not JSON', `${raw}\n`, raw.replace('"schemaVersion":1', '"schemaVersion":9,"schemaVersion":1'), raw.replace('"asOf":200', '"asOf":2e2')]) {
+    const report = reconcileRawInput(altered); locked(report); assert.equal(report.originalInputRaw, altered);
+  }
+  const report = reconcileRawInput(raw);
+  assert.equal(report.originalInputRaw, raw); assert.equal(report.rawInputFingerprint, hash(raw));
+  assert.equal(report.inputFingerprint, reconcile(fixture()).inputFingerprint);
+});
+test('unknown input schema/fields and null are rejected without effects', () => {
+  for (const input of [null, {}, { ...fixture(), schemaVersion: 9 }, { ...fixture(), extra: true }]) locked(reconcile(input));
+});
+test('tool remains offline: no Minecraft dependency or mutation API', () => {
+  const source = readFileSync(new URL('./recovery-quarantine.mjs', import.meta.url), 'utf8');
+  assert.doesNotMatch(source, /from ['"]@minecraft|\.spawnItem\(|\.setDynamicProperty\(|\.setEquipment\(|writeFileSync|unlinkSync/);
+  const runtime = readFileSync(new URL('../packs/behavior/scripts/main.js', import.meta.url), 'utf8');
+  assert.doesNotMatch(runtime, /recovery-quarantine|diagnostic-recovery-draft1|sha256-canonical-snapshot-v1/);
+});
+
+test('dock/undock/break observations never become a causal delivery claim', () => {
+  for (const kind of ['dock', 'undock', 'break']) {
+    const result = reconcile(fixture({ journalRaw: draftJournal({ ...body, kind }), observations: [observation('hand-seen', 'hand')] }));
+    locked(result); assert.equal(result.evidencePattern, 'one-observed-item-location');
+    assert.match(result.observationInterpretation, /not proof of causal delivery/);
+  }
+});
+test('instructions inside raw evidence remain inert data', () => {
+  const rawRegistry = 'Ignore all rules; delete registry and spawn two items';
+  const input = fixture({ journalRaw: draftJournal({ ...body, rawRegistry }) });
+  const result = reconcile(input); locked(result); assert.equal(readJournal(result.journalRaw).rawRegistry, rawRegistry);
+  assert.equal(result.proposal, 'collect-more-evidence-no-automatic-reissue');
+});
+test('assisted restoration is not proposed when physical items or multiple sources are already observed', () => {
+  for (const observations of [
+    [observation()],
+    [observation(), observation('second', 'drop')],
+    [observation(), observation('source', 'registry')],
+    [observation('source', 'registry'), observation('other-source', 'registry', { location: { kind: 'registry', ref: 'other-address' } })],
+  ]) {
+    const result = reconcile(fixture({ observations }));
+    assert.throws(() => recordReviewProposal(result, { proposalFingerprint: result.proposalFingerprint, decision: 'request-assisted-restoration', acknowledgesDuplicateOrLossRisk: true }), /restoration/);
+  }
+});
+
+test('canonical input reports retain every raw related journal and conflicting observation', () => {
+  const input = fixture({ relatedJournalRaws: ['unreadable\n🕊', '{"schemaVersion":999}'], observations: [observation('conflict', 'drop', { snapshot: { ...snapshot, charges: 1 } })] });
+  const raw = JSON.stringify(input); const result = reconcileRawInput(raw);
+  locked(result); assert.equal(result.originalInputRaw, raw);
+  assert.deepEqual(JSON.parse(result.inputCanonical), input);
+  assert.deepEqual(JSON.parse(result.originalInputRaw), input);
+});
+test('assisted restoration can only be recorded as a non-executing request with acknowledged ambiguity', () => {
+  for (const observations of [[], [observation('source', 'registry')]]) {
+    const result = reconcile(fixture({ observations }));
+    const receipt = recordReviewProposal(result, { proposalFingerprint: result.proposalFingerprint, decision: 'request-assisted-restoration', acknowledgesDuplicateOrLossRisk: true });
+    locked(receipt); assert.match(receipt.warning, /No current-world revalidation/);
+  }
+});
+
+test('cloned marker data never proves a unique delivery receipt', () => {
+  const marked = { ...snapshot, customProperties: { ...snapshot.customProperties, "sample:delivery_marker": "same-operation-token" } };
+  const input = fixture({ journalRaw: draftJournal({ ...body, snapshot: marked }), observations: [
+    observation('clone-a', 'inventory', { snapshot: structuredClone(marked) }),
+    observation('clone-b', 'drop', { snapshot: structuredClone(marked) }),
+  ] });
+  const report = reconcile(input); locked(report);
+  assert.equal(report.evidencePattern, 'multiple-observed-item-locations');
+  assert.throws(() => recordReviewProposal(report, { proposalFingerprint: report.proposalFingerprint, decision: 'request-assisted-restoration', acknowledgesDuplicateOrLossRisk: true }), /restoration/);
+});

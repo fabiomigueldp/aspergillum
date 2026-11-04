@@ -1,0 +1,29 @@
+from pathlib import Path
+O=Path(__file__).resolve().parent;B=O.parents[1];S=B/'ear_rim_v11/independent_diagnosis'
+s=(S/'review_rebuilt_rim.py').read_text()
+s=s.replace("basepath=B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz'", "basepath=B/'shell_band_v5/retained_candidate/evidence/band-paired.npz'")
+s=s.replace("bp=B/'shell_band_v5/retained_candidate/evidence/band-paired.npz'", "bp=B/'ear_rim_v11/structural_rebuild/retained-shell.npz'")
+s=s.replace("for label,ob in [('anatomy',a),('band',b)]:", "for label,ob in [('anatomy',a),('shell',b)]:")
+s=s.replace("oldw=np.array([r['point'] for r in json.loads((O/'contact-spatial-witnesses.json').read_text())]);oldtree=cKDTree(oldw)", "")
+s=s.replace(";r['witness_nearest_baseline_witness_mm_percentiles']=np.percentile(oldtree.query(pts)[0]*1000,[0,50,95,100]).tolist() if len(pts) else []", "")
+s=s.replace("'mantle_faces_exact':bool(np.all(role[part==2]==0))", "'source_front_faces_exact':bool(all(i in ff[exact] for i in np.flatnonzero(np.any(p0[f0][:,:,1]<-.28,axis=1))))")
+s=s.replace("quality[label]={'faces'", "\n if not np.any(mask):continue\n quality[label]={'faces'")
+# All-triangle float64 broadphase does not rely on Blender's float32 BVH.
+s=s.replace("bvh=set(tuple(sorted((i,j))) for i,j in tree.overlap(tree) if i!=j);allpairs", "lo=p[f].min(1);hi=p[f].max(1);bvh=set()\nfor i in range(len(f)):\n js=np.flatnonzero(np.all(hi[i]>=lo[i+1:],axis=1)&np.all(hi[i+1:]>=lo[i],axis=1))+i+1\n bvh.update((i,int(j)) for j in js)\nallpairs")
+# Keep the documented comparable float64 screen and a more sensitive longdouble screen.
+s=s.replace("cross,wpts,wi=hits(p,f,p,f,allpairs);shared=", "cross,wpts,wi=hits(p,f,p,f,allpairs);\nexec((O/'strict_longdouble.py').read_text())\nlongcross=strict_longdouble(p,f,allpairs);cross=np.array(sorted(set(map(tuple,cross))|set(map(tuple,longcross))),dtype=int).reshape(-1,2)\nshared=")
+# Do not duplicate the exploratory float32 ray-chord test; use exact all-triangle script.
+start=s.index('# Rim boundary segments:');end=s.index("rep['input_hashes_finish']",start)
+s=s[:start]+s[end:]
+s=s.replace("['topology','self_intersection','preservation','near_rim_thickness','frozen_inputs_intact']", "['topology','self_intersection','preservation','frozen_inputs_intact']")
+(O/'review_candidate.py').write_text(s)
+s=(S/'resolve_predicate_witnesses.py').read_text().replace('ear_rim_v11/structural_rebuild','band_ear_v12/structural_rebuild').replace("mp.mpf('1e-8')", "mp.mpf('1e-60')").replace('1e-8 strict barycentric thresholds','1e-60 barycentric guard against arithmetic cancellation at shared boundaries').replace('double_precision_candidate_pairs','floating_candidate_pairs')
+(O/'resolve_predicates.py').write_text(s)
+for fn in ['measure_exact_rim_chords.py','check_patch_domains.py']:
+ s=(S/fn).read_text().replace('ear_rim_v11/structural_rebuild','band_ear_v12/structural_rebuild').replace("base=np.load(B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz')", "base=np.load(B/'shell_band_v5/retained_candidate/evidence/band-paired.npz')")
+ (O/fn).write_text(s)
+s=(S/'measure_rim_lips.py').read_text().replace('ear_rim_v11/structural_rebuild','band_ear_v12/structural_rebuild')
+a=s.index("s=np.load(B/");z=s.index("edges=defaultdict(list)",a)
+s=s[:a]+"s=np.load(B/'shell_band_v5/retained_candidate/evidence/band-paired.npz');p=d['points'];f=d['triangles'];new=d['face_parts']==3;parents=d['baseline_face_indices'];side=s['source_side'];fc=np.array([x[0] if np.all(x==x[0]) else -2 for x in side[s['triangles']]]);"+s[z:]
+s=s.replace('V5 cap source_side joined to V7 bridge outer_source_ids=0 and inner_source_ids=1.','V5 band source_side=0 outward and source_side=1 inward.')
+(O/'measure_rim_lips.py').write_text(s)

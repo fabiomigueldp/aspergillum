@@ -1,0 +1,73 @@
+"""Exact asset reconstruction and native transport control. Never a Minecraft screenshot.
+--native replaces only three named bones with retained native triangles, while
+sampling the SAME exported textures/UV basis and bypassing alpha on those triangles.
+"""
+import bpy,numpy as np,json,math,hashlib,sys,argparse
+from pathlib import Path
+from mathutils import Vector,Euler
+R=Path(__file__).resolve().parents[1];B=R.parent
+ap=argparse.ArgumentParser();ap.add_argument('--geo',required=True);ap.add_argument('--texture',required=True);ap.add_argument('--normal');ap.add_argument('--tag',required=True);ap.add_argument('--mode',choices=['flat','color','normal','unlit'],default='flat');ap.add_argument('--native',action='store_true');ap.add_argument('--native-uv-contract',action='store_true');ap.add_argument('--views',default='front,threequarter,profile,back,head-front,band-front,left-ear,right-ear,mantle-back');ap.add_argument('--no-halo',action='store_true');ap.add_argument('--samples',type=int,default=48);args=ap.parse_args(sys.argv[sys.argv.index('--')+1:]);GEO=Path(args.geo);TEX=Path(args.texture);NORMAL=Path(args.normal) if args.normal else None
+assert args.mode!='normal' or NORMAL is not None
+source_native={'part_00':B/'band_shell_v13/constrained_fit/retained-band.npz','part_01':B/'ear_rim_v11/structural_rebuild/retained-shell.npz','part_15':B/'body_interface_v9/constrained_fit/retained-anatomy.npz'}
+g=json.loads(GEO.read_text())['minecraft:geometry'][0];tw=g['description']['texture_width'];th=g['description']['texture_height']
+bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False);s=bpy.context.scene;s.render.engine='CYCLES';s.cycles.samples=args.samples;s.cycles.transparent_max_bounces=512;s.cycles.use_denoising=False;s.render.threads_mode='FIXED';s.render.threads=8;s.view_settings.view_transform='Standard';s.view_settings.look='None';s.view_settings.exposure=0;s.render.image_settings.file_format='PNG';s.world.use_nodes=True;bg=s.world.node_tree.nodes.get('Background');bg.inputs['Color'].default_value=(.60,.65,.72,1);bg.inputs['Strength'].default_value=.65
+ld=bpy.data.lights.new('Fixed diagnostic sunlight','SUN');lo=bpy.data.objects.new('Fixed diagnostic sunlight',ld);s.collection.objects.link(lo);lo.rotation_euler=(.35,-.5,-.35);ld.energy=1.5;ld.angle=.1
+teximage=bpy.data.images.load(str(TEX));teximage.pack();normimage=None
+if args.mode=='normal':normimage=bpy.data.images.load(str(NORMAL));normimage.colorspace_settings.name='Non-Color';normimage.pack()
+def material(native=False):
+ m=bpy.data.materials.new(('Native exact triangle' if native else 'JSON alpha quad')+' '+args.mode+' external diagnostic');m.use_nodes=True;n=m.node_tree.nodes;n.clear();l=m.node_tree.links;out=n.new('ShaderNodeOutputMaterial');tr=n.new('ShaderNodeBsdfTransparent');bs=n.new('ShaderNodeEmission' if args.mode=='unlit' else 'ShaderNodeBsdfDiffuse');tex=n.new('ShaderNodeTexImage');tex.image=teximage;tex.interpolation='Closest';tex.extension='CLIP'
+ if args.mode=='flat':bs.inputs['Color'].default_value=(.63,.62,.59,1)
+ else:l.new(tex.outputs['Color'],bs.inputs['Color'])
+ surface=bs.outputs[0]
+ if not native:
+  mix=n.new('ShaderNodeMixShader');l.new(tex.outputs['Alpha'],mix.inputs[0]);l.new(tr.outputs[0],mix.inputs[1]);l.new(surface,mix.inputs[2]);surface=mix.outputs[0]
+ if args.mode=='normal':
+  nt=n.new('ShaderNodeTexImage');nt.image=normimage;nt.interpolation='Closest';nt.extension='CLIP';sep=n.new('ShaderNodeSeparateColor');sep.mode='RGB';inv=n.new('ShaderNodeMath');inv.operation='SUBTRACT';inv.inputs[0].default_value=1;comb=n.new('ShaderNodeCombineColor');comb.mode='RGB';normal=n.new('ShaderNodeNormalMap');normal.space='TANGENT';normal.inputs['Strength'].default_value=1;l.new(nt.outputs['Color'],sep.inputs[0]);l.new(sep.outputs['Green'],inv.inputs[1]);l.new(sep.outputs['Red'],comb.inputs['Red']);l.new(inv.outputs[0],comb.inputs['Green']);l.new(sep.outputs['Blue'],comb.inputs['Blue']);l.new(comb.outputs[0],normal.inputs['Color']);l.new(normal.outputs['Normal'],bs.inputs['Normal'])
+ geom=n.new('ShaderNodeNewGeometry');mix=n.new('ShaderNodeMixShader');l.new(geom.outputs['Backfacing'],mix.inputs[0]);l.new(surface,mix.inputs[1]);l.new(tr.outputs[0],mix.inputs[2]);l.new(mix.outputs[0],out.inputs[0]);return m
+mats={False:material(False),True:material(True)}
+facecorners={'north':[(0,1,0),(0,0,0),(1,0,0),(1,1,0)],'south':[(1,1,1),(1,0,1),(0,0,1),(0,1,1)],'east':[(1,1,0),(1,0,0),(1,0,1),(1,1,1)],'west':[(0,1,1),(0,0,1),(0,0,0),(0,1,0)],'up':[(0,1,1),(0,1,0),(1,1,0),(1,1,1)],'down':[(0,0,0),(0,0,1),(1,0,1),(1,0,0)]}
+def quad(c,face):
+ o=Vector(c['origin']);size=Vector(c['size']);pv=Vector(c.get('pivot',[o[i]+size[i]/2 for i in range(3)]));pivot=Vector((-pv.x,pv.y,pv.z));a=c.get('rotation',[0,0,0]);rot=Euler(tuple(math.radians(x) for x in [-a[0],-a[1],a[2]]),'XYZ').to_matrix();q=[]
+ for k in facecorners[face]:
+  p=o+Vector([k[i]*size[i] for i in range(3)]);bb=rot@(Vector((-p.x,p.y,p.z))-pivot)+pivot;q.append([bb.x/16,-bb.z/16,bb.y/16])
+ return np.array(q)
+counts={};uv_native_errors=[];uv_contract_deltas={};uv_contract_worst={}
+contract=dict(np.load(R/'export_work/transport_arrays.npz')) if args.native else None
+contract_indices={pi:np.flatnonzero(contract['part']==pi) for pi in [0,1,15]} if args.native else {}
+for bone in g['bones']:
+ name=bone['name'];assert not bone.get('parent') and not any(bone.get('rotation',[0,0,0]));
+ if args.no_halo and name=='part_10':continue
+ native=args.native and name in source_native;data=dict(np.load(source_native[name])) if native else None
+ if native:assert len(bone['cubes'])==len(data['triangles']), 'Native control requires cube order to equal retained face order'
+ vv=[];ff=[];uvs=[]
+ for ci,c in enumerate(bone.get('cubes',[])):
+  if native:assert len(c['uv'])==1
+  for fname,uv in c['uv'].items():
+   q=quad(c,fname);u,v=uv['uv'];du,dv=uv['uv_size'];st=len(vv)
+   if native:
+    p=data['points'][data['triangles'][ci]];U=q[3]-q[0];V=q[1]-q[0];delta=p-q[0];pu=delta@U/(U@U);pv=delta@V/(V@V);rec=q[0]+pu[:,None]*U+pv[:,None]*V;uv_native_errors.extend(np.linalg.norm(rec-p,axis=1).tolist());vv.extend(p.tolist());ff.append((st,st+1,st+2));projected=np.array([((u+du*x)/tw,1-(v+dv*y)/th) for x,y in zip(pu,pv)]);pi=int(name.split('_')[1]);ti=contract_indices[pi][ci];assert int(contract['native_face'][ti])==ci;order=contract['native_vertex_order'][ti];loc=contract['mask_local'][ti];sz=contract['quad_size'][ti];exact=[]
+    for vi in data['triangles'][ci]:
+     kk=int(np.flatnonzero(order==vi)[0]);xx,yy=loc[kk]/sz;exact.append(((u+du*xx)/tw,1-(v+dv*(1-yy))/th))
+    exact=np.array(exact);delta=float(np.max(np.abs((projected-exact)*np.array([tw,th]))));uv_contract_deltas[name]=max(uv_contract_deltas.get(name,0),delta)
+    if delta>=uv_contract_deltas[name]:uv_contract_worst[name]={'face':ci,'max_texel_delta':delta}
+    uvs.extend(exact.tolist() if args.native_uv_contract else projected.tolist())
+   else:
+    
+    if name in source_native:
+     vv.extend(q[:3].tolist());ff.append(tuple(range(st,st+3)));uvs.extend([(u/tw,1-v/th),(u/tw,1-(v+dv)/th),((u+du)/tw,1-(v+dv)/th)])
+    else:
+     vv.extend(q.tolist());ff.append(tuple(range(st,st+4)));uvs.extend([(u/tw,1-v/th),(u/tw,1-(v+dv)/th),((u+du)/tw,1-(v+dv)/th),((u+du)/tw,1-v/th)])
+ me=bpy.data.meshes.new(name+(' NATIVE retained control' if native else ' FROM JSON ONLY'));me.from_pydata(vv,[],ff);me.update();ob=bpy.data.objects.new(me.name,me);s.collection.objects.link(ob);me.materials.append(mats[native or name in source_native]);uvlayer=me.uv_layers.new(name='Exported atlas UV')
+ for loop,xy in zip(uvlayer.data,uvs):loop.uv=xy
+ for p in me.polygons:p.use_smooth=False
+ counts[name]={'native_control':native,'faces':len(ff),'vertices_unwelded':len(vv)}
+cd=bpy.data.cameras.new('Fixed orthographic diagnostic');cam=bpy.data.objects.new(cd.name,cd);s.collection.objects.link(cam);s.camera=cam;cd.type='ORTHO'
+views=[('front',(0,-8,1.90),(0,-.03,1.88),4.25,(800,1100)),('threequarter',(4.5,-7.2,2.5),(0,-.03,1.88),4.25,(800,1100)),('profile',(8,-.03,1.90),(0,-.03,1.88),4.25,(800,1100)),('back',(0,8,1.90),(0,-.03,1.88),4.25,(800,1100)),('head-front',(.25,-3.5,3.44),(.03,-.20,3.43),.85,(900,900)),('band-front',(.035,-3.5,3.58),(.035,-.30,3.58),.52,(1000,1000)),('left-ear',(-3,-.16,3.50),(-.085,-.205,3.485),.50,(1000,1000)),('right-ear',(3,-.16,3.48),(.17,-.205,3.46),.50,(1000,1000)),('mantle-back',(1.6,4.5,2.45),(0,0,2.35),2.35,(900,1100)),('mantle-front',(1.6,-4.5,2.45),(0,0,2.35),2.35,(900,1100))]
+selected=set(args.views.split(','));outputs=[]
+for name,pos,target,scale,res in views:
+ if name not in selected:continue
+ cam.location=pos;cam.rotation_euler=(Vector(target)-cam.location).to_track_quat('-Z','Y').to_euler();cd.ortho_scale=scale;s.render.resolution_x,s.render.resolution_y=res;s.render.resolution_percentage=100;path=R/f'evidence/{args.tag}-{name}.png';s.render.filepath=str(path);bpy.ops.render.render(write_still=True);outputs.append(str(path.relative_to(R)))
+s['analytical_clip_control_not_Bedrock']=True;s['minecraft_tested']=False;s['render_scope']='Three native control parts with unchanged JSON context' if args.native else 'Only faces reconstructed from supplied Bedrock JSON';s['source_geometry_sha256']=hashlib.sha256(GEO.read_bytes()).hexdigest();s['diagnostic_material_mode']=args.mode
+bpy.ops.wm.save_as_mainfile(filepath=str(R/f'evidence/{args.tag}-diagnostic.blend'))
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+report={'engine':'Blender Cycles external diagnostic','minecraft_screenshot':False,'all_rendered_geometry_from_json':True,'analytically_clipped_three_parts':True,'representable_as_Bedrock_cube_geometry':False,'native_control_parts':{k:{'path':str(v),'sha256':sha(v)} for k,v in source_native.items()} if args.native else {},'inputs':{'geo':{'path':str(GEO),'sha256':sha(GEO)},'texture':{'path':str(TEX),'sha256':sha(TEX)},'normal':{'path':str(NORMAL),'sha256':sha(NORMAL)} if NORMAL else None},'counts':counts,'mode':args.mode,'normal_mapping':args.mode=='normal','directx_green_inverted_for_blender_only':args.mode=='normal','one_sided_culling':True,'alpha':'nearest binary exported alpha on quads; native control triangles bypass alpha','native_control_planar_projection_max_error_block':max(uv_native_errors,default=0),'native_uv_source':('exact per-vertex transport contract' if args.native_uv_contract else 'float32 quad projection'),'native_projected_uv_vs_contract_max_texels':uv_contract_deltas,'native_projected_uv_vs_contract_worst_faces':uv_contract_worst,'original_source_sculpture_mesh_used':False,'highpoly_head_or_halo_used':False,'halo_hidden':args.no_halo,'outputs':outputs,'same_views_and_lighting_across_modes':True,'limitations':['Diffuse/normal diagnostic shader is not the actual Bedrock or Vibrant Visuals shader.','No engine, mipmap, mobile-performance or runtime support certificate.','Native control is explicitly separate from JSON-only reimport.']};(R/f'evidence/{args.tag}-render.json').write_text(json.dumps(report,indent=2))

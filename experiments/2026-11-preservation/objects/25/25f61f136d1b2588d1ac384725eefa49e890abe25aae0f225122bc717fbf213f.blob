@@ -1,0 +1,41 @@
+{
+  "body_pairs": 522,
+  "body_parts": {
+    "0": 185,
+    "1": 337,
+    "2": 0
+  },
+  "new_body_pairs": 314,
+  "removed_body_pairs": 399,
+  "self_pairs": 30,
+  "band_pairs": 1418,
+  "moved_vertices": 1182,
+  "displacement_max_mm": 15.794546594723295,
+  "displacement_p95_moved_mm": 9.69464439116319,
+  "area_ratio_min": 0.6534007723237722,
+  "normal_rotation_max_deg": 64.82210666802246,
+  "original_sources_exact": false,
+  "tag": "relax075-continuation-iteration03",
+  "parameters": {
+    "method": "Local pair-center translations with fixed offsets, thin-plate displacement graph, intrinsic metric and area and normal penalties, finite all-body skin support planes",
+    "stretch_floor_target": 0.75,
+    "target_weight": 2.0,
+    "target_posterior_mm": 20,
+    "skin_target_mm": 0.3,
+    "seed": "baseline",
+    "active_pair_groups": 576,
+    "soft_constraints": true,
+    "seven_view_contour_groups_fixed": 586,
+    "skin_faces": "all frozen anatomy with finite projected crossing support samples",
+    "principal_ceiling_target": 1.3,
+    "normal_degrees_target": 60,
+    "director_cosine_target": 0.08
+  },
+  "solver_success": false,
+  "solver_message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+  "solver_iterations": 900,
+  "objective": 8749931.713438654,
+  "seconds": 18.65540313720703,
+  "skin_constraints": 12711,
+  "sha256": "ace935ec6cec237565b0a7e70b587181bc26d1939cb14868f8c77f100396350c"
+}

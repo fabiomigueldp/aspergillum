@@ -1,0 +1,41 @@
+# Revisão visual independente V7
+
+Revisão provisória em 2026-11-03. A candidata adaptive ainda será examinada. Este documento não aprova geometria, exportação Bedrock ou execução Minecraft.
+
+## V6 physical-hermite versus V7 director-cone
+
+Inspeção visual direta das vistas full-front, junction-profile e junction-back, nas mesmas câmeras. A candidata mantém a silhueta global e a relação entre cap azul, ponte vermelha e manto verde. Não há melhora visual evidente do contorno nessas vistas; a alteração é muito localizada. A frente de corpo inteiro não mostra regressão perceptível.
+
+No perfil persistem múltiplas linhas/pregas estreitas na ponte vermelha atrás da orelha; na traseira persiste pequena ponta lateral no encontro vermelho/verde, à direita da imagem. Não se pode concluir só pela imagem se são interseções, bordas de material ou oclusão. O halo oculta parte relevante da região posterior. A mancha cinza na ponte próxima à nuca e as manchas cinzas no cap já aparecem no baseline e não constituem evidência de regressão provocada pelo cone.
+
+Como controle auxiliar de localização, a diferença absoluta entre renders, limiar >5/255 em qualquer canal, aparece em 44 pixels da vista global (bbox x420–495/y172–201), 702 pixels do perfil (x362–532/y440–605) e 648 pixels da traseira (x325–620/y389–511). Isso confirma a localização restrita da mudança, mas não prova qualidade nem ausência de defeitos. Não usei as contagens de cruzamentos como aprovação visual.
+
+A vista head-front do cone ainda não estava pronta no início desta revisão. As peças cinzas são a composição reduzida antiga, não a escultura highpoly, e não são avaliadas como defeito da ponte.
+
+## Adaptive
+
+Aguardando renders e instrução do responsável antes da avaliação final.
+
+## Complemento: cone head-front e adaptive-clearance intermediária
+
+As quatro vistas de adaptive-clearance foram inspecionadas. No perfil há melhora visual localizada: menos linhas paralelas/pregas vermelhas imediatamente atrás da orelha. A frente da cabeça mostra redução de pequenos fragmentos vermelhos junto às orelhas. A silhueta global permanece estável. A mancha cinza da nuca e a pequena ponta lateral vermelha/verde da traseira permanecem. O halo continua ocultando uma porção considerável da junção. A candidata não está visualmente resolvida na composição inteira, e o render não demonstra clearance geométrico.
+
+A vista head-front de director-cone também foi examinada quando disponível, sem regressão perceptível fora da região local da ponte.
+
+O responsável informou que adaptive-clearance será substituída por uma candidata de menor deformação e constraint corrigido. Também informou que a ponte intersecta a parte 15 antiga em teste separado; não há aprovação global nem alegação de que a mancha foi resolvida. Este relatório visual não valida essas contagens, apenas mantém explícito o limite da avaliação. Aguardando nome/hash e renders da candidata final.
+
+## Parecer final: adaptive-consistent
+
+Arquivo congelado: `lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz`.
+SHA256 verificado por leitura local: `712a550fbbb56090ae700e30e4e21153d04c16139062ebcd2a72e818f3e34f7b`.
+As quatro imagens `adaptive-consistent-{full-front,junction-profile,junction-back,head-front}.png` foram inspecionadas diretamente, em comparação com V6 physical-hermite e V7 director-cone.
+
+**Decisão: reter como evolução técnica local da casca, sem aprovar a composição final.**
+
+- Perfil: há redução perceptível das linhas paralelas/pregas vermelhas atrás da orelha que persistiam em V6/cone. A transição conserva seu desenho geral e não ganha uma protuberância nova perceptível.
+- Cabeça frontal: pequenos fragmentos vermelhos junto às orelhas ficam menos expostos. Não há regressão perceptível em cabeça, cap azul ou faixa dourada.
+- Frente global: silhueta preservada; nenhuma regressão nova perceptível no corpo ou no contorno do manto na escala do render.
+- Traseira: mantém a continuidade visual geral vermelho/verde, mas a pequena ponta à direita permanece. O halo oculta a região central superior, portanto esta câmera não permite atestar a qualidade da superfície encoberta.
+- Áreas cinzas: manchas do cap e mancha cinza da nuca permanecem. Já existiam no baseline, não são prova de regressão causada pelo patch nem foram resolvidas por ele.
+
+A recomendação deriva das imagens e da ausência de regressão local perceptível, não da contagem de interseções. Não constitui aprovação de clearance global, encaixe com todas as partes antigas, exportação Bedrock ou comportamento Minecraft. O teste geométrico da casca deve permanecer separado da integração com o corpo. A fonte/corpo exibidos não são a escultura highpoly. V5 e V6 não foram modificadas.

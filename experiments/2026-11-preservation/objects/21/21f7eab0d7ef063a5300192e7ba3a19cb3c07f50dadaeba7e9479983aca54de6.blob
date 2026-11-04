@@ -1,0 +1,97 @@
+{
+  "createdAt": "2026-11-04T00:39:16.807082+00:00",
+  "decision": "NO-GO for release, installation or world migration",
+  "scope": "Require an existing supported snapshot before undocking or deferred break delivery in isolated diagnostic copy",
+  "behavior": "No snapshot means no item synthesis, no source mutation and no delivery; break refusal precedes scheduling. Real supported V1/V2 snapshots with zero charges still restore normally.",
+  "checks": {
+    "focusedRuntimeTests": {
+      "status": "passed",
+      "files": 6,
+      "tests": 207,
+      "newTests": 23,
+      "log": "out/state-compaction/snapshot-authority/after.log"
+    },
+    "preFixRegression": {
+      "status": "expected-fail",
+      "failed": 14,
+      "passed": 7,
+      "scope": "First 21 new cases against original production handlers",
+      "log": "out/state-compaction/snapshot-authority/before.log"
+    },
+    "typecheck": {
+      "status": "passed",
+      "log": "out/state-compaction/snapshot-authority/typecheck.log"
+    },
+    "scriptBundle": {
+      "status": "passed",
+      "log": "out/state-compaction/snapshot-authority/build-script.log"
+    },
+    "documentation": {
+      "status": "passed",
+      "markdownFiles": 57,
+      "log": "out/state-compaction/snapshot-authority/docs.log"
+    },
+    "protectedBytes": {
+      "trackedFiles": 8629,
+      "identical": 8628,
+      "changed": [
+        "packs/behavior/scripts/main.js"
+      ],
+      "newFiles": []
+    },
+    "sourcePatch": "13 source files round-trip verified",
+    "independentReview": "Approved source/diff review without rerunning tests; no concrete blocker",
+    "priorRiskCharacterizations": "Unchanged after-effect spawn/equipment duplication, double rollback loss and delayed replay consuming a replacement snapshot at an air address. Missing-snapshot fallback changes contract and now has explicit refusal regressions."
+  },
+  "availabilityCost": "Occupied legacy/inconsistent blocks without a snapshot now remain blocked for inspection instead of yielding a new empty item. Already broken blocks are not restored; no original item data can be reconstructed from occupancy alone.",
+  "limitations": [
+    "Snapshot presence does not prove unique ownership or absence of earlier delivery.",
+    "Existing operation ordering is unchanged and non-atomic.",
+    "Mutation-then-throw, crash, delete failure, failed rollback and stale replay with a replacement snapshot remain unsafe.",
+    "No persistent generation marker, journal, quarantine, automatic retry or native validation added.",
+    "Break handlers still cancel sessions before recovery is refused."
+  ],
+  "notRepeated": [
+    "General build/check",
+    "State/codec/visual proofs",
+    "Offline journal/quarantine proofs",
+    "Creator Tools"
+  ],
+  "notRun": [
+    "Minecraft",
+    "World/LevelDB access",
+    "Package generation",
+    "Installation/publication"
+  ],
+  "sourceFiles": [
+    "CHANGELOG.md",
+    "docs/BREAK_RECOVERY_LOCATION_GUARD.md",
+    "docs/COMPACT_BLOCK_STATES_2.0.0.md",
+    "docs/PROJECT_STATUS.md",
+    "docs/RECOVERY_PROTOCOL_DIAGNOSTIC.md",
+    "docs/TESTING.md",
+    "src/application/aspersorium.ts",
+    "src/application/sacristan-table.ts",
+    "src/infrastructure/break-recovery.ts",
+    "tests/application/compact-event-routing.test.ts",
+    "tests/infrastructure/break-recovery-location.test.ts",
+    "tests/application/recovery-snapshot-authority.test.ts",
+    "docs/RECOVERY_SNAPSHOT_AUTHORITY.md"
+  ],
+  "filesSha256": {
+    "CHANGELOG.md": "2829e1dec06016373f2d90ee67019857fe817880d0befebd105a9f3a6f55f6a8",
+    "docs/BREAK_RECOVERY_LOCATION_GUARD.md": "bda62e2e05fec87c9f3bdc5a9bfa40cba9a04b4106b7c7f4f78b04e8ac403a65",
+    "docs/COMPACT_BLOCK_STATES_2.0.0.md": "80d77f95103589c926f995465bd1c34d0e56066cd8598ff685f7d4c7dafee2b7",
+    "docs/PROJECT_STATUS.md": "b174750747983b6ec57a6fdd5b62e4f36ad7aff90cc4b3ec14737a9426d2ac9e",
+    "docs/RECOVERY_PROTOCOL_DIAGNOSTIC.md": "f6c3e2f29771a8d397552e1c6be63bec59b7c400d0e79a463d52d3d637597887",
+    "docs/TESTING.md": "c92f41dced3d14260a86a69e08223b9e1fa77dca0643964dd6d9954f0001665d",
+    "src/application/aspersorium.ts": "32bd6b7cfc677ecdabf7a6b62a2b718d0837859e77e20524b8718f8d8c055266",
+    "src/application/sacristan-table.ts": "ed7d6c4046fc4194c366f04e424159e47c6ebc26bd92457db8e3d5a18e70d155",
+    "src/infrastructure/break-recovery.ts": "e60cef8b7eb89b21af1247fc57abc456b06b91b4f456bfafc016ff9857e032f6",
+    "tests/application/compact-event-routing.test.ts": "325dbba752ab9c37b12d605a5c1c06147f4fb4e6a68a4d7f1fa9b1702f9fee07",
+    "tests/infrastructure/break-recovery-location.test.ts": "69c0ae8707048a11935537827b1966a9a41d566acf24de518c3e4f481efb298d",
+    "tests/application/recovery-snapshot-authority.test.ts": "683b52c12db8660999904668f2decaaa071194f98fdc8f5e9f34f5f9e5393f65",
+    "docs/RECOVERY_SNAPSHOT_AUTHORITY.md": "cc849b4d305d4124253910e65b73f29f92ab9adec5be1f65f58780f67f154d7a",
+    "packs/behavior/scripts/main.js": "d9144f13361e0a278642d4e273212cbbb4a6e22810a469201aa8074aebb6d010"
+  }
+}

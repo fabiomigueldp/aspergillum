@@ -1,0 +1,349 @@
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -1,6 +1,8 @@
+ # Changelog
+ 
+ ## 2.0.0 — diagnóstico não publicado
++
++- Retirada e quebra exigem snapshot existente: ausência deixa de fabricar item vazio. Recusa antes de writes/spawn, com preservação de estado/bytes e mensagem de inspeção. V1/V2 e zero cargas reais permanecem suportados; replay com substituição e transações não atômicas continuam abertos.
+ 
+ - Recuperação atrasada de quebra exige ar carregado e válido antes de spawn/exclusão, além de snapshot inalterado. Preserva reocupação idêntica e registra recusas sem retry; não resolve replay em endereço vazio, entrega ambígua ou durabilidade. Testes antigos mantêm as caracterizações de risco com destruição simulada corretamente.
+ 
+--- a/docs/BREAK_RECOVERY_LOCATION_GUARD.md
++++ b/docs/BREAK_RECOVERY_LOCATION_GUARD.md
+@@ -14,11 +14,13 @@
+ 
+ - Qualquer preenchimento do endereço, inclusive água/fogo após destruição legítima, suspende a recuperação automática. O snapshot fica pendente para inspeção; nenhum reparo automático foi acrescentado.
+ - Os handlers de quebra já cancelam loading/encerram sessão **antes** de agendar a recuperação. Esta checagem não conserva nem reabre essas sessões.
+-- Ar não autentica o evento. Um replay atrasado enquanto o endereço permanece ar ainda pode gerar fallback vazio ou consumir outro snapshot. Reacomodar e destruir novamente antes do callback também não estabelece geração única.
++- Ar não autentica o evento. Um replay atrasado enquanto o endereço permanece ar ainda pode consumir outro snapshot. O fallback vazio sem registro foi posteriormente removido pela [exigência de snapshot](RECOVERY_SNAPSHOT_AUTHORITY.md). Reacomodar e destruir novamente antes do callback também não estabelece geração única.
+ - A ordem continua `spawn → delete`. Erro depois de spawn, falha de exclusão, undocking e rollback duplamente falho continuam não atômicos. Os testes que caracterizam esses riscos permanecem.
+ - Nenhuma identidade persistente, journal, tombstone, marca de item, schema, UUID ou state foi adicionado. A prevenção de jogador/explosão permanece separada.
+ 
+ ## Evidência focada
++
++O marco abaixo antecede a [remoção posterior do fallback sem snapshot](RECOVERY_SNAPSHOT_AUTHORITY.md); o teste que aceitava esse fallback agora exige recusa.
+ 
+ 18 testes novos exercitam diretamente a função de recuperação de produção: reocupação idêntica dos dois blocos, pedra/Altare/água/fogo, leitura indisponível/inválida, getters que lançam, caminho válido em ar, fallback legado, snapshot substituído e ausência de retry automático. A primeira execução teve 16 falhas antes da checagem. Mais dois testes passam pelas inscrições reais do bootstrap para o caso de reocupação com snapshot idêntico.
+ 
+--- a/docs/COMPACT_BLOCK_STATES_2.0.0.md
++++ b/docs/COMPACT_BLOCK_STATES_2.0.0.md
+@@ -83,10 +83,10 @@
+ **NO-GO para release, instalação ou migração de mundo.** A compactação e a conversão offline estão verificadas no escopo descrito; os seguintes limites continuam abertos:
+ 
+ 1. Creator Tools 0.17.7 reportou 54 erros de versão e 11 avisos de links. Após respostas HTTP 502 nas consultas de versões, a ferramenta comparou os formatos 1.26.30/1.26.40 contra 1.26.0. Os formatos de todos os arquivos apontados são iguais aos da baseline anterior, mas isso não transforma a execução em aprovação. Relatórios: `out/state-compaction/creator-tools.log`, `creator-tools/packs.csv` e `creator-tools-summary.json`. Não reduzir versões nem ignorar erros para obter um gate verde.
+-2. A recuperação de quebra captura o snapshot no despacho e recusa consumir uma substituição diferente escrita antes do callback. Essa recusa preserva o substituto, mas não recupera automaticamente o original. A deduplicação cobre o mesmo tick/identidade, não um replay arbitrário posterior: um evento antigo pode gerar o fallback vazio ou consumir um novo snapshot já existente no momento desse segundo despacho. O teste injeta esse replay; sua ocorrência no engine não foi demonstrada.
++2. A recuperação de quebra captura o snapshot no despacho e recusa consumir uma substituição diferente escrita antes do callback. Essa recusa preserva o substituto, mas não recupera automaticamente o original. A deduplicação cobre o mesmo tick/identidade, não um replay arbitrário posterior: um evento antigo ainda pode consumir um novo snapshot já existente no momento desse segundo despacho. A fabricação do fallback sem snapshot foi removida posteriormente. O teste injeta esse replay; sua ocorrência no engine não foi demonstrada.
+ 3. Spawn do item e exclusão do registro não são atômicos. Falha na exclusão pode deixar item entregue e snapshot coexistindo. Não repetir automaticamente. Uma exceção após spawn ou equipamento modificar não prova ausência do efeito; os novos testes reproduzem duplicação ao tentar de novo. Também há perda possível se a escrita de docking falhar após retirar a mão e a própria restauração da mão falhar; o rollback atual apaga o snapshot mesmo nessa condição.
+ 4. Os riscos identificados de `close` antigo e identidade de snapshot da mesa foram corrigidos e passaram nas regressões descritas acima. Isso não fornece uma identidade global para blocos destruídos nem atomicidade entre inventário, mundo e registros; os oito casos de caracterização de replay, rollback e entrega pós-erro continuam como limites conhecidos.
+-5. O fallback histórico de bloco ocupado sem snapshot ainda cria um item vazio; isso não reconstitui identidade/metadados ausentes e não é mecanismo de migração. O conversor offline apenas sinaliza a inconsistência e nunca sintetiza esse item.
++5. O fallback histórico de bloco ocupado sem snapshot foi removido: retirada e quebra agora recusam essa ausência antes de qualquer entrega. [Contrato e evidência](RECOVERY_SNAPSHOT_AUTHORITY.md). Ocupação inconsistente exige inspeção; isso não recupera identidade/metadados ausentes nem constitui migração. O conversor offline continua apenas sinalizando a inconsistência.
+ 6. Não existe nesta entrega exportador/importador integral de mundo, verificação de LevelDB, teste nativo, Content Log novo ou profiling. O empacotador oficial recusa o canal diagnóstico; nenhum `.mcaddon` novo foi distribuído ou instalado.
+ 
+ ## Próximo gate controlado
+--- a/docs/PROJECT_STATUS.md
++++ b/docs/PROJECT_STATUS.md
+@@ -1,6 +1,8 @@
+ # Estado do projeto
+ 
+-## Revisão diagnóstica 2.0.0 — 03/11/2026
++## Revisão diagnóstica 2.0.0 — 04/11/2026
++
++Retirada e recuperação de quebra agora recusam ausência de snapshot, sem fabricar item vazio nem escrever dados. Snapshots reais V1/V2 e itens de zero cargas permanecem suportados. [Regressões, custo de disponibilidade e riscos ainda abertos](RECOVERY_SNAPSHOT_AUTHORITY.md). NO-GO preservado.
+ 
+ Recuperação atrasada agora exige ar carregado no endereço, preservando registro de reocupação com a mesma instância. [Checagem, testes focados e perda deliberada de disponibilidade](BREAK_RECOVERY_LOCATION_GUARD.md). Sem recuperação durável, teste nativo ou mudança do NO-GO.
+ 
+--- a/docs/RECOVERY_PROTOCOL_DIAGNOSTIC.md
++++ b/docs/RECOVERY_PROTOCOL_DIAGNOSTIC.md
+@@ -1,6 +1,8 @@
+ # Recuperação: análise de falhas e fronteira de preservação
+ 
+-Revisão diagnóstica 2.0.0, 03/11/2026. Trabalho somente na cópia de desenvolvimento, sem instalação, publicação ou acesso a mundos. **Não há protocolo durável integrado nem promessa de atomicidade.** O código de produção recebeu apenas a recusa demonstrável de registros que seriam interpretados com perda. O restante é um modelo offline que delimita o que ainda precisa de prova.
++Revisão diagnóstica 2.0.0, 03/11/2026. Trabalho somente na cópia de desenvolvimento, sem instalação, publicação ou acesso a mundos. **Não há protocolo durável integrado nem promessa de atomicidade.** A primeira etapa do código de produção recebeu a recusa demonstrável de registros que seriam interpretados com perda; as recusas posteriores de endereço e de snapshot ausente estão indicadas abaixo. O modelo offline delimita o que ainda precisa de prova.
++
++Uma [recusa posterior de recuperação sem snapshot](RECOVERY_SNAPSHOT_AUTHORITY.md) remove a fabricação histórica de item vazio. Isso não constitui protocolo durável e não corrige as falhas pós-efeito descritas abaixo.
+ 
+ ## Modelo de falhas
+ 
+--- a/docs/TESTING.md
++++ b/docs/TESTING.md
+@@ -1,6 +1,8 @@
+ # Estratégia de testes e QA
+ 
+-## Revisão diagnóstica 2.0.0 — 03/11/2026
++## Revisão diagnóstica 2.0.0 — 04/11/2026
++
++A [autoridade do snapshot na recuperação](RECOVERY_SNAPSHOT_AUTHORITY.md) tem 23 casos focados: ausência de registro não fabrica item; retiradas recusadas preservam blocos/bytes; snapshots V1/V2 reais de zero cargas continuam válidos. O replay com substituição e as falhas pós-efeito continuam caracterizando riscos.
+ 
+ A [checagem de endereço antes da recuperação](BREAK_RECOVERY_LOCATION_GUARD.md) cobre reocupação idêntica, leitura de chunk/bloco, água/fogo, ausência de efeitos no ramo recusado e controle positivo em ar. Os cenários antigos de replay/falha pós-efeito continuam caracterizando riscos, com destruição representada corretamente no host simulado.
+ 
+--- a/src/application/aspersorium.ts
++++ b/src/application/aspersorium.ts
+@@ -18,7 +18,6 @@
+ import { resolvePlayerPolicies } from "../infrastructure/game-mode-policy";
+ import {
+   captureDockedAspergillum,
+-  createAspergillum,
+   getMainhand,
+   giveOrDrop,
+   ensureInitializedAspergillumInMainhand,
+@@ -294,7 +293,11 @@
+     action(player, ACTION_MESSAGES.registryRepairRequired);
+     return;
+   }
+-  const restoredItem = snapshot === undefined ? createAspergillum(0) : restoreDockedAspergillum(snapshot);
++  if (snapshot === undefined) {
++    action(player, ACTION_MESSAGES.registryRecoveryRequired);
++    return;
++  }
++  const restoredItem = restoreDockedAspergillum(snapshot);
+   const originalPermutation = block.permutation;
+   const updatedPermutation = withAspersoriumOccupancy(originalPermutation, null);
+   try {
+--- a/src/application/sacristan-table.ts
++++ b/src/application/sacristan-table.ts
+@@ -31,7 +31,6 @@
+ import { resolvePlayerPolicies } from "../infrastructure/game-mode-policy";
+ import {
+   captureDockedAspergillum,
+-  createAspergillum,
+   getMainhand,
+   giveOrDrop,
+   initializeAspergillum,
+@@ -141,7 +140,11 @@
+     action(player, ACTION_MESSAGES.tableUpdateFailed);
+     return false;
+   }
+-  const restoredItem = snapshot === undefined ? createAspergillum(0) : restoreDockedAspergillum(snapshot);
++  if (snapshot === undefined) {
++    action(player, ACTION_MESSAGES.registryRecoveryRequired);
++    return false;
++  }
++  const restoredItem = restoreDockedAspergillum(snapshot);
+   const originalPermutation = block.permutation;
+   const updatedPermutation = tablePermutation(block, false, "classic");
+   try {
+--- a/src/infrastructure/break-recovery.ts
++++ b/src/infrastructure/break-recovery.ts
+@@ -1,7 +1,7 @@
+ import { system, type Dimension, type Vector3 } from "@minecraft/server";
+ import type { DockedAspergillumSnapshot } from "../domain/docking";
+ import { deleteDockedSnapshot, getDockedSnapshot } from "./docked-item-registry";
+-import { createAspergillum, restoreDockedAspergillum } from "./item-state";
++import { restoreDockedAspergillum } from "./item-state";
+ 
+ const claims = new Set<string>();
+ function key(dimensionId: string, location: Vector3): string {
+@@ -28,8 +28,14 @@
+     console.error(`[Aspergillum] Could not capture broken block snapshot: ${String(error)}`);
+     return;
+   }
++  // Occupancy alone cannot reconstruct item identity or authorize a delivery.
++  // Refuse now, rather than adopting a snapshot that appears after this event.
++  if (snapshot === undefined) {
++    console.error(`[Aspergillum] Broken block has no item snapshot at ${key(dimensionId, location)}; no item fabricated, inspection required`);
++    return;
++  }
+   // Include source tick and identity so a new occupied block at this address is independent.
+-  const claim = `${key(dimensionId, location)}|${system.currentTick}|${snapshot?.instanceId ?? "missing"}`;
++  const claim = `${key(dimensionId, location)}|${system.currentTick}|${snapshot.instanceId}`;
+   if (claims.has(claim)) return;
+   claims.add(claim);
+   system.runTimeout(() => { claims.delete(claim); }, 3);
+@@ -44,11 +50,11 @@
+       // item. Refuse a non-air/unavailable address without changing its registry.
+       // Air still does not prove event generation, unique delivery or durability.
+       if (!isLoadedAir(dimension, location)) return;
+-      const recovered = snapshot === undefined ? createAspergillum(0) : restoreDockedAspergillum(snapshot);
++      const recovered = restoreDockedAspergillum(snapshot);
+       // Preserve the existing spawn-before-delete contract. These APIs are not atomic:
+       // a failed delete leaves both the delivered item and its persistent snapshot.
+       dimension.spawnItem(recovered, { x: location.x + 0.5, y: location.y + dropHeight, z: location.z + 0.5 });
+-      if (snapshot !== undefined) deleteDockedSnapshot(dimensionId, location);
++      deleteDockedSnapshot(dimensionId, location);
+     } catch (error) {
+       console.error(`[Aspergillum] Could not recover item after block destruction: ${String(error)}; recovery is not atomic, inspect registry and dropped item before retrying`);
+     }
+--- a/tests/application/compact-event-routing.test.ts
++++ b/tests/application/compact-event-routing.test.ts
+@@ -261,7 +261,7 @@
+ // Characterization, not acceptance: these assertions intentionally record the
+ // pre-existing unsafe residuals. A green suite does not approve release/migration.
+ describe("known lifecycle limitations retained outside the codec scope", () => {
+-  it.each(["missing", "replacement"] as const)("records delayed break replay consuming the current %s snapshot", (kind) => {
++  it("still records delayed break replay consuming a replacement snapshot at an air address", () => {
+     const { dimension, block, player, component } = fixture("table");
+     player.hand = createAspergillum(3);
+     component.onPlayerInteract!(player.interaction(block), parameters);
+@@ -271,12 +271,12 @@
+     advanceTicks();
+     expect(dimension.drops).toHaveLength(1);
+     const replacement = captureDockedAspergillum(createAspergillum(1), 1);
+-    if (kind === "replacement") setDockedSnapshot(dimension.id, block.location, replacement);
++    setDockedSnapshot(dimension.id, block.location, replacement);
+     component.onBreak!(oldEvent, parameters); // Injected replay, not observed engine behavior.
+     advanceTicks();
+     expect(dimension.drops).toHaveLength(2);
+-    expect(readAspergillumState(dimension.drops[1]!.item).charges).toBe(kind === "missing" ? 0 : 1);
+-    if (kind === "replacement") expect(captureDockedAspergillum(dimension.drops[1]!.item, 1)).toEqual(replacement);
++    expect(readAspergillumState(dimension.drops[1]!.item).charges).toBe(1);
++    expect(captureDockedAspergillum(dimension.drops[1]!.item, 1)).toEqual(replacement);
+     expect(getDockedSnapshot(dimension.id, block.location)).toBeUndefined();
+   });
+ 
+--- a/tests/infrastructure/break-recovery-location.test.ts
++++ b/tests/infrastructure/break-recovery-location.test.ts
+@@ -62,11 +62,10 @@
+     expect(captureDockedAspergillum(f.dimension.drops[0]!.item, 3)).toEqual(f.snapshot);
+     expect(getDockedSnapshot(f.dimension.id, f.block.location)).toBeUndefined();
+   });
+-  it("keeps the legacy empty-item fallback only when the location is loaded air", () => {
++  it("refuses the historical empty-item fallback even when the location is loaded air", () => {
+     const f = fixture(); world.setDynamicProperty(f.property, undefined); world.setDynamicProperty.mockClear();
+     f.schedule(); advanceTicks();
+-    expect(f.dimension.drops).toHaveLength(1);
+-    expect(captureDockedAspergillum(f.dimension.drops[0]!.item, 0).charges).toBe(0);
++    expect(f.dimension.drops).toHaveLength(0);
+     expect(world.setDynamicProperty).not.toHaveBeenCalled();
+   });
+   it("does not fabricate the legacy fallback into a replacement when the snapshot is missing", () => {
+--- /dev/null
++++ b/tests/application/recovery-snapshot-authority.test.ts
+@@ -0,0 +1,103 @@
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++vi.mock("@minecraft/server", async () => import("../mocks/compact-runtime"));
++vi.mock("../../src/presentation/animation-coordinator", () => ({ playLoadingAnimation: vi.fn() }));
++vi.mock("../../src/presentation/audio/bedrock-audio-adapter", () => ({ audioPort: { emit: vi.fn() } }));
++vi.mock("../../src/presentation/wet-feedback", () => ({ presentLoadedAspergillum: vi.fn() }));
++vi.mock("../../src/presentation/customization-menu", () => ({ showCustomizationMenu: vi.fn() }));
++
++import { handleAspersoriumBreak, handleAspersoriumInteraction } from "../../src/application/aspersorium";
++import { clearCustomizationPlayerState, handleSacristanTableBreak, handleSacristanTableInteraction } from "../../src/application/sacristan-table";
++import { encodeAspersoriumContents, encodeTableContents } from "../../src/domain/block-state-layout";
++import { dockedEntryKey, dockedShardPropertyId } from "../../src/domain/docking";
++import { ASPERSORIUM_BLOCK, ROTATION_STATE, SACRISTAN_TABLE_BLOCK, TABLE_ROTATION_STATE } from "../../src/infrastructure/constants";
++import { getDockedSnapshot, setDockedSnapshot } from "../../src/infrastructure/docked-item-registry";
++import { captureDockedAspergillum, createAspergillum } from "../../src/infrastructure/item-state";
++import { showCustomizationMenu } from "../../src/presentation/customization-menu";
++import { ACTION_MESSAGES } from "../../src/presentation/messaging";
++import { advanceTicks, FakeBlock, FakeDimension, FakePermutation, FakePlayer, resetRuntime, world } from "../mocks/compact-runtime";
++
++const players: string[] = [];
++const kinds = ["aspersorium", "table"] as const;
++function fixture(kind: typeof kinds[number]) {
++  const dimension = new FakeDimension();
++  const block = new FakeBlock(dimension, new FakePermutation(kind === "aspersorium" ? ASPERSORIUM_BLOCK : SACRISTAN_TABLE_BLOCK,
++    kind === "aspersorium" ? { ...encodeAspersoriumContents({ waterUnits: 14, cosmeticIndex: 0 }), [ROTATION_STATE]: 7 }
++      : { ...encodeTableContents({ cosmeticIndex: 0 }), [TABLE_ROTATION_STATE]: 7 }).asPermutation());
++  const original = block.permutation;
++  const player = new FakePlayer(dimension); players.push(player.id);
++  const item = createAspergillum(3); item.nameTag = "Exact retained snapshot"; item.setDynamicProperty("test:note", "preserve");
++  const snapshot = captureDockedAspergillum(item, 3);
++  const property = dockedShardPropertyId(dimension.id, block.location);
++  const interact = (sneaking = kind === "table") => {
++    player.isSneaking = sneaking;
++    (kind === "aspersorium" ? handleAspersoriumInteraction : handleSacristanTableInteraction)(player.interaction(block));
++    advanceTicks();
++  };
++  const broken = block.breakEvent();
++  const dispatchBreak = () => (kind === "aspersorium" ? handleAspersoriumBreak : handleSacristanTableBreak)(broken);
++  const noDelivery = () => {
++    expect(player.hand).toBeUndefined(); expect(player.inventory).toHaveLength(0); expect(dimension.drops).toHaveLength(0);
++    expect(player.equipment.setEquipment).not.toHaveBeenCalled(); expect(player.container.addItem).not.toHaveBeenCalled();
++    expect(dimension.spawnItem).not.toHaveBeenCalled(); expect(block.setPermutation).not.toHaveBeenCalled();
++  };
++  return { dimension, block, original, player, snapshot, property, interact, dispatchBreak, noDelivery };
++}
++beforeEach(() => { resetRuntime(); vi.clearAllMocks(); vi.spyOn(console, "error").mockImplementation(() => {}); });
++afterEach(() => { for (const id of players.splice(0)) clearCustomizationPlayerState(id); advanceTicks(50); vi.restoreAllMocks(); });
++
++describe("recovery never invents an item without an authoritative snapshot", () => {
++  for (const kind of kinds) for (const storage of ["absent", "empty", "neighbor"] as const) {
++    it(`refuses ${kind} undock with ${storage} storage before any write`, () => {
++      const f = fixture(kind);
++      const raw = storage === "absent" ? undefined : JSON.stringify({ schemaVersion: 1, entries: storage === "neighbor" ? { "3,64,-3": f.snapshot } : {} });
++      world.setDynamicProperty(f.property, raw); world.setDynamicProperty.mockClear();
++      f.interact(); advanceTicks(4); f.interact();
++      f.noDelivery(); expect(f.block.permutation).toBe(f.original);
++      expect(world.getDynamicProperty(f.property)).toBe(raw); expect(world.setDynamicProperty).not.toHaveBeenCalled();
++      expect(f.player.onScreenDisplay.setActionBar).toHaveBeenCalledWith(expect.objectContaining({ translate: ACTION_MESSAGES.registryRecoveryRequired }));
++    });
++    it(`refuses ${kind} break recovery with ${storage} storage, including delayed replay`, () => {
++      const f = fixture(kind);
++      const raw = storage === "absent" ? undefined : JSON.stringify({ schemaVersion: 1, entries: storage === "neighbor" ? { "3,64,-3": f.snapshot } : {} });
++      world.setDynamicProperty(f.property, raw); world.setDynamicProperty.mockClear();
++      f.block.destroyForBreak(); f.dispatchBreak(); advanceTicks(10); f.dispatchBreak(); advanceTicks(10);
++      f.noDelivery(); expect(world.getDynamicProperty(f.property)).toBe(raw); expect(world.setDynamicProperty).not.toHaveBeenCalled();
++    });
++  }
++  it.each(kinds)("does not adopt a %s snapshot that appears after a refused dispatch", kind => {
++    const f = fixture(kind); f.block.destroyForBreak(); f.dispatchBreak();
++    setDockedSnapshot(f.dimension.id, f.block.location, f.snapshot); world.setDynamicProperty.mockClear();
++    advanceTicks(100); f.noDelivery(); expect(getDockedSnapshot(f.dimension.id, f.block.location)).toEqual(f.snapshot);
++    expect(world.setDynamicProperty).not.toHaveBeenCalled();
++  });
++  it.each(kinds)("refuses a captured %s snapshot removed before the deferred callback", kind => {
++    const f = fixture(kind); setDockedSnapshot(f.dimension.id, f.block.location, f.snapshot);
++    f.block.destroyForBreak(); f.dispatchBreak();
++    world.setDynamicProperty(f.property, undefined); world.setDynamicProperty.mockClear();
++    advanceTicks(100); f.noDelivery(); expect(world.getDynamicProperty(f.property)).toBeUndefined();
++    expect(world.setDynamicProperty).not.toHaveBeenCalled();
++  });
++  it.each(kinds)("does not fabricate a second %s item after a successful break consumed its snapshot", kind => {
++    const f = fixture(kind); setDockedSnapshot(f.dimension.id, f.block.location, f.snapshot);
++    f.block.destroyForBreak(); f.dispatchBreak(); advanceTicks();
++    expect(f.dimension.drops).toHaveLength(1); expect(captureDockedAspergillum(f.dimension.drops[0]!.item, 3)).toEqual(f.snapshot);
++    world.setDynamicProperty.mockClear(); advanceTicks(10); f.dispatchBreak(); advanceTicks(10);
++    expect(f.dimension.drops).toHaveLength(1); expect(world.setDynamicProperty).not.toHaveBeenCalled();
++  });
++  for (const kind of kinds) for (const version of [1, 2] as const) {
++    it(`retains real ${kind} zero-charge snapshot retrieval for supported V${version}`, () => {
++      const f = fixture(kind); const expected = { ...f.snapshot, charges: 0 };
++      const stored = version === 1 ? { ...expected, schemaVersion: 1 } : expected;
++      world.setDynamicProperty(f.property, JSON.stringify({ schemaVersion: 1, entries: { [dockedEntryKey(f.block.location)]: stored } }));
++      f.interact(); expect(captureDockedAspergillum(f.player.hand!, 0)).toEqual(expected);
++      expect(getDockedSnapshot(f.dimension.id, f.block.location)).toBeUndefined(); expect(f.dimension.drops).toHaveLength(0);
++    });
++  }
++  it("refuses a table form's retrieval if its snapshot disappears after opening", () => {
++    const f = fixture("table"); setDockedSnapshot(f.dimension.id, f.block.location, f.snapshot); f.interact(false);
++    const actions = vi.mocked(showCustomizationMenu).mock.calls.at(-1)![2];
++    world.setDynamicProperty(f.property, undefined); world.setDynamicProperty.mockClear();
++    expect(actions.finishAndRetrieve()).toBe(false); f.noDelivery(); expect(f.block.permutation).toBe(f.original);
++    expect(world.setDynamicProperty).not.toHaveBeenCalled();
++  });
++});
+--- /dev/null
++++ b/docs/RECOVERY_SNAPSHOT_AUTHORITY.md
+@@ -0,0 +1,31 @@
++# Recuperação exige snapshot existente
++
++Diagnóstico 2.0.0, 04/11/2026. Mudança somente na cópia de desenvolvimento. **NO-GO para release, instalação e migração permanece.** Não há journal novo nem garantia de atomicidade ou entrega única.
++
++## Defeito reproduzido e recusa conservadora
++
++As duas retiradas e a recuperação de quebra aceitavam ocupação sem snapshot e criavam um aspersório vazio com identidade nova. Isso não recuperava identidade, cargas ou metadados perdidos. Um replay atrasado de quebra depois da exclusão do registro também fabricava outro item vazio.
++
++Agora, registro ausente não autoriza entrega:
++
++- Caldeirinha e mesa recusam retirada antes de alterar a permutação, escrever o registro ou entregar. O bloco permanece ocupado, água/rotação permanecem iguais e o jogador recebe a mensagem existente de inspeção do registro.
++- A quebra recusa já no despacho, antes de agendar a entrega. Snapshot inserido posteriormente não autoriza retroativamente aquela tentativa. Não há retry automático.
++- Com snapshot presente, permanecem a comparação no callback e a exigência de ar carregado. Snapshot removido ou substituído entre despacho e callback continua recusado.
++- Snapshots canônicos V1 e V2 continuam aceitos, inclusive itens reais com zero cargas. Ausência de snapshot não se confunde com `charges: 0`.
++- O formulário da mesa mantém a conferência da instância esperada. Registro desaparecido continua retornando `false`; não se utiliza o item capturado pela UI como fallback.
++
++A recusa não apaga bytes, não corrige ocupação e não fabrica identidade. Ocupações antigas sem snapshot deixam de fornecer o fallback vazio e exigem inspeção assistida. Na quebra, o bloco já foi destruído: recusar não restaura esse bloco nem recupera dados ausentes. Os handlers continuam encerrando suas sessões antes da recuperação.
++
++## Limites preservados
++
++A existência de snapshot não prova que não houve entrega anterior. `spawn → delete` e `esvaziar bloco → excluir snapshot → entregar` continuam operações separadas. Entrega que modifica e depois lança, rollback duplamente falho, interrupção e durabilidade permanecem riscos. Não se mudou a ordem dessas operações nem instalou quarentena automática.
++
++Um evento antigo despachado depois de surgir outro snapshot ainda pode consumi-lo se o endereço estiver em ar. A checagem não estabelece geração única. A caracterização desse replay com substituição e os testes de duplicação pós-efeito/perda foram preservados. A fabricação sem snapshot é o único resultado anterior que mudou de contrato nesta revisão.
++
++## Evidência focada
++
++`tests/application/recovery-snapshot-authority.test.ts` cobre 23 casos com handlers reais e host simulado: armazenamento ausente/vazio/somente vizinho, recusa repetida, bytes/estado sem escrita, retirada e quebra, inserção/remoção durante a espera, replay após consumo, snapshot real de zero cargas V1/V2 e formulário obsoleto. A execução inicial dos primeiros 21 casos apresentou 14 falhas e sete controles aprovados antes da correção.
++
++O antigo teste que exigia fallback em ar agora exige recusa. O caso de replay com snapshot substituto continua exigindo a caracterização insegura anterior, não uma falsa aprovação. A verificação usa apenas suítes de recuperação/handlers/rotas afetadas, tipos, compilação de script e documentação. Não repete provas de geometria/codec, modelo de journal, build geral ou Creator Tools; nenhum mundo foi aberto.
++
++Uma validação futura em Minecraft exigiria cópia descartável autorizada e estado de inconsistência preparado de forma controlada: retirada deve preservar a ocupação e indicar inspeção; quebra sem registro não deve gerar aspersório. Snapshot válido, inclusive zero cargas, deve preservar nome, identidade e metadados. Isso ainda não foi executado e não autoriza instalar o esquema compacto sobre saves antigos.

@@ -1,0 +1,14 @@
+from pathlib import Path
+import numpy as np,json,subprocess
+R=Path(__file__).resolve().parents[1];E=R/'evidence';a=np.load(E/'director-cone-assembly.npz');d=np.load(E/'director-cone-midfield.npz');field=np.load(E/'offset-reach-field.npz');where={int(s):i for i,s in enumerate(a['source_indices'])};records=[];gate=R.parent/'shell_band_v3/tools/independent_gate.py'
+for factor in [.5,.25,.1]:
+ points=a['points'].copy();half=d['half_thickness'].copy();t=d['uv'][:,1];dist=np.minimum(t,1-t);blend=np.clip((.2-dist)/.075,0,1);blend=blend*blend*(3-2*blend)
+ for i in d['generated_pair_indices']:
+  half[i]*=1-(1-factor)*blend[i]
+  points[where[int(d['outer_source_ids'][i])]]=d['center'][i]-d['new_director'][i]*half[i];points[where[int(d['inner_source_ids'][i])]]=d['center'][i]+d['new_director'][i]*half[i]
+ for sid,si,ti,side,fraction in field['generated_vertex_map']:
+  if int(side)!=2:continue
+  match=np.where(np.isclose(d['uv'][:,0],field['s'][int(si)])&np.isclose(d['uv'][:,1],field['t'][int(ti)]))[0];assert len(match)==1;i=int(match[0]);points[where[int(sid)]]=d['center'][i]+d['new_director'][i]*half[i]*(2*fraction-1)
+ name='cone-thickness-'+str(factor).replace('.','p');path=E/(name+'.npz');out={k:a[k] for k in a.files};out['points']=points;np.savez_compressed(path,**out);proc=subprocess.run(['/usr/bin/blender','-b','-t','3','--python',str(gate),'--',str(path.resolve()),str((E/(name+'-gate.json')).resolve())],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True);(E/(name+'-gate.log')).write_text(proc.stdout);g=json.loads((E/(name+'-gate.json')).read_text());from collections import Counter
+ record={'factor':factor,'strict_crossings':g['strict_crossings'],'parts':{str(k):v for k,v in Counter(tuple(a['face_parts'][c['triangles']].tolist()) for c in g['crossings']).items()},'min_generated_full_thickness':float((half[d['generated_pair_indices']]*2).min()),'source_points_identical':bool(np.array_equal(points[~a['generated_vertices']],a['points'][~a['generated_vertices']])),'central_t_0p2_to_0p8_identical':bool(np.array_equal(points[[where[int(s)] for i in d['generated_pair_indices'] if .2<=d['uv'][i,1]<=.8 for s in [d['outer_source_ids'][i],d['inner_source_ids'][i]]]],a['points'][[where[int(s)] for i in d['generated_pair_indices'] if .2<=d['uv'][i,1]<=.8 for s in [d['outer_source_ids'][i],d['inner_source_ids'][i]]]])),'diagnostic_only':True};records.append(record);print(record,flush=True)
+(E/'thickness-ablation.json').write_text(json.dumps({'method':'Controlled lateral-only half-thickness scale after director transversality repair. Centers, directors, source endpoints, central strip, and connectivity fixed. Diagnostic, not approved geometry.','rows':records},indent=2))

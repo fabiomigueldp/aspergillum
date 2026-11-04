@@ -1,0 +1,19 @@
+# Estudo conjunto de ponte/ponta/asas — V63 vs alternativa V68
+
+Baseline continua V63. V68 permanece alternativa, não promovida. Não houve nova redução nem alteração geométrica neste estudo.
+
+## Iluminação diagnóstica
+Pares V63/V68-nasal-balanced-{oblique,profile}.png: mesma câmera, iluminação e resolução700×900; área12W de tamanho0,35m em(-0,7,-1,4,3), ambiente0,025;64samples. Isso melhora leitura de planos em relação à luz ampla inicial, mas NÃO é calibração exata da fotografia histórica: exposição, câmera e propriedades da escultura real são desconhecidas. Série anterior `nasal-directional`60W foi excessivamente clara e não é comparação preferida.
+
+## Leitura
+Reference-9 mostra nariz relativamente longo, dorso com plano frontal estreito, transição definida para planos laterais e ponta integrada às asas. O estudo V68 encurta visualmente a projeção terminal, mas não resolve relação do plano frontal com laterais/asa; ganho segue inconclusivo. Não repetir redução isolada.
+
+## Próximo estudo de forma
+Trabalhar dorso e planos laterais como unidade, preservar extremos de comprimento/posição da ponta V63 e preservar largura geral da base até melhor evidência. Construir plano frontal sutil com transição lateral contínua, evitando esfera/bulbo e incisões profundas de narina. Não mexer olhos, filtro/boca ou queixo. Máscara com suporte compacto e teste de área/normais/auto-interseções. Comparar plano e silhueta em oblíqua/perfil sob luz diagnóstica, sem tratar contraste maior como melhora geométrica.
+
+A malha e anatomia ainda precisam de julgamento artístico; evidência atual não justifica declarar fidelidade nasal melhor nem mudar baseline.
+
+## Dívida técnica identificada
+O único par de auto-interseção preexistente58783/58786 corresponde a faces praticamente degeneradas: áreas1,776e-15 e3,972e-15m², coordenadas quase coincidentes, fora da região nasal em Z3,276. Não é colisão nova deV68, mas a malha não deve ser anunciada limpa/print-ready. Detalhes em V68-existing-pair-detail.json. Não foi feita limpeza global porque afetaria topologia/chaves fora do escopo.
+
+Referência: https://arquivo.arq.br/projetos/paroquia-nossa-senhora-da-paz ; imagens8/9 apenas consultadas, não redistribuídas.

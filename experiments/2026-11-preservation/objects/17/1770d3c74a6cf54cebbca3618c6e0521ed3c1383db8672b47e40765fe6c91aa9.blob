@@ -1,0 +1,8 @@
+import bpy,json
+from mathutils import Vector
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V56-child-neck-trial.blend',use_scripts=False);o=bpy.data.objects['Menino — cabeça colo retopologia V55 reversível'];a=[v.co for v in o.data.vertices];b=[v.co for v in o.data.shape_keys.key_blocks[-1].data]
+def av(p,f):return sum(((p[f[j]]-p[f[0]]).cross(p[f[j+1]]-p[f[0]])*.5 for j in range(1,len(f)-1)),Vector())
+fl=[]
+for f in o.data.polygons:
+ if av(a,f.vertices).dot(av(b,f.vertices))<0:fl.append({'face':f.index,'size':len(f.vertices),'in_upper_stitch':f.index>=len(o.data.polygons)-280,'center':list(sum((a[i] for i in f.vertices),Vector())/len(f.vertices))})
+json.dump(fl,open(r+'V56-fold-location.json','w'),indent=2);print(fl)

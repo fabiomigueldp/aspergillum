@@ -1,0 +1,42 @@
+{
+  "version": "0.12.3",
+  "renderer": "CPU barycentric rasterization of shared buildBedrockGeometry meshes",
+  "limitation": "Alternative technical preview. No WebGL, PBR, game lighting or Minecraft parity. Official Chromium renderer unavailable in this execution environment.",
+  "cameraConvention": "right-handed; direction centre to camera; right = worldUp cross direction",
+  "rendererSources": {
+    "tools/capture-cpu.mjs": "e7154570f63d568285b93289492bc96c163b321717eefcee4bb12fb6931d2dd8",
+    "tools/cpu-rasterize.py": "e2aab147ba2a8919022828d6affcb049ac4d130d785e782b5d39790521ae6140",
+    "tools/block-preview-basis.mjs": "17589a3deb7cd98baba5098a6a5c923579a553e79a7be179169f3ca2ac57635c",
+    "../../viewer-3d/src/shared/bedrock-geometry.js": "24dbd8979e54bb33be799e578109d6a5444a9254d1ad0f4c25160241c3e17e11",
+    "../../viewer-3d/src/shared/bedrock-uv.js": "e6701522cba86fa1449c5969387907870bf9b8169aed1a216fb211ad5c7a63b1"
+  },
+  "sourceHashes": {
+    "packs/resource/models/blocks/universal_crossbrace_lace_none_0_e9.geo.json": "1dea2c3cd738e461ac80114bbeda80ddf8711c1226fa8607fa6cc6deb51c2bed",
+    "packs/resource/textures/blocks/atelier_walnut.png": "f780cb89fd0cbd6353534bc9a5df465242e65330243386d69d747e00167968f8",
+    "packs/resource/textures/blocks/linen.png": "2929ae99d2625dda41bd77eac7f631bf2d03eea3a58988d6b426ce5832d77174",
+    "packs/resource/textures/blocks/ornate_lace.png": "86a9ccf417d9f1d90ee20b3821e931c8e1f581dd65eae52a2b3560cd235976f2",
+    "packs/resource/textures/blocks/frontal_frame.png": "340eb819bc68a8872c5bd5d8ccc9b1c689777463b3d032081ea5a2de3f6f1e88",
+    "packs/resource/textures/blocks/atelier_agnus.png": "a8bfc9531cd32581786af9f928db79d35c1016b336d8ada7d478577035410b4d",
+    "packs/resource/textures/blocks/joinery_walnut_horizontal.png": "66624c3cd5ae70a32865104e6d188276a406905a9ad7c6b3743fa2d8cbb25e32",
+    "packs/resource/textures/blocks/crossbrace_inlay.png": "956784eb27b97ba8676cdf6908b231bd134b711fe0cc8eb91e12e5a001b41e37",
+    "packs/resource/models/blocks/universal_crossbrace_lace_none_0_e1.geo.json": "3ebeb4ddaff6b91b23be1d1d39877e5db89d990996fec4902925d9e07eb1f371",
+    "packs/resource/models/blocks/universal_crossbrace_lace_none_0_e3.geo.json": "988c59b9b356cef30d150c8c6186bb1b7c8bd40e37b14dbc35f6125589bde603",
+    "packs/resource/models/blocks/universal_crossbrace_lace_none_0_e12.geo.json": "7707ce9b2e44b698e7b324d830b1480fc2326920b951e52679c07278f70f83b4",
+    "packs/resource/models/blocks/universal_crossbrace_lace_none_0_e4.geo.json": "e53322a8cc237c429c58e2880360c064b4524ee38cedc0ba7ee7b2f87afeb65c",
+    "packs/resource/models/blocks/universal_crossbrace_lace_none_0_e6.geo.json": "d9d60628910c6de86ac492d9d019ce52ae44b709b0b4f521f85024e5178ec817"
+  },
+  "scenes": [
+    {
+      "id": "crossbrace-7x2-lace",
+      "w": 7,
+      "d": 2,
+      "textile": "lace",
+      "direction": [
+        -0.45,
+        0.38,
+        -1
+      ],
+      "file": "crossbrace-7x2-lace.png"
+    }
+  ]
+}

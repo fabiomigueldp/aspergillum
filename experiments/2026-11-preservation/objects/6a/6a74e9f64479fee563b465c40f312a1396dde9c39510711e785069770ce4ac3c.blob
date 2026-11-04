@@ -1,0 +1,2164 @@
+{
+  "method": "For selected pixel witnesses, cast from 15 mm outside band along its exterior face normal. Intersections are float32 BVH estimates. Hypothetical shell translation is along -band normal, preserving this local ray wall thickness, placing shell outer 0.1 mm behind band inner. It is not authorization or proof of whole-patch safety; transition, tangent directions, unseen intersections still need validation.",
+  "rows": [
+    {
+      "view": "left-ear",
+      "pixel": [
+        783,
+        337
+      ],
+      "point_band_outer": [
+        -0.06555676460266113,
+        -0.34706705808639526,
+        3.5661396980285645
+      ],
+      "band_outward_normal": [
+        -0.9013293981552124,
+        -0.37720248103141785,
+        0.21289390325546265
+      ],
+      "normal_ray_hits": {
+        "shell": [
+          {
+            "point": [
+              -0.06566270440816879,
+              -0.34711137413978577,
+              3.56616473197937
+            ],
+            "normal": [
+              -0.8887504935264587,
+              -0.38994717597961426,
+              0.24096381664276123
+            ],
+            "face": 3581,
+            "distance_mm": 14.88246922328436,
+            "front_facing": true,
+            "normal_dot_ray": -0.9994456123583852,
+            "signed_band_normal_coordinate_mm": 0.1175323619282409
+          },
+          {
+            "point": [
+              -0.06518612802028656,
+              -0.3469119369983673,
+              3.566052198410034
+            ],
+            "normal": [
+              0.8831537365913391,
+              0.37389230728149414,
+              -0.2832740247249603
+            ],
+            "face": 952,
+            "distance_mm": 15.411207372082224,
+            "front_facing": false,
+            "normal_dot_ray": 0.9973527400584954,
+            "signed_band_normal_coordinate_mm": -0.41120584231268964
+          }
+        ],
+        "band": [
+          {
+            "point": [
+              -0.06555689871311188,
+              -0.34706711769104004,
+              3.5661396980285645
+            ],
+            "normal": [
+              -0.9013293981552124,
+              -0.37720248103141785,
+              0.21289390325546265
+            ],
+            "face": 144,
+            "distance_mm": 14.999858212191539,
+            "front_facing": true,
+            "normal_dot_ray": -1.0000001048592149,
+            "signed_band_normal_coordinate_mm": 0.0001433607117462543
+          },
+          {
+            "point": [
+              -0.06510894745588303,
+              -0.34687966108322144,
+              3.5660338401794434
+            ],
+            "normal": [
+              0.901250958442688,
+              0.37648805975914,
+              -0.21448418498039246
+            ],
+            "face": 564,
+            "distance_mm": 15.496855385402284,
+            "front_facing": false,
+            "normal_dot_ray": 0.9999984846477951,
+            "signed_band_normal_coordinate_mm": -0.49685386461373326
+          }
+        ],
+        "anatomy": [
+          {
+            "point": [
+              -0.06319078803062439,
+              -0.3460769057273865,
+              3.5655808448791504
+            ],
+            "normal": [
+              -0.8674038648605347,
+              -0.41094377636909485,
+              0.2805987596511841
+            ],
+            "face": 238,
+            "distance_mm": 17.624989892099844,
+            "front_facing": true,
+            "normal_dot_ray": -0.9965632761750329,
+            "signed_band_normal_coordinate_mm": -2.6249885944658047
+          }
+        ]
+      },
+      "current_camera_shell_ahead_mm": 0.13281699066692454,
+      "source_camera_shell_ahead_mm": -0.40727313176194,
+      "render_band_shell_source_depth_mm": -0.40703474474275936,
+      "band_face": 144,
+      "shell_face": 3581,
+      "shell_normal": [
+        -0.8887504935264587,
+        -0.38994717597961426,
+        0.24096381664276123
+      ],
+      "band_shell_normal_dot": 0.9994457171594675,
+      "shell_outer_ahead_band_mm": 0.1175323619282409,
+      "band_thickness_along_normal_mm": 0.49685386461373326,
+      "shell_thickness_along_band_normal_mm": 0.5287382042409305,
+      "band_inner_to_anatomy_mm": 2.1281347298520714,
+      "translation_to_put_shell_outer_01mm_behind_band_inner_mm": 0.7143862265419741,
+      "body_margin_after_hypothetical_translation_mm": 1.4993965256111408
+    },
+    {
+      "view": "left-ear",
+      "pixel": [
+        831,
+        314
+      ],
+      "point_band_outer": [
+        -0.049654483795166016,
+        -0.3713153898715973,
+        3.5775561332702637
+      ],
+      "band_outward_normal": [
+        -0.8000568747520447,
+        -0.5246524214744568,
+        0.29094475507736206
+      ],
+      "normal_ray_hits": {
+        "shell": [
+          {
+            "point": [
+              -0.049816932529211044,
+              -0.3714219033718109,
+              3.577615261077881
+            ],
+            "normal": [
+              -0.7981451153755188,
+              -0.4775486886501312,
+              0.36730316281318665
+            ],
+            "face": 3193,
+            "distance_mm": 14.796946409196593,
+            "front_facing": true,
+            "normal_dot_ray": -0.9959734829036199,
+            "signed_band_normal_coordinate_mm": 0.20305371777973313
+          },
+          {
+            "point": [
+              -0.04933709651231766,
+              -0.3711072504520416,
+              3.5774409770965576
+            ],
+            "normal": [
+              0.798128068447113,
+              0.47761139273643494,
+              -0.3672586977481842
+            ],
+            "face": 564,
+            "distance_mm": 15.396632934798152,
+            "front_facing": false,
+            "normal_dot_ray": 0.9959798053645716,
+            "signed_band_normal_coordinate_mm": -0.39663281283042195
+          }
+        ],
+        "band": [
+          {
+            "point": [
+              -0.0496542751789093,
+              -0.37131524085998535,
+              3.5775561332702637
+            ],
+            "normal": [
+              -0.8000568747520447,
+              -0.5246524214744568,
+              0.29094475507736206
+            ],
+            "face": 151,
+            "distance_mm": 15.000245209451773,
+            "front_facing": true,
+            "normal_dot_ray": -1.000000008352023,
+            "signed_band_normal_coordinate_mm": -0.00024508417340030064
+          },
+          {
+            "point": [
+              -0.04925750568509102,
+              -0.37105506658554077,
+              3.5774118900299072
+            ],
+            "normal": [
+              0.8001282811164856,
+              0.5252814292907715,
+              -0.28961023688316345
+            ],
+            "face": 571,
+            "distance_mm": 15.49615124386094,
+            "front_facing": false,
+            "normal_dot_ray": 0.999998876909603,
+            "signed_band_normal_coordinate_mm": -0.49615112272438644
+          }
+        ],
+        "anatomy": [
+          {
+            "point": [
+              -0.047445669770240784,
+              -0.36986690759658813,
+              3.5767529010772705
+            ],
+            "normal": [
+              -0.7843334674835205,
+              -0.5100595951080322,
+              0.35307249426841736
+            ],
+            "face": 233,
+            "distance_mm": 17.76082287461916,
+            "front_facing": true,
+            "normal_dot_ray": -0.9978399664635056,
+            "signed_band_normal_coordinate_mm": -2.760822772397198
+          }
+        ]
+      },
+      "current_camera_shell_ahead_mm": 0.2551421924144961,
+      "source_camera_shell_ahead_mm": -0.5098063840887335,
+      "render_band_shell_source_depth_mm": -0.5100447711088236,
+      "band_face": 151,
+      "shell_face": 3193,
+      "shell_normal": [
+        -0.7981451153755188,
+        -0.4775486886501312,
+        0.36730316281318665
+      ],
+      "band_shell_normal_dot": 0.9959734912220135,
+      "shell_outer_ahead_band_mm": 0.20305371777973313,
+      "band_thickness_along_normal_mm": 0.49615112272438644,
+      "shell_thickness_along_band_normal_mm": 0.5996865306101551,
+      "band_inner_to_anatomy_mm": 2.2646716496728114,
+      "translation_to_put_shell_outer_01mm_behind_band_inner_mm": 0.7992048405041196,
+      "body_margin_after_hypothetical_translation_mm": 1.5649851190626562
+    },
+    {
+      "view": "left-ear",
+      "pixel": [
+        872,
+        300
+      ],
+      "point_band_outer": [
+        -0.030065298080444336,
+        -0.39212027192115784,
+        3.584453582763672
+      ],
+      "band_outward_normal": [
+        -0.6480458378791809,
+        -0.5209570527076721,
+        0.5555541515350342
+      ],
+      "normal_ray_hits": {
+        "shell": [
+          {
+            "point": [
+              -0.030270840972661972,
+              -0.3922854959964752,
+              3.584629774093628
+            ],
+            "normal": [
+              -0.6556679010391235,
+              -0.6484617590904236,
+              0.38677772879600525
+            ],
+            "face": 2643,
+            "distance_mm": 14.68284087914625,
+            "front_facing": true,
+            "normal_dot_ray": -0.9775995178689076,
+            "signed_band_normal_coordinate_mm": 0.31715968794254756
+          },
+          {
+            "point": [
+              -0.029873870313167572,
+              -0.3919663727283478,
+              3.584289312362671
+            ],
+            "normal": [
+              0.6556968092918396,
+              0.6484025120735168,
+              -0.38682785630226135
+            ],
+            "face": 14,
+            "distance_mm": 15.295490485395653,
+            "front_facing": false,
+            "normal_dot_ray": 0.977615235134076,
+            "signed_band_normal_coordinate_mm": -0.2954899409890466
+          }
+        ],
+        "band": [
+          {
+            "point": [
+              -0.0300655085593462,
+              -0.3921204209327698,
+              3.584453582763672
+            ],
+            "normal": [
+              -0.6480458378791809,
+              -0.5209570527076721,
+              0.5555541515350342
+            ],
+            "face": 199,
+            "distance_mm": 14.999786526727995,
+            "front_facing": true,
+            "normal_dot_ray": -1.0000000370231021,
+            "signed_band_normal_coordinate_mm": 0.00021402862648844945
+          },
+          {
+            "point": [
+              -0.029746942222118378,
+              -0.3918643295764923,
+              3.5841803550720215
+            ],
+            "normal": [
+              0.6483543515205383,
+              0.5218250751495361,
+              -0.5543782711029053
+            ],
+            "face": 619,
+            "distance_mm": 15.491437474055386,
+            "front_facing": false,
+            "normal_dot_ray": 0.9999989051615741,
+            "signed_band_normal_coordinate_mm": -0.49143693690334445
+          }
+        ],
+        "anatomy": [
+          {
+            "point": [
+              -0.02774406038224697,
+              -0.39025425910949707,
+              3.582463502883911
+            ],
+            "normal": [
+              -0.6470421552658081,
+              -0.6483393907546997,
+              0.40123870968818665
+            ],
+            "face": 733,
+            "distance_mm": 18.58197852554065,
+            "front_facing": true,
+            "normal_dot_ray": -0.9799797484561799,
+            "signed_band_normal_coordinate_mm": -3.581978102810024
+          }
+        ]
+      },
+      "current_camera_shell_ahead_mm": 0.4785703243715034,
+      "source_camera_shell_ahead_mm": -0.7112961634302337,
+      "render_band_shell_source_depth_mm": -0.709388607263918,
+      "band_face": 199,
+      "shell_face": 2643,
+      "shell_normal": [
+        -0.6556679010391235,
+        -0.6484617590904236,
+        0.38677772879600525
+      ],
+      "band_shell_normal_dot": 0.9775995540626745,
+      "shell_outer_ahead_band_mm": 0.31715968794254756,
+      "band_thickness_along_normal_mm": 0.49143693690334445,
+      "shell_thickness_along_band_normal_mm": 0.6126496289315941,
+      "band_inner_to_anatomy_mm": 3.0905411659066795,
+      "translation_to_put_shell_outer_01mm_behind_band_inner_mm": 0.908596624845892,
+      "body_margin_after_hypothetical_translation_mm": 2.3778915369750853
+    },
+    {
+      "view": "left-ear",
+      "pixel": [
+        896,
+        284
+      ],
+      "point_band_outer": [
+        -0.008652925491333008,
+        -0.40445223450660706,
+        3.5923426151275635
+      ],
+      "band_outward_normal": [
+        -0.4372270703315735,
+        -0.7385482788085938,
+        0.5132047533988953
+      ],
+      "normal_ray_hits": {
+        "shell": [
+          {
+            "point": [
+              -0.008631289005279541,
+              -0.40441569685935974,
+              3.5923171043395996
+            ],
+            "normal": [
+              -0.4369712471961975,
+              -0.6958515644073486,
+              0.5699532628059387
+            ],
+            "face": 2869,
+            "distance_mm": 15.049538552381845,
+            "front_facing": true,
+            "normal_dot_ray": -0.9974782623203772,
+            "signed_band_normal_coordinate_mm": -0.049537131541654844
+          },
+          {
+            "point": [
+              -0.008370851166546345,
+              -0.4039757549762726,
+              3.5920114517211914
+            ],
+            "normal": [
+              0.4369952380657196,
+              0.6960317492485046,
+              -0.5697148442268372
+            ],
+            "face": 240,
+            "distance_mm": 15.645189666191765,
+            "front_facing": false,
+            "normal_dot_ray": 0.997499469432167,
+            "signed_band_normal_coordinate_mm": -0.6451883019601978
+          }
+        ],
+        "band": [
+          {
+            "point": [
+              -0.008652985095977783,
+              -0.4044523537158966,
+              3.5923426151275635
+            ],
+            "normal": [
+              -0.4372270703315735,
+              -0.7385482788085938,
+              0.5132047533988953
+            ],
+            "face": 217,
+            "distance_mm": 14.999887322979042,
+            "front_facing": true,
+            "normal_dot_ray": -1.0000000950365395,
+            "signed_band_normal_coordinate_mm": 0.00011410257982902294
+          },
+          {
+            "point": [
+              -0.008436989970505238,
+              -0.40408748388290405,
+              3.5920891761779785
+            ],
+            "normal": [
+              0.4372243583202362,
+              0.7376530170440674,
+              -0.5144927501678467
+            ],
+            "face": 637,
+            "distance_mm": 15.493866252718508,
+            "front_facing": false,
+            "normal_dot_ray": 0.9999987213008126,
+            "signed_band_normal_coordinate_mm": -0.49386487410568725
+          }
+        ],
+        "anatomy": [
+          {
+            "point": [
+              -0.007179250009357929,
+              -0.4019629657268524,
+              3.5906128883361816
+            ],
+            "normal": [
+              -0.4268002212047577,
+              -0.7622008323669434,
+              0.4867149889469147
+            ],
+            "face": 739,
+            "distance_mm": 18.370481103031068,
+            "front_facing": true,
+            "normal_dot_ray": -0.9993150740919081,
+            "signed_band_normal_coordinate_mm": -3.3704799978017674
+          }
+        ]
+      },
+      "current_camera_shell_ahead_mm": -0.11540891144204579,
+      "source_camera_shell_ahead_mm": -0.9917133600447414,
+      "render_band_shell_source_depth_mm": -0.9912365860050159,
+      "band_face": 217,
+      "shell_face": 2869,
+      "shell_normal": [
+        -0.4369712471961975,
+        -0.6958515644073486,
+        0.5699532628059387
+      ],
+      "band_shell_normal_dot": 0.9974783571172594,
+      "shell_outer_ahead_band_mm": -0.049537131541654844,
+      "band_thickness_along_normal_mm": 0.49386487410568725,
+      "shell_thickness_along_band_normal_mm": 0.595651170418543,
+      "band_inner_to_anatomy_mm": 2.87661512369608,
+      "translation_to_put_shell_outer_01mm_behind_band_inner_mm": 0.5443277425640324,
+      "body_margin_after_hypothetical_translation_mm": 2.180963953277537
+    },
+    {
+      "view": "right-ear",
+      "pixel": [
+        204,
+        347
+      ],
+      "point_band_outer": [
+        0.1536850929260254,
+        -0.3530281186103821,
+        3.5361201763153076
+      ],
+      "band_outward_normal": [
+        0.9090386033058167,
+        -0.4145490527153015,
+        -0.042400140315294266
+      ],
+      "normal_ray_hits": {
+        "shell": [
+          {
+            "point": [
+              0.15384791791439056,
+              -0.35310235619544983,
+              3.5361125469207764
+            ],
+            "normal": [
+              0.9058444499969482,
+              -0.4187774062156677,
+              -0.0638057067990303
+            ],
+            "face": 3332,
+            "distance_mm": 14.820886215299238,
+            "front_facing": true,
+            "normal_dot_ray": -0.9997567859353247,
+            "signed_band_normal_coordinate_mm": 0.17911280797111573
+          },
+          {
+            "point": [
+              0.15337152779102325,
+              -0.35288509726524353,
+              3.536134719848633
+            ],
+            "normal": [
+              -0.9147185683250427,
+              0.4035447835922241,
+              0.021011343225836754
+            ],
+            "face": 703,
+            "distance_mm": 15.344947880358788,
+            "front_facing": false,
+            "normal_dot_ray": 0.999694545762736,
+            "signed_band_normal_coordinate_mm": -0.3449488233666642
+          }
+        ],
+        "band": [
+          {
+            "point": [
+              0.15368510782718658,
+              -0.3530281186103821,
+              3.5361201763153076
+            ],
+            "normal": [
+              0.9090386033058167,
+              -0.4145490527153015,
+              -0.042400140315294266
+            ],
+            "face": 261,
+            "distance_mm": 14.999985489064086,
+            "front_facing": true,
+            "normal_dot_ray": -0.9999999356530481,
+            "signed_band_normal_coordinate_mm": 1.3545730759290109e-05
+          },
+          {
+            "point": [
+              0.1532338410615921,
+              -0.35282233357429504,
+              3.5361411571502686
+            ],
+            "normal": [
+              -0.90943443775177,
+              0.413836807012558,
+              0.04084309563040733
+            ],
+            "face": 681,
+            "distance_mm": 15.496402013440457,
+            "front_facing": false,
+            "normal_dot_ray": 0.9999984847503552,
+            "signed_band_normal_coordinate_mm": -0.4964029467027231
+          }
+        ],
+        "anatomy": [
+          {
+            "point": [
+              0.15143907070159912,
+              -0.3520038425922394,
+              3.536224842071533
+            ],
+            "normal": [
+              0.9047837853431702,
+              -0.42582952976226807,
+              -0.005960438400506973
+            ],
+            "face": 1325,
+            "distance_mm": 17.47077059545884,
+            "front_facing": true,
+            "normal_dot_ray": -0.9992634044273322,
+            "signed_band_normal_coordinate_mm": -2.470771401676508
+          }
+        ]
+      },
+      "current_camera_shell_ahead_mm": 0.19887133111342337,
+      "source_camera_shell_ahead_mm": -0.40322688099558945,
+      "render_band_shell_source_depth_mm": -0.4041808847809989,
+      "band_face": 261,
+      "shell_face": 3332,
+      "shell_normal": [
+        0.9058444499969482,
+        -0.4187774062156677,
+        -0.0638057067990303
+      ],
+      "band_shell_normal_dot": 0.999756721604023,
+      "shell_outer_ahead_band_mm": 0.17911280797111573,
+      "band_thickness_along_normal_mm": 0.4964029467027231,
+      "shell_thickness_along_band_normal_mm": 0.5240616313377799,
+      "band_inner_to_anatomy_mm": 1.974368454973785,
+      "translation_to_put_shell_outer_01mm_behind_band_inner_mm": 0.7755157546738388,
+      "body_margin_after_hypothetical_translation_mm": 1.350306823636005
+    },
+    {
+      "view": "right-ear",
+      "pixel": [
+        154,
+        318
+      ],
+      "point_band_outer": [
+        0.1393108367919922,
+        -0.3782598376274109,
+        3.550516128540039
+      ],
+      "band_outward_normal": [
+        0.8671460747718811,
+        -0.4365253746509552,
+        0.23979853093624115
+      ],
+      "normal_ray_hits": {
+        "shell": [
+          {
+            "point": [
+              0.1394580602645874,
+              -0.3783339262008667,
+              3.5505568981170654
+            ],
+            "normal": [
+              0.8585458993911743,
+              -0.5024890303611755,
+              0.10199881345033646
+            ],
+            "face": 3711,
+            "distance_mm": 14.830218119765474,
+            "front_facing": true,
+            "normal_dot_ray": -0.9882930582658671,
+            "signed_band_normal_coordinate_mm": 0.16978228333819345
+          },
+          {
+            "point": [
+              0.13893954455852509,
+              -0.37807291746139526,
+              3.5504136085510254
+            ],
+            "normal": [
+              -0.8636996746063232,
+              0.48235976696014404,
+              -0.1461222916841507
+            ],
+            "face": 1082,
+            "distance_mm": 15.428144528316233,
+            "front_facing": false,
+            "normal_dot_ray": 0.9945559450602003,
+            "signed_band_normal_coordinate_mm": -0.42814414110114996
+          }
+        ],
+        "band": [
+          {
+            "point": [
+              0.13931091129779816,
+              -0.3782598674297333,
+              3.550516128540039
+            ],
+            "normal": [
+              0.8671460747718811,
+              -0.4365253746509552,
+              0.23979853093624115
+            ],
+            "face": 180,
+            "distance_mm": 14.999922781706998,
+            "front_facing": true,
+            "normal_dot_ray": -1.0000000265728082,
+            "signed_band_normal_coordinate_mm": 7.761688713969761e-05
+          },
+          {
+            "point": [
+              0.13888505101203918,
+              -0.3780454993247986,
+              3.550398349761963
+            ],
+            "normal": [
+              -0.8670747876167297,
+              0.4375491440296173,
+              -0.2381850779056549
+            ],
+            "face": 600,
+            "distance_mm": 15.49102613913209,
+            "front_facing": false,
+            "normal_dot_ray": 0.9999982078411928,
+            "signed_band_normal_coordinate_mm": -0.4910257535879481
+          }
+        ],
+        "anatomy": [
+          {
+            "point": [
+              0.13685813546180725,
+              -0.37702512741088867,
+              3.549837827682495
+            ],
+            "normal": [
+              0.8620476126670837,
+              -0.5061099529266357,
+              0.02695731818675995
+            ],
+            "face": 1323,
+            "distance_mm": 17.828488543513398,
+            "front_facing": true,
+            "normal_dot_ray": -0.9749153397995372,
+            "signed_band_normal_coordinate_mm": -2.8284882200821926
+          }
+        ]
+      },
+      "current_camera_shell_ahead_mm": 0.19648703237453446,
+      "source_camera_shell_ahead_mm": -0.538431081390172,
+      "render_band_shell_source_depth_mm": -0.5408153801281514,
+      "band_face": 180,
+      "shell_face": 3711,
+      "shell_normal": [
+        0.8585458993911743,
+        -0.5024890303611755,
+        0.10199881345033646
+      ],
+      "band_shell_normal_dot": 0.9882930845275889,
+      "shell_outer_ahead_band_mm": 0.16978228333819345,
+      "band_thickness_along_normal_mm": 0.4910257535879481,
+      "shell_thickness_along_band_normal_mm": 0.5979264244393434,
+      "band_inner_to_anatomy_mm": 2.3374624664942445,
+      "translation_to_put_shell_outer_01mm_behind_band_inner_mm": 0.7608080369261415,
+      "body_margin_after_hypothetical_translation_mm": 1.639536042054901
+    },
+    {
+      "view": "right-ear",
+      "pixel": [
+        123,
+        292
+      ],
+      "point_band_outer": [
+        0.12450051307678223,
+        -0.39399734139442444,
+        3.5634098052978516
+      ],
+      "band_outward_normal": [
+        0.7183780074119568,
+        -0.6570447087287903,
+        0.22852838039398193
+      ],
+      "normal_ray_hits": {
+        "shell": [
+          {
+            "point": [
+              0.12473075091838837,
+              -0.3942078948020935,
+              3.5634829998016357
+            ],
+            "normal": [
+              0.7135833501815796,
+              -0.6805442571640015,
+              0.16630765795707703
+            ],
+            "face": 2660,
+            "distance_mm": 14.679531649168077,
+            "front_facing": true,
+            "normal_dot_ray": -0.9977766423714175,
+            "signed_band_normal_coordinate_mm": 0.32046782570116505
+          },
+          {
+            "point": [
+              0.12432031333446503,
+              -0.3938325047492981,
+              3.563352346420288
+            ],
+            "normal": [
+              -0.7105115056037903,
+              0.6776890158653259,
+              -0.18950201570987701
+            ],
+            "face": 31,
+            "distance_mm": 15.250887055988942,
+            "front_facing": false,
+            "normal_dot_ray": 0.9989944446503752,
+            "signed_band_normal_coordinate_mm": -0.25088756153568426
+          }
+        ],
+        "band": [
+          {
+            "point": [
+              0.12450046837329865,
+              -0.39399728178977966,
+              3.5634098052978516
+            ],
+            "normal": [
+              0.7183780074119568,
+              -0.6570447087287903,
+              0.22852838039398193
+            ],
+            "face": 117,
+            "distance_mm": 15.0000707627721,
+            "front_facing": true,
+            "normal_dot_ray": -0.9999999657235847,
+            "signed_band_normal_coordinate_mm": -7.127691592501151e-05
+          },
+          {
+            "point": [
+              0.12414528429508209,
+              -0.3936724364757538,
+              3.5632967948913574
+            ],
+            "normal": [
+              -0.718708336353302,
+              0.6562155485153198,
+              -0.22986823320388794
+            ],
+            "face": 537,
+            "distance_mm": 15.494491189992534,
+            "front_facing": false,
+            "normal_dot_ray": 0.9999986658318792,
+            "signed_band_normal_coordinate_mm": -0.4944916871894023
+          }
+        ],
+        "anatomy": [
+          {
+            "point": [
+              0.12150614708662033,
+              -0.3912586271762848,
+              3.562457323074341
+            ],
+            "normal": [
+              0.699954628944397,
+              -0.6907308101654053,
+              0.18153367936611176
+            ],
+            "face": 1061,
+            "distance_mm": 19.16821320784172,
+            "front_facing": true,
+            "normal_dot_ray": -0.9981586675407803,
+            "signed_band_normal_coordinate_mm": -4.168213579116564
+          }
+        ]
+      },
+      "current_camera_shell_ahead_mm": 0.45425737054620186,
+      "source_camera_shell_ahead_mm": -0.5818309621081426,
+      "render_band_shell_source_depth_mm": -0.5835001133696096,
+      "band_face": 117,
+      "shell_face": 2660,
+      "shell_normal": [
+        0.7135833501815796,
+        -0.6805442571640015,
+        0.16630765795707703
+      ],
+      "band_shell_normal_dot": 0.9977766081712112,
+      "shell_outer_ahead_band_mm": 0.32046782570116505,
+      "band_thickness_along_normal_mm": 0.4944916871894023,
+      "shell_thickness_along_band_normal_mm": 0.5713553872368493,
+      "band_inner_to_anatomy_mm": 3.673721891927162,
+      "translation_to_put_shell_outer_01mm_behind_band_inner_mm": 0.9149595128905673,
+      "body_margin_after_hypothetical_translation_mm": 3.0023665046903125
+    },
+    {
+      "view": "right-ear",
+      "pixel": [
+        98,
+        258
+      ],
+      "point_band_outer": [
+        0.10192179679870605,
+        -0.4068579077720642,
+        3.580249547958374
+      ],
+      "band_outward_normal": [
+        0.5182518362998962,
+        -0.7878848910331726,
+        0.33264467120170593
+      ],
+      "normal_ray_hits": {
+        "shell": [
+          {
+            "point": [
+              0.10194026678800583,
+              -0.4068859815597534,
+              3.580261468887329
+            ],
+            "normal": [
+              0.5259611010551453,
+              -0.7830507755279541,
+              0.33195868134498596
+            ],
+            "face": 2979,
+            "distance_mm": 14.964343882968407,
+            "front_facing": true,
+            "normal_dot_ray": -0.99995844549118,
+            "signed_band_normal_coordinate_mm": 0.0356564525181291
+          },
+          {
+            "point": [
+              0.1016308069229126,
+              -0.40641552209854126,
+              3.5800628662109375
+            ],
+            "normal": [
+              -0.5259782671928406,
+              0.7829850912094116,
+              -0.33208632469177246
+            ],
+            "face": 350,
+            "distance_mm": 15.561454036311664,
+            "front_facing": false,
+            "normal_dot_ray": 0.9999580500705371,
+            "signed_band_normal_coordinate_mm": -0.5614537141482856
+          }
+        ],
+        "band": [
+          {
+            "point": [
+              0.10192185640335083,
+              -0.40685799717903137,
+              3.580249547958374
+            ],
+            "normal": [
+              0.5182518362998962,
+              -0.7878848910331726,
+              0.33264467120170593
+            ],
+            "face": 70,
+            "distance_mm": 14.999899002078017,
+            "front_facing": true,
+            "normal_dot_ray": -1.0000000223127294,
+            "signed_band_normal_coordinate_mm": 0.00010133261518774361
+          },
+          {
+            "point": [
+              0.10166539996862411,
+              -0.40646809339523315,
+              3.580084800720215
+            ],
+            "normal": [
+              -0.5179995894432068,
+              0.7883213758468628,
+              -0.33200278878211975
+            ],
+            "face": 490,
+            "distance_mm": 15.494809600343384,
+            "front_facing": false,
+            "normal_dot_ray": 0.9999996759395156,
+            "signed_band_normal_coordinate_mm": -0.4948092766929868
+          }
+        ],
+        "anatomy": [
+          {
+            "point": [
+              0.10016050934791565,
+              -0.40418025851249695,
+              3.5791189670562744
+            ],
+            "normal": [
+              0.5021799802780151,
+              -0.7882596254348755,
+              0.35561510920524597
+            ],
+            "face": 339,
+            "distance_mm": 18.398551822029134,
+            "front_facing": true,
+            "normal_dot_ray": -0.9996069947957105,
+            "signed_band_normal_coordinate_mm": -3.39855156316915
+          }
+        ]
+      },
+      "current_camera_shell_ahead_mm": 0.06867505831996823,
+      "source_camera_shell_ahead_mm": -0.9232956138262125,
+      "render_band_shell_source_depth_mm": -0.9218653188731878,
+      "band_face": 70,
+      "shell_face": 2979,
+      "shell_normal": [
+        0.5259611010551453,
+        -0.7830507755279541,
+        0.33195868134498596
+      ],
+      "band_shell_normal_dot": 0.9999584678029825,
+      "shell_outer_ahead_band_mm": 0.0356564525181291,
+      "band_thickness_along_normal_mm": 0.4948092766929868,
+      "shell_thickness_along_band_normal_mm": 0.5971101666664147,
+      "band_inner_to_anatomy_mm": 2.903742286476163,
+      "translation_to_put_shell_outer_01mm_behind_band_inner_mm": 0.6304657292111159,
+      "body_margin_after_hypothetical_translation_mm": 2.2066321198097483
+    },
+    {
+      "view": "right-ear",
+      "pixel": [
+        255,
+        374
+      ],
+      "point_band_outer": [
+        0.16254520416259766,
+        -0.32738399505615234,
+        3.5226852893829346
+      ],
+      "band_outward_normal": [
+        0.9700412154197693,
+        -0.24286596477031708,
+        0.005999165121465921
+      ],
+      "normal_ray_hits": {
+        "shell": [
+          {
+            "point": [
+              0.1624835580587387,
+              -0.3273685574531555,
+              3.5226848125457764
+            ],
+            "normal": [
+              0.9255174398422241,
+              -0.3387591242790222,
+              -0.16929128766059875
+            ],
+            "face": 3006,
+            "distance_mm": 15.063550094291385,
+            "front_facing": true,
+            "normal_dot_ray": -0.9790476023534423,
+            "signed_band_normal_coordinate_mm": -0.06355139048364045
+          },
+          {
+            "point": [
+              0.1620633751153946,
+              -0.32726335525512695,
+              3.5226821899414062
+            ],
+            "normal": [
+              -0.9358972907066345,
+              0.326463907957077,
+              0.132354274392128
+            ],
+            "face": 377,
+            "distance_mm": 15.496710671698283,
+            "front_facing": false,
+            "normal_dot_ray": 0.9863519878033113,
+            "signed_band_normal_coordinate_mm": -0.49671193030065286
+          }
+        ],
+        "band": [
+          {
+            "point": [
+              0.1625455617904663,
+              -0.3273840844631195,
+              3.5226852893829346
+            ],
+            "normal": [
+              0.9700412154197693,
+              -0.24286596477031708,
+              0.005999165121465921
+            ],
+            "face": 257,
+            "distance_mm": 14.999630070579022,
+            "front_facing": true,
+            "normal_dot_ray": -0.9999999132195136,
+            "signed_band_normal_coordinate_mm": 0.00036862768171275206
+          },
+          {
+            "point": [
+              0.16206800937652588,
+              -0.3272645175457001,
+              3.5226824283599854
+            ],
+            "normal": [
+              -0.9698903560638428,
+              0.24349474906921387,
+              -0.004784923512488604
+            ],
+            "face": 677,
+            "distance_mm": 15.491931535849373,
+            "front_facing": false,
+            "normal_dot_ray": 0.9999989992959283,
+            "signed_band_normal_coordinate_mm": -0.4919327948664787
+          }
+        ],
+        "anatomy": [
+          {
+            "point": [
+              0.1600300371646881,
+              -0.32675427198410034,
+              3.522669553756714
+            ],
+            "normal": [
+              0.9259553551673889,
+              -0.36525759100914,
+              -0.09588275104761124
+            ],
+            "face": 1327,
+            "distance_mm": 17.59284727698928,
+            "front_facing": true,
+            "normal_dot_ray": -0.9863483645210904,
+            "signed_band_normal_coordinate_mm": -2.5928483536878932
+          }
+        ]
+      },
+      "current_camera_shell_ahead_mm": -0.06795991084436537,
+      "source_camera_shell_ahead_mm": -0.3965490650848551,
+      "render_band_shell_source_depth_mm": -0.39774097754570903,
+      "band_face": 257,
+      "shell_face": 3006,
+      "shell_normal": [
+        0.9255174398422241,
+        -0.3387591242790222,
+        -0.16929128766059875
+      ],
+      "band_shell_normal_dot": 0.9790475173912152,
+      "shell_outer_ahead_band_mm": -0.06355139048364045,
+      "band_thickness_along_normal_mm": 0.4919327948664787,
+      "shell_thickness_along_band_normal_mm": 0.4331605398170124,
+      "band_inner_to_anatomy_mm": 2.1009155588214146,
+      "translation_to_put_shell_outer_01mm_behind_band_inner_mm": 0.5283814043828382,
+      "body_margin_after_hypothetical_translation_mm": 1.567755019004402
+    },
+    {
+      "view": "left-ear-oblique",
+      "pixel": [
+        756,
+        358
+      ],
+      "point_band_outer": [
+        -0.06576752662658691,
+        -0.3468160629272461,
+        3.565692186355591
+      ],
+      "band_outward_normal": [
+        -0.9013293981552124,
+        -0.37720248103141785,
+        0.21289390325546265
+      ],
+      "normal_ray_hits": {
+        "shell": [
+          {
+            "point": [
+              -0.06589005887508392,
+              -0.34686732292175293,
+              3.565721035003662
+            ],
+            "normal": [
+              -0.8887504935264587,
+              -0.38994717597961426,
+              0.24096381664276123
+            ],
+            "face": 3581,
+            "distance_mm": 14.864082570951023,
+            "front_facing": true,
+            "normal_dot_ray": -0.9994456123583852,
+            "signed_band_normal_coordinate_mm": 0.13591901618958957
+          },
+          {
+            "point": [
+              -0.06542807817459106,
+              -0.34667399525642395,
+              3.5656118392944336
+            ],
+            "normal": [
+              0.8831537365913391,
+              0.37389230728149414,
+              -0.2832740247249603
+            ],
+            "face": 952,
+            "distance_mm": 15.376650079708659,
+            "front_facing": false,
+            "normal_dot_ray": 0.9973527400584954,
+            "signed_band_normal_coordinate_mm": -0.3766485463154723
+          }
+        ],
+        "band": [
+          {
+            "point": [
+              -0.06576764583587646,
+              -0.3468160927295685,
+              3.565692186355591
+            ],
+            "normal": [
+              -0.9013293981552124,
+              -0.37720248103141785,
+              0.21289390325546265
+            ],
+            "face": 144,
+            "distance_mm": 14.999882884553548,
+            "front_facing": true,
+            "normal_dot_ray": -1.0000001048592149,
+            "signed_band_normal_coordinate_mm": 0.00011868834715045296
+          },
+          {
+            "point": [
+              -0.0653202012181282,
+              -0.3466288447380066,
+              3.565586566925049
+            ],
+            "normal": [
+              0.901250958442688,
+              0.37648805975914,
+              -0.21448418498039246
+            ],
+            "face": 564,
+            "distance_mm": 15.496293960336098,
+            "front_facing": false,
+            "normal_dot_ray": 0.9999984846477951,
+            "signed_band_normal_coordinate_mm": -0.49629243948867696
+          }
+        ],
+        "anatomy": [
+          {
+            "point": [
+              -0.06344306468963623,
+              -0.34584328532218933,
+              3.56514310836792
+            ],
+            "normal": [
+              -0.8674038648605347,
+              -0.41094377636909485,
+              0.2805987596511841
+            ],
+            "face": 238,
+            "distance_mm": 17.578936663235726,
+            "front_facing": true,
+            "normal_dot_ray": -0.9965632761750329,
+            "signed_band_normal_coordinate_mm": -2.578935360772583
+          }
+        ]
+      },
+      "current_camera_shell_ahead_mm": 0.13876425153557648,
+      "source_camera_shell_ahead_mm": -0.38504835610274313,
+      "render_band_shell_source_depth_mm": -0.3841315421063882,
+      "band_face": 144,
+      "shell_face": 3581,
+      "shell_normal": [
+        -0.8887504935264587,
+        -0.38994717597961426,
+        0.24096381664276123
+      ],
+      "band_shell_normal_dot": 0.9994457171594675,
+      "shell_outer_ahead_band_mm": 0.13591901618958957,
+      "band_thickness_along_normal_mm": 0.49629243948867696,
+      "shell_thickness_along_band_normal_mm": 0.5125675625050619,
+      "band_inner_to_anatomy_mm": 2.082642921283906,
+      "translation_to_put_shell_outer_01mm_behind_band_inner_mm": 0.7322114556782665,
+      "body_margin_after_hypothetical_translation_mm": 1.470075358778844
+    },
+    {
+      "view": "left-ear-oblique",
+      "pixel": [
+        815,
+        336
+      ],
+      "point_band_outer": [
+        -0.04972803592681885,
+        -0.37158143520355225,
+        3.576892137527466
+      ],
+      "band_outward_normal": [
+        -0.7983857989311218,
+        -0.511702299118042,
+        0.317396879196167
+      ],
+      "normal_ray_hits": {
+        "shell": [
+          {
+            "point": [
+              -0.049930982291698456,
+              -0.37171149253845215,
+              3.5769729614257812
+            ],
+            "normal": [
+              -0.7965905070304871,
+              -0.49823689460754395,
+              0.34234994649887085
+            ],
+            "face": 2888,
+            "distance_mm": 14.745765895341163,
+            "front_facing": true,
+            "normal_dot_ray": -0.999596364554778,
+            "signed_band_normal_coordinate_mm": 0.25423338603980383
+          },
+          {
+            "point": [
+              -0.04945305734872818,
+              -0.3714051842689514,
+              3.5767829418182373
+            ],
+            "normal": [
+              0.7965756058692932,
+              0.49831390380859375,
+              -0.34227266907691956
+            ],
+            "face": 259,
+            "distance_mm": 15.344384687127139,
+            "front_facing": false,
+            "normal_dot_ray": 0.9995993458521044,
+            "signed_band_normal_coordinate_mm": -0.344385377545553
+          }
+        ],
+        "band": [
+          {
+            "point": [
+              -0.049727872014045715,
+              -0.3715813159942627,
+              3.576892137527466
+            ],
+            "normal": [
+              -0.7983857989311218,
+              -0.511702299118042,
+              0.317396879196167
+            ],
+            "face": 90,
+            "distance_mm": 15.00019115866468,
+            "front_facing": true,
+            "normal_dot_ray": -0.9999999528905199,
+            "signed_band_normal_coordinate_mm": -0.00019186529787162954
+          },
+          {
+            "point": [
+              -0.049331583082675934,
+              -0.37132734060287476,
+              3.5767345428466797
+            ],
+            "normal": [
+              0.7982253432273865,
+              0.5107128620147705,
+              -0.31938818097114563
+            ],
+            "face": 510,
+            "distance_mm": 15.496562488679746,
+            "front_facing": false,
+            "normal_dot_ray": 0.9999975830635277,
+            "signed_band_normal_coordinate_mm": -0.496563171929143
+          }
+        ],
+        "anatomy": [
+          {
+            "point": [
+              -0.04755978658795357,
+              -0.370191752910614,
+              3.5760302543640137
+            ],
+            "normal": [
+              -0.7843334674835205,
+              -0.5100595951080322,
+              0.35307249426841736
+            ],
+            "face": 233,
+            "distance_mm": 17.715761552639307,
+            "front_facing": true,
+            "normal_dot_ray": -0.9992635244548327,
+            "signed_band_normal_coordinate_mm": -2.715762131343391
+          }
+        ]
+      },
+      "current_camera_shell_ahead_mm": 0.259809981690978,
+      "source_camera_shell_ahead_mm": -0.41167474743906496,
+      "render_band_shell_source_depth_mm": -0.41383575433064834,
+      "band_face": 90,
+      "shell_face": 2888,
+      "shell_normal": [
+        -0.7965905070304871,
+        -0.49823689460754395,
+        0.34234994649887085
+      ],
+      "band_shell_normal_dot": 0.999596317464313,
+      "shell_outer_ahead_band_mm": 0.25423338603980383,
+      "band_thickness_along_normal_mm": 0.496563171929143,
+      "shell_thickness_along_band_normal_mm": 0.5986187635853568,
+      "band_inner_to_anatomy_mm": 2.219198959414248,
+      "translation_to_put_shell_outer_01mm_behind_band_inner_mm": 0.8507965579689468,
+      "body_margin_after_hypothetical_translation_mm": 1.5205801958288911
+    },
+    {
+      "view": "left-ear-oblique",
+      "pixel": [
+        870,
+        319
+      ],
+      "point_band_outer": [
+        -0.030310750007629395,
+        -0.3916482925415039,
+        3.5847790241241455
+      ],
+      "band_outward_normal": [
+        -0.6521136164665222,
+        -0.6303806900978088,
+        0.42115071415901184
+      ],
+      "normal_ray_hits": {
+        "shell": [
+          {
+            "point": [
+              -0.030525606125593185,
+              -0.39185598492622375,
+              3.5849177837371826
+            ],
+            "normal": [
+              -0.6556679010391235,
+              -0.6484617590904236,
+              0.38677772879600525
+            ],
+            "face": 2643,
+            "distance_mm": 14.67052471017723,
+            "front_facing": true,
+            "normal_dot_ray": -0.9992395003801331,
+            "signed_band_normal_coordinate_mm": 0.3294745790400899
+          },
+          {
+            "point": [
+              -0.030134817585349083,
+              -0.3914782404899597,
+              3.584665298461914
+            ],
+            "normal": [
+              0.6556968092918396,
+              0.6484025120735168,
+              -0.38682785630226135
+            ],
+            "face": 14,
+            "distance_mm": 15.269820418623784,
+            "front_facing": false,
+            "normal_dot_ray": 0.9992421149051337,
+            "signed_band_normal_coordinate_mm": -0.2698211016188834
+          }
+        ],
+        "band": [
+          {
+            "point": [
+              -0.030310802161693573,
+              -0.3916483521461487,
+              3.5847792625427246
+            ],
+            "normal": [
+              -0.6521136164665222,
+              -0.6303806900978088,
+              0.42115071415901184
+            ],
+            "face": 198,
+            "distance_mm": 14.999827310338745,
+            "front_facing": true,
+            "normal_dot_ray": -0.9999999536329399,
+            "signed_band_normal_coordinate_mm": 0.00017199414736879248
+          },
+          {
+            "point": [
+              -0.02998884581029415,
+              -0.391337126493454,
+              3.584571123123169
+            ],
+            "normal": [
+              0.652027428150177,
+              0.6295448541641235,
+              -0.4225320816040039
+            ],
+            "face": 618,
+            "distance_mm": 15.493628160802619,
+            "front_facing": false,
+            "normal_dot_ray": 0.9999986181114984,
+            "signed_band_normal_coordinate_mm": -0.49362883342041197
+          }
+        ],
+        "anatomy": [
+          {
+            "point": [
+              -0.028031621128320694,
+              -0.38944512605667114,
+              3.5833072662353516
+            ],
+            "normal": [
+              -0.6470421552658081,
+              -0.6483393907546997,
+              0.40123870968818665
+            ],
+            "face": 733,
+            "distance_mm": 18.49491593746636,
+            "front_facing": true,
+            "normal_dot_ray": -0.9996276479214351,
+            "signed_band_normal_coordinate_mm": -3.4949164709232594
+          }
+        ]
+      },
+      "current_camera_shell_ahead_mm": 0.34551945992643596,
+      "source_camera_shell_ahead_mm": -0.4678096381362593,
+      "render_band_shell_source_depth_mm": -0.4685307392701361,
+      "band_face": 198,
+      "shell_face": 2643,
+      "shell_normal": [
+        -0.6556679010391235,
+        -0.6484617590904236,
+        0.38677772879600525
+      ],
+      "band_shell_normal_dot": 0.9992394540483351,
+      "shell_outer_ahead_band_mm": 0.3294745790400899,
+      "band_thickness_along_normal_mm": 0.49362883342041197,
+      "shell_thickness_along_band_normal_mm": 0.5992956806589733,
+      "band_inner_to_anatomy_mm": 3.0012876375028474,
+      "translation_to_put_shell_outer_01mm_behind_band_inner_mm": 0.9231034124605019,
+      "body_margin_after_hypothetical_translation_mm": 2.301991956843874
+    },
+    {
+      "view": "left-ear-oblique",
+      "pixel": [
+        920,
+        299
+      ],
+      "point_band_outer": [
+        -0.0060880184173583984,
+        -0.4054476022720337,
+        3.5930957794189453
+      ],
+      "band_outward_normal": [
+        -0.4372270703315735,
+        -0.7385482788085938,
+        0.5132047533988953
+      ],
+      "normal_ray_hits": {
+        "shell": [
+          {
+            "point": [
+              -0.0060748388059437275,
+              -0.4054253399372101,
+              3.5930802822113037
+            ],
+            "normal": [
+              -0.443584144115448,
+              -0.7630048394203186,
+              0.4701666831970215
+            ],
+            "face": 2868,
+            "distance_mm": 15.030158955261221,
+            "front_facing": true,
+            "normal_dot_ray": -0.9987545884419635,
+            "signed_band_normal_coordinate_mm": -0.030157532579261348
+          },
+          {
+            "point": [
+              -0.005813635420054197,
+              -0.40498411655426025,
+              3.592773675918579
+            ],
+            "normal": [
+              0.44357234239578247,
+              0.7629024386405945,
+              -0.4703439474105835
+            ],
+            "face": 239,
+            "distance_mm": 15.62758066655348,
+            "front_facing": false,
+            "normal_dot_ray": 0.9987647733270751,
+            "signed_band_normal_coordinate_mm": -0.627579300648412
+          }
+        ],
+        "band": [
+          {
+            "point": [
+              -0.006087986286729574,
+              -0.4054475724697113,
+              3.5930957794189453
+            ],
+            "normal": [
+              -0.4372270703315735,
+              -0.7385482788085938,
+              0.5132047533988953
+            ],
+            "face": 217,
+            "distance_mm": 15.000037484379213,
+            "front_facing": true,
+            "normal_dot_ray": -1.0000000950365395,
+            "signed_band_normal_coordinate_mm": -3.605883461266224e-05
+          },
+          {
+            "point": [
+              -0.005871927831321955,
+              -0.4050826132297516,
+              3.5928423404693604
+            ],
+            "normal": [
+              0.4372243583202362,
+              0.7376530170440674,
+              -0.5144927501678467
+            ],
+            "face": 637,
+            "distance_mm": 15.494110135033461,
+            "front_facing": false,
+            "normal_dot_ray": 0.9999987213008126,
+            "signed_band_normal_coordinate_mm": -0.49410875644381735
+          }
+        ],
+        "anatomy": [
+          {
+            "point": [
+              -0.004600978456437588,
+              -0.40293577313423157,
+              3.5913503170013428
+            ],
+            "normal": [
+              -0.4268002212047577,
+              -0.7622008323669434,
+              0.4867149889469147
+            ],
+            "face": 739,
+            "distance_mm": 18.401061923880174,
+            "front_facing": true,
+            "normal_dot_ray": -0.9993150740919081,
+            "signed_band_normal_coordinate_mm": -3.401060821557167
+          }
+        ]
+      },
+      "current_camera_shell_ahead_mm": -0.035304611245010165,
+      "source_camera_shell_ahead_mm": -0.5340968468444771,
+      "render_band_shell_source_depth_mm": -0.5362578537356057,
+      "band_face": 217,
+      "shell_face": 2868,
+      "shell_normal": [
+        -0.443584144115448,
+        -0.7630048394203186,
+        0.4701666831970215
+      ],
+      "band_shell_normal_dot": 0.9987546833601435,
+      "shell_outer_ahead_band_mm": -0.030157532579261348,
+      "band_thickness_along_normal_mm": 0.49410875644381735,
+      "shell_thickness_along_band_normal_mm": 0.5974217680691507,
+      "band_inner_to_anatomy_mm": 2.90695206511335,
+      "translation_to_put_shell_outer_01mm_behind_band_inner_mm": 0.563951223864556,
+      "body_margin_after_hypothetical_translation_mm": 2.209530297044199
+    },
+    {
+      "view": "right-ear-oblique",
+      "pixel": [
+        240,
+        372
+      ],
+      "point_band_outer": [
+        0.15390026569366455,
+        -0.3525587320327759,
+        3.5361437797546387
+      ],
+      "band_outward_normal": [
+        0.9090386033058167,
+        -0.4145490527153015,
+        -0.042400140315294266
+      ],
+      "normal_ray_hits": {
+        "shell": [
+          {
+            "point": [
+              0.15406595170497894,
+              -0.3526342809200287,
+              3.5361359119415283
+            ],
+            "normal": [
+              0.9058444499969482,
+              -0.4187774062156677,
+              -0.0638057067990303
+            ],
+            "face": 3332,
+            "distance_mm": 14.817731726730624,
+            "front_facing": true,
+            "normal_dot_ray": -0.9997567859353247,
+            "signed_band_normal_coordinate_mm": 0.18226729633674665
+          },
+          {
+            "point": [
+              0.1535804122686386,
+              -0.3524128496646881,
+              3.536158561706543
+            ],
+            "normal": [
+              -0.9147185683250427,
+              0.4035447835922241,
+              0.021011343225836754
+            ],
+            "face": 703,
+            "distance_mm": 15.351860322518608,
+            "front_facing": false,
+            "normal_dot_ray": 0.999694545762736,
+            "signed_band_normal_coordinate_mm": -0.3518612650816877
+          }
+        ],
+        "band": [
+          {
+            "point": [
+              0.15390026569366455,
+              -0.3525587320327759,
+              3.5361437797546387
+            ],
+            "normal": [
+              0.9090386033058167,
+              -0.4145490527153015,
+              -0.042400140315294266
+            ],
+            "face": 261,
+            "distance_mm": 14.999999034795717,
+            "front_facing": true,
+            "normal_dot_ray": -0.9999999356530481,
+            "signed_band_normal_coordinate_mm": 0.0
+          },
+          {
+            "point": [
+              0.15344858169555664,
+              -0.35235273838043213,
+              3.5361647605895996
+            ],
+            "normal": [
+              -0.90943443775177,
+              0.413836807012558,
+              0.04084309563040733
+            ],
+            "face": 681,
+            "distance_mm": 15.496881321334921,
+            "front_facing": false,
+            "normal_dot_ray": 0.9999984847503552,
+            "signed_band_normal_coordinate_mm": -0.4968822545663443
+          }
+        ],
+        "anatomy": [
+          {
+            "point": [
+              0.15165910124778748,
+              -0.35153669118881226,
+              3.536248207092285
+            ],
+            "normal": [
+              0.9047837853431702,
+              -0.42582952976226807,
+              -0.005960438400506973
+            ],
+            "face": 1325,
+            "distance_mm": 17.465417988567093,
+            "front_facing": true,
+            "normal_dot_ray": -0.9992634044273322,
+            "signed_band_normal_coordinate_mm": -2.4654187951291817
+          }
+        ]
+      },
+      "current_camera_shell_ahead_mm": 0.19006389151172698,
+      "source_camera_shell_ahead_mm": -0.37940562166795644,
+      "render_band_shell_source_depth_mm": -0.3791076743323174,
+      "band_face": 261,
+      "shell_face": 3332,
+      "shell_normal": [
+        0.9058444499969482,
+        -0.4187774062156677,
+        -0.0638057067990303
+      ],
+      "band_shell_normal_dot": 0.999756721604023,
+      "shell_outer_ahead_band_mm": 0.18226729633674665,
+      "band_thickness_along_normal_mm": 0.4968822545663443,
+      "shell_thickness_along_band_normal_mm": 0.5341285614184343,
+      "band_inner_to_anatomy_mm": 1.9685365405628374,
+      "translation_to_put_shell_outer_01mm_behind_band_inner_mm": 0.7791495509030909,
+      "body_margin_after_hypothetical_translation_mm": 1.334407979144403
+    },
+    {
+      "view": "right-ear-oblique",
+      "pixel": [
+        181,
+        343
+      ],
+      "point_band_outer": [
+        0.13916361331939697,
+        -0.3782694339752197,
+        3.5512828826904297
+      ],
+      "band_outward_normal": [
+        0.8348801136016846,
+        -0.5426748991012573,
+        0.09208217263221741
+      ],
+      "normal_ray_hits": {
+        "shell": [
+          {
+            "point": [
+              0.1393321007490158,
+              -0.3783789277076721,
+              3.5513014793395996
+            ],
+            "normal": [
+              0.8603951334953308,
+              -0.4962829053401947,
+              0.11586037278175354
+            ],
+            "face": 3712,
+            "distance_mm": 14.798201098591168,
+            "front_facing": true,
+            "normal_dot_ray": -0.9983157488448088,
+            "signed_band_normal_coordinate_mm": 0.2017987244506969
+          },
+          {
+            "point": [
+              0.13883298635482788,
+              -0.37805449962615967,
+              3.551246404647827
+            ],
+            "normal": [
+              -0.8603557348251343,
+              0.49637356400489807,
+              -0.1157640740275383
+            ],
+            "face": 1083,
+            "distance_mm": 15.396032161345977,
+            "front_facing": false,
+            "normal_dot_ray": 0.9983231864618566,
+            "signed_band_normal_coordinate_mm": -0.3960323313449976
+          }
+        ],
+        "band": [
+          {
+            "point": [
+              0.13916385173797607,
+              -0.37826958298683167,
+              3.5512828826904297
+            ],
+            "normal": [
+              0.8348801136016846,
+              -0.5426748991012573,
+              0.09208217263221741
+            ],
+            "face": 181,
+            "distance_mm": 14.999719909595788,
+            "front_facing": true,
+            "normal_dot_ray": -0.9999999883593955,
+            "signed_band_normal_coordinate_mm": 0.0002799157918786932
+          },
+          {
+            "point": [
+              0.1387510597705841,
+              -0.37800127267837524,
+              3.5512373447418213
+            ],
+            "normal": [
+              -0.8352992534637451,
+              0.5416958332061768,
+              -0.09402523189783096
+            ],
+            "face": 601,
+            "distance_mm": 15.494150222795817,
+            "front_facing": false,
+            "normal_dot_ray": 0.9999975265279235,
+            "signed_band_normal_coordinate_mm": -0.49415039165268126
+          }
+        ],
+        "anatomy": [
+          {
+            "point": [
+              0.13693903386592865,
+              -0.37682345509529114,
+              3.551037549972534
+            ],
+            "normal": [
+              0.8620476126670837,
+              -0.5061099529266357,
+              0.02695731818675995
+            ],
+            "face": 1323,
+            "distance_mm": 17.66454421568482,
+            "front_facing": true,
+            "normal_dot_ray": -0.996841876462977,
+            "signed_band_normal_coordinate_mm": -2.664544359276988
+          }
+        ]
+      },
+      "current_camera_shell_ahead_mm": 0.20264251957451052,
+      "source_camera_shell_ahead_mm": -0.4143717768197348,
+      "render_band_shell_source_depth_mm": -0.41479599083822905,
+      "band_face": 181,
+      "shell_face": 3712,
+      "shell_normal": [
+        0.8603951334953308,
+        -0.4962829053401947,
+        0.11586037278175354
+      ],
+      "band_shell_normal_dot": 0.9983157372238098,
+      "shell_outer_ahead_band_mm": 0.2017987244506969,
+      "band_thickness_along_normal_mm": 0.49415039165268126,
+      "shell_thickness_along_band_normal_mm": 0.5978310557956945,
+      "band_inner_to_anatomy_mm": 2.1703939676243067,
+      "translation_to_put_shell_outer_01mm_behind_band_inner_mm": 0.7959491161033782,
+      "body_margin_after_hypothetical_translation_mm": 1.472562911828612
+    },
+    {
+      "view": "right-ear-oblique",
+      "pixel": [
+        138,
+        319
+      ],
+      "point_band_outer": [
+        0.12445235252380371,
+        -0.3941977024078369,
+        3.56298565864563
+      ],
+      "band_outward_normal": [
+        0.7183780074119568,
+        -0.6570447087287903,
+        0.22852838039398193
+      ],
+      "normal_ray_hits": {
+        "shell": [
+          {
+            "point": [
+              0.1246599480509758,
+              -0.3943875730037689,
+              3.563051700592041
+            ],
+            "normal": [
+              0.7135833501815796,
+              -0.6805442571640015,
+              0.16630765795707703
+            ],
+            "face": 2660,
+            "distance_mm": 14.71102148533937,
+            "front_facing": true,
+            "normal_dot_ray": -0.9977766423714175,
+            "signed_band_normal_coordinate_mm": 0.28897799060922935
+          },
+          {
+            "point": [
+              0.12425690144300461,
+              -0.3940189480781555,
+              3.5629234313964844
+            ],
+            "normal": [
+              -0.7105115056037903,
+              0.6776890158653259,
+              -0.18950201570987701
+            ],
+            "face": 31,
+            "distance_mm": 15.27207753209368,
+            "front_facing": false,
+            "normal_dot_ray": 0.9989944446503752,
+            "signed_band_normal_coordinate_mm": -0.2720780369140918
+          }
+        ],
+        "band": [
+          {
+            "point": [
+              0.12445221841335297,
+              -0.394197553396225,
+              3.56298565864563
+            ],
+            "normal": [
+              0.7183780074119568,
+              -0.6570447087287903,
+              0.22852838039398193
+            ],
+            "face": 117,
+            "distance_mm": 15.000193735149933,
+            "front_facing": true,
+            "normal_dot_ray": -0.9999999657235847,
+            "signed_band_normal_coordinate_mm": -0.00019424928954236975
+          },
+          {
+            "point": [
+              0.12409757077693939,
+              -0.3938731849193573,
+              3.562872886657715
+            ],
+            "normal": [
+              -0.718708336353302,
+              0.6562155485153198,
+              -0.22986823320388794
+            ],
+            "face": 537,
+            "distance_mm": 15.493861005607576,
+            "front_facing": false,
+            "normal_dot_ray": 0.9999986658318792,
+            "signed_band_normal_coordinate_mm": -0.4938615028260429
+          }
+        ],
+        "anatomy": [
+          {
+            "point": [
+              0.12143805623054504,
+              -0.391440749168396,
+              3.5620267391204834
+            ],
+            "normal": [
+              0.699954628944397,
+              -0.6907308101654053,
+              0.18153367936611176
+            ],
+            "face": 1061,
+            "distance_mm": 19.19598565877475,
+            "front_facing": true,
+            "normal_dot_ray": -0.9981586675407803,
+            "signed_band_normal_coordinate_mm": -4.195986029097654
+          }
+        ]
+      },
+      "current_camera_shell_ahead_mm": 0.291125005199774,
+      "source_camera_shell_ahead_mm": -0.4434679755581783,
+      "render_band_shell_source_depth_mm": -0.44435420483296184,
+      "band_face": 117,
+      "shell_face": 2660,
+      "shell_normal": [
+        0.7135833501815796,
+        -0.6805442571640015,
+        0.16630765795707703
+      ],
+      "band_shell_normal_dot": 0.9977766081712112,
+      "shell_outer_ahead_band_mm": 0.28897799060922935,
+      "band_thickness_along_normal_mm": 0.4938615028260429,
+      "shell_thickness_along_band_normal_mm": 0.5610560275233212,
+      "band_inner_to_anatomy_mm": 3.7021245262716107,
+      "translation_to_put_shell_outer_01mm_behind_band_inner_mm": 0.8828394934352722,
+      "body_margin_after_hypothetical_translation_mm": 3.0410684987482894
+    },
+    {
+      "view": "right-ear-oblique",
+      "pixel": [
+        90,
+        280
+      ],
+      "point_band_outer": [
+        0.10114395618438721,
+        -0.40710508823394775,
+        3.5808773040771484
+      ],
+      "band_outward_normal": [
+        0.5182518362998962,
+        -0.7878848910331726,
+        0.33264467120170593
+      ],
+      "normal_ray_hits": {
+        "shell": [
+          {
+            "point": [
+              0.10116614401340485,
+              -0.40713879466056824,
+              3.5808916091918945
+            ],
+            "normal": [
+              0.5259611010551453,
+              -0.7830507755279541,
+              0.33195868134498596
+            ],
+            "face": 2979,
+            "distance_mm": 14.957186148058131,
+            "front_facing": true,
+            "normal_dot_ray": -0.99995844549118,
+            "signed_band_normal_coordinate_mm": 0.04281418758811384
+          },
+          {
+            "point": [
+              0.10085666924715042,
+              -0.4066683053970337,
+              3.580693006515503
+            ],
+            "normal": [
+              -0.5259782671928406,
+              0.7829850912094116,
+              -0.33208632469177246
+            ],
+            "face": 350,
+            "distance_mm": 15.55432750475437,
+            "front_facing": false,
+            "normal_dot_ray": 0.9999580500705371,
+            "signed_band_normal_coordinate_mm": -0.5543271824319795
+          }
+        ],
+        "band": [
+          {
+            "point": [
+              0.10114378482103348,
+              -0.40710482001304626,
+              3.5808770656585693
+            ],
+            "normal": [
+              0.5182518362998962,
+              -0.7878848910331726,
+              0.33264467120170593
+            ],
+            "face": 70,
+            "distance_mm": 15.000379779920817,
+            "front_facing": true,
+            "normal_dot_ray": -1.0000000223127294,
+            "signed_band_normal_coordinate_mm": -0.00037944523834099186
+          },
+          {
+            "point": [
+              0.10088739544153214,
+              -0.4067150354385376,
+              3.5807125568389893
+            ],
+            "normal": [
+              -0.5179995894432068,
+              0.7883213758468628,
+              -0.33200278878211975
+            ],
+            "face": 490,
+            "distance_mm": 15.495082394829181,
+            "front_facing": false,
+            "normal_dot_ray": 0.9999996759395156,
+            "signed_band_normal_coordinate_mm": -0.49508207118487135
+          }
+        ],
+        "anatomy": [
+          {
+            "point": [
+              0.09936843067407608,
+              -0.404405802488327,
+              3.579737663269043
+            ],
+            "normal": [
+              0.5021799802780151,
+              -0.7882596254348755,
+              0.35561510920524597
+            ],
+            "face": 339,
+            "distance_mm": 18.425991511819852,
+            "front_facing": true,
+            "normal_dot_ray": -0.9996069947957105,
+            "signed_band_normal_coordinate_mm": -3.425991253572125
+          }
+        ]
+      },
+      "current_camera_shell_ahead_mm": 0.04617396291450859,
+      "source_camera_shell_ahead_mm": -0.4937373362708968,
+      "render_band_shell_source_depth_mm": -0.4937373362708968,
+      "band_face": 70,
+      "shell_face": 2979,
+      "shell_normal": [
+        0.5259611010551453,
+        -0.7830507755279541,
+        0.33195868134498596
+      ],
+      "band_shell_normal_dot": 0.9999584678029825,
+      "shell_outer_ahead_band_mm": 0.04281418758811384,
+      "band_thickness_along_normal_mm": 0.49508207118487135,
+      "shell_thickness_along_band_normal_mm": 0.5971413700200934,
+      "band_inner_to_anatomy_mm": 2.9309091823872535,
+      "translation_to_put_shell_outer_01mm_behind_band_inner_mm": 0.6378962587729852,
+      "body_margin_after_hypothetical_translation_mm": 2.23376781236716
+    }
+  ]
+}

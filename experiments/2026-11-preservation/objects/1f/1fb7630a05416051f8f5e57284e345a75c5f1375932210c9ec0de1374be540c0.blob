@@ -1,0 +1,11 @@
+import bpy,json,math
+from mathutils import Vector
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V73-gui-planes-trial.blend',use_scripts=False);s=bpy.context.scene
+for o in bpy.data.objects:
+ if o.type=='LIGHT':o.hide_render=True
+s.world.node_tree.nodes['Background'].inputs['Strength'].default_value=.12
+ld=bpy.data.lights.new('Face comparison key','AREA');ld.energy=15;ld.shape='DISK';ld.size=.55;lo=bpy.data.objects.new('Face comparison key',ld);bpy.context.collection.objects.link(lo);lo.location=(-.60,-1.15,4.25);target=Vector((.015,-.25,3.43));lo.rotation_euler=(target-lo.location).to_track_quat('-Z','Y').to_euler()
+s.cycles.samples=64;s.render.resolution_x=680;s.render.resolution_y=1000;s.render.resolution_percentage=100;c=s.camera;c.data.type='ORTHO';configs=[('photo-oblique',(-1.6,-5,3.7),(0,-.13,3.40),.95),('front',(0,-5,3.40),(0,-.13,3.40),.95),('profile',(-5,-.13,3.40),(0,-.13,3.40),.95)];records=[]
+for view,loc,targ,scale in configs:
+ c.location=loc;c.rotation_euler=(Vector(targ)-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=scale;records.append({'view':view,'location':list(loc),'target':list(targ),'rotation_euler_radians':list(c.rotation_euler),'orthographic_height_m':scale,'image_width_m':scale*680/1000});s.render.filepath=r+'V73-whole-face-'+view+'.png';bpy.ops.render.render(write_still=True)
+dg=bpy.context.evaluated_depsgraph_get();o=bpy.data.objects['Maria — anatomia feminina adaptada CC0'];p=[o.matrix_world@v.co for v in o.evaluated_get(dg).data.vertices];json.dump({'baseline':'V63 geometry unchanged; diagnostic cameras/lights only, no blend saved','reference':'reference-9 oblique face and reference-8 overall profile; approximate framing only, not calibrated photogrammetry','resolution':[680,1000],'cameras':records,'lighting':{'area_energy_W':15,'area_size_m':.55,'location':list(lo.location),'target':list(target),'world_strength':.12},'view_transform':s.view_settings.view_transform,'exposure':s.view_settings.exposure,'gamma':s.view_settings.gamma,'head_mesh_bbox_m':[[min(v[i] for v in p),max(v[i] for v in p)] for i in range(3)],'head_mesh_bbox_dimensions_m':[max(v[i] for v in p)-min(v[i] for v in p) for i in range(3)]},open(r+'V73-whole-face-settings.json','w'),indent=2)

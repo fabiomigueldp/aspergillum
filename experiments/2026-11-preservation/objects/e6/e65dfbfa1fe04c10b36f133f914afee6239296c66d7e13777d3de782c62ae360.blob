@@ -1,0 +1,49 @@
+# V15 opaque band cuboid feasibility experiment
+
+Status: isolated, not retained as faithful transport. No Minecraft, addon, deployment or publication. Only this directory is written by these scripts; native V13, shell and anatomy stay unchanged.
+
+## Technique
+
+The actual V13 outer/inner/return/trim triangles are clipped to an adaptive UV partition, then enclosed by positive-depth oriented cuboids. Cuboid orientation follows the local UV longitudinal tangent and area-weighted outward normal. Greedy binary subdivision reduces a box-volume-excess allocation proxy. Mandatory v3 and v13 boundaries respect where the double crest should be sampled, but do **not** prove that the crest geometry remains exact. Likewise clipping before fitting avoids using the untrimmed source ends, but a rectangular box still extends beyond the actual trimmed shape.
+
+All six band faces use solid RGB stone. No transparent triangular masks, zero-depth planes or poly_mesh. This is a geometrically approximate volume, not tolerance-zero alpha transport. Other parts in the combined assembly remain V14 and may still use alpha.
+
+## Actual geometry and cost
+
+| Band cubes | Band quads | Pruned band quads | Exposed-sample distance p95/max mm | Combined unpruned/pruned quads |
+|---:|---:|---:|---:|---:|
+| 300 | 1800 | 1768 | 0.696/2.013 | 20454/20422 |
+| 700 | 4200 | 4143 | 0.364/1.611 | 22854/22797 |
+| 1400 | 8400 | 8204 | 0.211/1.611 | 27054/26858 |
+
+V14 baseline has 4,444 band quads and 23,098 total assembly quads. The 1,400-cube candidate reduces cube objects but increases drawn faces. Safe hidden-face removal saves only 32/57/196 quads; no camera assumptions were used. The unchanged 1.611 mm worst exposed witness at 700 and 1400 is near the left trimmed termination. The present volume-error allocation does not converge that endpoint merely by doubling the global budget.
+
+At 1400, crest-vertex outward normal rays reach 0.382 mm and 0.811 mm beyond the native v3/v13 samples. These are directional samples, not nearest-surface distances. Therefore neither double crest nor endpoints are claimed preserved exactly.
+
+## Deliverables
+
+Each budget-0300, budget-0700 and budget-1400 folder contains:
+- band.geo.json: standalone opaque band Bedrock geometry.
+- band.npz: actual triangles reconstructed from the delivered JSON, plus cube centers, bases, sizes and per-triangle cube IDs.
+- lineage.json: UV rectangle and native V13 source-face support for every cube; source hash and explicit approximation contract.
+- combined-v14.geo.json: complete V14 assembly with only part_00 replaced.
+- combination.json: exact preservation assertion for other bones and original atlas pixels.
+- metrics.json / metrics-samples.npz: nearest actual native triangle distances, exposed face samples, normal rays, crest samples and caveats.
+- silhouette-metrics.json / coverage-*.png:2048px fixed-view band-only and frozen-native-three-part union coverage differences.
+- pruned/: separate geometry and mesh, with full four-corner positive-clearance containment witnesses for every removed face. Original variants remain untouched.
+
+Standalone texture: opaque-white.png. Combined texture: combined-v14-opaque.png. The combined copy changes only a previously transparent unused 4x4 corner region at 4092..4095 and samples its solid center texel. Every original pixel elsewhere, including all legacy 2048x2048 pixels, remains equal. Sources themselves are not edited.
+
+## Interpretation and limitations
+
+The surface metric uses Blender BVH closest points on actual native triangles, not nearest vertices. It samples 7x7 points per box face and removes samples strictly inside another box. Direct solid-containment tests cover all 31,108 native triangle samples at every budget, with zero samples outside at the 1 nm tolerance; source-sample-coverage.json records this. This does not prove exact crest or endpoint shape. Quantiles are sample quantiles rather than uniform-area percentiles; the finite samples are not a Hausdorff certificate. Overlapping cuboids are intentional, and union volume or watertight Boolean topology was not certified.
+
+Normal rays start 20 mm outside the native sample and use analytical box slabs. Some ray directions meet nearby overfill nearly tangentially. Raw offset from the source sample is not a geometric distance. Native first-hit baseline correction is included separately; large directional deviations still do not equal nearest-surface deviation.
+
+Raster boundary distance includes interior-hole topology. Use added-coverage reach and hole-filled outer boundary metrics, where provided, rather than calling every raw boundary maximum an outer silhouette shift. Tiny negative raster coverage can arise from polygon rasterization; no continuous missing-surface claim follows from it alone.
+
+The standalone band meshes and source lineage provide research artifacts, not a finished asset. Rendered images and independent geometric/contact/pruning checks live in the parent V15 evidence/independent_validation directories and are not substituted by the builder's metrics.
+
+## Reproduce
+
+Run build_opaque_band.py; combine_v14.py; Blender background measure_opaque_band.py; Blender background correct_normal_ray_baseline.py; measure_silhouettes.py; clarify_silhouette_metrics.py; prune_hidden_faces.py; finalize_experiment.py. Python needs NumPy/SciPy/Pillow. Measurement scripts require Blender mathutils BVH. All write only this directory. A rerun intentionally replaces this isolated experiment's outputs, never native source files.

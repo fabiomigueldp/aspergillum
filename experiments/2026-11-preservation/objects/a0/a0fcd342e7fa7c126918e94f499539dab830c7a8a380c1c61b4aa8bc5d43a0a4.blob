@@ -1,0 +1,8 @@
+import numpy as np,json
+from pathlib import Path
+from mathutils.bvhtree import BVHTree
+R=Path(__file__).resolve().parents[1];B=R.parent;report={}
+for part in ['cap','band']:
+ hi=np.load(B/f'evidence/{part}-source.npz');lo=np.load(R/f'evidence/{part}-paired.npz');hv=hi['points'];hf=hi['triangles'];lv=lo['points'];lf=lo['triangles'];HT=BVHTree.FromPolygons(hv.tolist(),hf.tolist(),all_triangles=True);LT=BVHTree.FromPolygons(lv.tolist(),lf.tolist(),all_triangles=True)
+ samples=np.unique(np.linspace(0,len(hv)-1,10000).astype(int));d=np.array([LT.find_nearest(tuple(hv[k]))[3] for k in samples]);cent=lv[lf].mean(1);c=np.array([HT.find_nearest(tuple(p))[3] for p in cent]);v=np.array([HT.find_nearest(tuple(p))[3] for p in lv]);report[part]={'source_vertex_samples':len(samples),'source_samples_to_low':{'mean':float(d.mean()),'p95':float(np.percentile(d,95)),'max':float(d.max())},'all_low_centroids_to_high':{'mean':float(c.mean()),'p95':float(np.percentile(c,95)),'max':float(c.max())},'low_vertices_to_high_max':float(v.max()),'units':'Blender source units, mapped one unit to one Minecraft block','limits':'Sampled nearest-surface distances, not Hausdorff; nearest triangles may belong to either wall. Does not measure every point or artistic shape accuracy.'}
+(R/'evidence/surface-error.json').write_text(json.dumps(report,indent=2));print(report)

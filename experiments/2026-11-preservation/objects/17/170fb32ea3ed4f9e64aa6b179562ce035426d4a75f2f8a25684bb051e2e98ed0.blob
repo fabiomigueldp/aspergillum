@@ -1,0 +1,44 @@
+# Orçamento local dos verificadores auxiliares
+
+Revisão de ferramentas em cópia isolada, 03/11/2026. Não altera packs, schemas, mundos ou decisão NO-GO.
+
+`verify-native-integration.mjs` e `verify-catalog-compaction.mjs` não presumem mais que o Aspergillum contém 9.744 estados. Ambos usam `tools/lib/block-state-budget.mjs` para ler os dois Behavior Packs emitidos na árvore candidata:
+
+- Altare: o `packs/behavior` deste add-on;
+- Aspergillum: `../../packs/behavior` a partir deste add-on, nunca a árvore passada como baseline;
+- manifest de comportamento obrigatório e blocos JSON percorridos recursivamente, incluindo proxies sem states (um estado cada);
+- produto das cardinalidades por bloco e soma por pack; arrays e intervalos inteiros inclusivos são reconhecidos;
+- recusa explícita de pasta/manifest ausentes, pasta vazia, JSON/definição inválidos, IDs duplicados, domínio desconhecido/vazio/misto ou contagem que exceda precisão inteira segura. Não existe fallback para zero ou uma contagem histórica.
+
+Os dois verificadores exigem soma **≤65.536**, sem parâmetro para elevar o teto, antes das comparações semânticas caras. O total Altare lido dos arquivos também precisa coincidir com a enumeração semântica do próprio verificador. O relatório fornece o pack, manifest, versão e número de blocos lidos. Os arquivos devem formar uma cópia completa dos packs: contar o diretório não prova que um terceiro nunca removeu um arquivo que não está mais lá.
+
+## Variantes verificadas
+
+| Altare emitido | Aspergillum emitido | Soma | Resultado do orçamento |
+| --- | ---: | ---: | --- |
+| Catálogo histórico, 51.608 | Legado, 9.744 | 61.352 | Dentro do teto |
+| Catálogo histórico, 51.608 | Compacto, 5.008 | 56.616 | Dentro do teto |
+| Integração nativa, 59.840 | Legado, 9.744 | 69.584 | Recusado, excesso de 4.048 |
+| Integração nativa, 59.840 | Compacto, 5.008 | 64.848 | Dentro do teto, margem 688 |
+
+Passar o orçamento não aprova outras invariantes ou a release. O verificador histórico continua exigindo os mesmos 414 IDs, 51.608 estados e arte/RP preservados. Ele **continua recusando** a integração 0.13.0 por mudança de IDs; não deve ser flexibilizado para aceitar os 17 blocos novos. O verificador nativo é a comparação apropriada para essa integração.
+
+## Reprodução sem build
+
+Testes portáteis de contagem, erros e CLIs com sibling ausente/legado:
+
+```sh
+node --experimental-strip-types --test tests/block-state-budget.node.ts
+```
+
+Quatro comparações completas adicionais usam baselines explícitas, já emitidas, somente para leitura. Sem essas variáveis, elas ficam marcadas como skipped, não como aprovadas:
+
+```sh
+ALTARE_PRECOMPACT_BASELINE=/copia/precompact/addons/altare \
+ALTARE_COMPACT_CATALOG_BASELINE=/copia/catalogo-compacto/addons/altare \
+node --experimental-strip-types --test tests/block-state-budget.node.ts
+```
+
+A suíte constrói árvores temporárias, copia somente os verificadores/helper e usa fontes/packs de referência read-only. Verifica os dois CLIs, o sibling correto apesar de outro `cwd`, os casos 65.536/65.537 e a recusa histórica por escopo. Nenhum build, instalação ou chamada Creator Tools faz parte desses testes.
+
+O gate principal `validate-collection.mjs` permanece inalterado; esta revisão corrige somente os auxiliares. Não oferece teste nativo, migração, estimativa de memória ou garantia de desempenho. Outros add-ons do mundo precisam ser contados separadamente.

@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "baselineVersion": "0.12.3",
+  "candidateVersion": "0.13.0",
+  "blocks": {
+    "idsPreserved": 414,
+    "newIds": 17,
+    "schemasChanged": 136,
+    "unaffectedByteIdentical": 278
+  },
+  "states": {
+    "before": 80000,
+    "after": 59840,
+    "oldSubsetAfter": 51608,
+    "newFamily": 8232,
+    "netReduction": 20160,
+    "aspergillum": 9744,
+    "combined": 69584,
+    "combinedHeadroom": -4048
+  },
+  "semantics": {
+    "atelierCompared": 14688,
+    "classicCompared": 3000,
+    "allEffectiveComponentsEqual": true,
+    "migration": {
+      "atelier": {
+        "accepted": 16416,
+        "rejected": 18144,
+        "normalizedUnusedRole": 1728
+      },
+      "classic": {
+        "accepted": 3000,
+        "rejected": 8520
+      }
+    }
+  },
+  "resources": {
+    "previousFiles": 4971,
+    "byteIdentical": 4967,
+    "preservedManifestSha256": "cf6cd4800e938aeb36b099abb4c6986e0eebaa7f7b94d2fe75337d03342320df",
+    "authorizedChanges": [
+      "blocks.json",
+      "manifest.json",
+      "texts/en_US.lang",
+      "texts/pt_BR.lang"
+    ],
+    "addedFiles": 2742
+  },
+  "authoredAssets": {
+    "previousFiles": 27,
+    "byteIdentical": 26,
+    "preservedManifestSha256": "7dff0fd2352468806f1c09886e757bfbd239c1b61ad52c38bb2f7a591efe89e6",
+    "authorizedChanges": [
+      "locales.mjs"
+    ],
+    "addedFiles": 7
+  },
+  "limitations": [
+    "Comparison is offline and does not validate native Bedrock loading, persistence, rendering, or performance.",
+    "Same block IDs with changed state schemas are not safe to install over existing worlds. Migration accepts exported snapshots only; no world is read or modified.",
+    "Rejected old combinations are not silently repaired or stripped of iconography.",
+    "Known combined budget includes only Altare and the 9,744-state Aspergillum pack."
+  ]
+}

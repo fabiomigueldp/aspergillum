@@ -1,0 +1,49 @@
+{
+  "seam_faces": 1096,
+  "seam_faces_in_intersection_component": 1083,
+  "seam_mantle_layer_incidence": {
+    "(-1,)": 8,
+    "(-1, 1)": 2,
+    "(1,)": 542,
+    "(-1, 0)": 2,
+    "(0,)": 542
+  },
+  "sources": {
+    "Maria \u2014 v\u00e9u reconstru\u00eddo de perfil": {
+      "verts": 5040,
+      "polygons": 4929,
+      "modifiers": [
+        {
+          "name": "Espessura de pedra",
+          "type": "SOLIDIFY",
+          "thickness": 0.0006000000284984708,
+          "levels": null
+        },
+        {
+          "name": "Suavidade localizada",
+          "type": "SUBSURF",
+          "thickness": null,
+          "levels": 1
+        }
+      ]
+    },
+    "Maria \u2014 plano cont\u00ednuo do manto": {
+      "verts": 800,
+      "polygons": 711,
+      "modifiers": [
+        {
+          "name": "Borda de pedra",
+          "type": "SOLIDIFY",
+          "thickness": 0.006000000052154064,
+          "levels": null
+        },
+        {
+          "name": "Continuidade do manto",
+          "type": "SUBSURF",
+          "thickness": null,
+          "levels": 2
+        }
+      ]
+    }
+  }
+}

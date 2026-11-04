@@ -1,0 +1,7 @@
+import bpy,json
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V62-opposite-foot-trial.blend',use_scripts=False);o=bpy.data.objects['Menino — pé.001'];dg=bpy.context.evaluated_depsgraph_get();after=[o.matrix_world@v.co for v in o.evaluated_get(dg).data.vertices];k=o.data.shape_keys.key_blocks[-1];k.value=0;bpy.context.view_layer.update();before=[o.matrix_world@v.co for v in o.evaluated_get(bpy.context.evaluated_depsgraph_get()).data.vertices];b=bpy.data.objects['Laje'];m=b.evaluated_get(dg).data;bv=BVHTree.FromPolygons([b.matrix_world@v.co for v in m.vertices],[tuple(f.vertices) for f in m.polygons]);d=json.load(open(r+'V62-opposite-foot-verification.json'));d.pop('pose_y_unchanged',None);d['pose_y_max_delta_m']=max(abs(a.y-b.y) for a,b in zip(before,after));d['support_raycast']={}
+for label,lo,hi in [('heel',-.275,-.24),('forefoot',-.395,-.345)]:
+ q=min((p for p in after if lo<=p.y<=hi),key=lambda p:p.z);loc,n,f,dist=bv.ray_cast(q+Vector((0,0,.05)),Vector((0,0,-1)),.2);d['support_raycast'][label]={'base_hit':loc is not None,'gap_m':q.z-loc.z if loc else None}
+json.dump(d,open(r+'V62-opposite-foot-verification.json','w'),indent=2);print(d)

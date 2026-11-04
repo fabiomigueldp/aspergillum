@@ -1,0 +1,18 @@
+# V54 — prova de união localizada, NÃO promoção
+Fonte V52 intacta. V53 rejeitada, não incorporada.
+
+Cabeça+pescoço avaliados unidos em novo objeto pela operação Boolean exata; originais ocultos preservam geometria/chaves. Suavização limitada por distância geodésica18mm da interseção e proteções frontal/craniana; sombreamento smooth no novo objeto.
+
+## Verificações
+- 19872v/19776faces; zero bordas abertas, zero arestas não-manifold, zero auto-interseções não-adjacentes e zero faces invertidas pela suavização.
+- 16003 vértices da cabeça original protegida frente/crânio preservados exatamente por busca de coordenadas (delta0).
+- Todos objetos originais/chaves/matrizes idênticos àV52; apenas visibilidade da cabeça/pescoço muda e novo objeto adicionado.
+- Delta máximo de suavização8.35mm na junção.
+
+## Alerta de qualidade
+Área por face após suavização vs união bruta: razão0.5188..460.8304;69faces crescem>2×. O extremo460.8× vem de face minúscula0.001663mm²→0.766437mm², mas NÃO são apenas casos desprezíveis: entre faces>2× a maior área original é33.665mm². A união introduz distribuição irregular de faces e o relaxamento redistribui áreas fortemente. Malha manifold não equivale a retopologia de boa qualidade. Necessário avaliar/retrabalhar anel de junção antes de aceitar tecnicamente.
+
+## Visual
+Frente/perfil/3-4 sem o bulboV53. Pescoço deixa de ser facetado; transição não parece plenamente anatômica. Parte da melhora é apenas smooth, não fidelidade. Não promover automaticamente. Compare comV52-child-face mesmos enquadramento/luz.
+
+Rollback: ocultar `Menino — cabeça colo unidos V54 reversível` e reexibir cabeça infantil/pescoço originais, viewport+render. Não sobrescreverV52.

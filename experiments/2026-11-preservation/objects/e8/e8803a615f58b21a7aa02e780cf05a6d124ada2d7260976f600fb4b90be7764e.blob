@@ -1,0 +1,26 @@
+{
+  "format": "Bedrock 1.14.0 cubes only",
+  "cube_count": 8312,
+  "nonzero_faces_per_cube": 1,
+  "quads": 8312,
+  "raster_triangles": 16624,
+  "atlas_size": [
+    4096,
+    4096
+  ],
+  "atlas_alpha": "0 or 255",
+  "atlas_shading": "source stone base colors + local AO + modest baked directional relief; no original image textures exist",
+  "engine_tested": false,
+  "render_is_minecraft": false,
+  "conversion": "evaluated V75 -> region-budget decimation -> rotated zero-depth cubes with south alpha-masked face",
+  "unit_scale": "1 Blender source unit = 1 Minecraft block",
+  "source_height_blocks": 3.7597365111578256,
+  "limitations": [
+    "Entity prototype only; not a block geometry replacement.",
+    "8312 cuboids is a high mobile performance risk until profiled in target Bedrock.",
+    "Alpha cutout edges, mipmapping seams, culling and shader combination require engine QA.",
+    "Original sculptural inaccuracies of V75 remain.",
+    "Triangle appearance is rasterized at 40 px per tile; not lossless mesh transport.",
+    "Baked relief lighting is fixed and cannot replicate the original Blender material."
+  ]
+}

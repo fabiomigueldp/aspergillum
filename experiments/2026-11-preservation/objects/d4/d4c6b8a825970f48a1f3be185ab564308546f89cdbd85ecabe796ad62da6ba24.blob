@@ -1,0 +1,24 @@
+import bpy,json,math,collections
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False);dg=bpy.context.evaluated_depsgraph_get()
+def mesh(n):
+ o=bpy.data.objects[n];m=o.evaluated_get(dg).to_mesh();p=[o.matrix_world@v.co for v in m.vertices];f=[tuple(v.vertices) for v in m.polygons];o.evaluated_get(dg).to_mesh_clear();return p,f,BVHTree.FromPolygons(p,f)
+hp,hf,h=mesh('Maria — anatomia feminina adaptada CC0');mp,mf,m=mesh('TESTE 34 — conexão de superfícies avaliadas');tp,tf,t=mesh('Maria — túnica e mangas integradas')
+report={}
+for name,tree,pp,ff in [('mantle',m,mp,mf),('tunic',t,tp,tf)]:
+ pairs=h.overlap(tree);near=[]
+ for a,b in pairs:
+  c=sum((hp[i] for i in hf[a]),Vector())/len(hf[a])
+  if 3.05<c.z<3.42:near.append({'head_face':a,'other_face':b,'head_face_center':list(c)})
+ report['head_'+name]={'all_triangle_pairs':len(pairs),'neck_region_pairs':len(near),'pairs':near}
+# Ray locations of the observed colored-render scar and penetration, approximate pixels.
+camloc=Vector((-5,-.05,3.25));target=Vector((0,-.05,3.2));rot=(target-camloc).to_track_quat('-Z','Y');right=rot@Vector((1,0,0));up=rot@Vector((0,1,0));forward=rot@Vector((0,0,-1));points={}
+for label,(x,y) in {'skin_scalloped_line':(365,278),'blue_spot_in_mantle':(271,307)}.items():
+ org=camloc+right*((x/600-.5)*.95*.75)+up*((.5-y/800)*.95);hits={}
+ for n,tr in [('head',h),('mantle',m),('tunic',t)]:
+  p,nor,face,dist=tr.ray_cast(org,forward,20)
+  if p is not None:hits[n]={'location':list(p),'face':face,'distance':dist}
+ points[label]={'approximate_pixel':[x,y],'hits':hits}
+report['diagnostic_rays']=points
+json.dump(report,open(r+'neck-interface-contact-diagnosis.json','w'),indent=2);print({k:{a:b for a,b in v.items() if a!='pairs'} for k,v in report.items() if k!='diagnostic_rays'});print(points)

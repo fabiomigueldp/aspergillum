@@ -1,0 +1,137 @@
+{
+  "candidate": "bridge_ear_v10/structural_fit/relax065-t2-iteration03.npz",
+  "sha256": "b3444dccbbecb44a16ba193dcd43149a19a3d6c05ce4fa2220f5fc832447ae83",
+  "self_gate": {
+    "input": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/bridge_ear_v10/structural_fit/relax065-t2-iteration03.npz",
+    "sha256": "b3444dccbbecb44a16ba193dcd43149a19a3d6c05ce4fa2220f5fc832447ae83",
+    "method": "Blender BVH epsilon zero broad phase; double-precision strict segment-triangle intersection in both directions. Shared-vertex pairs are included.",
+    "limitations": "Not a proof for tangencies, general coplanar overlaps, minimum clearance, or intersections with other objects. BVH broad phase uses Blender precision. No game validation.",
+    "vertices": 6244,
+    "triangles": 12484,
+    "euler": 2,
+    "boundary_edges": 0,
+    "edges_not_two_faces": 0,
+    "inconsistent_edge_winding": 0,
+    "bad_vertex_links": [],
+    "unused_vertices": [],
+    "degenerate_triangles": [],
+    "minimum_triangle_area": 4.260022597417041e-07,
+    "bvh_candidates": 0,
+    "strict_crossings": 0,
+    "crossings": [],
+    "opposed_coplanar_edge_adjacent_candidates": [],
+    "elapsed_seconds": 0.35494044100050814,
+    "passes_screen": true
+  },
+  "explicit_adjacent_test": {
+    "pairs_tested": 91602,
+    "strict_crossing_pairs": 0,
+    "pairs": [],
+    "scale_relative_parallel_tolerance": 1e-12,
+    "raw_absolute_tolerance_artifacts_removed": [
+      [
+        7147,
+        7388
+      ]
+    ]
+  },
+  "mixed_director_faces": 6,
+  "mixed_midface_indices": [
+    51,
+    395,
+    740,
+    746,
+    752,
+    754
+  ],
+  "mixed_midface_uv": [
+    [
+      [
+        0.0,
+        0.1830357142857143
+      ],
+      [
+        0.0,
+        0.1875
+      ],
+      [
+        0.16666666666666666,
+        0.17857142857142855
+      ]
+    ],
+    [
+      [
+        0.3333333333333333,
+        0.03571428571428571
+      ],
+      [
+        0.5,
+        0.03571428571428571
+      ],
+      [
+        0.5,
+        0.017857142857142856
+      ]
+    ],
+    [
+      [
+        0.8333333333333333,
+        0.017857142857142856
+      ],
+      [
+        0.8333333333333333,
+        0.03571428571428571
+      ],
+      [
+        1.0,
+        0.03481012658227848
+      ]
+    ],
+    [
+      [
+        0.8333333333333333,
+        0.03571428571428571
+      ],
+      [
+        0.8333333333333333,
+        0.05357142857142857
+      ],
+      [
+        1.0,
+        0.05063291139240506
+      ]
+    ],
+    [
+      [
+        0.8333333333333333,
+        0.05357142857142857
+      ],
+      [
+        1.0,
+        0.06962025316455696
+      ],
+      [
+        1.0,
+        0.06645569620253164
+      ]
+    ],
+    [
+      [
+        0.8333333333333333,
+        0.07142857142857142
+      ],
+      [
+        1.0,
+        0.07278481012658228
+      ],
+      [
+        1.0,
+        0.06962025316455696
+      ]
+    ]
+  ],
+  "nonpositive_director_products": 6,
+  "min_director_face_cosine": -0.13719266157233082,
+  "paired_full_thickness_max_change_mm": 3.5691935518222806e-13,
+  "limits": "This targeted control checks self crossings and offset-director transversality. It does not repeat all contacts, shape/visibility/contour tests or certify a viable alternative."
+}

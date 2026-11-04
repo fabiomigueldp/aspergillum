@@ -1,0 +1,15 @@
+from pathlib import Path
+from PIL import Image,ImageDraw,ImageFont
+R=Path(__file__).resolve().parents[1];B=R.parent
+font='/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf';f=ImageFont.truetype(font,25);small=ImageFont.truetype(font,20)
+im=Image.new('RGB',(1600,1810),(30,35,40));dr=ImageDraw.Draw(im)
+dr.text((24,18),'V7 → V8 | encaixe local da anatomia | Blender, NÃO MINECRAFT',font=f,fill='white')
+dr.text((24,58),'Casca V7 congelada; cabeça antiga simplificada. Imagens não aprovam o modelo completo.',font=small,fill=(215,220,225))
+items=[(R/'evidence/native-control-junction-profile.png','Controle nativo: topo e nuca atravessam a casca'),(R/'evidence/fit-first-junction-profile.png','V8 nativa: manchas principais removidas'),(B/'lateral_v7/evidence/adaptive-consistent-junction-profile.png','V7: anatomia antiga reimportada JSON + alfa'),(R/'evidence/fit-json-junction-profile.png','V8: JSON + alfa; pequenos pontos ainda retornam')]
+for i,(p,label) in enumerate(items):
+ x=(i%2)*800;y=102+(i//2)*840;dr.text((x+16,y),label,font=small,fill='white');a=Image.open(p).convert('RGB');a.thumbnail((800,800));im.paste(a,(x,y+34))
+dr.text((24,1784),'Reencaixe parcial: 670 pares na casca e 1.115 na faixa permanecem. Sem publicação ou teste no jogo.',font=small,fill=(215,220,225));im.save(R/'evidence/V7_V8_NATIVE_AND_JSON_NOT_MINECRAFT.png')
+im=Image.new('RGB',(1600,890),(30,35,40));dr=ImageDraw.Draw(im);dr.text((20,12),'Diagnóstico sem halo | mesma câmera | anatomia nativa, NÃO MINECRAFT',font=f,fill='white')
+for i,(tag,label) in enumerate([('native-control-nohalo','Controle: ilha cinza posterior'),('fit-first-nohalo','V8: ilha posterior não visível')]):
+ dr.text((i*800+20,48),label,font=small,fill='white');a=Image.open(R/f'evidence/{tag}-junction-back.png').convert('RGB').resize((800,800));im.paste(a,(i*800,80))
+im.save(R/'evidence/V7_V8_NO_HALO_DIAGNOSTIC.png')

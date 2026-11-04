@@ -1,0 +1,17 @@
+from pathlib import Path
+O=Path(__file__).resolve().parent
+exec(compile((O/'ray_diagnosis.py').read_text().split("views={'left-ear'")[0],str(O/'ray_diagnosis.py'),'exec'))
+z=np.load(B/'shell_band_v3/evidence/band-source.npz');bvh['render_source_band']=BVHTree.FromPolygons(z['points'].tolist(),z['triangles'].tolist(),all_triangles=True)
+rows=json.loads((O/'band-normal-ray-samples.json').read_text());out=[]
+for r in rows:
+ if not(5<=r['uv'][1]<=11 and r['point'][1]<-.28):continue
+ p=np.array(r['point']);n=np.array(r['outward_normal']);ori=p+n*.015;di=-n;rout={'band_face':r['band_face'],'barycentric':r['barycentric'],'point':r['point'],'outward_normal':r['outward_normal'],'uv':r['uv'],'hits':{k:hits(k,ori,di,.04,4) for k in ['shell','render_source_band','source_shell','band','anatomy']}}
+ for key in rout['hits']:
+  for h in rout['hits'][key]:h['coordinate_mm']=float((np.array(h['point'])-p)@n)*1000
+ first={k:next((h for h in v if h['front_facing']),None) for k,v in rout['hits'].items()};rout['first']=first
+ if all(first[k] for k in ['shell','render_source_band','source_shell','band']):
+  s,b,ss,sb=[first[k]['coordinate_mm'] for k in ['shell','band','source_shell','render_source_band']];rout['current_shell_ahead_mm']=s-b;rout['source_band_ahead_mm']=sb-ss;rout['current_band_recession_from_render_source_mm']=sb-b;rout['current_shell_advance_from_source_mm']=s-ss;rout['inversion']=bool(s-b>.01 and sb-ss>.01)
+ out.append(rout)
+(O/'valley-source-order-map.json').write_text(json.dumps({'method':'Seven deterministic barycentric samples per external band face, retained if 5<=v<=11 and y<-0.28m. Ray from 15mm outside along local exterior band normal. Current vs render-resolution original band and viewport TESTE34 source shell. Inversion requires shell ahead current and band ahead source by >0.01mm each. Local-normal ordering is geometric evidence, not a whole-camera visibility mask.','samples':out},indent=2))
+inv=[r for r in out if r.get('inversion')];from collections import Counter
+summary={'sample_count':len(out),'inverted_count':len(inv),'band_faces_with_inverted_sample':sorted(set(r['band_face'] for r in inv)),'shell_faces_with_inverted_sample':sorted(set(r['first']['shell']['face'] for r in inv)),'inverted_uv_ranges':[[min(r['uv'][i] for r in inv),max(r['uv'][i] for r in inv)] for i in [0,1]],'current_shell_ahead_mm_quantiles':np.percentile([r['current_shell_ahead_mm'] for r in inv],[0,50,95,100]).tolist(),'source_band_ahead_mm_quantiles':np.percentile([r['source_band_ahead_mm'] for r in inv],[0,50,95,100]).tolist(),'band_recession_mm_quantiles':np.percentile([r['current_band_recession_from_render_source_mm'] for r in inv],[0,50,95,100]).tolist(),'shell_advance_mm_quantiles':np.percentile([r['current_shell_advance_from_source_mm'] for r in inv],[0,50,95,100]).tolist()};(O/'valley-source-order-summary.json').write_text(json.dumps(summary,indent=2));print(json.dumps(summary,indent=2))

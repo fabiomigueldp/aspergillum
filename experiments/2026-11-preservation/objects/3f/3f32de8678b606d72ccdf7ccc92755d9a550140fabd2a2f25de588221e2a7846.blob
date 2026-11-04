@@ -1,0 +1,29 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import * as THREE from 'three';
+import {buildBedrockGeometry} from './src/shared/bedrock-geometry.js';
+const root=path.resolve(import.meta.dirname,'../..');
+const manifest=JSON.parse(fs.readFileSync('public/asset-library/projects/paz-v75-pbr/manifest.json'));
+const model=manifest.models[0];
+const doc=JSON.parse(fs.readFileSync('public/asset-library/projects/paz-v75-pbr/'+model.source));
+const built=buildBedrockGeometry(doc['minecraft:geometry'][0],model.geometries[0],{default:new THREE.MeshBasicMaterial(),named:{}},{includePivots:false,includeLocators:false});
+built.root.updateMatrixWorld(true);
+const positions=[],faceCounts=[];let faceCount=0,invalid=0;
+const bounds=new THREE.Box3();
+for(const {mesh}of built.meshRecords){
+ const p=mesh.geometry.getAttribute('position'),uv=mesh.geometry.getAttribute('uv');
+ faceCounts.push(mesh.geometry.groups.length);faceCount+=mesh.geometry.groups.length;
+ for(const group of mesh.geometry.groups){
+   const indices=[...new Set(Array.from(mesh.geometry.index.array.slice(group.start,group.start+group.count)))];
+   if(indices.length!==4)throw Error('Expected quad');
+   for(const idx of indices){
+     const v=new THREE.Vector3().fromBufferAttribute(p,idx).applyMatrix4(mesh.matrixWorld);
+     positions.push(v.x,v.y,v.z);bounds.expandByPoint(v);
+     if(![v.x,v.y,v.z,uv.getX(idx),uv.getY(idx)].every(Number.isFinite))invalid++;
+   }
+ }
+}
+const arr=new Float64Array(positions);fs.writeFileSync(path.join(root,'threejs-surface-corners.f64'),Buffer.from(arr.buffer));
+const report={method:'Actual unmodified buildBedrockGeometry module from Aspergillum viewer. Node-only geometry construction; no WebGL/shader/browser execution.',sourceCommit:'3eaf97b172a38dac794461b156b70864737875d6',threeVersion:THREE.REVISION,cubeMeshes:built.meshRecords.length,bones:built.boneRecords.length,renderedQuadGroups:faceCount,finiteGeometryAndUvs:invalid===0,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray(),size:bounds.getSize(new THREE.Vector3()).toArray()},faceCounts,limitation:'Does not validate pixels, materials, culling, GPU performance or Minecraft runtime.'};
+fs.writeFileSync(path.join(root,'threejs-geometry-validation.json'),JSON.stringify(report,null,2));
+console.log(JSON.stringify({...report,faceCounts:'omitted from console'},null,2));

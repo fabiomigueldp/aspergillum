@@ -1,0 +1,43 @@
+"""Structural assembly only. Converted legacy JSON body; new shell as native triangles. NOT Minecraft."""
+import bpy,numpy as np,json,sys,math,hashlib
+from mathutils import Vector,Euler
+from pathlib import Path
+R=Path(__file__).resolve().parents[1];B=R.parent
+args=sys.argv[sys.argv.index('--')+1:];meshpath=Path(args[0]);tag=args[1];bodypath=Path(args[2]) if len(args)>2 and args[2]!='none' else None;views_filter=args[3].split(',') if len(args)>3 else None;hide_halo=len(args)>4 and args[4]=='no-halo';geo_override=Path(args[5]) if len(args)>5 else None;tex_override=Path(args[6]) if len(args)>6 else None;d=np.load(meshpath)
+bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False);s=bpy.context.scene;s.render.engine='CYCLES';s.cycles.samples=48;s.cycles.transparent_max_bounces=512;s.cycles.use_denoising=False;s.render.threads_mode='FIXED';s.render.threads=6;s.view_settings.view_transform='Standard';s.view_settings.look='None';s.world.use_nodes=True;bg=s.world.node_tree.nodes.get('Background');bg.inputs['Color'].default_value=(.60,.65,.72,1);bg.inputs['Strength'].default_value=.65
+ld=bpy.data.lights.new('Neutral sun','SUN');lo=bpy.data.objects.new('Neutral sun',ld);s.collection.objects.link(lo);lo.rotation_euler=(.35,-.5,-.35);ld.energy=1.5;ld.angle=.1
+colors=[(.25,.55,.8,1),(.8,.27,.32,1),(.25,.7,.55,1),(.8,.64,.2,1),(.63,.62,.59,1)]
+def material(label,col):
+ m=bpy.data.materials.new(label);m.use_nodes=True;n=m.node_tree.nodes;n.clear();bs=n.new('ShaderNodeBsdfDiffuse');bs.inputs['Color'].default_value=col;tr=n.new('ShaderNodeBsdfTransparent');gn=n.new('ShaderNodeNewGeometry');mix=n.new('ShaderNodeMixShader');out=n.new('ShaderNodeOutputMaterial');l=m.node_tree.links;l.new(gn.outputs['Backfacing'],mix.inputs[0]);l.new(bs.outputs[0],mix.inputs[1]);l.new(tr.outputs[0],mix.inputs[2]);l.new(mix.outputs[0],out.inputs[0]);return m
+mats=[material(n,c) for n,c in zip(['Cap candidate','Bridge candidate','Mantle candidate','Band V5','Unchanged legacy body'],colors)]
+me=bpy.data.meshes.new('Candidate native structural triangles');me.from_pydata(d['points'].tolist(),[],d['triangles'].tolist());me.update();ob=bpy.data.objects.new('Candidate assembly native triangles NOT JSON',me);s.collection.objects.link(ob)
+for m in mats[:3]:me.materials.append(m)
+fp=d['face_parts'] if 'face_parts' in d.files else np.zeros(len(d['triangles']),int)
+for p,part in zip(me.polygons,fp):p.material_index=int(part);p.use_smooth=False
+band=np.load(B/'shell_band_v5/retained_candidate/evidence/band-paired.npz');me=bpy.data.meshes.new('V5 exact band native');me.from_pydata(band['points'].tolist(),[],band['triangles'].tolist());me.update();ob=bpy.data.objects.new('V5 exact band native',me);s.collection.objects.link(ob);me.materials.append(mats[3])
+geo_path=B/'pbr_normals_v2/resource_pack/models/entity/paz_v75_pbr_sculpture.geo.json';tex_path=B/'pbr_normals_v2/resource_pack/textures/entity/paz_v75_pbr_sculpture.png';geo_path=geo_override or geo_path;tex_path=tex_override or tex_path;g=json.loads(geo_path.read_text())['minecraft:geometry'][0];tw=g['description']['texture_width'];th=g['description']['texture_height'];faces={'north':[(0,1,0),(0,0,0),(1,0,0),(1,1,0)],'south':[(1,1,1),(1,0,1),(0,0,1),(0,1,1)],'east':[(1,1,0),(1,0,0),(1,0,1),(1,1,1)],'west':[(0,1,1),(0,0,1),(0,0,0),(0,1,0)],'up':[(0,1,1),(0,1,0),(1,1,0),(1,1,1)],'down':[(0,0,0),(0,0,1),(1,0,1),(1,0,0)]};vv=[];ff=[];uvs=[]
+for b in g['bones'][2:]:
+ if hide_halo and b['name']=='part_10':continue
+ if bodypath is not None and b['name']=='part_15':continue
+ for c in b['cubes']:
+  o=Vector(c['origin']);sz=Vector(c['size']);p=Vector(c.get('pivot',[o[i]+sz[i]/2 for i in range(3)]));piv=Vector((-p.x,p.y,p.z));a=c.get('rotation',[0,0,0]);rot=Euler(tuple(math.radians(x) for x in [-a[0],-a[1],a[2]]),'XYZ').to_matrix()
+  for name,uv in c['uv'].items():
+   st=len(vv)
+   for q in faces[name]:
+    p=o+Vector([q[i]*sz[i] for i in range(3)]);bb=rot@(Vector((-p.x,p.y,p.z))-piv)+piv;vv.append((bb.x/16,-bb.z/16,bb.y/16))
+   ff.append(tuple(range(st,st+4)));u,v=uv['uv'];w,h=uv['uv_size'];uvs.extend([(u/tw,1-v/th),(u/tw,1-(v+h)/th),((u+w)/tw,1-(v+h)/th),((u+w)/tw,1-v/th)])
+me=bpy.data.meshes.new('Unchanged 18 body parts JSON');me.from_pydata(vv,[],ff);me.update();ob=bpy.data.objects.new('Unchanged legacy 18 parts JSON',me);s.collection.objects.link(ob);uv=me.uv_layers.new(name='Exact JSON UV')
+for loop,xy in zip(uv.data,uvs):loop.uv=xy
+m=mats[4];n=m.node_tree.nodes;l=m.node_tree.links;out=next(x for x in n if x.type=='OUTPUT_MATERIAL');tr=next(x for x in n if x.type=='BSDF_TRANSPARENT');prev=out.inputs[0].links[0].from_socket;tex=n.new('ShaderNodeTexImage');tex.image=bpy.data.images.load(str(tex_path));tex.image.pack();tex.interpolation='Closest';mix=n.new('ShaderNodeMixShader');l.new(tex.outputs['Alpha'],mix.inputs[0]);l.new(tr.outputs[0],mix.inputs[1]);l.new(prev,mix.inputs[2]);l.new(mix.outputs[0],out.inputs[0]);me.materials.append(m)
+if bodypath is not None:
+ bd=np.load(bodypath);me=bpy.data.meshes.new('Part15 native geometry override');me.from_pydata(bd['points'].tolist(),[],bd['triangles'].tolist());me.update();ob=bpy.data.objects.new('Part15 native geometry override NOT JSON',me);s.collection.objects.link(ob);me.materials.append(material('Part15 diagnostic native stone',colors[4]))
+ for poly in me.polygons:poly.use_smooth=False
+camdata=bpy.data.cameras.new('Diagnostic');cam=bpy.data.objects.new('Diagnostic',camdata);s.collection.objects.link(cam);s.camera=cam;camdata.type='ORTHO'
+views=[('full-front',(0,-8,1.9),(0,-.03,1.88),4.3,(900,1200)),('junction-profile',(3,-.1,3.4),(.03,-.10,3.42),.8,(1000,1000)),('junction-back',(2,3,3.5),(.03,-.1,3.34),.95,(1000,1000)),('head-front',(.25,-3.5,3.44),(.03,-.20,3.43),.85,(900,900))]
+views += [('left-ear',(-3,-.16,3.50),(-.085,-.205,3.485),.50,(1000,1000)),('right-ear',(3,-.16,3.48),(.17,-.205,3.46),.50,(1000,1000)),('rear-open',(.035,3,3.52),(.035,-.15,3.43),.70,(1000,1000))]
+views += [('left-ear-oblique',(-2,-1.5,3.82),(-.085,-.205,3.485),.50,(1000,1000)),('right-ear-oblique',(2,-1.5,3.82),(.17,-.205,3.46),.50,(1000,1000))]
+for view,pos,target,scale,res in views:
+ if views_filter is not None and view not in views_filter:continue
+ cam.location=pos;cam.rotation_euler=(Vector(target)-cam.location).to_track_quat('-Z','Y').to_euler();camdata.ortho_scale=scale;s.render.resolution_x,s.render.resolution_y=res;s.render.resolution_percentage=100;s.render.filepath=str(R/f'evidence/{tag}-{view}.png');bpy.ops.render.render(write_still=True)
+bpy.ops.wm.save_as_mainfile(filepath=str(R/f'evidence/{tag}-diagnostic.blend'))
+report={'renderer':'Blender Cycles48, neutral identical light, one-sided culling','minecraft_screenshot':False,'candidate_mesh':str(meshpath),'candidate_sha256':hashlib.sha256(meshpath.read_bytes()).hexdigest(),'body':'Legacy V2 JSON body parts with unchanged transforms/UV alpha; native part15 override if supplied, flat diagnostic stone, no normalmap','new_shell':'Native triangles, not Bedrock export; flat normals and color-coded components','colors':{'blue':'V5 cap opened for seam','red':'bridge candidate','green':'mantle candidate','gold':'V5 band','gray':'legacy converted body'},'highpoly_head_or_halo_context':False,'normalmap_used':False,'geometry_json':str(geo_path),'geometry_sha256':hashlib.sha256(geo_path.read_bytes()).hexdigest(),'texture_alpha':str(tex_path),'texture_sha256':hashlib.sha256(tex_path.read_bytes()).hexdigest(),'views_filter':views_filter,'diagnostic_halo_hidden':hide_halo,'body_override_native_npz':str(bodypath) if bodypath else None,'body_override_sha256':hashlib.sha256(bodypath.read_bytes()).hexdigest() if bodypath else None,'quality_approval':False};(R/f'evidence/{tag}-render.json').write_text(json.dumps(report,indent=2))

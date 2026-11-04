@@ -1,0 +1,11 @@
+# Aspergillum: revisão de fontes de prevenção de explosão
+
+Overlay de fontes, testes e documentação para a cópia diagnóstica 2.0.0. Não é projeto completo, pacote Minecraft, autorização de instalação ou migração de save.
+
+Implementa filtro síncrono de caldeirinha/mesa ocupadas ou ambíguas no evento anterior de explosão. Mantém os outros blocos; se excluir falhar, cancela a explosão inteira. Nenhuma entrega ou escrita no registry.
+
+Validação: check completo (338 testes add-on, 12 modelo offline, 87 viewer), 29 regressões falhando antes/passando depois, 76 rotas totais. Arte e áudio preservados; somente o bundle compilado muda entre 8.629 arquivos protegidos. Estados: 64.848, margem 688.
+
+NO-GO: Creator Tools HTTP 502 permanece, Minecraft não executado, retirada/entrega/persistência não atômicas e comandos não resolvidos. Sem .mcaddon, instalação, publicação ou mundo alterado.
+
+Use source.patch para revisar o diff; arquivos completos em source/. Não aplique a outro schema sem revisão. Evidências locais em evidence/.

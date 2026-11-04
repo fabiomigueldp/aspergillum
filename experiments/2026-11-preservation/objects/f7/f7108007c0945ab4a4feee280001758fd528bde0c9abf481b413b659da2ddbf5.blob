@@ -1,0 +1,4 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-arm-chain/inspect.py').read().split('for n in')[0])
+o=bpy.data.objects['Maria — túnica e mangas integradas'];p=np.array([v.co[:] for v in o.data.vertices])
+for z in np.arange(2.,3.11,.1):
+ q=p[(abs(p[:,2]-z)<.01)&(p[:,0]<0)];print(round(z,2),'bounds',q.min(0).tolist(),q.max(0).tolist(),'lateral_mean',q[q[:,0]<q[:,0].min()+.05].mean(0).tolist())

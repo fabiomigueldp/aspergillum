@@ -1,0 +1,13 @@
+# V70/V71 — estudo faixa–têmpora sobre superfície existente
+
+Baseline V63 intacta. Nenhuma compressão de crânio, nenhum painel adicionado, nenhum manto inferior alterado.
+
+V70: reprojeção direta da calota anterior e faixa sobre superfície externa da cabeça/orelha. Rejeitada antes de salvar:127 faces invertidas e51 novos pares de auto-interseção. Tecido não deve simplesmente copiar o relevo anatômico.
+
+V71: transporte suave do campo de deslocamento (80passos de difusão), faixa segue campo da calota. Guardas protegem a costura posterior; manto delta0. Resultado0 inversões/0 novos pares, mas baseline já tem1670 pares nessa superfície fina avaliada — não afirmar malha livre de colisões. Área mínima0,077934×,p5=0,216774×,mediana0,907732×;4468faces abaixo0,25×, compressão ampla suficiente para contraindicar promoção sem retopologia.
+
+REJEIÇÃO VISUAL: frente produz faixa pontuda/emV; têmpora tem gancho; orelha permanece exposta. Há elevação de trajetória, mas não reproduz o arco suave observado. A guarda necessária para preservar costura evita prolongamento temporal necessário, e fórmula de altura escalar gera trajetória inadequada. Não considerar progresso artístico ou reter V71.
+
+Próximo método distinto: desenhar primeiro arco frontal/temporal a partir de landmarks das vistas reais, sem fórmula angular que produza pico; reconstruir apenas malha da calota/terminação temporal sobre esse percurso com parametrização regular e transição explícita até superfície posterior existente. Verificar se contorno compartilhado permite cobertura da orelha antes de criar tecido. Não repetir difusão/amplitude como microajuste.
+
+V71-veil-trial.blend contém só estudo reversível; chave TESTE71=0 e ocultar faixaTESTE71/reexibirTESTE29 restauraV63. Imagens V71-whole-face-{photo-oblique,front,profile}.png usam mesmas condições V63-whole-face. JSON métricas/áreas e scripts preservados. V70 não salvou blend.

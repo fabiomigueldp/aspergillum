@@ -1,0 +1,316 @@
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -1,4 +1,8 @@
+ # Changelog
++
++## 2026-11-03 · Altare 0.12.3
++
++Corrige Guadalupe indevida ao trocar de modelo e acrescenta feedback ao encerrar por prazo. [Correções e reteste](addons/altare/docs/EDITOR_CHOICES_0.12.3.md). Fonte e pacote diagnósticos isolados; versões anteriores preservadas. Aspergillum 1.2.5 e Estúdio 2.3.0 mantidos.
+ 
+ ## 2026-11-03 · Altare 0.12.2
+ 
+--- a/addons/altare/CHANGELOG.md
++++ b/addons/altare/CHANGELOG.md
+@@ -1,4 +1,10 @@
+ # Changelog
++
++## 0.12.3 · Escolhas e prazo do editor — 2026-11-03
++
++- Ao trocar de arquitetura para Clássico, papéis centrais não ligam Guadalupe. Preserva ícone clássico genuíno, escolhas explícitas e Restaurar.
++- Encerramento após o prazo mostra o aviso localizado existente, sem estender o lock ou aplicar o rascunho.
++- Geometria, texturas, blocos, IDs e estados permanecem idênticos à 0.12.2. [Correções, evidências e reteste](docs/EDITOR_CHOICES_0.12.3.md).
+ 
+ ## 0.12.2 · Dimensões do editor — 2026-11-03
+ 
+--- a/addons/altare/README.md
++++ b/addons/altare/README.md
+@@ -1,6 +1,6 @@
+ # Altare
+ 
+-**0.12.2 — Cruzeta e dimensões do editor.** Oitavo modelo: marcenaria aberta, quadros apoiados, X duplo cavilhado e marchetaria proporcional. Dez toalhas compartilhadas, com oito cores do Floral IHS. [Construção e compatibilidade](docs/CROSSBRACE_0.12.1.md) · [Correção das dimensões do editor](docs/EDITOR_DIMENSIONS_0.12.2.md).
++**0.12.3 — Cruzeta e escolhas do editor.** Oitavo modelo: marcenaria aberta, quadros apoiados, X duplo cavilhado e marchetaria proporcional. Dez toalhas compartilhadas, com oito cores do Floral IHS. [Construção e compatibilidade](docs/CROSSBRACE_0.12.1.md) · [Dimensões do editor](docs/EDITOR_DIMENSIONS_0.12.2.md) · [Guadalupe e prazo de edição](docs/EDITOR_CHOICES_0.12.3.md).
+ 
+ A [marcenaria 0.6.1](docs/JOINERY_0.6.1.md) acrescenta Arca e Balaústres ao [contrato de personalização](docs/CUSTOMIZATION_0.5.0.md). Os dois modelos usam nogueira, todos os tecidos e as oito cores do Floral IHS, sem aplique adicional.
+ 
+@@ -30,15 +30,15 @@
+ 
+ O Content Log da 0.4.1 confirmou a rejeição das caixas de colisão dos 66 blocos de cavaletes: os IDs não eram registrados e a aplicação terminava em rollback. A 0.4.2 usa caixas estáveis `origin/size`, resolve todas as permutações antes da primeira escrita e registra a cadeia de causas. Refina também a estrutura dos cavaletes, pilastras e ogivas, preservando integralmente as texturas. [Diagnóstico](docs/STRUCTURES_0.4.2.md) · [comparação antes/depois](out/structure-comparison-0.4.2/index.html).
+ 
+-## Testar a 0.12.2
++## Testar a 0.12.3
+ 
+-[Baixar Altare-0.12.2.mcaddon](dist/releases/Altare-0.12.2.mcaddon) · [Relatório oficial](dist/validation/0.12.2/release-summary.json) · [Correção do editor](docs/EDITOR_FIX_0.11.1.md) · [Reteste visual](docs/OGIVE_DETAIL_0.11.2.md).
++[Baixar Altare-0.12.3.mcaddon](dist/releases/Altare-0.12.3.mcaddon) · [Relatório oficial](dist/validation/0.12.3/release-summary.json) · [Correção do editor](docs/EDITOR_FIX_0.11.1.md) · [Reteste visual](docs/OGIVE_DETAIL_0.11.2.md).
+ 
+ [Ogivas: comparar antes e depois](out/ogive-comparison-0.11.2/index.html).
+ 
+ Antes da matriz histórica abaixo, escolher **Cruzeta** no editor e testar 1 × 1, 7 × 2 e 8 × 2, sem toalha, com linho curto, renda e Floral IHS. O tampo e objetos superiores não podem se mover. [Matriz visual preservada](docs/CROSSBRACE_0.12.1.md) · [Reteste das dimensões](docs/EDITOR_DIMENSIONS_0.12.2.md).
+ 
+-1. Importar em uma cópia do mundo e ativar BP/RP **`[0,12,2]`**, sem outra revisão Altare concorrente. Alvo mínimo 1.26.40; Script API 2.9.0/UI 2.1.0 estáveis; sem experimentos. A ferramenta deve abrir a tela sem `InvalidObservableError`, inclusive ao alternar materiais fixos e aplique indisponível.
++1. Importar em uma cópia do mundo e ativar BP/RP **`[0,12,3]`**, sem outra revisão Altare concorrente. Alvo mínimo 1.26.40; Script API 2.9.0/UI 2.1.0 estáveis; sem experimentos. A ferramenta deve abrir a tela sem `InvalidObservableError`, inclusive ao alternar materiais fixos e aplique indisponível.
+ 2. Executar `/function altare/dev_kit`; montar 7 × 2 módulos, com um bloco de altura. Usar **Acabamento do altar**, escolher Ogivas e Sem toalha; conferir pontas, recessos, impostas, apoios e retorno dos cantos em movimento. Alternar tecidos, materiais e relevo; repetir em 8 × 2 e conferir o centro dividido.
+ 3. Usar **Acabamento do altar** na lateral frontal. Na mesma tela, escolher Cavaletes, Nogueira e Sem toalha; usar Aplicar. Reabrir, escolher Cordeiro e aplicar. Cancelar não altera blocos; Restaurar escolhas recupera a configuração aberta. Conferir dois cavaletes nas extremidades, escoras conectadas e vão central aberto.
+ 4. Colocar pedra vanilla e caldeirinha sobre o tampo; alternar cavaletes, pilastras e ogivas. Testar também **Floral IHS**, branco/roxo/róseo; salvar e reabrir. Objetos superiores devem permanecer na mesma posição.
+--- /dev/null
++++ b/addons/altare/docs/EDITOR_CHOICES_0.12.3.md
+@@ -0,0 +1,54 @@
++# Escolhas e prazo do editor — 0.12.3
++
++## Guadalupe indevida: reprodução e correção
++
++Um altar de Pilastras sem toalha e sem relevo possui `frontal > 0` no centro por motivos de layout. O editor interpretava esse valor arquitetônico como Guadalupe. Ao selecionar Clássico, o toggle já aparecia ligado e Aplicar adicionava ornamentação não escolhida.
++
++Agora a abertura reconhece Guadalupe somente nos blocos clássicos: legado sem design ou catálogo com `structure === 'classic'`. Clássicos com tecidos universais conservam `frontal` para Guadalupe e `textileRole` para o motivo têxtil. O ícone genuíno continua lembrado durante trocas de modelo. Escolhas explícitas do jogador e Restaurar mantêm sua semântica. Em conjuntos mistos, a presença de Guadalupe clássica real é conservada independentemente da ordem; papel arquitetônico isolado não a inventa.
++
++O patch é restrito à leitura inicial do rascunho. Não migra saves, não redefine IDs ou states e não escreve no mundo antes de Aplicar.
++
++## Encerramento por prazo
++
++O prazo existente de 1.200 ticks fecha a tela e descarta o rascunho. Antes, o retorno sem acabamento encerrava o fluxo sem mensagem. Agora, se o retorno ocorre após o prazo, a infraestrutura mostra `error.expired`, já traduzida nos dois idiomas. Não há timer novo, extensão da sessão nem mudança nos locks ou rollback.
++
++Cancelar e invalidação concluídos antes do prazo permanecem silenciosos. O critério usa o instante de retorno, não uma causa explícita: um cancelamento iniciado antes do limite, mas cujo retorno fosse atrasado além dele, também poderia receber o aviso genérico de edição encerrada. Essa ressalva não implica escrita de dados ou retenção de lock.
++
++## Verificação direcionada
++
++- Guadalupe: três dos quatro testes novos falham com o menu 0.12.2; os quatro passam com a correção.
++- A matriz percorre 401 designs arquitetônicos e 416 casos clássicos (legado e 12 tecidos, Guadalupe ligada/desligada, quatro frentes e larguras 1/2/7/8), além de conjuntos mistos e escolha manual após transição. As entradas passam pelo codec de save e permanecem intactas.
++- Prazo: duas falhas antes; quatro testes passam depois. Timer e interação que detecta lease expirado produzem um aviso; cancelamento/invalidação antecipados não produzem. Sem escrita e com timer/lock liberados.
++- Tipos da cópia aprovados. As suítes anteriormente aprovadas não foram repetidas nesta rodada; não se apresenta seu resultado histórico como uma execução nova.
++
++```
++node --experimental-strip-types --test --test-name-pattern 'ornament identity|Guadalupe intent|mixed altar|explicit Guadalupe' tests/menu.node.ts
++node --experimental-strip-types --test tests/editor-timeout.node.ts
++npm run typecheck
++npm run build
++node tools/validate.mjs
++```
++
++Os testes usam adaptadores para UI, relógio e mundo, exercitando a apresentação/infraestrutura reais. Não validam foco, narrador, contraste, toque, controle ou renderização no cliente Bedrock. As revisões independentes de fonte não encontraram bloqueio na distinção entre papéis centrais e Guadalupe.
++
++## Preservação e distribuição
++
++A 0.12.3 foi preparada em cópia isolada. O checkout e o arquivo 0.12.2 anteriores foram preservados. A comparação do pacote confirma 5.386 entradas idênticas, incluindo os 414 blocos, 4.700 arquivos de geometria e 265 arquivos de textura. Nenhum recurso foi adicionado ou removido. Todas as fontes de domínio também permanecem idênticas.
++
++Mudam somente o runtime com as duas correções e seis arquivos de versão. As 5.393 entradas têm CRC íntegro e coincidem com os packs gerados. Artefato: 20.859.137 bytes; SHA-256 `47ea472ff249e46926d4b8f6572a3e0c7c53db6df51dc05ef6a287e3df19c1f4`.
++
++Aspergillum permanece 1.2.5 e Estúdio 2.3.0. Não houve commit, publicação, instalação ou alteração de mundos.
++
++## Validação do pacote
++
++Build e validação estrutural aprovados. Creator Tools oficial: zero erros, 2.084 avisos de complexidade já delimitados e zero avisos inesperados. Alvo offline fixado em 1.26.40. O [relatório completo](../dist/validation/0.12.3/release-summary.json) preserva os avisos. Essa validação não executa o cliente Minecraft.
++
++## Reteste nativo mínimo — pendente
++
++1. Em cópia de mundo, ativar somente BP/RP [0,12,3] do arquivo exato, sem revisão concorrente. Minecraft mínimo 1.26.40, sem experimentos.
++2. Aplicar Pilastras sem toalha/sem relevo; reabrir e escolher Clássico. Guadalupe deve permanecer desligada. Ligar manualmente, alternar modelos e retornar: a escolha deve continuar ligada.
++3. Reabrir um clássico salvo com Guadalupe, inclusive com tecido universal. O ícone deve continuar ligado. Restaurar recupera o estado aberto; Cancelar não escreve.
++4. Abrir o editor e aguardar o prazo: deve fechar sem aplicar e mostrar o aviso de edição encerrada. Reabrir e cancelar antes do limite: nenhum aviso de expiração.
++5. Salvar/recarregar, conferir as escolhas e Content Log sem novos erros. Registrar hash, versão do jogo, idioma e dispositivo de entrada.
++
++O teste Minecraft continua reservado ao usuário. Nenhuma aprovação nativa é declarada.
+--- a/addons/altare/docs/TESTING.md
++++ b/addons/altare/docs/TESTING.md
+@@ -1,4 +1,8 @@
+ # QA do Altare 0.12.2
++
++## Revisão 0.12.3: Guadalupe e encerramento por prazo
++
++Oito testes novos, sem repetir suítes já aprovadas: quatro de fluxo de expiração/cancelamento e quatro de identidade/intenções de Guadalupe. Matrizes incluem 401 designs arquitetônicos e 416 casos clássicos. [Evidências e reteste](EDITOR_CHOICES_0.12.3.md).
+ 
+ ## Dimensões do editor — 0.12.2
+ 
+--- a/addons/altare/package.json
++++ b/addons/altare/package.json
+@@ -1,9 +1,9 @@
+ {
+   "name": "altare-bedrock-addon",
+-  "version": "0.12.2",
++  "version": "0.12.3",
+   "private": true,
+   "type": "module",
+-  "description": "Altares modulares para o Criativo. Cruzeta em nogueira e dimensões do editor atualizadas ao trocar a frente. Diagnóstico 0.12.2.",
++  "description": "Altares modulares para o Criativo. Guadalupe preservada nas transições e aviso de encerramento por prazo. Diagnóstico 0.12.3.",
+   "engines": {
+     "node": ">=24"
+   },
+--- a/addons/altare/src/infrastructure/editor.ts
++++ b/addons/altare/src/infrastructure/editor.ts
+@@ -25,7 +25,12 @@
+     timer=system.runTimeout(()=>sessions.release(active),1200);
+     const selectedSlot=player.selectedSlotIndex;
+     const finish=await chooseFinish(player,before,face??before[0]!.facing,()=>sessions.isCurrent(active,system.currentTick),callback=>sessions.onRelease(active,callback));
+-    if(!finish)return;
++    if(!finish){
++      // Expiry closes the form like Cancel, but should explain why the draft
++      // disappeared. Earlier cancellation/invalidation keeps its old behavior.
++      if(system.currentTick>=active.expires)tell(player,'error.expired');
++      return;
++    }
+     const item=player.getComponent('minecraft:inventory')?.container?.getItem(selectedSlot);
+     if(!sessions.isCurrent(session,system.currentTick)||!allowed(player)||player.dimension.id!==dimension.id
+       ||player.selectedSlotIndex!==selectedSlot||item?.typeId!==TOOL
+--- a/addons/altare/src/presentation/menu.ts
++++ b/addons/altare/src/presentation/menu.ts
+@@ -1,7 +1,7 @@
+ import {CustomForm, ObservableBoolean, ObservableNumber, ObservableUIRawMessage, type UIRawMessage} from '@minecraft/server-ui';
+ import type {Player, RawMessage} from '@minecraft/server';
+ import {bounds, type Finish, type Tile} from '../domain/surface.ts';
+-import {SURFACES, FRONTALS, LITURGICAL_COLORS} from '../domain/catalog.ts';
++import {SURFACES, FRONTALS, LITURGICAL_COLORS, designById} from '../domain/catalog.ts';
+ import {MODELS, CLOTHS, customizationFromFinish, customizationFinish, customizationCapabilities, changeCustomization, type Customization} from '../domain/customization.ts';
+ 
+ export const tr=(key:string):RawMessage=>({translate:`altare.${key}`});
+@@ -9,7 +9,10 @@
+ 
+ export async function chooseFinish(player:Player,tiles:readonly Tile[],facing:number,isCurrent:()=>boolean=()=>true,onRelease:(callback:()=>void)=>()=>void=()=>()=>{}):Promise<Finish|undefined>{
+   const tile=tiles[0]!, b=bounds(tiles);
+-  const initial=customizationFromFinish({stone:tile.stone,cloth:tile.cloth,ornamental:tiles.some(t=>t.frontal>0),facing,...(tile.design?{design:tile.design}:{})});
++  // Architectural frontal values are centre roles, not the classic Guadalupe.
++  // Universal classic textiles keep the icon in frontal and cloth in textileRole.
++  const ornamentalOnOpen=tiles.some(t=>t.frontal>0&&(!t.design||designById(t.design)?.structure==='classic'));
++  const initial=customizationFromFinish({stone:tile.stone,cloth:tile.cloth,ornamental:ornamentalOnOpen,facing,...(tile.design?{design:tile.design}:{})});
+   let draft=initial, selected:Finish|undefined, updating=false, alive=true;
+   const labels=(items:readonly string[],prefix:string)=>items.map((id,value)=>({label:tr(`${prefix}.${id}`) as UIRawMessage,value}));
+   const fields={model:MODELS,surface:SURFACES,textile:CLOTHS,color:LITURGICAL_COLORS,relief:FRONTALS,stone:[0,1,2],facing:[0,1,2,3]} as const;
+--- /dev/null
++++ b/addons/altare/tests/editor-timeout.node.ts
+@@ -0,0 +1,58 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import {build} from 'esbuild';
++import {fileURLToPath} from 'node:url';
++
++// New, targeted infrastructure regression. The timer/session/edit path is real;
++// the UI adapter only models its documented close/undefined contract.
++const origin={x:0,y:0,z:0};
++const tile={position:origin,stone:0,cloth:0,frontal:0,facing:0,edges:15};
++let writes=0,nextTimer=1,view:any;
++const messages:string[]=[],timers=new Map<number,{callback:()=>void,delay:number}>();
++const system={currentTick:0,runTimeout(callback:()=>void,delay:number){const id=nextTimer++;timers.set(id,{callback,delay});return id;},clearRun(id:number){timers.delete(id);}};
++class Port {
++ read(p:any){return p.x===0&&p.y===0&&p.z===0?structuredClone(tile):null;}
++ reconcile(){}
++ prepare(){}
++ write(){writes++;}
++}
++async function chooseFinish(_player:any,_tiles:any,_facing:any,isCurrent:()=>boolean,onRelease:(callback:()=>void)=>()=>void){
++ let close!:()=>void;
++ const wait=new Promise<undefined>(resolve=>{close=()=>resolve(undefined);});
++ view={showing:true,isCurrent,close:()=>{view.showing=false;close();}};
++ const unsubscribe=onRelease(view.close);
++ try{return await wait;}finally{unsubscribe();}
++}
++(globalThis as any).__altareExpiryAdapter={system,GameMode:{Creative:'creative',Survival:'survival'},BedrockSurfacePort:Port,TOOL:'altare:finish_tool',chooseFinish,tell:(_player:any,key:string)=>messages.push(key)};
++const bundled=await build({entryPoints:[fileURLToPath(new URL('../src/infrastructure/editor.ts',import.meta.url))],bundle:true,format:'esm',platform:'node',write:false,plugins:[{
++ name:'expiry-adapters',setup(b){
++  b.onResolve({filter:/^@minecraft\/server$|^\.\/surface-port\.ts$|^\.\.\/presentation\/menu\.ts$/},args=>({path:args.path,namespace:'expiry'}));
++  b.onLoad({filter:/.*/,namespace:'expiry'},()=>({contents:'export const {system,GameMode,BedrockSurfacePort,TOOL,chooseFinish,tell}=globalThis.__altareExpiryAdapter;'}));
++ },
++}]});
++const {edit,sessions}=await import('data:text/javascript;base64,'+Buffer.from(bundled.outputFiles[0]!.text).toString('base64'));
++const player={id:'expiry-review',isValid:true,getGameMode:()=> 'creative'},dimension={id:'overworld'};
++function start(){messages.length=0;writes=0;system.currentTick=0;assert.equal(timers.size,0);return edit(player,dimension,origin);}
++
++test('scheduled expiry explains closure once without applying the draft or retaining a lock',async()=>{
++ const pending=start();assert.equal(view.showing,true);assert.deepEqual(messages,[]);
++ const timer=[...timers.values()][0]!;assert.equal(timer.delay,1200);
++ system.currentTick=1200;timer.callback();await pending;
++ assert.equal(view.showing,false);assert.deepEqual(messages,['error.expired']);assert.equal(writes,0);assert.equal(timers.size,0);
++ const replacement=sessions.acquire(player.id,dimension.id,['0,0,0'],1201);assert.ok(replacement);sessions.release(replacement);
++});
++
++test('a lease discovered expired by an interaction gets the same notice before the timer fires',async()=>{
++ const pending=start();system.currentTick=1200;assert.equal(view.isCurrent(),false);await pending;
++ assert.deepEqual(messages,['error.expired']);assert.equal(writes,0);assert.equal(timers.size,0);
++});
++
++test('voluntary cancellation before the deadline does not show an expiry warning',async()=>{
++ const pending=start();system.currentTick=100;view.close();await pending;
++ assert.deepEqual(messages,[]);assert.equal(writes,0);assert.equal(timers.size,0);
++});
++
++test('non-timeout invalidation before the deadline keeps its existing silent dismissal',async()=>{
++ const pending=start();system.currentTick=100;sessions.invalidate(dimension.id,'0,0,0');await pending;
++ assert.equal(view.showing,false);assert.deepEqual(messages,[]);assert.equal(writes,0);assert.equal(timers.size,0);
++});
+--- a/addons/altare/tests/menu.node.ts
++++ b/addons/altare/tests/menu.node.ts
+@@ -2,6 +2,9 @@
+ import assert from 'node:assert/strict';
+ import {build} from 'esbuild';
+ import {EditSessions} from '../src/application/sessions.ts';
++import {DESIGNS} from '../src/domain/catalog.ts';
++import {planFinish} from '../src/domain/surface.ts';
++import {encodeTile,decodeTile} from '../src/domain/block-codec.ts';
+ 
+ // Exercise the real presentation with a minimal native UI adapter. This proves
+ // draft/commit and lifecycle behavior, not Bedrock layout or controller parity.
+@@ -134,3 +137,57 @@
+  const control=field('menu.front').value;click('menu.cancel');assert.equal(await result,undefined);
+  control.setData(0);assert.equal(dimensions(),' · 2 × 7');assert.equal(control.callbacks.size,0);
+ });
++
++
++// Frontal means a centre role on architecture, but Guadalupe on classic blocks.
++const savedLayout=(design:string|undefined,ornamental:boolean,facing=0,width=7)=>{
++ const cells=Array.from({length:width*2},(_,i)=>({position:{x:i%width,y:0,z:Math.floor(i/width)},stone:2,cloth:0,frontal:0,facing:0,edges:15}));
++ return planFinish(cells,{stone:2,cloth:0,ornamental,facing,...(design?{design}:{})}).map(tile=>{const saved=encodeTile(tile);return decodeTile(saved.id,tile.position,saved.states)!;});
++};
++
++test('ornament identity never interprets an architectural centre role as Guadalupe',async()=>{
++ for(const design of DESIGNS.filter(d=>d.structure!=='classic')){
++  const layout=savedLayout(design.id,false),snapshot=structuredClone(layout);
++  const result=chooseFinish({},layout,0);field('menu.model').value.setData(0);
++  const toggle=field('menu.ornamental').value.getData();click('menu.apply');const finish=await result;
++  assert.equal(toggle,false,design.id);assert.equal(finish.ornamental,false,design.id);assert.deepEqual(layout,snapshot);
++ }
++});
++
++test('Guadalupe intent survives saved classic textiles, model switches, explicit choices and Restore',async()=>{
++ for(const design of [undefined,...DESIGNS.filter(d=>d.structure==='classic').map(d=>d.id)])for(const ornamental of [false,true])for(const facing of [0,1,2,3])for(const width of [1,2,7,8]){
++  const layout=savedLayout(design,ornamental,facing,width),snapshot=structuredClone(layout);
++  const result=chooseFinish({},layout,facing);
++  assert.equal(field('menu.ornamental').value.getData(),ornamental,`${design??'legacy'} initial`);
++  field('menu.model').value.setData(7);field('menu.model').value.setData(0);
++  assert.equal(field('menu.ornamental').value.getData(),ornamental,'switching models preserves the classic choice');
++  field('menu.ornamental').value.setData(!ornamental);
++  field('menu.model').value.setData(1);field('menu.model').value.setData(0);
++  assert.equal(field('menu.ornamental').value.getData(),!ornamental,'explicit choice survives a switch');
++  click('menu.restore');assert.equal(field('menu.ornamental').value.getData(),ornamental);
++  click('menu.apply');assert.equal((await result).ornamental,ornamental);assert.deepEqual(layout,snapshot);
++ }
++});
++
++test('mixed altar keeps genuine Guadalupe but ignores unrelated architectural centres',async()=>{
++ const architecture=savedLayout('altare:a_pilaster_marble_none_none',false);
++ for(const expected of [false,true])for(const reverse of [false,true]){
++  const classic=savedLayout(undefined,expected,0,1)[0]!;
++  const mixed=architecture.map((tile,i)=>i===0?{...classic,position:tile.position}:tile);
++  if(reverse)mixed.reverse();const snapshot=structuredClone(mixed);
++  const result=chooseFinish({},mixed,0);field('menu.model').value.setData(0);
++  const toggle=field('menu.ornamental').value.getData();click('menu.apply');const finish=await result;
++  assert.equal(toggle,expected);assert.equal(finish.ornamental,expected);assert.deepEqual(mixed,snapshot);
++ }
++});
++
++test('explicit Guadalupe choice after an architectural transition is retained and Restore removes only that draft choice',async()=>{
++ const layout=savedLayout('altare:a_pilaster_marble_none_none',false);
++ let result=chooseFinish({},layout,0);field('menu.model').value.setData(0);field('menu.ornamental').value.setData(true);
++ field('menu.model').value.setData(7);field('menu.model').value.setData(0);
++ assert.equal(field('menu.ornamental').value.getData(),true);click('menu.apply');assert.equal((await result).ornamental,true);
++ result=chooseFinish({},layout,0);field('menu.model').value.setData(0);field('menu.ornamental').value.setData(true);
++ click('menu.restore');field('menu.model').value.setData(0);
++ const restored=field('menu.ornamental').value.getData();click('menu.apply');const finish=await result;
++ assert.equal(restored,false);assert.equal(finish.ornamental,false);
++});
+--- a/docs/PROJECT_STATUS.md
++++ b/docs/PROJECT_STATUS.md
+@@ -1,4 +1,8 @@
+ # Estado do projeto
++
++## Escolhas e prazo do editor Altare — 03/11/2026
++
++Altare 0.12.3 distingue Guadalupe de papéis centrais arquitetônicos e avisa quando a edição termina após o prazo. Os dois defeitos foram reproduzidos em testes novos, com correções em cópia isolada. [Escopo e reteste](../addons/altare/docs/EDITOR_CHOICES_0.12.3.md). Nenhum teste Minecraft declarado.
+ 
+ ## Dimensões do editor Altare — 03/11/2026
+ 

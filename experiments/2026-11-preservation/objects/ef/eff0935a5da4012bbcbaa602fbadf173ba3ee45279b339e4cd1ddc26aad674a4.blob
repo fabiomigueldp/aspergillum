@@ -1,0 +1,127 @@
+{
+  "case": "recentered",
+  "variant": "masked",
+  "source_scene": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/opaque_transport_v15/evidence/shared-2048-diagnostic.blend",
+  "source_scene_sha256": "99f7e09562cd6c694312059aba998f996c4960e7663d9ff1cd479152a916dbbd",
+  "notes": [
+    "All mesh vertex coordinates and camera translated together by negative head target; same physical geometry up to float32 rounding; SUN direction/world unchanged. Numerical diagnostic only.",
+    {
+      "rebase_max_additional_rounding_mm": 0.0001071587784492166,
+      "shift": [
+        0.035,
+        -0.3,
+        3.58
+      ]
+    }
+  ],
+  "position_checks": [
+    {
+      "object": "part_00 FROM JSON ONLY",
+      "positions_byte_equal": false,
+      "vertices": 35552
+    },
+    {
+      "object": "part_01 FROM JSON ONLY",
+      "positions_byte_equal": false,
+      "vertices": 101312
+    },
+    {
+      "object": "part_02 FROM JSON ONLY",
+      "positions_byte_equal": false,
+      "vertices": 1600
+    },
+    {
+      "object": "part_03 FROM JSON ONLY",
+      "positions_byte_equal": false,
+      "vertices": 3600
+    },
+    {
+      "object": "part_04 FROM JSON ONLY",
+      "positions_byte_equal": false,
+      "vertices": 480
+    },
+    {
+      "object": "part_05 FROM JSON ONLY",
+      "positions_byte_equal": false,
+      "vertices": 480
+    },
+    {
+      "object": "part_06 FROM JSON ONLY",
+      "positions_byte_equal": false,
+      "vertices": 24
+    },
+    {
+      "object": "part_07 FROM JSON ONLY",
+      "positions_byte_equal": false,
+      "vertices": 24
+    },
+    {
+      "object": "part_08 FROM JSON ONLY",
+      "positions_byte_equal": false,
+      "vertices": 24
+    },
+    {
+      "object": "part_09 FROM JSON ONLY",
+      "positions_byte_equal": false,
+      "vertices": 5200
+    },
+    {
+      "object": "part_10 FROM JSON ONLY",
+      "positions_byte_equal": false,
+      "vertices": 200
+    },
+    {
+      "object": "part_11 FROM JSON ONLY",
+      "positions_byte_equal": false,
+      "vertices": 2800
+    },
+    {
+      "object": "part_12 FROM JSON ONLY",
+      "positions_byte_equal": false,
+      "vertices": 472
+    },
+    {
+      "object": "part_13 FROM JSON ONLY",
+      "positions_byte_equal": false,
+      "vertices": 472
+    },
+    {
+      "object": "part_14 FROM JSON ONLY",
+      "positions_byte_equal": false,
+      "vertices": 200
+    },
+    {
+      "object": "part_15 FROM JSON ONLY",
+      "positions_byte_equal": false,
+      "vertices": 11008
+    },
+    {
+      "object": "part_16 FROM JSON ONLY",
+      "positions_byte_equal": false,
+      "vertices": 720
+    },
+    {
+      "object": "part_17 FROM JSON ONLY",
+      "positions_byte_equal": false,
+      "vertices": 720
+    },
+    {
+      "object": "part_18 FROM JSON ONLY",
+      "positions_byte_equal": false,
+      "vertices": 720
+    },
+    {
+      "object": "part_19 FROM JSON ONLY",
+      "positions_byte_equal": false,
+      "vertices": 720
+    }
+  ],
+  "render_seconds_observed_not_benchmark": 30.97555221398943,
+  "lighting": {
+    "max_bounces": 12,
+    "diffuse_bounces": 4,
+    "transparent_max_bounces": 512
+  },
+  "image_sha256": "77d824a262845653f2a35230fe2e7ec861e77d908a10cbd42a7277c7e40d13b8",
+  "external_Blender_only": true
+}

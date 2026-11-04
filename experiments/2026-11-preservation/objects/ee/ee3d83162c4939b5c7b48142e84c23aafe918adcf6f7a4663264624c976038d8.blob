@@ -1,0 +1,8 @@
+import bpy
+from pathlib import Path
+bpy.ops.wm.open_mainfile(filepath=str(Path(__file__).resolve().parent/'V59-child-tunic-trial.blend'),use_scripts=False)
+for o in bpy.data.objects:
+ if o.type=='MESH':
+  print(o.name, 'render_hidden=',o.hide_render,'vertices=',len(o.data.vertices))
+  if o.data.shape_keys:
+   print([(k.name,k.value) for k in o.data.shape_keys.key_blocks])

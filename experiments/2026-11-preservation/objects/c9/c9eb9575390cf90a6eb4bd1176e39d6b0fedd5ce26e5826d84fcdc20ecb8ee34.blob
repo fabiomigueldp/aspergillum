@@ -1,0 +1,120 @@
+import fs from 'node:fs';
+import {PNG} from 'pngjs';
+import {textileProfiles,hemLimit,roleCenter} from './profiles.mjs';
+import {dyeFabric,textilePalette,fabricMask} from './palette.mjs';
+import {ornateDefinitions} from './ornate.mjs';
+const atlas=PNG.sync.read(fs.readFileSync(new URL('./embroidery-plates-v2.png',import.meta.url)));
+const cw=atlas.width/2,ch=atlas.height/4;
+const artAspect=(cw-11)/(ch-11);
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const wrap=(v,p)=>(v%p+p)%p;
+const mix=(a,b,t)=>a.map((v,i)=>v*(1-t)+b[i]*t);
+const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a));return t*t*(3-2*t);};
+function plate(col,row,u,v){
+ const pad=5,x=col*cw+pad+clamp(u)*(cw-2*pad-1),y=row*ch+pad+clamp(v)*(ch-2*pad-1);
+ const ix=Math.floor(x),iy=Math.floor(y),fx=x-ix,fy=y-iy;
+ const pixel=(dx,dy)=>{const i=((iy+dy)*atlas.width+ix+dx)*4;return [atlas.data[i],atlas.data[i+1],atlas.data[i+2]];};
+ return mix(mix(pixel(0,0),pixel(1,0),fx),mix(pixel(0,1),pixel(1,1),fx),fy);
+}
+function surface(rgb,alpha=255,theme=''){
+ const [r,g,b]=rgb,red=r>g*1.65&&r>b*1.4,gold=!red&&r>b*1.45&&g>b*1.15&&(!theme||r>65);
+ const encoded=rgb.map(v=>Math.round(clamp(v,0,255)));
+ // Textile height follows the encoded color, avoiding sub-byte donor-ground
+ // differences between an odd centre and the same emblem split across cells.
+ const lum=(theme?encoded:rgb).reduce((sum,v)=>sum+v,0)/765;
+ const silver=theme==='requiem'?smooth(.25,.55,lum)*(1-smooth(.08,.2,(Math.max(...rgb)-Math.min(...rgb))/255)):0;
+ return {rgb:encoded,alpha,rough:gold?170:232-silver*50,metal:gold?155:silver*145,height:(gold?.12:silver*.085)+lum*.025};
+}
+// Author a mirrored repeat from one source half. Blending unrelated ends made
+// translucent double leaves; reflection joins one drawing to itself instead.
+// Ruby's endpoint is in the gap between complete lilies, never through a petal.
+const repeatWindows={agnus:[.04,.50],ruby:[.02,.44],verdant:[.02,.516],requiem:[.02,.493]};
+// Content ends before the horizontal dividers painted into the source atlas.
+// The long Agnus fringe needs more room than the compact Jerusalem cartouche.
+const emblemEnds={agnus:[.96,.975],ruby:[.92,.94],verdant:[.966,.985],requiem:[.90,.92]};
+const grounds=Object.fromEntries(Object.entries(textileProfiles).filter(([,p])=>Number.isInteger(p.row)).map(([name,p])=>{
+ const samples=Array.from({length:32},(_,i)=>plate(0,p.row,(i+.5)/32,.02));
+ return [name,[0,1,2].map(c=>samples.reduce((sum,s)=>sum+s[c],0)/samples.length)];
+}));
+export function textileArtDomain(theme){
+ const p=textileProfiles[theme],top=.02,bottom=.98-p.scallop-.035;
+ return {top,bottom,sourceBottom:.97,aspect:artAspect};
+}
+export function textilePaint(x,y,theme,role=0,color='red'){
+ const p=textileProfiles[theme],u=wrap(x,128)/128,limit=hemLimit(x,theme),v=y/128;
+ const domain=textileArtDomain(theme),span=domain.bottom-domain.top;
+ // The embroidery has a rectangular, isotropic physical domain. Only the
+ // bare cloth and its cord follow the scallop; symbols are never sheared.
+ const localY=(v-domain.top)/span*domain.sourceBottom;
+ const [start,end]=repeatWindows[theme],repeatU=start+(end-start)*(1-Math.abs(2*u-1));
+ const weave=(Math.cos(x*Math.PI)*Math.cos(y*Math.PI))*.008;
+ const ground=grounds[theme].map(c=>c+weave*65);
+ const topInk=smooth(-.015,.015,localY);
+ // Do not project the atlas's straight bottom divider onto the free scallop.
+ const repeatInk=topInk*(1-smooth(theme==='requiem'?.88:.91,theme==='requiem'?.915:.955,localY));
+ let rgb=mix(ground,plate(0,p.row,repeatU,localY),repeatInk);
+ if(role){
+  const distance=(x-roleCenter(role))/(p.drop*8*span/domain.sourceBottom*artAspect),sourceU=.5+distance;
+  // Oval cartouches need an oval mask: a vertical strip reveals donor-ground
+  // patches and cropped fragments of the source's neighboring ornament.
+  const alpha=['ruby','agnus'].includes(theme)?1-smooth(.98,1.04,Math.hypot(distance/.17,(localY-.48)/.51)):1-smooth(.16,.18,Math.abs(distance));
+  const emblemInk=topInk*(1-smooth(...emblemEnds[theme],localY));
+  if(alpha)rgb=mix(rgb,mix(ground,plate(1,p.row,sourceU,localY),emblemInk),alpha);
+ }
+ // The trim follows the very same curve as the alpha silhouette.
+ const edge=(limit-v)*128;
+ if(edge>=0&&edge<2.1){
+  const round=Math.sin(Math.PI*edge/2.1),thread=Math.cos(x*Math.PI*1.5+edge*3)*3;
+  rgb=[166+round*54+thread,125+round*53+thread,55+round*37+thread*.4];
+ }
+ const result=surface(rgb,v<=limit&&v>=0?255:0,theme);
+ // Fine weft and warp share normal/roughness across every dye color.
+ result.height+=weave*(1-result.metal/255);
+ if(theme==='ruby'){
+  const mask=fabricMask(rgb);result.metal*=1-mask;result.rough=Math.round(result.rough*(1-mask)+238*mask);
+  result.rgb=dyeFabric(result.rgb,color);
+ }
+ return result;
+}
+export function plaquePaint(x,y){
+ const u=x/128,v=y/128;
+ const inside=u>=0&&u<=1&&v>=0&&v<=1;
+ const border=inside&&(u<.045||u>.955||v<.035||v>.965);
+ const rgb=border?[195,156,71]:plate(1,0,.32+clamp(u)*.36,.04+clamp(v)*.89);
+ return surface(rgb,inside?255:0);
+}
+export function walnutPaint(x,y){
+ const grain=Math.sin((x+Math.sin(y*.07)*1.4)*1.4)*3+Math.sin(x*.39+Math.sin(y*.025))*7;
+ const pore=Math.sin(x*8+y*.12)*1.2;
+ return {rgb:[82+grain+pore,48+grain*.65,29+grain*.37].map(Math.round),rough:197,metal:0,height:grain*.004};
+}
+export function atelierDefinitions(){
+ const result=[{id:'atelier_walnut',size:128,paint:walnutPaint},{id:'joinery_walnut_horizontal',size:128,paint:(x,y)=>walnutPaint(y,x)}];
+ for(const theme of ['agnus','ruby','verdant','requiem'])for(let role=0;role<4;role++)result.push({id:`textile_${theme}_${role}`,size:256,alpha:true,sampleOffset:0,extendNormals:true,paint:(x,y)=>textilePaint(x,y,theme,role)});
+ for(const color of Object.keys(textilePalette).filter(c=>c!=='red'))for(let role=0;role<4;role++)result.push({id:`textile_ruby_${role}_${color}`,size:256,alpha:true,sampleOffset:0,mapSource:`textile_ruby_${role}`,paint:(x,y)=>textilePaint(x,y,'ruby',role,color)});
+ result.push({id:'atelier_agnus',size:256,sampleOffset:0,extendNormals:true,paint:plaquePaint});
+ result.push({id:'crossbrace_inlay',size:64,paint:crossbraceInlay});
+ return [...result,...seamDefinitions(),...ornateDefinitions()];
+}
+
+export const seamFor=(theme,color='red')=>theme==='requiem'?'black_silver':theme==='ruby'?`${color}_gold`:'white_gold';
+function seamDefinitions(){
+ const colors=['white','red','green','purple','rose','black','gold','silver'];
+ return [...colors.map(c=>`${c}_gold`),'black_silver'].map((name,i)=>({
+  id:`seam_${name}`,size:4,height:64,logicalHeight:128,...(i?{mapSource:'seam_white_gold'}:{}),
+  paint:(x,y)=>{
+   const silver=name==='black_silver',color=name.split('_')[0],rgb=silver?grounds.requiem:dyeFabric(grounds.ruby,color);
+   const metal=y>125,thread=Math.cos(y*Math.PI)*1.2;
+   return {rgb:metal?(silver?[204,204,198]:[206,166,80]):rgb.map(c=>Math.round(c+thread)),metal:metal?160:0,rough:metal?175:237,height:metal?.08:.015};
+  },
+ }));
+}
+
+// Original maple-on-walnut marquetry. Only this new model consumes the map.
+export function crossbraceInlay(x,y){
+ const grain=walnutPaint(y,x),v=y/128,u=x/128;
+ const border=Math.min(Math.abs(v-.14),Math.abs(v-.86));
+ const diamonds=Math.abs(Math.abs(((u*4)%1)-.5)*2+Math.abs(v-.5)*4-.48);
+ const inlay=border<.018||(v>.32&&v<.68&&diamonds<.09);
+ return inlay?{rgb:[181,140,84],rough:202,metal:0,height:.008}:grain;
+}

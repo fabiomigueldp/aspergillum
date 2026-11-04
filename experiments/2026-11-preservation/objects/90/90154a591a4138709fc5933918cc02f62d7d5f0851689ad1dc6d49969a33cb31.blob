@@ -1,0 +1,86 @@
+# V12: fragmentos da faixa nas orelhas, retenção técnica local
+
+**Retida:** `structural_rebuild/retained-band.npz`, byte-idêntica à `polygonal-pinna-0.6mm-clean.npz`.
+
+SHA-256: `1c293d8c5b35cca07cfc0e73d2b2e360cbbc3bea27688bb6e6373537ecf54c76`.
+
+A correção retira o ouro invasor das cavidades nas vistas examinadas, mantém a frente da faixa e suas duas cristas contínuas, sem alterar a anatomia V9 ou a casca V11. As revisões geométrica e visual independentes são favoráveis à **retenção técnica local**. Não é aprovação artística global, interface livre de contatos ou versão de jogo. Nenhuma exportação Bedrock, publicação, substituição do addon ou integração da arte P85 ocorreu.
+
+## Diagnóstico e escolha da técnica
+
+Os fragmentos visíveis não eram peças desconectadas: pertenciam às duas paredes e aos retornos da faixa V5, que formava uma única componente. Apagar faces abriria a malha. A V12 recorta as terminações por um envelope local e fecha o corte entre as paredes, preservando coordenadas fonte sobreviventes.
+
+O recorte é maior em número de faces do que aparenta: afeta 1.102 das 1.912 faces antigas, mas retira aproximadamente **11,3% da área original**, não metade da faixa. As terminações são encurtadas de verdade, especialmente à direita. Não se classificou toda a área retirada como invisível; o ouro estava visível nas cavidades e as mudanças de terminação foram avaliadas nas imagens.
+
+A primeira candidata usou o mesmo envelope de 0,5 mm da casca V11. Embora limpasse o ouro visualmente, criou 60 sobreposições coplanares faixa/casca nos novos fechamentos, com área somada de 1,46779 mm², sem união global. Foi rejeitada e permanece preservada.
+
+A retida usa margem de **0,6 mm**, um acréscimo local de 0,1 mm no envelope da faixa. Isso elimina a coincidência dos planos novos e evita um corte quase tangente que criava triângulos numericamente frágeis. **Não significa folga mínima de 0,1 mm entre os objetos:** outros contatos persistem. Não houve varredura extensa; foram testadas duas geometrias, guardadas em quatro checkpoints bruto/clean.
+
+## Duas cristas e frente preservadas
+
+A validação independente reconstruiu os intervalos geométricos das linhas fonte v=3 e v=13, sem confiar apenas nos atributos UV candidatos.
+
+- As duas cristas em cada parede permanecem conexas, sem lacunas, ramificações ou duplicação de domínio.
+- Todo trecho fora do cutter é preservado. As 488 faces da guarda frontal, com algum vértice em y < −0,28 m, ficam exatamente iguais à fonte.
+- As cristas externas passam de 630,745/664,741 mm para **585,840/568,176 mm**. Isso é encurtamento de aproximadamente 7,1%/14,5% nas terminações, não desaparecimento de uma crista.
+- Contra o primeiro ensaio de 0,5 mm, a margem de 0,6 mm remove apenas cerca de 0,32/0,23 mm adicionais dessas curvas.
+
+O parecer visual confirma largura e relevo frontais preservados e as duas saliências reconhecíveis onde a luz permite. PNGs não certificam perfis ocultos; essa parte é sustentada pela comparação geométrica separada.
+
+## Geometria, domínio e espessura
+
+A faixa final tem **584 vértices e 1.164 triângulos**, uma componente fechada, Euler 2 e orientação consistente. Há zero arestas abertas/não-manifold, enlaces defeituosos, vértices sem uso, duplicatas por índices ou degenerados abaixo do limiar testado.
+
+- 436 vértices fonte sobrevivem bit a bit; 148 são novos.
+- 810 faces orientadas fonte ficam exatas, 210 triângulos têm ancestral recortado e 144 faces fecham as duas terminações.
+- O domínio de todos os 1.912 triângulos originais, inclusive os inteiramente retirados, foi comparado ao clipping analítico. Erro máximo de área por ancestral: 4,40×10⁻¹⁷ m².
+- Zero auto-interseções estritas confirmadas, incluindo 7.507 pares adjacentes. Não se detectaram sobreposições coplanares positivas acima do limiar na faixa, nem na relação com casca/anatomia.
+- Os novos fechamentos têm duas regiões conectadas, uma em cada ponta; **a faixa inteira continua uma única componente**. Cada fechamento liga as duas paredes identificáveis.
+- Distância mínima entre curvas opostas de encontro: **0,099875 mm à esquerda e 0,272772 mm à direita**. Isso mede os lábios do novo fechamento, não uma espessura mínima global.
+
+Os métodos, limiares, testemunhos e limitações estão no parecer independente. Zero cruzamento estrito não certifica tangências, toda coplanaridade possível, espessura ou folga globais.
+
+## Quantização float32
+
+A candidata de 0,5 mm passava a cerca de 0,01169 mm de um vértice fonte, gerando triângulos muito pequenos. A alteração local do envelope corrige essa fragilidade sem deslocar os pontos fonte restantes.
+
+Na retida, o controle float64→float32→float64 não funde vértices, não degenera nem inverte faces. A maior rotação de normal cai de 4,284° para **0,429°**, e a altitude mínima cresce de 2,73 para **10,67 micrômetros**. Isso é um controle numérico, não teste do transporte por cubos/JSON, alfa, mipmaps, normalmap, PBR ou engine. A nova faixa ainda precisa de exportação e bake próprios.
+
+## Comparação visual independente
+
+A versão `band06` foi examinada nas nove câmeras contra a V11, mantendo **toda a faixa na mesma cor ouro**, inclusive faces novas. Não houve limpeza por recoloração.
+
+- O ouro invasor não aparece no alto/interior das cavidades, nos pequenos fragmentos baixos, nas duas laterais/oblíquas e no perfil examinados.
+- Pinna, margem e lóbulo conservam extensão aparente.
+- A terminação direita recua visivelmente e deixa mais cinza no alto. A revisão não identifica nova grande abertura temporal, dente longo, aba ou achatamento frontal.
+- Frente conserva largura/relevo; não se observou regressão relevante entre 0,5 e 0,6 mm nas três câmeras comuns.
+- **Continuam visíveis** recortes azuis e degraus da faixa, vermelho temporal/posterior e pequenas bordas/pontos escuros. Não foram classificados como ocultos ou resolvidos.
+
+No teste de contorno da união casca+anatomia+faixa, em sete vistas de 2048 pixels, seis vistas têm cobertura idêntica. A frontal altera 89 pixels, com distância máxima de borda de 2,993 mm. Portanto as terminações não são exatamente iguais ao baseline, e não alegamos silhueta global idêntica.
+
+Imagens finais:
+
+- `evidence/band06-{full-front,head-front,junction-profile,junction-back,left-ear,right-ear}.png`: com halo, comparáveis diretamente aos controles `baseline-v11-*`.
+- `evidence/band06-nohalo-{left-ear-oblique,right-ear-oblique,rear-open}.png`: sem halo, como os controles correspondentes.
+- `evidence/retained-structural-diagnostic.blend`: cena nativa de pesquisa, não addon.
+
+Todos os renders são **Blender externos, não capturas de Minecraft**. Casca V11, anatomia V9 e faixa V12 são triângulos nativos coloridos por componente; as outras partes vêm do JSON legado real. Não se substituiu rosto ou halo por highpoly. Culling permanece ativo, sem normalmap.
+
+## Contatos remanescentes
+
+- Faixa/anatomia: **189 pares**, incluindo 15 no novo fechamento, contra 797 no baseline.
+- Faixa/casca V11: **1.360 pares**, incluindo 44 no fechamento, contra 1.339 no baseline.
+
+Não se interpreta a mudança de contagem isoladamente: a tesselação mudou. A soma dos comprimentos dos segmentos de interseção triângulo–triângulo cai de 883,256 para 318,149 mm na anatomia, enquanto a relação com a casca fica praticamente igual, 3.782,715→3.778,693 mm. São somas **sem união/deduplicação espacial global**, não medidas de profundidade ou ausência de contato.
+
+A limpeza visual local não resolve a relação inteira da faixa com a calota e a pele. Os contatos frontais herdados e demais detalhes do modelo continuam pendentes. Os gates congelados da anatomia/casca não foram repetidos; seus hashes foram conferidos. A própria anatomia mantém suas limitações herdadas. Nenhum teste de desempenho ou runtime Minecraft foi executado.
+
+## Arquivos e reprodução
+
+- `structural_rebuild/README.md`, `trials-manifest.json` e `retained-identity.json`: método, duas geometrias, checkpoints, escolha e proveniência.
+- `independent_diagnosis/REVIEW_FINAL_V12.md`: revisão geométrica independente e seus limites.
+- `evidence/review-visual-v12.md`: revisão visual independente.
+- `evidence/final-validation.json`: identidade da retida, fontes e cena final conferidas.
+- `package-validation.json`: tamanho, hash e CRC da entrega.
+
+A bancada usa os diretórios anteriores V5/V9/V11 e JSON/atlas V2. Esses inputs não são duplicados no pacote. Blender 4.3.2, NumPy, SciPy, Pillow e mpmath já estavam disponíveis. As fontes e todos os candidatos permanecem no workspace; nada foi publicado ou sobrescrito.

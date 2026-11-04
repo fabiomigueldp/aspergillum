@@ -1,0 +1,20 @@
+# Comparação estrutural do rosto inteiro — baseline V63
+
+Nenhuma geometria alterada. V68/V69 não incorporadas. As imagens novas são vistas diagnósticas, não progresso do modelo.
+
+## Condições reproduzíveis
+680×1000px, ortográfica, altura0,95m/largura0,646m. Três vistas: frontal, perfil lateral e oblíqua aproximadamente orientada como reference-9 (azimute -18,19°, elevação≈3,35° em relação ao alvo). Perfil e frontal nivelados. Área15W/0,55m em(-0,60,-1,15,4,25), ambiente0,12, AgX exposição0/gamma1,64samples. Coordenadas exatas em whole-face-comparison-settings.json. Não há metadados da câmera histórica para calibrar uma correspondência exata; perspectiva e inclinação da escultura real continuam incertas.
+
+BBox do objeto anatômico de cabeça/pescoço:0,306154×0,499287×0,646015m nos eixos do modelo. Inclui pescoço e inclinação; NÃO é largura/comprimento facial anatômico nem medida da escultura real.
+
+## Maiores diferenças observadas
+1. **Enquadramento do rosto pelo véu/faixa.** No modelo a faixa frontal fica relativamente baixa em relação ao topo da calota, expondo grande volume arredondado; a fotografia mostra uma borda mais alta/rente e tecido lateral que cobre mais a têmpora/orelha. A orelha isolada e a tira lateral com vazio triangular no perfil são diferenças claras de construção, mais impactantes que milímetros da ponta nasal. Não concluir que basta reduzir crânio: revisar percurso da faixa e cobertura antes.
+2. **Planos bochecha–mandíbula–boca.** Modelo apresenta bochecha côncava/maçã marcada, afunilamento mandibular e lábio projetado; referência-9 lê-se como planos mais cheios/contínuos e expressão menos franzida. A comparação de luz reduz confusão, mas não elimina câmera/material como fatores. Requer estudo conjunto da metade inferior, não nova redução só do nariz ou só do lábio.
+3. **Continuidade pescoço/vestimenta.** Há corte angular visível na base do pescoço e transição inferior rígida no modelo, além de borda serrilhada posterior em perfil. Referência tem continuidade escultórica mais suave. Isto é estrutural, não efeito de câmera.
+4. **Nariz.** A referência realmente possui nariz longo e planos marcados. A ponta menor V68 e planarização V69 não demonstraram ganho suficiente. Deixar o nariz em V63 enquanto diferenças maiores são tratadas.
+5. **Inclinação global.** Ambas as imagens mostram cabeça inclinada, mas não há prova suficiente para quantificar mudança de pose a partir das duas fotos. Não girar cabeça só para alinhar um retrato: isso altera perfil/campanha de vistas e pode mascarar proporções.
+
+## Ordem recomendada antes de deformar
+Estabelecer landmarks observáveis do contorno faixa–têmpora–orelha e da silhueta facial nas duas referências; validar plano de cobertura do véu sem comprimir a anatomia. Depois estudar bochechas/mandíbula/lábios em conjunto com máscaras reversíveis e preservação de olhos. Não adicionar detalhes finos nem dobras imaginadas para disfarçar estrutura.
+
+Arquivos: V63-whole-face-{photo-oblique,front,profile}.png, whole-face-comparison-settings.json, whole-face-comparison-study.py. Fonte real: https://arquivo.arq.br/projetos/paroquia-nossa-senhora-da-paz , reference-8 e9 apenas consultadas.

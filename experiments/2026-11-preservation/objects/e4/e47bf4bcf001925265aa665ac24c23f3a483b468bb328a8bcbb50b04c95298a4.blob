@@ -1,0 +1,70 @@
+{
+  "status": "UNRETAINED_CAUSE_DIAGNOSTIC_NOT_A_FIX",
+  "source_atlas": "resource_pack/textures/entity/paz_v75_v14_lab_sculpture.png",
+  "source_sha256": "4793c77398d1e0301ccd8dfaef53a83ded9befbbcbb88571a9d1479b2a972ac7",
+  "output_file": "alpha-center-only-trial.png",
+  "output_sha256": "c173a3695d8bdf4a614690e2a76a89a3a403266e326011704709e401c6589ef1",
+  "geometry_sha256_unchanged": "60ca91b76eb9f8d4a1cb2bf4f69f6e7e5c97d17abc63db26883cee9d3fead00b",
+  "contract": {
+    "only_change": "Alpha channel of the 18,484 new 20 x 20 tiles. RGB everywhere and full 2048 x 2048 legacy quadrant unchanged. No RP files changed.",
+    "test_parameter": "Original conservative half-plane threshold \u22120.75*min(world_units_per_texel) becomes 0.",
+    "pixel_rule": "Keep alpha 255 iff all three signed edge distances at the pixel center are >=0; otherwise 0. Exact boundary centers are included, without epsilon or dilation. This is center-only coverage, not polygon area antialiasing.",
+    "scope": "Standalone PNG under export_work; not referenced by any retained entity/texture_set. No rendering or retention recommendation.",
+    "limitations": "Removing conservative coverage can expose cracks or jagged edges. This tests dilation against sampling gaps; it does not certify a working fix or Bedrock runtime."
+  },
+  "per_part": {
+    "0": {
+      "tiles": 4444,
+      "old_opaque_pixels": 871177,
+      "new_opaque_pixels": 726329,
+      "opaque_to_transparent": 144848,
+      "transparent_to_opaque": 0,
+      "exact_edge_distance_zero_samples": 0
+    },
+    "1": {
+      "tiles": 12664,
+      "old_opaque_pixels": 2491441,
+      "new_opaque_pixels": 2095132,
+      "opaque_to_transparent": 396309,
+      "transparent_to_opaque": 0,
+      "exact_edge_distance_zero_samples": 0
+    },
+    "15": {
+      "tiles": 1376,
+      "old_opaque_pixels": 276834,
+      "new_opaque_pixels": 223518,
+      "opaque_to_transparent": 53316,
+      "transparent_to_opaque": 0,
+      "exact_edge_distance_zero_samples": 0
+    }
+  },
+  "totals": {
+    "tiles": 18484,
+    "old_opaque_pixels": 3639452,
+    "new_opaque_pixels": 3044979,
+    "opaque_to_transparent": 594473,
+    "transparent_to_opaque": 0,
+    "exact_edge_distance_zero_samples": 0
+  },
+  "checks": {
+    "rgb_entire_atlas_bit_exact": true,
+    "legacy_quadrant_rgba_bit_exact": true,
+    "all_resource_pack_assets_byte_unchanged": true,
+    "binary_alpha_only": true
+  },
+  "critical_shell_texel": {
+    "part": 1,
+    "native_face": 4488,
+    "tile_local_xy": [
+      16,
+      11
+    ],
+    "atlas_xy": [
+      3224,
+      1751
+    ],
+    "old_alpha": 255,
+    "trial_alpha": 0,
+    "claim": "Only the identified texel is tested here; full ray re-test and paired visual review remain pending."
+  }
+}

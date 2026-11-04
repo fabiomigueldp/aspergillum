@@ -1,0 +1,70 @@
+"""Explicitly PARTIAL PBR experiment after geometry proof; never a source-detail equivalence claim.
+Band: high-source source UV + physical wall identity; returns are flat geometry.
+Anatomy: original per-texel normal texture at matching source-face barycentric coordinates.
+Shell: explicit flat geometric fallback; high-detail correspondence unresolved.
+"""
+from pathlib import Path
+import numpy as np,json,gzip,hashlib,copy
+from PIL import Image
+W=Path(__file__).resolve().parent;B=W.parent.parent;R=W.parent/'resource_pack';TD=R/'textures/entity';T=20;A=np.array([[1,0,0],[0,0,1],[0,-1,0]],float)
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def savej(p,d):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,indent=2,allow_nan=False)+'\n')
+def norm(n):return n/np.maximum(np.linalg.norm(n,axis=-1,keepdims=True),1e-30)
+def basis(p):
+ u=norm(p[1]-p[0]);v=norm((p[2]-p[0])-u*((p[2]-p[0])@u));return np.column_stack((u,v,np.cross(u,v)))
+def encode(n,M):
+ tang=n@M;tang[...,1]*=-1;rgb=np.rint(np.clip(.5+.5*tang,0,1)*255).astype(np.uint8)
+ back=rgb/255*2-1;back[...,1]*=-1;rec=norm(back@M.T);err=np.degrees(np.arccos(np.clip(np.sum(rec*n,axis=-1),-1,1)));return rgb,tang[...,2],err
+class SourceSampler:
+ """Same cell/triangle identity rule as V13 map_source_restore.py::SourceSampler."""
+ def __init__(self):
+  self.d=dict(np.load(B/'shell_band_v3/evidence/band-source.npz'));self.uv=np.load(B/'shell_band_v3/evidence/band-source-parameters.npz')['uv'];self.classes=np.load(B/'shell_band_v3/evidence/band-source-wall-classes.npz')['wall_class'];self.cells=[]
+  for side in [0,1]:
+   fs=np.flatnonzero(self.classes==side);xy=self.uv[self.d['triangles'][fs]];cell=np.floor(xy.mean(1)*4).astype(int);idx=cell[:,0]*64+cell[:,1];order=np.argsort(idx,kind='stable');fs=fs[order];ix=idx[order];assert np.array_equal(ix,np.repeat(np.arange(704*64),2));self.cells.append(fs.reshape(704*64,2))
+ def sample(self,q,side):
+  q=np.asarray(q);cell=np.floor(np.clip(q,[0,0],[176-1e-9,16-1e-9])*4).astype(int);fi=self.cells[side][cell[:,0]*64+cell[:,1]];t=self.uv[self.d['triangles'][fi]];e=np.stack((t[:,:,1]-t[:,:,0],t[:,:,2]-t[:,:,0]),axis=-1);uv=np.linalg.solve(e,(q[:,None]-t[:,:,0])[...,None])[...,0];bc=np.concatenate((1-uv.sum(-1,keepdims=True),uv),axis=-1);best=np.argmax(bc.min(-1),axis=1);ii=np.arange(len(fi));f=fi[ii,best];b=bc[ii,best];assert b.min()>-1e-8;assert np.all(self.classes[f]==side);n=norm((self.d['normals'][self.d['triangles'][f]]*b[:,:,None]).sum(1));return n,f,b
+rows=[json.loads(x)for x in gzip.open(W/'transport_faces.jsonl.gz','rt')];arr=np.load(W/'transport_arrays.npz');color=np.array(Image.open(TD/'paz_v75_v14_lab_sculpture.png').convert('RGBA'));out=np.array(Image.open(TD/'paz_v75_v14_lab_sculpture_normal_dx.png').convert('RGBA'));legacy=np.array(Image.open(W/'legacy-normal-dx.png').convert('RGBA'));lcolor=np.array(Image.open(W/'legacy-color.png').convert('RGBA'));low=np.load(B/'pbr_normals_v2/evidence/repaired_meshes.npz')
+source={i:dict(np.load(W/f'source-{name}-frozen.npz'))for i,name in [(0,'band'),(1,'shell'),(15,'anatomy')]};low={k:low[k]for k in ['low_v','low_f']};sampler=SourceSampler();Y,X=np.mgrid[:20,:20];pixel=np.stack((X+.5,Y+.5,np.ones_like(X)),axis=-1)
+# Every new texel has an explicit kind: 1=band source UV+wall, 2=anatomy legacy pixel+frame, 3=flat native face.
+methods=np.full(len(rows),3,np.uint8);bandf=np.full((4444,20,20),-1,np.int32);bandb=np.zeros((4444,20,20,3),np.float32);anatomyxy=np.zeros((1376,20,20,2),np.uint16);anatomyrot=np.repeat(np.eye(3)[None],1376,axis=0);anatomyidentity=np.zeros(1376,bool);anatomyfallback=np.zeros((1376,20,20),bool)
+stats={str(pi):{'faces':0,'covered_texels':0,'source_faces':0,'flat_faces':0,'negative_tangent_z_covered':0,'angular_error_sum':0.,'angular_error_max':0.,'below_old_alpha_sample_count':0,'source_covered_texels':0,'flat_covered_texels':0,'same_face_alpha_fallback_texels':0}for pi in [0,1,15]};old_alpha=0
+for ti,r in enumerate(rows):
+ pi=r['part'];fi=r['native_triangle_index'];d=source[pi];tx,ty=r['atlas_uv'];M=np.array(r['basis_bb']);idx=np.array(r['native_triangle']);weights=pixel@np.array(r['pixel_to_native_barycentric']).T;weights=np.maximum(weights,0);weights/=weights.sum(-1,keepdims=True);mask=color[ty:ty+20,tx:tx+20,3]>0;stat=stats[str(pi)];stat['faces']+=1;stat['covered_texels']+=int(mask.sum())
+ if pi==0 and int(d['face_parts'][fi])in [0,1]:
+  side=int(d['face_parts'][fi]);q=(weights@d['source_uv'][idx]).reshape(-1,2);n,f,bc=sampler.sample(q,side);bandf[fi]=f.reshape(20,20);bandb[fi]=bc.reshape(20,20,3);n=(n@A.T).reshape(20,20,3);rgb,z,err=encode(n,M);out[ty:ty+20,tx:tx+20,:3]=rgb;methods[ti]=1;stat['source_faces']+=1
+ elif pi==15:
+  c=r['legacy_correspondence'];oldfi=c['source_repaired_face'];of=low['low_f'][oldfi];assert np.array_equal(d['source_indices'][idx],of);oldpts=low['low_v'][of];newpts=d['points'][idx];identity=np.array_equal(oldpts,newpts);OM=np.array(c['legacy_basis_bb']);ow,oh,ot,omu,omv,oww,ohh=c['legacy_shape'];ok=c['legacy_vertex_roll'];wo=np.roll(weights,-ok,axis=2);ox=wo[:,:,1]*ow+wo[:,:,2]*ot;oy=wo[:,:,2]*oh;sx=np.clip(np.floor((ox+omu)/oww*20).astype(int),0,19);sy=np.clip(np.floor((1-(oy+omv)/ohh)*20).astype(int),0,19);lx,ly=c['legacy_uv']
+  if identity:
+   sx=X.copy();sy=Y.copy();Q=np.eye(3);anatomyidentity[fi]=True
+  else:Q=basis(newpts@A.T)@basis(oldpts@A.T).T
+  invalid=mask&(lcolor[ly+sy,lx+sx,3]==0)
+  if invalid.any():
+   assert not identity, 'An identity tile must not invent a source-alpha fallback'
+   valid=np.column_stack(np.where(lcolor[ly:ly+20,lx:lx+20,3]>0));assert len(valid)>0
+   for yy,xx in zip(*np.where(invalid)):
+    best=int(np.argmin(np.sum((valid-[sy[yy,xx],sx[yy,xx]])**2,axis=1)));sy[yy,xx],sx[yy,xx]=valid[best]
+   anatomyfallback[fi]=invalid;stat['same_face_alpha_fallback_texels']+=int(invalid.sum())
+  anatomyxy[fi]=np.stack((lx+sx,ly+sy),axis=-1);anatomyrot[fi]=Q;encoded=legacy[ly+sy,lx+sx,:3];tang=encoded.astype(float)/255*2-1;tang[...,1]*=-1;n=norm(norm(tang@OM.T)@Q.T);rgb,z,err=encode(n,M)
+  if identity:
+   assert np.max(np.abs(M-OM))<1e-12;rgb=encoded;err[:]=0
+   color[ty:ty+20,tx:tx+20,:3]=lcolor[ly:ly+20,lx:lx+20,:3]
+  out[ty:ty+20,tx:tx+20,:3]=rgb;methods[ti]=2;stat['source_faces']+=1;stat['below_old_alpha_sample_count']+=int(np.sum(mask&(lcolor[ly+sy,lx+sx,3]==0)))
+ else:
+  # No ambiguous smoothing across wall/cut/rim boundaries. Exact face geometric normal in tangent basis.
+  z=np.ones((20,20));err=np.zeros((20,20));stat['flat_faces']+=1
+ stat['source_covered_texels'if methods[ti]in [1,2]else'flat_covered_texels']+=int(mask.sum())
+ stat['negative_tangent_z_covered']+=int(np.sum(mask&(z<0)));stat['angular_error_sum']+=float(err[mask].sum());stat['angular_error_max']=max(stat['angular_error_max'],float(err[mask].max()))
+ if ti%3000==0:print('PBR',ti,'/',len(rows),flush=True)
+assert np.array_equal(out[:2048,:2048],legacy);assert np.array_equal(color[:2048,:2048],lcolor)
+# New PBR is a separate explicitly experimental material/texture, not the flat control's texture_set.
+Image.fromarray(out).save(TD/'paz_v75_v14_lab_pbr_experimental_normal_dx.png');Image.fromarray(color).save(TD/'paz_v75_v14_lab_pbr_experimental.png')
+np.savez_compressed(W/'pbr-texel-provenance.npz',normal_method_per_face=methods,band_high_source_face=bandf,band_high_source_barycentric=bandb,anatomy_legacy_texel_xy=anatomyxy,anatomy_rotation_old_bb_to_new_bb=anatomyrot,anatomy_identity_face=anatomyidentity,anatomy_same_face_alpha_fallback=anatomyfallback)
+for s in stats.values():s['mean_reencoding_angular_error_source_covered']=s.pop('angular_error_sum')/max(s['source_covered_texels'],1);s['geometric_flat_quantization_error_deg']=float(np.degrees(np.arccos(1/np.linalg.norm([1/255,-1/255,1]))))
+report={'status':'PARTIAL_PBR_EXPERIMENT_NOT_EQUIVALENCE','runtime_tested':False,'directx_convention':'Legacy assumed DX negative green; Bedrock tangent basis still unvalidated. No automatic abs(z) or normal flipping.','band':{'method':'Exact evaluated band-source UV grid triangle and physical source wall 0/1 at each target texel; no spatial nearest fallback. Returns and new closures use flat native-face normals.','source_uv_is':'Geometric source-parameter lineage, not texture UVs. Interpolated at target barycentric weights then exact high-source cell lookup.'},'anatomy':{'method':'Original legacy atlas pixel from same repaired low triangle and canonical source-face barycentric location. On moved triangles, normal rotates between canonical old/new face frames before target tangent encoding; this is a declared rigid per-face transfer model, not a newly baked highpoly body.','identity_faces_bit_exact':int(anatomyidentity.sum()),'changed_faces':int((~anatomyidentity).sum()),'same_face_alpha_fallback_texels':int(anatomyfallback.sum()),'alpha_edge_fallback':'When a moved-face texel addresses an unbaked old alpha-zero pixel, use nearest covered texel inside that same 20x20 source-face tile, with deterministic first-row tie break. Every occurrence is recorded. No spatial nearest or other source face is used.','microcomponent':'Native vertices 437–439 and opposed faces 424/1131 preserved. Legacy normal atlas copied for their identity geometry; no use of cancelling zero vertex normals.','legacy_limits':'Original per-texel bake has part-restricted nearest fallbacks and negative tangent Z; original sampled values are preserved, not claimed historically correct or silently repaired. See pbr_normals_v2/evidence/per-texel-normal-bake.json.'},'shell':{'method':'All 12,664 faces retain geometric flat normals, including 246 new rim faces. Existing source-vertex/baseline-face lineage is frozen but there is no verified per-texel high-source surface map.','blocker':'Full original-detail equivalence for shell is pending a wall/region-constrained correspondence chain. Geometric smooth vertex normals would invent cross-edge shading, so are not used.'},'statistics':stats,'texel_provenance':'pbr-texel-provenance.npz records exact high-source face/barycentric per band texel, exact legacy pixel per anatomy texel, per-pixel same-face alpha fallback flag and old-to-new frame per anatomy face. method 3 maps to source native face via transport record. All upper-left legacy texels are bit-exact.','input_sha256':{str(p.relative_to(B)):sha(p)for p in [B/'shell_band_v3/evidence/band-source.npz',B/'shell_band_v3/evidence/band-source-parameters.npz',B/'shell_band_v3/evidence/band-source-wall-classes.npz',W/'transport_faces.jsonl.gz',W/'legacy-normal-dx.png',B/'pbr_normals_v2/evidence/per-texel-normal-bake.json']},'output_sha256':{str(p.relative_to(W.parent)):sha(p)for p in [TD/'paz_v75_v14_lab_pbr_experimental_normal_dx.png',TD/'paz_v75_v14_lab_pbr_experimental.png',W/'pbr-texel-provenance.npz']}}
+savej(W/'pbr-investigation-report.json',report)
+savej(TD/'paz_v75_v14_lab_pbr_experimental.texture_set.json',{'format_version':'1.21.30','minecraft:texture_set':{'color':'paz_v75_v14_lab_pbr_experimental','normal':'paz_v75_v14_lab_pbr_experimental_normal_dx','metalness_emissive_roughness':[0,0,204]}})
+ent=json.loads((R/'entity/paz_v75_v14_lab.entity.json').read_text());desc=ent['minecraft:client_entity']['description'];desc['identifier']='paz_v75_v14_lab:pbr_experimental';desc['textures']['default']='textures/entity/paz_v75_v14_lab_pbr_experimental';savej(R/'entity/paz_v75_v14_lab_pbr_experimental.entity.json',ent)
+man=json.loads((R/'manifest.json').read_text());man['capabilities']=['pbr'];man['header']['description']='Isolated LAB geometry proof + separate PARTIAL PBR experiment. Shell high-detail not transferred. Runtime untested. No behavior pack.';savej(R/'manifest.json',man)
+with (W/'README.md').open('r+')as fh:
+ prior=fh.read().split('## Separate partial PBR experiment')[0].rstrip();fh.seek(0);fh.write(prior+'\n');fh.write('\n## Separate partial PBR experiment\n\nRun `python build_pbr_experiment.py` after the geometry build. It creates a distinct experimental entity/material and leaves the default flat control unconnected to a normalmap. Anatomy reuses the exact old surface’s per-texel normalmap, with bit-exact identity tiles and declared frame rotation on displaced faces. Band samples evaluated source normals only through known UV and physical wall identity; closures stay flat. Shell stays explicitly flat because a verified per-texel detail chain is absent. This is PARTIAL PBR, not normal/detail equivalence of the full sculpture. `pbr-investigation-report.json` and `pbr-texel-provenance.npz` state and audit that boundary.\n');fh.truncate()
+print(json.dumps(report,indent=2),flush=True)

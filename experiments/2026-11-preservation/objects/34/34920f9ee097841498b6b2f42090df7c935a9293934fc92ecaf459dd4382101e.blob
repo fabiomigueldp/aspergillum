@@ -1,0 +1,63 @@
+{
+  "hypothesis": "Constrained thin-plate minimization removes near-antiparallel lateral center folds before offsetting. Fixed source interfaces and unaffected central strip; preserve original paired wall thickness.",
+  "method": "Constrained anisotropic thin-plate, physical step ratio3, displacement regularizer0.133352143; fixed endpoint director half-spaces margin0.2; obstacle plane supports faces10958/10959/10976 at0.21mm using previous final directors; area-weighted directors projected into incident normal cone margin0.1.",
+  "center_moved_vertices": 120,
+  "center_displacement_max_mm": 19.02406310875725,
+  "center_displacement_p95_mm": 8.968594253270373,
+  "shell_displacement_max_mm": 19.457746256408495,
+  "mixed_director_faces": 0,
+  "nonpositive_director_products": 0,
+  "cone_failures": [],
+  "cone_margin_min": 0.34685965323936013,
+  "source_vertices_exact": true,
+  "central_center_exact": true,
+  "thickness_min_mm": 0.9367844656692647,
+  "thickness_max_mm": 5.049497780673556,
+  "triangles": 12484,
+  "provenance": {
+    "input": "lateral_v7/evidence/director-cone-assembly.npz",
+    "source_geometry": "integration_v6/evidence/seam-hermite-physical-7p5-assembly.npz",
+    "only_generated_vertices_moved": true,
+    "connectivity_preserved": true,
+    "source_orientation_preserved": true,
+    "face_parts": "0 cap;1 bridge;2 restored mantle",
+    "source_indices_preserved": true
+  },
+  "final_director_plane_constraints": [
+    {
+      "mantle_face": 10958,
+      "generated_outer_source_id": 186439,
+      "signed_plane_distance_mm": 0.21230171364866718
+    },
+    {
+      "mantle_face": 10958,
+      "generated_outer_source_id": 186440,
+      "signed_plane_distance_mm": 2.250612975175674
+    },
+    {
+      "mantle_face": 10959,
+      "generated_outer_source_id": 186439,
+      "signed_plane_distance_mm": 0.6077465892503099
+    },
+    {
+      "mantle_face": 10959,
+      "generated_outer_source_id": 186440,
+      "signed_plane_distance_mm": 2.5338585643176206
+    },
+    {
+      "mantle_face": 10976,
+      "generated_outer_source_id": 186439,
+      "signed_plane_distance_mm": 0.5823655896810156
+    },
+    {
+      "mantle_face": 10976,
+      "generated_outer_source_id": 186440,
+      "signed_plane_distance_mm": 2.5207035247866116
+    }
+  ],
+  "all_six_final_plane_constraints_at_least_0p2mm": true,
+  "final_plane_constraint_min_mm": 0.21230171364866718,
+  "director_fixed_point_iterations_after_first_final": 1,
+  "prior_director_artifact": "fidelity-0p133-midfield.npz",
+  "limitations": "Local signed support-plane distances only, not a global minimum-clearance certificate; no render/game/artistic validation."
+}

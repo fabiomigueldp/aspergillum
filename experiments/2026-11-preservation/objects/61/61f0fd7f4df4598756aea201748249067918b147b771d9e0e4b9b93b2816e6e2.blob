@@ -1,0 +1,57 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+ RUN  v3.2.7 /workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103
+
+ ❯ tests/infrastructure/docked-registry-preservation.test.ts (20 tests | 6 failed) 58ms
+   ✓ lossless registry boundary before world mutation > keeps canonical V2 metadata and unrelated valid entries across a targeted update/delete 8ms
+   ✓ lossless registry boundary before world mutation > accepts canonical legacy V1 and promotes only the documented zero-charge schema 3ms
+   ✓ lossless registry boundary before world mutation > refuses unknown-root-field without altering any original property bytes 3ms
+   ✓ lossless registry boundary before world mutation > refuses invalid-neighbor without altering any original property bytes 1ms
+   ✓ lossless registry boundary before world mutation > refuses future-neighbor without altering any original property bytes 1ms
+   ✓ lossless registry boundary before world mutation > refuses unknown-item-field without altering any original property bytes 1ms
+   ✓ lossless registry boundary before world mutation > refuses invalid-custom-property without altering any original property bytes 1ms
+   ✓ lossless registry boundary before world mutation > refuses invalid-charges without altering any original property bytes 1ms
+   ✓ lossless registry boundary before world mutation > refuses legacy-nonzero-charges without altering any original property bytes 1ms
+   ✓ lossless registry boundary before world mutation > refuses duplicate-key without altering any original property bytes 1ms
+   ✓ lossless registry boundary before world mutation > refuses noncanonical-json without altering any original property bytes 0ms
+   ✓ lossless registry boundary before world mutation > refuses array-entries without altering any original property bytes 0ms
+   ✓ lossless registry boundary before world mutation > refuses future-shard without altering any original property bytes 1ms
+   × lossless registry boundary before world mutation > refuses vector-extra-field without altering any original property bytes 13ms
+     → expected [Function] to throw an error
+   × lossless registry boundary before world mutation > refuses reserved:charges without altering any original property bytes 2ms
+     → expected [Function] to throw an error
+   × lossless registry boundary before world mutation > refuses reserved:schema_version without altering any original property bytes 2ms
+     → expected [Function] to throw an error
+   × lossless registry boundary before world mutation > refuses reserved:instance_id without altering any original property bytes 2ms
+     → expected [Function] to throw an error
+   × lossless registry boundary before world mutation > refuses reserved:cosmetic_id without altering any original property bytes 4ms
+     → expected [Function] to throw an error
+   × lossless registry boundary before world mutation > refuses reserved:spray_profile_id without altering any original property bytes 8ms
+     → expected [Function] to throw an error
+   ✓ lossless registry boundary before world mutation > refuses an oversized update before mutation, including multibyte text 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/infrastructure/docked-registry-preservation.test.ts > lossless registry boundary before world mutation > refuses vector-extra-field without altering any original property bytes
+ FAIL  tests/infrastructure/docked-registry-preservation.test.ts > lossless registry boundary before world mutation > refuses reserved:charges without altering any original property bytes
+ FAIL  tests/infrastructure/docked-registry-preservation.test.ts > lossless registry boundary before world mutation > refuses reserved:schema_version without altering any original property bytes
+ FAIL  tests/infrastructure/docked-registry-preservation.test.ts > lossless registry boundary before world mutation > refuses reserved:instance_id without altering any original property bytes
+ FAIL  tests/infrastructure/docked-registry-preservation.test.ts > lossless registry boundary before world mutation > refuses reserved:cosmetic_id without altering any original property bytes
+ FAIL  tests/infrastructure/docked-registry-preservation.test.ts > lossless registry boundary before world mutation > refuses reserved:spray_profile_id without altering any original property bytes
+AssertionError: expected [Function] to throw an error
+ ❯ tests/infrastructure/docked-registry-preservation.test.ts:64:58
+     62|     if (kind === "noncanonical-json") original = ` \n${original}\n`;
+     63|     writeRaw(original);
+     64|     expect(() => getDockedSnapshot(dimension, location)).toThrow();
+       |                                                          ^
+     65|     expect(() => setDockedSnapshot(dimension, location, snapshot)).toT…
+     66|     expect(() => deleteDockedSnapshot(dimension, location)).toThrow();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 14 passed (20)
+   Start at  17:49:12
+   Duration  851ms (transform 184ms, setup 0ms, collect 214ms, tests 58ms, environment 0ms, prepare 140ms)
+

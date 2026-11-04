@@ -1,0 +1,52 @@
+{
+  "inputs": {
+    "shell_band_v5/retained_candidate/evidence/band-paired.npz": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647",
+    "ear_rim_v11/structural_rebuild/retained-shell.npz": "c79f296415d566db5f9c109389375e0d3ae112fbccbbc89c8628200939fbf81f",
+    "body_interface_v9/constrained_fit/retained-anatomy.npz": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db"
+  },
+  "input_hashes_equal_first_build": true,
+  "scripts": [
+    {
+      "file": "audit_preservation.py",
+      "sha256": "762821831205cd2df779d944eb873700f0f214285a42109766aea4549ffd19c0",
+      "syntax": "OK"
+    },
+    {
+      "file": "build_band_cutter.py",
+      "sha256": "4356580ae3cf8f980956fce18f0b998892b2660915d1e29d0a006be94b8f0d24",
+      "syntax": "OK"
+    },
+    {
+      "file": "build_band_termination.py",
+      "sha256": "e7b62b7c3276800c47489c0aafd2f73b886e94277e27cad097521164a2c14628",
+      "syntax": "OK"
+    },
+    {
+      "file": "prepare_reference_cutter.py",
+      "sha256": "ae56f8aafcf23143095bc6867c08712f5996167617ac0101243296147083e0a7",
+      "syntax": "OK"
+    },
+    {
+      "file": "retain_selected_band.py",
+      "sha256": "7a4e4a94f03076556e35d978a690d5449b63ad589e16a8c4e190624a0bad9848",
+      "syntax": "OK"
+    },
+    {
+      "file": "retriangulate_inherited_patches.py",
+      "sha256": "ed117fa4af4c2fed6547376414b8a2a62f4c92528bf1aa6fcd0de8de55313266",
+      "syntax": "OK"
+    },
+    {
+      "file": "update_manifest.py",
+      "sha256": "c9899f224f89cd7cbed6f6f80fba0a959578762c5051aff1d5a78427f085f80c",
+      "syntax": "OK"
+    }
+  ],
+  "retained_present": true,
+  "retained_byte_identical_to_selected": true,
+  "candidate_invariants": {
+    "polygonal-pinna-0.5mm-clean": true,
+    "polygonal-pinna-0.6mm-clean": true
+  },
+  "exported_or_published": false
+}

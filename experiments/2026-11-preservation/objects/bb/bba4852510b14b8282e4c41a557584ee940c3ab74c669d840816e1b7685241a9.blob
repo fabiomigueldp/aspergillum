@@ -1,0 +1,1258 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index 23491ea..c06d72f 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -1,5 +1,13 @@
+ # Changelog
+ 
++## 2026-11-03 · Altare 0.12.1
++
++Refina Cruzeta com marchetaria proporcional, apoios simétricos e X duplo cavilhado. Mesmos contratos de mundo, 80.000 estados e mapas. [Revisão e reteste](addons/altare/docs/CROSSBRACE_0.12.1.md). Aspergillum 1.2.5 e Estúdio 2.3.0 preservados.
++
++## 2026-11-03 · Altare 0.12.0 / Estúdio 2.3.0
++
++Nova família Cruzeta em nogueira, com estrutura aberta e marchetaria. Dez toalhas, 17 acabamentos adicionais, IDs anteriores preservados e teto diagnóstico inalterado. [Contrato e reteste](addons/altare/docs/CROSSBRACE_0.12.0.md). Aspergillum permanece 1.2.5.
++
+ ## Ferramenta local — 2026-10-31 — Render Studio 2.2.1
+ 
+ - Integra Altare 0.11.2: chanfros e mitras de Ogivas, com o mesmo custo geométrico e relevos ajustados ao campo do fundo.
+diff --git a/addons/altare/CHANGELOG.md b/addons/altare/CHANGELOG.md
+index 3782109..d432b59 100644
+--- a/addons/altare/CHANGELOG.md
++++ b/addons/altare/CHANGELOG.md
+@@ -1,5 +1,20 @@
+ # Changelog
+ 
++## 0.12.1 · Polimento da Cruzeta — 2026-11-03
++
++- Marchetaria com motivos inteiros em escala próxima nas travessas/cabeças; pés só com filetes e UVs complementares nos meios montantes.
++- Fustes quadrados com recuo simétrico, travessas inferiores encostadas e cavilha de madeira atravessando cada X duplo.
++- Até 50 cubos, sem alterar os tetos, IDs, estados, colisões ou recursos de outras famílias.
++- Matriz CPU ampliada para 35 vistas, todos os tecidos, oito cores, frente/verso, rasantes e underside. [Revisão e reteste](docs/CROSSBRACE_0.12.1.md).
++
++## 0.12.0 · Cruzeta em nogueira — 2026-11-03
++
++- Novo modelo aberto em nogueira, com apoios compartilhados, travessas, diagonais em meia espessura e marchetaria de madeira clara sem metal.
++- Dez desenhos de toalha e oito cores Floral IHS; 17 novos IDs, todos os 397 contratos anteriores preservados.
++- Sem toalha usa contorno simétrico: 80.000 combinações Altare, sem elevar o teto diagnóstico.
++- Estúdio 2.3.0 integra o oitavo modelo e dois presets. Prévia CPU alternativa disponível; renderer Chromium bloqueado neste ambiente.
++- [Contrato e reteste](docs/CROSSBRACE_0.12.0.md). Importação, Content Log e profiling do arquivo exato permanecem pendentes.
++
+ ## 0.11.2 — 2026-10-31 — chanfros de Ogivas
+ 
+ - Intradorso com chanfro contínuo e mitras fechadas na ponta e entre facetas; transporte correto das rotações compostas para os quatro lados.
+diff --git a/addons/altare/README.md b/addons/altare/README.md
+index 8351eef..6f52f8d 100644
+--- a/addons/altare/README.md
++++ b/addons/altare/README.md
+@@ -1,6 +1,6 @@
+ # Altare
+ 
+-**0.11.2 — Ogivas com chanfros contínuos e mitras refinadas.** Relevos ajustados ao campo do fundo, preservando toalhas, apoios e o editor corrigido da 0.11.1. [Construção e compatibilidade](docs/OGIVE_DETAIL_0.11.2.md).
++**0.12.1 — Cruzeta em nogueira.** Oitavo modelo: marcenaria aberta, quadros apoiados, X duplo cavilhado e marchetaria proporcional. Dez toalhas compartilhadas, com oito cores do Floral IHS. [Construção, compatibilidade e reteste](docs/CROSSBRACE_0.12.1.md).
+ 
+ A [marcenaria 0.6.1](docs/JOINERY_0.6.1.md) acrescenta Arca e Balaústres ao [contrato de personalização](docs/CUSTOMIZATION_0.5.0.md). Os dois modelos usam nogueira, todos os tecidos e as oito cores do Floral IHS, sem aplique adicional.
+ 
+@@ -12,7 +12,7 @@ O uso principal é construção e ornamentação no Criativo. [Colunata e renda]
+ - **Materiais:** mármore, calcário e nogueira.
+ - **Toalhas:** linho curto/longo, bordado curto/longo, branco/Cordeiro, Floral IHS em oito cores, branco-verde/IHS, preto/prata, renda floral ou sem toalha. Dobras estáticas com profundidade, bordados e festões recortados.
+ - **Apliques:** sem aplique, cruz dourada em relevo ou placa do Cordeiro. Na mesa aberta, o aplique tem suporte suspenso próprio.
+-- **396 acabamentos**, além do bloco clássico: os 224 anteriores e 172 novas combinações. Centro único em frentes ímpares, duas metades alinhadas em pares. Retângulos até 16 × 8, em qualquer orientação, máximo de 128 módulos.
++- **413 acabamentos**, além do bloco clássico: os 396 anteriores e 17 acabamentos da Cruzeta. Centro único em frentes ímpares, duas metades alinhadas em pares. Retângulos até 16 × 8, em qualquer orientação, máximo de 128 módulos.
+ 
+ O editor configura o conjunto conectado inteiro. Toalha e estrutura ocupam somente as células da base: o tampo termina exatamente em `y + 1`, deixando livres as células superiores. Trocar a aparência não move, captura ou recria os vasos. Itens que não sejam colocáveis ainda precisam de um adaptador próprio; outros add-ons conservam suas regras de suporte.
+ 
+@@ -22,7 +22,7 @@ Os recortes do tecido usam transparência binária; as dobras e a estrutura são
+ 
+ O desenho **Floral IHS** oferece branco, vermelho, verde, roxo, róseo, preto, dourado e prateado festivos. São 104 combinações de cor/estrutura/material; nove vermelhas reutilizam receitas existentes. O bordado central, as flores claras e o ouro conservam suas cores. A cobertura sobre o tampo permanece branca.
+ 
+-Esta família funciona nos sete modelos, com os materiais próprios de cada estrutura. Pilastras, ogivas e cavaletes aceitam relevo adicional no vermelho. Nas demais cores, o controle de relevo mostra a indisponibilidade e lembra a escolha durante a edição. Todos os desenhos ficam na mesma tela. A família permite escolher cores; não aplica calendário nem regras de celebração automaticamente. [Contrato, referências e autoria](docs/TEXTILES_0.4.0.md).
++Esta família funciona nos oito modelos, com os materiais próprios de cada estrutura. Pilastras, ogivas e cavaletes aceitam relevo adicional no vermelho. Nas demais cores, o controle de relevo mostra a indisponibilidade e lembra a escolha durante a edição. Todos os desenhos ficam na mesma tela. A família permite escolher cores; não aplica calendário nem regras de celebração automaticamente. [Contrato, referências e autoria](docs/TEXTILES_0.4.0.md).
+ 
+ O polimento da coleção inclui fonte artística mais limpa, bainha com cordão, trama nos normais, dobras menos angulosas e cantos finos inclinados. O linho superior tem espessura própria sobre o tampo estrutural, mantendo a cota de apoio.
+ 
+@@ -30,13 +30,15 @@ A 0.4.1 corrige as frestas entre facetas e a sobreposição de desenhos nas jun
+ 
+ O Content Log da 0.4.1 confirmou a rejeição das caixas de colisão dos 66 blocos de cavaletes: os IDs não eram registrados e a aplicação terminava em rollback. A 0.4.2 usa caixas estáveis `origin/size`, resolve todas as permutações antes da primeira escrita e registra a cadeia de causas. Refina também a estrutura dos cavaletes, pilastras e ogivas, preservando integralmente as texturas. [Diagnóstico](docs/STRUCTURES_0.4.2.md) · [comparação antes/depois](out/structure-comparison-0.4.2/index.html).
+ 
+-## Testar a 0.11.2
++## Testar a 0.12.1
+ 
+-[Baixar Altare-0.11.2.mcaddon](dist/releases/Altare-0.11.2.mcaddon) · [Relatório oficial](dist/validation/0.11.2/release-summary.json) · [Correção do editor](docs/EDITOR_FIX_0.11.1.md) · [Reteste visual](docs/OGIVE_DETAIL_0.11.2.md).
++[Baixar Altare-0.12.1.mcaddon](dist/releases/Altare-0.12.1.mcaddon) · [Relatório oficial](dist/validation/0.12.1/release-summary.json) · [Correção do editor](docs/EDITOR_FIX_0.11.1.md) · [Reteste visual](docs/OGIVE_DETAIL_0.11.2.md).
+ 
+ [Ogivas: comparar antes e depois](out/ogive-comparison-0.11.2/index.html).
+ 
+-1. Importar em uma cópia do mundo e ativar BP/RP **`[0,11,2]`**, sem outra revisão Altare concorrente. Alvo mínimo 1.26.40; Script API 2.9.0/UI 2.1.0 estáveis; sem experimentos. A ferramenta deve abrir a tela sem `InvalidObservableError`, inclusive ao alternar materiais fixos e aplique indisponível.
++Antes da matriz histórica abaixo, escolher **Cruzeta** no editor e testar 1 × 1, 7 × 2 e 8 × 2, sem toalha, com linho curto, renda e Floral IHS. O tampo e objetos superiores não podem se mover. [Matriz completa](docs/CROSSBRACE_0.12.1.md).
++
++1. Importar em uma cópia do mundo e ativar BP/RP **`[0,12,1]`**, sem outra revisão Altare concorrente. Alvo mínimo 1.26.40; Script API 2.9.0/UI 2.1.0 estáveis; sem experimentos. A ferramenta deve abrir a tela sem `InvalidObservableError`, inclusive ao alternar materiais fixos e aplique indisponível.
+ 2. Executar `/function altare/dev_kit`; montar 7 × 2 módulos, com um bloco de altura. Usar **Acabamento do altar**, escolher Ogivas e Sem toalha; conferir pontas, recessos, impostas, apoios e retorno dos cantos em movimento. Alternar tecidos, materiais e relevo; repetir em 8 × 2 e conferir o centro dividido.
+ 3. Usar **Acabamento do altar** na lateral frontal. Na mesma tela, escolher Cavaletes, Nogueira e Sem toalha; usar Aplicar. Reabrir, escolher Cordeiro e aplicar. Cancelar não altera blocos; Restaurar escolhas recupera a configuração aberta. Conferir dois cavaletes nas extremidades, escoras conectadas e vão central aberto.
+ 4. Colocar pedra vanilla e caldeirinha sobre o tampo; alternar cavaletes, pilastras e ogivas. Testar também **Floral IHS**, branco/roxo/róseo; salvar e reabrir. Objetos superiores devem permanecer na mesma posição.
+@@ -50,7 +52,7 @@ Os testes do pacote importado e de multiplayer são feitos pelo usuário. As cap
+ 
+ Ainda é uma revisão diagnóstica, sem receitas/economia de Sobrevivência, edição em Aventura, formas em L/curvas, altura fracionária, vários itens por célula ou física dinâmica do tecido. A mesa aberta usa dois cavaletes de extremidade, com um montante por célula de profundidade em cada um; não acrescenta apoios intermediários conforme o comprimento. O recorte ornamental não é uma malha de renda fio a fio. Seleção mantém o cubo completo; colisão da mesa segue tampo/apoios/travessas, com caixas conservadoras nas escoras diagonais e sem corpo sólido central.
+ 
+-Quebrar um módulo descarta seus estados locais de contorno e papel central. Nas receitas novas, o ID do item conserva a família/aparência; no bloco clássico, o acabamento volta aos defaults. Reaplicar a ferramenta após reconstruir. O catálogo usa 78.432 combinações de estados e 88.176 com Aspergillum local. Excede a referência de desempenho 65.536; a exceção é diagnóstica e exige profiling, não limita crafts. Custos, avisos e condições de promoção estão no [contrato 0.9.0](docs/UNIVERSAL_TEXTILES_0.9.0.md).
++Quebrar um módulo descarta seus estados locais de contorno e papel central. Nas receitas novas, o ID do item conserva a família/aparência; no bloco clássico, o acabamento volta aos defaults. Reaplicar a ferramenta após reconstruir. O catálogo usa 80.000 combinações de estados e 89.744 com Aspergillum local. Excede a referência de desempenho 65.536; a exceção é diagnóstica e exige profiling, não limita crafts. Custos, avisos e condições de promoção estão no [contrato 0.9.0](docs/UNIVERSAL_TEXTILES_0.9.0.md).
+ 
+ ## Desenvolvimento
+ 
+diff --git a/addons/altare/assets-src/atelier/geometry.mjs b/addons/altare/assets-src/atelier/geometry.mjs
+index 7c20e27..61600ff 100644
+--- a/addons/altare/assets-src/atelier/geometry.mjs
++++ b/addons/altare/assets-src/atelier/geometry.mjs
+@@ -1,3 +1,4 @@
++import {crossbraceArchitecture,crossbraceCollision} from './crossbrace-model.mjs';
+ import {pilasterArchitecture,pilasterProfile} from './pilaster-model.mjs';
+ import {ogiveArchitecture,ogiveProfile,ogiveReliefFit} from './ogive-model.mjs';
+ import {garment} from './garment.mjs';
+@@ -34,9 +35,10 @@ export function legacyAtelierGeometry(structure,textile,frontal,facing=0,edges){
+   add('tabletop_base',[box([-8,slabBottom,-8],[16,round(linenBottom-slabBottom),16],'stone')]);
+   add('top',[box([-8,linenBottom,-8],[16,linenThickness,16],'top')]);
+  }
+- if(['coffer','baluster'].includes(structure)){
++ if(['coffer','baluster','crossbrace'].includes(structure)){
+   if(frontal!=='none')throw Error('Joinery models have no applied relief');
+-  joineryMembers(structure,add,turn,edge,edges);
++  if(structure==='crossbrace')for(const b of crossbraceArchitecture(edges??15).bones)add(b.name,b.cubes);
++  else joineryMembers(structure,add,turn,edge,edges);
+  }else if(structure!=='trestle'){
+   add('core',[box([bodyEdge,plinthHeight,bodyEdge],[bodyWidth,bodyHeight,bodyWidth],'stone'),box([-8,0,-8],[16,plinthHeight,16],'stone')]);
+   // Internal joins extend the recessed body to the cell boundary. Recesses
+@@ -124,7 +126,8 @@ export function legacyAtelierGeometry(structure,textile,frontal,facing=0,edges){
+  return {doc,visibility};
+ }
+ export function structureCollision(structure,edges,facing){
+- if(['coffer','baluster'].includes(structure))return joineryCollision(structure,edges);
++ if(structure==='crossbrace')return crossbraceCollision(edges);
++ if(['coffer','baluster','crossbrace'].includes(structure))return joineryCollision(structure,edges);
+  if(structure!=='trestle')return true;
+  const {doc,visibility}=atelierGeometry(structure,'none','none',facing);
+  const q={block_state:()=>edges},math={floor:Math.floor,mod:(a,b)=>a%b};
+@@ -147,6 +150,7 @@ export function structureCollision(structure,edges,facing){
+ }
+ 
+ export function atelierGeometry(structure,textile,frontal,facing=0,edges){
++ if(structure==='crossbrace'&&edges===undefined)edges=15;
+  const out=legacyAtelierGeometry(structure,textile,frontal,facing,edges);
+  if(['pilaster','ogive'].includes(structure)){
+   const mask=edges??15,g=out.doc['minecraft:geometry'][0],appliques=g.bones.filter(b=>b.name.startsWith('applique_')&&(mask&(1<<facing)));
+@@ -159,7 +163,7 @@ export function atelierGeometry(structure,textile,frontal,facing=0,edges){
+   }return out;
+  }
+  if(textile==='none')return out;
+- const cloth=garment(textile,edges,{facing,twoSided:['trestle','baluster'].includes(structure)});
++ const cloth=garment(textile,edges,{facing,twoSided:['trestle','baluster','crossbrace'].includes(structure)});
+  const g=out.doc['minecraft:geometry'][0];g.bones=g.bones.filter(b=>b.name!=='top'&&!b.name.startsWith('drape_')&&!b.name.startsWith('fold_corner_'));
+  for(const k of Object.keys(out.visibility))if(k==='top'||k.startsWith('drape_')||k.startsWith('fold_corner_'))delete out.visibility[k];
+  g.bones.push(...cloth.bones.map(b=>({...b,pivot:[0,0,0],cubes:b.cubes.map(serializeCube)})));
+diff --git a/addons/altare/assets-src/atelier/materials.mjs b/addons/altare/assets-src/atelier/materials.mjs
+index 5417dbe..736499e 100644
+--- a/addons/altare/assets-src/atelier/materials.mjs
++++ b/addons/altare/assets-src/atelier/materials.mjs
+@@ -93,6 +93,7 @@ export function atelierDefinitions(){
+  for(const theme of ['agnus','ruby','verdant','requiem'])for(let role=0;role<4;role++)result.push({id:`textile_${theme}_${role}`,size:256,alpha:true,sampleOffset:0,extendNormals:true,paint:(x,y)=>textilePaint(x,y,theme,role)});
+  for(const color of Object.keys(textilePalette).filter(c=>c!=='red'))for(let role=0;role<4;role++)result.push({id:`textile_ruby_${role}_${color}`,size:256,alpha:true,sampleOffset:0,mapSource:`textile_ruby_${role}`,paint:(x,y)=>textilePaint(x,y,'ruby',role,color)});
+  result.push({id:'atelier_agnus',size:256,sampleOffset:0,extendNormals:true,paint:plaquePaint});
++ result.push({id:'crossbrace_inlay',size:64,paint:crossbraceInlay});
+  return [...result,...seamDefinitions(),...ornateDefinitions()];
+ }
+ 
+@@ -108,3 +109,12 @@ function seamDefinitions(){
+   },
+  }));
+ }
++
++// Original maple-on-walnut marquetry. Only this new model consumes the map.
++export function crossbraceInlay(x,y){
++ const grain=walnutPaint(y,x),v=(y+.5)/128,u=(x+.5)/128;
++ const border=Math.min(Math.abs(v-.14),Math.abs(v-.86));
++ const diamonds=Math.abs(Math.abs(((u*8)%1)-.5)*2+Math.abs(v-.5)*4-.48);
++ const inlay=border<.018||(v>.32&&v<.68&&diamonds<.14);
++ return inlay?{rgb:[181,140,84],rough:202,metal:0,height:.008}:grain;
++}
+diff --git a/addons/altare/assets-src/locales.mjs b/addons/altare/assets-src/locales.mjs
+index 78afd77..60bf861 100644
+--- a/addons/altare/assets-src/locales.mjs
++++ b/addons/altare/assets-src/locales.mjs
+@@ -4,7 +4,7 @@ export const locales={
+   'tile.altare:mensa.name':'Módulo de altar', 'item.altare:finish_tool.name':'Acabamento do altar',
+   'altare.menu.title':'Personalizar altar','altare.menu.model':'Modelo','altare.menu.pattern':'Desenho','altare.menu.frontal':'Frontal','altare.menu.restore':'Restaurar escolhas','altare.menu.cancel':'Cancelar','altare.menu.relief_limit':'Relevo disponível no floral vermelho.','altare.textile.floral':'Floral IHS','altare.menu.size':'Superfície: %s × %s. Clique uma lateral para escolher a frente.',
+   'altare.menu.collection':'Estrutura do altar','altare.menu.collection_help':'Escolha a estrutura. Depois combine material, toalha e frontal para o altar inteiro.',
+-  'altare.structure.classic':'Clássico','altare.structure.pilaster':'Pilastras','altare.structure.ogive':'Ogivas','altare.structure.trestle':'Cavaletes','altare.structure.coffer':'Arca','altare.structure.baluster':'Balaústres','altare.structure.colonnade':'Colunata dourada','altare.menu.lace':'Toalha de renda',
++  'altare.structure.classic':'Clássico','altare.structure.pilaster':'Pilastras','altare.structure.ogive':'Ogivas','altare.structure.trestle':'Cavaletes','altare.structure.crossbrace':'Cruzeta','altare.structure.coffer':'Arca','altare.structure.baluster':'Balaústres','altare.structure.colonnade':'Colunata dourada','altare.menu.lace':'Toalha de renda',
+   'altare.menu.surface':'Material','altare.menu.applique':'Relevo',
+   'altare.menu.palette':'Floral IHS · cores litúrgicas','altare.menu.structure':'Estrutura','altare.menu.color':'Cor',
+   'altare.color.white':'Branco','altare.color.red':'Vermelho','altare.color.green':'Verde','altare.color.purple':'Roxo','altare.color.rose':'Róseo','altare.color.black':'Preto','altare.color.gold':'Dourado · festivo','altare.color.silver':'Prateado · festivo',
+@@ -30,7 +30,7 @@ export const locales={
+   'tile.altare:mensa.name':'Altar module','item.altare:finish_tool.name':'Altar finishing tool',
+   'altare.menu.title':'Customize altar','altare.menu.model':'Model','altare.menu.pattern':'Pattern','altare.menu.frontal':'Frontal','altare.menu.restore':'Restore choices','altare.menu.cancel':'Cancel','altare.menu.relief_limit':'Relief is available with red floral cloth.','altare.textile.floral':'Floral IHS','altare.menu.size':'Surface: %s × %s. Click a side to choose the front.',
+   'altare.menu.collection':'Altar structure','altare.menu.collection_help':'Choose the structure, then combine material, cloth and frontal for the entire altar.',
+-  'altare.structure.classic':'Classic','altare.structure.pilaster':'Pilasters','altare.structure.ogive':'Ogives','altare.structure.trestle':'Trestles','altare.structure.coffer':'Panelled chest','altare.structure.baluster':'Balusters','altare.structure.colonnade':'Gilded colonnade','altare.menu.lace':'Lace cloth',
++  'altare.structure.classic':'Classic','altare.structure.pilaster':'Pilasters','altare.structure.ogive':'Ogives','altare.structure.trestle':'Trestles','altare.structure.crossbrace':'Cross-braced walnut','altare.structure.coffer':'Panelled chest','altare.structure.baluster':'Balusters','altare.structure.colonnade':'Gilded colonnade','altare.menu.lace':'Lace cloth',
+   'altare.menu.surface':'Material','altare.menu.applique':'Relief',
+   'altare.menu.palette':'Floral IHS · liturgical colors','altare.menu.structure':'Structure','altare.menu.color':'Color',
+   'altare.color.white':'White','altare.color.red':'Red','altare.color.green':'Green','altare.color.purple':'Violet','altare.color.rose':'Rose','altare.color.black':'Black','altare.color.gold':'Gold · festive','altare.color.silver':'Silver · festive',
+diff --git a/addons/altare/docs/ARCHITECTURE.md b/addons/altare/docs/ARCHITECTURE.md
+index 0589392..d90d5d3 100644
+--- a/addons/altare/docs/ARCHITECTURE.md
++++ b/addons/altare/docs/ARCHITECTURE.md
+@@ -143,3 +143,7 @@ Os fustes usam oito faces em quatro prismas; cada par de fachadas adjacentes rec
+ ## Envelope têxtil da Colunata — 0.8.3
+ 
+ `assets-src/atelier/colonnade-textile.mjs` emite a cobertura, retornos, caimento e costuras, consumindo um único perfil de cotas. O linho é a única superfície superior; a dobra termina em y=15,91 e seus retornos se encontram sem sobreposição. A costura diagonal liga as duas faces da renda e termina na mesma fase da bainha da pintura. A arquitetura sem renda, todas as definições de bloco e todas as texturas são preservadas. [Contrato e reteste](COLONNADE_CLOTH_0.8.3.md).
++
++## Marcenaria Cruzeta — 0.12.1
++
++`atelier/crossbrace-model.mjs` compila somente faces de perímetro, com apoios de quina únicos e meios montantes em emendas. Diagonais em duas camadas de meia espessura evitam coplanaridade no cruzamento; uma cavilha pequena atravessa o encontro. Fustes recuam nas quatro faces e as travessas inferiores encostam nos apoios. A marchetaria usa motivos inteiros e UVs complementares nas emendas. Cada contorno tem até cinco caixas de colisão conservadoras e centro aberto; tampo y=16. O novo bare usa codec simétrico existente, agora restituindo `stone` a partir do material do design (Colunata continua 0; Cruzeta recebe nogueira 2). As dez toalhas, IDs anteriores e algoritmos de sessão/rollback permanecem. [Orçamento e testes](CROSSBRACE_0.12.1.md).
+diff --git a/addons/altare/docs/TESTING.md b/addons/altare/docs/TESTING.md
+index ed810e3..8f6272b 100644
+--- a/addons/altare/docs/TESTING.md
++++ b/addons/altare/docs/TESTING.md
+@@ -1,4 +1,8 @@
+-# QA do Altare 0.11.2
++# QA do Altare 0.12.1
++
++## Polimento da Cruzeta — 0.12.1
++
++Escala e periodicidade inteira da marchetaria, continuidade dos meios montantes, recuo simétrico dos fustes e contato com travessas, cavilhas nos centros de X. A matriz CPU de 35 vistas não substitui Minecraft. [Revisão e reteste](CROSSBRACE_0.12.1.md).
+ 
+ ## Chanfros de Ogivas — 0.11.2
+ 
+@@ -103,3 +107,7 @@ Regressão externa: `npm run check` na raiz, com 107 testes do Aspergillum e 54
+ - [ ] Content Log sem novos erros de manifest, geometria, Molang, MaterialInstances, texture sets, collision_box, custom component, dependências ou mensagens `[Altare]` no caminho normal.
+ 
+ Registro mínimo: versão do Minecraft, plataforma, controles, gráficos, idioma, tamanho/orientação, hash do pacote, esperado/observado, captura e Content Log. Para downgrade, seguir [MIGRATION_0.4.0.md](MIGRATION_0.4.0.md); não desativar o pack em mundo com IDs novos ainda presentes.
++
++## Cruzeta — 0.12.0
++
++`crossbrace.node.ts` cobre os 17 acabamentos, teto exato de 80.000 estados, contornos, vertices rotacionados, apoio y=16, colisões, centro aberto, duas faces do tecido, invariância da madeira e round-trip do novo bare simétrico. Regressão da marcenaria e editor mantém a ordem dos sete modelos anteriores. [Roteiro manual e limites da prévia](CROSSBRACE_0.12.0.md).
+diff --git a/addons/altare/package.json b/addons/altare/package.json
+index 3fe8dee..c2e679a 100644
+--- a/addons/altare/package.json
++++ b/addons/altare/package.json
+@@ -1,9 +1,9 @@
+ {
+   "name": "altare-bedrock-addon",
+-  "version": "0.11.2",
++  "version": "0.12.1",
+   "private": true,
+   "type": "module",
+-  "description": "Altares modulares para o Criativo. Ogivas com chanfros contínuos e encontros mitrados; relevos ajustados ao campo esculpido. Diagnóstico 0.11.2.",
++  "description": "Altares modulares para o Criativo. Cruzeta em nogueira, X duplo cavilhado, apoios simétricos e marchetaria proporcional. Diagnóstico 0.12.1.",
+   "engines": {
+     "node": ">=24"
+   },
+diff --git a/addons/altare/src/domain/block-codec.ts b/addons/altare/src/domain/block-codec.ts
+index 55f74c0..6a9cb3a 100644
+--- a/addons/altare/src/domain/block-codec.ts
++++ b/addons/altare/src/domain/block-codec.ts
+@@ -8,7 +8,7 @@ export function decodeTile(id:string,position:Position,states:Record<string,unkn
+  if(design?.codec==='classic_textile')return {position:{...position},design:id,cloth:TEXTILE_VALUES.indexOf(design.textile),...decodeClassicTextile(states)};
+  if(design?.codec==='symmetric'){
+   const edges=Number(states['altare:edges']);if(!Number.isInteger(edges)||edges<0||edges>15)throw Error('configuration');
+-  return {position:{...position},design:id,stone:0,cloth:TEXTILE_VALUES.indexOf(design.textile),frontal:0,facing:0,edges};
++  return {position:{...position},design:id,stone:SURFACES.indexOf(design.surface),cloth:TEXTILE_VALUES.indexOf(design.textile),frontal:0,facing:0,edges};
+  }
+  if(design&&compactLayout(design))return {position:{...position},design:id,stone:SURFACES.indexOf(design.surface),cloth:TEXTILE_VALUES.indexOf(design.textile),...decodePalette(states)};
+  if(design?.codec==='edges')return {position:{...position},design:id,stone:SURFACES.indexOf(design.surface),cloth:TEXTILE_VALUES.indexOf(design.textile),frontal:0,facing:Number(states['altare:facing']),edges:Number(states['altare:edges'])};
+diff --git a/addons/altare/src/domain/catalog.ts b/addons/altare/src/domain/catalog.ts
+index 9e86e7f..8530e7a 100644
+--- a/addons/altare/src/domain/catalog.ts
++++ b/addons/altare/src/domain/catalog.ts
+@@ -2,7 +2,7 @@ import {PALETTE_STATES} from './palette-layout.ts';
+ import {CLASSIC_TEXTILE_STATES} from './classic-textile-layout.ts';
+ // Public recipe keys are persistent world identity. Append; never reorder meanings.
+ export const STRUCTURES=['pilaster','ogive','trestle'] as const;
+-export const JOINERY_STRUCTURES=['coffer','baluster'] as const;
++export const JOINERY_STRUCTURES=['coffer','baluster','crossbrace'] as const;
+ export const SURFACES=['marble','limestone','walnut'] as const;
+ export const TEXTILES=['none','agnus','ruby','verdant','requiem'] as const;
+ export const TEXTILE_VALUES=[...TEXTILES,'lace','linen_short','linen_long','gold_short','gold_long'] as const;
+@@ -15,7 +15,7 @@ export interface Design {id:string;structure:typeof STRUCTURES[number]|typeof JO
+ export const ATELIER_DESIGNS:readonly Design[]=Object.freeze(STRUCTURES.flatMap(structure=>SURFACES.flatMap(surface=>TEXTILES.flatMap(textile=>FRONTALS.map(frontal=>Object.freeze({id:`altare:a_${structure}_${surface}_${textile}_${frontal}`,structure,surface,textile,frontal}))))));
+ export const PALETTE_DESIGNS:readonly Design[]=Object.freeze(STRUCTURES.flatMap(structure=>SURFACES.flatMap(surface=>LITURGICAL_COLORS.filter(c=>c!=='red').map(palette=>Object.freeze({id:`altare:l_${structure}_${surface}_${palette}`,structure,surface,textile:'ruby' as const,frontal:'none' as const,palette})))));
+ export const JOINERY_DESIGNS:readonly Design[]=Object.freeze(JOINERY_STRUCTURES.flatMap(structure=>[
+- ...TEXTILES.map(textile=>Object.freeze({id:`altare:j_${structure}_${textile}`,structure,surface:'walnut' as const,textile,frontal:'none' as const,codec:textile==='none'?'edges' as const:'compact' as const})),
++ ...TEXTILES.map(textile=>Object.freeze({id:`altare:j_${structure}_${textile}`,structure,surface:'walnut' as const,textile,frontal:'none' as const,codec:textile==='none'?(structure==='crossbrace'?'symmetric' as const:'edges' as const):'compact' as const})),
+  ...LITURGICAL_COLORS.filter(c=>c!=='red').map(palette=>Object.freeze({id:`altare:j_${structure}_ruby_${palette}`,structure,surface:'walnut' as const,textile:'ruby' as const,frontal:'none' as const,palette,codec:'compact' as const})),
+ ]));
+ // A perimeter repeat has no directional emblem: retain only its exposed sides.
+@@ -62,7 +62,7 @@ export function colorOf(d:Design|undefined):LiturgicalColor|undefined {return d?
+ export const LEGACY_ID='altare:mensa';
+ export const isAltarId=(id:string):boolean=>id===LEGACY_ID||byId.has(id);
+ export const ROLE_STATES=[0,1,2,3] as const;
+-export const CATALOG_PERMUTATIONS=11520+ATELIER_DESIGNS.length*256+PALETTE_DESIGNS.length*PALETTE_STATES+JOINERY_DESIGNS.reduce((n,d)=>n+(d.codec==='edges'?64:PALETTE_STATES),0)+ORNATE_DESIGNS.length*16+UNIVERSAL_DESIGNS.reduce((n,d)=>n+(d.codec==='classic_textile'?CLASSIC_TEXTILE_STATES:d.codec==='symmetric'?16:d.codec==='edges'?64:PALETTE_STATES),0);
++export const CATALOG_PERMUTATIONS=11520+ATELIER_DESIGNS.length*256+PALETTE_DESIGNS.length*PALETTE_STATES+JOINERY_DESIGNS.reduce((n,d)=>n+(d.codec==='symmetric'?16:d.codec==='edges'?64:PALETTE_STATES),0)+ORNATE_DESIGNS.length*16+UNIVERSAL_DESIGNS.reduce((n,d)=>n+(d.codec==='classic_textile'?CLASSIC_TEXTILE_STATES:d.codec==='symmetric'?16:d.codec==='edges'?64:PALETTE_STATES),0);
+ export function centerRole(width:number,index:number):number {
+  if(!Number.isInteger(width)||width<1||width>16||!Number.isInteger(index)||index<0||index>=width)throw Error('configuration');
+  if(width%2)return index===Math.floor(width/2)?1:0;
+diff --git a/addons/altare/src/domain/customization.ts b/addons/altare/src/domain/customization.ts
+index 242eeaa..757ea38 100644
+--- a/addons/altare/src/domain/customization.ts
++++ b/addons/altare/src/domain/customization.ts
+@@ -1,6 +1,6 @@
+ import {STRUCTURES,JOINERY_STRUCTURES,SURFACES,FRONTALS,LITURGICAL_COLORS,SHARED_TEXTILES,designById,sharedDesignFor,textileOf} from './catalog.ts';
+ import type {Finish} from './surface.ts';
+-export const MODELS=['classic',...STRUCTURES,...JOINERY_STRUCTURES,'colonnade'] as const;
++export const MODELS=['classic',...STRUCTURES,'coffer','baluster','colonnade','crossbrace'] as const;
+ export const CLOTHS=SHARED_TEXTILES;
+ export const CLASSIC_CLOTHS=['none','linen_short','linen_long','gold_short','gold_long'] as const;
+ export interface Customization {
+@@ -14,7 +14,7 @@ export function customizationFromFinish(f:Finish):Customization {
+ }
+ export function customizationCapabilities(d:Customization){
+  const architectural=d.model!=='classic',ornate=d.model==='colonnade',joinery=JOINERY_STRUCTURES.some(s=>s===d.model),color=d.textile==='floral';
+- return {architectural,ornate,joinery,color,material:architectural&&!ornate&&!joinery,relief:architectural&&!ornate&&!joinery&&(!color||d.color==='red'),directional:!ornate||['agnus','floral','verdant','requiem'].includes(d.textile)};
++ return {architectural,ornate,joinery,color,material:architectural&&!ornate&&!joinery,relief:architectural&&!ornate&&!joinery&&(!color||d.color==='red'),directional:!(d.model==='crossbrace'&&d.textile==='none')&&(!ornate||['agnus','floral','verdant','requiem'].includes(d.textile))};
+ }
+ export function customizationFinish(d:Customization):Finish {
+  if(!MODELS.includes(d.model)||!SURFACES.includes(d.surface)||!CLOTHS.includes(d.textile)||!LITURGICAL_COLORS.includes(d.color)||!FRONTALS.includes(d.relief)||!Number.isInteger(d.stone)||d.stone<0||d.stone>2||!Number.isInteger(d.cloth)||d.cloth<0||d.cloth>4||!Number.isInteger(d.facing)||d.facing<0||d.facing>3||typeof d.ornamental!=='boolean'||typeof d.ornateLace!=='boolean')throw Error('configuration');
+diff --git a/addons/altare/tests/catalog.node.ts b/addons/altare/tests/catalog.node.ts
+index 85604d3..b9ee710 100644
+--- a/addons/altare/tests/catalog.node.ts
++++ b/addons/altare/tests/catalog.node.ts
+@@ -6,8 +6,8 @@ import {commitFinish} from '../src/application/finish.ts';
+ import {encodeTile,decodeTile} from '../src/domain/block-codec.ts';
+ const grid=(w:number,d:number):Tile[]=>Array.from({length:w*d},(_,i)=>({position:{x:i%w,y:4,z:Math.floor(i/w)},stone:0,cloth:3,frontal:0,facing:0,edges:15}));
+ test('catalog has stable unique identities and a bounded total state budget',()=>{
+- assert.equal(ATELIER_DESIGNS.length,135);assert.equal(DESIGNS.length,396);assert.equal(new Set(DESIGNS.map(d=>d.id)).size,396);
+- assert.equal(CATALOG_PERMUTATIONS,78432);assert.ok(CATALOG_PERMUTATIONS<=80000);
++ assert.equal(ATELIER_DESIGNS.length,135);assert.equal(DESIGNS.length,413);assert.equal(new Set(DESIGNS.map(d=>d.id)).size,413);
++ assert.equal(CATALOG_PERMUTATIONS,80000);assert.ok(CATALOG_PERMUTATIONS<=80000);
+  assert.equal(designFor('trestle','walnut','agnus','none').id,'altare:a_trestle_walnut_agnus_none');
+  assert.equal(designById('altare:a_future'),undefined);assert.throws(()=>designFor('future','marble','agnus','none'));
+ });
+diff --git a/addons/altare/tests/joinery.node.ts b/addons/altare/tests/joinery.node.ts
+index d7abf41..5f8dbc2 100644
+--- a/addons/altare/tests/joinery.node.ts
++++ b/addons/altare/tests/joinery.node.ts
+@@ -36,7 +36,7 @@ test('new models preserve all textile choices and suspend only stone and applied
+ test('wood members retain their dimensions under textiles, respect the cell and keep full-height support',()=>{
+  for(const structure of JOINERY_STRUCTURES)for(let facing=0;facing<4;facing++){
+   const bare=atelierGeometry(structure,'none','none',facing).doc['minecraft:geometry'][0];
+-  const members=(g:any)=>g.bones.filter((b:any)=>/^(case_|baluster_|joinery_)/.test(b.name));
++  const members=(g:any)=>g.bones.filter((b:any)=>/^(case_|baluster_|joinery_|crossbrace_)/.test(b.name));
+   for(const textile of ['none','agnus','ruby','verdant','requiem']){
+    const g=atelierGeometry(structure,textile,'none',facing).doc['minecraft:geometry'][0];
+    assert.deepEqual(members(g),members(bare));assert.ok(g.bones.flatMap((b:any)=>b.cubes).length<=50);
+diff --git a/addons/altare/tests/universal-textiles.node.ts b/addons/altare/tests/universal-textiles.node.ts
+index f85d2ea..16d77c3 100644
+--- a/addons/altare/tests/universal-textiles.node.ts
++++ b/addons/altare/tests/universal-textiles.node.ts
+@@ -10,7 +10,7 @@ import {frontalRole} from '../src/domain/frontal-layout.ts';
+ import {compileCollection} from '../tools/catalog-pack.mjs';
+ const grid=(w:number,d:number):Tile[]=>Array.from({length:w*d},(_,i)=>({position:{x:i%w,y:0,z:Math.floor(i/w)},stone:0,cloth:0,frontal:0,facing:0,edges:15}));
+ 
+-test('one cloth collection is available across all seven structures and all floral dyes',()=>{
++test('one cloth collection is available across all structures and all floral dyes',()=>{
+  const initial=customizationFromFinish({stone:2,cloth:3,ornamental:true,facing:3});
+  for(const textile of CLOTHS)for(const color of textile==='floral'?LITURGICAL_COLORS:['red'] as const)for(const model of MODELS){
+   const d=changeCustomization(initial,{model,textile,color}),finish=customizationFinish(d),opened=customizationFromFinish(finish);
+@@ -62,7 +62,7 @@ test('long falls retain full reliefs above the plinth, with square motifs scaled
+   const g=collection.models[suffix].doc['minecraft:geometry'][0];
+   for(const b of g.bones.filter((b:any)=>b.name.startsWith('applique_')))for(const c of b.cubes.filter((c:any)=>Object.values(c.uv).some((u:any)=>u?.material_instance==='metal'||u?.material_instance==='plaque'))){assert.ok(c.origin[1]>=.75-1e-8);assert.ok(c.origin[1]+c.size[1]<=5+1e-8);}
+  }
+- assert.equal(UNIVERSAL_DESIGNS.length,172);
++ assert.equal(UNIVERSAL_DESIGNS.length,177);
+  assert.equal(TEXTILE_VALUES.indexOf('ruby'),2,'published logical textile axes must retain their meaning');
+  assert.equal(textileOf(sharedDesignFor('colonnade','marble','lace','none')),'lace');
+ });
+diff --git a/addons/altare/tools/capture.mjs b/addons/altare/tools/capture.mjs
+index 430f5eb..20f6a4c 100644
+--- a/addons/altare/tools/capture.mjs
++++ b/addons/altare/tools/capture.mjs
+@@ -65,16 +65,16 @@ const structurePresets=[
+ ].map(([id,s,m,c,f,w,d,facing])=>({id,w:facing%2?d:w,d:facing%2?w:d,stone:0,cloth:0,ornamental:false,facing,design:designFor(s,m,c,f).id}));
+ const catalogPresets=[
+  {id:'classic',w:3,d:2,stone:0,cloth:0,ornamental:false,facing:0},
+- ...['pilaster','ogive','trestle','coffer','baluster','colonnade'].map(structure=>({id:structure,w:3,d:2,stone:0,cloth:0,ornamental:false,facing:0,design:designFor(structure,['trestle','coffer','baluster'].includes(structure)?'walnut':'marble','none','none').id})),
++ ...['pilaster','ogive','trestle','coffer','baluster','crossbrace','colonnade'].map(structure=>({id:structure,w:3,d:2,stone:0,cloth:0,ornamental:false,facing:0,design:designFor(structure,['trestle','coffer','baluster','crossbrace'].includes(structure)?'walnut':'marble','none','none').id})),
+ ];
+-const joineryPresets=['coffer','baluster'].flatMap(s=>[
++const joineryPresets=['coffer','baluster','crossbrace'].flatMap(s=>[
+  ...[1,3,7,8,16].map(w=>({id:`${s}-bare-${w}`,w,d:w===1?1:2,stone:0,cloth:0,ornamental:false,facing:0,design:designFor(s,'walnut','none','none').id})),
+  ...[0,1,2,3].map(facing=>({id:`${s}-white-${facing}`,w:facing%2?2:7,d:facing%2?7:2,stone:0,cloth:0,ornamental:false,facing,design:designFor(s,'walnut','agnus','none').id})),
+  {id:`${s}-purple-8`,w:8,d:2,stone:0,cloth:0,ornamental:false,facing:0,design:liturgicalDesign(s,'walnut','purple').id},
+ ]);
+ const ornatePresets=[1,3,7,8,16].flatMap(w=>[false,true].map(lace=>({id:`colonnade-${lace?'lace':'bare'}-${w}`,w,d:w===1?1:2,stone:0,cloth:0,ornamental:false,facing:0,design:designFor('colonnade','marble',lace?'agnus':'none','none').id})));
+ const universalPresets=[
+- ...['classic','pilaster','ogive','trestle','coffer','baluster','colonnade'].map(structure=>({id:`${structure}-lace-7`,w:7,d:2,stone:0,cloth:0,ornamental:structure==='classic',facing:0,design:sharedDesignFor(structure,['trestle','coffer','baluster'].includes(structure)?'walnut':'marble','lace','none').id})),
++ ...['classic','pilaster','ogive','trestle','coffer','baluster','crossbrace','colonnade'].map(structure=>({id:`${structure}-lace-7`,w:7,d:2,stone:0,cloth:0,ornamental:structure==='classic',facing:0,design:sharedDesignFor(structure,['trestle','coffer','baluster','crossbrace'].includes(structure)?'walnut':'marble','lace','none').id})),
+  ...['linen_short','linen_long','gold_short','gold_long','agnus','verdant','requiem'].map(textile=>({id:`colonnade-${textile}-7`,w:7,d:2,stone:0,cloth:0,ornamental:false,facing:0,design:sharedDesignFor('colonnade','marble',textile,'none').id})),
+  ...LITURGICAL_COLORS.map(color=>({id:`colonnade-floral-${color}-8`,w:2,d:8,stone:0,cloth:0,ornamental:false,facing:1,design:sharedDesignFor('colonnade','marble','floral','none',color).id})),
+  {id:'classic-floral-green-7',w:7,d:2,stone:2,cloth:0,ornamental:true,facing:0,design:sharedDesignFor('classic','marble','floral','none','green').id},
+diff --git a/addons/altare/tools/catalog-pack.mjs b/addons/altare/tools/catalog-pack.mjs
+index 0fdccff..bdca375 100644
+--- a/addons/altare/tools/catalog-pack.mjs
++++ b/addons/altare/tools/catalog-pack.mjs
+@@ -10,7 +10,7 @@ export function collectionMaterials(d,role=0,facing=0){
+  const cloth=clothTexture(d,role);
+  const carved=detailed(d.structure),rail=material(d.surface==='walnut'?'joinery_walnut_horizontal':body);
+  const cards=carved?Object.fromEntries(Array.from({length:4},(_,i)=>[`cloth_${i}`,material(clothTexture(d,i===facing?role:0))])):{};
+- return {'*':material(body),stone:material(body),top:material(d.textile==='none'?((d.codec||carved&&d.surface==='walnut')?'joinery_walnut_horizontal':body):'linen'),linen:material('linen'),seam:material(seamTexture(d)),drape:material(cloth),repeat:material(clothTexture(d,0)),metal:material('frontal_frame'),plaque:material('atelier_agnus'),...(d.codec?{wood_cross:material('joinery_walnut_horizontal')}:{}),...(carved?{rail,...cards}:{}),...(d.structure==='ogive'?{arcade:material(`ogive_${body}`)}:{})};
++ return {'*':material(body),stone:material(body),top:material(d.textile==='none'?((d.codec||carved&&d.surface==='walnut')?'joinery_walnut_horizontal':body):'linen'),linen:material('linen'),seam:material(seamTexture(d)),drape:material(cloth),repeat:material(clothTexture(d,0)),metal:material('frontal_frame'),plaque:material('atelier_agnus'),...(d.codec?{wood_cross:material('joinery_walnut_horizontal')}:{}),...(carved?{rail,...cards}:{}),...(d.structure==='crossbrace'?{joinery_inlay:material('crossbrace_inlay')}:{}),...(d.structure==='ogive'?{arcade:material(`ogive_${body}`)}:{})};
+ }
+ export function compileCollection(){
+  const models={},blocks={},sounds={};
+@@ -46,16 +46,16 @@ export function compileCollection(){
+   Object.assign(block.components,permutations[0].components);block.permutations=permutations;
+   blocks[d.id]=doc;sounds[d.id]={sound:d.surface==='walnut'?'wood':'stone'};
+  }
+- for(const structure of JOINERY_STRUCTURES.filter(s=>s!=='baluster'))for(const textile of TEXTILES)for(let facing=0;facing<4;facing++){
++ for(const structure of JOINERY_STRUCTURES.filter(s=>!['baluster','crossbrace'].includes(s)))for(const textile of TEXTILES)for(let facing=0;facing<4;facing++){
+   const name=atelierGeometryName(structure,textile,'none',facing);models[name]=atelierGeometry(structure,textile,'none',facing);
+  }
+  for(const d of JOINERY_DESIGNS){
+   const compact=d.codec==='compact';
+-  const states=compact?{'altare:shape':[0,1,2,3,4,5,6],'altare:detail':[0,1,2,3],'altare:facing':[0,1,2,3]}:{'altare:edges':[15,...Array.from({length:15},(_,i)=>i)],'altare:facing':[0,1,2,3]};
++  const states=d.codec==='symmetric'?{'altare:edges':[15,...Array.from({length:15},(_,i)=>i)]}:compact?{'altare:shape':[0,1,2,3,4,5,6],'altare:detail':[0,1,2,3],'altare:facing':[0,1,2,3]}:{'altare:edges':[15,...Array.from({length:15},(_,i)=>i)],'altare:facing':[0,1,2,3]};
+   const rows=Object.entries(states).reduce((rows,[k,values])=>rows.flatMap(r=>values.map(v=>({...r,[k]:v}))),[{}]);
+   const permutations=rows.map(state=>{
+-   const pose=compact?decodePalette(state):{edges:state['altare:edges'],frontal:0,facing:state['altare:facing']};
+-   const edgeVariant=d.structure==='baluster'?pose.edges:undefined;
++   const pose=compact?decodePalette(state):{edges:state['altare:edges'],frontal:0,facing:state['altare:facing']??0};
++   const edgeVariant=['baluster','crossbrace'].includes(d.structure)?pose.edges:undefined;
+    const name=atelierGeometryName(d.structure,d.textile,'none',pose.facing,edgeVariant);
+    const model=models[name]??(models[name]=atelierGeometry(d.structure,d.textile,'none',pose.facing,edgeVariant));
+    const q={block_state:k=>({'altare:edges':pose.edges,'altare:role':pose.frontal,'altare:facing':pose.facing})[k]},math={floor:Math.floor,mod:(a,b)=>a%b};
+@@ -64,7 +64,7 @@ export function compileCollection(){
+   });
+   const doc=structuredClone(blocks[designFor('trestle','walnut','none','none').id]),block=doc['minecraft:block'];
+   block.description={identifier:d.id,states};block.permutations=permutations;
+-  Object.assign(block.components,permutations[0].components,{'minecraft:light_dampening':d.structure==='baluster'?0:15});
++  Object.assign(block.components,permutations[0].components,{'minecraft:light_dampening':['baluster','crossbrace'].includes(d.structure)?0:15});
+   blocks[d.id]=doc;sounds[d.id]={sound:'wood'};
+  }
+  for(const d of ORNATE_DESIGNS){
+diff --git a/addons/altare/tools/universal-pack.mjs b/addons/altare/tools/universal-pack.mjs
+index ad940e5..1ab22c8 100644
+--- a/addons/altare/tools/universal-pack.mjs
++++ b/addons/altare/tools/universal-pack.mjs
+@@ -32,8 +32,8 @@ function geometryFor(d,pose){
+   g.bones.push(...cloth.bones.map(b=>({...b,pivot:[0,0,0],cubes:b.cubes.map(serializeCube)})));
+   const name=`universal_colonnade_${d.textile}_e${edges}`;g.description.identifier=`geometry.altare.${name}`;return {name,doc,visibility:{}};
+  }
+- const out=atelierGeometry(d.structure,d.textile,d.frontal,facing,['baluster','pilaster','ogive'].includes(d.structure)?edges:undefined),g=out.doc['minecraft:geometry'][0];
+- const name=`universal_${d.structure}_${d.textile}_${d.frontal}_${facing}${['baluster','pilaster','ogive'].includes(d.structure)&&edges!==undefined?`_e${edges}`:''}`;
++ const out=atelierGeometry(d.structure,d.textile,d.frontal,facing,['baluster','crossbrace','pilaster','ogive'].includes(d.structure)?edges:undefined),g=out.doc['minecraft:geometry'][0];
++ const name=`universal_${d.structure}_${d.textile}_${d.frontal}_${facing}${['baluster','crossbrace','pilaster','ogive'].includes(d.structure)&&edges!==undefined?`_e${edges}`:''}`;
+  g.description.identifier=`geometry.altare.${name}`;return {name,...out};
+ }
+ export function compileUniversal({models,blocks,sounds},collectionMaterials){
+@@ -46,7 +46,7 @@ export function compileUniversal({models,blocks,sounds},collectionMaterials){
+   const permutations=rows.map(state=>{
+    const pose=decodeTile(d.id,{x:0,y:0,z:0},state),role=d.structure==='classic'?pose.textileRole:pose.frontal;
+    const geometryPose=['pilaster','ogive'].includes(d.structure)&&d.frontal==='none'?{...pose,facing:0}:pose;
+-   const key=d.structure==='colonnade'?`${d.structure}_${d.textile}_${pose.edges}`:`${d.structure}_${d.textile}_${d.frontal}_${geometryPose.facing}${['baluster','pilaster','ogive'].includes(d.structure)?'_'+pose.edges:''}`;
++   const key=d.structure==='colonnade'?`${d.structure}_${d.textile}_${pose.edges}`:`${d.structure}_${d.textile}_${d.frontal}_${geometryPose.facing}${['baluster','crossbrace','pilaster','ogive'].includes(d.structure)?'_'+pose.edges:''}`;
+    let model=cache.get(key);if(!model){model=geometryFor(d,geometryPose);cache.set(key,model);models[model.name]=model;}
+    const virtual={'altare:edges':pose.edges,'altare:role':pose.frontal,'altare:frontal':pose.frontal,'altare:facing':pose.facing,'altare:cloth':1},q={block_state:k=>virtual[k]},math={floor:Math.floor,mod:(a,b)=>a%b};
+    const visible=Object.fromEntries(Object.entries(model.visibility).map(([k,v])=>[k,typeof v==='boolean'?v:Boolean(Function('q','math',`return ${v}`)(q,math))]));
+@@ -59,7 +59,7 @@ export function compileUniversal({models,blocks,sounds},collectionMaterials){
+    return {condition:Object.entries(state).map(([k,v])=>`q.block_state('${k}') == ${v}`).join(' && '),components:{'minecraft:geometry':{identifier:`geometry.altare.${model.name}`,bone_visibility:visible},'minecraft:material_instances':materials,'minecraft:collision_box':d.structure==='classic'||d.structure==='colonnade'?true:structureCollision(d.structure,pose.edges,pose.facing)}};
+   });
+   const doc=structuredClone(template),block=doc['minecraft:block'];block.description={identifier:d.id,states};block.permutations=permutations;
+-  Object.assign(block.components,permutations[0].components,{'minecraft:light_dampening':['trestle','baluster'].includes(d.structure)?0:15});
++  Object.assign(block.components,permutations[0].components,{'minecraft:light_dampening':['trestle','baluster','crossbrace'].includes(d.structure)?0:15});
+   blocks[d.id]=doc;sounds[d.id]={sound:d.surface==='walnut'?'wood':'stone'};
+  }
+ }
+diff --git a/docs/PROJECT_STATUS.md b/docs/PROJECT_STATUS.md
+index 97a7aae..cf2cd82 100644
+--- a/docs/PROJECT_STATUS.md
++++ b/docs/PROJECT_STATUS.md
+@@ -1,5 +1,13 @@
+ # Estado do projeto
+ 
++## Polimento da Cruzeta — 03/11/2026
++
++Altare 0.12.1 refina marchetaria, encontros dos apoios e X duplo com cavilha de madeira. Matriz externa ampliada para todos os tecidos/cores, frente/verso e inspeções rasantes. Mesmos IDs, estados e colisão; máximo de 50 cubos, sem elevar tetos. [Revisão e reteste](../addons/altare/docs/CROSSBRACE_0.12.1.md). Validação Minecraft continua pendente.
++
++## Cruzeta Altare — 03/11/2026
++
++Altare 0.12.0 / Estúdio 2.3.0 acrescenta Cruzeta em nogueira com marcenaria aberta, diagonais encaixadas, travessas e marchetaria clara. Oito modelos, dez toalhas compartilhadas e 17 novos IDs. O bare simétrico mantém o teto de 80.000 estados sem alterá-lo. [Contrato e reteste](../addons/altare/docs/CROSSBRACE_0.12.0.md). Aspergillum permanece 1.2.5; importação e profiling pendentes.
++
+ ## Chanfros de Ogivas Altare — 31/10/2026
+ 
+ Altare 0.11.2 / Estúdio 2.2.1 refina os recessos de Ogivas com planos inclinados e mitras fechadas, incluindo a ponta. Relevos ímpares cabem no campo do fundo; corpo, apoios, toalhas, mapas, definições de bloco e runtime/editor são preservados. Não aumenta registros/faces, arquivos ou estados. [Construção e reteste](../addons/altare/docs/OGIVE_DETAIL_0.11.2.md). Aspergillum permanece 1.2.5; importação e profiling pendentes.
+diff --git a/docs/RENDER_STUDIO.md b/docs/RENDER_STUDIO.md
+index 4bcfa29..0b7d25b 100644
+--- a/docs/RENDER_STUDIO.md
++++ b/docs/RENDER_STUDIO.md
+@@ -1,22 +1,24 @@
+ # Render Studio de altares
+ 
+-Ferramenta local do 3D Workbench para compor e fotografar os altares reais do Altare. Renderer 2.2.1, construções revisão 4, montagem litúrgica revisão 3. Não modifica os packs, instalações ou mundos. Conteúdo atual: Altare 0.11.2 e Aspergillum 1.2.5. Ogivas tem chanfros contínuos, mitras e apoios compartilhados; [construção e QA](../addons/altare/docs/OGIVE_DETAIL_0.11.2.md).
++Ferramenta local do 3D Workbench para compor e fotografar os altares reais do Altare. Renderer 2.3.0, construções revisão 4, montagem litúrgica revisão 3. Não modifica os packs, instalações ou mundos. O catálogo do Altare 0.12.0 inclui Cruzeta em nogueira, com marcenaria aberta e travessas cruzadas; Aspergillum permanece 1.2.5. Os modelos anteriores e as regras de personalização são preservados.
+ 
+ ## Abrir e usar
+ 
+ Na raiz: `npm run studio:altare`. Também é possível abrir `viewer-3d/abrir-estudio.cmd`. A preparação registra o Altare no catálogo local quando necessário, sincroniza os assets, atualiza miniaturas ausentes ou de outra versão do renderer e abre a aba Render Studio. Usa as dependências já existentes da raiz e do viewer; requer Node.js 20.19+.
+ 
+-1. Na aba Altar, escolher um dos sete modelos ou abrir Composições.
++1. Na aba Altar, escolher um dos oito modelos ou abrir Composições.
+ 2. Ajustar material, desenho, cor, relevo e dimensões na mesma aba. A altura permanece um bloco; frente de 1–16 e profundidade de 1–8 blocos. O padrão é 7 × 2.
+ 3. Na aba Cena, escolher ambiente, montagem, velas, ornamentação e iluminação. Arrastar para girar, botão direito para deslocar, roda para aproximar; as vistas prontas incluem frente, verso, bordado, jogador e ambiente.
+ 4. Na aba Imagem, escolher proporção e resolução, depois **Exportar PNG**. A opção 3840 gera 3840 × 2160 em 16:9; formatos verticais usam 3840 na maior dimensão. A interface não aparece na imagem.
+ 5. **Salvar cena** guarda composição e câmera em JSON. **Abrir cena** permite repetir o enquadramento. A última cena também permanece no armazenamento local do navegador.
+ 
++**Cruzeta em nogueira** fixa a madeira e não oferece aplique adicional. As composições Cruzeta em nogueira (5 × 2, sem toalha) e Cruzeta com linho (7 × 2, linho curto) mostram o novo modelo na capela. A família participa do salvamento/importação de cenas e do histórico Desfazer/Refazer.
++
+ Um único seletor Desenho oferece as dez escolhas em qualquer modelo. O tecido acompanha a troca de estrutura; cor aparece para Floral IHS e Guadalupe continua independente no Clássico. Cenas novas usam schema 2; a importação de schema 1 preserva a antiga aparência de Clássico/Colunata. [Contrato universal](../addons/altare/docs/UNIVERSAL_TEXTILES_0.9.0.md).
+ 
+ Desfazer/Refazer guardam até 40 configurações na sessão. As regras e escolhas temporariamente indisponíveis seguem o [domínio compartilhado do Altare](../addons/altare/docs/CUSTOMIZATION_0.5.0.md). As miniaturas de modelos são geradas por `scripts/capture-studio-models.mjs` e verificadas pelo hash das fontes.
+ 
+-As onze composições são pontos de partida, não o limite do catálogo. A família Floral IHS disponibiliza as oito cores existentes no add-on. Na aba, o projeto fica fixo em Altare; os outros laboratórios continuam disponíveis. Alt+4 abre o estúdio.
++As treze composições são pontos de partida, não o limite do catálogo. A família Floral IHS disponibiliza as oito cores existentes no add-on. Na aba, o projeto fica fixo em Altare; os outros laboratórios continuam disponíveis. Alt+4 abre o estúdio.
+ 
+ ## Ambientes Minecraft
+ 
+@@ -70,6 +72,7 @@ Na raiz:
+ 
+ ```powershell
+ npm run render:altars -- --presets all --size 2560
++npm run render:altars -- --presets crossbrace,crossbrace-linen --size 2560
+ npm run render:altars -- --presets guadalupe,trestle --size 3840 --output out/altar-renders/4k
+ npm run render:altars -- --presets green --environment chapel --view player --size 2560
+ npm run render:altars -- --presets trestle --environment transparent --size 2560
+diff --git a/viewer-3d/README.md b/viewer-3d/README.md
+index 421c539..2643caa 100644
+--- a/viewer-3d/README.md
++++ b/viewer-3d/README.md
+@@ -9,7 +9,7 @@ Bancada web integrada e toolchain headless para inspecionar geometrias, texturas
+ 
+ ## Render Studio de altares
+ 
+-Estúdio 2.2.1 integra Ogivas com chanfros e mitras refinados no Altare 0.11.2, preservando o editor corrigido. Miniaturas derivam dos recursos reais; [construção, comparação e reteste](../addons/altare/docs/OGIVE_DETAIL_0.11.2.md).
++Estúdio 2.3.0 acrescenta **Cruzeta em nogueira**, uma mesa aberta com travessas cruzadas. O oitavo modelo aceita as dez toalhas e as oito cores do Floral IHS; duas composições mostram a marcenaria nua ou com linho curto. Miniaturas derivam dos recursos reais. Os modelos anteriores e os arquivos de cena existentes continuam disponíveis. [Uso, construção e limites](../docs/RENDER_STUDIO.md).
+ 
+ Na raiz, `npm run studio:altare` abre a quarta aba da bancada, com os modelos reais do Altare e cenários de blocos/texturas vanilla. Estruturas, toalhas, cores, dimensões, câmeras e ambientes são ajustáveis. Exporta PNG até 4K e salva cenas JSON. `npm run render:altars -- --presets all --size 2560` gera a coleção e suas miniaturas. [Instruções e limites](../docs/RENDER_STUDIO.md).
+ 
+diff --git a/viewer-3d/package-lock.json b/viewer-3d/package-lock.json
+index 6192a1e..eab13f9 100644
+--- a/viewer-3d/package-lock.json
++++ b/viewer-3d/package-lock.json
+@@ -1,12 +1,12 @@
+ {
+   "name": "aspergillum-model-viewer",
+-  "version": "0.2.0",
++  "version": "2.3.0",
+   "lockfileVersion": 3,
+   "requires": true,
+   "packages": {
+     "": {
+       "name": "aspergillum-model-viewer",
+-      "version": "0.2.0",
++      "version": "2.3.0",
+       "dependencies": {
+         "three": "0.185.1"
+       },
+diff --git a/viewer-3d/package.json b/viewer-3d/package.json
+index bb18229..4e19b81 100644
+--- a/viewer-3d/package.json
++++ b/viewer-3d/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "aspergillum-model-viewer",
+-  "version": "2.2.1",
++  "version": "2.3.0",
+   "private": true,
+   "type": "module",
+   "description": "Bancada 3D multi-add-on e ferramentas headless para inspeção de assets Bedrock.",
+diff --git a/viewer-3d/render-studio.html b/viewer-3d/render-studio.html
+index bdce53d..ec6c9a0 100644
+--- a/viewer-3d/render-studio.html
++++ b/viewer-3d/render-studio.html
+@@ -9,7 +9,7 @@
+    <section id="studio-panel-altar" role="tabpanel" aria-labelledby="studio-tab-altar">
+     <h2>Estrutura</h2>
+     <div id="studio-models" class="studio-models" role="group" aria-label="Modelo"></div>
+-    <select id="studio-family" hidden aria-label="Modelo"><option value="classic">Clássico</option><option value="pilaster">Pilastras</option><option value="ogive">Ogivas</option><option value="trestle">Cavaletes</option><option value="coffer">Arca</option><option value="baluster">Balaústres</option><option value="colonnade">Colunata dourada</option></select>
++    <select id="studio-family" hidden aria-label="Modelo"><option value="classic">Clássico</option><option value="pilaster">Pilastras</option><option value="ogive">Ogivas</option><option value="trestle">Cavaletes</option><option value="coffer">Arca</option><option value="baluster">Balaústres</option><option value="colonnade">Colunata dourada</option><option value="crossbrace">Cruzeta em nogueira</option></select>
+     <div id="studio-architectural"><label>Material<select id="studio-surface"><option value="marble">Mármore</option><option value="limestone">Calcário</option><option value="walnut">Nogueira</option></select></label></div>
+     <div id="studio-classic"><label>Material<select id="studio-stone"><option value="0">Mármore</option><option value="1">Calcário</option><option value="2">Pedra escura</option></select></label></div>
+     <div class="studio-rule"></div><h2>Toalha</h2>
+diff --git a/viewer-3d/scripts/capture-studio-models.mjs b/viewer-3d/scripts/capture-studio-models.mjs
+index 6b8bd97..96abc44 100644
+--- a/viewer-3d/scripts/capture-studio-models.mjs
++++ b/viewer-3d/scripts/capture-studio-models.mjs
+@@ -5,9 +5,9 @@ import crypto from 'node:crypto';
+ import {spawnSync} from 'node:child_process';
+ const viewer=path.resolve(import.meta.dirname,'..'),root=path.resolve(viewer,'../addons/altare');
+ const output=path.join(viewer,'public/studio-models');
+-const models=['classic','pilaster','ogive','trestle','coffer','baluster','colonnade'];
++const models=['classic','pilaster','ogive','trestle','coffer','baluster','colonnade','crossbrace'];
+ // The model selector uses actual product renders, with its own source hash.
+-const inputs=['assets-src/model.mjs','assets-src/block-primitives.mjs','assets-src/atelier/garment.mjs','assets-src/atelier/geometry.mjs','assets-src/atelier/joinery.mjs','assets-src/atelier/ornate.mjs','assets-src/atelier/pilaster-model.mjs','assets-src/atelier/ogive-model.mjs','assets-src/atelier/opening-reveal.mjs','assets-src/atelier/ogive-art.mjs','assets-src/atelier/colonnade-model.mjs','assets-src/atelier/colonnade-textile.mjs','assets-src/atelier/structure-profiles.mjs','tools/preview.mjs','tools/capture.mjs','out/build-manifest.json'];
++const inputs=['assets-src/model.mjs','assets-src/block-primitives.mjs','assets-src/atelier/garment.mjs','assets-src/atelier/geometry.mjs','assets-src/atelier/joinery.mjs','assets-src/atelier/crossbrace-model.mjs','assets-src/atelier/ornate.mjs','assets-src/atelier/pilaster-model.mjs','assets-src/atelier/ogive-model.mjs','assets-src/atelier/opening-reveal.mjs','assets-src/atelier/ogive-art.mjs','assets-src/atelier/colonnade-model.mjs','assets-src/atelier/colonnade-textile.mjs','assets-src/atelier/structure-profiles.mjs','tools/preview.mjs','tools/capture.mjs','out/build-manifest.json'];
+ const hashes=Object.fromEntries(inputs.map(file=>[file,crypto.createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex')]));
+ hashes['renderer-policy']=crypto.createHash('sha256').update(fs.readFileSync(path.join(viewer,'scripts/lib/render-browser.mjs'))).update(JSON.stringify(renderSettings())).digest('hex');
+ const sourceHash=crypto.createHash('sha256').update(JSON.stringify(hashes)).digest('hex');
+diff --git a/viewer-3d/scripts/render-altars.mjs b/viewer-3d/scripts/render-altars.mjs
+index daa50d4..778f041 100644
+--- a/viewer-3d/scripts/render-altars.mjs
++++ b/viewer-3d/scripts/render-altars.mjs
+@@ -8,7 +8,7 @@ import {createServer} from 'vite';
+ import {STUDIO_PRESETS,STUDIO_VERSION,studioDimensions,normalizeStudioConfig,studioFilename} from '../src/shared/studio-contract.js';
+ const viewer=path.resolve(import.meta.dirname,'..'),project=path.resolve(viewer,'..');
+ const args=process.argv.slice(2),option=(flag,fallback)=>{const i=args.indexOf(flag);if(i<0)return fallback;if(!args[i+1]||args[i+1].startsWith('--'))throw Error(`${flag} exige valor.`);return args[i+1];};
+-if(args.includes('--help')){console.log('npm run render:altars -- --presets all|colonnade,coffer,baluster,guadalupe,trestle,green,gothic,requiem,wood,rose,purple --size 2560 --output out/altar-renders/<pasta> [--environment gallery|chapel|studio|transparent] [--view hero|front|back|top|detail|player|wide] [--lighting classic|shadows] [--ratio 16:9|4:3|1:1|4:5] [--quality high|draft] [--dressing none|ready|gifts] [--candles 2|4|6|7] [--season ordinary|advent|lent|festive] [--furnishing gold|wood] [--candlePlacement floor|mensa]');process.exit(0);}
++if(args.includes('--help')){console.log('npm run render:altars -- --presets all|colonnade,coffer,baluster,crossbrace,crossbrace-linen,guadalupe,trestle,green,gothic,requiem,wood,rose,purple --size 2560 --output out/altar-renders/<pasta> [--environment gallery|chapel|studio|transparent] [--view hero|front|back|top|detail|player|wide] [--lighting classic|shadows] [--ratio 16:9|4:3|1:1|4:5] [--quality high|draft] [--dressing none|ready|gifts] [--candles 2|4|6|7] [--season ordinary|advent|lent|festive] [--furnishing gold|wood] [--candlePlacement floor|mensa]');process.exit(0);}
+ for(let i=0;i<args.length;i+=2)if(!['--presets','--size','--output','--environment','--view','--ratio','--quality','--lighting','--dressing','--candles','--season','--furnishing','--candlePlacement'].includes(args[i]))throw Error(`Opção desconhecida: ${args[i]}`);
+ const size=Number(option('--size','2560')),ids=option('--presets','all'),presets=ids==='all'?STUDIO_PRESETS:ids.split(',').map(id=>{const preset=STUDIO_PRESETS.find(p=>p.id===id);if(!preset)throw Error(`Composição desconhecida: ${id}`);return preset;});
+ const overrides=Object.fromEntries(['environment','view','ratio','quality','lighting','dressing','candles','season','furnishing','candlePlacement'].filter(k=>args.includes('--'+k)).map(k=>[k,option('--'+k)]));
+diff --git a/viewer-3d/scripts/smoke-studio.mjs b/viewer-3d/scripts/smoke-studio.mjs
+index 79eb6f1..1b6795a 100644
+--- a/viewer-3d/scripts/smoke-studio.mjs
++++ b/viewer-3d/scripts/smoke-studio.mjs
+@@ -55,7 +55,7 @@ try{
+  await page.click('#studio-redo');await ready();assert.equal(await page.locator('#studio-frontal').inputValue(),'cross');
+  await page.click('[data-model="classic"]');await ready();await page.click('[data-model="ogive"]');await ready();
+  assert.equal(await page.locator('#studio-frontal').inputValue(),'cross');
+- for(const family of ['coffer','baluster']){
++ for(const family of ['coffer','baluster','crossbrace']){
+   await page.click(`[data-model="${family}"]`);await ready();
+   assert.equal(await page.locator('#studio-surface').inputValue(),'walnut');assert.equal(await page.locator('#studio-surface').isDisabled(),true);
+   assert.equal(await page.locator('#studio-frontal').isVisible(),false);
+@@ -66,12 +66,31 @@ try{
+  }
+  await page.click('[data-model="ogive"]');await ready();
+  assert.equal(await page.locator('#studio-surface').inputValue(),'limestone');assert.equal(await page.locator('#studio-frontal').inputValue(),'cross');
++ const preCrossbraceScene=await page.evaluate(()=>window.__BEDROCK_STUDIO__.scene());
++ await page.evaluate(()=>window.__BEDROCK_STUDIO__.preset('crossbrace'));
++ assert.equal(await page.evaluate(()=>window.__BEDROCK_STUDIO__.scene().config.family),'crossbrace');
++ assert.equal(await page.evaluate(()=>window.__BEDROCK_STUDIO__.scene().config.dressing),'none');
++ assert.equal(await page.locator('#studio-selection-label').textContent(),'Cruzeta em nogueira');
++ await page.evaluate(()=>window.__BEDROCK_STUDIO__.preset('crossbrace-linen'));
++ assert.equal(await page.evaluate(()=>window.__BEDROCK_STUDIO__.scene().config.textile),'linen_short');
++ await page.click('#studio-undo');await ready();
++ assert.equal(await page.evaluate(()=>window.__BEDROCK_STUDIO__.scene().config.textile),'none');
++ await page.click('#studio-redo');await ready();
++ assert.equal(await page.evaluate(()=>window.__BEDROCK_STUDIO__.scene().config.textile),'linen_short');
++ const crossbraceScene=await page.evaluate(()=>window.__BEDROCK_STUDIO__.scene());
++ await page.evaluate(()=>window.__BEDROCK_STUDIO__.preset('green'));
++ await page.locator('#studio-file').setInputFiles({name:'crossbrace.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(crossbraceScene))});
++ await page.waitForFunction(()=>window.__BEDROCK_STUDIO__.scene().config.family==='crossbrace');await ready();
++ assert.deepEqual(await page.evaluate(()=>window.__BEDROCK_STUDIO__.scene()),crossbraceScene);
++ const crossbraceCapture=await page.evaluate(()=>window.__BEDROCK_STUDIO__.capture(960));
++ await fs.writeFile(path.join(output,'crossbrace-linen.png'),Buffer.from(crossbraceCapture.dataUrl.split(',')[1],'base64'));
++ await page.evaluate(config=>window.__BEDROCK_STUDIO__.configure(config),preCrossbraceScene.config);
+  const environmentSamples=[];
+  await page.click('[data-model="colonnade"]');await ready();
+  assert.equal(await page.locator('#studio-surface').inputValue(),'marble');assert.equal(await page.locator('#studio-pattern-field').isVisible(),true);
+  assert.equal(await page.locator('#studio-textile').inputValue(),'floral');
+  await page.selectOption('#studio-textile','lace');await ready();assert.equal(await page.evaluate(()=>window.__BEDROCK_STUDIO__.scene().config.textile),'lace');
+- for(const family of ['classic','pilaster','ogive','trestle','coffer','baluster','colonnade']){
++ for(const family of ['classic','pilaster','ogive','trestle','coffer','baluster','colonnade','crossbrace']){
+   await page.click(`[data-model="${family}"]`);await ready();assert.equal(await page.locator('#studio-textile').inputValue(),'lace');
+   assert.equal(await page.locator('#studio-textile option').count(),10);
+  }
+diff --git a/viewer-3d/src/render-studio/main.js b/viewer-3d/src/render-studio/main.js
+index 575ace9..ab8dfd9 100644
+--- a/viewer-3d/src/render-studio/main.js
++++ b/viewer-3d/src/render-studio/main.js
+@@ -18,7 +18,7 @@ function remember(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>{try{localS
+ function panel(id,focus=false){for(const button of root.querySelectorAll('[data-panel]')){const active=button.dataset.panel===id;button.setAttribute('aria-selected',String(active));button.tabIndex=active?0:-1;$('panel-'+button.dataset.panel).hidden=!active;if(active&&focus)button.focus();}}
+ for(const button of root.querySelectorAll('[data-panel]')){button.addEventListener('click',()=>panel(button.dataset.panel));button.addEventListener('keydown',event=>{const ids=['altar','scene','image'],i=ids.indexOf(button.dataset.panel);if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();panel(ids[event.key==='Home'?0:event.key==='End'?2:(i+(event.key==='ArrowRight'?1:2))%3],true);}});}
+ function appearance(patch){if(exporting)return;selection=null;const next=changeCustomization(intent?.draft??editorDraft,patch);return request({...(intent?.config??config),...studioAppearance(next)},false,{draft:next}).catch(error=>{syncUI();failure(error);});}
+-for(const [id,label]of [['classic','Clássico'],['pilaster','Pilastras'],['ogive','Ogivas'],['trestle','Cavaletes'],['coffer','Arca'],['baluster','Balaústres'],['colonnade','Colunata']]){const button=document.createElement('button');button.type='button';button.dataset.model=id;button.setAttribute('aria-pressed','false');const img=document.createElement('img');img.src=new URL(`studio-models/${id}.png`,document.baseURI).href;img.alt='';img.addEventListener('error',()=>{img.hidden=true;},{once:true});const text=document.createElement('span');text.textContent=label;button.append(img,text);button.addEventListener('click',()=>appearance({model:id}));$('models').append(button);}
++for(const [id,label]of [['classic','Clássico'],['pilaster','Pilastras'],['ogive','Ogivas'],['trestle','Cavaletes'],['coffer','Arca'],['baluster','Balaústres'],['colonnade','Colunata'],['crossbrace','Cruzeta']]){const button=document.createElement('button');button.type='button';button.dataset.model=id;button.setAttribute('aria-pressed','false');const img=document.createElement('img');img.src=new URL(`studio-models/${id}.png`,document.baseURI).href;img.alt='';img.addEventListener('error',()=>{img.hidden=true;},{once:true});const text=document.createElement('span');text.textContent=label;button.append(img,text);button.addEventListener('click',()=>appearance({model:id}));$('models').append(button);}
+ async function travel(direction){if(exporting||drain)return;const state=history[direction]();if(!state)return;selection=state.selection;await request(state.config,true,{draft:state.draft,record:false});}
+ $('undo').addEventListener('click',()=>travel('undo').catch(failure));$('redo').addEventListener('click',()=>travel('redo').catch(failure));
+ root.addEventListener('keydown',event=>{if((event.ctrlKey||event.metaKey)&&!event.target.matches('input,select,textarea')){const key=event.key.toLowerCase();if(key==='z'||key==='y'){event.preventDefault();travel(key==='y'||event.shiftKey?'redo':'undo').catch(failure);}}});
+@@ -43,7 +43,7 @@ function syncUI(){
+  $('color-label').textContent=colors.find(c=>c[0]===editorDraft.color)[1];$('exposure-value').textContent=config.exposure.toFixed(2).replace('.',',');$('light-value').textContent=config.light+'°';
+  $('light').disabled=config.lighting==='classic';$('light').title=config.lighting==='classic'?'Ative sombras para alterar a direção da luz.':'';
+  $('environment-label').textContent=STUDIO_ENVIRONMENTS.find(e=>e.id===config.environment).label.toLocaleUpperCase('pt-BR');
+- $('selection-label').textContent=selection?STUDIO_PRESETS.find(p=>p.id===selection).name:({classic:config.ornamental?'Guadalupe':'Clássico',trestle:'Mesa com cavaletes',pilaster:'Moldura com pilastras',ogive:'Arcadas ogivais',coffer:'Arca em nogueira',baluster:'Mesa balaustrada',colonnade:'Colunata dourada'}[config.family]);
++ $('selection-label').textContent=selection?STUDIO_PRESETS.find(p=>p.id===selection).name:({classic:config.ornamental?'Guadalupe':'Clássico',trestle:'Mesa com cavaletes',pilaster:'Moldura com pilastras',ogive:'Arcadas ogivais',coffer:'Arca em nogueira',baluster:'Mesa balaustrada',colonnade:'Colunata dourada',crossbrace:'Cruzeta em nogueira'}[config.family]);
+  const dimensions=studioDimensions(config.ratio,Number($('resolution').value));$('output-size').textContent=`${dimensions.width} × ${dimensions.height} · PNG`;
+  resize();
+ }
+diff --git a/viewer-3d/src/shared/studio-contract.js b/viewer-3d/src/shared/studio-contract.js
+index 3d72957..550c977 100644
+--- a/viewer-3d/src/shared/studio-contract.js
++++ b/viewer-3d/src/shared/studio-contract.js
+@@ -1,11 +1,13 @@
+ import {SHARED_TEXTILES,sharedDesignFor} from '../../../addons/altare/src/domain/catalog.ts';
+-export const STUDIO_VERSION='2.2.1';
++export const STUDIO_VERSION='2.3.0';
+ export const STUDIO_ENVIRONMENTS=[{id:'gallery',label:'Presbitério de quartzo'},{id:'chapel',label:'Capela de madeira'},{id:'studio',label:'Claustro com jardim'},{id:'transparent',label:'Transparente'}];
+ export const STUDIO_VIEWS=[{id:'hero',label:'Três quartos',direction:[-.4,.22,-1]},{id:'front',label:'Frente',direction:[0,.10,-1]},{id:'back',label:'Verso',direction:[.65,.36,1]},{id:'top',label:'Superior',direction:[-.1,1,-.2]},{id:'detail',label:'Bordado',direction:[-.2,.12,-1]},{id:'player',label:'Jogador',direction:[0,.1,-1]},{id:'wide',label:'Ambiente',direction:[-.18,.17,-1]}];
+ export const STUDIO_PRESETS=[
+  {id:'colonnade',name:'Colunata e renda',description:'Mármore claro · douramento · renda vazada',family:'colonnade',surface:'marble',textile:'lace',frontal:'none',environment:'gallery',candles:6,width:7},
+  {id:'coffer',name:'Arca em nogueira',description:'Painéis rebaixados · molduras de madeira',family:'coffer',surface:'walnut',textile:'none',frontal:'none',environment:'chapel',dressing:'none',width:5},
+  {id:'baluster',name:'Balaústres e linho',description:'Mesa aberta · apoios facetados',family:'baluster',surface:'walnut',textile:'agnus',frontal:'none',environment:'chapel',furnishing:'wood',candles:2,width:5},
++ {id:'crossbrace',name:'Cruzeta em nogueira',description:'Marcenaria aberta · travessas cruzadas · sem toalha',family:'crossbrace',surface:'walnut',textile:'none',frontal:'none',environment:'chapel',dressing:'none',furnishing:'wood',width:5,depth:2},
++ {id:'crossbrace-linen',name:'Cruzeta com linho',description:'Nogueira · linho curto · encaixes aparentes',family:'crossbrace',surface:'walnut',textile:'linen_short',frontal:'none',environment:'chapel',dressing:'ready',furnishing:'wood',candles:4,width:7,depth:2},
+  {id:'guadalupe',name:'Guadalupe',description:'Frontal dourado · linho bordado',family:'classic',stone:0,cloth:3,textile:'gold_short',ornamental:true,environment:'gallery'},
+  {id:'trestle',name:'Nogueira e linho',description:'Cavaletes · branco e ouro',family:'trestle',surface:'walnut',textile:'agnus',frontal:'none',environment:'gallery'},
+  {id:'green',name:'Verde e ouro',description:'Pilastras · floral IHS',family:'pilaster',surface:'marble',textile:'palette',color:'green',environment:'chapel',furnishing:'wood',candles:4},
+@@ -16,7 +18,7 @@ export const STUDIO_PRESETS=[
+  {id:'purple',name:'Roxo floral',description:'Ogivas · floral IHS',family:'ogive',surface:'limestone',textile:'palette',color:'purple',environment:'chapel',furnishing:'wood',season:'lent',candles:4},
+ ];
+ export const DEFAULT_STUDIO_CONFIG=Object.freeze({family:'classic',surface:'marble',textile:'gold_short',frontal:'none',color:'green',stone:0,cloth:3,ornamental:true,width:7,depth:2,environment:'gallery',view:'hero',ratio:'16:9',lighting:'classic',exposure:1,light:0,quality:'high',projection:'perspective',dressing:'ready',candles:6,season:'ordinary',furnishing:'gold',candlePlacement:'floor'});
+-const choices={family:['classic','pilaster','ogive','trestle','coffer','baluster','colonnade'],surface:['marble','limestone','walnut'],textile:[...SHARED_TEXTILES,'ruby','palette'],frontal:['none','cross','agnus'],color:['white','red','green','purple','rose','black','gold','silver'],environment:STUDIO_ENVIRONMENTS.map(x=>x.id),view:STUDIO_VIEWS.map(x=>x.id),ratio:['16:9','4:3','1:1','4:5'],lighting:['classic','shadows'],quality:['draft','high'],projection:['perspective','orthographic']};
++const choices={family:['classic','pilaster','ogive','trestle','coffer','baluster','colonnade','crossbrace'],surface:['marble','limestone','walnut'],textile:[...SHARED_TEXTILES,'ruby','palette'],frontal:['none','cross','agnus'],color:['white','red','green','purple','rose','black','gold','silver'],environment:STUDIO_ENVIRONMENTS.map(x=>x.id),view:STUDIO_VIEWS.map(x=>x.id),ratio:['16:9','4:3','1:1','4:5'],lighting:['classic','shadows'],quality:['draft','high'],projection:['perspective','orthographic']};
+ Object.assign(choices,{candlePlacement:['floor','mensa'],furnishing:['gold','wood'],dressing:['none','ready','gifts'],season:['ordinary','advent','lent','festive']});
+ export function normalizeStudioConfig(input={}){
+  if(!input||typeof input!=='object'||Array.isArray(input))throw Error('Configuração inválida.');
+@@ -30,7 +32,7 @@ export function normalizeStudioConfig(input={}){
+  if(result.family==='colonnade'){result.surface='marble';result.frontal='none';}
+  if(result.textile==='floral'&&result.color!=='red')result.frontal='none';
+  if(result.family==='classic'&&['none','linen_short','linen_long','gold_short','gold_long'].includes(result.textile))result.cloth=['none','linen_short','linen_long','gold_short','gold_long'].indexOf(result.textile);
+- if(['coffer','baluster'].includes(result.family)){result.surface='walnut';result.frontal='none';}
++ if(['coffer','baluster','crossbrace'].includes(result.family)){result.surface='walnut';result.frontal='none';}
+  return result;
+ }
+ export function studioDimensions(ratio,longEdge){
+diff --git a/viewer-3d/tests/studio-contract.node.mjs b/viewer-3d/tests/studio-contract.node.mjs
+index 68d3b82..5f5e48b 100644
+--- a/viewer-3d/tests/studio-contract.node.mjs
++++ b/viewer-3d/tests/studio-contract.node.mjs
+@@ -1,6 +1,6 @@
+ import test from 'node:test';
+ import assert from 'node:assert/strict';
+-import {normalizeStudioConfig,designId,studioDimensions,STUDIO_PRESETS,validateStudioCamera,migrateStudioConfig} from '../src/shared/studio-contract.js';
++import {normalizeStudioConfig,designId,studioDimensions,STUDIO_PRESETS,validateStudioCamera,migrateStudioConfig,studioFilename} from '../src/shared/studio-contract.js';
+ import {build} from 'esbuild';
+ import {fileURLToPath} from 'node:url';
+ const bundled=await build({entryPoints:[fileURLToPath(new URL('../../addons/altare/tools/studio-domain.ts',import.meta.url))],bundle:true,format:'esm',platform:'neutral',write:false});
+@@ -9,7 +9,7 @@ const ids=new Set(DESIGNS.map(d=>d.id));
+ test('studio presets and the eight liturgical colors resolve real published designs',()=>{
+  for(const preset of STUDIO_PRESETS){const id=designId(preset);if(id)assert.ok(ids.has(id));}
+  for(const family of ['pilaster','ogive','trestle'])for(const surface of ['marble','limestone','walnut'])for(const color of ['white','red','green','purple','rose','black','gold','silver'])assert.ok(ids.has(designId({family,surface,textile:'palette',color,frontal:'cross'})));
+- for(const family of ['coffer','baluster'])for(const textile of ['none','agnus','ruby','verdant','requiem','palette'])for(const color of ['white','red','green','purple','rose','black','gold','silver'])assert.ok(ids.has(designId({family,textile,color})));
++ for(const family of ['coffer','baluster','crossbrace'])for(const textile of ['none','agnus','ruby','verdant','requiem','palette'])for(const color of ['white','red','green','purple','rose','black','gold','silver'])assert.ok(ids.has(designId({family,textile,color})));
+ });
+ test('studio composition uses addon domain roles and dimensions, including split centres',()=>{
+  for(const width of [1,3,7,8,16]){
+@@ -28,10 +28,27 @@ test('schema 1 scenes retain classic cloth and former Colonnade lace while schem
+  const a=migrateStudioConfig({family:'classic',cloth:4,textile:'agnus'},1);assert.equal(a.textile,'gold_long');assert.equal(a.cloth,4);
+  const b=migrateStudioConfig({family:'colonnade',textile:'agnus'},1);assert.equal(b.textile,'lace');
+  const c=migrateStudioConfig({family:'colonnade',textile:'agnus'},2);assert.equal(c.textile,'agnus');
+- for(const family of ['classic','pilaster','ogive','trestle','coffer','baluster','colonnade']){
++ for(const family of ['classic','pilaster','ogive','trestle','coffer','baluster','colonnade','crossbrace']){
+   assert.ok(ids.has(designId({family,textile:'lace'})));
+   const style=normalizeStudioConfig({family,textile:'floral',color:'rose'});assert.equal(style.textile,'floral');assert.ok(ids.has(designId(style)));
+  }
+  assert.equal(normalizeStudioConfig({family:'classic',textile:'linen_long'}).cloth,2);
+  assert.equal(normalizeStudioConfig({family:'classic',cloth:4}).textile,'gold_long');
+ });
++
++
++test('cross-braced walnut scenes preserve joinery restrictions and every shared textile',()=>{
++ const textiles=['none','linen_short','linen_long','gold_short','gold_long','agnus','floral','verdant','requiem','lace'];
++ for(const textile of textiles)for(const width of [1,3,7,8,16]){
++  const config=normalizeStudioConfig({family:'crossbrace',surface:'marble',frontal:'cross',textile,color:'purple',width,depth:2});
++  assert.equal(config.family,'crossbrace');assert.equal(config.surface,'walnut');assert.equal(config.frontal,'none');
++  const id=designId(config);assert.ok(ids.has(id));
++  const tiles=compose({width,depth:2,design:id});assert.equal(tiles.length,width*2);
++  assert.ok(tiles.every(tile=>tile.position.y===0));
++  assert.deepEqual(migrateStudioConfig(JSON.parse(JSON.stringify(config)),2),config);
++  assert.match(studioFilename(config),/^altare-crossbrace-walnut-/);
++ }
++ const presets=STUDIO_PRESETS.filter(p=>p.family==='crossbrace');
++ assert.ok(presets.some(p=>p.textile==='none'&&p.dressing==='none'));
++ assert.ok(presets.some(p=>p.textile==='linen_short'));
++});
+diff --git a/viewer-3d/tests/studio-customization.node.mjs b/viewer-3d/tests/studio-customization.node.mjs
+index 7568960..1d9160c 100644
+--- a/viewer-3d/tests/studio-customization.node.mjs
++++ b/viewer-3d/tests/studio-customization.node.mjs
+@@ -25,7 +25,7 @@ test('suspended relief returns after color or textile changes, including history
+ 
+ test('joinery controls resolve real wood recipes and restore hidden stone/relief choices',()=>{
+  const original=studioCustomization(normalizeStudioConfig({family:'ogive',surface:'limestone',textile:'ruby',frontal:'cross'}));
+- for(const model of ['coffer','baluster']){
++ for(const model of ['coffer','baluster','crossbrace']){
+   const draft=changeCustomization(original,{model});
+   const appearance=studioAppearance(draft);
+   assert.equal(appearance.surface,'walnut');assert.equal(appearance.frontal,'none');
+diff --git a/addons/altare/assets-src/atelier/crossbrace-model.mjs b/addons/altare/assets-src/atelier/crossbrace-model.mjs
+new file mode 100644
+index 0000000..792c5d2
+--- /dev/null
++++ b/addons/altare/assets-src/atelier/crossbrace-model.mjs
+@@ -0,0 +1,99 @@
++import {box,rect,rotateCube} from '../block-primitives.mjs';
++
++// Cruzeta: an open walnut frame. A bay is a frame, never a solid chest.
++// The contour is compiled, so internal faces/posts are not merely hidden.
++export const crossbraceProfile=Object.freeze({top:16,slabBottom:14.2,outer:7.8,inner:6.2,railBottom:1.45,railTop:12.15,braceBottom:2.38,braceTop:12.26});
++const exposed=(mask,side)=>!!(mask&(1<<((side+4)%4)));
++const round=v=>Number(v.toFixed(9));
++// One 1.6-unit motif per post; rails keep a nearly constant texel/world scale even
++// when a corner shortens a bay. Eight periods fit the largest 14.4-unit rail.
++const inlayScale=8.75,inlayPeriod=14;
++function inlay(width,center=72){
++ // Crop whole rail periods, never half a diamond at a butt joint.
++ const periods=Math.round(width/1.8);
++ if(width>1.6)return rect('joinery_inlay',0,0,periods*16,128);
++ const pixels=Math.round(width*inlayScale);
++ return rect('joinery_inlay',center-pixels/2,0,pixels,128);
++}
++function peg(x,y){
++ const c=member([x-.17,y-.17,-7.56],[.34,.34,1.12],'wood_cross');
++ c.pivot=[x,y,-7];c.rotation=[0,0,45];
++ // A tiny maple end-grain insert, sampled from the same opaque wood atlas.
++ for(const f of ['north','south'])c.uv[f]=rect('joinery_inlay',0,18,1,1);
++ return c;
++}
++function member(origin,size,surface='stone'){
++ const c=box(origin.map(round),size.map(round),surface);
++ for(const uv of Object.values(c.uv))uv.uv_size=uv.uv_size.map(v=>Math.min(128,v));return c;
++}
++function turn(c,side){
++ const out=rotateCube(c,side);
++ if(c.rotation){const [x,y,z]=c.rotation;out.rotation=side===1?[-z,y,x]:side===2?[-x,y,-z]:side===3?[z,y,-x]:[x,y,z];}
++ return out;
++}
++function brace(a,b,z){
++ const x=(a[0]+b[0])/2,y=(a[1]+b[1])/2,length=Math.hypot(b[0]-a[0],b[1]-a[1]);
++ const c=member([x-length/2,y-.42,z],[length,.84,.48],'wood_cross');
++ c.pivot=[x,y,z+.24];c.rotation=[0,0,round(Math.atan2(b[1]-a[1],b[0]-a[0])*180/Math.PI)];return c;
++}
++function post(corner){
++ const x=corner?-7.8:-8,w=corner?1.6:.8,z=-7.8,d=1.6;
++ const shaft=member([x+(corner?.12:0),1.4,z+.12],[w-(corner?.24:.12),10.75,d-.24]);
++ const foot=member([x,0,z],[w,1.4,d],'wood_cross');
++ const cap=member([x,12.15,z],[w,2.05,d],'wood_cross');
++ // A single diamond on a capital; feet retain only the two quiet filets.
++ // Shared half posts crop complementary halves of one complete motif.
++ for(const f of ['north','south','east','west']){
++  foot.uv[f]=rect('joinery_inlay',0,0,1,128);
++  shaft.uv[f]=rect('stone',0,0,12,86);
++  cap.uv[f]=inlay(1.6);
++ }
++ if(!corner){
++  cap.uv.north=inlay(.8,72-inlayPeriod/4);cap.uv.south=inlay(.8,72+inlayPeriod/4);
++  shaft.uv.north=rect('stone',0,0,6,86);shaft.uv.south=rect('stone',6,0,6,86);
++  // The face at the module cut is internal, so emit neither duplicate cap.
++  for(const c of [foot,shaft,cap])delete c.uv.west;
++ }
++ return [foot,shaft,cap];
++}
++function mirror(c){
++ const out=structuredClone(c);out.origin[0]=round(-c.origin[0]-c.size[0]);
++ const e=out.uv.east,w=out.uv.west;delete out.uv.east;delete out.uv.west;if(e)out.uv.west=e;if(w)out.uv.east=w;
++ // Reflection exchanges the front/back UV halves; the complete shared post
++ // matches a corner's continuous grain/motif rather than repeating a half.
++ const n=out.uv.north,s=out.uv.south;if(n)out.uv.south=n;if(s)out.uv.north=s;
++ return out;
++}
++export function crossbraceArchitecture(edges=15){
++ if(!Number.isInteger(edges)||edges<0||edges>15)throw Error('Invalid Cruzeta contour');
++ const bones=[],add=(name,cubes)=>bones.push({name,cubes});
++ for(let side=0;side<4;side++){
++  if(!exposed(edges,side))continue;
++  const left=exposed(edges,side+3),right=exposed(edges,side+1);
++  if(left)add(`crossbrace_corner_${side}`,post(true).map(c=>turn(c,side)));
++  else add(`crossbrace_half_${side}_left`,post(false).map(c=>turn(c,side)));
++  if(!right)add(`crossbrace_half_${side}_right`,post(false).map(mirror).map(c=>turn(c,side)));
++  const a=left?-6.2:-7.2,b=right?6.2:7.2;
++  const top=member([a,12.15,-7.62],[b-a,2.05,1.24],'wood_cross');
++  const bottom=member([a-.12,1.45,-7.5],[b-a+.24,1.05,1],'wood_cross');
++  top.uv.north=inlay(b-a,64);top.uv.south=inlay(b-a,64);
++  // Two offset half-depth members meet at a common plane and are joined
++  // with a through-peg. This is a pegged double-layer X, not a local half-lap.
++  const inset=.14,lo=crossbraceProfile.braceBottom,hi=crossbraceProfile.braceTop;
++  const diagonalA=brace([a-inset,lo],[b+inset,hi],-7.48);
++  const diagonalB=brace([a-inset,hi],[b+inset,lo],-7);
++  add(`crossbrace_bay_${side}`,[top,bottom,diagonalA,diagonalB,peg((a+b)/2,(lo+hi)/2)].map(c=>turn(c,side)));
++ }
++ return {bones};
++}
++export function crossbraceCollision(edges){
++ // One narrow perimeter frame envelope per exposed face, plus the slab.
++ // Unlike a full cube, the centre of the table is free. AABB envelopes are
++ // deliberately conservative across the diagonal openings, like trestles.
++ const result=[{origin:[-8,14.2,-8],size:[16,1.8,16]}];
++ for(let side=0;side<4;side++)if(exposed(edges,side)){
++  const c=rotateCube({origin:[-8,0,-7.8],size:[16,14.2,1.6],uv:{}},side);
++  result.push({origin:c.origin,size:c.size});
++ }
++ return result;
++}
+diff --git a/addons/altare/docs/CROSSBRACE_0.12.0.md b/addons/altare/docs/CROSSBRACE_0.12.0.md
+new file mode 100644
+index 0000000..f520c7e
+--- /dev/null
++++ b/addons/altare/docs/CROSSBRACE_0.12.0.md
+@@ -0,0 +1,59 @@
++# Cruzeta em nogueira — 0.12.0
++
++Registro da primeira revisão. A revisão diagnóstica atual e seu reteste estão em [Polimento 0.12.1](CROSSBRACE_0.12.1.md).
++
++## Intenção e construção
++
++O oitavo modelo é uma mesa de marcenaria aberta. Não é uma recoloração da Arca ou uma variação dos Balaústres: cada vão tem travessa superior, travessa inferior e diagonais em X. Pés e cabeças escalonadas enquadram os montantes verticais. A nogueira escura recebe filetes e pequenos losangos de madeira clara, sem ouro ou emissividade, na travessa superior e nos encaixes.
++
++A construção vive em `assets-src/atelier/crossbrace-model.mjs`. Somente o contorno exposto recebe estrutura; uma quina usa um único montante. Em trechos contínuos, cada célula contribui com meio montante, formando uma junta compartilhada. Os veios permanecem verticais nos montantes e horizontais nas travessas/diagonais antes da rotação. As duas diagonais ocupam metades adjacentes da profundidade, com plano de encontro comum, sem duas faces exteriores coplanares no cruzamento. Não se declara uma simulação física de marcenaria.
++
++O tampo termina exatamente em y=16. A estrutura é idêntica sob todos os tecidos. A marchetaria é um mapa autoral procedural de 64², derivado no build; mapas das famílias anteriores não mudam. Textura de madeira e objetos litúrgicos não são imagens inventadas para o render: a prévia usa os arquivos distribuídos.
++
++## Estado e compatibilidade
++
++- 17 novos IDs: `altare:j_crossbrace_*` e `altare:u_crossbrace_walnut_*_none`. Não muda UUID, nome ou significado de qualquer estado anterior.
++- Dez desenhos de toalha e oito cores do Floral IHS. Sem aplique adicional; material fixo nogueira.
++- Sem toalha usa o codec simétrico já existente: somente `altare:edges`, 16 estados. A direção tem significado apenas quando uma toalha direcional é escolhida.
++- O leitor do codec simétrico deriva o material do design. Colunata continua mármore/0; Cruzeta usa nogueira/2. A ordem dos sete modelos antigos no editor é preservada; Cruzeta é acrescentada ao final.
++- Altare passa de 78.432 a **80.000** estados. A economia de 48 estados no novo bare impede ultrapassar o teto de 80.000; o teto não foi elevado. Com Aspergillum local: **89.744**, abaixo do teto diagnóstico de 90.000, mas acima da referência global de 65.536. Outros add-ons não estão incluídos.
++- A colisão possui até cinco caixas: tampo e até quatro envoltórias estreitas dos quadros. O centro está livre. Os pequenos vãos entre diagonais têm colisão conservadora, não recorte físico fino. Seleção conserva o cubo completo.
++- As geometrias novas usam no máximo **46 cubos e 211 faces**, abaixo do teto de 50 cubos por módulo, inclusive no isolado vestido. Não se acrescenta exceção de complexidade ao validador.
++- Mapas únicos: 33,2255859375 MiB antes de mipmaps/ícones, abaixo do teto existente de 33,25 MiB.
++
++Mundos anteriores só recebem a família após aplicar a ferramenta. Downgrade após colocar os novos IDs não é seguro: voltar ao acabamento anterior antes de remover a 0.12.0, sempre em cópia do mundo. O add-on não captura nem recria objetos acima da mensa.
++
++## Verificação reproduzível
++
++Na raiz:
++
++```
++npm --prefix addons/altare run check
++npm --prefix addons/altare run package
++node addons/altare/tools/capture-cpu.mjs
++```
++
++`crossbrace.node.ts` verifica orçamento, 17 acabamentos, codec simétrico, 16 contornos, dimensões de 1×1 a 16×8, quatro frentes, invariância sob dez tecidos, caixas de colisão e vértices rotacionados. Os testes existentes de marcenaria, editor e tecido incluem a nova família. O Estúdio 2.3.0 oferece dois presets: madeira exposta e linho curto.
++
++A prévia alternativa requer Python 3 com NumPy/Pillow e usa o adaptador geométrico compartilhado do projeto, incluindo transformações/UV reais, seguido de rasterização CPU. É **prévia técnica externa**, com iluminação simplificada e somente cor: não usa WebGL, PBR, iluminação nativa ou paridade Minecraft. O renderer oficial Chromium não pôde iniciar por restrição do ambiente; a restrição não foi contornada. Os manifests preservam os hashes dos modelos e mapas utilizados.
++
++## Resultados desta revisão
++
++- 108 testes Altare, 107 testes Aspergillum e 84 testes viewer aprovados; tipos, documentação e build aprovados.
++- Creator Tools no alvo 1.26.40: zero erros, zero avisos inesperados e 2.084 avisos limitados das famílias anteriores. Cruzeta não usa a exceção de complexidade. As consultas npm devolveram 502; a checagem foi offline, complementada pelos tipos estáveis instalados.
++- Os 397 blocos, 4.108 geometrias e 258 arquivos de textura anteriores são byte a byte idênticos à baseline. Os 78.432 estados antigos decodificam de modo idêntico; 1.568 estados novos e 25.088 reparos de contorno passaram.
++- Os 5.393 arquivos do pacote correspondem aos gerados. As 38 fontes de geometria/mapas das prévias correspondem ao pacote final.
++
++## Reteste no Minecraft
++
++1. Fazer uma cópia do mundo. Importar somente BP/RP Altare **[0,12,0]**, sem revisão concorrente, no alvo mínimo 1.26.40; sem experimentos.
++2. `/function altare/dev_kit`. Montar 1×1, 3×2, 7×2 e 8×2. Abrir Acabamento do altar e selecionar Cruzeta.
++3. Sem toalha: observar frente, verso, quatro quinas, interior e underside. Conferir cruzamentos sem cintilação, nenhuma duplicação de montantes e continuidade das travessas.
++4. Alternar todas as dez toalhas, principalmente linho curto, renda e Floral IHS verde/roxo. Conferir o verso do tecido através do quadro, centro ímpar e dois meios centros no par.
++5. Colocar pedra vanilla e caldeirinha sobre a mensa. Trocar de/para modelos antigos, aplicar, cancelar, restaurar e reabrir. Objetos superiores devem permanecer no lugar.
++6. Testar quatro frentes, remoção/reposição de módulos, salvar/reabrir e multiplayer. Reaplicar depois de redimensionar para recentralizar a toalha.
++7. Conferir luz através da mesa, colisão conservadora dos quadros, apoio do tampo, Content Log sem novos erros e profiling no dispositivo-alvo.
++
++Se a consulta de versão do Creator Tools falhar mesmo em `--offline`, o CLI pode cair no fallback 1.26.0 e rejeitar até arquivos já publicados. Neste ambiente, a validação é repetida com a opção existente `MCT_TEST_PINNED_MC_VERSION=1.26.40`, fixando o alvo declarado no manifest. Isso não altera schemas, arquivos ou a política de avisos.
++
++Build e validação offline não substituem essa etapa. A versão continua diagnóstica e não é promovida como fisicamente aprovada sem o teste do arquivo exato.
+diff --git a/addons/altare/docs/CROSSBRACE_0.12.1.md b/addons/altare/docs/CROSSBRACE_0.12.1.md
+new file mode 100644
+index 0000000..1516119
+--- /dev/null
++++ b/addons/altare/docs/CROSSBRACE_0.12.1.md
+@@ -0,0 +1,53 @@
++# Cruzeta: juntas e marchetaria — 0.12.1
++
++Revisão da [primeira construção](CROSSBRACE_0.12.0.md), após comparação visual de frente, costas, quinas e encontros de módulos. O diagnóstico anterior não foi publicado nem aprovado no Minecraft.
++
++## Alterações justificadas pela inspeção
++
++1. **Marchetaria proporcional.** Na primeira versão, o mesmo recorte de quatro losangos ocupava tanto a travessa larga como a cabeça estreita. Agora cada cabeça tem um motivo legível; os pés conservam apenas dois filetes. Travessas usam períodos completos, sem cortar um losango na ponta. A densidade horizontal fica dentro de 5% da referência do apoio, inclusive quando uma quina encurta o vão. O atlas continua 64², com oito períodos alinhados à grade de pixels. O material continua madeira opaca, sem metal ou emissão.
++2. **Apoios simétricos e juntas fechadas.** O fuste de quina recua 0,12 unidade em todas as quatro faces e passa a ter seção 1,36 × 1,36. As travessas inferiores avançam os mesmos 0,12 até a face real do apoio. Meios montantes continuam compartilhados; UVs complementares recompõem o veio e o motivo completos. Faces internas das meias colunas não são emitidas.
++3. **X duplo cavilhado.** As diagonais continuam em camadas adjacentes de meia profundidade. Uma pequena cavilha de madeira, centrada no cruzamento, atravessa ambas e dá leitura de junção. Não é descrito como meia-madeira localizada nem como simulação física. Fazer o rebaixo localizado integral exigiria mais peças; não se elevou o orçamento para isso.
++
++A mensa, sua altura y=16, os dez tecidos e seus recortes não mudam. O tampo não recebe um chanfro especulativo. Nas imagens CPU inspecionadas, o afastamento do tecido e as quinas continuam legíveis; iluminação, culling nativo e comportamento em movimento ainda exigem o jogo.
++
++## Contratos e custo
++
++- Mesmos 414 blocos, 4.700 geometrias, 17 acabamentos Cruzeta e 80.000 estados Altare.
++- Nenhuma mudança de UUID, codec, state, colisão, aplicação/rollback ou preservação de objetos sobre a mensa.
++- Cruzeta usa até 50 cubos e 235 faces. O teto de 50 é preservado, sem nova exceção de complexidade.
++- Mesmos 33,2255859375 MiB de mapas únicos; só o trio novo `crossbrace_inlay` muda visualmente. Mapas das outras famílias são preservados.
++- Aspergillum permanece 1.2.5; Estúdio permanece 2.3.0 e consome os novos recursos pelo catálogo/hash gerado.
++
++## Verificação reproduzível
++
++```
++npm --prefix addons/altare run check
++HOME=/tmp/altare-creator-home MCT_TEST_PINNED_MC_VERSION=1.26.40 node addons/altare/tools/package.mjs
++python addons/altare/tools/cpu-rasterize.py --test-camera
++node addons/altare/tools/capture-cpu.mjs --matrix
++```
++
++O pin usa a opção existente do Creator Tools e o alvo declarado, porque a consulta de versão offline havia caído indevidamente no fallback 1.26.0. Não altera schemas ou política de avisos.
++
++A matriz gera 35 PNGs: cenas principais 1×1, 3×2, 7×2 e 8×2; todos os dez tecidos e oito cores Floral IHS; quatro frentes; junção frontal/traseira, rasantes frente/verso, vista inferior, 1×3, 2×2 e lateral com linho longo. `--only <id>` permite repetir uma cena; `--out <diretório>` conserva comparações. Os manifests registram hashes dos arquivos de geometria/mapas realmente consumidos.
++
++A revisão independente detectou que a primeira câmera CPU espelhava horizontalmente a projeção inteira. A base foi corrigida apenas no capturador: norte projeta +X à esquerda, sul projeta +X à direita, e +Y continua para cima. Um teste de cinco bases ortonormais com determinante +1 protege essa convenção. Nenhuma arte/UV do tecido distribuído foi invertida para compensar a prévia.
++
++A ferramenta CPU mantém o mesmo adaptador geométrico do projeto e suas UVs. Não executa Chromium, GPU ou PBR, e não prova paridade Bedrock. O Chromium continua bloqueado pelo ambiente; nenhuma restrição foi contornada.
++
++## Resultado desta rodada
++
++- 111/111 testes Altare, 107/107 Aspergillum e 84/84 viewer; tipos, builds, documentação e validação estrutural aprovados.
++- Creator Tools no alvo 1.26.40: zero erros, zero avisos inesperados e os 2.084 avisos limitados das famílias anteriores. Cruzeta não usa exceção. As consultas de registry npm receberam 502; a validação offline é complementada pelos tipos estáveis instalados.
++- 35 PNGs finais, com 137 hashes de geometria/mapas e cinco hashes dos capturadores/adaptadores conferidos. Câmera corrigida e monogramas legíveis, revisados independentemente.
++- Todas as 414 definições de bloco e runtime são byte-idênticos à 0.12.0. Só 555 geometrias Cruzeta, seus três mapas próprios e seis arquivos de metadados de versão mudaram. Da baseline 0.11.2, todos os 397 blocos, 4.108 geometrias e 258 arquivos de textura permanecem idênticos.
++- Os 5.393 arquivos do `.mcaddon` foram comparados aos packs gerados, sem divergência. SHA-256: `5c19edfd4b2b0bf3855b9691e3b875dcb179e98b0ae1a33cef4b02970a1affb7`.
++
++## Reteste do arquivo exato no Minecraft
++
++1. Copiar o mundo, remover revisão concorrente e importar BP/RP **[0,12,1]**, no alvo mínimo 1.26.40, sem experimentos.
++2. Montar 1×1, 2×1, 3×2, 7×2 e 8×2. Examinar frente, verso, quinas e parte inferior: filetes contínuos, um apoio por junta, fustes simétricos, cavilhas centrais e nenhum brilho/cintilação de faces.
++3. Alternar todas as dez toalhas e as quatro frentes; conferir oito cores Floral IHS, seu centro ímpar e centro dividido par. Olhar o verso do tecido através do quadro.
++4. Trocar modelos, aplicar/cancelar/restaurar, remover/repor módulos e salvar/reabrir. Objetos acima da mensa devem permanecer. Testar colisão estreita conservadora, multiplayer, Content Log e desempenho no dispositivo-alvo.
++
++Só essa importação permite encerrar o gate visual/físico. A revisão continua diagnóstica.
+diff --git a/addons/altare/tests/crossbrace.node.ts b/addons/altare/tests/crossbrace.node.ts
+new file mode 100644
+index 0000000..d6e8f65
+--- /dev/null
++++ b/addons/altare/tests/crossbrace.node.ts
+@@ -0,0 +1,107 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import {crossbraceArchitecture,crossbraceCollision} from '../assets-src/atelier/crossbrace-model.mjs';
++import {atelierGeometry} from '../assets-src/atelier/geometry.mjs';
++import {DESIGNS,JOINERY_DESIGNS,CATALOG_PERMUTATIONS,sharedDesignFor,SHARED_TEXTILES} from '../src/domain/catalog.ts';
++import {planFinish,type Tile} from '../src/domain/surface.ts';
++import {encodeTile,decodeTile} from '../src/domain/block-codec.ts';
++import {customizationFromFinish,customizationFinish,customizationCapabilities,changeCustomization} from '../src/domain/customization.ts';
++import {collectionMaterials} from '../tools/catalog-pack.mjs';
++import {crossbraceInlay} from '../assets-src/atelier/materials.mjs';
++const grid=(w:number,d:number):Tile[]=>Array.from({length:w*d},(_,i)=>({position:{x:i%w,y:0,z:Math.floor(i/w)},stone:0,cloth:0,frontal:0,facing:0,edges:15}));
++function points(c:any){
++ const p=c.pivot??[0,0,0],r=(c.rotation??[0,0,0]).map((v:number)=>v*Math.PI/180),result:number[][]=[];
++ for(const x of [0,1])for(const y of [0,1])for(const z of [0,1]){
++  let v=c.origin.map((n:number,i:number)=>n+c.size[i]*[x,y,z][i]!-p[i]);
++  for(let axis=0;axis<3;axis++){const j=(axis+1)%3,k=(axis+2)%3,a=v[j],b=v[k];v[j]=a*Math.cos(r[axis])-b*Math.sin(r[axis]);v[k]=a*Math.sin(r[axis])+b*Math.cos(r[axis]);}
++  result.push(v.map((n:number,i:number)=>n+p[i]));
++ }return result;
++}
++test('Cruzeta adds seventeen finishes without relaxing either state ceiling',()=>{
++ assert.equal(DESIGNS.filter(d=>d.structure==='crossbrace').length,17);
++ assert.equal(CATALOG_PERMUTATIONS,80000);assert.ok(CATALOG_PERMUTATIONS+9744<=90000);
++ const bare=JOINERY_DESIGNS.find(d=>d.id==='altare:j_crossbrace_none')!;assert.equal(bare.codec,'symmetric');
++ for(let facing=0;facing<4;facing++)for(const [w,d] of [[1,1],[7,2],[8,2],[16,8]]){
++  for(const t of planFinish(grid(w!,d!),{stone:0,cloth:0,ornamental:false,facing,design:bare.id})){
++   const e=encodeTile(t);assert.deepEqual(Object.keys(e.states),['altare:edges']);assert.equal(t.stone,2);assert.equal(t.facing,0);assert.deepEqual(decodeTile(e.id,t.position,e.states),t);
++  }
++ }
++});
++test('Cruzeta carpentry does not change with textile, dye or front direction',()=>{
++ for(let edges=0;edges<16;edges++){
++  const bare=atelierGeometry('crossbrace','none','none',0,edges).doc['minecraft:geometry'][0];
++  const structure=(g:any)=>g.bones.filter((b:any)=>b.name.startsWith('crossbrace_'));
++  for(let facing=0;facing<4;facing++)for(const textile of SHARED_TEXTILES){
++   const g=atelierGeometry('crossbrace',textile==='floral'?'ruby':textile,'none',facing,edges).doc['minecraft:geometry'][0];
++   assert.deepEqual(structure(g),structure(bare));assert.ok(g.bones.flatMap((b:any)=>b.cubes).length<=50);
++   assert.ok(g.bones.find((b:any)=>b.name==='top').cubes.every((c:any)=>Math.abs(c.origin[1]+c.size[1]-16)<1e-9));
++   if(textile!=='none')for(const b of g.bones.filter((b:any)=>b.name.startsWith('drape_')))assert.ok(b.cubes.slice(0,2).every((c:any)=>c.uv.north&&c.uv.south||c.uv.east&&c.uv.west),'open frame cloth has a visible reverse');
++  }
++ }
++});
++test('Cruzeta compiled contours share corner posts and keep diagonal support inside collision bounds',()=>{
++ for(let edges=0;edges<16;edges++){
++  const bones=crossbraceArchitecture(edges).bones,collision=crossbraceCollision(edges);
++  assert.ok(collision.length<=5);assert.ok(!collision.some((b:any)=>[0,7,0].every((v,i)=>v>b.origin[i]&&v<b.origin[i]+b.size[i])));
++  for(const c of bones.flatMap((b:any)=>b.cubes))for(const p of points(c)){
++   assert.ok(p[0]!>=-8-1e-8&&p[0]!<=8+1e-8&&p[1]!>=0&&p[1]!<=14.2+1e-8&&p[2]!>=-8-1e-8&&p[2]!<=8+1e-8);
++   assert.ok(collision.some((b:any)=>p.every((v,i)=>v>=b.origin[i]-1e-7&&v<=b.origin[i]+b.size[i]+1e-7)),`uncovered wood vertex ${p}`);
++  }
++  assert.equal(bones.filter((b:any)=>b.name.startsWith('crossbrace_bay_')).length,[0,1,2,3].filter(s=>edges&(1<<s)).length);
++ }
++ const isolated=crossbraceArchitecture(15).bones;assert.equal(isolated.filter((b:any)=>b.name.includes('_corner_')).length,4);assert.ok(!isolated.some((b:any)=>b.name.includes('_half_')));
++ const continuous=crossbraceArchitecture(1).bones;assert.equal(continuous.filter((b:any)=>b.name.includes('_half_')).length,2);
++ const laps=isolated.find((b:any)=>b.name==='crossbrace_bay_0')!.cubes.slice(2,4);assert.equal(laps[0]!.origin[2]+laps[0]!.size[2],laps[1]!.origin[2]);
++});
++test('Cruzeta materials preserve wood, receive all shared cloths, and have no metallic body or extra relief',()=>{
++ for(const textile of SHARED_TEXTILES){const d=sharedDesignFor('crossbrace','walnut',textile,'none');const m=collectionMaterials(d);assert.equal(m.stone.texture,'altare_atelier_walnut');assert.equal(m.joinery_inlay.texture,'altare_crossbrace_inlay');}
++ assert.throws(()=>atelierGeometry('crossbrace','none','cross',0,15),/no applied relief/);
++});
++
++test('symmetric Cruzeta hides direction while preserving the draft for a later cloth',()=>{
++ const d=changeCustomization(customizationFromFinish({stone:0,cloth:0,ornamental:false,facing:3}),{model:'crossbrace',textile:'none'});
++ assert.equal(customizationCapabilities(d).directional,false);assert.equal(customizationFinish(d).facing,0);assert.equal(d.facing,3);
++ const clothed=changeCustomization(d,{textile:'agnus'});assert.equal(customizationCapabilities(clothed).directional,true);assert.equal(customizationFinish(clothed).facing,3);
++});
++
++test('Cruzeta inlay retains physical scale and shared posts reconstruct a complete motif',()=>{
++ const epsilon=1e-7;
++ for(let edges=1;edges<16;edges++){
++  const bones=crossbraceArchitecture(edges).bones;
++  for(const b of bones.filter((b:any)=>b.name.startsWith('crossbrace_bay_'))){
++   const c=b.cubes[0],uv=Object.values(c.uv).find((f:any)=>f.material_instance==='joinery_inlay') as any;
++   assert.ok(Math.abs(uv.uv_size[0]/Math.max(c.size[0],c.size[2])-8.75)<.4);
++   assert.ok(uv.uv[0]>=0&&uv.uv[0]+uv.uv_size[0]<=128+epsilon);
++   assert.equal(uv.uv[0]%16,0);assert.equal(uv.uv_size[0]%16,0);
++  }
++ }
++ const full=crossbraceArchitecture(15).bones.find((b:any)=>b.name==='crossbrace_corner_0')!.cubes;
++ const halves=crossbraceArchitecture(1).bones.filter((b:any)=>b.name.startsWith('crossbrace_half_0'));
++ const [left,right]=halves.map((b:any)=>b.cubes[2].uv.north);
++ assert.ok(Math.abs(left.uv[0]+left.uv_size[0]-right.uv[0])<epsilon);
++ assert.ok(Math.abs(left.uv[0]-full[2].uv.north.uv[0])<epsilon);
++ assert.ok(Math.abs(left.uv_size[0]+right.uv_size[0]-full[2].uv.north.uv_size[0])<epsilon);
++ assert.equal(halves[0].cubes.every((c:any)=>!c.uv.west),true);
++ assert.equal(halves[1].cubes.every((c:any)=>!c.uv.east),true);
++});
++
++test('Cruzeta square recessed shafts meet lower rails and every X has one contained through-peg',()=>{
++ const bones=crossbraceArchitecture(15).bones,post=bones.find((b:any)=>b.name==='crossbrace_corner_0')!.cubes;
++ assert.ok(Math.abs(post[1].size[0]-1.36)<1e-9);assert.ok(Math.abs(post[1].size[2]-1.36)<1e-9);
++ const low=bones.find((b:any)=>b.name==='crossbrace_bay_0')!.cubes[1];
++ assert.ok(Math.abs(low.origin[0]-(post[1].origin[0]+post[1].size[0]))<1e-9);
++ for(let edges=0;edges<16;edges++)for(const b of crossbraceArchitecture(edges).bones.filter((b:any)=>b.name.startsWith('crossbrace_bay_'))){
++  assert.equal(b.cubes.length,5);
++  const [a,c,pin]=b.cubes.slice(2),center=(box:any)=>box.pivot;
++  assert.ok(Math.abs(Math.hypot(...center(a).map((n:number,i:number)=>n-center(pin)[i]))-.24)<1e-8);
++  assert.ok(Math.abs(Math.hypot(...center(c).map((n:number,i:number)=>n-center(pin)[i]))-.24)<1e-8);
++  assert.equal(Object.values(pin.uv).filter((f:any)=>f.material_instance==='joinery_inlay').length,2);
++ }
++});
++
++
++test('Cruzeta marquetry repeats on whole texture pixels without uneven broken diamonds',()=>{
++ const light=(x:number,y:number)=>crossbraceInlay(2*x+.5,2*y+.5).rgb[0]===181;
++ for(let y=0;y<64;y++)for(let x=0;x<8;x++)for(let period=1;period<8;period++)assert.equal(light(x,y),light(x+period*8,y));
++ for(let y=0;y<64;y++)for(let x=0;x<64;x++){const p=crossbraceInlay(2*x+.5,2*y+.5);assert.equal(p.metal,0);assert.equal(p.alpha??255,255);}
++});
+diff --git a/addons/altare/tools/capture-cpu.mjs b/addons/altare/tools/capture-cpu.mjs
+new file mode 100644
+index 0000000..10bf6e8
+--- /dev/null
++++ b/addons/altare/tools/capture-cpu.mjs
+@@ -0,0 +1,66 @@
++/** Fallback diagnostic, no browser/WebGL. Uses the project's actual geometry adapter. */
++import fs from 'node:fs';
++import path from 'node:path';
++import crypto from 'node:crypto';
++import {spawnSync} from 'node:child_process';
++import * as THREE from '../../../viewer-3d/node_modules/three/build/three.module.js';
++import {buildBedrockGeometry} from '../../../viewer-3d/src/shared/bedrock-geometry.js';
++import {blockPreviewGeometry} from './block-preview-basis.mjs';
++import {planFinish} from '../src/domain/surface.ts';
++import {encodeTile} from '../src/domain/block-codec.ts';
++import {sharedDesignFor} from '../src/domain/catalog.ts';
++const root=path.resolve(import.meta.dirname,'..'),args=process.argv.slice(2),matrix=args.includes('--matrix');
++const outArg=args.indexOf('--out'),out=outArg<0?path.join(root,matrix?'out/crossbrace-cpu-polish':'out/crossbrace-cpu'):path.resolve(args[outArg+1]);fs.mkdirSync(out,{recursive:true});
++const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8')),atlas=read('packs/resource/textures/terrain_texture.json').texture_data;
++const version=read('package.json').version;
++if(read('packs/behavior/manifest.json').header.version.join('.')!==version||read('packs/resource/manifest.json').header.version.join('.')!==version||read('out/build-manifest.json').version!==version)throw Error('CPU preview requires a matching complete build.');
++const scenes=[{id:'crossbrace-3x2-bare',w:3,d:2,textile:'none',direction:[-.52,.38,-1]}, {id:'crossbrace-7x2-linen',w:7,d:2,textile:'linen_short',direction:[-.45,.38,-1]}, {id:'crossbrace-8x2-floral',w:8,d:2,textile:'floral',color:'green',direction:[-.45,.38,-1]}, {id:'crossbrace-detail',w:1,d:1,textile:'none',direction:[-.65,.25,-1]}, {id:'crossbrace-7x2-bare',w:7,d:2,textile:'none',direction:[-.45,.38,-1]}, {id:'crossbrace-7x2-lace',w:7,d:2,textile:'lace',direction:[-.45,.38,-1]}];
++if(matrix){
++ for(const textile of ['none','linen_short','linen_long','gold_short','gold_long','lace','agnus','verdant','requiem'])scenes.push({id:`textile-${textile}`,w:3,d:2,textile,direction:[-.45,.22,-1]});
++ for(const color of ['white','red','green','purple','rose','black','gold','silver'])scenes.push({id:`floral-${color}`,w:4,d:2,textile:'floral',color,direction:[-.45,.22,-1]});
++ scenes.push(
++  {id:'join-front',w:2,d:1,textile:'none',direction:[0,.02,-1],center:[.5,.5,-.44],frame:[1.8,1.1]},
++  {id:'join-back',w:2,d:1,textile:'none',direction:[0,.02,1],center:[.5,.5,.44],frame:[1.8,1.1]},
++  {id:'cross-front-grazing',w:1,d:1,textile:'none',direction:[-.85,.08,-.5]},
++  {id:'cross-back-grazing',w:1,d:1,textile:'none',direction:[.85,.08,.5]},
++  {id:'corner-underside',w:1,d:1,textile:'none',direction:[-.65,-.5,-1]},
++  {id:'narrow-1x3',w:1,d:3,textile:'none',direction:[-1,.25,-.35]},
++  {id:'square-2x2',w:2,d:2,textile:'none',direction:[-.65,.4,-1]},
++  {id:'side-linen-long',w:1,d:2,textile:'linen_long',direction:[1,.18,.3]},
++  ...[0,1,2,3].map(facing=>({id:`floral-facing-${facing}`,w:3,d:2,textile:'floral',color:'purple',facing,direction:[-.45,.28,-1]})),
++ );
++}
++const onlyArg=args.indexOf('--only');if(onlyArg>=0){const id=args[onlyArg+1];if(!scenes.some(s=>s.id===id))throw Error(`Unknown CPU scene: ${id}`);scenes.splice(0,scenes.length,...scenes.filter(s=>s.id===id));}
++const hashes={};
++for(const scene of scenes){
++ const design=sharedDesignFor('crossbrace','walnut',scene.textile,'none',scene.color??'red'),meshes=[];
++ const tiles=planFinish(Array.from({length:scene.w*scene.d},(_,i)=>({position:{x:i%scene.w,y:0,z:Math.floor(i/scene.w)},stone:0,cloth:0,frontal:0,facing:0,edges:15})),{stone:0,cloth:0,ornamental:false,facing:scene.facing??0,design:design.id});
++ for(const tile of tiles){
++  const e=encodeTile(tile),block=read(`packs/behavior/blocks/${e.id.split(':')[1]}.block.json`)['minecraft:block'],q={block_state:k=>e.states[k]};
++  const component=Object.assign({},block.components,...block.permutations.filter(p=>Function('q',`return ${p.condition}`)(q)).map(p=>p.components));
++  const geomPath=`packs/resource/models/blocks/${component['minecraft:geometry'].identifier.replace('geometry.altare.','')}.geo.json`,doc=read(geomPath),g=blockPreviewGeometry(doc['minecraft:geometry'][0]);
++  hashes[geomPath]=crypto.createHash('sha256').update(fs.readFileSync(path.join(root,geomPath))).digest('hex');
++  const palette={named:{}};
++  for(const [name,m] of Object.entries(component['minecraft:material_instances'])){
++   const file='packs/resource/'+atlas[m.texture].textures[0]+'.png',material=new THREE.MeshBasicMaterial();material.userData.file=path.join(root,file);
++   hashes[file]=crypto.createHash('sha256').update(fs.readFileSync(material.userData.file)).digest('hex');
++   if(name==='*')palette.default=material;else palette.named[name]=material;
++  }
++  const built=buildBedrockGeometry(g,{identifier:g.description.identifier,textureWidth:128,textureHeight:128,formatVersion:doc.format_version},palette,{includePivots:false,includeLocators:false});
++  for(const [name,group] of built.boneGroups)group.visible=component['minecraft:geometry'].bone_visibility[name]??true;
++  built.root.position.set(tile.position.x,0,tile.position.z);built.root.updateMatrixWorld(true);
++  built.root.traverseVisible(o=>{if(!o.isMesh)return;const p=o.geometry.attributes.position,uv=o.geometry.attributes.uv,idx=o.geometry.index;
++   for(const group of o.geometry.groups){const material=Array.isArray(o.material)?o.material[group.materialIndex]:o.material;
++    if(!material?.userData.file)continue;
++    for(let i=group.start;i<group.start+group.count;i+=3){const points=[],coords=[];
++     for(let j=0;j<3;j++){const k=idx?idx.getX(i+j):i+j,vertex=new THREE.Vector3().fromBufferAttribute(p,k).applyMatrix4(o.matrixWorld);points.push(vertex.toArray());coords.push([uv.getX(k),uv.getY(k)]);}
++     meshes.push({points,uv:coords,texture:material.userData.file});
++    }
++   }
++  });
++ }
++ const file=path.join(out,scene.id+'.scene.json');fs.writeFileSync(file,JSON.stringify({...scene,version,triangles:meshes}));
++ const proc=spawnSync('python',[path.join(import.meta.dirname,'cpu-rasterize.py'),file,path.join(out,scene.id+'.png')],{stdio:'inherit'});if(proc.status!==0)throw Error('CPU rasterizer failed');
++}
++fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify({version,renderer:'CPU barycentric rasterization of shared buildBedrockGeometry meshes',limitation:'Alternative technical preview. No WebGL, PBR, game lighting or Minecraft parity. Official Chromium renderer unavailable in this execution environment.',cameraConvention:'right-handed; direction centre to camera; right = worldUp cross direction',rendererSources:Object.fromEntries(['tools/capture-cpu.mjs','tools/cpu-rasterize.py','tools/block-preview-basis.mjs','../../viewer-3d/src/shared/bedrock-geometry.js','../../viewer-3d/src/shared/bedrock-uv.js'].map(p=>[p,crypto.createHash('sha256').update(fs.readFileSync(path.resolve(root,p))).digest('hex')])),sourceHashes:hashes,scenes:scenes.map(s=>({...s,file:s.id+'.png'}))},null,2)+'\n');
++console.log(out);
+diff --git a/addons/altare/tools/cpu-rasterize.py b/addons/altare/tools/cpu-rasterize.py
+new file mode 100644
+index 0000000..11348b4
+--- /dev/null
++++ b/addons/altare/tools/cpu-rasterize.py
+@@ -0,0 +1,64 @@
++"""Technical color-only preview; no browser, GPU, network or external process."""
++import json,sys
++from pathlib import Path
++import numpy as np
++from PIL import Image,ImageDraw,ImageFont
++def camera_basis(vector):
++ # direction is centre -> camera. The basis must have determinant +1;
++ # crossing in the opposite order would mirror lettering and every world X.
++ direction=np.array(vector,float);direction/=np.linalg.norm(direction)
++ right=np.cross([0,1,0],direction);right/=np.linalg.norm(right);up=np.cross(direction,right)
++ assert np.linalg.det(np.stack([right,up,direction]))>.999999
++ return right,up,direction
++
++if sys.argv[1:]==['--test-camera']:
++ for vector in [[0,.02,-1],[0,.02,1],[-.45,.28,-1],[1,.18,.3],[-.65,-.5,-1]]:
++  r,u,d=camera_basis(vector)
++  assert abs(r@u)<1e-9 and abs(r@d)<1e-9 and abs(u@d)<1e-9
++  assert u[1]>0 # screen Y uses minus this projection: world +Y is up
++  if vector[0]==0:assert (r[0]<0)==(vector[2]<0)
++ print('CPU camera: 5 right-handed bases; north +X left, south +X right, +Y up.')
++ sys.exit(0)
++
++s=json.loads(Path(sys.argv[1]).read_text()); W,H=2000,1100
++image=np.zeros((H,W,3),dtype=np.float64);image[:]=[232,227,215];zbuffer=np.full((H,W),-np.inf)
++right,up,direction=camera_basis(s['direction'])
++center=np.array(s.get('center',[(s['w']-1)/2,.50,(s['d']-1)/2]))
++allpts=np.array([p for t in s['triangles'] for p in t['points']]);proj=np.stack([(allpts-center)@right,(allpts-center)@up],1)
++frame=s.get('frame',[np.ptp(proj[:,0]),np.ptp(proj[:,1])]);scale=min((W-220)/frame[0],(H-270)/frame[1]);offset=np.array([W/2,H/2+55])
++light=np.array([-.4,.85,-.55]);light/=np.linalg.norm(light)
++textures={}
++for t in s['triangles']:
++ p=np.array(t['points']);uv=np.array(t['uv']);pp=p-center
++ screen=np.stack([pp@right,-pp@up],1)*scale+offset;depth=pp@direction
++ a,b,c=screen;den=(b[1]-c[1])*(a[0]-c[0])+(c[0]-b[0])*(a[1]-c[1])
++ if abs(den)<1e-8:continue
++ x0=max(0,int(np.floor(screen[:,0].min())));x1=min(W-1,int(np.ceil(screen[:,0].max())))
++ y0=max(0,int(np.floor(screen[:,1].min())));y1=min(H-1,int(np.ceil(screen[:,1].max())))
++ if x0>x1 or y0>y1:continue
++ xx,yy=np.meshgrid(np.arange(x0,x1+1)+.5,np.arange(y0,y1+1)+.5)
++ w0=((b[1]-c[1])*(xx-c[0])+(c[0]-b[0])*(yy-c[1]))/den
++ w1=((c[1]-a[1])*(xx-c[0])+(a[0]-c[0])*(yy-c[1]))/den;w2=1-w0-w1
++ inside=(w0>=-1e-7)&(w1>=-1e-7)&(w2>=-1e-7)
++ zz=w0*depth[0]+w1*depth[1]+w2*depth[2];zview=zbuffer[y0:y1+1,x0:x1+1];mask=inside&(zz>zview+1e-9)
++ if not np.any(mask):continue
++ f=t['texture']
++ if f not in textures:textures[f]=np.array(Image.open(f).convert('RGBA'))
++ tex=textures[f];th,tw=tex.shape[:2]
++ u=w0*uv[0,0]+w1*uv[1,0]+w2*uv[2,0];v=w0*uv[0,1]+w1*uv[1,1]+w2*uv[2,1]
++ tx=np.minimum(tw-1,np.maximum(0,(u*tw).astype(int)));ty=np.minimum(th-1,np.maximum(0,((1-v)*th).astype(int)))
++ samples=tex[ty,tx];mask&=samples[:,:,3]>=128
++ n=np.cross(p[1]-p[0],p[2]-p[0]);n/=np.linalg.norm(n)
++ if n@direction<0:n=-n
++ shade=.65+.45*max(0,float(n@light));rgb=np.minimum(255,samples[:,:,:3]*shade)
++ image[y0:y1+1,x0:x1+1][mask]=rgb[mask];zview[mask]=zz[mask]
++im=Image.fromarray(image.astype('uint8'));draw=ImageDraw.Draw(im)
++try:
++ font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',32);small=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',19)
++except OSError:font=small=ImageFont.load_default()
++draw.text((64,42),'ALTARE  /  CRUZETA EM NOGUEIRA',fill=(55,44,33),font=font)
++label={'none':'Sem toalha','linen_short':'Linho curto','linen_long':'Linho longo','gold_short':'Linho dourado curto','gold_long':'Linho dourado longo','floral':'Floral IHS','lace':'Renda floral','agnus':'Agnus Dei','verdant':'Verdante','requiem':'Réquiem'}.get(s['textile'],s['textile'])
++if s['textile']=='floral':label+=' '+{'white':'branco','red':'vermelho','green':'verde','purple':'roxo','rose':'rosa','black':'preto','gold':'dourado','silver':'prateado'}.get(s.get('color','red'),s.get('color','red'))
++draw.text((64,90),f"Altare {s.get('version','0.12.0')}  ·  {s['w']} × {s['d']} módulos  ·  {label}  ·  geometria e mapas reais do pacote",fill=(100,88,71),font=small)
++draw.text((64,H-48),'PRÉVIA TÉCNICA CPU · iluminação simplificada · não é captura do Minecraft',fill=(105,90,73),font=small)
++im.save(sys.argv[2]);print(sys.argv[2])

@@ -1,0 +1,17 @@
+"""Lower-fragmentation finite ear cutter, mitered offset of pinna yz convex hull.
+The same experimental pinna selection is used. Each supporting line is offset
+outwards by the specified margin (default 0.6 mm). Corner miter extension is explicitly reported; this
+is not the circular Minkowski envelope used by the earlier attempt.
+"""
+from pathlib import Path
+import numpy as np,json,hashlib,sys
+from scipy.spatial import ConvexHull
+O=Path(__file__).resolve().parent;B=O.parents[1];a=np.load(B/'body_interface_v9/constrained_fit/retained-anatomy.npz');ap=a['points'];margin=float(sys.argv[1] if len(sys.argv)>1 else '0.6')/1000;vs=[];fs=[];sides=[];planes=[];infos=[]
+for side in [-1,1]:
+ mask=a['protected_ears']&((ap[:,0]-.04)*side>0)
+ if side>0:mask&=ap[:,2]<=3.500
+ ids=np.flatnonzero(mask);q=ap[ids,1:];h2=ConvexHull(q);q=q[h2.vertices];edge=np.roll(q,-1,axis=0)-q;n=np.stack([edge[:,1],-edge[:,0]],axis=1);n/=np.linalg.norm(n,axis=1)[:,None];rhs=np.einsum('ij,ij->i',n,q)+margin;yz=np.array([np.linalg.solve(np.stack([n[i-1],n[i]]),[rhs[i-1],rhs[i]]) for i in range(len(q))]);xx=[-.4,.04] if side<0 else [.04,.4];points=np.concatenate([np.column_stack([np.full(len(yz),x),yz]) for x in xx]);h=ConvexHull(points);used=np.unique(h.simplices);idx=np.full(len(points),-1,int);idx[used]=np.arange(len(used));v=points[used];f=idx[h.simplices];raw=np.cross(v[f[:,1]]-v[f[:,0]],v[f[:,2]]-v[f[:,0]]);flip=np.einsum('ij,ij->i',raw,h.equations[:,:3])<0;f[flip]=f[flip][:,[0,2,1]]
+ infos.append({'side':side,'x_extent':xx,'anatomy_vertex_indices':ids.tolist(),'yz_source_hull':q.tolist(),'yz_offset_polygon':yz.tolist(),'corner_extensions_mm':(np.linalg.norm(yz-q,axis=1)*1000).tolist(),'max_corner_extension_mm':float(np.linalg.norm(yz-q,axis=1).max()*1000),'cutter_vertices':len(v),'cutter_triangles':len(f)});fs.append(f+sum(map(len,vs)));vs.append(v);sides.extend([side]*len(f));planes.append(h.equations)
+tag=f'polygonal-pinna-{margin*1000:g}mm';dst=O/(tag+'-cutter.npz')
+if dst.exists():raise FileExistsError(dst)
+np.savez_compressed(dst,points=np.concatenate(vs),triangles=np.concatenate(fs),face_sides=np.array(sides),planes=np.concatenate(planes),metadata=np.array(json.dumps({'scope':'pinna','margin_mm':margin*1000,'method':'Mitered offset of frozen experimental pinna yz hull, extruded through matching halfspace','ears':infos,'offset_description':f'Every original hull support line offset exactly {margin*1000:g} mm; corner extensions separately measured, not a circular offset.'})));(O/(tag+'-envelope-manifest.json')).write_text(json.dumps({'tag':tag,'file':dst.name,'sha256':hashlib.sha256(dst.read_bytes()).hexdigest(),'ears':infos},indent=2));print(json.dumps({'tag':tag,'corners':[(r['side'],len(r['yz_offset_polygon']),r['max_corner_extension_mm']) for r in infos]},indent=2))

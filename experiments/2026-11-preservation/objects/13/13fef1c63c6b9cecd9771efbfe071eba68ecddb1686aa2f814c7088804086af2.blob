@@ -1,0 +1,24 @@
+"""Independent immutable input review: Blender -b --python this.py -- INPUT OUTPUTPREFIX.
+Does not certify visual quality, alpha-expanded transport, or runtime.
+"""
+from pathlib import Path
+import sys,importlib.util,json,numpy as np,hashlib
+from mathutils.bvhtree import BVHTree
+sys.dont_write_bytecode=True
+O=Path(__file__).resolve().parent;B=O.parent.parent
+spec=importlib.util.spec_from_file_location('source_gate',B/'shell_band_v3/tools/independent_gate.py');gate=importlib.util.module_from_spec(spec);spec.loader.exec_module(gate)
+args=sys.argv[sys.argv.index('--')+1:];path=Path(args[0]);pref=args[1];d=np.load(path);v=d['points'];f=d['triangles'];base=np.load(B/'body_interface_v8/anatomy_fit/baseline-welded.npz');shell=np.load(B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz')
+assert path.exists();rep={'input':str(path.resolve()),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'shell_sha256':hashlib.sha256((B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz').read_bytes()).hexdigest(),'same_connectivity':bool(np.array_equal(f,base['triangles'])),'same_source_indices':bool(np.array_equal(d['source_indices'],base['source_indices'])),'same_source_face_indices':bool(np.array_equal(d['source_face_indices'],base['source_face_indices'])),'limitations':'Strict crossings, topology and displacement audit only. Not tangency/coplanarity or global-clearance certificate; alpha expansion and runtime not tested.'}
+rep['self_gate']=gate.review(path);tree=BVHTree.FromPolygons(v.tolist(),f.tolist(),all_triangles=True,epsilon=0);st=BVHTree.FromPolygons(shell['points'].tolist(),shell['triangles'].tolist(),all_triangles=True,epsilon=0);hits=[]
+for i,j in tree.overlap(st):
+ w=gate.strict_hits(v[f[i]],shell['points'][shell['triangles'][j]])+gate.strict_hits(shell['points'][shell['triangles'][j]],v[f[i]])
+ if w:hits.append({'body_face':int(i),'body_source_face':int(d['source_face_indices'][i]),'shell_face':int(j),'shell_part':int(shell['face_parts'][j]),'witnesses':w})
+rep['body_shell']={'strict_pairs':len(hits),'body_faces':len(set(x['body_face'] for x in hits)),'shell_faces':len(set(x['shell_face'] for x in hits)),'by_shell_part':{str(i):sum(x['shell_part']==i for x in hits) for i in range(3)},'crossings':hits}
+# Preserve selected vertices literally; note worst displacements and triangle inversion relative original.
+delta=v-base['points'];mag=np.linalg.norm(delta,axis=1)*1000;rep['displacement_mm']={'moved_vertices_gt_1e_minus_9_mm':int((mag>1e-9).sum()),'max':float(mag.max()),'p95_all_vertices':float(np.percentile(mag,95)),'p95_moved_vertices':float(np.percentile(mag[mag>1e-9],95)) if (mag>1e-9).any() else 0.0,'median_moved':float(np.median(mag[mag>1e-9])) if (mag>1e-9).any() else 0.0,'worst_vertex':int(mag.argmax()),'worst_source_vertex':int(d['source_indices'][mag.argmax()])}
+rep['protected']={}
+for k in ['protected_vertices','protected_face','protected_ears','protected_lowneck']:
+ if k in d.files:
+  mask=d[k].astype(bool);rep['protected'][k]={'vertices':int(mask.sum()),'unchanged_bit_for_bit':bool(np.array_equal(v[mask],base['points'][mask])),'max_displacement_mm':float(mag[mask].max()) if mask.any() else 0.0}
+t=v[f];bt=base['points'][f];cross=np.cross(t[:,1]-t[:,0],t[:,2]-t[:,0]);bcross=np.cross(bt[:,1]-bt[:,0],bt[:,2]-bt[:,0]);area=np.linalg.norm(cross,axis=1);ba=np.linalg.norm(bcross,axis=1);dot=np.sum(cross*bcross,axis=1);valid=ba>2e-12;ratio=area/np.maximum(ba,1e-300);cos=dot/np.maximum(area*ba,1e-300);rep['face_changes']={'original_faces_over_1e_minus_12_area':int(valid.sum()),'normal_rotated_gt90_faces':np.flatnonzero(valid&(dot<0)).tolist(),'minimum_area_ratio_valid':float(ratio[valid].min()),'max_normal_change_degrees_valid':float(np.degrees(np.arccos(np.clip(cos[valid],-1,1))).max()),'area_ratio_below_0p1_faces':np.flatnonzero(valid&(ratio<.1)).tolist()}
+(O/(pref+'-review.json')).write_text(json.dumps(rep,indent=2));print(json.dumps({k:v for k,v in rep.items() if k not in ['self_gate','body_shell']},indent=2));print('SELF', {k:rep['self_gate'][k] for k in ['strict_crossings','boundary_edges','edges_not_two_faces','inconsistent_edge_winding','degenerate_triangles','opposed_coplanar_edge_adjacent_candidates','passes_screen']});print('BODY_SHELL',{k:v for k,v in rep['body_shell'].items() if k!='crossings'},flush=True)

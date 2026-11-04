@@ -1,0 +1,65 @@
+{
+  "trial_sha256": "c173a3695d8bdf4a614690e2a76a89a3a403266e326011704709e401c6589ef1",
+  "constraints": {
+    "same_shape": true,
+    "all_rgb_unchanged": true,
+    "legacy_region_all_channels_unchanged": true,
+    "binary_alpha": [
+      0,
+      255
+    ]
+  },
+  "parts": {
+    "0": {
+      "faces": 4444,
+      "native_area_blocks2": 0.03362153689119629,
+      "old_added_area_blocks2": 0.0074055496438982515,
+      "old_missing_area_blocks2": 0.00017281653195176975,
+      "trial_added_area_blocks2": 0.0011581144977198113,
+      "trial_missing_area_blocks2": 0.0009298246983945815,
+      "trial_empty_faces": 0,
+      "max_trial_missing_fraction": 0.040115109065623426,
+      "max_trial_added_fraction": 0.060014443429956064,
+      "old_added_fraction_area_weighted": 0.22026207986456964,
+      "old_missing_fraction_area_weighted": 0.0051400544987287985,
+      "trial_added_fraction_area_weighted": 0.034445614472283705,
+      "trial_missing_fraction_area_weighted": 0.027655627445099144
+    },
+    "1": {
+      "faces": 12664,
+      "native_area_blocks2": 5.405380952320958,
+      "old_added_area_blocks2": 1.0257061833152656,
+      "old_missing_area_blocks2": 0.004501010897191224,
+      "trial_added_area_blocks2": 0.2627364357289234,
+      "trial_missing_area_blocks2": 0.046325410198968776,
+      "trial_empty_faces": 0,
+      "max_trial_missing_fraction": 0.04010639090977223,
+      "max_trial_added_fraction": 0.06017321525716354,
+      "old_added_fraction_area_weighted": 0.18975650233770272,
+      "old_missing_fraction_area_weighted": 0.0008326907829241126,
+      "trial_added_fraction_area_weighted": 0.04860646049675923,
+      "trial_missing_fraction_area_weighted": 0.008570239657036125
+    },
+    "15": {
+      "faces": 1376,
+      "native_area_blocks2": 0.6268532339745579,
+      "old_added_area_blocks2": 0.1535547516592203,
+      "old_missing_area_blocks2": 0.0008632397673791525,
+      "trial_added_area_blocks2": 0.01998387570836567,
+      "trial_missing_area_blocks2": 0.018124638554855646,
+      "trial_empty_faces": 0,
+      "max_trial_missing_fraction": 0.040017735762712045,
+      "max_trial_added_fraction": 0.05996875071096327,
+      "old_added_fraction_area_weighted": 0.24496124983771342,
+      "old_missing_fraction_area_weighted": 0.0013771002853503486,
+      "trial_added_fraction_area_weighted": 0.031879672346360986,
+      "trial_missing_fraction_area_weighted": 0.028913687562775292
+    }
+  },
+  "method": "Reuse independently derived native triangle\u2192tile coordinates from the original audit. Recompute exact polygon intersection with unit pixel cells for only the alternative alpha. No geometry/transform/primary-source/legacy engine tests repeated.",
+  "limitations": [
+    "Per-face area totals are not union area or silhouette area.",
+    "Center-only alpha still expands beyond triangle in some pixel-cell corners and erodes inside other parts.",
+    "Nearest mip0 model only; closing one witness does not prove crack-free or acceptable rendering."
+  ]
+}

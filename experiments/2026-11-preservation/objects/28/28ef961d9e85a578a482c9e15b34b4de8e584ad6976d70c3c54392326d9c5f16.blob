@@ -1,0 +1,6 @@
+import bpy,hashlib
+from pathlib import Path
+R=Path(__file__).resolve().parents[1];bpy.ops.wm.open_mainfile(filepath=str(R/'evidence/intrinsic097-diagnostic.blend'),use_scripts=False)
+for o in bpy.data.objects:
+ if o.name.startswith('Part15 native geometry override'):o.name='V9 retained anatomy NATIVE research; not Bedrock'
+s=bpy.context.scene;s['research_scope']='V9 anatomy NATIVE + V7 shell NATIVE + V5 band NATIVE. Other pieces legacy JSON. No V9 Bedrock export, game test or global approval.';s['retained_sha256']=hashlib.sha256((R/'constrained_fit/retained-anatomy.npz').read_bytes()).hexdigest();s['published']=False;s['minecraft_tested']=False;bpy.ops.wm.save_as_mainfile(filepath=str(R/'evidence/retained-structural-diagnostic.blend'))

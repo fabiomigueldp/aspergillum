@@ -1,0 +1,15 @@
+{
+  "status": "Rejected diagnostic candidate; stopped after one Hermite construction as requested.",
+  "strict_crossings": 934,
+  "crossing_part_pairs": {
+    "(1, 1)": 927,
+    "(1, 2)": 7
+  },
+  "winding_inconsistent_edges": 0,
+  "boundary_edges": 0,
+  "source_endpoints_unchanged": true,
+  "source_faces_not_flipped": true,
+  "normalmap_untouched": true,
+  "finding": "Hermite center-surface derivative normals align with cap thickness at start but oppose mantle thickness at end. Exact wall endpoints then create a return/inversion in this candidate. The construction does not solve the physical wall/orientation incompatibility.",
+  "scope_limit": "Failure of this concrete correspondence and loft, not a proof that every possible redesigned transition is impossible. No additional geometry optimization performed."
+}

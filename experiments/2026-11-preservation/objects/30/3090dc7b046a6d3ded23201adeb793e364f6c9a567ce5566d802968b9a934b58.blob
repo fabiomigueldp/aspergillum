@@ -1,0 +1,58 @@
+import numpy as np,json,collections
+from pathlib import Path
+R=Path(__file__).resolve().parents[1];z=np.load(R/'evidence/bridge-boundary-parameters.npz');src=np.load(R/'evidence/seam-source-inspection.npz');pos=src[[k for k in src.files if k.startswith('key_TESTE74')][0]];old=np.load(R/'evidence/bridge-exact.npz');norm={int(i):n for i,n in zip(old['source_indices'],old['normals'])};tri=[]
+def strip(a,b,ta,tb):
+ i=j=0
+ while i<len(a)-1 or j<len(b)-1:
+  if i<len(a)-1 and (j==len(b)-1 or ta[i+1]<=tb[j+1]+1e-12):tri.append([int(a[i]),int(a[i+1]),int(b[j])]);i+=1
+  else:tri.append([int(a[i]),int(b[j+1]),int(b[j])]);j+=1
+for side in [0,1]:
+ c=z['cap_ids'][z['cap_side']==side];ct=z['cap_t'][z['cap_side']==side];ix=np.argsort(ct);c,ct=c[ix],ct[ix];m=z['mantle_ids'][z['mantle_side']==side];mt=z['mantle_t'][z['mantle_side']==side];ix=np.argsort(mt);m,mt=m[ix],mt[ix];strip(c,m,ct,mt)
+# Follow endpoint arcs outer -> inner using boundary adjacency.
+def arc(edges,start,end):
+ adj=collections.defaultdict(list)
+ for x,y in edges:adj[int(x)].append(int(y));adj[int(y)].append(int(x))
+ paths=[]
+ for first in adj[start]:
+  p=[start,first]
+  while p[-1]!=end:p.append(next(x for x in adj[p[-1]] if x!=p[-2]))
+  paths.append(p)
+ return min(paths,key=len)
+cap=np.load(R/'evidence/cap-open.npz');man=np.load(R/'evidence/mantle-rest.npz');ce=cap['source_indices'][cap['boundary_edges']];me=man['source_indices'][man['boundary_edges']]
+for ca,ci,ma,mi in [(4956,9996,161106,161906),(5012,10052,161185,161985)]:
+ c=arc(ce,ca,ci);m=arc(me,ma,mi);assert len(c)==len(m)==5;strip(c,m,np.linspace(0,1,5),np.linspace(0,1,5))
+# Orient every bridge face from cap boundary, propagating across shared bridge edges.
+edges=collections.defaultdict(list)
+for i,f in enumerate(tri):
+ for x,y in zip(f,f[1:]+f[:1]):edges[tuple(sorted((x,y)))].append((i,x,y))
+capfaces=cap['source_indices'][cap['triangles']];capedge={}
+for f in capfaces:
+ for x,y in zip(f,np.roll(f,-1)):
+  key=tuple(sorted((int(x),int(y))))
+  if key in edges:capedge[key]=(int(x),int(y))
+sign={};queue=[]
+for edge,(x,y) in capedge.items():
+ if len(edges[edge])==1:
+  i,a,b=edges[edge][0];sg=-1 if (a,b)==(x,y) else 1
+  if i in sign:assert sign[i]==sg
+  sign[i]=sg;queue.append(i)
+while queue:
+ i=queue.pop();f=tri[i]
+ for x,y in zip(f,f[1:]+f[:1]):
+  for j,a,b in edges[tuple(sorted((x,y)))]:
+   if j==i:continue
+   sg=sign[i]*(-1 if (a,b)==(x,y) else 1)
+   if j in sign:assert sign[j]==sg
+   else:sign[j]=sg;queue.append(j)
+assert len(sign)==len(tri)
+tri=np.array([f if sign[i]==1 else f[::-1] for i,f in enumerate(tri)]);ids=np.unique(tri);mp={int(s):i for i,s in enumerate(ids)};f=np.array([[mp[int(s)] for s in t] for t in tri]);np.savez_compressed(R/'evidence/bridge-paired.npz',points=pos[ids],triangles=f,source_indices=ids,normals=np.array([norm[int(i)] for i in ids]),face_parts=np.ones(len(f),int))
+def merge(files,name):
+ pp={};nn={};ff=[];parts=[]
+ for part,file in enumerate(files):
+  a=np.load(R/('evidence/'+file+'.npz'))
+  for sid,p,n in zip(a['source_indices'],a['points'],a['normals']):
+   if int(sid) in pp:assert np.array_equal(pp[int(sid)],p)
+   pp[int(sid)]=p;nn[int(sid)]=n
+  ff.extend(a['source_indices'][a['triangles']].tolist());parts.extend([part]*len(a['triangles']))
+ ids=np.array(sorted(pp));mp={int(s):i for i,s in enumerate(ids)};f=np.array([[mp[s] for s in t] for t in ff]);np.savez_compressed(R/('evidence/'+name+'.npz'),points=np.array([pp[int(s)] for s in ids]),normals=np.array([nn[int(s)] for s in ids]),source_indices=ids,triangles=f,face_parts=np.array(parts))
+merge(['cap-open','bridge-paired'],'cap-bridge-paired');merge(['cap-open','bridge-paired','mantle-paired'],'seam-paired-assembly');report={'bridge_vertices':len(ids),'bridge_triangles':len(tri),'method':'Independent outer/inner parameter synchronized strips with identical zipper connectivity; two endpoint caps. Exact source endpoints, no coordinate movement.','source_unchanged':True};(R/'evidence/bridge-paired-build.json').write_text(json.dumps(report,indent=2));print(report)

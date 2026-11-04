@@ -1,0 +1,18 @@
+from pathlib import Path
+import numpy as np,json,sys
+from collections import defaultdict
+O=Path(__file__).resolve().parent;B=O.parents[1];tag=sys.argv[1];a=np.load(B/'body_interface_v9/constrained_fit/retained-anatomy.npz');b=np.load(B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz');d=np.load(B/f'ear_rim_v11/structural_rebuild/{tag}.npz');arr=np.load(O/(tag+'-review-arrays.npz'));old=json.loads((O/'contact-spatial-witnesses.json').read_text());groups=defaultdict(list)
+for r in old:groups[(r['shell_face'],r['body_face'])].append(r['point'])
+sets={'baseline':groups};groups=defaultdict(list)
+for pair,pt in zip(arr['anatomy_witness_pair_indices'],arr['anatomy_witness_points']):groups[tuple(pair)].append(pt)
+sets['candidate']=groups;out={}
+for label,gr in sets.items():
+ lens=[];side=defaultdict(float);parts=defaultdict(float);earlen=0.;earpairs=0;segmentrows=[];mesh=b if label=='baseline' else d
+ for (s,bod),pts in gr.items():
+  pts=np.array(pts);dist=np.sqrt(np.sum((pts[:,None]-pts[None,:])**2,axis=-1));idx=np.unravel_index(dist.argmax(),dist.shape);ll=float(dist[idx]*1000);lens.append(ll);center=pts.mean(0);sidelabel='positive_x' if center[0]>.04 else 'negative_x';side[sidelabel]+=ll;part=int(mesh['face_parts'][s]);parts[str(part)]+=ll;ear=bool(np.any(a['protected_ears'][a['triangles'][bod]]))
+  if ear:earlen+=ll;earpairs+=1
+  segmentrows.append({'shell_face':int(s),'anatomy_face':int(bod),'part':part,'segment':pts[list(idx)].tolist(),'length_mm':ll,'incident_to_ear_mask':ear,'side':sidelabel})
+ out[label]={'noncoplanar_intersection_polyline_length_mm_sum':sum(lens),'pair_segments':len(lens),'by_side_mm':dict(side),'by_shell_part_mm':dict(parts),'protected_mask_incident_trace_length_mm':earlen,'protected_mask_incident_pairs':earpairs,'zero_length_pairs':int(sum(x<1e-9 for x in lens))};(O/(tag+'-'+label+'-contact-segments.json')).write_text(json.dumps(segmentrows,indent=2))
+out['spatial_union_or_deduplication']=False
+out['method']='For each strictly crossing triangle pair, maximum separation of its recomputed segment-triangle witness points gives noncoplanar intersection segment length; sum across pairs. Unlike pair count this sum is stable under regular subdivision when trace is not duplicated. No coplanar/tangent certificate; exact boundaries not strict can be missed.'
+(O/(tag+'-contact-trace-lengths.json')).write_text(json.dumps(out,indent=2));print(json.dumps(out,indent=2))

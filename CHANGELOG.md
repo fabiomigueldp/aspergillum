@@ -1,5 +1,16 @@
 # Changelog
 
+## Preservação — 2026-11-04
+
+- Preserva fontes, entradas, estudos históricos, modelo 3D e add-on Nossa Senhora da Paz em [arquivo isolado e restaurável](experiments/2026-11-preservation/README.md), com deduplicação e hashes por arquivo.
+- Mantém as versões/runtime e o áudio aprovado; não promove schemas incompatíveis, diagnósticos ou candidatos visuais a release.
+
+## Em desenvolvimento — 2026-11-04 — fechamento das interfaces
+
+- Impede ações atrasadas e fechamento duplicado depois que a interface deixa de estar aberta; remove inscrições dos observáveis ao encerrar ou falhar na abertura.
+- Preserva aplicação imediata, restauração, retirada e transações existentes. Aspergillum permanece 1.2.5, sem novo pacote ou validação nativa. [Contrato e reteste](docs/SACRISTAN_TABLE_DESIGN_CONTRACT.md).
+- Permite repetir um fechamento nativo que falhou sem ocultar a tela. No Altare, Aplicar com falha não deixa um acabamento pendente para Cancelar depois; na Mesa, uma retirada já concluída não é repetida.
+
 ## Em desenvolvimento — 2026-11-04 — editor Altare
 
 - Personalização mais clara, materiais fixos como texto e ações que respeitam o fechamento da tela.

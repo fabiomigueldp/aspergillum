@@ -1,0 +1,21 @@
+# V75 opaque voxel alternatives
+
+Authoritative deliverables are in **H96/** and **H192/**. Files in this directory root and root renders are preliminary, superseded outputs (including an earlier centered-origin version). Do not package those preliminary files.
+
+- H96: 340 nonoverlapping cuboids, 2,040 emitted faces, 20,529 occupied voxels.
+- H192: 1,360 nonoverlapping cuboids, 8,160 emitted faces, 140,157 occupied voxels.
+- Geometry format 1.14.0, per-face UV, no poly_mesh, no zero-thickness cubes.
+- Two opaque stone swatches in a 16x8 RGBA PNG; source linear base colors encoded to sRGB.
+- Coordinates Blender(x,y,z) -> Bedrock(-x,z,-y), scale 16. One Blender unit is one block. Height 3.760687351 blocks. Each geometry has a unique identifier ending h96/h192.
+
+## Method and evidence
+
+The evaluated 1,052,300-triangle high mesh was sampled on a barycentric lattice whose maximum edge sampling interval is 0.45 voxel. Enclosed empty cavities were filled, with color assigned from nearest occupied voxel. Six axis-order greedy box merges were tried and the smallest result retained. Exact, nonoverlapping reconstruction of the resulting voxel occupancy was asserted. See per-variant metrics.json, voxel_grid.npz, and comparison.json.
+
+Run `python build_voxels.py 96` or `python build_voxels.py 192` to reproduce. The source meshes and metadata in ../evidence are read-only inputs.
+
+## Limits
+
+This is sampled voxelization, not exact conservative triangle-box intersection. Sampling may omit very small details; boundary alignment and grid coverage can broaden horizontal dimensions by up to a voxel. The topmost boundary-only sample is excluded so the grid has exactly the requested height. Closed cavities are filled, but open meshes can stay hollow. All six faces of every box are exported, including occluded internal faces. Voxelization changes sculpture contours and loses details; H96 strongly simplifies faces and hands. Cuboid counts alone do not establish acceptable mobile performance.
+
+No Minecraft validation was performed. Any offline Blender reconstruction is NOT an in-game screenshot. These are geometry and texture assets, not standalone installable add-ons. The existing add-on and source sculpture were not modified.

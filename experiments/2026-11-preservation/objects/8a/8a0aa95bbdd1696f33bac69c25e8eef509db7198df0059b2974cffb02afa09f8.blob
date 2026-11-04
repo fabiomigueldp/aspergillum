@@ -1,0 +1,46 @@
+from pathlib import Path
+from PIL import Image,ImageDraw,ImageFont
+import json,uuid,zipfile,hashlib,shutil,numpy as np
+R=Path(__file__).resolve().parents[1];RP=R/'resource_pack';BP=R/'behavior_pack'
+def write(p,x):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(x,indent=2))
+def uid(k):return str(uuid.uuid5(uuid.NAMESPACE_URL,'https://local.invalid/paz-v75-pbr-lab-20261103/'+k))
+for prefix,base in [('rp',RP),('bp',BP)]:
+ m={'format_version':2,'header':{'name':'Paz V75 PBR NORMALS LAB '+prefix.upper(),'description':'Vibrant Visuals research only. Normal mapping and low-shell defects not approved. Disposable world only.','uuid':uid(prefix+'header'),'version':[0,0,1],'min_engine_version':[1,21,120]},'modules':[{'type':'resources' if prefix=='rp' else 'data','uuid':uid(prefix+'module'),'version':[0,0,1]}]}
+ if prefix=='rp':m['capabilities']=['pbr']
+ else:m['dependencies']=[{'uuid':uid('rpheader'),'version':[0,0,1]}]
+ write(base/'manifest.json',m)
+main_geo=json.load(open(RP/'models/entity/sculpture_hybrid.geo.json'));main_geo['minecraft:geometry'][0]['description']['identifier']='geometry.paz_v75_pbr.sculpture';write(RP/'models/entity/paz_v75_pbr_sculpture.geo.json',main_geo)
+for old,new in [('sculpture_hybrid.png','paz_v75_pbr_sculpture.png'),('sculpture_hybrid_normal_dx.png','paz_v75_pbr_sculpture_normal_dx.png')]:shutil.copy2(RP/'textures/entity'/old,RP/'textures/entity'/new)
+roughness=json.load(open(R.parent/'evidence/source-export.json'))['parts'][0]['roughness']
+write(RP/'textures/entity/paz_v75_pbr_sculpture.texture_set.json',{'format_version':'1.21.30','minecraft:texture_set':{'color':'paz_v75_pbr_sculpture','normal':'paz_v75_pbr_sculpture_normal_dx','metalness_emissive_roughness':[0,0,round(255*roughness)]}})
+# Asymmetric calibration: neutral, +X, +Y, -Y, with identifiable colors/letters.
+normal=np.zeros((128,192,3),np.uint8);vectors=[(0,0,1),(.6,0,.8),(-.6,0,.8),(0,.6,.8),(0,-.6,.8),(.4242640687,.4242640687,.8)]
+color=Image.new('RGB',(192,128),'#c5bca6');dr=ImageDraw.Draw(color);font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',13)
+for i,v in enumerate(vectors):
+ x=(i%3)*64;y=(i//3)*64;dr.rectangle([x+1,y+1,x+62,y+62],outline='#303030',width=2);dr.text((x+5,y+5),['0 FLAT','+X','-X','+Y','-Y','+XY'][i],font=font,fill='#303030');t=np.array(v);t[1]*=-1;normal[y:y+64,x:x+64]=np.round((t*.5+.5)*255).astype(np.uint8)
+for convention in ['dx','gl']:
+ name='paz_v75_pbr_calibration_'+convention;color.save(RP/'textures/entity'/f'{name}.png');nn=normal.copy()
+ if convention=='gl':nn[:,:,1]=255-nn[:,:,1]
+ Image.fromarray(nn).save(RP/'textures/entity'/f'{name}_normal.png')
+ write(RP/'textures/entity'/f'{name}.texture_set.json',{'format_version':'1.21.30','minecraft:texture_set':{'color':name,'normal':name+'_normal','metalness_emissive_roughness':[0,0,255]}})
+calgeo={'format_version':'1.14.0','minecraft:geometry':[{'description':{'identifier':'geometry.paz_v75_pbr.calibration','texture_width':192,'texture_height':128,'visible_bounds_width':12,'visible_bounds_height':6,'visible_bounds_offset':[-2,1,0]},'bones':[{'name':'root','pivot':[0,0,0],'cubes':[{'origin':[-16,0,0],'size':[32,32,0],'pivot':[0,16,0],'uv':{'south':{'uv':[0,0],'uv_size':[192,128]}}},{'origin':[24,0,0],'size':[32,32,0],'pivot':[40,16,0],'rotation':[25,30,15],'uv':{'south':{'uv':[0,0],'uv_size':[192,128]}}}]}]}]}
+write(RP/'models/entity/calibration.geo.json',calgeo)
+variants=[('sculpture','geometry.paz_v75_pbr.sculpture','paz_v75_pbr_sculpture'),('calibration_dx','geometry.paz_v75_pbr.calibration','paz_v75_pbr_calibration_dx'),('calibration_gl','geometry.paz_v75_pbr.calibration','paz_v75_pbr_calibration_gl')]
+for key,geometry,texture in variants:
+ identifier='paz_v75_pbr:'+key
+ write(RP/'entity'/f'{key}.entity.json',{'format_version':'1.10.0','minecraft:client_entity':{'description':{'identifier':identifier,'materials':{'default':'entity_alphatest'},'textures':{'default':'textures/entity/'+texture},'geometry':{'default':geometry},'render_controllers':['controller.render.paz_v75_pbr'],'spawn_egg':{'base_color':'#b6c1d6','overlay_color':'#7655aa'}}}})
+ write(BP/'entities'/f'{key}.json',{'format_version':'1.21.80','minecraft:entity':{'description':{'identifier':identifier,'is_spawnable':True,'is_summonable':True,'is_experimental':False},'components':{'minecraft:physics':{'has_gravity':False,'has_collision':False},'minecraft:health':{'value':20,'max':20},'minecraft:persistent':{}}}})
+write(RP/'render_controllers/pbr.render_controllers.json',{'format_version':'1.8.0','render_controllers':{'controller.render.paz_v75_pbr':{'geometry':'Geometry.default','materials':[{'*':'Material.default'}],'textures':['Texture.default']}}})
+# Exclude intermediate alpha atlas/geometry and all evidence. One2048 albedo + one2048 normal only.
+allowed=['manifest.json','models/entity/paz_v75_pbr_sculpture.geo.json','models/entity/calibration.geo.json','textures/entity/paz_v75_pbr_sculpture.png','textures/entity/paz_v75_pbr_sculpture_normal_dx.png','textures/entity/paz_v75_pbr_sculpture.texture_set.json','render_controllers/pbr.render_controllers.json']
+for key,_,_ in variants:allowed.append('entity/'+key+'.entity.json')
+for key in ('calibration_dx','calibration_gl'):
+ allowed += ['textures/entity/paz_v75_pbr_'+key+s for s in ('.png','_normal.png','.texture_set.json')]
+path=R/'Paz-V75-PBR-NORMALS-LAB-NOT-RELEASE.mcaddon'
+with zipfile.ZipFile(path,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+ for rel in allowed:z.write(RP/rel,'PazV75PBR_RP/'+rel)
+ z.write(BP/'manifest.json','PazV75PBR_BP/manifest.json')
+ for p in (BP/'entities').glob('*.json'):z.write(p,'PazV75PBR_BP/entities/'+p.name)
+with zipfile.ZipFile(path) as z:assert z.testzip() is None
+report={'file':path.name,'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'bytes':path.stat().st_size,'engine_minimum':[1,21,120],'requires_graphics_mode':'Vibrant Visuals','capabilities':['pbr'],'normal_convention':'DirectX as initial hypothesis; DX/GL calibration included for actual engine','emissive':0,'directional_light_baked':False,'roughness_0_255':round(255*roughness),'geometry_cubes':7793,'albedo_and_normal_size':[2048,2048],'approx_raw_rgba_two_layers_mib':32,'approx_raw_rgba_total_with_calibration_mib':32.375,'push_components':'Legacy pushable omitted; no new push components present','classic_mode_normal_maps_ignored':True,'rtx_entity_pbr_supported':False,'runtime_tested':False,'release_approved':False}
+write(R/'evidence/pbr-package.json',report);print(json.dumps(report,indent=2))

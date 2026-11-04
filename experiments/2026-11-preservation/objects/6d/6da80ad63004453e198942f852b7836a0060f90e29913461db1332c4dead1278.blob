@@ -1,0 +1,25 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-cloth-obstacle-surface-trial.py').read().split('counts=collections.Counter')[0])
+patch=set(json.load(open(r+'neck-paired-boundary-feasibility-growth.json'))['patch_faces']);contact={(a,b) for a,b in hb.overlap(BVHTree.FromPolygons(p.tolist(),fs)) if b in patch};active={b for a,b in contact};edgefaces=collections.defaultdict(set)
+for fi in patch:
+ f=fs[fi]
+ for a,b in zip(f,f[1:]+f[:1]):edgefaces[tuple(sorted((a,b)))].add(fi)
+adj=collections.defaultdict(set)
+for faces in edgefaces.values():
+ for a in faces:adj[a]|=faces-{a}
+seen=set();components=[]
+for fi in active:
+ if fi in seen:continue
+ todo=[fi];seen.add(fi);comp=[]
+ while todo:
+  a=todo.pop();comp.append(a)
+  for b in adj[a]&active:
+   if b not in seen:seen.add(b);todo.append(b)
+ ids={v for f in comp for v in fs[f]};components.append({'faces':comp,'bounds':[p[list(ids)].min(0).tolist(),p[list(ids)].max(0).tolist()],'skin_pairs':sum(b in comp for a,b in contact)})
+counts=collections.Counter(tuple(sorted((a,b))) for fi in patch for a,b in zip(fs[fi],fs[fi][1:]+fs[fi][:1]));boundary={v for e,n in counts.items() if n==1 for v in e};affected={v for fi in patch for v in fs[fi]};interior=affected-boundary
+# A detached seed must keep boundary fixed while escaping the skin. Find directional separation of the *entire* local skin geometry, not sampled nearest normals.
+head=bpy.data.objects['Maria — anatomia feminina adaptada CC0'];hm=head.evaluated_get(dg).to_mesh();hp=np.array([v.co[:] for v in hm.vertices]);hf=[tuple(f.vertices) for f in hm.polygons];head.evaluated_get(dg).to_mesh_clear();lo=p[list(affected)].min(0);hi=p[list(affected)].max(0);near_skin=[]
+for fi,f in enumerate(hf):
+ tri=hp[list(f)]
+ if np.all(tri.max(0)[1:]>=lo[1:]) and np.all(tri.min(0)[1:]<=hi[1:]):near_skin.append(fi)
+local=hp[list({v for f in near_skin for v in hf[f]})];sep_x=float(local[:,0].min()-.001);boundary_x=p[list(boundary),0];need=np.maximum(0,boundary_x-sep_x)
+report={'method':'Connected intersection regions + feasibility of guaranteed-separated seed, no deformation','components':components,'component_count':len(components),'local_skin_bounds':[local.min(0).tolist(),local.max(0).tolist()],'guaranteed_left_plane_x':sep_x,'boundary_vertices':len(boundary),'boundary_vertices_not_left_of_separating_plane':int((need>0).sum()),'boundary_move_needed_for_planar_certificate_m':[float(need.min()),float(need.max())],'region_bounds':[lo.tolist(),hi.tolist()],'note':'A global separating-plane seed cannot preserve these boundary coordinates. This rules out that certificate, NOT every curved reconstruction.'};json.dump(report,open(r+'neck-detached-seed-feasibility.json','w'),indent=2);print({k:v for k,v in report.items() if k!='components'});print([(len(c['faces']),c['skin_pairs']) for c in components])

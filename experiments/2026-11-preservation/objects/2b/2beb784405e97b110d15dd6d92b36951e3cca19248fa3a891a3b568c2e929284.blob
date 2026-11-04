@@ -1,0 +1,5 @@
+import numpy as np,json
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';s=np.load(r+'neck-collar-exact-obstacles.npz');P=s['skin_points'][s['skin_triangles']];Y=P[:,:,1:];e1=Y[:,1]-Y[:,0];e2=Y[:,2]-Y[:,0];det=e1[:,0]*e2[:,1]-e1[:,1]*e2[:,0];valid=abs(det)>1e-14;C=np.load(r+'cap-mantle-source-cap.npz')['points'][-112:][28:85];res=[]
+for j in range(15,42):
+ q=C[j];ids=np.where(valid &(Y.max(1)>=q[1:]).all(1)&(Y.min(1)<=q[1:]).all(1))[0];z=q[1:]-Y[ids,0];u=(z[:,0]*e2[ids,1]-z[:,1]*e2[ids,0])/det[ids];v=(e1[ids,0]*z[:,1]-e1[ids,1]*z[:,0])/det[ids];ok=(u>=0)&(v>=0)&(u+v<=1);ids=ids[ok];u=u[ok];v=v[ok];x=P[ids,0,0]+u*(P[ids,1,0]-P[ids,0,0])+v*(P[ids,2,0]-P[ids,0,0]);sign=1 if j<28 else -1;need=float(np.max(.0008+sign*(x-q[0]))) if len(x) else None;res.append({'node':j,'required_outward_x_m':need})
+json.dump({'fixed_cap_nodes':res,'note':'Same X-envelope diagnostic; not a general clearance metric; no movements'},open(r+'cap-fixed-contour-clearance-audit.json','w'),indent=2);print([a for a in res if a['required_outward_x_m'] is not None and a['required_outward_x_m']>0])

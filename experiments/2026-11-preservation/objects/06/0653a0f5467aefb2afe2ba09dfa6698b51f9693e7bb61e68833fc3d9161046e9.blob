@@ -1,0 +1,40 @@
+import { system, type Dimension, type Vector3 } from "@minecraft/server";
+import type { DockedAspergillumSnapshot } from "../domain/docking";
+import { deleteDockedSnapshot, getDockedSnapshot } from "./docked-item-registry";
+import { createAspergillum, restoreDockedAspergillum } from "./item-state";
+
+const claims = new Set<string>();
+function key(dimensionId: string, location: Vector3): string {
+  return `${dimensionId}|${location.x},${location.y},${location.z}`;
+}
+
+/** Capture identity at dispatch; never consume a later replacement block's registry entry. */
+export function scheduleDockedBreakRecovery(dimension: Dimension, location: Vector3, dropHeight: number): void {
+  const dimensionId = dimension.id;
+  let snapshot: DockedAspergillumSnapshot | undefined;
+  try { snapshot = getDockedSnapshot(dimensionId, location); } catch (error) {
+    console.error(`[Aspergillum] Could not capture broken block snapshot: ${String(error)}`);
+    return;
+  }
+  // Include source tick and identity so a new occupied block at this address is independent.
+  const claim = `${key(dimensionId, location)}|${system.currentTick}|${snapshot?.instanceId ?? "missing"}`;
+  if (claims.has(claim)) return;
+  claims.add(claim);
+  system.runTimeout(() => { claims.delete(claim); }, 3);
+  system.run(() => {
+    try {
+      const current = getDockedSnapshot(dimensionId, location);
+      if (JSON.stringify(current) !== JSON.stringify(snapshot)) {
+        console.error(`[Aspergillum] Broken block snapshot changed before recovery at ${key(dimensionId, location)}; replacement preserved, recovery requires inspection`);
+        return;
+      }
+      const recovered = snapshot === undefined ? createAspergillum(0) : restoreDockedAspergillum(snapshot);
+      // Preserve the existing spawn-before-delete contract. These APIs are not atomic:
+      // a failed delete leaves both the delivered item and its persistent snapshot.
+      dimension.spawnItem(recovered, { x: location.x + 0.5, y: location.y + dropHeight, z: location.z + 0.5 });
+      if (snapshot !== undefined) deleteDockedSnapshot(dimensionId, location);
+    } catch (error) {
+      console.error(`[Aspergillum] Could not recover item after block destruction: ${String(error)}; recovery is not atomic, inspect registry and dropped item before retrying`);
+    }
+  });
+}

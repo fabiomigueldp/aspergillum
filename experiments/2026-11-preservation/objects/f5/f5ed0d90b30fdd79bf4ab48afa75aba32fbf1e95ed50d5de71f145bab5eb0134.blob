@@ -1,0 +1,7 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-cloth-obstacle-surface-trial.py').read().split('counts=collections.Counter')[0])
+d=np.load(r+'neck-whole-fold-collar-proof.npz');V=d['points'];T=d['triangles'];inner=set(d['inner_rings'].ravel().tolist());report=json.load(open(r+'neck-whole-fold-collar-proof.json')); em=o.evaluated_get(dg).to_mesh();em.calc_loop_triangles();obstacles=[list(t.vertices) for t in em.loop_triangles if t.polygon_index==180902];o.evaluated_get(dg).to_mesh_clear();result=[]
+for ti in [890,893]:
+ for f in obstacles:
+  P=p[f];n=np.cross(P[1]-P[0],P[2]-P[0]);n/=np.linalg.norm(n);dist=(V[T[ti]]-P[0])@n
+  result.append({'collar_triangle':ti,'vertices':T[ti].tolist(),'movable':[int(v) in inner for v in T[ti]],'obstacle_triangle':f,'normal':n.tolist(),'plane_distance':dist.tolist()})
+json.dump({'constraints':result,'obstacle_points':p[list(fs[180902])].tolist()},open(r+'neck-collar-internal-dof-audit.json','w'),indent=2);print(result)

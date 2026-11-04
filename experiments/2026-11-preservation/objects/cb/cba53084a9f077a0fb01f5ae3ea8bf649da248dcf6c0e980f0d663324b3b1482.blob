@@ -1,0 +1,24 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-adjacent-fold-structure-audit.py').read().split('faces=set(targets)')[0])
+base=set(json.load(open(r+'neck-collar-targeted-expansion-audit.json'))['patch_faces']);feature=set(json.load(open(r+'neck-fold-feature-component-audit.json'))[0]['face_indices']);support=feature|set().union(*(adj[fi] for fi in feature));pairlist=np.load(r+'neck-source-layer-pairs.npz')['pairs']+160386;pairmap={int(a):int(b) for a,b in pairlist for a,b in [(a,b),(b,a)]};lookup={tuple(sorted(f)):fi for fi,f in enumerate(fs)};missing=[]
+for fi in list(support):
+ if not all(v in pairmap for v in fs[fi]):missing.append(fi);continue
+ other=lookup.get(tuple(sorted(pairmap[v] for v in fs[fi])))
+ if other is None:missing.append(fi)
+ else:support.add(other)
+patch=base|support;counts=collections.Counter(tuple(sorted((a,b))) for fi in patch for a,b in zip(fs[fi],fs[fi][1:]+fs[fi][:1]));edges=[e for e,n in counts.items() if n==1];boundary={v for e in edges for v in e};badj=collections.defaultdict(set);badedges=[]
+for a,b in edges:
+ badj[a].add(b);badj[b].add(a);u=Vector(p[a]);v=Vector(p[b]);e=v-u;h,_,_,_=hb.ray_cast(u,e.normalized(),e.length);invalid=h is not None
+ for t in [0,.25,.5,.75,1]:
+  pt=u.lerp(v,t);near,nor,_,_=hb.find_nearest(pt)
+  if (pt-near).dot(nor)<.0001:invalid=True
+ if invalid:badedges.append([a,b])
+seen=set();loops=[]
+for v in badj:
+ if v in seen:continue
+ todo=[v];seen.add(v);comp=[]
+ while todo:
+  a=todo.pop();comp.append(a)
+  for b in badj[a]:
+   if b not in seen:seen.add(b);todo.append(b)
+ loops.append(comp)
+frozen={fi for fi in patch if all(v in boundary for v in fs[fi])};fixedhits=[(a,b) for a,b in hb.overlap(BVHTree.FromPolygons(p.tolist(),fs)) if b in frozen];pts=p[list({v for fi in support for v in fs[fi]})];report={'feature_faces':len(feature),'one_ring_paired_support_faces':len(support),'added_to_current_patch':len(patch-base),'total_patch_faces':len(patch),'unpaired_faces':missing,'support_bounds':[pts.min(0).tolist(),pts.max(0).tolist()],'leaves_neck_bounds':bool(pts[:,2].min()<3.22 or pts[:,2].max()>3.42 or pts[:,0].max()>.025),'boundary_loop_sizes':[len(c) for c in loops],'bad_boundary_degrees':sum(len(v)!=2 for v in badj.values()),'invalid_boundary_edges':len(badedges),'frozen_skin_pairs':len(fixedhits),'patch_faces':sorted(patch),'note':'Full geometric crease component plus one-ring transition, paired; no positions changed, no replacement generated'};json.dump(report,open(r+'neck-whole-fold-mask-audit.json','w'),indent=2);print({k:v for k,v in report.items() if k!='patch_faces'})

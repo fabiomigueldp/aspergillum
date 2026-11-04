@@ -1,0 +1,70 @@
+# V75 · V9 · faixa, orelhas e qualidade geométrica
+
+**Candidata técnica retida, sem exportação.** A faixa agora integra os obstáculos. O encaixe melhora e a compressão severa da nuca é corrigida, mas permanecem contatos e pequena compressão real. A condição literal de “compressão zero” não foi cumprida. Não é addon, aprovação artística global ou teste Minecraft.
+
+Candidata: `constrained_fit/retained-anatomy.npz`.
+
+SHA-256: `c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db`.
+
+A cópia retida é byte-idêntica a `intrinsic097-c30-iteration00.npz`. V7, V8, faixa V5 e fontes permanecem intactas.
+
+## Resultado e custo medidos independentemente
+
+- Casca × anatomia: **670 → 607 pares**. Frente à V8: 29 novos e 92 removidos. Resíduos: calota 207, ponte 400, manto zero.
+- Faixa × anatomia: **1.115 → 797 pares**. Frente à V8: 12 novos e 330 removidos.
+- A face 144 da nuca, que conservava somente **13,666%** da área original, recupera **99,877%**: 72,996 mm² na anatomia original reduzida, 9,975 mm² na V8 e 72,906 mm² na V9.
+- Área mínima de qualquer face principal: **96,937%** da original. Stretch intrínseco mínimo/máximo: **0,968192–1,032648**. Existe contração de até **3,181%** numa direção e expansão de até **3,265%**, não compressão zero. Nenhuma face principal ultrapassa o intervalo de teste 0,95–1,05; esse intervalo é critério técnico declarado, não autorização artística ou tolerância do usuário.
+- Rotação máxima de normal: 12,261°, contra 42,145° na V8. Nenhuma inversão.
+- 281 vértices movidos. Máximo 9,233 mm, mediana 1,041 mm, p95 dos movidos 5,050 mm. O p95 da V8 era 2,885 mm: a movimentação ficou mais distribuída para evitar esmagar uma face.
+- Mesmos 692 vértices / 1.376 triângulos e identidades fonte. Os 280 protegidos (153 rosto, 88 orelhas e 39 baixo pescoço) e os 410 fora do domínio ativo V8 são bit a bit preservados.
+- Zero cruzamentos próprios reais nos testes aplicados. O defeito microscópico herdado de 3 vértices / 2 faces opostas continua intacto; por isso o gate integral da anatomia não passa irrestritamente.
+
+Relatórios: `independent_diagnosis/retained-anatomy-review.json`, `REVIEW_V9_CANDIDATES.md` e `constrained_fit/README.md`. O teste adicional de 8.659 pares adjacentes preserva o falso positivo do predicado legado em aresta compartilhada e explica a tolerância relativa usada para distingui-lo de cruzamento real. Nenhuma face foi removida para alterar o resultado.
+
+## Orelhas: oculto não significa simplesmente “atrás”
+
+A classificação independente usa **910 direções × 21 amostras por face**. Encontrou exposição em **203 de 214 faces** incidentes à região de orelhas. Oito vértices não têm exposição pontual amostrada, mas todos afetam faces parcialmente expostas. Portanto não houve liberação automática de vértices nem redução da máscara por conveniência do solver.
+
+Há uma barreira exata sob essas restrições: com orelhas, faixa e casca congeladas, **462 pares da casca e 657 da faixa são imutáveis**, envolvendo triângulos de pele totalmente fixos. Mantendo todo o domínio ativo V8, esses limites sobem a 465 e 705. Isso prova um conflito da hipótese de alterar apenas a anatomia com zero contato; não prova impossibilidade de outro desenho de ponte/faixa ou reconstrução topológica.
+
+As câmeras laterais ampliadas mostram vermelho/azul dentro das duas cavidades das orelhas, não apenas atrás de pele escondida. Recolher a orelha visível para apagar esse sinal não foi aceito. A mistura física da faixa também foi medida: ela está acima da cabeça em boa parte da frente e embutida em porções laterais, com folga assinada mudando de sinal. Nomes de `source_side` não foram tratados como prova de interior/exterior.
+
+## Método e tentativas preservadas
+
+O ensaio passa do deslocamento somente normal da V8 para deslocamento 3D, combinando fidelidade, suavidade, obstáculos finitos da casca e faixa, área, rotação e os dois stretches intrínsecos por face. Os contatos são amostrados em vértices, bordas e centros dentro da cobertura finita das superfícies, evitando extrapolar planos distantes.
+
+O alvo de folga de 0,3 mm e as restrições do solver são **locais e suaves**. A aceitação usa métricas independentes; não existe garantia de folga global. Intrinsic00 atingiu o limite de 1.300 iterações, portanto não se alega convergência ou ótimo global.
+
+Foram preservadas 37 tentativas. Controlar só a área falhou: um ensaio com área mínima 96,67% ainda escondia contração de 10,2% e expansão de 23,2% em direções diferentes. A V9 mede os valores singulares do mapa entre triângulos para detectar isso. Um ensaio com área não decrescente ainda tinha stretch mínimo 0,7053; logo não era ausência de compressão intrínseca. O ensaio direcionado a stretch ≥1,001 não atingiu o alvo. Esses resultados são tentativas falhas, não prova geral de inviabilidade.
+
+A alternativa `accumulated097-c30-iteration03.npz` chega a 572 pares da casca e 798 da faixa, com 7/14 novos frente à V8, mas deforma mais (stretch 0,963633–1,040211; p95 5,558 mm). A revisão visual não identificou vantagem que justificasse preferi-la. Permanece preservada e auditada, sem promoção automática pelo menor total.
+
+## Revisão visual e silhueta
+
+A revisão independente inspecionou **sete vistas de cada candidata**, incluindo as duas orelhas ampliadas e traseira direta sem halo. Feições, lóbulos, exposição das orelhas, nuca e contorno essencial ficam preservados nas vistas examinadas. Não voltam as grandes manchas que motivaram a correção V8.
+
+Há uma diferença visual real: **sombra de borda mais contínua sob a faixa**, sem furo ou franja identificados. A ponte vermelha/azul dentro das orelhas permanece. Assim, a V9 não é uma solução visual dessa interface, nem visualmente idêntica à V8. Parecer em `evidence/review-visual-v9.md`.
+
+As projeções binárias nativas a 2.048 px, sem halo nem outras peças, medem diferença de contorno frente à V8 de 0 mm na frontal, até 1,105 mm no perfil e 0,928 mm na traseira; p95 zero nas três. É uma medida limitada por vista/resolução, não prova de silhueta idêntica em todos os ângulos.
+
+Os novos pares também não são todos ocultos: a amostragem encontrou raios de exposição para 11/29 novos da casca e 6/12 da faixa. Isso não prova defeito perceptível no render, mas impede descartá-los como invisíveis.
+
+## Escopo ainda aberto
+
+A túnica conserva 60 pares, sem novos. Outras peças válidas testadas não ganham contatos. O halo é apenas proxy do antigo mapa triangular; o híbrido atual não foi certificado. Tangências, coplanaridade geral, distância mínima global, pixels alfa, normalmap, PBR, culling, mipmaps e desempenho no jogo continuam fora desse gate nativo.
+
+**Nenhum JSON Bedrock, textura, normalmap ou addon V9 foi exportado.** O foco desta etapa foi verificar a geometria e sua aparência nativa antes de qualquer transporte. A cena `.blend` é um diagnóstico local, não uma captura ou pacote Minecraft. A próxima mudança estrutural relevante precisa tratar a relação da ponte/faixa com a orelha visível, em vez de liberar pele sem evidência.
+
+## Arquivos úteis
+
+- `constrained_fit/retained-anatomy.npz`: candidata preferida congelada.
+- `constrained_fit/retained-manifest.json`: seleção e hashes.
+- `independent_diagnosis/REVIEW_V9_CANDIDATES.md`: verificação e comparação independente.
+- `independent_diagnosis/fixed-contact-lower-bound.json`: pares geometricamente imutáveis.
+- `evidence/V8_V9_NAPE_TRIANGLE_SHAPE.png`: recuperação da face comprimida, em escala comum.
+- `evidence/V8_V9_EAR_COMPARISON_NOT_MINECRAFT.png`: comparação visual e pendência da orelha explícita.
+- `evidence/retained-structural-diagnostic.blend`: anatomia V9, casca V7 e faixa V5 nativas, demais peças legadas JSON.
+
+## Pacote de pesquisa
+
+`V75-V9-BAND-EAR-CONSTRAINTS-RESEARCH-NOT-ADDON.zip` inclui as candidatas, testes, scripts, relatórios, imagens principais e uma cena de diagnóstico. Exclui caches, cenas/backup redundantes e PNGs individuais dos ensaios `bounded097` e `accumulated03`, preservados no workspace e regeneráveis. Seus dados, métricas e pareceres permanecem no pacote. O manifesto lista as exclusões. Scripts dependem dos diretórios irmãos V3–V8 e da fonte V75; o pacote não é addon nem instalação independente.

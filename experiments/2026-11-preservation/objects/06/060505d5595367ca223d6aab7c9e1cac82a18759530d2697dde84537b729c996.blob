@@ -1,0 +1,17 @@
+# V14 isolated geometry and alpha transport LAB
+
+Not a released add-on. Not tested in Minecraft. No behavior pack or installation action.
+
+Run `python build_transport.py` from this directory to reconstruct the isolated assets. Only export_work and resource_pack are written.
+
+The 17 untouched bones retain identical JSON values and original pixel UV addresses. The entire original 2048-square color and normal atlas is copied bit-exact in decoded RGBA into the upper-left of a 4096-square atlas; exact original PNG files are frozen here too.
+
+New source triangles use the established south-only zero-depth-cube representation, one cube per native triangle, with no poly_mesh and no face simplification. Mapping is native triangle index = bone-local cube index. `transport_contract.json` defines coordinates, UVs, alpha and every texel’s reproducible source correspondence. `transport_faces.jsonl.gz` provides human-readable full mappings; `transport_arrays.npz` provides numeric arrays.
+
+Normal texture is deliberately not connected by a texture_set in this first geometry-alpha control. Its old quadrant is preserved and all new tiles are visibly documented neutral placeholders. Anatomy scalar color samples the original matching triangle’s atlas; band/shell colors are source part base stone colors with no invented AO or baked directional light. PBR investigation follows separately.
+
+Geometry values retain float64 precision; actual Bedrock arithmetic and precision are not certified. Some native triangles are extremely thin or tiny. Alpha is an approximation, not exact mesh transport. Use the native-vs-exported comparisons and independent verification before any later decision.
+
+## Separate partial PBR experiment
+
+Run `python build_pbr_experiment.py` after the geometry build. It creates a distinct experimental entity/material and leaves the default flat control unconnected to a normalmap. Anatomy reuses the exact old surface’s per-texel normalmap, with bit-exact identity tiles and declared frame rotation on displaced faces. Band samples evaluated source normals only through known UV and physical wall identity; closures stay flat. Shell stays explicitly flat because a verified per-texel detail chain is absent. This is PARTIAL PBR, not normal/detail equivalence of the full sculpture. `pbr-investigation-report.json` and `pbr-texel-provenance.npz` state and audit that boundary.

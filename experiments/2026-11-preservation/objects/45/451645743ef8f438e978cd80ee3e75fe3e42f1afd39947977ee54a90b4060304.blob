@@ -1,0 +1,49 @@
+import bpy,math,json
+from mathutils import Vector,Matrix
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V63-opposite-ankle-trial.blend',use_scripts=False);R=bpy.data.objects['Maria — auréola lisa'].rotation_euler.to_matrix()@Matrix.Rotation(-math.pi/2,3,'X');Ri=R.transposed();head=bpy.data.objects['Maria — anatomia feminina adaptada CC0'];dg=bpy.context.evaluated_depsgraph_get();hv=[v.co.copy() for v in head.evaluated_get(dg).data.vertices];hf=[tuple(f.vertices) for f in head.data.polygons];hb=BVHTree.FromPolygons(hv,hf)
+def sm(t):t=max(0,min(1,t));return t*t*(3-2*t)
+def edge(a):
+ e=3.50-.14*math.sin(a)**2-.35*max(0,-math.cos(a));return e-.025*sm((e-3.38)/.185)
+def shift(a):return (.035*max(0,math.cos(a))**4-.045*math.exp(-((abs(a)-1.25)/.22)**2))*(1-sm((abs(a)-1.20)/.20))
+def surface(a,z):
+ center=R@Vector((-.44,1.012,z));d=R@Vector((math.sin(a),-math.cos(a),0));return hb.ray_cast(center+d*.7,-d,1.4)
+o=bpy.data.objects['TESTE 34 — conexão de superfícies avaliadas'];old=[v.co.copy() for v in o.data.vertices];new=[p.copy() for p in old];miss=0;changed=[]
+for i,p in enumerate(old[:160386]):
+ l=Ri@p;a=math.atan2(l.x+.44,-(l.y-1.012));ds=shift(a)
+ if abs(ds)<1e-8:continue
+ t=max(0,min(1,(3.539-l.z)/max(.015,3.539-edge(a))));ds*=sm(t)
+ if abs(ds)<1e-8:continue
+ h,n,_,_=surface(a,l.z);hn,nn,_,_=surface(a,l.z+ds)
+ if h is None or hn is None:miss+=1;continue
+ new[i]=p+(hn-h);changed.append(i)
+import numpy as np
+from scipy.sparse import coo_matrix,diags
+from mathutils.kdtree import KDTree
+arr=np.array([v[:] for v in old]);delta=np.array([v[:] for v in new])-arr;edges=np.array([e.vertices[:] for e in o.data.edges]);keep=edges[(edges<160386).all(axis=1)];rows=np.r_[keep[:,0],keep[:,1]];cols=np.r_[keep[:,1],keep[:,0]];A=coo_matrix((np.ones(len(rows)),(rows,cols)),shape=(len(old),len(old))).tocsr();degree=np.asarray(A.sum(axis=1)).ravel();A=diags(1/np.maximum(1,degree))@A;mask=np.zeros(len(old),dtype=bool);mask[changed]=True
+for iteration in range(80):
+ delta=.5*delta+.5*(A@delta);delta[~mask]=0
+new=[Vector(v) for v in arr+delta]
+kd=KDTree(160386)
+for i,p in enumerate(old[:160386]):kd.insert(p,i)
+kd.balance()
+if not o.data.shape_keys:o.shape_key_add(name='Basis')
+k=o.shape_key_add(name='TESTE71 — borda frontal alta e cobertura temporal');k.value=1
+for i,p in enumerate(new):k.data[i].co=p
+band=bpy.data.objects['TESTE 29 — faixa embutida com terminação suave'];bc=band.copy();bc.data=band.data.copy();bc.name='TESTE71 — faixa coordenada reversível';bpy.context.collection.objects.link(bc)
+for v in bc.data.vertices:
+ nearest,index,distance=kd.find(v.co);v.co+=Vector(delta[index])
+band.hide_render=True;band.hide_set(True)
+fs=[tuple(f.vertices) for f in o.data.polygons]
+def pairs(p):
+ b=BVHTree.FromPolygons(p,fs);return set((a,c) for a,c in b.overlap(b) if a<c and not set(fs[a])&set(fs[c]))
+before=pairs(old);after=pairs(new);flips=0;flip_locations=[];rat=[];cs=set(changed)
+def av(p,f):return sum(((p[f[j]]-p[f[0]]).cross(p[f[j+1]]-p[f[0]])*.5 for j in range(1,len(f)-1)),Vector())
+for f in fs:
+ if not any(i in cs for i in f):continue
+ a,b=av(old,f),av(new,f)
+ if a.length>1e-12:rat.append(b.length/a.length);flips+=a.dot(b)<0
+ if a.dot(b)<0:flip_locations.append(list(Ri@(sum((old[i] for i in f),Vector())/len(f))))
+report={'flips_local_coordinates':flip_locations,'new_pair_centroids_local':[[list(Ri@(sum((old[i] for i in fs[f]),Vector())/len(fs[f]))) for f in pair] for pair in sorted(after-before)],'source':'V63','method':'Smooth transported scalp displacement, 80 diffusion steps on existing cap; band follows same field; no panels or skull deformation','changed_cap_vertices':len(changed),'ray_misses':miss,'max_delta_m':max((a-b).length for a,b in zip(old,new)),'mantle_coordinate_delta_max':max((old[i]-new[i]).length for i in range(160386,len(old))),'area_ratios':[min(rat),max(rat)],'flipped_faces':flips,'baseline_self_pairs':len(before),'new_self_pairs':len(after-before),'rollback':'TESTE71 cap key=0; hide TESTE71 band and unhide TESTE29'};json.dump(report,open(r+'V71-veil-verification.json','w'),indent=2);print(report)
+if flips or (after-before):raise RuntimeError('Invalid cap warp; no blend saved')
+bpy.ops.wm.save_as_mainfile(filepath=r+'V71-veil-trial.blend')

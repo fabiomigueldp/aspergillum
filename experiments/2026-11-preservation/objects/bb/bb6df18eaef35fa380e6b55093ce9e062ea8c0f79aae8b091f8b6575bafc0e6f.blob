@@ -1,0 +1,22 @@
+ALTARE 0.12.2 — CRUZETA E DIMENSÕES DO EDITOR
+
+O título do editor agora acompanha a frente escolhida: um altar 7 × 2 passa a mostrar 2 × 7 ao selecionar leste/oeste. Restaurar também restaura a leitura. A correção é apenas de apresentação.
+
+A geometria, os tecidos e a marchetaria são exatamente os mesmos da 0.12.1. A revisão visual adicional não justificou nova ornamentação. Não é uma nova aprovação visual dentro do jogo.
+
+CONTEÚDO
+- Altare-0.12.2.mcaddon: pacote diagnóstico exato, com hash e metadados.
+- Fontes: overlay completo contra 3eaf97b172a38dac794461b156b70864737875d6 e patch menor contra a entrega 0.12.1. Ambos foram reaplicados em cópias temporárias e conferidos byte a byte.
+- Documentação: explicação do defeito, correção, preservação e roteiro nativo mínimo.
+- QA: logs, evidência da regressão antes/depois, delta do runtime, integridade e relatório oficial Creator.
+
+VERIFICAÇÃO
+113 testes Altare, 107 Aspergillum e 84 Estúdio aprovados. Tipos/builds/documentação aprovados. Creator: zero erros, 2.084 avisos antigos delimitados de complexidade e nenhum aviso inesperado. Consultas do registry falharam com 502; validação offline usou alvo 1.26.40 fixado.
+5.386 entradas do pacote idênticas à 0.12.1, incluindo 414 blocos, 4.700 geometrias e 265 arquivos de textura. Mudam somente o runtime do título e seis arquivos de versão. Nenhum recurso adicionado ou removido.
+
+RETESTE MÍNIMO
+Em cópia de mundo, importar este pacote e ativar BP/RP [0,12,2], sem revisão concorrente. Em um altar 7 × 2, abrir o editor: norte/sul devem mostrar 7 × 2, leste/oeste 2 × 7. Testar Restaurar, Cruzeta sem toalha e retorno a Agnus/Floral. Cancelar deve manter os blocos; Aplicar deve orientar o tecido como antes. Salvar/reabrir e conferir Content Log.
+
+O teste nativo não foi executado nesta entrega. Não foram criados commits, enviados arquivos ao GitHub, instalados packs nem alterados mundos. Aspergillum permanece 1.2.5; Estúdio 2.3.0.
+
+SHA-256 do mcaddon: 2b7576872c69fa94f72130c3ae260ebdceafc906c2428985219782a6da4940a9

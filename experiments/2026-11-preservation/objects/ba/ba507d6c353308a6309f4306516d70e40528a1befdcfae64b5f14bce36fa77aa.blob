@@ -1,0 +1,20 @@
+import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';
+import {twinPedestalCells} from '../assets-src/atelier/twin-pedestal-cell-study.mjs';
+import {twinPedestalCollision} from '../assets-src/atelier/twin-pedestal-collision-study.mjs';
+const out=path.resolve(import.meta.dirname,'../out/two-pedestal-integration');fs.mkdirSync(out,{recursive:true});
+const visual=new Set(),combined=new Set(),oriented=new Set(),semantic=new Set();let maxUv=0,maxCubes=0,maxBoxes=0,instances=0;
+const canonical=v=>Array.isArray(v)?v.map(canonical):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,canonical(v[k])])):v;
+const hash=v=>crypto.createHash('sha256').update(JSON.stringify(canonical(v))).digest('hex');
+for(let w=1;w<=16;w++)for(let d=1;d<=8;d++)for(let f=0;f<4;f++){
+ const plan=twinPedestalCells(w,d,f,{uvPolicy:'module-grain',capCuts:true}),physical=twinPedestalCollision(w,d,f);
+ for(let i=0;i<plan.cells.length;i++){
+  const cell=plan.cells[i],cubes=cell.doc['minecraft:geometry'][0].bones.flatMap(b=>b.cubes),v=cubes.map(c=>JSON.stringify(canonical(c))).sort(),collision=physical.cells[i].nativeBoxes;
+  const nx=f%2?d:w,nz=f%2?w:d,edges=(cell.z===0?1:0)|(cell.x===nx-1?2:0)|(cell.z===nz-1?4:0)|(cell.x===0?8:0);
+  visual.add(hash(v));combined.add(hash([v,collision]));oriented.add(hash([f,v,collision]));semantic.add(hash([f,edges,v,collision]));instances++;maxCubes=Math.max(maxCubes,cubes.length);maxBoxes=Math.max(maxBoxes,collision.length);
+  for(const c of cubes)for(const uv of Object.values(c.uv))for(let j=0;j<2;j++){if(uv.uv[j]<-1e-6||uv.uv_size[j]<=0||uv.uv[j]+uv.uv_size[j]>128+1e-6)throw Error(`UV outside atlas: ${w}x${d}/${f} ${JSON.stringify(uv)}`);maxUv=Math.max(maxUv,uv.uv[j]+uv.uv_size[j]);}
+ }
+ if(f===0&&[[1,1],[3,2],[7,2],[16,8]].some(([a,b])=>a===w&&b===d))fs.writeFileSync(path.join(out,`native-grain-cells-${w}x${d}.json`),JSON.stringify(plan));
+}
+function packing(size){let packed=Infinity,cardinalities=[];for(let a=1;a<=16;a++)for(let b=1;b<=16;b++)for(let c=1;c<=16;c++)if(a*b*c>=size&&a*b*c<packed){packed=a*b*c;cardinalities=[a,b,c];}return {cardinalities,declaredStates:packed,padding:packed-size};}
+const report={scope:'Unregistered native model and collision codebook study; changed UV policy, unchanged shape',configurations:512,instances,visualProfiles:visual.size,combinedVisualCollisionProfiles:combined.size,maxCubes,maxBoxes,maxUv,oneIdThreePropertyPalette:packing(combined.size),orientedVisualCollisionProfiles:oriented.size,semanticProfilesWithFacingAndEdges:semantic.size,semanticThreePropertyPalette:packing(semantic.size),policy:'8 texels per author unit, repeating at module boundaries for horizontal wood; original continuous shaft UVs and inlays preserved; internal cuts capped',limits:['This is a deliberate texture-mapping change from the stretched global prototype UVs.','No model, block ID, state, codec or editor option has been registered.','No textiles/colors are included in this bare-walnut cost.','The semantic packing explicitly includes facing and original rectangular edge metadata; raw appearance packing does not.','Atlas repetition and chamfer joins require visual review; no Minecraft test.']};
+fs.writeFileSync(path.join(out,'native-grain-profile-report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));

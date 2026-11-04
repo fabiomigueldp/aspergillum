@@ -1,0 +1,85 @@
+"""Convert a decimated sculpture to documented Bedrock cube faces, never poly_mesh.
+Source mesh -> Blockbench RH coords -> Bedrock exporter coordinate conventions.
+The PNG carries stone color, local AO, and modest fixed relief shading; not PBR.
+"""
+from pathlib import Path
+import json,math,numpy as np,hashlib
+from PIL import Image
+from scipy.spatial.transform import Rotation
+ROOT=Path(__file__).resolve().parents[1]
+d=np.load(ROOT/'evidence/repaired_meshes.npz');bake=np.load(ROOT/'evidence/part_normal_bake.npz')
+meta=json.load(open(ROOT.parent/'evidence/source-export.json'))
+v=d['low_v'];f=d['low_f']; normals=bake['source_normal'];ao=bake['ao'];midx=d['low_m']
+# Blender -> Blockbench (+X right,+Y up,+Z viewer); determinant +1.
+bbv=np.column_stack((v[:,0],v[:,2],-v[:,1]))*16
+TILE=20;PAD=1;ATLAS=2048;COLS=ATLAS//TILE
+atlas=np.zeros((ATLAS,ATLAS,4),dtype=np.uint8)
+normal_atlas=np.zeros((ATLAS,ATLAS,3),dtype=np.uint8);normal_atlas[:]=[128,128,255]
+normal_errors=[]
+bones=[{'name':'part_%02d'%i,'pivot':[0,0,0],'cubes':[]} for i in range(len(meta['parts']))]
+tri_info=[]; residuals=[];vertex_tris=[]
+light=np.array([-.35,-.65,.68]);light/=np.linalg.norm(light)
+# Keep color & source geometry, flatten original procedural bump to an atlas.
+shade=.5+.5*ao  # AO only, no baked directional light or emissive shading
+for ti,idx in enumerate(f):
+ pts=bbv[idx]
+ edges=[np.linalg.norm(pts[(i+1)%3]-pts[i]) for i in range(3)];k=int(np.argmax(edges))
+ idx=np.roll(idx,-k);p=bbv[idx];a,bb,c=p
+ U=(bb-a);w=np.linalg.norm(U)
+ if w<1e-8:continue
+ U/=w;vec=c-a;t=np.dot(vec,U);V=vec-t*U;h=np.linalg.norm(V)
+ if h<1e-8:continue
+ V/=h;N=np.cross(U,V);M=np.column_stack((U,V,N))
+ # scipy lowercase xyz is extrinsic Rz*Ry*Rx; same as Three/BB intrinsic ZYX.
+ e=Rotation.from_matrix(M).as_euler('xyz',degrees=True)
+ assert np.max(np.abs(Rotation.from_euler('xyz',e,degrees=True).as_matrix()-M))<1e-8
+ margin_u=w*PAD/(TILE-2*PAD);margin_v=h*PAD/(TILE-2*PAD)
+ ww=w+2*margin_u;hh=h+2*margin_v
+ # Choose pre-rotation from and pivot around a. Geometry exported by Blockbench rules.
+ frombb=a+np.array([-margin_u,-margin_v,0.]);size=np.array([ww,hh,0.])
+ origin=[-(frombb[0]+size[0]),frombb[1],frombb[2]]
+ pivot=[-a[0],a[1],a[2]];rot=[-e[0],-e[1],e[2]]
+ tx=(ti%COLS)*TILE;ty=(ti//COLS)*TILE
+ cube={'origin':[round(float(x),7) for x in origin],'size':[round(float(x),7) for x in size],'pivot':[round(float(x),7) for x in pivot],'rotation':[round(float(x),7) for x in rot],'uv':{'south':{'uv':[tx,ty],'uv_size':[TILE,TILE]}}}
+ bones[int(midx[ti])]['cubes'].append(cube)
+ # Atlas south in Blockbench is X increasing, image V down from Ymax.
+ yy,xx=np.mgrid[0:TILE,0:TILE];px=(xx+.5)/TILE*ww-margin_u;py=(1-(yy+.5)/TILE)*hh-margin_v
+ lc=py/h;lb=(px-t*lc)/w;la=1-lb-lc
+ # Conservative 0.75-texel cover reduces alpha cracks while remaining bounded.
+ tol=.75
+ pts2=np.array([[0.,0.],[w,0.],[t,h]])
+ covered=np.ones((TILE,TILE),bool)
+ for j in range(3):
+  q=pts2[j];z=pts2[(j+1)%3];edge=z-q
+  dist=(edge[0]*(py-q[1])-edge[1]*(px-q[0]))/np.linalg.norm(edge)
+  covered &= dist>=-tol*min(ww/TILE,hh/TILE)
+ weights=np.stack((la,lb,lc),-1);weights=np.maximum(weights,0);weights/=np.maximum(weights.sum(-1,keepdims=True),1e-8)
+ s=weights@shade[idx]
+ interp_normal=weights@normals[idx];interp_normal/=np.maximum(np.linalg.norm(interp_normal,axis=2,keepdims=True),1e-10)
+ nbb=np.stack((interp_normal[:,:,0],interp_normal[:,:,2],-interp_normal[:,:,1]),-1)
+ tangent=nbb@M  # U,V,N in the same basis as the exact cube
+ tangent[:,:,1]*=-1  # DirectX normal convention; invert green for Blender OpenGL preview
+ quant=np.round(np.clip(tangent*.5+.5,0,1)*255).astype(np.uint8)
+ normal_atlas[ty:ty+TILE,tx:tx+TILE,:]=quant
+ decoded=quant/255.*2-1;decoded[:,:,1]*=-1;recovered=decoded@M.T;recovered/=np.maximum(np.linalg.norm(recovered,axis=2,keepdims=True),1e-10)
+ dots=np.clip((recovered*nbb).sum(-1),-1,1);normal_errors.extend(np.degrees(np.arccos(dots[covered])).tolist())
+ color=np.array(meta['parts'][int(midx[ti])]['color'][:3])
+ rgb_lin=np.clip(s[:,:,None]*color,0,1)
+ rgb=np.where(rgb_lin<=.0031308,12.92*rgb_lin,1.055*rgb_lin**(1/2.4)-.055)
+ atlas[ty:ty+TILE,tx:tx+TILE,:3]=np.round(rgb*255).astype(np.uint8)
+ atlas[ty:ty+TILE,tx:tx+TILE,3]=covered.astype(np.uint8)*255
+ # Reconstruction check independent of floating rounding and store intended triangle BB coordinates.
+ tri_info.append({'cube':ti,'part':int(midx[ti]),'a':a.tolist(),'b':bb.tolist(),'c':c.tolist(),'mask_local':[[margin_u,margin_v],[w+margin_u,margin_v],[t+margin_u,h+margin_v]]})
+ # Compact source correspondence for QA, not shipped in resource pack.
+ vertex_tris.append(p)
+ if ti%1000==0:print('converted',ti,flush=True)
+geo={'format_version':'1.14.0','minecraft:geometry':[{'description':{'identifier':'geometry.paz_v75_prototype.sculpture','texture_width':ATLAS,'texture_height':ATLAS,'visible_bounds_width':2,'visible_bounds_height':4.3,'visible_bounds_offset':[0,1.9,0]},'bones':bones}]}
+(ROOT/'resource_pack/models/entity/sculpture.geo.json').write_text(json.dumps(geo,separators=(',',':')))
+Image.fromarray(atlas).save(ROOT/'resource_pack/textures/entity/sculpture.png',optimize=True)
+Image.fromarray(normal_atlas).save(ROOT/'resource_pack/textures/entity/sculpture_normal_dx.png',optimize=True)
+(ROOT/'evidence/normal-encoding.json').write_text(json.dumps({'convention':'DirectX Y-negative, based on NVIDIA RTX guidance; VV custom-entity engine confirmation pending','mean_angular_error_degrees':sum(normal_errors)/len(normal_errors),'max_angular_error_degrees':max(normal_errors),'covered_texels':len(normal_errors),'no_emission':True,'directional_light_baked':False,'normal_data':'evaluated V75 smooth normals, nearest point within matching source part, barycentric interpolation'},indent=2))
+np.savez_compressed(ROOT/'evidence/alpha-correspondence.npz',triangles_bb=np.array(vertex_tris))
+(ROOT/'evidence/alpha-triangle-map.json').write_text(json.dumps(tri_info,separators=(',',':')))
+report={'format':'Bedrock 1.14.0 cubes only','cube_count':sum(len(b['cubes']) for b in bones),'nonzero_faces_per_cube':1,'quads':len(tri_info),'raster_triangles':len(tri_info)*2,'atlas_size':[ATLAS,ATLAS],'atlas_alpha':'0 or 255','atlas_shading':'source stone base colors + local AO only; separate tangent normal texture; no original image textures exist','engine_tested':False,'render_is_minecraft':False,'conversion':'evaluated V75 -> region-budget decimation -> rotated zero-depth cubes with south alpha-masked face','unit_scale':'1 Blender source unit = 1 Minecraft block','source_height_blocks':float(v[:,2].max()-v[:,2].min()),'limitations':['Entity prototype only; not a block geometry replacement.','8312 cuboids is a high mobile performance risk until profiled in target Bedrock.','Alpha cutout edges, mipmapping seams, culling and shader combination require engine QA.','Original sculptural inaccuracies of V75 remain.','Triangle appearance is rasterized at 20 px per tile; not lossless mesh transport.','Normal maps need Vibrant Visuals; classic mode ignores them.']}
+(ROOT/'evidence/alpha-build.json').write_text(json.dumps(report,indent=2))
+print(json.dumps(report,indent=2))

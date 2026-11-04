@@ -1,0 +1,3407 @@
+{
+  "method": "Use only original source UV to identify both ridge polylines. Clip each original finite segment against both cutter volumes. Identify candidate edges geometrically on source segments in3D, without trusting candidate UV. Compare unions of scalar intervals, not just sums of length. Tolerance1e-10m to source segment and1e-8 in normalized interval endpoints.",
+  "ridges": [
+    {
+      "wall_side": 0,
+      "ridge_v": 3,
+      "source_edges": 36,
+      "candidate_edges": 29,
+      "expected_remaining_length_mm": 585.8395821477962,
+      "actual_remaining_length_mm": 585.8395821477967,
+      "max_source_edge_interval_length_error_mm": 5.030698080332741e-13,
+      "failed_source_edge_domains": [],
+      "connected_components": [
+        {
+          "vertices": 30,
+          "degree_histogram": {
+            "1": 2,
+            "2": 28
+          }
+        }
+      ],
+      "source_edge_domains": [
+        {
+          "source_edge": [
+            3,
+            20
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            20,
+            396
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            37,
+            57
+          ],
+          "expected_intervals": [
+            [
+              0.2257080551051389,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.22570805510514533,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              3,
+              450
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 9.8879238130678e-14
+        },
+        {
+          "source_edge": [
+            37,
+            396
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            57,
+            65
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              3,
+              6
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            65,
+            72
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              6,
+              13
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            72,
+            79
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              13,
+              20
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            79,
+            86
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              20,
+              27
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            86,
+            93
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              27,
+              34
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            93,
+            100
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              34,
+              41
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            100,
+            107
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              41,
+              48
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            107,
+            114
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              48,
+              55
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            114,
+            121
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              55,
+              62
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            121,
+            128
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              62,
+              69
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            128,
+            135
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              69,
+              76
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            135,
+            142
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              76,
+              83
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            142,
+            149
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              83,
+              90
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            149,
+            156
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              90,
+              97
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            156,
+            163
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              97,
+              104
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            163,
+            170
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              104,
+              111
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            170,
+            177
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              111,
+              118
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            177,
+            184
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              118,
+              125
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            184,
+            191
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              125,
+              132
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            191,
+            198
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              132,
+              139
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            198,
+            205
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              139,
+              146
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            205,
+            212
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              146,
+              153
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            212,
+            221
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              153,
+              162
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            221,
+            238
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              162,
+              178
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            238,
+            255
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              178,
+              192
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            255,
+            272
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              192,
+              203
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            272,
+            289
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              203,
+              211
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            289,
+            306
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              0.8080963499081623
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              0.8080963499082342
+            ]
+          ],
+          "candidate_edges": [
+            [
+              211,
+              476
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 5.030698080332741e-13
+        },
+        {
+          "source_edge": [
+            306,
+            323
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            323,
+            387
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            340,
+            357
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            340,
+            387
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        }
+      ]
+    },
+    {
+      "wall_side": 0,
+      "ridge_v": 13,
+      "source_edges": 41,
+      "candidate_edges": 25,
+      "expected_remaining_length_mm": 568.1760068443438,
+      "actual_remaining_length_mm": 568.1760068443439,
+      "max_source_edge_interval_length_error_mm": 4.0592529337857286e-13,
+      "failed_source_edge_domains": [],
+      "connected_components": [
+        {
+          "vertices": 26,
+          "degree_histogram": {
+            "1": 2,
+            "2": 24
+          }
+        }
+      ],
+      "source_edge_domains": [
+        {
+          "source_edge": [
+            13,
+            30
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            30,
+            47
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            47,
+            413
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            54,
+            379
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            54,
+            414
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            62,
+            69
+          ],
+          "expected_intervals": [
+            [
+              0.6949209963985292,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.6949209963985131,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              10,
+              457
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 4.0592529337857286e-13
+        },
+        {
+          "source_edge": [
+            62,
+            380
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            69,
+            76
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              10,
+              17
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            76,
+            83
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              17,
+              24
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            83,
+            90
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              24,
+              31
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            90,
+            97
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              31,
+              38
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            97,
+            104
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              38,
+              45
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            104,
+            111
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              45,
+              52
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            111,
+            118
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              52,
+              59
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            118,
+            125
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              59,
+              66
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            125,
+            132
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              66,
+              73
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            132,
+            139
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              73,
+              80
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            139,
+            146
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              80,
+              87
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            146,
+            153
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              87,
+              94
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            153,
+            160
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              94,
+              101
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            160,
+            167
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              101,
+              108
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            167,
+            174
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              108,
+              115
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            174,
+            181
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              115,
+              122
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            181,
+            188
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              122,
+              129
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            188,
+            195
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              129,
+              136
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            195,
+            202
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              136,
+              143
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            202,
+            209
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              143,
+              150
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            209,
+            216
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              150,
+              157
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            216,
+            231
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              157,
+              172
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            231,
+            248
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              172,
+              188
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            248,
+            409
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              0.2950685517759215
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              0.29506855177582675
+            ]
+          ],
+          "candidate_edges": [
+            [
+              188,
+              464
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 3.664603343001005e-13
+        },
+        {
+          "source_edge": [
+            265,
+            409
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            265,
+            421
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            282,
+            299
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            282,
+            421
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            299,
+            316
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            316,
+            333
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            333,
+            350
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            350,
+            367
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            379,
+            380
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            413,
+            414
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        }
+      ]
+    },
+    {
+      "wall_side": 1,
+      "ridge_v": 3,
+      "source_edges": 36,
+      "candidate_edges": 29,
+      "expected_remaining_length_mm": 584.2917354307207,
+      "actual_remaining_length_mm": 584.2917354307217,
+      "max_source_edge_interval_length_error_mm": 7.441963711940502e-13,
+      "failed_source_edge_domains": [],
+      "connected_components": [
+        {
+          "vertices": 30,
+          "degree_histogram": {
+            "1": 2,
+            "2": 28
+          }
+        }
+      ],
+      "source_edge_domains": [
+        {
+          "source_edge": [
+            482,
+            499
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            499,
+            875
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            516,
+            536
+          ],
+          "expected_intervals": [
+            [
+              0.24400378352678598,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.24400378352673802,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              221,
+              522
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 7.441963711940502e-13
+        },
+        {
+          "source_edge": [
+            516,
+            875
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            536,
+            544
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              221,
+              224
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            544,
+            551
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              224,
+              231
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            551,
+            558
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              231,
+              238
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            558,
+            565
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              238,
+              245
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            565,
+            572
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              245,
+              252
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            572,
+            579
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              252,
+              259
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            579,
+            586
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              259,
+              266
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            586,
+            593
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              266,
+              273
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            593,
+            600
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              273,
+              280
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            600,
+            607
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              280,
+              287
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            607,
+            614
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              287,
+              294
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            614,
+            621
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              294,
+              301
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            621,
+            628
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              301,
+              308
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            628,
+            635
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              308,
+              315
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            635,
+            642
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              315,
+              322
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            642,
+            649
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              322,
+              329
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            649,
+            656
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              329,
+              336
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            656,
+            663
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              336,
+              343
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            663,
+            670
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              343,
+              350
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            670,
+            677
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              350,
+              357
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            677,
+            684
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              357,
+              364
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            684,
+            691
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              364,
+              371
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            691,
+            700
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              371,
+              380
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            700,
+            717
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              380,
+              396
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            717,
+            734
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              396,
+              410
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            734,
+            751
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              410,
+              421
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            751,
+            768
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              421,
+              429
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            768,
+            785
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              0.7852431936165181
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              0.7852431936165488
+            ]
+          ],
+          "candidate_edges": [
+            [
+              429,
+              548
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 2.177077962350893e-13
+        },
+        {
+          "source_edge": [
+            785,
+            802
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            802,
+            866
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            819,
+            836
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            819,
+            866
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        }
+      ]
+    },
+    {
+      "wall_side": 1,
+      "ridge_v": 13,
+      "source_edges": 41,
+      "candidate_edges": 25,
+      "expected_remaining_length_mm": 566.5225782462163,
+      "actual_remaining_length_mm": 566.522578246216,
+      "max_source_edge_interval_length_error_mm": 2.5760643618255585e-13,
+      "failed_source_edge_domains": [],
+      "connected_components": [
+        {
+          "vertices": 26,
+          "degree_histogram": {
+            "1": 2,
+            "2": 24
+          }
+        }
+      ],
+      "source_edge_domains": [
+        {
+          "source_edge": [
+            492,
+            509
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            509,
+            526
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            526,
+            892
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            533,
+            858
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            533,
+            893
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            541,
+            548
+          ],
+          "expected_intervals": [
+            [
+              0.6937162314107324,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.6937162314107352,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              228,
+              529
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 7.19910242530375e-14
+        },
+        {
+          "source_edge": [
+            541,
+            859
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            548,
+            555
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              228,
+              235
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            555,
+            562
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              235,
+              242
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            562,
+            569
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              242,
+              249
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            569,
+            576
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              249,
+              256
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            576,
+            583
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              256,
+              263
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            583,
+            590
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              263,
+              270
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            590,
+            597
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              270,
+              277
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            597,
+            604
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              277,
+              284
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            604,
+            611
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              284,
+              291
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            611,
+            618
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              291,
+              298
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            618,
+            625
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              298,
+              305
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            625,
+            632
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              305,
+              312
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            632,
+            639
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              312,
+              319
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            639,
+            646
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              319,
+              326
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            646,
+            653
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              326,
+              333
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            653,
+            660
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              333,
+              340
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            660,
+            667
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              340,
+              347
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            667,
+            674
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              347,
+              354
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            674,
+            681
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              354,
+              361
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            681,
+            688
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              361,
+              368
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            688,
+            695
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              368,
+              375
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            695,
+            710
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              375,
+              390
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            710,
+            727
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "candidate_edges": [
+            [
+              390,
+              406
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            727,
+            888
+          ],
+          "expected_intervals": [
+            [
+              0.0,
+              0.24527158347565775
+            ]
+          ],
+          "candidate_intervals": [
+            [
+              0.0,
+              0.24527158347559214
+            ]
+          ],
+          "candidate_edges": [
+            [
+              406,
+              536
+            ]
+          ],
+          "domains_match": true,
+          "length_error_mm": 2.5760643618255585e-13
+        },
+        {
+          "source_edge": [
+            744,
+            888
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            744,
+            900
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            761,
+            778
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            761,
+            900
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            778,
+            795
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            795,
+            812
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            812,
+            829
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            829,
+            846
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            858,
+            859
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        },
+        {
+          "source_edge": [
+            892,
+            893
+          ],
+          "expected_intervals": [],
+          "candidate_intervals": [],
+          "candidate_edges": [],
+          "domains_match": true,
+          "length_error_mm": 0.0
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Two surviving connected original ridge curves do not prove the terminal shape is artistically acceptable or preserve full source length.",
+    "The portions inside the chosen envelope are deliberately removed; reports expose remaining lengths and no unchanged-global-shape claim."
+  ]
+}

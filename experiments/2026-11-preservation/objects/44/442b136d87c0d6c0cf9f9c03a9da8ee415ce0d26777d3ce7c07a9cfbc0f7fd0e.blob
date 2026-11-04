@@ -1,0 +1,29 @@
+{
+  "method": "Per-triangle 3x2 deformation gradient from original V8 welded baseline; exact singular values measure intrinsic compression/stretch, independent of rigid face rotation. These are distortion metrics, not a collision or artistic certificate.",
+  "rows": {
+    "intrinsic097": {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/body_interface_v9/constrained_fit/intrinsic097-c30-iteration00.npz",
+      "sha256": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+      "main_faces_measured": 1374,
+      "tiny_faces_excluded_ids": [
+        424,
+        1131
+      ],
+      "excluded_positions_unchanged": true,
+      "minimum_principal_stretch": 0.9681917999673681,
+      "minimum_stretch_triangle_id": 694,
+      "maximum_principal_stretch": 1.0326483402552162,
+      "maximum_stretch_triangle_id": 645,
+      "minimum_area_ratio": 0.9693669125788968,
+      "maximum_anisotropy": 1.0631796078069247,
+      "faces_with_min_stretch_below_0p9": 0,
+      "faces_with_max_stretch_above_1p1": 0,
+      "changed_face_count": 640,
+      "changed_min_stretch_p05_median": [
+        0.9699135464640398,
+        0.9899875168840413
+      ],
+      "changed_max_stretch_p95": 1.030022612244385
+    }
+  }
+}

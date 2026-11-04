@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "baselineVersion": "0.12.3",
+  "candidateVersion": "0.12.3",
+  "blocks": {
+    "idsPreserved": 414,
+    "schemasChanged": 136,
+    "unaffectedByteIdentical": 278
+  },
+  "states": {
+    "before": 80000,
+    "after": 51608,
+    "saved": 28392,
+    "aspergillum": 9744,
+    "combined": 61352,
+    "combinedHeadroom": 4184
+  },
+  "semantics": {
+    "atelierCompared": 14688,
+    "classicCompared": 3000,
+    "allEffectiveComponentsEqual": true,
+    "migration": {
+      "atelier": {
+        "accepted": 16416,
+        "rejected": 18144,
+        "normalizedUnusedRole": 1728
+      },
+      "classic": {
+        "accepted": 3000,
+        "rejected": 8520
+      }
+    }
+  },
+  "resources": {
+    "files": 4971,
+    "manifestSha256": "69b1d529755318e2777daafe916e3f30f8e70d28aed7a4bdbd3febd0e2be4b97",
+    "byteIdentical": true
+  },
+  "authoredAssets": {
+    "files": 27,
+    "manifestSha256": "7a262f3bfcd6cd271a8f5508d8b824a7539c876748ef204eda9e44fb69fbf3ce",
+    "byteIdentical": true
+  },
+  "limitations": [
+    "Comparison is offline and does not validate native Bedrock loading, persistence, rendering, or performance.",
+    "Same block IDs with changed state schemas are not safe to install over existing worlds. Migration accepts exported snapshots only; no world is read or modified.",
+    "Rejected old combinations are not silently repaired or stripped of iconography.",
+    "Known combined budget includes only Altare and the 9,744-state Aspergillum pack."
+  ]
+}

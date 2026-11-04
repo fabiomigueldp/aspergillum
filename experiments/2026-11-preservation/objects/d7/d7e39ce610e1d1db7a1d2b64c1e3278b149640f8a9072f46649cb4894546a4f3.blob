@@ -1,0 +1,11 @@
+import bpy,json,numpy as np
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False);o=bpy.data.objects['Maria — plano contínuo do manto'];o.hide_viewport=False;o.hide_set(False);mods=[{'name':md.name,'type':md.type,'levels':getattr(md,'levels',None),'render_levels':getattr(md,'render_levels',None),'thickness':getattr(md,'thickness',None)} for md in o.modifiers];print(mods)
+for md in o.modifiers:
+ if md.type=='SUBSURF':md.levels=md.render_levels
+for name,fn in [('source_row',lambda i:i//80),('source_col_sin',lambda i:np.sin(2*np.pi*(i%80)/80)),('source_col_cos',lambda i:np.cos(2*np.pi*(i%80)/80))]:
+ a=o.data.attributes.new(name,'FLOAT','POINT')
+ for i,v in enumerate(a.data):v.value=fn(i)
+bpy.context.view_layer.update();dg=bpy.context.evaluated_depsgraph_get();m=o.evaluated_get(dg).to_mesh();p=np.array([v.co[:] for v in m.vertices]);q=np.array([v.co[:] for v in bpy.data.objects['TESTE 34 — conexão de superfícies avaliadas'].data.vertices])[160386:];attrs=np.array([[m.attributes[n].data[i].value for n in ['source_row','source_col_sin','source_col_cos']] for i in range(len(p))]);groups={}
+for i,a in enumerate(attrs):groups.setdefault(tuple(np.round(a,6)),[]).append(i)
+from collections import Counter
+counts=Counter(map(len,groups.values()));pairs=[g for g in groups.values() if len(g)==2];th=[float(np.linalg.norm(p[g[0]]-p[g[1]])) for g in pairs];report={'modifiers':mods,'vertex_count':len(p),'unified_mantle_count':len(q),'raw_coordinate_max_delta':float(np.linalg.norm(p-q,axis=1).max()) if p.shape==q.shape else None,'attribute_group_sizes':dict(counts),'paired_vertices':2*len(pairs),'pair_distance_range':[min(th),max(th)] if th else None};json.dump(report,open(r+'neck-source-shell-correspondence-audit.json','w'),indent=2);np.savez(r+'neck-source-shell-correspondence.npz',points=p,params=attrs,pairs=np.array(pairs));print(report)

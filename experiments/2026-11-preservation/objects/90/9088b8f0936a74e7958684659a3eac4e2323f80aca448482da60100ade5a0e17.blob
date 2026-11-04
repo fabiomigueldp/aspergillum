@@ -1,0 +1,18 @@
+"""Produce independent source-area holdout, never candidate-derived samples."""
+from pathlib import Path
+import numpy as np
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+R=Path(__file__).resolve().parents[2]
+source=np.load(R/'shell_band_v3/evidence/cap-source.npz');p=source['points'];f=source['triangles']
+classes=np.load(R/'shell_band_v3/evidence/cap-source-wall-classes.npz')['wall_class']
+params=np.load(R/'shell_band_v4/evidence/cap-source-parameters.npz')['params']
+mask=(classes==0)&(params[f,0].max(axis=1)<40);tri=f[mask];vs=p[tri]
+area=np.linalg.norm(np.cross(vs[:,1]-vs[:,0],vs[:,2]-vs[:,0]),axis=1)/2
+seed=20261104;rng=np.random.default_rng(seed);sel=rng.choice(len(tri),20000,p=area/area.sum());uv=rng.random((20000,2));rt=np.sqrt(uv[:,0]);w=np.column_stack([1-rt,rt*(1-uv[:,1]),rt*uv[:,1]]);points=(vs[sel]*w[:,:,None]).sum(axis=1)
+head=np.load(R/'shell_band_v4/evidence/head-source.npz');tree=BVHTree.FromPolygons(head['points'].tolist(),head['triangles'].tolist(),all_triangles=True)
+high=[]
+for q in points:
+ hp,hn,_,_=tree.find_nearest(Vector(q));high.append(float((Vector(q)-hp).dot(hn)))
+np.savez_compressed(R/'shell_band_v5/evidence/review-holdout-points.npz',points=points,source_triangle_indices=np.flatnonzero(mask)[sel],source_triangle_vertices=tri[sel],barycentric_weights=w,high_signed_nearest_plane=np.array(high),seed=np.array(seed),crown_row_threshold=np.array(40))
+print('Saved 20000 independent area-weighted holdout samples, seed',seed)

@@ -1,0 +1,110 @@
+"""Run using Blender: blender -b -t 4 --python independent_gate.py -- INPUT.npz OUTPUT.json.
+Strict crossing gate; not a certificate for tangency, coplanar overlap or clearance.
+"""
+import sys, json, time, hashlib
+from pathlib import Path
+from collections import defaultdict
+import numpy as np
+from mathutils.bvhtree import BVHTree
+
+
+def strict_hits(a, b):
+    result = []
+    e1, e2 = b[1] - b[0], b[2] - b[0]
+    for k in range(3):
+        origin = a[k]
+        direction = a[(k + 1) % 3] - origin
+        h = np.cross(direction, e2)
+        det = np.dot(e1, h)
+        if abs(det) < 1e-20:
+            continue
+        s = origin - b[0]
+        u = np.dot(s, h) / det
+        q = np.cross(s, e1)
+        v = np.dot(direction, q) / det
+        t = np.dot(e2, q) / det
+        if 1e-8 < t < 1 - 1e-8 and u > 1e-8 and v > 1e-8 and u + v < 1 - 1e-8:
+            result.append((origin + t * direction).tolist())
+    return result
+
+
+def review(path):
+    start = time.perf_counter()
+    data = np.load(path, allow_pickle=False)
+    p = np.asarray(data['points'], dtype=np.float64)
+    f = np.asarray(data['triangles'], dtype=np.int64)
+    if p.ndim != 2 or p.shape[1] != 3 or f.ndim != 2 or f.shape[1] != 3:
+        raise ValueError('Expected points Nx3 and triangles Mx3')
+    if not np.isfinite(p).all() or f.min() < 0 or f.max() >= len(p):
+        raise ValueError('Nonfinite positions or invalid triangle indices')
+    edges, links = defaultdict(list), defaultdict(list)
+    for ti, tri in enumerate(f):
+        for k in range(3):
+            x, y = int(tri[k]), int(tri[(k + 1) % 3])
+            edges[tuple(sorted((x, y)))].append((x, y, ti))
+            links[x].append((int(tri[(k + 1) % 3]), int(tri[(k + 2) % 3])))
+    bad_links = []
+    for vertex, es in links.items():
+        adj = defaultdict(set)
+        for x, y in es:
+            adj[x].add(y)
+            adj[y].add(x)
+        seen, stack = set(), [next(iter(adj))]
+        while stack:
+            x = stack.pop()
+            if x not in seen:
+                seen.add(x)
+                stack.extend(adj[x] - seen)
+        if len(seen) != len(adj) or any(len(ns) != 2 for ns in adj.values()):
+            bad_links.append(vertex)
+    tree = BVHTree.FromPolygons(p.tolist(), f.tolist(), all_triangles=True, epsilon=0)
+    candidates = sorted(set(tuple(sorted(pair)) for pair in tree.overlap(tree) if pair[0] != pair[1]))
+    crossings = []
+    for i, j in candidates:
+        witnesses = strict_hits(p[f[i]], p[f[j]]) + strict_hits(p[f[j]], p[f[i]])
+        if witnesses:
+            entry = {'triangles': [i, j], 'vertices': f[[i, j]].tolist(),
+                     'shared_vertices': len(set(f[i]) & set(f[j])), 'witnesses': witnesses}
+            if 'source_indices' in data:
+                entry['source_indices'] = data['source_indices'][f[[i, j]]].tolist()
+            if 'source_side' in data:
+                entry['source_side'] = data['source_side'][f[[i, j]]].tolist()
+            crossings.append(entry)
+    raw = np.cross(p[f[:, 1]] - p[f[:, 0]], p[f[:, 2]] - p[f[:, 0]])
+    lengths = np.linalg.norm(raw, axis=1)
+    normals = raw / np.maximum(lengths[:, None], 1e-300)
+    opposed = []
+    for es in edges.values():
+        if len(es) != 2:
+            continue
+        i, j = es[0][2], es[1][2]
+        if np.dot(normals[i], normals[j]) < -.999999 and max(abs((p[f[j]] - p[f[i, 0]]) @ normals[i])) < 1e-10:
+            opposed.append([i, j])
+    result = {
+        'input': str(path.resolve()), 'sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
+        'method': 'Blender BVH epsilon zero broad phase; double-precision strict segment-triangle intersection in both directions. Shared-vertex pairs are included.',
+        'limitations': 'Not a proof for tangencies, general coplanar overlaps, minimum clearance, or intersections with other objects. BVH broad phase uses Blender precision. No game validation.',
+        'vertices': len(p), 'triangles': len(f), 'euler': len(p) - len(edges) + len(f),
+        'boundary_edges': sum(len(es) == 1 for es in edges.values()),
+        'edges_not_two_faces': sum(len(es) != 2 for es in edges.values()),
+        'inconsistent_edge_winding': sum(len(es) == 2 and es[0][:2] == es[1][:2] for es in edges.values()),
+        'bad_vertex_links': bad_links, 'unused_vertices': sorted(set(range(len(p))) - set(links)),
+        'degenerate_triangles': np.flatnonzero(lengths < 2e-16).tolist(),
+        'minimum_triangle_area': float(lengths.min() / 2),
+        'bvh_candidates': len(candidates), 'strict_crossings': len(crossings), 'crossings': crossings,
+        'opposed_coplanar_edge_adjacent_candidates': opposed,
+        'elapsed_seconds': time.perf_counter() - start,
+    }
+    result['passes_screen'] = not any((result['strict_crossings'], result['edges_not_two_faces'], result['inconsistent_edge_winding'], bad_links, result['unused_vertices'], result['degenerate_triangles'], opposed))
+    return result
+
+
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('input', type=Path)
+    parser.add_argument('output', type=Path)
+    args = parser.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else sys.argv[1:])
+    result = review(args.input)
+    args.output.write_text(json.dumps(result, indent=2))
+    print(json.dumps({k: v for k, v in result.items() if k != 'crossings'}, indent=2))

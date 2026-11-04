@@ -1,0 +1,21 @@
+# Campo3D global do contorno — formulação e limite de viabilidade
+
+## Método distinto proposto, ainda não implementado/aprovado
+Parametrizar cada contorno inteiro por comprimento de arco s, e deslocamento D(s)=ΣBᵢ(s)cᵢ em base cúbicaC2 (poucos controles XYZ compartilhados pelos dois contornos, não deslocamentos independentes nó a nó). Otimizar erro de posição e energia de curvatura do campo; incluir acoplamento entre calota/manto para evitar torção das ligações. A direção varia continuamente pela nuca, sem sinalX abrupto.
+
+Restrições: anatomia/faixa/bainha congeladas; fronteira frontal protegida; controles fora do pano não existem. Limite inicial25mm de deslocamento como teto conservador de estudo — não dimensão medida na fotografia. Variação de comprimento, inversões e abertura entre faixa/pano devem ser medidas. O teto é menor que o hull exigiria em alguns pontos: hull não serve para certificar essa rota conservadora dentro desse limite.
+
+## Critério necessário antes de tecido
+A curva representada pelos segmentos finais deve ter distância mínima positiva em relação a TODOS os triângulos da anatomia e faixa, incluindo contatos vértice–face, aresta–aresta, casos coplanares e suporte da espessura. Não basta valores de signed-distance em nós, nearest-normals, amostras do spline, nem ausência de raycasts transversais. A distância mínima deve cobrir o segmento inteiro. Se a curva for mantida como spline contínuo em vez de poligonal, será necessário bound certificado por intervalos/subdivisão adaptativa, não simples tesselação visual.
+
+A seguir a superfície entre contornos exige teste completo de triângulos e auto-contato. Curva aprovada não autoriza afirmar tecido aprovado.
+
+## Viabilidade e parada
+As ferramentas existentes permitem desenhar o campo e otimizar energias locais, mas ainda NÃO há neste trabalho implementação validada do conjunto de restrições não convexas de distância segmento–triângulo/aresta–aresta com suporte de espessura, preservação de faixa e auto-contato. BVH/raycast usados até agora detectam cruzamentos, não certificam folga contínua. Os solvers lineares anteriores só são válidos para uma direção fixa e não se transferem automaticamente paraD(s)3D.
+
+Portanto não demonstrada viabilidade dentro de25mm, nem impossibilidade geral. Não executei mais um solver aproximado para fabricar candidato. Este caminho automático para aqui; nenhum nó, superfície ou baseline mudou.
+
+## Alternativa substantiva
+Reconstrução manual de uma gaiola única baixa resolução, com marcos visuais explícitos e controle artístico das bordas testa–têmpora–nuca, seguida de validação geométrica completa e revisão humana/independente. Isso substitui a geometria-fonte problemática em vez de continuar ajustando a costura. As fotos atuais não definem costas e profundidade com precisão: uma sequência fotográfica adicional frontal/perfil oposto/posterior em ângulos conhecidos ajudaria a fixar essa gaiola, sem prometer fotogrametria a partir de duas fotos.
+
+Não recomendo voltar a variações de nariz/cabelo/panturrilha já rejeitadas, nem usar geração de imagem como substituto de um mesh verificado. Arquivos e rollbackV75 preservados.

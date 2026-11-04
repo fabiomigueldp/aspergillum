@@ -1,0 +1,47 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-cloth-obstacle-surface-trial.py').read().split('counts=collections.Counter')[0])
+patch=set(json.load(open(r+'neck-whole-fold-mask-audit.json'))['patch_faces']);pairlist=np.load(r+'neck-source-layer-pairs.npz')['pairs']+160386;pairmap={int(a):int(b) for a,b in pairlist for a,b in [(a,b),(b,a)]};primary={int(a):int(a) for a,b in pairlist};primary.update({int(b):int(a) for a,b in pairlist});counts=collections.Counter(tuple(sorted((a,b))) for fi in patch for a,b in zip(fs[fi],fs[fi][1:]+fs[fi][:1]));edges=[e for e,n in counts.items() if n==1];bprim={primary[v] for e in edges for v in e};adj=collections.defaultdict(set);badj=collections.defaultdict(set)
+for a,b in counts:
+ a,b=primary[a],primary[b]
+ if a!=b:adj[a].add(b);adj[b].add(a)
+for a,b in edges:
+ a,b=primary[a],primary[b];badj[a].add(b);badj[b].add(a)
+assert all(len(n)==2 for n in badj.values());start=min(bprim);loop=[start];prev=None;cur=start
+while True:
+ nxt=next(v for v in badj[cur] if v!=prev)
+ if nxt==start:break
+ loop.append(nxt);prev,cur=cur,nxt
+assert len(loop)==len(bprim)
+mids={v:(p[v]+p[pairmap[v]])/2 for v in adj};free=set(adj)-bprim;inner=[];fallback=[];width=[]
+for v in loop:
+ frontier={v};seen={v};targets=set()
+ for depth in range(1,len(adj)+1):
+  frontier=set().union(*(adj[a] for a in frontier))-seen;seen|=frontier;targets=frontier&free
+  if targets:break
+ assert targets,'No interior direction without leaving source patch'
+ target=np.mean([mids[a] for a in targets],axis=0);direction=target-mids[v];distance=np.linalg.norm(direction);step=min(.002,.15*distance);inner.append(mids[v]+direction/distance*step);width.append(step)
+ if depth>1:fallback.append({'vertex':v,'graph_hops':depth})
+verts=p.tolist();rings=[];N=len(loop)
+for layer in [0,1]:
+ ring=[]
+ for j,v in enumerate(loop):
+  thickness=p[pairmap[v]]-p[v];position=inner[j]+(-.5 if layer==0 else .5)*thickness;ring.append(len(verts));verts.append(position.tolist())
+ rings.append(ring)
+collar=[];layerinfo=[];source_normals=[]
+for layer in [0,1]:
+ outer=loop if layer==0 else [pairmap[v] for v in loop];faces=[]
+ for j in range(N):
+  k=(j+1)%N;faces.append([outer[j],outer[k],rings[layer][k],rings[layer][j]])
+ # Set coherent winding once per layer using normals of original incident patch faces.
+ dots=[]
+ for j,f in enumerate(faces):
+  edge={outer[j],outer[(j+1)%N]};neighbors=[fi for fi in patch if edge.issubset(fs[fi])];ref=np.zeros(3)
+  for fi in neighbors:
+   pp=p[list(fs[fi])];ref+=np.cross(pp[1]-pp[0],pp[2]-pp[0])
+  a,b,c=np.array([verts[i] for i in f[:3]]);dots.append(np.dot(np.cross(b-a,c-a),ref))
+ if np.median(dots)<0:faces=[list(reversed(f)) for f in faces]
+ for f in faces:collar.extend([[f[0],f[1],f[2]],[f[0],f[2],f[3]]])
+ layerinfo.append({'layer':layer,'outer_vertices':len(outer),'inner_vertices':len(rings[layer]),'triangles':len(faces)*2})
+V=np.array(verts);ct=BVHTree.FromPolygons(verts,collar,all_triangles=True);headpairs=ct.overlap(hb);outside=[f for fi,f in enumerate(fs) if fi not in patch];ot=BVHTree.FromPolygons(verts,outside);outsidepairs=[(a,b) for a,b in ct.overlap(ot) if not set(collar[a])&set(outside[b])];selfpairs=set((a,b) for a,b in ct.overlap(ct) if a<b and not set(collar[a])&set(collar[b]));T=np.array(collar);area=np.linalg.norm(np.cross(V[T[:,1]]-V[T[:,0]],V[T[:,2]]-V[T[:,0]]),axis=1)/2
+# Evaluate diagnostic collar mesh with no modifiers; keep data only in this unsaved scene.
+me=bpy.data.meshes.new('Diagnostic independent paired collars');me.from_pydata(verts,[],collar);me.update();obj=bpy.data.objects.new('Diagnostic collars only — not a replacement',me);bpy.context.collection.objects.link(obj);bpy.context.view_layer.update();dg=bpy.context.evaluated_depsgraph_get();em=obj.evaluated_get(dg).to_mesh();evaldelta=max((em.vertices[i].co-Vector(verts[i])).length for i in range(len(verts)));obj.evaluated_get(dg).to_mesh_clear()
+report={'method':'Two independent annular collars; outer loop per layer unchanged; paired inner XYZ points moved2mm max toward source-connected interior; no central filling, no joining layers as one domain','layers':layerinfo,'outer_pair_thickness_range_m':[float(min(np.linalg.norm(p[v]-p[pairmap[v]]) for v in loop)),float(max(np.linalg.norm(p[v]-p[pairmap[v]]) for v in loop))],'inner_collar_width_range_m':[float(min(width)),float(max(width))],'vertices_requiring_more_than_one_graph_hop':len(fallback),'skin_triangle_pairs':len(headpairs),'outside_fold_pairs_nonadjacent':len(outsidepairs),'self_pairs_nonadjacent':len(selfpairs),'triangle_area_range':[float(area.min()),float(area.max())],'degenerate_triangles':int((area<1e-12).sum()),'evaluated_modifier_coordinate_delta':evaldelta,'outer_ring_delta':0.0,'center_filled':False,'skin_pairs_by_layer':[sum(a<2*N for a,b in headpairs),sum(a>=2*N for a,b in headpairs)],'skin_pair_examples':headpairs[:10],'outside_pair_examples':outsidepairs[:10],'skin_pairs_all':headpairs,'outside_pairs_all':outsidepairs,'outside_source_face_indices':[fi for fi in range(len(fs)) if fi not in patch],'ordered_primary_loop':loop,'graph_fallback':fallback,'status':'Reject and stop before center if any collision or degeneracy; no blend saved'};json.dump(report,open(r+'neck-whole-fold-collar-proof.json','w'),indent=2);np.savez(r+'neck-whole-fold-collar-proof.npz',points=V,triangles=T,outer_loop=loop,paired_outer=[pairmap[v] for v in loop],inner_rings=rings);print({k:v for k,v in report.items() if k not in ["outside_source_face_indices","ordered_primary_loop","graph_fallback"]},flush=True)

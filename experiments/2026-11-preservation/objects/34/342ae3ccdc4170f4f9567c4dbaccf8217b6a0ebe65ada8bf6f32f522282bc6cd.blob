@@ -1,0 +1,58 @@
+{
+  "checks": {
+    "legacy_color_exact": true,
+    "legacy_normal_exact": true,
+    "source_wall_identity": true,
+    "source_barycentric_range": true,
+    "all_flat_tiles_neutral": true,
+    "identity_flags_correct": true,
+    "anatomy_rotations_correct": true
+  },
+  "stats": {
+    "0": {
+      "faces": 4444,
+      "covered_pixels": 871177,
+      "max_angle_degrees": 0.37715134197529615,
+      "negative_tangent_z_pixels": 57,
+      "legacy_uncovered_sample_pixels": 0,
+      "identity_faces": 0,
+      "identity_color_normal_exact": true,
+      "legacy_uncovered_sample_faces": [],
+      "mean_angle_degrees": 0.18008755408359509
+    },
+    "1": {
+      "faces": 12664,
+      "covered_pixels": 2491441,
+      "max_angle_degrees": 0.31775544208130285,
+      "negative_tangent_z_pixels": 0,
+      "legacy_uncovered_sample_pixels": 0,
+      "identity_faces": 0,
+      "identity_color_normal_exact": true,
+      "legacy_uncovered_sample_faces": [],
+      "mean_angle_degrees": 0.3177554420697979
+    },
+    "15": {
+      "faces": 1376,
+      "covered_pixels": 276834,
+      "max_angle_degrees": 0.3640305574891759,
+      "negative_tangent_z_pixels": 10144,
+      "legacy_uncovered_sample_pixels": 0,
+      "identity_faces": 736,
+      "identity_color_normal_exact": true,
+      "legacy_uncovered_sample_faces": [],
+      "mean_angle_degrees": 0.014205932282276268
+    }
+  },
+  "max_source_uv_error_from_float32_provenance": 7.790587233102997e-06,
+  "max_barycentric_sum_error": 4.470348358154297e-08,
+  "max_anatomy_frame_matrix_error": 0.0,
+  "normal_file_sha256": "f2a48b36bcb2855bb7e2cf698acedf884d35f9d902bfc51a98c66da7239b2f00",
+  "provenance_sha256": "7a651dd7913c93456d8a46823d53ad2d74d31a9f46ad58599dc3f86e300086d6",
+  "interpretation": "Decoded normal vectors checked against explicit saved source-face lineage and independent cube frame. This verifies declared partial transfer, not a complete new highpoly bake.",
+  "limitations": [
+    "12,664 shell faces and258 band returns/closures have neutral normal placeholders, lacking source relief.",
+    "Changed anatomy uses per-face frame rotation of old sampled normal; highpoly/current-position correspondence is not established.",
+    "307 newly covered anatomy pixels use a declared nearest-covered-pixel fallback within the same legacy tile; this remains a resampling approximation.",
+    "DirectX green sign and tangent basis in real Minecraft are untested."
+  ]
+}

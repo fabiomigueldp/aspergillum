@@ -1,0 +1,22 @@
+from pathlib import Path
+from PIL import Image,ImageDraw,ImageFont
+import hashlib,json
+R=Path(__file__).resolve().parents[1];E=R/'evidence';V=R.parent/'opaque_transport_v15/evidence'
+f='/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf';F=lambda s:ImageFont.truetype(f,s)
+records=[]
+def sheet(name,items,crop=None,cols=2,scale=1):
+ ims=[]
+ for label,path in items:
+  im=Image.open(path).convert('RGB')
+  if crop: im=im.crop(crop)
+  if scale!=1:im=im.resize((round(im.width*scale),round(im.height*scale)),Image.Resampling.LANCZOS)
+  ims.append((label,im,path))
+ w=max(im.width for _,im,_ in ims);h=max(im.height for _,im,_ in ims);pad=16;header=74;caption=52
+ out=Image.new('RGB',(cols*w+(cols+1)*pad,header+((len(ims)+cols-1)//cols)*(h+caption+pad)+pad),'#e9ecef');draw=ImageDraw.Draw(out)
+ draw.text((pad,12),'V16 · Diagnóstico Cycles, mesma máscara e iluminação',font=F(24),fill='#15222c');draw.text((pad,43),'Melhoria local com novas regressões. Sem teste Minecraft ou aprovação global.',font=F(17),fill='#33434f')
+ for k,(label,im,path) in enumerate(ims):
+  x=pad+(k%cols)*(w+pad);y=header+(k//cols)*(h+caption+pad);draw.text((x,y),label,font=F(18),fill='#15222c');out.paste(im,(x,y+caption))
+ p=E/name;out.save(p);records.append({'file':name,'sources':[{'label':a,'path':str(p.relative_to(R.parent)),'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}for a,_,p in ims],'crop_pixels':crop,'display_scale':scale,'pixel_edits':'none; identical crop/resizing and labels only','sha256':hashlib.sha256(p.read_bytes()).hexdigest()})
+sheet('comparison-trim-and-restoration.png',[('V15 · cartões originais',V/'shared-2048-band-front.png'),('V16 · recorte local nível 3',E/'roi68-depth3-band-front.png'),('Controle · só transparências recolocadas',E/'roi68-depth3-restored-transparent-band-front.png'),('Recorte analítico · não é cube Bedrock',V/'shared-2048-analytic-clip-control-band-front.png')],crop=(175,365,825,705))
+sheet('comparison-whole.png',[('V15 · original',V/'shared-2048-threequarter.png'),('V16 · nível 3, correção local',E/'roi68-depth3-context-threequarter.png')],cols=2,scale=.65)
+(E/'comparison-provenance.json').write_text(json.dumps(records,indent=2,ensure_ascii=False)+'\n')

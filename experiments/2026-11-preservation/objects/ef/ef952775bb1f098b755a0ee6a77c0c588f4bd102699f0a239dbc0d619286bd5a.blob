@@ -1,0 +1,34 @@
+"""Per-texel correspondence restricted to outer wall, inner wall, or actual rim."""
+import bpy,numpy as np,json,time,sys
+from pathlib import Path
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+B=Path(__file__).resolve().parents[1];R=Path(sys.argv[sys.argv.index('--')+1]) if '--' in sys.argv else B
+maps=json.load(open(R/'evidence/alpha-triangle-map.json'));geo=json.load(open(R/'resource_pack/models/entity/paired_cap_band.geo.json'))['minecraft:geometry'][0];trees={};hvs={};hns={};hfs={};lowclass=[]
+for pi,part in enumerate(['cap','band']):
+ src=np.load(B/f'evidence/{part}-source.npz');side=np.load(B/f'evidence/{part}-source-wall-classes.npz')['wall_class'];hv=src['points'];hf=src['triangles'];hvs[pi]=hv;hns[pi]=src['normals']
+ for wall in [0,1,2]:
+  ff=hf[side==wall];trees[(pi,wall)]=BVHTree.FromPolygons(hv.tolist(),ff.tolist(),all_triangles=True);hfs[(pi,wall)]=ff
+ low=np.load(R/f'evidence/{part}-paired.npz');ls=low['source_side'][low['triangles']];lowclass.extend(np.where(np.all(ls==0,axis=1),0,np.where(np.all(ls==1,axis=1),1,2)).tolist())
+WAT=geo['description']['texture_width'];HAT=geo['description']['texture_height'];img=bpy.data.images.load(str(R/'resource_pack/textures/entity/paired_cap_band.png'));A=np.array(img.pixels[:],dtype=np.float32).reshape((HAT,WAT,4))[::-1];normal=np.zeros((HAT,WAT,4),np.float32);normal[:]=[.5,.5,1,1];counts={};stats={'texels':0,'negative_tangent_z':0,'class_texels':{},'max_projection_distance':{},'rays':0,'nearest_fallback':0,'distant_ray_rejected':0};start=time.time()
+def to_bl(p):return np.array([p[0],-p[2],p[1]])
+for mi,m in enumerate(maps):
+ pi=m['part'];wall=lowclass[m['cube']];key=(pi,wall);st=str(key);ci=counts.get(pi,0);counts[pi]=ci+1;c=geo['bones'][pi]['cubes'][ci];uv=c['uv']['south'];tx,ty=uv['uv'];W,H=uv['uv_size'];mask=A[ty:ty+H,tx:tx+W,3]>.5
+ a,b,cc=np.array([m['a'],m['b'],m['c']]);U=b-a;U/=np.linalg.norm(U);tmp=cc-a;V=tmp-np.dot(tmp,U)*U;V/=np.linalg.norm(V);N=np.cross(U,V);M=np.column_stack((U,V,N));mu,mv=m['mask_local'][0];ww,hh=c['size'][:2];faceN=to_bl(N);tree=trees[key];ff=hfs[key];hv=hvs[pi];hn=hns[pi];eps=.02
+ for y,x in zip(*np.where(mask)):
+  px=(x+.5)/W*ww-mu;py=(1-(y+.5)/H)*hh-mv;p=to_bl(a+U*px+V*py)/16
+  q,fn,fi,dist=tree.ray_cast(Vector(p+faceN*eps),Vector(-faceN),eps*2)
+  if q is None:q,fn,fi,dist=tree.find_nearest(Vector(p));stats['nearest_fallback']+=1
+  else:
+   near=tree.find_nearest(Vector(p));ray_distance=float(np.linalg.norm(np.array(q)-p))
+   if ray_distance>near[3]*1.5+.00025:
+    q,fn,fi,dist=near;stats['nearest_fallback']+=1;stats['distant_ray_rejected']+=1
+   else:stats['rays']+=1
+  distance=float(np.linalg.norm(np.array(q)-p));stats['max_projection_distance'][st]=max(stats['max_projection_distance'].get(st,0),distance)
+  aa,bb,cc=hv[ff[fi]];v0=bb-aa;v1=cc-aa;v2=np.array(q)-aa;d00=np.dot(v0,v0);d01=np.dot(v0,v1);d11=np.dot(v1,v1);d20=np.dot(v2,v0);d21=np.dot(v2,v1);den=d00*d11-d01*d01
+  if abs(den)>1e-24:
+   wb=(d11*d20-d01*d21)/den;wc=(d00*d21-d01*d20)/den;weights=np.clip([1-wb-wc,wb,wc],0,1);weights/=sum(weights);n=weights@hn[ff[fi]]
+  else:n=np.array(fn)
+  n/=max(np.linalg.norm(n),1e-12);nbb=np.array([n[0],n[2],-n[1]]);t=nbb@M;stats['negative_tangent_z']+=int(t[2]<0);t[1]*=-1;normal[ty+y,tx+x,:3]=t*.5+.5;stats['texels']+=1;stats['class_texels'][st]=stats['class_texels'].get(st,0)+1
+ if mi%500==0:print('Wall-aware bake',mi,'/',len(maps),round(time.time()-start),flush=True)
+out=bpy.data.images.new('Wall-corresponding DirectX normal',width=WAT,height=HAT,alpha=True);out.colorspace_settings.name='Non-Color';out.pixels.foreach_set(normal[::-1].flatten());out.filepath_raw=str(R/'resource_pack/textures/entity/paired_cap_band_normal_per_wall_dx.png');out.file_format='PNG';out.save();stats.update({'seconds':time.time()-start,'method':'BVH ray projection ±2cm, reject ray hits farther than 1.5 times nearest-source distance +0.25mm; nearest fallback, restricted to matching source part AND matching outer/inner/rim class. Smooth high-source normals interpolated per texel.','directional_light_baked':False,'geometry_changed':False,'normal_convention':'DirectX hypothesis; not tested in Bedrock','negative_z_fraction':stats['negative_tangent_z']/stats['texels']});(R/'evidence/per-wall-normal-bake.json').write_text(json.dumps(stats,indent=2));print(stats,flush=True)

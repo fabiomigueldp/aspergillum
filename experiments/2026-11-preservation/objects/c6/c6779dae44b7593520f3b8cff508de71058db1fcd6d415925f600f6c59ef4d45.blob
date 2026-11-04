@@ -1,0 +1,100 @@
+# V14: revisão independente do transporte
+
+Data: 2026-11-03. **Parecer: prova numérica de coordenadas e rastreio aprovada como laboratório; fidelidade do recorte alfa reprovada em testemunho local; equivalência PBR da escultura inteira não demonstrada. Não é versão aprovada para jogo ou publicação.**
+
+Nenhuma fonte, exportador, recurso do pack, save, repositório ou serviço foi alterado por esta revisão. Escritas restritas a `independent_validation/`. O teste não usou runtime Minecraft. Não houve repetição de Viewer/browser nem tentativa de contornar a indisponibilidade anterior.
+
+## 1. Escopo, integridade e geometria
+
+Entrada: faixa V13 C1 n4, casca V11 e anatomia V9 retidas, substituindo somente `part_00`, `part_01`, `part_15`. A leitura independente das três NPZ confirma **18.484 triângulos** (4.444 + 12.664 + 1.376). A geometria final tem **23.081 cubes, 23.098 faces de quad, 46.196 triângulos de rasterização**, incluindo os elementos legados. Isso é contagem, não orçamento certificado de desempenho.
+
+Passaram:
+
+- Somente os três bones autorizados diferem. Os outros 17 são iguais como objetos JSON, incluindo cubes, UVs e pivôs.
+- Todas as faces nativas aparecem exatamente uma vez e correspondem ao índice de cube local. Índices, valores e linhagem das cópias NPZ conferem. Hashes das três entradas continuam iguais aos capturados no início.
+- Coordenadas, rotações, UVs e normais reconstruídos são finitos. Novos cubes têm largura/altura positivas, profundidade zero e somente south. Não há triângulo nativo exatamente de área zero nem face descartada.
+- Reconstrução independente com matrizes explícitas, sem importar o exportador: erro máximo dos triângulos **2,6443×10⁻¹⁵ bloco**. Orientação geométrica coincide com a malha nativa. Mapa bruto pixel→baricêntricas confere até **2,77×10⁻¹⁰**.
+- Novos tiles não se sobrepõem nem invadem o quadrante legado. Alfa é binário. Pixels RGBA de albedo e normal 2048² são bit-exatos no canto superior esquerdo do atlas 4096². PNGs e JSON legados congelados também conferem byte a byte com os originais atuais.
+- Todos os cantos, incluindo margens transparentes dos quads, cabem nos bounds declarados. AABB real: aproximadamente **0,968881 × 3,760263 × 0,864215 bloco**; margem mínima para a caixa declarada: **0,250675 bloco**. Isso não executa o culling do motor.
+
+Evidências: `input-audit.json`, `transport-audit.json`, `source-preservation-final.json`, `visible-bounds-check.json`.
+
+## 2. Divergências reais da bancada Aspergillum
+
+Foi executado o módulo original, sem alterações, no commit `3eaf97b172a38dac794461b156b70864737875d6`. Seus hashes Git locais conferem. Os conjuntos de cantos concordam com a reconstrução até **1,49×10⁻⁸ bloco**, mas isso sozinho escondia dois problemas:
+
+1. **U espelhado em todas as 18.484 faces south novas**, quando posição e UV são associados. A diferença chega a 20 texels; uma reflexão horizontal remove a diferença exatamente. 18.292 tiles têm alfa assimétrico, portanto não é uma diferença inócua de convenção.
+2. **Atributos de normal opostos ao próprio winding dos triângulos**, dot = −1, nas 18.484 faces. `Three.BoxGeometry` com depth=0 atribui −Z à face south pela condição `depth > 0`; a face indexada continua com winding de +Z antes da rotação.
+
+Para decidir o UV sem presumir que nosso importador estava correto, esta revisão obteve fontes primárias do Blockbench no commit `ec0b2827104d0799c153bfb5f867579c0c44652f`, verificou os hashes e executou `parseCube`, `setShape` e `updateUV` originais em harness mínimo com fixture assimétrico. O resultado **concorda com o exportador/importador Blender**, não com o mapeamento direto atual do Aspergillum. Esse harness verifica funções de geometria/UV, não lança o aplicativo completo; não incorpora a pequena espessura de conveniência usada no preview Blockbench.
+
+Portanto os renders anteriores de Blender não foram reclassificados como Aspergillum ou Minecraft. O módulo do viewer não foi “corrigido” silenciosamente nem usado como prova de alfa/PBR. Shader, material, DirectX e culling em engine continuam sem prova.
+
+Evidências: `actual-module-validation.json`, `joint-position-uv-comparison.json`, `blockbench-uv-oracle.json`. Fontes primárias: [parser/exportador](https://github.com/JannisX11/blockbench/blob/ec0b2827104d0799c153bfb5f867579c0c44652f/js/formats/bedrock/bedrock.js), [UV de cube](https://github.com/JannisX11/blockbench/blob/ec0b2827104d0799c153bfb5f867579c0c44652f/js/outliner/types/cube.js), [setShape](https://github.com/JannisX11/blockbench/blob/ec0b2827104d0799c153bfb5f867579c0c44652f/js/util/three_custom.js).
+
+## 3. O recorte alfa não preserva os triângulos
+
+Interseção poligonal exata entre cada célula opaca e o triângulo projetado, considerando **nearest em mip0**, mede tanto sobrecobertura quanto perda. A área acumulada por face não é área de união, silhueta ou profundidade de penetração.
+
+- Faixa: área extra **0,00740555 bloco²**, área perdida **0,000172817 bloco²**. São aproximadamente **+22,03% / −0,514%** da soma das áreas nativas. A extrapolação máxima de um canto de pixel para fora do triângulo é **2,061 mm**; mediana **0,430 mm**.
+- Casca: área extra **1,025706 bloco²**, perda **0,00450101 bloco²**. A extrapolação chega a **40,472 mm** nos maiores triângulos. Isso não diz que houve penetração de 40 mm.
+- Nos **246 novos fechamentos da orelha**, a extrapolação máxima é **0,974 mm**, soma extra **22,18%** e perda **0,240%**. Nos **258 retornos/fechamentos da faixa**, a extrapolação máxima é **1,826 mm**.
+- Não há tile completamente vazio. Isso não impede erosão de bordas ou exposição de outra peça.
+
+### Testemunho causal de shell reaparecendo à frente
+
+Os 17 raios conhecidos da V13 e o raio central da amostra protegida 7442 preservam o primeiro componente. A separação central recomputada em float64 é **0,022263 mm**; o valor anterior de BVH float32 era 0,022178 mm. O ponto é protegido e anterior à correção local V13: não foi uma margem pequena criada pelo patch.
+
+No entorno, origem deslocada **(−0,1; +0,1) mm** no plano tangente ao raio:
+
+- Malha nativa: faixa, face **900**, distância **14,9878995 mm**.
+- Recorte alfa: casca, face **4488**, distância **14,9662652 mm**.
+- A casca fica **0,0216343 mm à frente**, embora o ponto esteja fora do seu triângulo: baricêntricas **(−0,061146; 0,618634; 0,442512)**. O texel local **(16,11)** está opaco.
+
+Isso é regressão de **suporte pelo alfa** em relação à malha nativa, não uma nova interseção da própria malha. Entre 450 raios locais iniciais, um muda faixa→casca. Um mapa ampliado 201² sobre 0,4×0,4 mm encontra **4.048/40.401 amostras** com essa substituição; avanço máximo **0,0227585 mm**. Área amostrada estimada: 0,016192 mm². Não é certificação de área contínua, pixel visível de câmera ou defeito perceptível no Minecraft.
+
+Evidências: `raster-face-audit.jsonl.gz`, `critical-region-raster-summary.json`, `critical-ray-alpha-comparison.json`, `critical-gap-plane-sampling.json` e **`critical-gap-alpha-regression.png`**. A imagem é um mapa matemático de suporte, não render nem screenshot.
+
+## 4. Trial centro-only: não reter como solução global
+
+O trial isolado reduz a tolerância de inclusão do centro do pixel a zero, preservando geometria e RGB. Remove o texel invasor acima, mas **piora os raios de controle**:
+
+- Mudanças faixa→casca: **1 → 26 em 450**.
+- Raios centrais com troca de componente: **0 → 2 em 18**.
+- Um é o raio conhecido da orelha direita, pixel **(98,258)**: a faixa face 249 está presente geometricamente mas fica transparente, expondo a casca 2979 cerca de **1,5114 mm atrás**.
+- O outro é o próprio centro protegido 7442, cuja faixa face 901 também perde cobertura, expondo a casca 2995.
+
+O método “só centros dentro” ainda tem cantos de pixels fora do triângulo e abre perdas em outros pontos. Não resolve globalmente a tensão entre vazamento e fissuras. A comparação exata de áreas está concluída em `alpha-center-only-independent-audit.json`. Na faixa, a perda de área acumulada sobe de **0.514% para 2.766%**; na casca de **0.083% para 0.857%**; na anatomia de **0.138% para 2.891%**. A área extra cai, mas nenhum desses valores representa área de união ou avaliação visual. Nenhum trial foi promovido para o pack.
+
+## 5. PBR separado: transferência parcial declarada, não equivalência
+
+A textura flat de controle mantém novos tiles neutros e não possui texture_set ligado. A entidade PBR experimental é separada.
+
+A auditoria independente dos vetores decodificados e da linhagem final confirma:
+
+- **736 faces de anatomia identidade** preservam seus tiles de cor/normal bit-exatos. As outras **640** usam rotação entre frames geométricos das faces: as matrizes conferem, mas isso não é novo bake highpoly nas posições alteradas.
+- A faixa usa correspondência por UV geométrico e parede física para **4.186 faces**; **258 retornos/fechamentos ficam flat**. Os índices e baricêntricas reconstruídos correspondem à parede certa. O armazenamento float32 das baricêntricas introduz erro máximo de aproximadamente 7,8×10⁻⁶ em unidades UV de parâmetro, não em blocos.
+- **12.664 faces da casca permanecem flat**, inclusive os novos fechamentos. Não há equivalência de detalhe superficial da escultura inteira.
+- Erro angular máximo da codificação/releitura: **0,3772° faixa**, **0,3641° anatomia**. A cor neutra quantizada 128/128/255 inclina o normal flat em aproximadamente **0,3178°**.
+- Valores negativos no eixo tangente Z foram preservados: **57 texels da faixa e 10.144 da anatomia**. Não houve flip nem abs(z) silencioso.
+- O resultado final não busca texels com alfa zero no legado: **307 casos** usam fallback documentado para pixel coberto na **mesma tile**. Todos os endereços foram rederivados independentemente; os 307 flags conferem, nenhum endereço sai de sua tile e o deslocamento máximo é √2 texels. Isso continua sendo reamostragem, não detalhe highpoly novo.
+
+Evidências: `pbr-independent-audit.json`, `anatomy-resampling-audit.json` e proveniência original em export_work. Convenção DirectX, tangent space real da entidade e resultado Classic/PBR seguem sem teste no motor.
+
+## 6. Microcomponente herdado
+
+Os vértices 437–439 e faces opostas 424/1131 da anatomia foram deliberadamente preservados. Cada face tem área **5,0683×10⁻¹⁵ bloco²**, e seus normais de vértice cancelam para zero. Não foram usados como base do novo normalmap.
+
+V2 e V14 mantêm 198 texels opacos por tile. A reconstrução float64 e o caminho CPU do viewer preservam área; a precisão de posição V14 melhora sobre a antiga truncagem a sete casas. Um modelo de cálculo inteiramente float32 colapsa ambas as versões, enquanto somente arredondar a posição mundial final para float32 não colapsa. São testes de sensibilidade, não descrição do pipeline Bedrock. Não há conclusão de invisibilidade global nem motivo para classificar sua existência como regressão V14.
+
+Evidência: `microcomponent-comparison.json`.
+
+## 7. Limites documentados e decisão
+
+`DOCUMENTED_SCOPE.md` reúne as fontes oficiais e o escopo. Os campos adotados têm representação na schema de entidade; a recomendação de 50 cubes por **bloco** não é um limite de entidade. Nenhum teto documentado de cubes/bones/atlas encontrado nas fontes examinadas permite certificar este pacote. A ausência de teto expresso não significa suporte ilimitado.
+
+**Retenção autorizável apenas como laboratório diagnosticado**, mantendo fontes e controle flat. Não chamar de transporte triangular sem perdas, material original preservado, fidelidade Bedrock aprovada ou produto pronto. O problema de alfa requer outra decisão de representação/amostragem com controles pareados; reduzir a tolerância globalmente não passou. PBR de casca e runtime real permanecem lacunas separadas. Não foi feita publicação, instalação ou alteração de saves.
+
+## Reprodução
+
+Scripts independentes nesta pasta: `audit_inputs.py`, `audit_transport.py`, `inspect_actual_module.mjs`, `check_blockbench_uv.mjs`, `compare_position_uv.py`, `audit_critical_rays.py`, `plot_critical_alpha.py`, `audit_alpha_trial.py`, `audit_pbr.py`, `audit_anatomy_resampling.py`, `check_microcomponent.py`. Os dados do exportador são lidos como entradas e confrontados com fontes/cálculo independentes; nenhum módulo do exportador foi importado. Para os scripts NumPy, usar `OPENBLAS_NUM_THREADS=1`; para plots, direcionar caches para uma pasta gravável. Todos os relatórios se restringem aos hashes efetivamente auditados.

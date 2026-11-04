@@ -1,0 +1,123 @@
+# Revisão visual independente da borda calota–ponte V11
+
+Data: 2026-11-03. Estado: revisão concluída.
+
+**Parecer final: favorável à retenção técnica local de pesquisa de `polygon05` (`polygonal-pinna-0.5mm-clean.npz`), sem aprovação global da interface ou Minecraft. `convex15` foi rejeitada; `rim05` já demonstrava o ganho visual local, que `polygon05` conserva. Ouro da faixa congelada, sinais vermelhos temporais/posteriores e linhas/pontos escuros ainda são visíveis.**
+
+## Referência e escopo
+
+Referência conservada: V7 + anatomia V9, faixa V5 congelada. V10 rejeitada não é baseline. Foram lidos o `README.md` raiz e `bridge_ear_v10/evidence/review-visual-v10.md`. Foram inspecionados diretamente os nove PNGs `bridge_ear_v10/evidence/baseline-v9-{left-ear,right-ear,head-front,junction-profile,junction-back,full-front,rear-open,left-ear-oblique,right-ear-oblique}.png`.
+
+Os renders são diagnósticos externos do Blender, não Minecraft. Cabeça e halo legados permanecem reduzidos, sem highpoly. Somente `rear-open`, `left-ear-oblique` e `right-ear-oblique` estão sem halo. As demais câmeras usam halo e suas oclusões não demonstram ausência de defeitos atrás dele.
+
+## Baseline observado
+
+- **Orelha esquerda, lateral e oblíqua:** lâmina vermelha longa dentro da cavidade, ponta azul no polo superior e pequeno ouro no interior/alto. Pinna, margem cinza externa e lóbulo têm extensão aparente própria. Fundo cinza inferior ainda visível.
+- **Orelha direita, lateral e oblíqua:** vermelho superior e tira descendente diagonal, azul no polo superior e ouro parcial. Margem cinza e lóbulo expostos. Há um pequeno recorte cinza e vermelho acima da extremidade da faixa, condição já herdada.
+- **Faixa e região temporal:** faixa ouro com recortes azuis persistentes, pontas/segmentos locais e linha escura inferior. Esses defeitos prévios não devem ser atribuídos à V11, nem sua conservação deve ser confundida com acabamento aprovado.
+- **Frente da cabeça:** feições e pescoço anterior cinzas constituem marcos de preservação. As duas orelhas mostram trechos vermelhos, com assimetria de projeção.
+- **Perfil/traseira com halo:** curva posterior de calota/ponte contínua nas áreas visíveis, sem grande exposição cinza. Halo oculta extensa superfície posterior. Vermelho continua aparente atrás da orelha.
+- **Traseira aberta:** exterior azul/vermelho/verde visualmente contínuo, com facetas/sombras e pequenas quinas herdadas; orelhas parcialmente visíveis nos lados. Não revela anatomia sob a casca.
+- **Corpo inteiro:** composição e proporções registradas; escala insuficiente para certificar interfaces pequenas.
+
+## Critérios V11
+
+1. Julgar nova conectividade/borda local nas imagens, não somente contagem ou deslocamento de vértices.
+2. Exigir limpeza visual das cavidades nas vistas inspecionadas sem recolhimento ou cobertura da pinna, margem ou lóbulo. Vermelho trocado por azul não é limpeza.
+3. Examinar fechamento aparente, pontas, furos, abas, degraus e espessura visual da nova borda. A ausência de furo num PNG não certifica topologia.
+4. Comparar exposições cinzas e ouro na região temporal, faixa, cobertura da cabeça e arco posterior ao baseline V9 equivalente, com materiais, luz e câmeras equivalentes.
+5. Nenhum fragmento visível poderá ser chamado oculto. Uma série limitada de imagens não prova invisibilidade universal, anatomia ocluída, clearance ou ausência de interseção.
+
+## Limite de intervenção
+
+Nenhuma fonte, candidata ou exportação foi alterada. O único arquivo escrito por esta revisão é `ear_rim_v11/evidence/review-visual-v11.md`.
+
+## Primeiro ensaio: `convex15`
+
+Inspeção direta de `convex15-{head-front,left-ear-oblique,right-ear-oblique}.png`, todos sem halo. Comparação frontal com `baseline-nohalo-head-front.png`, gerado na mesma família, e das oblíquas com as duas `baseline-v9-*-ear-oblique.png`. A nova superfície de fechamento foi apresentada com material púrpura. A declaração de mudança de conectividade vem do responsável; esta revisão julga sua aparência, não audita o algoritmo.
+
+**Parecer parcial: rejeitar `convex15` como solução visual. Há remoção aparente das lâminas vermelha/azul do centro das duas cavidades nas três projeções recebidas, sem recolhimento aparente das orelhas, mas a abertura temporal direita expõe uma grande região cinza.**
+
+### Orelha esquerda
+
+Na oblíqua, a longa lâmina vermelha e a ponta azul que ocupavam a cavidade não aparecem ali. A cavidade passa a expor mais superfície cinza, e a margem/pinna e o lóbulo conservam a extensão aparente. Isso constitui melhora local visível, não apenas troca de vermelho por azul. Ouro continua claramente visível no alto e em pequeno ponto no interior; portanto a cavidade não pode ser descrita como livre de todo fragmento colorido.
+
+A cobertura azul ampla e o arco posterior aparentam conservar o baseline. A região imediatamente acima do polo superior contém pequena junção/linha escura sob a borda azul e junto à faixa. Não identifico grande ilha cinza isolada nesta oblíqua, mas também não posso certificar fechamento geométrico ou ausência de fenda por essa imagem. O pequeno vermelho na extremidade temporal superior continua aparente, fora do centro da cavidade.
+
+### Orelha direita
+
+Vermelho e azul deixam o centro da cavidade nesta oblíqua; margem, pinna e lóbulo conservam contorno aparente. Ouro torna-se mais evidente no polo superior/interior. A melhora local não salva a cobertura acima: aparece uma grande área cinza poligonal, aberta desde a extremidade da faixa até bem acima da orelha, com quinas e borda escura. Sua borda posterior/inferior contém púrpura visível, pertencente ao novo fechamento diagnóstico. Não se pode declarar essa peça oculta.
+
+O recorte é muito maior que o pequeno sinal cinza herdado no baseline. Trata-se de regressão clara de cobertura da cabeça e encontro da faixa; o PNG sozinho não decide entre pele deliberadamente liberada, superfície que atravessa envelope ou outra causa geométrica. A silhueta posterior externa azul e vermelha conserva aproximadamente o arco amplo do baseline, sem o grande ombro posterior da V10 `boundary30`. Esse ganho de silhueta não compensa a exposição temporal.
+
+### Frente e conclusão limitada
+
+Na frente sem halo, os sinais vermelhos anteriormente internos às duas orelhas deixam de aparecer no centro das cavidades. Feições, pescoço e projeção ampla das orelhas parecem preservados. A regressão temporal direita projeta-se somente como tira cinza estreita na lateral da calota, acima da extremidade da faixa; a oblíqua demonstra que ela corresponde a uma região muito maior. A concordância de melhora frontal não autoriza omitir a falha oblíqua.
+
+Não foram examinadas lateral direita/esquerda, traseira aberta, perfil ou corpo inteiro de `convex15`. Não há parecer sobre outras direções, integridade/manifold, interseções, exportação, transporte ou Minecraft. O ensaio mostra que a nova borda pode liberar visualmente as cavidades mantendo melhor o contorno amplo, mas ainda não demonstra a combinação de cobertura preservada, fechamento discreto e ausência de fragmentos visíveis.
+
+## Segundo ensaio: `extruded05-clean` / `rim05`
+
+### Três primeiras vistas sem halo
+
+Inspeção direta de `extruded05-clean-{head-front,left-ear-oblique,right-ear-oblique}.png`. Os controles continuam `baseline-nohalo-head-front.png` e as duas oblíquas V9. O responsável informa cutter direito sem os quatro pontos temporais altos e triangulação/fechamento novos, sem deformar anatomia.
+
+**Resultado: a grande área cinza temporal direita de `convex15` desaparece. A cobertura azul e o contorno amplo se aproximam de V9, enquanto a melhora das duas cavidades permanece.** Na oblíqua direita há novamente somente o pequeno recorte cinza/vermelho herdado junto à extremidade da faixa, com uma estreita borda escura sobre o polo superior. A grande borda púrpura observada no ensaio anterior não é visível nesta oblíqua. Isso é uma observação de câmera, não declaração de invisibilidade universal.
+
+A oblíqua esquerda conserva a limpeza local vermelha/azul, a extensão aparente da pinna/margem/lóbulo e cobertura ampla. Há uma pequena marca triangular escura acima do polo superior, junto ao encontro da calota e faixa, mais evidente do que o encontro do baseline. Não a classifico como furo aberto somente pelos pixels. Ouro aparece no alto e em pequeno ponto inferior da cavidade, como no primeiro ensaio; a faixa congelada fica mais descoberta depois da retirada das lâminas. À direita o ouro também persiste no alto/interior. Essa presença não é uma nova lâmina da calota/ponte, mas impede chamar o conjunto da interface de integralmente limpo.
+
+Na frente sem halo, feições, pescoço e projeção das orelhas permanecem próximos do baseline e não reaparece a tira cinza excessiva da primeira versão. Não há vermelho/azul no centro das cavidades nesta câmera. A silhueta ampla posterior das duas oblíquas não ganha os degraus acentuados da V10 `boundary30`.
+
+### Primeiras três vistas adicionais com halo
+
+Inspeção direta de `rim05-{full-front,junction-back,junction-profile}.png`, comparados aos `baseline-v9` correspondentes.
+
+- **Corpo inteiro:** composição, proporções, feições em escala geral e contorno do manto aparentam preservados. Esta escala não certifica interfaces pequenas.
+- **Perfil da junção:** a cavidade antes atravessada por vermelho/azul agora apresenta cinza e ouro no alto/interior. Margem/lóbulo e perfil de face/pescoço aparentam preservados; não há grande exposição temporal ou ombro posterior novo.
+- **Traseira com halo:** o recorte próximo à orelha revela mais cinza na área imediatamente atrás dela e um encontro azul/vermelho mais recuado localmente. Não há grande ilha cinza na parte visível da calota/ponte. O halo continua ocultando extensa área; esta imagem não certifica a nova borda completa.
+
+Estado provisório após essas seis imagens: há mérito visual para retenção técnica **local**, com pendências explícitas, sujeito à revisão das laterais, frente com halo e traseira aberta restantes. Não há aprovação global da interface.
+
+### Quatro vistas adicionais e parecer `rim05`
+
+Inspeção direta de `rim05-{head-front,left-ear,right-ear}.png` com halo e `rim05-nohalo-rear-open.png` sem halo, contra os quatro controles V9 correspondentes. Com isso foram examinadas as nove câmeras previstas, além da frente sem halo da clean.
+
+As duas laterais confirmam a ausência aparente das lâminas vermelha/azul no centro das cavidades e preservação de pinna, margem e lóbulo. Ouro continua visível e relativamente mais descoberto, incluindo pequenos trechos abaixo do polo superior. A borda da calota acompanha o contorno superior/posterior da orelha como uma linha fina escura, especialmente legível à esquerda; não surge uma aba larga, bico longo ou nova grande exposição temporal. Essa linha é visível e não deve ser anunciada como fechamento universalmente oculto. O vermelho temporal acima da faixa e o vermelho posterior continuam visíveis fora do centro da cavidade.
+
+A frente com halo confirma a melhora local e preservação aparente das feições. A traseira aberta mantém a continuidade ampla azul/vermelho/verde e a silhueta geral. Revela mais superfície cinza junto às faces posteriores das orelhas, consequência visual do recorte local, sem ilha cinza separada na calota ou grande ombro novo. Pequenos sinais escuros nos polos superiores/encontro com a calota permanecem aparentes; os pixels não permitem resolver se são sombra, folga ou superfície estreita. Tampouco permitem certificar ausência de furos topológicos.
+
+**Parecer visual `rim05`: favorável à retenção técnica local de pesquisa, não à aprovação global.** A nova borda demonstra a combinação local que a V10 não conseguiu: retirar as lâminas vermelha/azul das cavidades nas vistas examinadas sem a grande perda de cobertura ou deformação ampla de silhueta. O ouro da faixa congelada, os pequenos encontros temporais/coloridos e as linhas/pontos escuros ficam como pendências visíveis e explicitadas. Não há alegação de cavidades integralmente limpas nem de fechamento invisível em todas as direções.
+
+
+## Alternativa final: `polygon05`
+
+Foram inspecionados diretamente os nove PNGs finais:
+
+- Com halo: `polygon05-{full-front,junction-profile,junction-back,head-front,left-ear,right-ear}.png`.
+- Sem halo: `polygon05-nohalo-{left-ear-oblique,right-ear-oblique,rear-open}.png`.
+
+As comparações primárias foram os nove controles V9 correspondentes; a comparação secundária foi `rim05`/`extruded05-clean` nas câmeras equivalentes. `convex15` serviu apenas para identificar a regressão temporal já rejeitada, nunca como referência de preservação.
+
+### O que a revisão visual confirma
+
+1. **Ambas as cavidades:** nas duas laterais, duas oblíquas e frente examinadas, não aparece a longa lâmina vermelha nem a ponta azul que atravessavam o interior no baseline. Fundo cinza aparece onde havia as lâminas. Não identifico redução aparente da pinna, margem ou lóbulo para obter essa melhora.
+2. **Cobertura temporal:** a grande abertura cinza poligonal direita de `convex15` não reaparece. A cobertura azul ampla e sua relação com a faixa aproximam-se do baseline. Permanece o pequeno recorte/sinal cinza e vermelho herdado junto à extremidade direita da faixa, e pequeno vermelho também pode ser visto junto ao encontro esquerdo.
+3. **Nova borda:** nas laterais acompanha a margem superior/posterior da orelha com linha escura fina, sem aba larga, grande bico ou dente novo observado. Pequenas marcas escuras junto aos polos superiores e à têmpora permanecem nas oblíquas e traseira aberta. Não classifico todas como furos, mas tampouco como invisíveis. A inspeção visual não substitui teste de borda fechada/manifold.
+4. **Pinna posterior e casca ampla:** traseira aberta e traseira com halo mostram mais cinza imediatamente junto às faces posteriores das orelhas, sem grande ilha cinza isolada no corpo da calota. Exterior azul/vermelho/verde continua visualmente unido nas áreas examinadas; não surge o ombro posterior severo da V10 rejeitada.
+5. **Silhueta e composição:** perfil da face/pescoço, arco amplo da calota, margens/lóbulos e composição da figura inteira parecem preservados. Figura inteira continua insuficiente para julgar detalhe local; frente com halo e costas com halo têm as oclusões já declaradas.
+
+### O que permanece visível e pendente
+
+Ouro da faixa V5 congelada continua exposto no alto/interior das duas cavidades, com fragmentos pequenos adicionais. A retirada das lâminas o torna mais evidente. Não é correto atribuir esse ouro a uma nova lâmina calota–ponte nem anunciar o conjunto da cavidade como integralmente limpo. Vermelho continua nas extremidades temporais e na ponte atrás das orelhas. A borda escura fina e pequenos sinais escuros nos polos superiores também devem constar da descrição da aparência. Recortes azuis ao longo da faixa e demais defeitos legados não foram corrigidos por esta etapa.
+
+**Não identifico melhora visual adicional relevante de `polygon05` sobre `rim05` nas imagens examinadas, nem regressão que impeça reter seu ganho local.** O responsável informou menos fragmentação de borda, maior estabilidade float32, gate geométrico independente aprovado e menor contagem de contatos por tesselação. Não reproduzi esses testes. Menos contatos não foram usados como evidência de limpeza visual, e a decisão visual não depende dessa contagem.
+
+## Conclusão e uso permitido do parecer
+
+**Favorável à retenção técnica local de pesquisa de `polygon05`, mantendo V9 e demais referências como rollback.** Esse parecer significa que a reconstrução local da borda preserva o ganho visual demonstrado: remove das cavidades as lâminas vermelha/azul nas projeções examinadas, sem a grande exposição temporal nem deformação ampla de silhueta dos ensaios rejeitados, e sem recolhimento aparente da orelha. Não significa aprovação estética global, ausência de todo fragmento, invisibilidade universal do fechamento ou interface totalmente resolvida.
+
+`convex15` permanece rejeitada por exposição temporal direita; `rim05` é visualmente favorável no mesmo escopo local. A preferência técnica por `polygon05` em relação a `rim05` deve citar os testes geométricos separados, não inventar melhoria visual adicional.
+
+Todos os renders são externos Blender, não Minecraft. Cabeça/halo legados continuam reduzidos; nenhuma substituição highpoly foi introduzida pela revisão. Não há aprovação de anatomia sob casca, não interseção universal, transporte/serialização, alfa/culling/normalmap, desempenho, exportação, pacote, release ou execução Bedrock. Imagens limitadas não provam ausência de defeito em outras direções.
+
+Nenhuma fonte, candidata, geometria ou exportação foi alterada. O único arquivo escrito por esta revisão é `ear_rim_v11/evidence/review-visual-v11.md`.

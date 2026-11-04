@@ -1,0 +1,112 @@
+{
+  "status": "V15 LAB ONLY. Shared-mask geometry experiment, no Minecraft engine/performance/visual success claim.",
+  "source_parts": [
+    [
+      "band",
+      0,
+      "band_shell_v13/constrained_fit/retained-band.npz"
+    ],
+    [
+      "shell",
+      1,
+      "ear_rim_v11/structural_rebuild/retained-shell.npz"
+    ],
+    [
+      "anatomy",
+      15,
+      "body_interface_v9/constrained_fit/retained-anatomy.npz"
+    ]
+  ],
+  "source_to_bb": {
+    "matrix_rows": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ],
+      [
+        0.0,
+        -1.0,
+        0.0
+      ]
+    ],
+    "scale": 16
+  },
+  "geometry": "Split each native triangle at altitude foot on its longest edge. [H,C,A] and [H,B,C] give same winding. Each child maps (right vertex, leg U, leg V) to canonical (0,0),(1,0),(0,1), placed on zero-depth south cube. Exact zero legs skipped and listed; no positive area is deliberately dropped.",
+  "official_uv_convention": "Local +X is increasing U. Local +Y is decreasing PNG row V. South local corners [0,0],[width,0],[0,height] map [0,N],[N,N],[0,0]. Not the horizontally mirrored Aspergillum convention.",
+  "mask": {
+    "rule": "column<=row for pixel centers; inclusive centers on hypotenuse. No morphological, halfplane-distance, or filter dilation.",
+    "uv_origin_combined": [
+      2048,
+      0
+    ],
+    "uv_size_by_tier": {
+      "128": [
+        128,
+        128
+      ],
+      "512": [
+        512,
+        512
+      ],
+      "2048": [
+        2048,
+        2048
+      ]
+    },
+    "canonical_to_native_barycentric": "b=(1-x-y)*right_vertex_native_bary + x*leg_u_native_bary + y*leg_v_native_bary. x=(pixel_column+0.5)/N, y=1-(pixel_row+0.5)/N.",
+    "binary_alpha": true,
+    "uniform_stone_srgb": [
+      208,
+      206,
+      202
+    ],
+    "no_color_or_highpoly_detail_claim": true,
+    "quantization": "Inclusive hypotenuse-center cells add exactly child_area/N, missing0 in ideal nearest mip0 math. This is not exact triangle geometry and not a promise of crack-free rendering.",
+    "filters": "Mipmaps, bilinear filtering, alpha cutoff, backface handling, zero-depth support and float32 engine arithmetic untested."
+  },
+  "legacy": {
+    "unchanged_bones": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      16,
+      17,
+      18,
+      19
+    ],
+    "all_unchanged_bone_json_values_and_pixel_uvs_identical": true,
+    "original_rgba_square_bit_exact": true,
+    "atlas_dimensions": [
+      4096,
+      2048
+    ],
+    "old_region": [
+      0,
+      0,
+      2048,
+      2048
+    ]
+  },
+  "normal_maps": "No normal map is generated, sampled or bound. New faces are uniform base stone, not PBR/highpoly baking.",
+  "mapping_files": [
+    "transport_arrays.npz",
+    "transport_faces.jsonl.gz"
+  ],
+  "ray_validation": "Pending separate audit against final geometry and sampled mask; this build report is analytic self-check only."
+}

@@ -1,0 +1,6 @@
+import bpy,json
+from mathutils import Vector
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V60-child-foot-trial.blend',use_scripts=False);dg=bpy.context.evaluated_depsgraph_get();o=bpy.data.objects['Menino — pé'];p=min((o.matrix_world@v.co for v in o.evaluated_get(dg).data.vertices),key=lambda q:q.z);result=bpy.context.scene.ray_cast(dg,p-Vector((0,0,.0001)),Vector((0,0,-1)),distance=2)
+d={'sole_lowest_point':list(p),'ray_hit':bool(result[0])}
+if result[0]:d.update({'support_object':result[4].name,'support_point':list(result[1]),'vertical_gap_m':p.z-result[1].z})
+json.dump(d,open(r+'V60-foot-support-audit.json','w'),indent=2);print(d)

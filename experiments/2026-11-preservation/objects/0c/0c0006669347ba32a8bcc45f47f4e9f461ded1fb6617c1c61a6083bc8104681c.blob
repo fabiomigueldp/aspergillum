@@ -1,0 +1,354 @@
+{
+  "status": {
+    "status": "RETAINED_LOCAL_TECHNICAL_RESEARCH",
+    "retained_band": "constrained_fit/retained-band.npz",
+    "sha256": "aa27567ac125b12a298c283b0e9c99130fe222bf2ce3bdf9f22edf2908f4404b",
+    "vertices": 2224,
+    "triangles": 4444,
+    "previous_v12_triangles": 1164,
+    "same_field_n8_triangles": 13980,
+    "source_files_unchanged": true,
+    "complete_anatomy_frozen": true,
+    "v11_shell_frozen": true,
+    "all_584_v12_vertices_exact": true,
+    "ridge_polylines_exact_despite_subdivision": true,
+    "center_and_terminations_preserved": true,
+    "modified_ancestral_faces": 192,
+    "modified_ancestral_surface_area_percent": 31.876,
+    "conformity_only_ancestral_faces": 80,
+    "literal_untouched_triangles": 892,
+    "one_closed_component": true,
+    "euler": 2,
+    "native_self_crossings_confirmed": 0,
+    "coplanar_overlap_above_test_threshold": 0,
+    "dense_baseline_inversions_resolved": 1376,
+    "dense_new_inversions": 0,
+    "external_valley_crossing_pairs": 0,
+    "remaining_band_anatomy_pairs": 189,
+    "remaining_band_shell_pairs": 1672,
+    "remaining_shell_pairs_by_band_wall": {
+      "external": 414,
+      "internal": 1214,
+      "v12_closures": 44
+    },
+    "local_visual_review": {
+      "color_views": 10,
+      "neutral_views": 3,
+      "favorable": true
+    },
+    "silhouette_exact_in_all_tested_views": false,
+    "outline_changed_pixels_back": 69,
+    "outline_back_max_shift_mm": 0.927734375,
+    "global_interface_clean": false,
+    "global_minimum_thickness_certified": false,
+    "final_art_approved": false,
+    "bedrock_exported": false,
+    "minecraft_runtime_tested": false,
+    "performance_tested": false,
+    "published": false,
+    "limits": [
+      "Residual upper-margin and ear-end contacts remain, including potentially visible source-order differences not proven to be new artistic defects.",
+      "Native research geometry; Bedrock geometry transport, texture baking and runtime checks remain undone.",
+      "C1 refers to the restoration weight, not differential continuity of a piecewise-triangle surface.",
+      "The 4,444-face band is still larger than the 1,164-face V12 baseline.",
+      "Nine frozen input files and all historical candidates remain preserved."
+    ]
+  },
+  "inputs": [
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/band_ear_v12/structural_rebuild/retained-band.npz",
+      "sha256": "1c293d8c5b35cca07cfc0e73d2b2e360cbbc3bea27688bb6e6373537ecf54c76",
+      "bytes": 48596,
+      "current_sha256": "1c293d8c5b35cca07cfc0e73d2b2e360cbbc3bea27688bb6e6373537ecf54c76",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/ear_rim_v11/structural_rebuild/retained-shell.npz",
+      "sha256": "c79f296415d566db5f9c109389375e0d3ae112fbccbbc89c8628200939fbf81f",
+      "bytes": 348223,
+      "current_sha256": "c79f296415d566db5f9c109389375e0d3ae112fbccbbc89c8628200939fbf81f",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/body_interface_v9/constrained_fit/retained-anatomy.npz",
+      "sha256": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+      "bytes": 47106,
+      "current_sha256": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/shell_band_v3/evidence/band-source.npz",
+      "sha256": "17c8af8120aca2b0e9336ab8e1866cbbc9c82915b0996d6bed3b25ceb0b7efb8",
+      "bytes": 3031059,
+      "current_sha256": "17c8af8120aca2b0e9336ab8e1866cbbc9c82915b0996d6bed3b25ceb0b7efb8",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/evidence/source_meshes.npz",
+      "sha256": "28577cf94f32de4ed5e75bda496dafa255577feaa174a7116f4b0ee063e5bf9b",
+      "bytes": 10264891,
+      "current_sha256": "28577cf94f32de4ed5e75bda496dafa255577feaa174a7116f4b0ee063e5bf9b",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/evidence/source-export.json",
+      "sha256": "8b71bc1691b73d284e3c40476c9704ca5898f9d077aa652bf0258776991aa501",
+      "bytes": 7087,
+      "current_sha256": "8b71bc1691b73d284e3c40476c9704ca5898f9d077aa652bf0258776991aa501",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-refinement/gui-test/checkpoint-V75-20261102/V75-tunic-lower-trial.blend",
+      "sha256": "2c14fbc7566217ad350ef926abc1dc4a1bc41f457eaab8f10351e90b1f4777d9",
+      "bytes": 59672216,
+      "current_sha256": "2c14fbc7566217ad350ef926abc1dc4a1bc41f457eaab8f10351e90b1f4777d9",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/pbr_normals_v2/resource_pack/models/entity/paz_v75_pbr_sculpture.geo.json",
+      "sha256": "160d00c5489e618bdb093eb48a388b17f606ca9970f00de88b164758fa1c46cf",
+      "current_sha256": "160d00c5489e618bdb093eb48a388b17f606ca9970f00de88b164758fa1c46cf",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/pbr_normals_v2/resource_pack/textures/entity/paz_v75_pbr_sculpture.png",
+      "sha256": "9547dffd84fdc399535c97f88cf8694ade2af98e82de0ec71ec7117473eb7856",
+      "current_sha256": "9547dffd84fdc399535c97f88cf8694ade2af98e82de0ec71ec7117473eb7856",
+      "unchanged": true
+    }
+  ],
+  "retained_identical_to_reviewed": true,
+  "frozen_scene": {
+    "V13 retained band NATIVE local research": {
+      "points_equal_expected_float32": true,
+      "triangles_exact": true,
+      "hash_metadata_matches": true,
+      "vertices": 2224,
+      "triangles": 4444
+    },
+    "Frozen V11 shell NATIVE research": {
+      "points_equal_expected_float32": true,
+      "triangles_exact": true,
+      "hash_metadata_matches": true,
+      "vertices": 6334,
+      "triangles": 12664
+    },
+    "Frozen V9 anatomy NATIVE research": {
+      "points_equal_expected_float32": true,
+      "triangles_exact": true,
+      "hash_metadata_matches": true,
+      "vertices": 692,
+      "triangles": 1376
+    },
+    "minecraft_tested": false,
+    "bedrock_exported": false,
+    "published": false
+  },
+  "syntax_check": {
+    "passed": true,
+    "files": [
+      "tools/render_contact_diagnostic.py",
+      "tools/inspect_frozen_scene.py",
+      "tools/finalize_package.py",
+      "tools/prepare_source_context.py",
+      "tools/freeze_diagnostic_scene.py",
+      "tools/compare_band_outline.py",
+      "independent_diagnosis/refine_visible_witnesses.py",
+      "independent_diagnosis/classify_contact_visibility.py",
+      "independent_diagnosis/check_upper_edge_visibility.py",
+      "independent_diagnosis/map_valley_inversions.py",
+      "independent_diagnosis/compare_front_embedding.py",
+      "independent_diagnosis/classify_final_contact_visibility.py",
+      "independent_diagnosis/review_candidate_order_quick.py",
+      "independent_diagnosis/ray_diagnosis.py",
+      "independent_diagnosis/check_restored_domains.py",
+      "independent_diagnosis/plot_dense_map.py",
+      "independent_diagnosis/map_valley_dense.py",
+      "independent_diagnosis/map_contacts.py",
+      "independent_diagnosis/review_local_candidate.py",
+      "independent_diagnosis/check_candidate_preservation.py",
+      "independent_diagnosis/classify_remaining_contacts.py",
+      "constrained_fit/check_numeric_and_walls.py",
+      "constrained_fit/map_source_restore.py",
+      "constrained_fit/compare_transition_fields.py",
+      "constrained_fit/compare_density_samples.py",
+      "constrained_fit/check_old_points_against_source.py",
+      "constrained_fit/project_transition_witnesses.py",
+      "constrained_fit/build_local_source_patch.py",
+      "constrained_fit/audit_local_patch.py",
+      "constrained_fit/update_trial_manifest.py"
+    ]
+  },
+  "final_images": [
+    {
+      "path": "evidence/valley-c1-n4-band-front.png",
+      "sha256": "cc18080ae4ad2adaf3eb42187d90eabc748d67e8999fa678ab546d23942b3898",
+      "bytes": 1072664
+    },
+    {
+      "path": "evidence/valley-c1-n4-left-ear.png",
+      "sha256": "4a317ec9ee722a9341ce998b77f0e3194dbd92f82116a125d114c47c3bd9855d",
+      "bytes": 1226773
+    },
+    {
+      "path": "evidence/valley-c1-n4-right-ear.png",
+      "sha256": "aeb1db843e38fd0f1af32e2b6273fe3ae56b75dac8d1aed0e5dbd6bfc7be9218",
+      "bytes": 1219484
+    },
+    {
+      "path": "evidence/valley-c1-n4-full-full-front.png",
+      "sha256": "d01dca9255a80dc078d1bb5007762d04c552ab99465f93da8e0860a87428e612",
+      "bytes": 1193811
+    },
+    {
+      "path": "evidence/valley-c1-n4-full-head-front.png",
+      "sha256": "f90d975faa60982ed557df647e574ab3ad775f06ad0ed0da936928e562aa96ba",
+      "bytes": 981756
+    },
+    {
+      "path": "evidence/valley-c1-n4-full-junction-profile.png",
+      "sha256": "bc1727887b1b792b3aa3006c67091b9683d4c1c2b5e5ab4348fcb919fd9d051f",
+      "bytes": 1188972
+    },
+    {
+      "path": "evidence/valley-c1-n4-extra-junction-back.png",
+      "sha256": "a12f7ccbca2111f26ba9fe9b1f22f6de4838a9bdd36e1ca5f9c30bc3035ea6b1",
+      "bytes": 1079845
+    },
+    {
+      "path": "evidence/valley-c1-n4-extra-left-ear-oblique.png",
+      "sha256": "ec6a75afd6c4067c1ff41b2d38908d01a65d0661cb4e71b5c3da6da7876a400a",
+      "bytes": 1197349
+    },
+    {
+      "path": "evidence/valley-c1-n4-extra-right-ear-oblique.png",
+      "sha256": "fde88b0b2bcccdbd12e2ade9ec4dedf88bcf7cf40da53c3dfd086654f5a4cd3b",
+      "bytes": 1182341
+    },
+    {
+      "path": "evidence/valley-c1-n4-extra-rear-open.png",
+      "sha256": "7513d671f363a5852941445e44ae7246e5ffccc69d2b2153c3cf125b549bf7db",
+      "bytes": 1100620
+    },
+    {
+      "path": "evidence/valley-c1-n4-neutral-band-front.png",
+      "sha256": "f6d9e9ed7a26d76e724d90424a60b7410b2368b006fcea0d6c41c7f45c1b1012",
+      "bytes": 1046325
+    },
+    {
+      "path": "evidence/valley-c1-n4-neutral-left-ear.png",
+      "sha256": "62ef8a62621dc0a5d5a8bf4fba725995db21b45822167be3d393b857be563002",
+      "bytes": 1155838
+    },
+    {
+      "path": "evidence/valley-c1-n4-neutral-right-ear.png",
+      "sha256": "c64c3ca5b6a019af38c88388cd4593a96e7ec39df5d44803b58d05afc8d07faa",
+      "bytes": 1124251
+    }
+  ],
+  "independent_geometry_review": "independent_diagnosis/REVIEW_FINAL_V13.md",
+  "independent_visual_review": "evidence/review-visual-v13.md",
+  "outline": {
+    "method": "2048px orthographic binary union of candidate native band, frozen V11 shell and frozen V9 part15 triangles; no halo or other pieces, no alpha expansion, lighting or normals. Red=removed coverage, blue=added. Horizontal scanline shift can overstate near-horizontal contour movement; bidirectional nearest boundary distance is also reported. Both are view-limited and raster-quantized, not a 3D silhouette guarantee.",
+    "inputs": [
+      {
+        "path": "paz-bedrock-v75-prototype-20261103/band_ear_v12/structural_rebuild/retained-band.npz",
+        "sha256": "1c293d8c5b35cca07cfc0e73d2b2e360cbbc3bea27688bb6e6373537ecf54c76"
+      },
+      {
+        "path": "paz-bedrock-v75-prototype-20261103/band_shell_v13/constrained_fit/valley-source-c1-n4.npz",
+        "sha256": "aa27567ac125b12a298c283b0e9c99130fe222bf2ce3bdf9f22edf2908f4404b"
+      }
+    ],
+    "views": {
+      "front": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 1266662,
+        "coverage_pixels_after": 1266662,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.4150390625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "profile": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 1433373,
+        "coverage_pixels_after": 1433373,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.390625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "back": {
+        "boundary_bidirectional_nearest_max_pixels": 2.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.927734375,
+        "xor_coverage_pixels": 69,
+        "coverage_pixels_before": 1382130,
+        "coverage_pixels_after": 1382199,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 2.0,
+        "pixel_world_size_mm": 0.4638671875,
+        "max_outer_edge_shift_mm": 0.927734375
+      },
+      "left-ear": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 2761990,
+        "coverage_pixels_after": 2761990,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "right-ear": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 2842914,
+        "coverage_pixels_after": 2842914,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "left-oblique": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 2585138,
+        "coverage_pixels_after": 2585138,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "right-oblique": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 2601673,
+        "coverage_pixels_after": 2601673,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 0.0
+      }
+    },
+    "minecraft_test": false
+  },
+  "geometry_audit": "constrained_fit/valley-source-c1-n4-local-audit.json",
+  "source_domain_audit": "independent_diagnosis/valley-source-c1-n4-source-domain-check.json",
+  "residual_visibility": "independent_diagnosis/valley-source-c1-n4-exterior-contact-visibility-summary.json"
+}

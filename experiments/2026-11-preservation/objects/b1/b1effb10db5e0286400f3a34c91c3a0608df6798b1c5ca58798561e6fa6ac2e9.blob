@@ -1,0 +1,42 @@
+{
+  "version": "0.12.3",
+  "renderer": "CPU barycentric rasterization of shared buildBedrockGeometry meshes",
+  "limitation": "Alternative technical preview. No WebGL, PBR, game lighting or Minecraft parity. Official Chromium renderer unavailable in this execution environment.",
+  "cameraConvention": "right-handed; direction centre to camera; right = worldUp cross direction",
+  "rendererSources": {
+    "tools/capture-cpu.mjs": "e7154570f63d568285b93289492bc96c163b321717eefcee4bb12fb6931d2dd8",
+    "tools/cpu-rasterize.py": "e2aab147ba2a8919022828d6affcb049ac4d130d785e782b5d39790521ae6140",
+    "tools/block-preview-basis.mjs": "17589a3deb7cd98baba5098a6a5c923579a553e79a7be179169f3ca2ac57635c",
+    "../../viewer-3d/src/shared/bedrock-geometry.js": "24dbd8979e54bb33be799e578109d6a5444a9254d1ad0f4c25160241c3e17e11",
+    "../../viewer-3d/src/shared/bedrock-uv.js": "e6701522cba86fa1449c5969387907870bf9b8169aed1a216fb211ad5c7a63b1"
+  },
+  "sourceHashes": {
+    "packs/resource/models/blocks/atelier_crossbrace_none_none_0_e9.geo.json": "1b5fe140e0669cf58a73d5a08b80765cfe195842998ec0ca87b7cb44c907a583",
+    "packs/resource/textures/blocks/atelier_walnut.png": "f780cb89fd0cbd6353534bc9a5df465242e65330243386d69d747e00167968f8",
+    "packs/resource/textures/blocks/joinery_walnut_horizontal.png": "66624c3cd5ae70a32865104e6d188276a406905a9ad7c6b3743fa2d8cbb25e32",
+    "packs/resource/textures/blocks/linen.png": "2929ae99d2625dda41bd77eac7f631bf2d03eea3a58988d6b426ce5832d77174",
+    "packs/resource/textures/blocks/seam_white_gold.png": "abeef1ad08079a0eed9e186e5e78948e41d80a1cbecb1730a98fa177834585b9",
+    "packs/resource/textures/blocks/frontal_frame.png": "340eb819bc68a8872c5bd5d8ccc9b1c689777463b3d032081ea5a2de3f6f1e88",
+    "packs/resource/textures/blocks/atelier_agnus.png": "a8bfc9531cd32581786af9f928db79d35c1016b336d8ada7d478577035410b4d",
+    "packs/resource/textures/blocks/crossbrace_inlay.png": "956784eb27b97ba8676cdf6908b231bd134b711fe0cc8eb91e12e5a001b41e37",
+    "packs/resource/models/blocks/atelier_crossbrace_none_none_0_e1.geo.json": "16bb6edfcb6f57f36a2141c1950d9e6c916b35caf1850c244d465b84b807113c",
+    "packs/resource/models/blocks/atelier_crossbrace_none_none_0_e3.geo.json": "c982f4e7cdd5e7dd2b12b25183f624b43c31b4bbdb5becee5ed25f241bbee2fc",
+    "packs/resource/models/blocks/atelier_crossbrace_none_none_0_e12.geo.json": "861832901f6acb73d9bde4d19a153df2d4c36b9b652e2a6a96e7267d7de4c1f7",
+    "packs/resource/models/blocks/atelier_crossbrace_none_none_0_e4.geo.json": "5c9aa50bc6a240e7b4bf03e095b6377a41b1cf3ceebc613b20ddf510de4828a3",
+    "packs/resource/models/blocks/atelier_crossbrace_none_none_0_e6.geo.json": "74e70fee12028183a455ab940936d9dbead429409f19d8d881c8e640f9968a52"
+  },
+  "scenes": [
+    {
+      "id": "crossbrace-3x2-bare",
+      "w": 3,
+      "d": 2,
+      "textile": "none",
+      "direction": [
+        -0.52,
+        0.38,
+        -1
+      ],
+      "file": "crossbrace-3x2-bare.png"
+    }
+  ]
+}

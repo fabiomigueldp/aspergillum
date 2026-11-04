@@ -1,0 +1,13 @@
+from pathlib import Path
+from PIL import Image,ImageDraw,ImageFont
+R=Path(__file__).resolve().parents[1];F=R/'constrained_source';font='/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf';bold='/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf';t=ImageFont.truetype(bold,28);m=ImageFont.truetype(bold,21);s=ImageFont.truetype(font,18)
+canvas=Image.new('RGB',(1800,1370),(242,242,240));d=ImageDraw.Draw(canvas);d.text((25,16),'V75 | calota e faixa dupla | prova técnica externa',font=t,fill=(30,30,30));d.text((25,54),'Blender reimportando JSON/PNG. NÃO é Minecraft. Cabeça e auréola highpoly idênticas, só contexto.',font=s,fill=(55,55,55));d.text((25,80),'Controle: 2.516 tri; candidata: 3.652 tri em 3.652 faces de cubo. Manto e costura não integrados.',font=s,fill=(55,55,55))
+cols=[('Fonte V75 avaliada',R/'evidence','source'),('Controle da casca reduzida',R/'evidence','same-budget-control'),('Candidata JSON + PNG',F/'evidence','bedrock-perwall')]
+for row,view in enumerate(['front','profile']):
+ for col,(label,folder,prefix) in enumerate(cols):
+  x=col*600;y=125+row*615;d.text((x+18,y),label,font=m,fill=(30,30,30));im=Image.open(folder/f'{prefix}-{view}.png').convert('RGB').resize((590,590),Image.Resampling.LANCZOS);canvas.paste(im,(x+5,y+30))
+canvas.save(F/'evidence/FINAL_PROOF_NOT_MINECRAFT.png')
+canvas=Image.new('RGB',(1200,710),(242,242,240));d=ImageDraw.Draw(canvas);d.text((20,15),'Mesmo JSON, mesma cor, luz e câmera; só o normal map muda',font=m,fill=(30,30,30));d.text((20,47),'Prova externa Blender. Não comprova shader/tangentes/qualidade no Minecraft.',font=s,fill=(55,55,55))
+for col,(tag,label) in enumerate([('bedrock-flat','Sem normal map'),('bedrock-perwall','Normal por parede, por texel')]):
+ x=col*600;d.text((x+18,83),label,font=m,fill=(30,30,30));im=Image.open(F/f'evidence/{tag}-front.png').convert('RGB').resize((590,590),Image.Resampling.LANCZOS);canvas.paste(im,(x+5,115))
+canvas.save(F/'evidence/NORMAL_MAP_CONTROL_NOT_MINECRAFT.png')

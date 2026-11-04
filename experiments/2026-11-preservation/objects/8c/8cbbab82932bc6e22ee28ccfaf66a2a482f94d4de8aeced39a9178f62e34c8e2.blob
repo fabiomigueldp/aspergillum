@@ -1,0 +1,42 @@
+import bpy,json,hashlib,math,time
+from pathlib import Path
+from mathutils import Vector
+import numpy as np
+ROOT=Path('/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103')
+SRC=Path('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/checkpoint-V75-20261102/V75-tunic-lower-trial.blend')
+bpy.ops.wm.open_mainfile(filepath=str(SRC),use_scripts=False)
+parts=[]; all_high_v=[];all_high_f=[];all_low_v=[];all_low_f=[];all_low_n=[];all_low_m=[]
+source_objects=[o for o in bpy.context.scene.objects if o.type in ('MESH','CURVE','SURFACE') and not o.hide_render and o.name!='Chão']
+dg=bpy.context.evaluated_depsgraph_get()
+for oi,o in enumerate(source_objects):
+ ev=o.evaluated_get(dg); mesh=bpy.data.meshes.new_from_object(ev,depsgraph=dg)
+ mesh.transform(o.matrix_world);mesh.calc_loop_triangles()
+ vh=np.array([v.co[:] for v in mesh.vertices]);fh=np.array([t.vertices[:] for t in mesh.loop_triangles])
+ offset=sum(len(a) for a in all_high_v);all_high_v.append(vh);all_high_f.append(fh+offset)
+ name=o.name
+ if 'anatomia feminina' in name: target=1400
+ elif 'cabeça colo' in name: target=900
+ elif 'conexão de superfícies' in name:target=1600
+ elif 'Maria — túnica' in name:target=1300
+ elif 'Menino — túnica' in name:target=700
+ elif 'mão' in name:target=180
+ elif 'auréola' in name:target=160
+ elif 'cabelo' in name:target=400
+ elif any(s in name for s in ('Base inferior','Pedestal','Laje')):target=100
+ elif 'faixa embutida' in name:target=220
+ else:target=120
+ ob=bpy.data.objects.new('LOW_'+name,mesh);bpy.context.scene.collection.objects.link(ob)
+ bpy.ops.object.select_all(action='DESELECT');ob.select_set(True);bpy.context.view_layer.objects.active=ob
+ dec=ob.modifiers.new('Source reduction for Bedrock alpha planes','DECIMATE');dec.ratio=min(1.,target/len(fh));dec.use_collapse_triangulate=True
+ bpy.ops.object.modifier_apply(modifier=dec.name)
+ ob.data.calc_loop_triangles(); ml=ob.data
+ v=np.array([v.co[:] for v in ml.vertices]);f=np.array([t.vertices[:] for t in ml.loop_triangles]);n=np.array([v.normal[:] for v in ml.vertices])
+ off=sum(len(a) for a in all_low_v);all_low_v.append(v);all_low_f.append(f+off);all_low_n.append(n);all_low_m.extend([oi]*len(f))
+ bs=o.data.materials[0].node_tree.nodes.get('Principled BSDF')
+ parts.append({'name':name,'high_triangles':len(fh),'low_triangles':len(f),'color':list(bs.inputs['Base Color'].default_value),'roughness':bs.inputs['Roughness'].default_value,'vertex_start':off,'vertex_count':len(v)})
+ print(name,len(fh),'->',len(f),flush=True)
+ ob.hide_render=True
+np.savez_compressed(ROOT/'evidence/source_meshes.npz',high_v=np.concatenate(all_high_v),high_f=np.concatenate(all_high_f),low_v=np.concatenate(all_low_v),low_f=np.concatenate(all_low_f),low_n=np.concatenate(all_low_n),low_m=np.array(all_low_m))
+report={'source':str(SRC),'sha256':hashlib.sha256(SRC.read_bytes()).hexdigest(),'parts':parts,'high_triangles':sum(p['high_triangles'] for p in parts),'low_triangles':sum(p['low_triangles'] for p in parts),'selection':'20 visible sculpture objects; no floor, camera, hidden rollback objects, or P85','images_in_source_materials':False}
+(ROOT/'evidence/source-export.json').write_text(json.dumps(report,ensure_ascii=False,indent=2))
+print('EXPORT COMPLETE',report['low_triangles'],flush=True)

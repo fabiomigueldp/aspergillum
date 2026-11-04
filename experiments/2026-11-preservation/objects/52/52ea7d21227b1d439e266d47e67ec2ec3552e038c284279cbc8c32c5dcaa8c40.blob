@@ -1,0 +1,31 @@
+"""Read-only audit consolidation; writes only V11 structural_rebuild reports."""
+from pathlib import Path
+import json,hashlib,ast
+import numpy as np
+from collections import Counter
+O=Path(__file__).resolve().parent;B=O.parents[1]
+status={
+'convex-protected-1.5mm':'Rejected: two degenerate triangles after proximity-based plane restoration; right temporal overcut visually confirmed; grazing local hull.',
+'convex-protected-1.5mm-precise':'Rejected: exact cutter-plane ancestry fixes coordinate restoration, but one degenerate source triangle remains and the same temporal cutter scope remains.',
+'extruded-protected-1.5mm':'Rejected: two degenerate source triangles; deliberately preserved broad protected-ear scope remains unsuitable for the right temple.',
+'extruded-pinna-0.5mm':'Rejected raw triangulation: nine degenerate triangles; same geometric surface subsequently re-triangulated without moving/removing vertices or oriented boundaries.',
+'extruded-pinna-0.5mm-clean':'Valid research candidate reviewed independently; clean ear rendering reported by parent. Float32 does not collapse/invert faces but slivers amplify normal errors. Not an addon or overall assembly approval.',
+'polygonal-pinna-0.5mm':'Raw polygonal candidate, geometry-identical to clean copy; no degenerate source polygons needed replacement. Included as reproducibility checkpoint.',
+'polygonal-pinna-0.5mm-clean':'Retained local research: independent geometry review passes and parent matched nine-view comparison is favorable. retained-shell.npz is byte-identical. Not global approval or Bedrock export.'}
+rows=[]
+for tag,verdict in status.items():
+ p=O/(tag+'.npz')
+ if not p.exists():continue
+ d=np.load(p);pt=d['points'];f=d['triangles'];edges=Counter(tuple(sorted((int(t[k]),int(t[(k+1)%3])))) for t in f for k in range(3));raw=np.cross(pt[f[:,1]]-pt[f[:,0]],pt[f[:,2]]-pt[f[:,0]]);r={'tag':tag,'file':p.name,'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'status':verdict,'vertices':len(pt),'triangles':len(f),'euler':len(pt)-len(edges)+len(f),'boundary_edges':sum(x==1 for x in edges.values()),'edges_not_two_faces':sum(x!=2 for x in edges.values()),'new_vertices':int((d['baseline_vertex_indices']<0).sum()),'surviving_baseline_vertices':int((d['baseline_vertex_indices']>=0).sum()),'unchanged_baseline_faces':int((d['face_roles']==0).sum()),'new_rim_faces':int((d['face_parts']==3).sum()),'minimum_area_m2':float(np.linalg.norm(raw,axis=1).min()/2)}
+ audit=O/(tag+'-audit.json')
+ if audit.exists():
+  a=json.loads(audit.read_text());r.update(construction_gate_passes=a['self_gate']['passes_screen'],construction_gate_strict_crossings=a['self_gate']['strict_crossings'],degenerate_triangles=a['self_gate']['degenerate_triangles'],contacts=a['contacts'],preservation=a['preservation'])
+ quality=O/(tag+'-triangle-quality.json')
+ if quality.exists():r['triangle_quality']=json.loads(quality.read_text())
+ rows.append(r)
+(O/'trials-manifest.json').write_text(json.dumps({'baseline':'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz','notes':['7 shell NPZ checkpoints from 4 executed cutter domains; polygonal raw/clean have identical geometry.','14 cutter files include unused prepared envelopes; an unused cutter is NOT a tested shell candidate.','All files are research, no Bedrock export, no publication.','Independent review and parent image decisions take precedence over construction-side metrics.'],'trials':rows,'retained':json.loads((O/'retained-identity.json').read_text()) if (O/'retained-identity.json').exists() else None},indent=2))
+locked=[B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz',B/'body_interface_v9/constrained_fit/retained-anatomy.npz',B/'shell_band_v5/retained_candidate/evidence/band-paired.npz'];start=json.loads((O/'convex-protected-1.5mm-construction.json').read_text())['input_hashes_start'];end={str(p.relative_to(B)):hashlib.sha256(p.read_bytes()).hexdigest() for p in locked};syntax={}
+for p in O.glob('*.py'):
+ try:ast.parse(p.read_text());syntax[p.name]='pass'
+ except Exception as exc:syntax[p.name]=str(exc)
+(O/'final-validation.json').write_text(json.dumps({'input_hashes_start':start,'input_hashes_finish':end,'frozen_inputs_unchanged':start==end,'python_syntax':syntax,'bedrock_exported':False,'published':False},indent=2));print(json.dumps({'shell_checkpoints':len(rows),'frozen_inputs_unchanged':start==end,'python_files':len(syntax),'syntax_all_pass':all(x=='pass' for x in syntax.values())},indent=2))

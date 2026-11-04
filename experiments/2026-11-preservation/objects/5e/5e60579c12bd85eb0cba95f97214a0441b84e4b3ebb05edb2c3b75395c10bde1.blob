@@ -1,0 +1,11 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-cloth-obstacle-surface-trial.py').read().split('seen=set();comps=[]')[0])
+from mathutils import Vector
+hits=[];samples=[]
+for (a,b),n in counts.items():
+ if n!=1:continue
+ u=Vector(p[a]);v=Vector(p[b]);e=v-u;hit,normal,face,dist=hb.ray_cast(u,e.normalized(),e.length)
+ if hit is not None:hits.append({'edge':[a,b],'hit':list(hit),'head_face':face})
+ for t in [.25,.5,.75]:
+  pt=u.lerp(v,t);near,nor,_,_=hb.find_nearest(pt);sd=(pt-near).dot(nor)
+  if sd<-.00001:samples.append({'edge':[a,b],'fraction':t,'signed_distance':sd})
+json.dump({'boundary_edges':sum(n==1 for n in counts.values()),'crossing_edges':len(hits),'interior_samples':len(samples),'max_sample_penetration':min([s['signed_distance'] for s in samples],default=0),'hits':hits,'samples':samples},open(r+'neck-boundary-segment-audit.json','w'),indent=2);print(len(hits),len(samples),min([s['signed_distance'] for s in samples],default=0))

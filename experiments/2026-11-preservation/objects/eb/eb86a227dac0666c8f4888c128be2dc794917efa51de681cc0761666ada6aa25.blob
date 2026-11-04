@@ -1,0 +1,20 @@
+{
+  "status": "failed; not a release gate pass",
+  "exitCode": 4,
+  "creatorToolsVersion": "0.17.7",
+  "errors": 416,
+  "errorTypes": {
+    "FORMATVER:122": 414,
+    "FORMATVER:142": 1,
+    "ITEMTYPE:131": 1
+  },
+  "allErrorFormatVersionsIdenticalToBaseline": true,
+  "warnings": 2084,
+  "warningTypes": {
+    "GEOMETRY:501": 2084
+  },
+  "unexpectedGeometryWarnings": 0,
+  "metadata": "Public version and Script API metadata requests returned HTTP 502 despite offline mode. Validator expected format 1.26.0; unchanged pack declarations target 1.26.30. No declarations or validation policies were relaxed to make this pass.",
+  "otherErrorCategories": 0,
+  "nativeMinecraft": "not tested"
+}

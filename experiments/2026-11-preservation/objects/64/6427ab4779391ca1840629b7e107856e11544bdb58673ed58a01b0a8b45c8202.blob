@@ -1,0 +1,22 @@
+# V22 — teste rejeitado, não integrar
+
+## Resultado verificado
+- Blender 4.3.2 concluiu a gravação do estudo separado e dois renders Cycles CPU.
+- `face.png`: superfícies palpebrais com bordas explícitas apresentaram costuras sobre a órbita; continuam infladas e sem a transição anatômica da fotografia histórica.
+- `profile.png`: o perfil facial e o véu continuam derivados da anatomia genérica, não constituem reprodução fiel.
+- A faixa fina do véu reduz marginalmente a aparência de touca, mas não corrige a implantação frontal/capilar.
+- Não aprovado, não publicado, não incorporado ao addon. V20 preservado.
+
+## Diagnóstico causal
+A superfície original já contém um volume orbital genérico. Uma malha projetada sobre esse volume duplica relevo; não recupera a topologia integrada da pálpebra. O problema não se resolve adicionando subdivisões, tubos na linha dos olhos, gaussianas ou ajuste de landmarks 2D. O mesmo vale para os lábios: a modelagem precisa integrar comissuras, vermelhão, filtrum e plano do queixo.
+
+## Próxima abordagem que seria materialmente distinta
+Reconstruir uma cabeça separada com topologia quad limpa: loops palpebrais fechados integrados à órbita, loops labiais com comissuras próprias, nariz com alas e columela, mandíbula e pescoço contínuos. Bloquear proporções usando foto frontal histórica e perfil em câmera calibrada. Não adotar o resultado até comparar simultaneamente silhueta/perfil e close facial. Depois, substituir o crânio/véu, deixando V20 em coleção oculta. Este trabalho não foi executado neste teste.
+
+## Evidência ainda ausente
+Fotografias nítidas de perfil/3/4 do rosto, mãos, Menino e reverso; o perfil histórico disponível é de corpo inteiro e não resolve os detalhes faciais. Sem estas imagens, algumas superfícies serão interpretativas, jamais verificáveis como gêmeo perfeito. A ausência não impede melhorar frontalmente, mas impede certificar fidelidade integral.
+
+## V23 / V23b — teste estrutural também rejeitado
+Reconstrução conectada à própria malha, não overlay: 2.395 faces orbitais removidas, bordas fechadas de 166 e 162 vértices e oito anéis de quads para cada pálpebra. O script preservou V20 e gravou arquivos independentes. V23 exibiu pregas radiais e V23b, com superfície de profundidade ajustada por quadrática, ainda mostra estrias/costuras e uma órbita artificial. A parametrização radial da borda irregular e o fechamento estreito não constituem uma topologia palpebral apropriada. Não integrar nem divulgar como versão melhor.
+
+Limite desta execução: não consegui reconstruir com precisão anatômica a malha facial. Não houve falha de Blender, permissão ou render; houve falha de qualidade da modelagem e do método geométrico. A próxima etapa requer retopologia/escultura com controle artístico adequado, não repetição de scripts de interpolação. Nenhuma afirmação de perfeição, de progresso estético ou de entrega final é sustentada por estes testes.

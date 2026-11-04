@@ -1,0 +1,46 @@
+import bpy,bmesh,json,math,numpy as np
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+from collections import Counter
+r='/workspace/scratch/212c580ada5b/paz-sleeve-proxy/';out=r+'cuff-open/'
+bpy.ops.wm.open_mainfile(filepath=r+'V85-PROXY-MANGA-NAO-INTEGRADA.blend',use_scripts=False)
+o=bpy.data.objects['PROXY85 manga de controle'];h=bpy.data.objects['PROXY85 mão rígida — dedos originais'];N=28;M=32
+group_names=[g.name for g in o.vertex_groups];old=o.data;ps=[v.co.copy() for v in old.vertices];fs=[tuple(f.vertices) for f in old.polygons if not (len(f.vertices)==M and all(i>=N*M for i in f.vertices))]
+c=sum(ps[N*M:(N+1)*M],Vector())/M;c0=sum(ps[(N-1)*M:N*M],Vector())/M;axis=(c-c0).normalized();last=list(range(N*M,(N+1)*M));end=last[:]
+# Three regular inset sections form a hollow cuff, rather than a disk across the wrist.
+for depth,scale in [(0,.90),(.004,.90),(.040,.90)]:
+ ring=[]
+ for i in range(M):ring.append(len(ps));ps.append(c-axis*depth+(ps[end[i]]-c)*scale)
+ for i in range(M):j=(i+1)%M;fs.append((last[i],last[j],ring[j],ring[i]))
+ last=ring
+fs.append(tuple(last))
+m=bpy.data.meshes.new('P85 cuff hollow technical revision');m.from_pydata(ps,[],fs);m.update();bm=bmesh.new();bm.from_mesh(m);bmesh.ops.recalc_face_normals(bm,faces=list(bm.faces));bm.to_mesh(m);bm.free();o.data=m
+for mat in old.materials:m.materials.append(mat)
+for f in m.polygons:f.use_smooth=True
+for name in group_names:
+ if name not in o.vertex_groups:o.vertex_groups.new(name=name)
+# Restore original weights and assign new internal sleeve vertices to the wrist bone.
+for i in range(len(old.vertices)):
+ for g in old.vertices[i].groups:o.vertex_groups[g.group].add([i],g.weight,'REPLACE')
+o.vertex_groups['cotovelo_punho'].add(list(range(len(old.vertices),len(ps))),1.,'REPLACE')
+# Crease the circular outer rim, not every radial edge. No decorative folds invented.
+crease=m.attributes.new('crease_edge','FLOAT','EDGE')
+endset=set(end)
+for e in m.edges:
+ if all(v in endset for v in e.vertices):crease.data[e.index].value=.65
+bpy.context.view_layer.update();dg=bpy.context.evaluated_depsgraph_get()
+def geom(x):
+ ev=x.evaluated_get(dg);mm=ev.to_mesh();p=[x.matrix_world@v.co for v in mm.vertices];f=[tuple(z.vertices) for z in mm.polygons];ev.to_mesh_clear();return p,f
+p,f=geom(o);t=BVHTree.FromPolygons(p,f);pairs=[(a,b) for a,b in t.overlap(t) if a<b and not set(f[a])&set(f[b])];edges=Counter(tuple(sorted((face[i],face[(i+1)%len(face)]))) for face in f for i in range(len(face)));hp,hf=geom(h);ht=BVHTree.FromPolygons(hp,hf);handpairs=t.overlap(ht)
+report={'method':'Replace terminal ngon with inset cuff cavity; unchanged path, pose, fingers, torso','raw_vertices':len(ps),'evaluated_vertices':len(p),'nonmanifold_edges':sum(n!=2 for n in edges.values()),'self_intersections':len(pairs),'sleeve_hand_intersection_pairs':len(handpairs),'depth_m':.04,'radial_thickness_fraction':.10,'outer_rim_crease':.65,'warning':'Technical cuff construction is provisional, not measured original; garment is not integrated.'}
+json.dump(report,open(out+'audit.json','w'),indent=2);o['cuff_revision']='Provisional hollow cuff; fixed technical cap pinching, not likeness approved'
+bpy.ops.wm.save_as_mainfile(filepath=out+'P85-CUFF-TECHNICAL-TRIAL.blend')
+s=bpy.context.scene;s.render.engine='CYCLES';s.cycles.samples=40;s.render.resolution_x=700;s.render.resolution_y=700;s.render.resolution_percentage=100
+for x in bpy.data.objects:
+ if x.type=='MESH' and x not in (o,h):x.hide_render=True
+cam=s.camera;cam.data.type='ORTHO';cam.data.ortho_scale=.34;target=c+Vector((0,-.035,-.025))
+for view,off in [('profile',(-5,0,0)),('threequarter',(-3,-5,-.4))]:
+ cam.location=target+Vector(off);cam.rotation_euler=(target-cam.location).to_track_quat('-Z','Y').to_euler()
+ for state in ['before','after']:
+  o.data=old if state=='before' else m;bpy.context.view_layer.update();s.render.filepath=out+state+'-'+view+'.png';bpy.ops.render.render(write_still=True)
+print(report)

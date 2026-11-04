@@ -1,0 +1,35 @@
+from pathlib import Path
+import json,hashlib,zipfile,py_compile,numpy as np
+R=Path(__file__).resolve().parents[1];B=R.parent
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+p=R/'structural_rebuild/retained-shell.npz';candidate=R/'structural_rebuild/polygonal-pinna-0.5mm-clean.npz'
+assert p.read_bytes()==candidate.read_bytes();assert sha(p)=='c79f296415d566db5f9c109389375e0d3ae112fbccbbc89c8628200939fbf81f'
+d=np.load(p);base=np.load(B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz');m=d['baseline_vertex_indices']>=0;assert np.array_equal(d['points'][m],base['points'][d['baseline_vertex_indices'][m]])
+inputs=json.loads((R/'evidence/input-hashes.json').read_text())
+for r in inputs:r['current_sha256']=sha(Path(r['path']));r['unchanged']=r['current_sha256']==r['sha256'];assert r['unchanged']
+scene=json.loads((R/'evidence/frozen-scene-check.json').read_text());assert scene['points_equal_expected_float32'] and scene['triangles_exact']
+compiled=[]
+for f in R.rglob('*.py'):py_compile.compile(str(f),doraise=True);compiled.append(str(f.relative_to(R)))
+images=[R/f'evidence/polygon05-{name}.png' for name in ['full-front','head-front','junction-profile','junction-back','left-ear','right-ear']]+[R/f'evidence/polygon05-nohalo-{name}.png' for name in ['left-ear-oblique','right-ear-oblique','rear-open']]
+assert all(f.exists() for f in images)
+status={'status':'RETAINED_LOCAL_TECHNICAL_RESEARCH','retained_shell':str(p.relative_to(R)),'sha256':sha(p),'source_files_unchanged':True,'complete_anatomy_frozen':True,'band_frozen':True,'native_closed_shell_screen_passed':True,'independent_visual_retention':'local_only_nine_views','global_interface_clean':False,'final_art_approved':False,'bedrock_exported':False,'minecraft_runtime_tested':False,'published':False,'vertices':len(d['points']),'triangles':len(d['triangles']),'baseline_surviving_vertices_exact':int(m.sum()),'native_self_crossings_confirmed':0,'remaining_shell_anatomy_pairs':98,'remaining_shell_band_pairs':1339,'silhouette_exact_in_every_tested_view':False,'limits':['Residual anatomy and band contacts.','Visible gold fragments, temporal red and small dark ear edges.','Small frontal raster contour difference.','No global clearance/thickness or engine certification.','New cut triangles still need Bedrock transport and bake validation.']}
+(R/'STATUS.json').write_text(json.dumps(status,indent=2))
+validation={'status':status,'inputs':inputs,'frozen_scene':scene,'retained_identical_to_reviewed':True,'syntax_check':{'passed':True,'files':compiled},'final_images':[{'path':str(f.relative_to(R)),'sha256':sha(f),'bytes':f.stat().st_size} for f in images],'independent_geometry_review':'independent_diagnosis/REVIEW_FINAL_V11.md','independent_visual_review':'evidence/review-visual-v11.md','outline':json.loads((R/'evidence/polygon05-outline.json').read_text())}
+(R/'evidence/final-validation.json').write_text(json.dumps(validation,indent=2))
+files=[];excluded=[]
+for f in sorted(R.rglob('*')):
+ if not f.is_file() or '__pycache__' in f.parts or f.suffix in ['.zip','.blend1'] or f.name in ['file-manifest.json','package-validation.json']:continue
+ rel=f.relative_to(R);keep=True
+ if f.suffix=='.blend':keep=f.name=='retained-structural-diagnostic.blend'
+ if rel.parts[0]=='evidence' and f.suffix=='.png':keep=f.name.startswith(('baseline-v9-','baseline-nohalo-head-front','polygon05-')) or f.name in ['convex15-head-front.png','convex15-left-ear-oblique.png','convex15-right-ear-oblique.png','extruded05-clean-head-front.png','extruded05-clean-left-ear-oblique.png','extruded05-clean-right-ear-oblique.png']
+ (files if keep else excluded).append(f)
+manifest={'included':[{'path':str(f.relative_to(R)),'bytes':f.stat().st_size,'sha256':sha(f)} for f in files],'omitted_diagnostic_images_and_scenes_still_preserved_in_workspace':[str(f.relative_to(R)) for f in excluded]}
+(R/'file-manifest.json').write_text(json.dumps(manifest,indent=2));files.append(R/'file-manifest.json')
+out=R/'V75-V11-EAR-RIM-RESEARCH-NOT-ADDON.zip';assert not out.exists()
+with zipfile.ZipFile(out,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+ for f in files:z.write(f,'ear_rim_v11/'+str(f.relative_to(R)))
+with zipfile.ZipFile(out) as z:
+ assert z.testzip() is None
+ for f in files:assert z.read('ear_rim_v11/'+str(f.relative_to(R)))==f.read_bytes()
+report={'file':out.name,'bytes':out.stat().st_size,'sha256':sha(out),'member_count':len(files),'crc_valid':True,'all_archived_bytes_match_workspace':True,'all_candidate_npz_files_included':True,'original_sources_not_duplicated':True}
+(R/'package-validation.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))

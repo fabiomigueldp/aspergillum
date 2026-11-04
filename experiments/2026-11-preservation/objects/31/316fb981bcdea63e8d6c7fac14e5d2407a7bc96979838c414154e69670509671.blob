@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "scope": "OFFLINE PROPOSAL ONLY",
+  "decision": "retain-quarantine",
+  "quarantineRetained": true,
+  "tombstonesRetained": true,
+  "releaseAllowed": false,
+  "executionAllowed": false,
+  "automaticRetryAllowed": false,
+  "allowedEffects": [],
+  "inputFingerprint": "ebb5842b61719944aae33960f5465c1f2770ad659dfde3c11401ea5f3d6aa644",
+  "inputCanonical": "{\"context\":{\"asOf\":200,\"contract\":\"aspergillum-2.0.0-diagnostic-recovery-draft1\",\"epoch\":\"inspection-1\",\"maxObservationAge\":50,\"worldId\":\"synthetic-world\"},\"journalRaw\":\"{\\\"body\\\":{\\\"worldId\\\":\\\"synthetic-world\\\",\\\"operationId\\\":\\\"synthetic-op-0001\\\",\\\"kind\\\":\\\"break\\\",\\\"address\\\":{\\\"dimension\\\":\\\"overworld\\\",\\\"x\\\":1,\\\"y\\\":64,\\\"z\\\":2},\\\"createdAt\\\":100,\\\"phase\\\":\\\"effects-may-have-occurred\\\",\\\"occupancyGeneration\\\":null,\\\"snapshot\\\":{\\\"schemaVersion\\\":2,\\\"instanceId\\\":\\\"synthetic-item-A\\\",\\\"charges\\\":3,\\\"cosmeticId\\\":\\\"classic\\\",\\\"sprayProfileId\\\":\\\"standard\\\",\\\"customProperties\\\":{\\\"sample:note\\\":\\\"Synthetic evidence only\\\"}},\\\"rawRegistry\\\":\\\" {\\\\\\\"opaqueOriginal\\\\\\\":\\\\\\\"🕊\\\\\\\",\\\\\\\"unknownVersion\\\\\\\":99}\\\\n\\\",\\\"originalHand\\\":null,\\\"originalBlock\\\":{\\\"illustrative\\\":\\\"previous-occupied-block\\\"},\\\"schemaVersion\\\":1,\\\"contract\\\":\\\"aspergillum-2.0.0-diagnostic-recovery-draft1\\\",\\\"fingerprintAlgorithm\\\":\\\"sha256-canonical-snapshot-v1\\\",\\\"snapshotFingerprint\\\":\\\"f68c2a4c2dd136dabad023f239e41023e8bf1d69d2051e9bc75c06dc29cf8b3f\\\"},\\\"checksum\\\":\\\"ba45dfd70a831855e4dda8ebd570bd97d1ccd56cf7969d1c4d95aae67438862e\\\"}\",\"observations\":[{\"capturedAt\":180,\"contract\":\"aspergillum-2.0.0-diagnostic-recovery-draft1\",\"epoch\":\"inspection-1\",\"location\":{\"kind\":\"registry\",\"ref\":\"synthetic-source\"},\"observationId\":\"source\",\"occupancyGeneration\":null,\"snapshot\":{\"charges\":3,\"cosmeticId\":\"classic\",\"customProperties\":{\"sample:note\":\"Synthetic evidence only\"},\"instanceId\":\"synthetic-item-A\",\"schemaVersion\":2,\"sprayProfileId\":\"standard\"},\"worldId\":\"synthetic-world\"},{\"capturedAt\":180,\"contract\":\"aspergillum-2.0.0-diagnostic-recovery-draft1\",\"epoch\":\"inspection-1\",\"location\":{\"kind\":\"inventory\",\"ref\":\"synthetic-found\"},\"observationId\":\"found\",\"occupancyGeneration\":null,\"snapshot\":{\"charges\":3,\"cosmeticId\":\"classic\",\"customProperties\":{\"sample:note\":\"Synthetic evidence only\"},\"instanceId\":\"synthetic-item-A\",\"schemaVersion\":2,\"sprayProfileId\":\"standard\"},\"worldId\":\"synthetic-world\"}],\"relatedJournalRaws\":[],\"schemaVersion\":1}",
+  "journalRaw": "{\"body\":{\"worldId\":\"synthetic-world\",\"operationId\":\"synthetic-op-0001\",\"kind\":\"break\",\"address\":{\"dimension\":\"overworld\",\"x\":1,\"y\":64,\"z\":2},\"createdAt\":100,\"phase\":\"effects-may-have-occurred\",\"occupancyGeneration\":null,\"snapshot\":{\"schemaVersion\":2,\"instanceId\":\"synthetic-item-A\",\"charges\":3,\"cosmeticId\":\"classic\",\"sprayProfileId\":\"standard\",\"customProperties\":{\"sample:note\":\"Synthetic evidence only\"}},\"rawRegistry\":\" {\\\"opaqueOriginal\\\":\\\"🕊\\\",\\\"unknownVersion\\\":99}\\n\",\"originalHand\":null,\"originalBlock\":{\"illustrative\":\"previous-occupied-block\"},\"schemaVersion\":1,\"contract\":\"aspergillum-2.0.0-diagnostic-recovery-draft1\",\"fingerprintAlgorithm\":\"sha256-canonical-snapshot-v1\",\"snapshotFingerprint\":\"f68c2a4c2dd136dabad023f239e41023e8bf1d69d2051e9bc75c06dc29cf8b3f\"},\"checksum\":\"ba45dfd70a831855e4dda8ebd570bd97d1ccd56cf7969d1c4d95aae67438862e\"}",
+  "reasons": [
+    "native-durability-and-downgrade-not-verified",
+    "event-generation-not-bound-by-native-contract"
+  ],
+  "fingerprintAlgorithm": "sha256-canonical-snapshot-v1",
+  "evidencePattern": "registry-and-item-observations",
+  "proposal": "review-coexisting-representations",
+  "matchingObservations": [
+    {
+      "observationId": "source",
+      "location": {
+        "kind": "registry",
+        "ref": "synthetic-source"
+      },
+      "fingerprint": "f68c2a4c2dd136dabad023f239e41023e8bf1d69d2051e9bc75c06dc29cf8b3f",
+      "capturedAt": 180
+    },
+    {
+      "observationId": "found",
+      "location": {
+        "kind": "inventory",
+        "ref": "synthetic-found"
+      },
+      "fingerprint": "f68c2a4c2dd136dabad023f239e41023e8bf1d69d2051e9bc75c06dc29cf8b3f",
+      "capturedAt": 180
+    }
+  ],
+  "limits": [
+    "Checksums detect changed content, not authenticity or native durability.",
+    "Matching IDs/fingerprints are evidence of content, not proof of one physical item or delivery.",
+    "Empty or partial observations never establish absence; items may be in unavailable inventories.",
+    "Timestamps and world/epoch labels are supplied claims, not an engine-enforced snapshot.",
+    "No native event-generation binding, downgrade protection, exactly-once delivery or automatic repair."
+  ],
+  "operationId": "synthetic-op-0001",
+  "operationKind": "break",
+  "observationInterpretation": "Locations are supplied observations, not proof of causal delivery or simultaneous physical copies.",
+  "snapshotFingerprint": "f68c2a4c2dd136dabad023f239e41023e8bf1d69d2051e9bc75c06dc29cf8b3f",
+  "journalFingerprint": "6ab850b33ae0512fbca861ca1071a1fb332b55ebb3e8b7fbea5496f8b3d2efdf",
+  "originalInputRaw": "{\"schemaVersion\":1,\"journalRaw\":\"{\\\"body\\\":{\\\"worldId\\\":\\\"synthetic-world\\\",\\\"operationId\\\":\\\"synthetic-op-0001\\\",\\\"kind\\\":\\\"break\\\",\\\"address\\\":{\\\"dimension\\\":\\\"overworld\\\",\\\"x\\\":1,\\\"y\\\":64,\\\"z\\\":2},\\\"createdAt\\\":100,\\\"phase\\\":\\\"effects-may-have-occurred\\\",\\\"occupancyGeneration\\\":null,\\\"snapshot\\\":{\\\"schemaVersion\\\":2,\\\"instanceId\\\":\\\"synthetic-item-A\\\",\\\"charges\\\":3,\\\"cosmeticId\\\":\\\"classic\\\",\\\"sprayProfileId\\\":\\\"standard\\\",\\\"customProperties\\\":{\\\"sample:note\\\":\\\"Synthetic evidence only\\\"}},\\\"rawRegistry\\\":\\\" {\\\\\\\"opaqueOriginal\\\\\\\":\\\\\\\"🕊\\\\\\\",\\\\\\\"unknownVersion\\\\\\\":99}\\\\n\\\",\\\"originalHand\\\":null,\\\"originalBlock\\\":{\\\"illustrative\\\":\\\"previous-occupied-block\\\"},\\\"schemaVersion\\\":1,\\\"contract\\\":\\\"aspergillum-2.0.0-diagnostic-recovery-draft1\\\",\\\"fingerprintAlgorithm\\\":\\\"sha256-canonical-snapshot-v1\\\",\\\"snapshotFingerprint\\\":\\\"f68c2a4c2dd136dabad023f239e41023e8bf1d69d2051e9bc75c06dc29cf8b3f\\\"},\\\"checksum\\\":\\\"ba45dfd70a831855e4dda8ebd570bd97d1ccd56cf7969d1c4d95aae67438862e\\\"}\",\"context\":{\"worldId\":\"synthetic-world\",\"contract\":\"aspergillum-2.0.0-diagnostic-recovery-draft1\",\"epoch\":\"inspection-1\",\"asOf\":200,\"maxObservationAge\":50},\"observations\":[{\"observationId\":\"source\",\"worldId\":\"synthetic-world\",\"contract\":\"aspergillum-2.0.0-diagnostic-recovery-draft1\",\"epoch\":\"inspection-1\",\"capturedAt\":180,\"location\":{\"kind\":\"registry\",\"ref\":\"synthetic-source\"},\"snapshot\":{\"schemaVersion\":2,\"instanceId\":\"synthetic-item-A\",\"charges\":3,\"cosmeticId\":\"classic\",\"sprayProfileId\":\"standard\",\"customProperties\":{\"sample:note\":\"Synthetic evidence only\"}},\"occupancyGeneration\":null},{\"observationId\":\"found\",\"worldId\":\"synthetic-world\",\"contract\":\"aspergillum-2.0.0-diagnostic-recovery-draft1\",\"epoch\":\"inspection-1\",\"capturedAt\":180,\"location\":{\"kind\":\"inventory\",\"ref\":\"synthetic-found\"},\"snapshot\":{\"schemaVersion\":2,\"instanceId\":\"synthetic-item-A\",\"charges\":3,\"cosmeticId\":\"classic\",\"sprayProfileId\":\"standard\",\"customProperties\":{\"sample:note\":\"Synthetic evidence only\"}},\"occupancyGeneration\":null}],\"relatedJournalRaws\":[]}",
+  "rawInputFingerprint": "7db00f4ea153c45f109687bcc15e9595d0eedae82c0a11301d1fc75f22d9c964",
+  "proposalFingerprint": "c7056f24642f941788d966313dced5ac9e769dc9e5fa4ca351499b44d8c1d975"
+}

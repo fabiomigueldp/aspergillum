@@ -1,0 +1,172 @@
+{
+  "createdAt": "2026-11-03T21:59:53.645896+00:00",
+  "status": "passed-tooling-only",
+  "releaseDecision": "NO-GO unchanged",
+  "scope": "Two auxiliary Altare verifiers in compact diagnostic copy; no runtime, pack, world or threshold changes",
+  "tests": {
+    "focusedWithExplicitBaselines": {
+      "passed": 34,
+      "failed": 0,
+      "skipped": 0,
+      "log": "out/state-compaction/auxiliary-budget/tests-final.log"
+    },
+    "portableWithoutBaselines": {
+      "passed": 30,
+      "failed": 0,
+      "skipped": 4,
+      "reason": "Four full semantic comparisons require explicit read-only baseline artifacts. Unit and CLI failure-path coverage remains active.",
+      "log": "out/state-compaction/auxiliary-budget/tests-portable.log"
+    },
+    "typecheck": "passed",
+    "syntaxChecks": "passed for both entrypoints and helper",
+    "documentationLinks": "passed for modified/new docs",
+    "patchRoundTrip": "passed, seven source files exact"
+  },
+  "budgets": {
+    "nativeCompact": {
+      "altare": 59840,
+      "aspergillum": 5008,
+      "combined": 64848,
+      "reference": 65536,
+      "combinedHeadroom": 688,
+      "sources": {
+        "altare": {
+          "states": 59840,
+          "blocks": 431,
+          "root": "/workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103/addons/altare",
+          "manifest": "/workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103/addons/altare/packs/behavior/manifest.json",
+          "version": [
+            0,
+            13,
+            0
+          ]
+        },
+        "aspergillum": {
+          "states": 5008,
+          "blocks": 18,
+          "root": "/workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103",
+          "manifest": "/workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103/packs/behavior/manifest.json",
+          "version": [
+            2,
+            0,
+            0
+          ]
+        }
+      },
+      "decision": "passed"
+    },
+    "nativeLegacy": {
+      "altare": 59840,
+      "aspergillum": 9744,
+      "combined": 69584,
+      "reference": 65536,
+      "combinedHeadroom": -4048,
+      "sources": {
+        "altare": {
+          "states": 59840,
+          "blocks": 431,
+          "root": "/workspace/scratch/212c580ada5b/altare-two-pillars-integration-20261103/addons/altare",
+          "manifest": "/workspace/scratch/212c580ada5b/altare-two-pillars-integration-20261103/addons/altare/packs/behavior/manifest.json",
+          "version": [
+            0,
+            13,
+            0
+          ]
+        },
+        "aspergillum": {
+          "states": 9744,
+          "blocks": 18,
+          "root": "/workspace/scratch/212c580ada5b/altare-two-pillars-integration-20261103",
+          "manifest": "/workspace/scratch/212c580ada5b/altare-two-pillars-integration-20261103/packs/behavior/manifest.json",
+          "version": [
+            1,
+            2,
+            5
+          ]
+        }
+      },
+      "decision": "rejected",
+      "reason": "Block-state budget: known packs exceed 65536: Altare 59840 + Aspergillum 9744 = 69584 (4048 over)"
+    },
+    "historicalLegacy": {
+      "altare": 51608,
+      "aspergillum": 9744,
+      "combined": 61352,
+      "reference": 65536,
+      "combinedHeadroom": 4184,
+      "sources": {
+        "altare": {
+          "states": 51608,
+          "blocks": 414,
+          "root": "/workspace/scratch/212c580ada5b/altare-catalog-compaction-20261103/addons/altare",
+          "manifest": "/workspace/scratch/212c580ada5b/altare-catalog-compaction-20261103/addons/altare/packs/behavior/manifest.json",
+          "version": [
+            0,
+            12,
+            3
+          ]
+        },
+        "aspergillum": {
+          "states": 9744,
+          "blocks": 18,
+          "root": "/workspace/scratch/212c580ada5b/altare-catalog-compaction-20261103",
+          "manifest": "/workspace/scratch/212c580ada5b/altare-catalog-compaction-20261103/packs/behavior/manifest.json",
+          "version": [
+            1,
+            2,
+            5
+          ]
+        }
+      },
+      "decision": "passed"
+    }
+  },
+  "historicalCompactFixture": {
+    "altare": 51608,
+    "aspergillum": 5008,
+    "combined": 56616,
+    "verifiedBy": "full historical CLI test with explicit baseline"
+  },
+  "preservation": {
+    "status": "passed",
+    "unchangedFiles": 8629,
+    "changedFiles": [],
+    "scope": "Same files protected before explosion prevention, with that revision compiled script hash as baseline"
+  },
+  "historicalContract": "414 IDs / 51608 states and exact art/RP comparison remain enforced. Catalog verifier still rejects current native 0.13.0 by identity gate.",
+  "gate": {
+    "reference": 65536,
+    "configurable": false,
+    "legacyNativeCombination": "rejected before semantic comparison",
+    "primaryCollectionValidator": "unchanged"
+  },
+  "notRun": [
+    "General build/check, because only auxiliary tools changed",
+    "Creator Tools",
+    "Minecraft",
+    "Packaging, installation or world migration"
+  ],
+  "limits": [
+    "Emitted file counting assumes complete packs; it cannot prove a file was never removed before inspection.",
+    "This is structural counting, not full Minecraft schema validation or performance evidence.",
+    "Other world add-ons are not counted."
+  ],
+  "sourceFiles": [
+    "addons/altare/tools/lib/block-state-budget.mjs",
+    "addons/altare/tools/verify-native-integration.mjs",
+    "addons/altare/tools/verify-catalog-compaction.mjs",
+    "addons/altare/tests/block-state-budget.node.ts",
+    "addons/altare/docs/LOCAL_STATE_BUDGET.md",
+    "addons/altare/docs/CATALOG_COMPACTION.md",
+    "addons/altare/CHANGELOG.md"
+  ],
+  "filesSha256": {
+    "addons/altare/tools/lib/block-state-budget.mjs": "f9f1f61df35e02082cc29c346b9960c8ccca68226f87f47e32803e0eb5197530",
+    "addons/altare/tools/verify-native-integration.mjs": "bdb50975caf036d10be60b9891709998e90d6aaa161fe39a4f08b0089e1f67cf",
+    "addons/altare/tools/verify-catalog-compaction.mjs": "2131f800f247667e92ca97cb3ab8f0ee74517c9ef714507f6e503df313cbd528",
+    "addons/altare/tests/block-state-budget.node.ts": "e693ecfbd8091ccc7ddbd73ba3fa85cf129c3300c4216484e8dfff68e14d02d8",
+    "addons/altare/docs/LOCAL_STATE_BUDGET.md": "170fb32ea3ed4f9e64aa6b179562ce035426d4a75f2f8a25684bb051e2e98ed0",
+    "addons/altare/docs/CATALOG_COMPACTION.md": "025c1587a9d4a037634fe48e5808c7e871bd79ffd8e2311844f414f8947f8df1",
+    "addons/altare/CHANGELOG.md": "a82ca381a4dc437d7865b4ad1d2f542f78d7b3643bc73539a2b7b50e29475d5e"
+  }
+}

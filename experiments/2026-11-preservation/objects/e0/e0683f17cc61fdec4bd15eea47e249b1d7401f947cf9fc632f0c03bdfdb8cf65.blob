@@ -1,0 +1,9 @@
+# Gaiola única interativa — ensaio rejeitado
+
+Preparada gaiola486v com origem nas superfícies-fonte, em cópia separada. No Blender da nuvem, referência9 ficou lado a lado e os objetos originais foram bloqueados para seleção. Foi realizada seleção por caixa da fileira cervical e transformação nativaY+0,01m. Auditoria confirmou15v alterados (441..455), máximo10,000002mm, nenhuma geometria original alterada, área de faces0,9300..1,0889,zero inversões. Antes preservado em `interactive-whole-cloth-cage-before.blend`; estudo em `interactive-whole-cloth-cage-study.blend` (guia render-hidden).
+
+Avaliação de espessura/subdivisão em sessão separada:15330v,98pares não adjacentes de auto-interseção e3272pares com pele. Não comparar esses números diretamente com a malha densa como se fossem melhoria. Ainda não há garantia de bainha equivalente na gaiola reduzida; a bainha original permanece no objetoV75 não substituído.
+
+Renders pareados frente/perfil mostram falha clara: boa parte da calota fica sob a pele (azul aparece onde deveria haver pano verde). A transição cervical parece mais contínua, mas isso não compensa a penetração da cabeça. O cage extraído com redução e subdivisão não preserva automaticamente a superfície original; não basta uma edição de fileira. Rejeitado, nenhum candidato promovido.
+
+Arquivos `interactive-lowcage-{baseline,rejected}-{profile,front}.png`; auditoria `interactive-lowcage-verification.json`. Controle GUI real foi demonstrado, mas não qualidade artística ou um redesenho final. V75 continua baseline. A próxima intervenção teria de reconstruir volume superior de fato, não apenas suavizar/decimar a fonte ou tratar contagens menores como avanço.

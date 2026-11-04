@@ -1,0 +1,14 @@
+# V60 — estudo do pé visível, sem promoção
+V59 preservada. Somente objeto `Menino — pé` (negativoX) ganha chaveTESTE60. Outro pé, pernas e demais geometrias/chaves/matrizes intactos porhash.
+
+## Forma
+Calcanhar estreitado, sola inferior menos elipsoidal, volume dorsal concentrado perto do tornozelo, antepé mais baixo. ComprimentoY/pose e cota mínimaZ preservados. Não foram criados dedos ocultos ou separações individuais que a referência de perfil não resolve. É bloqueio anatômico de perfil, não pé final.
+
+## Métricas
+Zero auto-interseções/0inversões. Área0.581..1.447×; maxdelta28.924mm. ComprimentoY−.425..−.215m inalterado. Cota mínimaZ0.498000m antes/depois.
+Auditoria de apoio por raycast vertical abaixo do ponto mais baixo encontra objetoLaje emZ0.492500m: folga5.500mm. Portanto pé continua flutuando como no baseline; NÃO afirmar sola apoiada. Este teste isolou forma, não resolveu apoio ou junção tornozelo/perna.
+
+## Visual
+Comparar V59-foot-close-profile/threequarter comV60 equivalentes (mesma câmera/luz). Perfil é menos cápsula e distingue dorso/antepé, mas ainda tem leitura de sapato simples sem dedos e encaixe de tornozelo abrupto. Requer revisão independente; não declarar fidelidade completa.
+Fonte real https://arquivo.arq.br/projetos/paroquia-nossa-senhora-da-paz, perfil reference-8.jpg local não redistribuído.
+ArquivoV60-child-foot-trial.blend. TESTE60=0 restauraV59.

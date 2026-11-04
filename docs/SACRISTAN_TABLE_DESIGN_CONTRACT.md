@@ -68,6 +68,22 @@ Mudanças de dropdown são aplicadas imediatamente. Não há botão genérico �
 
 Todos os textos usam `RawMessage`/translation keys em `pt_BR` e `en_US`. A UI não depende de imagens exclusivas de APIs pre-release. O menu não repete cargas, custo zero ou confirmação de sucesso; falhas são comunicadas por action bar localizada.
 
+### Fechamento — em desenvolvimento — 04/11/2026
+
+Os callbacks só solicitam ações enquanto o formulário está vivo e `isShowing()` é verdadeiro, inclusive no intervalo entre um fechamento nativo e a continuação de `show()`. Fechar repetidamente não chama `close()` numa tela já encerrada. As três inscrições reativas são removidas ao concluir `show()` ou quando ele falha, e a UI chama `actions.close` uma única vez. Erros síncronos de `show()` continuam propagando ao chamador após a limpeza.
+
+Se `close()` lançar erro e a tela continuar aberta, é possível tentar fechar novamente. Depois de retirada bem-sucedida, os controles não voltam a solicitar alterações: **Fechar** e **Concluir e retirar** podem repetir somente o fechamento pendente, nunca a retirada. Um erro depois do fechamento efetivo não reativa callbacks.
+
+A correção é restrita à apresentação: dropdowns continuam aplicando imediatamente; restauração não duplica escritas reativas; retorno `false` de retirada não fecha a tela. Ações, sessões, transações e recuperação do item não mudam. [Testes da apresentação real](../tests/presentation/customization-menu.test.ts) substituem apenas a API nativa e reproduzem callbacks atrasados, fechamento repetido e inscrições retidas na implementação anterior.
+
+Reteste nativo pendente, quando houver pacote próprio desta mudança:
+
+- alterar perfil, metal e empunhadura, fechar pelo botão ou pelo controle nativo e reabrir: manter as escolhas já aplicadas e o item na mesa;
+- restaurar, fechar e concluir/retirar em aberturas sucessivas: nenhuma ação duplicada, nenhum `FormVisibilityError` no Content Log e somente uma retirada;
+- repetir com teclado, controle e toque disponíveis, sem perda do snapshot ou bloqueio residual da mesa.
+
+Aspergillum permanece 1.2.5. Os testes automatizados não comprovam renderização/input Bedrock; não foi criado ou importado um novo pacote.
+
 ## Autoridade e custo zero
 
 O servidor autoriza snapshot, item, perfil e cosmético. A UI apenas solicita alterações. Cada callback revalida sessão, jogador, dimensão, distância, bloco e snapshot.

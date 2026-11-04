@@ -1,0 +1,17 @@
+import bpy,numpy as np,json
+from scipy.sparse import coo_matrix
+from scipy.sparse.csgraph import connected_components
+from mathutils import Vector
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V63-opposite-ankle-trial.blend',use_scripts=False);o=bpy.data.objects['Maria — túnica e mangas integradas'];p=np.array([v.co[:] for v in o.data.vertices]);edges=np.array([e.vertices[:] for e in o.data.edges]);seed=np.argmin(np.linalg.norm(p-np.array([-.226,-.206,2.0]),axis=1));out=[];last=None
+for z in np.arange(2.035,2.096,.005):
+ mask=p[:,2]<z;inds=np.where(mask)[0];idx=np.full(len(p),-1);idx[inds]=np.arange(len(inds));ee=edges[mask[edges].all(axis=1)];a=idx[ee];g=coo_matrix((np.ones(len(a)*2),(np.r_[a[:,0],a[:,1]],np.r_[a[:,1],a[:,0]])),shape=(len(inds),len(inds)));n,l=connected_components(g);sel=inds[l==l[idx[seed]]];bounds=[p[sel].min(axis=0).tolist(),p[sel].max(axis=0).tolist()];safe=len(sel)<5000 and bounds[0][2]>1.9
+ out.append({'cut_z':float(z),'count':len(sel),'bounds':bounds,'isolated_from_body':safe})
+ if safe:last=sel.copy()
+json.dump(out,open(r+'V65-mask-connectivity-audit.json','w'),indent=2)
+mat=bpy.data.materials.new('DIAGNOSTIC isolated cuff');mat.diffuse_color=(.85,.15,.015,1);mat.use_nodes=True;mat.node_tree.nodes['Principled BSDF'].inputs['Base Color'].default_value=(.85,.15,.015,1);o.data.materials.append(mat);idx=len(o.data.materials)-1;selected=set(last.tolist())
+for f in o.data.polygons:
+ if all(v in selected for v in f.vertices):f.material_index=idx
+s=bpy.context.scene;s.cycles.samples=24;s.render.resolution_x=700;s.render.resolution_y=850;s.render.resolution_percentage=100;c=s.camera;ct=Vector((-.03,-.19,2.03));c.data.ortho_scale=.72
+for v,off in [('profile',(-3,0,0)),('front',(0,-3,0)),('back',(0,3,0))]:
+ c.location=ct+Vector(off);c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler();s.render.filepath=r+'V65-mask-audit-'+v+'.png';bpy.ops.render.render(write_still=True)
+print(out)

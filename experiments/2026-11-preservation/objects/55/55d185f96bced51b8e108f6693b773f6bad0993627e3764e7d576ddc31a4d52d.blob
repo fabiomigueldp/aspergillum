@@ -1,0 +1,49 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import * as THREE from '../../../viewer-3d/node_modules/three/build/three.module.js';
+import {buildBedrockGeometry} from '../../../viewer-3d/src/shared/bedrock-geometry.js';
+import {blockPreviewGeometry} from '../tools/block-preview-basis.mjs';
+import {twinPedestalGeometry,pedestalDimensions} from '../assets-src/atelier/twin-pedestal-shoulder-study.mjs';
+const close=(a:number,b:number)=>assert.ok(Math.abs(a-b)<1e-6,`${a} != ${b}`);
+function meshes(w:number,d:number,f:number){const m=twinPedestalGeometry(w,d,f),g=blockPreviewGeometry(m.doc['minecraft:geometry'][0]),material=new THREE.MeshBasicMaterial();const b=buildBedrockGeometry(g,{identifier:g.description.identifier,textureWidth:128,textureHeight:128,formatVersion:'1.16.0'},{default:material,named:{wood_horizontal:material,wood_vertical:material,inlay:material}},{includePivots:false,includeLocators:false});b.root.updateMatrixWorld(true);return {m,g,b};}
+test('every supported dimension and facing has exactly two centred supports and a free lower centre',()=>{
+ for(let w=1;w<=16;w++)for(let d=1;d<=8;d++)for(let f=0;f<4;f++){
+  const {m,g,b}=meshes(w,d,f);assert.equal(g.bones.filter((x:any)=>x.name.endsWith('_shaft')).length,2);assert.equal(g.bones.filter((x:any)=>x.name.endsWith('_base')).length,2);
+  const bounds=new THREE.Box3().setFromObject(b.root);close(bounds.min.y,0);close(bounds.max.y,1);assert.ok(bounds.max.x-bounds.min.x<=(f%2?d:w)+1e-6);assert.ok(bounds.max.z-bounds.min.z<=(f%2?w:d)+1e-6);
+  for(let i=0;i<2;i++){
+   const box=new THREE.Box3().setFromObject(b.boneGroups.get(`pedestal_${i}_shaft`));const c=box.getCenter(new THREE.Vector3());
+   // The shell extends inward by 0.02 author units; tolerances allow that skin.
+   assert.ok(Math.abs(f%2?c.x:c.z)<.002);assert.ok(Math.abs((f%2?c.z:c.x)-(f>=2?-1:1)*m.profile.centers[i]/16)<.002);
+   assert.ok(!box.containsPoint(new THREE.Vector3(0,.4,0)));
+  }
+  assert.equal(g.bones.reduce((n:number,x:any)=>n+x.cubes.length,0),42);
+ }
+});
+test('pedestal stack meets the slab without gaps and retains two separated ground footprints',()=>{
+ for(const [w,d] of [[1,1],[3,2],[7,2],[1,3],[2,3],[16,8]]){
+  const p=pedestalDimensions(w,d),m=twinPedestalGeometry(w,d),bones=m.doc['minecraft:geometry'][0].bones;
+  assert.ok(p.centers[1]-p.centers[0]>p.capW);assert.ok(p.baseD<=p.D-2);assert.ok(p.capD<=p.D-2);
+  for(let i=0;i<2;i++){
+   const base=bones.find((x:any)=>x.name===`pedestal_${i}_base`).cubes,cap=bones.find((x:any)=>x.name===`pedestal_${i}_capital`).cubes.slice(0,5);
+   let y=0;for(const c of base){close(c.origin[1],y);y+=c.size[1];}close(y,2.2);close(y+8.5,10.7);
+   y=10.7;for(const c of cap){close(c.origin[1],y);y+=c.size[1];}close(y,14.2);
+  }
+ }
+});
+test('prototype uses valid finite cubes and bounded atlas UVs without public block states',()=>{
+ for(const [w,d] of [[1,1],[3,2],[7,2],[16,8]]){
+  const m=twinPedestalGeometry(w,d);assert.equal(m.unregistered,true);assert.equal(m.prototype,true);assert.equal(m.doc.format_version,'1.16.0');
+  for(const b of m.doc['minecraft:geometry'][0].bones)for(const c of b.cubes){assert.ok(c.size.every((n:number)=>Number.isFinite(n)&&n>0));assert.ok(c.origin.every(Number.isFinite));for(const u of Object.values(c.uv) as any[]){assert.ok(u.uv.every((n:number)=>n>=0));assert.ok(u.uv_size.every((n:number)=>n>0&&n<=128));}}
+ }
+ assert.throws(()=>twinPedestalGeometry(0,2));assert.throws(()=>twinPedestalGeometry(3,9));assert.throws(()=>twinPedestalGeometry(3,2,4));
+});
+test('capital depth grows through two balanced shoulders instead of one broad unsupported-looking lip',()=>{
+ for(let w=1;w<=16;w++)for(let d=1;d<=8;d++){
+  const m=twinPedestalGeometry(w,d),bones=m.doc['minecraft:geometry'][0].bones;
+  for(let i=0;i<2;i++){
+   const cap=bones.find((x:any)=>x.name===`pedestal_${i}_capital`).cubes;
+   const low=cap[0].size[2],middle=cap[1].size[2],high=cap[2].size[2];
+   assert.ok(low<middle&&middle<high);
+   assert.ok(Math.abs((middle-low)-(high-middle))<=.2000001);
+  }
+ }
+});

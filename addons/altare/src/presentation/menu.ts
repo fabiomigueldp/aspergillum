@@ -39,7 +39,13 @@ export async function chooseFinish(player:Player,tiles:readonly Tile[],facing:nu
       unchanged.setData((Object.keys(initial) as (keyof Customization)[]).every(key=>draft[key]===initial[key]));
     }finally{updating=false;}
   }
-  const close=()=>{alive=false;if(form.isShowing())form.close();};
+  const close=()=>{
+    if(!alive)return;
+    alive=false;
+    try{if(form.isShowing())form.close();}
+    // Engine errors can leave the native screen open; let the user retry.
+    catch(error){alive=form.isShowing();throw error;}
+  };
   const editable=()=>{
     if(!alive||!form.isShowing())return false;
     if(!isCurrent()){close();return false;}
@@ -74,7 +80,8 @@ export async function chooseFinish(player:Player,tiles:readonly Tile[],facing:nu
     .dropdown(tr('menu.front'),values.facing,labels(['0','1','2','3'],'facing'),{visible:directional,description:tr('menu.front_help')})
     .divider().button(tr('menu.apply'),()=>{
       if(!editable())return;
-      selected=customizationFinish(draft);close();
+      // A failed dismissal must never leave a finish for a later Cancel.
+      const finish=customizationFinish(draft);close();selected=finish;
     })
     // Apply stays enabled: reapplying also recentres an altar after placement.
     .button(tr('menu.restore'),()=>{if(!editable())return;draft=initial;refresh();},{disabled:unchanged})

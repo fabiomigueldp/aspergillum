@@ -1,0 +1,162 @@
+/** OFFLINE abstract state machine. Never imported by runtime or used on worlds. */
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+
+export const LIMIT = 30_000;
+export const ASSUMPTIONS = [
+  'One serialized writer; each modeled write mutates one field atomically.',
+  'Every applied write survives simulated reload, in program order; no torn writes.',
+  'An exception may occur before or after a mutation; all exceptions stop forward execution.',
+  'Raw registry is an opaque UTF-8 string, never parsed/sanitized; missing is explicit null.',
+  'All participating routes honor journal quarantine; reload never retries effects automatically.',
+  'The modeled item backup is abstract, not proof of complete ItemStack serialization.',
+];
+export const LIMITATIONS = [
+  'No Bedrock transaction, fsync, persistence ordering or engine-event guarantee is established.',
+  'Preserved evidence is not restored gameplay state, availability, or exactly-once delivery.',
+  'A journal ignored by an older pack cannot enforce quarantine after downgrade.',
+  'No event generation token means a late old event and a valid new event can be indistinguishable.',
+  'Completed journal entries also block further modeled operations: no liveness, tombstone GC or reuse policy is proved.',
+  'Generation is an abstract label only; it is not supplied by native events or proved globally unique.',
+  'No integrated protocol, repair command, migration, world access, pack change or publication.',
+];
+export function initialState(kind, rawRegistry = '{ "schemaVersion":1, "entries":{"0,0,0":{"instanceId":"A","unknown":"preserve"}} }') {
+  if (!['dock', 'undock', 'break'].includes(kind)) throw new Error('Unknown operation');
+  return { kind, rawRegistry, hand: kind === 'dock' ? 'item-A-with-original-charges' : null,
+    block: kind === 'dock' ? 'empty-water-12' : kind === 'break' ? 'air' : 'occupied-water-12',
+    delivered: 0, journal: null };
+}
+export function encodeJournal(state) {
+  const encoded = JSON.stringify({ schemaVersion: 1, operation: state.kind,
+    phase: 'prepared', address: 'overworld:0,0,0', occupancyGeneration: 'abstract-generation-A',
+    rawRegistry: state.rawRegistry, originalHand: state.hand, originalBlock: state.block });
+  if (Buffer.byteLength(encoded, 'utf8') > LIMIT) throw new Error('Journal exceeds UTF-8 byte budget');
+  return encoded;
+}
+export function stepsFor(state) {
+  const prepared = encodeJournal(state); // Preflight before effects, including journal mutation.
+  const phase = (s, value) => { s.journal = JSON.stringify({ ...JSON.parse(s.journal), phase: value }); };
+  // Preflight every possible phase as well: the final phase can have a longer name.
+  for (const value of ['effects-may-have-occurred', 'completed']) {
+    if (Buffer.byteLength(JSON.stringify({ ...JSON.parse(prepared), phase: value }), 'utf8') > LIMIT) {
+      throw new Error('Journal phase exceeds UTF-8 byte budget');
+    }
+  }
+  const effects = state.kind === 'dock' ? [
+    ['registry', s => { s.rawRegistry = 'MODEL:desired-registry-with-A'; }],
+    ['remove-hand', s => { s.hand = null; }],
+    ['occupy', s => { s.block = 'occupied-water-16'; }],
+  ] : state.kind === 'undock' ? [
+    ['clear-block', s => { s.block = 'empty-water-12'; }],
+    ['delete-registry', s => { s.rawRegistry = null; }],
+    ['deliver', s => { s.delivered += 1; }],
+  ] : [
+    ['deliver', s => { s.delivered += 1; }],
+    ['delete-registry', s => { s.rawRegistry = null; }],
+  ];
+  return [['prepare', s => { s.journal = prepared; }],
+    ['mark-ambiguous', s => phase(s, 'effects-may-have-occurred')], ...effects,
+    ['complete', s => phase(s, 'completed')]];
+}
+export function reload(state) {
+  const copy = structuredClone(state);
+  // Read-only recovery: even completed records are retained. No retry/GC/repair here.
+  return { state: copy, decision: copy.journal === null ? 'no-journal-no-automatic-action' : 'retain-evidence-no-automatic-action',
+    automaticDeliveries: 0 };
+}
+export function runModel(initial, fault = null) {
+  const state = structuredClone(initial);
+  const trace = [];
+  if (state.journal !== null) return { state, trace, stopped: 'existing-journal-blocks-operation', reload: reload(state) };
+  let steps;
+  try { steps = stepsFor(state); } catch (error) {
+    return { state, trace, stopped: String(error), reload: reload(state) };
+  }
+  let stopped = 'success';
+  for (const [index, [name, mutate]] of steps.entries()) {
+    if (fault?.index === index && fault.mode === 'throw-before') { stopped = `${name}:throw-before`; break; }
+    mutate(state);
+    trace.push(name);
+    if (fault?.index === index) { stopped = `${name}:${fault.mode}`; break; }
+  }
+  return { state, trace, stopped, reload: reload(state) };
+}
+export function evidencePreserved(initial, result) {
+  if (result.state.journal === null) return result.state.rawRegistry === initial.rawRegistry && result.state.hand === initial.hand && result.state.block === initial.block;
+  const record = JSON.parse(result.state.journal);
+  return record.rawRegistry === initial.rawRegistry && record.originalHand === initial.hand && record.originalBlock === initial.block;
+}
+export function enumerate(rawRegistry) {
+  const rows = [];
+  for (const kind of ['dock', 'undock', 'break']) {
+    const initial = initialState(kind, rawRegistry);
+    for (const [index, [step]] of stepsFor(initial).entries()) {
+      for (const mode of ['throw-before', 'throw-after', 'interrupt-after']) {
+        const result = runModel(initial, { index, mode });
+        rows.push({ kind, step, mode, evidencePreserved: evidencePreserved(initial, result),
+          deliveries: result.state.delivered, automaticDeliveriesAfterReload: result.reload.automaticDeliveries,
+          stopped: result.stopped });
+      }
+    }
+    const result = runModel(initial);
+    rows.push({ kind, step: 'all', mode: 'success', evidencePreserved: evidencePreserved(initial, result),
+      deliveries: result.state.delivered, automaticDeliveriesAfterReload: result.reload.automaticDeliveries, stopped: result.stopped });
+  }
+  return rows;
+}
+export function counterexamples() {
+  const before = runModel(initialState('break'), { index: 2, mode: 'throw-before' }).state;
+  const after = runModel(initialState('break'), { index: 2, mode: 'throw-after' }).state;
+  // Execute the unsafe old recovery policy against the quarantined state.
+  const oldPack = structuredClone(after);
+  if (oldPack.rawRegistry !== null) { oldPack.delivered += 1; oldPack.rawRegistry = null; }
+  // Adversarial persistence projection: entity survives while earlier journal write does not.
+  const crashProjection = { journal: null, registry: after.rawRegistry, delivered: after.delivered };
+  // Execute the double failure of the legacy rollback order, not the conservative protocol.
+  const legacy = { hand: 'A', registry: null, block: 'empty', delivered: 0 };
+  legacy.registry = 'A';
+  legacy.hand = null;
+  try { throw new Error('occupy-before'); } catch {
+    try { throw new Error('restore-hand-before'); } catch { /* legacy ignores rollback failure */ }
+    legacy.block = 'empty';
+    legacy.registry = null;
+  }
+  return {
+    ambiguousDelivery: { journalBefore: before.journal, journalAfter: after.journal,
+      equalRecoveryJournal: before.journal === after.journal,
+      deliveredBefore: before.delivered, deliveredAfter: after.delivered,
+      observation: 'In the delivered history the item can be collected into an unavailable inventory; absence nearby is not proof of non-delivery.',
+      retryOutcomes: [before.delivered + 1, after.delivered + 1] },
+    replayWithoutGeneration: {
+      validNewEvent: { address: '0,0,0', brokenPermutation: 'occupied', registry: 'new-B' },
+      replayOldEvent: { address: '0,0,0', brokenPermutation: 'occupied', registry: 'new-B' },
+      outcome: 'Same handler inputs; current-registry identity cannot tell which occupation generated the event.' },
+    downgrade: { quarantinedJournal: after.journal, retainedRegistry: after.rawRegistry,
+      deliveriesBefore: after.delivered, deliveriesAfterOldHandler: oldPack.delivered,
+      outcome: 'Old spawn-before-delete handler ignores journal and emits A again.' },
+    reorderedCrash: { programOrder: ['prepare-journal', 'spawn-A'],
+      persistedAfterCrash: crashProjection,
+      outcome: 'If spawn survives but earlier journal write does not, quarantine evidence is absent. Readback before spawn does not establish flush ordering.' },
+    legacyDoubleRollbackFailure: { programOrder: ['write-snapshot', 'remove-hand', 'occupy throws-before', 'restore-hand throws-before', 'restore-block', 'delete-snapshot'],
+      final: legacy, outcome: 'Current defensive rollback can erase the only remaining item representation.' },
+  };
+}
+export function report() {
+  const rows = enumerate();
+  const successfulAssertions = rows.every(row => row.evidencePreserved && row.automaticDeliveriesAfterReload === 0 && row.deliveries <= 1);
+  return { scope: 'OFFLINE ABSTRACT MODEL ONLY', assumptions: ASSUMPTIONS, limitations: LIMITATIONS,
+    coverage: { rows: rows.length, injectedFaults: rows.filter(row => row.mode !== 'success').length,
+      successfulPaths: 3, modes: ['throw-before', 'throw-after', 'interrupt-after'],
+      steps: Object.fromEntries(['dock', 'undock', 'break'].map(kind => [kind, stepsFor(initialState(kind)).map(([name]) => name)])) },
+    successfulAssertions, rows, counterexamples: counterexamples() };
+}
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+  const output = resolve('out/state-compaction/recovery-analysis');
+  const result = report();
+  mkdirSync(output, { recursive: true });
+  writeFileSync(`${output}/report.json`, `${JSON.stringify(result, null, 2)}\n`);
+  writeFileSync(`${output}/README.md`, `# Offline recovery model\n\n${result.coverage.rows} cases: ${result.coverage.injectedFaults} injected faults and 3 successful paths. Assertions: ${result.successfulAssertions}.\n\n## Assumptions\n${ASSUMPTIONS.map(s => `- ${s}`).join('\n')}\n\n## Limits\n${LIMITATIONS.map(s => `- ${s}`).join('\n')}\n\nCounterexamples and per-step traces are in report.json. Run: node --test tools/recovery-analysis.node-test.mjs && node tools/recovery-analysis.mjs.\n`);
+  console.log(JSON.stringify({ output, coverage: result.coverage, successfulAssertions: result.successfulAssertions }, null, 2));
+  if (!result.successfulAssertions) process.exitCode = 1;
+}

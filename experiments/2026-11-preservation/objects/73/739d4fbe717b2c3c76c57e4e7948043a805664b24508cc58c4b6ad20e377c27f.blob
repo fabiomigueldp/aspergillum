@@ -1,0 +1,3 @@
+import bpy,json
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V50-child-hair-trial.blend',use_scripts=False);o=bpy.data.objects['Menino — cabelo contínuo V50 reversível'];p=[v.co for v in o.data.vertices];f=[tuple(x.vertices) for x in o.data.polygons];bv=BVHTree.FromPolygons(p,f);pairs=[(i,j) for i,j in bv.overlap(bv) if i<j and not set(f[i])&set(f[j])];d=json.load(open(r+'V50-child-hair-verification.json'));d['nonadjacent_self_intersections']=len(pairs);json.dump(d,open(r+'V50-child-hair-verification.json','w'),indent=2);print(d)

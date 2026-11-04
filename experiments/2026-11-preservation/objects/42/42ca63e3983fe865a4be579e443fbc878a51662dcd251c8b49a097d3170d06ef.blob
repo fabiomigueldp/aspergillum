@@ -1,0 +1,27 @@
+✖ assisted restoration is not proposed when physical items or multiple sources are already observed (24.810799ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 31592.27074
+
+✖ failing tests:
+
+test at tools/recovery-quarantine.node-test.mjs:173:1
+✖ assisted restoration is not proposed when physical items or multiple sources are already observed (24.810799ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103/tools/recovery-quarantine.node-test.mjs:181:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /restoration/,
+    operator: 'throws',
+    diff: 'simple'
+  }

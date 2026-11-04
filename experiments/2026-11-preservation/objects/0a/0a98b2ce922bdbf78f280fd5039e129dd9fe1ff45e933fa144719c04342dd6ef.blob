@@ -1,0 +1,11 @@
+# Redesenho localizado dos contornos — prova parcial, não adotada
+
+Método distinto do hull: para cada segmento lateral, interseção da sua projeçãoYZ com cada triângulo anatômico projetado. Nos extremos de cada intervalo sobreposto, desigualdades lineares colocam o X do segmento do lado exterior do triângulo completo. MantidosY/Z, anatomia e bainha; deslocamentos limitados a40mm como teto diagnóstico, não objetivo artístico. Suporte meia espessura+margem0,5mm. Projeções degeneradas não são certificadas por essa formulação; verificação independente segmento–triângulo da pele foi feita para a candidata do manto.
+
+Manto:1990 desigualdades, cinco nós movidos, máximo24,783mm; resíduo linear zero. Checagem independente dos79 segmentos contra a pele triangulada não encontra passagens transversais. A prova remove as quatro passagens anteriores, mas não certifica tangências/coplanaridade nem uma futura superfície ou espessura. Apenas curva em NPZ, não aplicada ao modelo.
+
+Calota:1982 desigualdades nos nós móveis, mas dois endpoints mantidos fixos no limite do suporte exigem respectivamente0,1993mm e0,1733mm adicionais de afastamento para a margem. Portanto gate conjunto ainda falha; o solver dos nós livres não é aprovação. Não reduzi margem nem apliquei metade da alteração.
+
+Comparação de contorno frontal/perfil em `cap-mantle-exterior-contour-diagnostic.png`: perfil permanece exatamente igual; frente remove reentrâncias laterais, porém deslocamento máximo é relevante e falta integração tangencial com o pano. Não há alegação de melhoria do modelo. A parte não observada continua hipótese. Revisão visual independente solicitada antes de qualquer aplicação.
+
+V75 intacta; nenhuma cena/candidato salvo. Próximo passo possível: incluir explicitamente esses dois pontos-limite no redesenho permitido, definir transição suave dos nós em ambos contornos e repetir gate geométrico, não fabricar loft ainda.

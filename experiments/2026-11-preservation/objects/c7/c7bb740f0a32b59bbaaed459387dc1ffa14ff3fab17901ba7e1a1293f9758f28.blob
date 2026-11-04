@@ -1,0 +1,19 @@
+"""Does the unchanged-V12-point constraint conflict with evaluated high source?"""
+from pathlib import Path
+import numpy as np,json,collections,sys
+sys.dont_write_bytecode=True
+from map_source_restore import O,B,BAND,SourceSampler
+sampler=SourceSampler();base=dict(np.load(BAND));d=dict(np.load(O/'valley-source-mask-n8.npz'));p=base['points'];uv=base['source_uv'];f=base['triangles'];side=base['source_side'];patchfaces=np.unique(d['v13_parent_face_indices'][d['v13_face_roles']==2]);neighborfaces=np.unique(d['v13_parent_face_indices'][d['v13_face_roles']==1]);patchv=np.unique(f[patchfaces]);edgecount=collections.Counter(tuple(sorted((int(a),int(b)))) for t in f[patchfaces] for a,b in zip(t,np.roll(t,-1)));boundaryv=np.unique([x for e,n in edgecount.items() if n==1 for x in e]);interior=np.setdiff1d(patchv,boundaryv);neighborv=np.unique(f[neighborfaces]);out={'question':'Do unchanged original vertices inside or at the patch boundary differ from same-UV evaluated source?','method':'Evaluate exact high-source triangular grid at each old source UV, separately for the two walls. Also compare original source_indices directly where available. This checks positions, not between-vertex curves.','regions':{},'rows':[]}
+for name,ids in [('patch_all_old_vertices',patchv),('patch_boundary_old_vertices',boundaryv),('patch_interior_old_vertices',interior),('conformity_neighbor_old_vertices',neighborv)]:
+ rows=[]
+ for ss in [0,1]:
+  ii=ids[side[ids]==ss];ref,fi,bc=sampler.sample(uv[ii],ss);delta=np.linalg.norm(ref-p[ii],axis=1);direct=sampler.d['points'][base['source_indices'][ii]];dd=np.linalg.norm(direct-p[ii],axis=1)
+  for j,i in enumerate(ii):rows.append({'old_vertex':int(i),'side':ss,'uv':uv[i].tolist(),'same_uv_source_delta_mm':float(delta[j]*1000),'same_uv_bit_exact':bool(np.array_equal(ref[j],p[i])),'source_index_delta_mm':float(dd[j]*1000),'source_index_bit_exact':bool(np.array_equal(direct[j],p[i]))})
+ out['regions'][name]={'vertices':len(ids),'checked_wall_vertices':len(rows),'same_uv_max_delta_mm':max(x['same_uv_source_delta_mm'] for x in rows),'same_uv_all_bit_exact':all(x['same_uv_bit_exact'] for x in rows),'source_index_max_delta_mm':max(x['source_index_delta_mm'] for x in rows),'source_index_all_bit_exact':all(x['source_index_bit_exact'] for x in rows)};out['rows'].extend(dict(region=name,**r) for r in rows)
+# Original boundary chords deviate from source between their unchanged endpoints.
+# This separates source-compatible points from a source-incompatible forced curve.
+rows=[]
+for (a,b),n in edgecount.items():
+ if n!=1 or side[a]!=side[b] or side[a]<0:continue
+ ts=np.linspace(0,1,17);quv=(1-ts[:,None])*uv[a]+ts[:,None]*uv[b];q=(1-ts[:,None])*p[a]+ts[:,None]*p[b];ref,_,_=sampler.sample(quv,int(side[a]));delta=np.linalg.norm(ref-q,axis=1)*1000;rows.append({'edge':[a,b],'side':int(side[a]),'uv':uv[[a,b]].tolist(),'maximum_source_minus_chord_mm':float(delta.max()),'at_t':float(ts[delta.argmax()])})
+out['boundary_chord_samples']={'sample_points_per_edge':17,'edges':len(rows),'max_deviation_mm':max(r['maximum_source_minus_chord_mm'] for r in rows),'quantiles_mm':np.quantile([r['maximum_source_minus_chord_mm'] for r in rows],[0,.5,.9,1]).tolist(),'rows':rows};out['conclusion']='Original points are compatible if exact; fixed piecewise-linear boundary edges need not be source-compatible between them. This is a distinct constraint from retaining vertices and crests.';(O/'old-points-source-compatibility.json').write_text(json.dumps(out,indent=2));print(json.dumps({k:v for k,v in out.items() if k not in ['rows','boundary_chord_samples']},indent=2));print(json.dumps({k:v for k,v in out['boundary_chord_samples'].items() if k!='rows'},indent=2))

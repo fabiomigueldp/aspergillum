@@ -1,0 +1,90 @@
+# V75 → Bedrock: laboratório independente de conversão
+
+**Estado: protótipo de pesquisa. NÃO é release aprovado, NÃO substitui o addon 0.1.3 e NÃO foi validado dentro do Minecraft.**
+
+## O que foi feito
+
+A cena V75 foi aberta com scripts desativados. Foram selecionadas somente as 20 peças visíveis da escultura, excluindo chão, câmera e objetos ocultos de rollback. A malha avaliada tinha 1.052.300 triângulos. Uma redução por região produziu 8.336 triângulos, dos quais 24 degenerados foram omitidos no conversor de placas. A origem não contém imagens de textura: o material é pedra procedural. O atlas aproxima sua cor, oclusão local e iluminação de relevo, mas não transporta integralmente o shader Blender.
+
+Foram criadas alternativas locais:
+
+- `alpha`:8.312 cubos planos rotacionados,8.312 faces, atlas 4096 × 4096. Cada triângulo vira uma face retangular com máscara alfa. Não usa poly_mesh.
+- `hybrid`:7.793 cubos,7.810 faces. Mantém a conversão de superfície, mas usa 3 cuboides opacos nas bases e tampas elípticas com 48 faces laterais em cada auréola. A aproximação das bases omite pequenos chanfros.
+- `voxel192`:1.360 cuboides opacos,8.160 faces, atlas 16 × 8. Amostragem a 192 voxels na altura e agregação por volume. Preserva composição, mas simplifica muito feições e mãos.
+- `voxel_alternative/H96`:340 cuboides,2.040 faces, retida apenas como comparação de orçamento.
+
+Escala:1 unidade do Blender =1 bloco. A geometria-fonte avaliada tem aproximadamente 3,761 blocos de altura com pedestal. Eixos: Blender(x,y,z)→Blockbench(x,z,−y)→Bedrock(−x,z,−y). Rotações seguem a convenção de exportação do Blockbench, incluindo a inversão deX e dos ângulosX/Y.
+
+## Entrega de teste
+
+`Paz-V75-LAB-INDEPENDENT-NOT-RELEASE.mcaddon` contém RP/BP com novos UUIDs e namespace `paz_v75_lab`. **Somente para um mundo descartável de teste**, nunca como atualização de um mundo importante.
+
+Entidades de teste:
+
+- `/summon paz_v75_lab:alpha`
+- `/summon paz_v75_lab:hybrid`
+- `/summon paz_v75_lab:voxel192`
+
+São entidades estáticas, sem gravidade nem movimento, não um bloco funcional equivalente a`paz_glicerio:imagem`. Não há migração, substituição de blocos, edição de saves ou publicação. O protótipo usa o material vanilla `entity_alphatest`; não instala shader customizado.
+
+## Evidência visual e seus limites
+
+`evidence/comparison-technical-NOT-MINECRAFT.png` compara a reconstrução offline dos arquivos exportados. Nenhum render carrega a malha-fonte original para fazer-se passar por exportação. Os metadados incluem os hashes dos JSON/PNG efetivamente renderizados.
+
+- `hybrid-front.png`: atlas-only, sem luz externa. É útil para verificar cor/UV/silhueta, mas **não representa aparência garantida no jogo**.
+- `hybrid-lit-*.png`: mesmos arquivos com iluminação Lambert neutra em Blender; expõe facetamento real.
+- `hybrid-cull-*.png`: teste de estresse de unilateralidade/culling. Expõe lacunas/manchas na banda/calota, mãos e manto. Não é uma configuração adicional do mcaddon e não prova que o material de destino usa exatamente esse culling.
+- `voxel192-lit-*.png`: reconstrução dos cuboides opacos. Silhueta reconhecível, perda substancial do rosto/dedos.
+
+**Avaliação: nenhuma variante passa o nível de acabamento solicitado.** A alternativa híbrida preserva melhor a forma, porém facetas, falhas do véu e custo de transparência permanecem. A opaca é mais conservadora, porém perde detalhe facial. O source V75 já documenta limitações de anatomia, gesto e vestes; uma conversão não as corrige.
+
+## Verificações realizadas
+
+- JSONs válidos, campos de cubos finitos, dimensões não negativas e UVs dentro do atlas.
+-8.312 correspondências do conversor de placas reconstruídas com erro máximo de 1,22 × 10⁻⁸ bloco. Isso verifica transformação/serialização, **não fidelidade geométrica ao highpoly nem o engine**.
+- A redução tem distância média dos vértices à fonte de 0,00070 unidade e máxima de 0,00614; não é uma medida de Hausdorff nem um teste completo de superfícies.
+- Ambos os voxel grids reconstruídos exatamente por cuboides disjuntos. A própria voxelização é amostral, não interseção triângulo/célula exata.
+- Fontes originais preservadas por hash; não há P85 incorporada.
+- UUIDs/referências RP/BP, arquivos de geometria/textura/render controller e integridade ZIP verificados.
+- Renders gerados exclusivamente dos JSON/PNG exportados e inspecionados em frente, três quartos, perfil, costas e close.
+
+Os relatórios completos estão em`evidence/*validation.json`, `source-export.json`, `hybrid-build.json` e `voxel_alternative/*/metrics.json`.
+
+## Bloqueios antes de qualquer aprovação
+
+1. Abrir em Minecraft Bedrock real na versão/dispositivo de destino; verificar importação e Content Log.
+2. Validar rotação combinadaXYZ, UV assimétrico, faces frente/verso, espessura zero, recorte e mipmaps a 1/4/8/16 blocos.
+3. Corrigir as lacunas e o facetamento evidenciados; não ocultar com material emissivo/iluminação de apresentação.
+4. Perfilar 1/4/16 estátuas no dispositivo alvo. Não há garantia de FPS. Atlas 4096 RGBA ocupa cerca 64 MiB antes de mipmaps, mesmo que o PNG comprima bem; o pacote LAB carrega duas dessas texturas.
+5. Definir a integração de gameplay: entidade não herda mineração, colocação, seleção e colisão de bloco.
+6. Testar salvar/reabrir/mudar de chunk no mundo descartável e só depois planejar migração preservando saves.
+
+## Reprodução
+
+Ferramentas:Blender 4.3.2, Python/numpy/scipy/Pillow já presentes. Scripts locais em`tools/`:
+
+1. `export_source.py` viaBlender cria malhas avaliadas/reduzidas.
+2. `bake_normals_ao.py` viaBlender prepara normais/oclusão.
+3. `build_alpha_geometry.py` e `refine_specials.py` geram os arquivos.
+4. `voxel_alternative/build_voxels.py` gera as variantes opacas.
+5. `render_geometry.py` viaBlender reimporta os JSON/PNG. O renderer é um verificador externo, não uma reprodução exata do motor Bedrock.
+6. `validate_alpha.py`, `package_prototypes.py`, `validate_pack.py` executam os testes e empacotamento.
+
+Não há execução automática de scripts ao abrir o arquivo original.
+
+## Referências primárias consultadas
+
+- [Microsoft:geometria 1.14](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/schemasreference/schemas/minecraftschema_geometry_1.14.0?view=minecraft-bedrock-stable):cubos rotacionados e UV por face; face omitida não desenha.
+- [Microsoft:geometria atual](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/visualreference/geometry.v1.12.0?view=minecraft-bedrock-stable):poly_mesh depreciado, gera erros em conteúdo novo.
+- [Mojang:copper golem](https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/models/entity/copper_golem.geo.json):precedente de cubos planos rotacionados vanilla. Não certifica este pacote específico.
+- [Microsoft:materiais](https://learn.microsoft.com/en-us/minecraft/creator/documents/material-files?view=minecraft-bedrock-stable):entity_alphatest e alfa; recomenda materiais vanilla. Culling exato do alvo permanece teste de runtime.
+- [Microsoft:validação de geometria](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/mctoolsvalreference/geometry?view=minecraft-bedrock-stable):50 cubos é warning/recomendação de bloco, não teto oficial comprovado de entidade.
+- [Microsoft:performance](https://learn.microsoft.com/en-us/minecraft/creator/documents/practices/improvingperformanceandresourceusage?view=minecraft-bedrock-stable):complexidade e texturas carregadas em memória.
+- [Blockbench:exportadorBedrock](https://github.com/JannisX11/blockbench/blob/master/js/formats/bedrock/bedrock.js) e [ordemEuler](https://github.com/JannisX11/blockbench/blob/master/js/io/format.ts):convenções de coordenadas/rotação.
+
+## Pacotes individuais para medir custo sem carregar duas texturas grandes
+
+- `Paz-V75-HYBRID-LAB-NOT-RELEASE.mcaddon`: somente híbrido, uma textura 4096² (aproximadamente 64 MiB brutos sem mipmaps).
+- `Paz-V75-VOXEL192-LAB-NOT-RELEASE.mcaddon`: somente voxel, textura 16×8.
+
+Ative **uma variante individual OU o pacote conjunto**, nunca ambos no mesmo teste: as entidades têm os mesmos identificadores entre os pacotes individuais e o combinado. Use os individuais ao comparar desempenho. A revisão estrutural independente confirmou referências, UVs e ZIP do combinado; os ZIPs individuais têm validação adicional de integridade/bytes. Continua sem teste no Minecraft.

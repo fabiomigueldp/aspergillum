@@ -1,0 +1,11 @@
+# V66 — reconstrução estrutural distal, candidata técnica rejeitada visualmente
+
+V63 é o checkpoint estável. V66 e V66b são provas locais reversíveis, não promovidas.
+
+A máscara permite extrair dois contornos simples com104 e74 vértices. Substituídas1383 faces por2738 numa ponte regular de19 anéis internos com128 amostras, mantendo contorno compartilhado. Conservado exatamente o torso e manga superior (delta0). A mão recebeu translação rígida(-60,+80,-100)mm; cap inferior estreitado radialmente a80%. Desvio lateral e dimensões são inferências geométricas de espaço, não medidas fotográficas.
+
+Verificação V66: zero auto-interseções e zero arestas não-manifold. Outros objetos, incluindo Menino, são idênticos. Não há contato mão/Menino. Contagens túnica/Menino são idênticas ao baseline (inserções preexistentes). Contato mão/manga está apenas na raiz face-set24:69 vértices internos, profundidade máxima7,74mm, zero vértices distais internos;2 vértices têm classificação ambígua por raios, explicitamente não se declara ausência volumétrica absoluta.
+
+Apesar da melhora de localização da mão em perfil, render revela estrias artificiais e abaulamento da manga na reconstrução. V66b com tangente superior uniforme eliminou variação da tangente, mas não eliminou estrias. Provável causa remanescente: irregularidade dos contornos voxelizados propagada pela correspondência dos anéis; a prova técnica não garante superfície de tecido convincente. Não adotar nenhuma delas. Exige regularização de seção intermediária e controle de silhueta com transição até borda original, ou reconstrução artística manual; não repetir variações pequenas de tangentes.
+
+Rollback: ocultar `Maria — túnica manga distal V66 reversível`, reexibir `Maria — túnica e mangas integradas`, chave TESTE66 da mão=0. Arquivos V66/V66b-protective-sleeve-trial.blend, comparações perfil/frente/3quarter, scripts e auditorias correspondentes. Fonte da referência: https://arquivo.arq.br/projetos/paroquia-nossa-senhora-da-paz . Sem fotos redistribuídas.

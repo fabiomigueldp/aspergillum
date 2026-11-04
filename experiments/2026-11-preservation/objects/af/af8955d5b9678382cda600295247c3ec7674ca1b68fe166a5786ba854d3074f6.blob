@@ -1,0 +1,9 @@
+# Altare: verificadores de orçamento local
+
+Overlay de fontes e evidências para revisão, não pacote Minecraft nem projeto completo.
+
+Corrige os dois auxiliares para contar os packs emitidos na cópia candidata, incluindo subpastas e proxies. Dados ausentes/inválidos falham sem fallback. Teto 65.536 e contratos históricos preservados.
+
+34 testes passaram com baselines explícitas; modo portátil passa 30 e marca 4 comparações completas como skipped quando as baselines não são fornecidas. Tipos/sintaxe passaram. 8.629 arquivos protegidos permanecem byte a byte idênticos; sem build geral, Creator Tools, mundos ou instalação. NO-GO de release permanece.
+
+Diff em source.patch, arquivos completos em source/, evidências em evidence/.

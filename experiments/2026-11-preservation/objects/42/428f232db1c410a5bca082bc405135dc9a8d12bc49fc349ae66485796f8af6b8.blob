@@ -1,0 +1,82 @@
+# Revisão visual independente da ponte/orelhas V10
+
+Data: 2026-11-03. Estado: revisão concluída dos ensaios `boundary30` e `constrained-final`.
+
+**Parecer final: nenhuma V10 desta família deve ser retida. `boundary30` limpa aparentemente as lâminas vermelha/azul em quatro projeções, mas cria grandes exposições cinzas e degrada a silhueta. `constrained-final` preserva melhor o contorno amplo em duas oblíquas, mas mantém as lâminas nas duas cavidades e acrescenta irregularidades locais. O baseline V9 continua somente como candidata conservadora de pesquisa, com suas pendências conhecidas.**
+
+## Escopo e limite
+
+A revisão examina pixels dos renders diagnósticos Blender, não somente métricas geométricas. O baseline é `body_interface_v9/constrained_fit/intrinsic097-c30-iteration00.npz`. Anatomia V9 deve permanecer congelada, sem substituição highpoly; cabeça/halo legados são reduzidos. Nenhum parecer abaixo constitui teste ou aprovação Minecraft, transporte Bedrock, anatomia ocluída ou não interseção em todas as direções.
+
+Foram lidos o `README.md` raiz e `body_interface_v9/evidence/review-visual-v9.md`. Foram inspecionados diretamente os sete PNGs V9: `intrinsic097-left-ear`, `intrinsic097-right-ear`, `intrinsic097-head-front`, `intrinsic097-junction-profile`, `intrinsic097-junction-back`, `intrinsic097-nohalo-rear-open` e `intrinsic097-full-front`.
+
+## Baseline visual V9
+
+- **Left-ear:** lâmina vermelha longa na cavidade, descendo do polo superior, e ponta azul no alto. Margem externa cinza e lóbulo permanecem expostos e têm extensão própria. A faixa termina acima da orelha em pequenos segmentos/pontas; há uma estreita linha escura sob sua borda inferior.
+- **Right-ear:** vermelho no alto e uma tira vermelha diagonal dentro da cavidade. Uma ponta azul ocupa parte do polo superior. Margem externa e lóbulo cinzas estão expostos; a faixa tem recorte próximo à extremidade temporal e pequeno sinal vermelho entre essa extremidade e a cap.
+- **Frontal da cabeça:** orelhas aparecem com projeções assimétricas, mas as duas conservam regiões cinzas expostas e pequenos trechos vermelhos internos. Recortes azuis persistem ao longo da faixa. Feições e pescoço anterior são marcos de preservação.
+- **Perfil da junção:** a lâmina vermelha/azul ainda é identificável na orelha. A ponte curva contorna o pescoço pela parte posterior, sem substituir a região anterior cinza.
+- **Traseira com halo:** halo cinza oclui extensa área da cap/ponte. A banda vermelha visível e seu encontro verde não mostram buraco ou ilha cinza; há um pequeno recorte lateral herdado.
+- **Traseira aberta:** a retirada do halo revela exterior contínuo azul/vermelho/verde, com faixas de faceta/sombra. As duas orelhas continuam parcialmente visíveis de costas. Esta imagem revela a casca, não a anatomia que fica sob ela.
+- **Corpo inteiro:** composição, proporções e contorno geral registrados. A escala não permite certificar as pequenas interfaces de orelhas/faixa.
+
+## Critérios para as candidatas
+
+1. Usar pares com câmeras, representação, luz e materiais equivalentes; distinguir alteração de sombra de alteração da superfície visível.
+2. Examinar ambas as orelhas, polos superiores, cavidades, margens e lóbulos. Não aceitar desaparecimento de lâminas obtido recolhendo anatomia, estreitando cavidade ou cobrindo-a com outra peça.
+3. Separar vermelho removido de fato das vistas examinadas, vermelho apenas reduzido e mudança vermelho → azul. Uma cavidade sem vermelho mas ainda atravessada por lâmina azul não está limpa.
+4. Conferir região temporal, faixa, linha de sombra, perfil de face/pescoço e silhueta posterior. Procurar lacunas cinzas, fendas abertas, bicos, degraus, abas ou recortes novos.
+5. Não declarar oculto um componente visível nos PNGs. Ausência de sinal em uma câmera não certifica ocultação geral, clearance ou ausência de interseção.
+
+Nenhuma fonte, candidata ou exportação foi alterada por esta revisão. O único arquivo escrito é este relatório.
+
+## Baseline adicional: oblíquas sem halo
+
+Inspeção direta de `bridge_ear_v10/evidence/baseline-v9-left-ear-oblique.png` e `baseline-v9-right-ear-oblique.png`. A comparação V10 passa a exigir estas duas vistas além das sete iniciais.
+
+A oblíqua esquerda confirma a lâmina vermelha longa e sua ponta azul superior; revela melhor o fundo cinza ainda livre na parte inferior da cavidade e as extremidades ouro/cinza junto à têmpora. A oblíqua direita confirma vermelho superior e sua tira descendente, azul no alto e pequeno trecho ouro no interior. A margem cinza externa e o lóbulo continuam expostos nos dois casos. Sem halo, a continuidade e a silhueta posterior azul/vermelha podem ser examinadas com menos oclusão. Essas novas vistas não eliminam o limite sobre anatomia sob a casca.
+
+## Ensaio estrutural `boundary30`: rejeição visual
+
+Foram inspecionados diretamente `boundary30-{left-ear,right-ear,left-ear-oblique,right-ear-oblique}.png`. As duas oblíquas foram comparadas a `baseline-v9-*-ear-oblique.png`, igualmente sem halo. Nas duas laterais, o controle V9 inicial tem halo e o ensaio não; essa diferença conhecida de montagem não foi atribuída à geometria da candidata. `boundary30` foi apresentado como prova estrutural forte, não como candidata retida.
+
+**Resultado útil:** nas quatro projeções examinadas, as lâminas vermelha e azul deixam o centro das cavidades e revelam mais fundo cinza. A melhoria não depende de somente uma das duas vistas laterais. As margens externas cinzas, os polos superiores, os lóbulos e a cavidade abaixo conservam contorno aparente; não identifico recolhimento da orelha. Restam, porém, fragmentos ouro no alto/interior das duas cavidades. No baseline havia ouro parcialmente aparente, especialmente na oblíqua direita; no ensaio fica mais exposto. Não se pode chamar as cavidades de integralmente limpas ou certificar todas as direções.
+
+**Regressões claras:**
+
+- Nas duas vistas direitas, uma grande região cinza irregular interrompe a cap azul acima da extremidade da faixa. Tem múltiplos braços/quinas e desce até a região temporal. É uma exposição nova muito maior do que o recorte local herdado. Não a classifico como vazamento versus pele liberada somente pela cor, mas seu impacto visual é inequívoco.
+- Nas duas vistas esquerdas há uma pequena ilha cinza isolada na cap e uma abertura/trecho cinza com borda escura imediatamente acima da orelha, entre cap e faixa. A ponta da faixa ganha leitura de saliência mais pronunciada por perda do suporte visual azul ao lado.
+- A silhueta posterior da cap nas oblíquas deixa o arco suave do baseline e ganha um ombro/degrau acentuado na altura temporal. A ponte vermelha atrás das orelhas também mostra quinas/estreitamentos mais abruptos. São mudanças de contorno, não simples alterações de sombra.
+- Ainda existe vermelho visível acima e atrás das duas orelhas. O deslocamento da lâmina para fora do centro da cavidade não significa que toda a peça foi escondida.
+
+**Parecer:** rejeitar `boundary30` como candidata visual. Ele demonstra remoção local aparente das lâminas em quatro projeções, mas à custa de grandes exposições cinzas e deformação do contorno da casca. Pode servir apenas de diagnóstico para uma correção mais localizada. Esse parecer não aprova integridade, contato, anatomia coberta, transporte ou Minecraft.
+
+## Ensaio `constrained-final`: duas oblíquas
+
+Foram inspecionados diretamente `constrained-final-left-ear-oblique.png` e `constrained-final-right-ear-oblique.png`, comparados aos dois `baseline-v9-*-ear-oblique.png` e às duas oblíquas `boundary30`. Esses seis renders usam as mesmas vistas sem halo. Não foram recebidas nem examinadas as sete outras câmeras de `constrained-final`; o parecer desse ensaio limita-se às duas oblíquas, suficientes para constatar que as cavidades continuam visualmente pendentes.
+
+### Orelha esquerda
+
+A lâmina vermelha continua longa dentro da cavidade. Sua parte superior parece mais larga e forma uma face triangular mais saliente do que no baseline V9. Azul ainda aparece no polo superior, junto à margem cinza. Fragmentos ouro ficam expostos no interior. A margem externa e o lóbulo conservam extensão aparente; a região inferior da cavidade continua aberta à vista. Não identifico uma limpeza visual: houve redistribuição de superfícies coloridas, não seu desaparecimento.
+
+Acima da orelha, a cap azul ganha dobras/quinas e mudanças de faceta fortes. Seu encontro com a faixa revela uma área escura/ouro, deixando mais evidente uma abertura visual sob a borda azul. Não se pode inferir pelo PNG se essa área é fundo, folga ou face ocluída. A pequena ilha cinza distante que surgira em `boundary30` não aparece aqui, e a silhueta ampla azul volta a ser mais próxima do baseline. Esses dois ganhos relativos não eliminam os novos recortes e ressaltos locais.
+
+### Orelha direita
+
+A tira vermelha mais estreita e descendente do baseline é substituída por uma placa vermelha visivelmente mais larga na porção superior da cavidade. Há menos extensão vermelha para baixo, mas não há remoção: a ocupação superior se torna mais ampla. Azul permanece no alto e pequenos trechos ouro continuam no interior. A margem externa cinza e o lóbulo preservam contorno aparente. Portanto, nem esta vista nem a esquerda permitem dizer que a ponte ou as lâminas ficaram ocultas.
+
+A grande mancha cinza temporal de `boundary30` desaparece. O pequeno recorte cinza junto à extremidade da faixa permanece, próximo da condição do baseline. O contorno posterior azul se aproxima do arco original, mas ainda contém pequeno degrau/quina acima da altura da orelha. A região acima/atrás da faixa e da orelha apresenta mudanças locais de sombra/faceta, menos severas do que `boundary30`, porém não equivalentes à aparência V9.
+
+### Comparação e conclusão visual
+
+- **V9:** contorno amplo mais regular; lâminas vermelha/azul claramente presentes em ambas as cavidades; irregularidades herdadas na faixa.
+- **`boundary30`:** remoção aparente dessas lâminas no centro das cavidades em quatro projeções, preservando a extensão aparente das orelhas, porém com grandes áreas cinzas expostas, recortes e deformação posterior. Rejeitar.
+- **`constrained-final`:** recupera boa parte da cobertura/silhueta ampla perdida em `boundary30`, mas deixa as lâminas nas duas cavidades e acrescenta dobras/quinas locais. Não é correto resumir como aparência conservada: o vermelho redistribui sua área aparente e os encontros temporais pioram. Não há vantagem visual suficiente sobre V9; rejeitar como solução dessa interface.
+
+O responsável informou separadamente que `constrained-final` também falhou o gate geométrico por auto-interseções. Não reproduzi essa análise e ela não fundamentou a observação dos pixels acima. A reprovação visual permanece válida por si; a aparência tampouco reabilita uma candidata reprovada geometricamente.
+
+## Encerramento
+
+Nenhuma V10 foi aprovada ou retida nesta família. O resultado experimental distingue dois problemas: retirar a lâmina do centro das cavidades pode abrir falhas e deformar a casca; preservar melhor a silhueta pode deixar ou ampliar superfícies coloridas dentro das orelhas. As duas tentativas não demonstram a combinação exigida de cavidade limpa, anatomia exposta preservada, casca contínua e contorno conservado.
+
+Este parecer não aprova anatomia oculta, não interseção, todas as direções, serialização, alfa, culling, normalmap, desempenho, exportação ou Minecraft. Cabeça/halo continuam legados reduzidos, sem troca highpoly. A revisão não editou geometria, fontes, candidatas ou pacotes. Único arquivo escrito: `bridge_ear_v10/evidence/review-visual-v10.md`.

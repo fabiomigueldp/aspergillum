@@ -1,0 +1,62 @@
+from audit_common import *
+import json
+p=O/'blender-normal-confound.json';d=json.load(open(p));a=np.load(O/'blender-normal-confound-arrays.npz');m=np.load(B/'opaque_transport_v15/shared_mask/transport_arrays.npz');
+for r in d['parts']:
+ part=r['part'];weights=m['child_area_blocks2'][m['part']==part];bad=a[f'part{part}_saved_quad_vs_source']>1;r.pop('source_area_fraction_on_halves_quad_error_gt1deg',None);r['native_child_area_fraction_quad_error_gt1deg']=float(weights[bad].sum()/weights.sum())
+center=a['part0_centers'];x=(center[:,0]-.035)/.52*1000+500;y=500-(center[:,2]-3.58)/.52*1000;roi={}
+for name,limits in [('central_scar_strip',[300,700,430,565]),('central_crest',[450,600,425,505])]:
+ x0,x1,y0,y1=limits;mask=(x>=x0)&(x<=x1)&(y>=y0)&(y<=y1);roi[name]={'image_rect_xmin_xmax_ymin_ymax':limits,'projected_face_centroids':int(mask.sum()),'scope':'Rectangular diagnostic region chosen from saved band-front render. No depth/visibility rejection.','angles_q50_q99_max_deg':{k:np.quantile(a['part0_'+k][mask],[.5,.99,1]).tolist()for k in ['saved_quad_vs_source','saved_clipped_vs_source','saved_quad_vs_saved_clipped']}}
+d['band_front_region_mapping']=roi;d['conclusion']='Changing quads to clipped triangles changes computed normals, but the saved normal differences do not support a broad Newell-normal error as the cause of the widespread central scars. The three band quad outliers above1degree are thin termination/closure faces; their normal errors remain or grow in the clean clipped control. Central-crest normal errors are small and are not improved by clipping. Exact alpha/geometry/ray/lighting cause remains unresolved; no correction or extra render is justified by this audit alone.';d['scene_integrity']=json.load(open(O/'blender-normal-extraction.json'));save(p,d)
+text='''# Saved Blender normal confound: independent result
+
+**No evidence for a blanket normal correction or for attributing the clean clipping control to improved normals.** The exact alpha/geometry/ray/lighting interaction remains unresolved.
+
+Both saved scenes were opened read-only with Blender4.3.2. All band/shell/anatomy MeshPolygon normals, corners, loop-triangle normals and corner normals were extracted; input blend hashes remained unchanged. Source native normals were independently calculated from frozen V13/V11/V9 triangles, with exact JSON frame normals as a separate cross-check. No source/models/materials/scenes were altered and no render was generated.
+
+## Band: all8,888 half-faces
+
+| Metric | Saved quad vs source | Saved clipped vs source |
+|---|---:|---:|
+|Median|0.000929°|0.001158°|
+|99th percentile|0.051569°|0.073750°|
+|Maximum|7.900092°|7.900092°|
+|Count over1°|3|4|
+|Count over5°|2|2|
+
+Quad-vs-clipped normal differences have median0.000148°,p99=0.026229°,maximum2.459284°. The clipped first three corner positions are bit-exact to the corresponding quad corners. Exact JSON frame normals agree with native normals to1.21e-6° numerical angular resolution. Stored/reconstructed float32 band corner positions differ from exact JSON by at most0.000325mm; tiny closure facets can amplify this small positional error into degrees of normal error.
+
+Recomputing Newell in float64 from the *same saved float32 corners* reproduces the quad error pattern, while float64 triangle cross reproduces the clipped error pattern. This distinguishes geometric precision in those corner coordinates from a claim that Blender broadly miscomputed Newell normals.
+
+## Outlier locations
+
+|Native band face / half|Band-front centroid pixel|Quad error|Clipped error|Region|
+|---|---|---:|---:|---|
+|4124 /1|(258.8,620.3)|7.9001°|7.9001°|Left thin termination/closure|
+|4126 /0|(760.3,689.3)|5.1003°|5.2635°|Right lower termination/closure|
+|4179 /1|(760.2,605.8)|1.1569°|1.3024°|Right upper termination/closure|
+
+All three have source face_part2. Their errors do not disappear in the clean clipped control. `blender-band-quad-normal-error-projections.png` overlays their centroids on the actual saved band-front render:yellow>1°,orange>5°,red>15°. It is a location map without occlusion rejection, not proof that each marked face contributes a visible pixel.
+
+The exterior wall's4,186 halves have quad p99=0.008133°,max0.229650° and no face above1°. The interior wall's4,186 halves have p99=0.007733°,max0.083029°.
+
+## Central visible-scar regions
+
+For projected centroids in the central strip,x300–700,y430–565 (4,959 halves, no depth rejection), quad-vs-source p99/max are0.009286°/0.131584°; clipped p99/max are0.011771°/0.252817°. Quad-vs-clipped maximum is0.339329°.
+
+For the central crest,x450–600,y425–505 (1,162 halves), quad p99/max are0.011835°/0.131584°; clipped p99/max are0.014544°/0.210254°. The data do not identify a substantial broad normal defect in the scarred central region, and clipping does not improve these statistics.
+
+## Other parts and qualifications
+
+Shell quad p99/max are0.026466°/1.180850° versus clipped0.038398°/1.208982°. The inherited microscopic anatomy faces424/1131 produce three degenerate/fallback-normal halves in both scenes; their82–98° errors are unchanged by clipping and are outside this band-front framing. These must not be generalized to the band or treated as a new source-mesh regression.
+
+Mesh data are direct scene evidence, not a measurement of the final Cycles shader's normal at every ray. Clipping also removes alpha transport and unused quad area, so its clean appearance still cannot establish a unique cause. Parent should retain the analytic-clip and no-shadow images as diagnostic controls and keep causality unresolved. This branch is complete; no normal-corrected render was made.
+
+## Files
+
+- `blender-normal-confound.json`:complete metrics,witness mapping,ROI stats and input hashes.
+- `blender-normal-confound-arrays.npz`:all per-half angle arrays.
+- `blender-{quads,clipped}-part{00,01,15}-actual-normals.npz`:actual extracted geometry/normals.
+- `blender-normal-extraction.json`:scene integrity and Blender version.
+- `extract_blender_normals.py`,`audit_blender_normal_confound.py`,`finalize_normal_confound.py`:reproduction.
+'''
+(O/'REVIEW_BLENDER_NORMAL_CONFOUND.md').write_text(text);print(d['conclusion']);print(json.dumps(roi,indent=2))

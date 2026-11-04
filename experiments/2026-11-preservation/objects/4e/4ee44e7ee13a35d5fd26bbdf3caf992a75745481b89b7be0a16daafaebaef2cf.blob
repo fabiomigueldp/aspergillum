@@ -1,0 +1,14 @@
+exec(open(__import__('pathlib').Path(__file__).resolve().parent/'audit-v49-root-pairs.py').read().split("report={}")[0])
+from collections import Counter
+report=json.load(open(r+'V49-root-contact-detail.json')); edge=Counter(tuple(sorted((f[i],f[(i+1)%len(f)]))) for f in states[1][3] for i in range(len(f)))
+report['tunic_boundary_edges']=sum(v==1 for v in edge.values());report['tunic_nonmanifold_edges']=sum(v!=2 for v in edge.values())
+for state in [0,1]:
+ hp,tp,hf,tf,tb=states[state];inside=[]
+ for i,p in enumerate(hp):
+  loc,n,f,d=tb.find_nearest(p)
+  if (p-loc).dot(n)<-1e-7:inside.append((i,d))
+ report['wrist_inside_'+str(state)]={'count':len(inside),'max_depth_m':max(d for i,d in inside),'original_z_min':min(h.data.vertices[i].co.z for i,d in inside),'original_z_max':max(h.data.vertices[i].co.z for i,d in inside)}
+json.dump(report,open(r+'V49-root-contact-detail.json','w'),indent=2);print({k:v for k,v in report.items() if k.startswith('wrist') or k.startswith('tunic')})
+s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=700;s.render.resolution_y=700;s.render.resolution_percentage=100;c=s.camera;ct=Vector((-.117,-.397,1.21));c.data.ortho_scale=.22
+for label,off in [('underside',(-2,-3,-.3))]:
+ c.location=ct+Vector(off);c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler();s.render.filepath=r+'V49-root-contact-'+label+'.png';bpy.ops.render.render(write_still=True)

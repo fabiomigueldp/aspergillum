@@ -1,0 +1,21 @@
+# V14: escopo das regras verificadas
+
+Revisão em 2026-11-03. Esta bancada não é Minecraft e não há runtime Bedrock instalado/comprovado nesta tarefa. Nenhuma contagem é prova de compatibilidade, orçamento seguro ou desempenho.
+
+## Geometria de entidade
+
+A schema oficial `geometry:1.14.0` documenta cubes por bone, origin/size, rotação em graus na ordem x→y→z e pivot. UV por face permite omitir faces; `south` fica no plano x/y e aponta +z. Texture width/height representam texels. Os campos usados pelo transporte têm representação nessa schema, mas ela não estabelece um teto de cubes, de bones ou de dimensão de atlas que possa certificar este arquivo. Zero-depth cube e material alfa precisam de confirmação no motor, não só aceitação numérica externa. Fonte: [schemas oficiais Mojang](https://mojang.github.io/bedrock-samples/Schemas.html).
+
+A documentação atual de geometria marca poly_mesh como deprecated, com erros de conteúdo para novo uso. Esse transporte deve permanecer em cubes. Fonte: [referência geometry v1.12+](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/visualreference/geometry.v1.12.0?view=minecraft-bedrock-stable).
+
+## Não importar limites de blocos para entidade
+
+A recomendação de até 50 cubes em “Model Complexity” é explicitamente para modelos de **blocos**; não é um limite validado de entidade nem autoriza este total de cubes. A mesma página reconhece atlas de entidades e alerta para memória de texturas e desperdício de área. Tamanho de PNG comprimido não mede consumo de textura decodificada. Não foi encontrado ali limite universal de 2048 ou 4096 aplicável a esta entidade. Fonte: [performance e uso de recursos](https://learn.microsoft.com/en-us/minecraft/creator/documents/practices/improvingperformanceandresourceusage?view=minecraft-bedrock-stable).
+
+## Texturas e validação ausente
+
+Texture Set exige color, aceita RGB/RGBA para normal e proíbe combinar normal/heightmap; referências devem resolver dentro do pack. Só color participa do pipeline Classic. Portanto carregar arquivos e reconstruir vetores fora do motor não comprova PBR, material, convenção verde, alfa/culling, mipmap ou consumo GPU. Fonte: [Texture Sets Introduction](https://github.com/MicrosoftDocs/minecraft-creator/blob/main/creator/Reference/Content/TextureSetsReference/TextureSetsConcepts/TextureSetsIntroduction.md).
+
+## Bancada reutilizada
+
+Aspergillum no commit `3eaf97b172a38dac794461b156b70864737875d6`: importar somente o módulo real `buildBedrockGeometry`, sem editar fontes. A execução com V14 é um teste novo de posições/UV e não repete a tentativa de browser que já falhou. As limitações anteriores permanecem: cadeia direta não resolve totalmente client_entity; MER constante não é tratado no resolver; sinal verde DirectX não é convertido explicitamente. Verificação de schema, round-trip e 2 implementações concordantes não equivalem a teste de engine.

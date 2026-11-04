@@ -1,0 +1,97 @@
+import numpy as np,json,collections
+from pathlib import Path
+R=Path(__file__).resolve().parents[2]/'integration_v6'; O=Path(__file__).resolve().parent
+# Execute construction-only prefix, with no file-writing statements reached.
+s=(R/'tools/build_hermite_physical_bridge.py').read_text().split('def save(')[0]
+g={'__file__':str(R/'tools/build_hermite_physical_bridge.py')};exec(s,g)
+layers=g['layers'];cap=g['cap'];man=g['man'];params=g['params'];pair=g['pair'];P=g['P']
+vm={}
+for j,l in enumerate(layers):
+ for side in [0,1]:
+  for sid,t in zip(l['sides'][side],l['t']):vm[int(sid)]=(j/6,float(t),side)
+ for end,t in [(0,0.),(1,1.)]:
+  for sid in l['ends'][end][1:-1]:vm[int(sid)]=(j/6,t,2)
+# Physical outer=0 corresponds to original mantle inner after confirmed orientation correction.
+wall={int(x)+160386:0 for x in pair['inner']};wall.update({int(x)+160386:1 for x in pair['outer']})
+
+def classify(ids,part):
+ if part==1:
+  vv=[vm[int(x)] for x in ids];s=[v[0] for v in vv];t=[v[1] for v in vv];sides={v[2] for v in vv}
+  side=next(iter(sides)) if len(sides)==1 and 2 not in sides else 2
+  return dict(part='bridge',wall=['outer','inner','lateral_cap'][side],s_range=[min(s),max(s)],t_range=[min(t),max(t)])
+ if part==2:
+  sides={wall.get(int(x),2) for x in ids};side=next(iter(sides)) if len(sides)==1 else 2
+  ts=[float(params[int(x)-160386,1]/79) for x in ids];rs=[float(params[int(x)-160386,0]) for x in ids]
+  return dict(part='mantle',wall=['outer','inner','lateral_cap'][side],row_range=[min(rs),max(rs)],t_range=[min(ts),max(ts)])
+ # cap wall exact boundary membership where available, otherwise propagated vertex side by source normals not needed for count
+ ss={vm[int(x)][2] for x in ids if int(x) in vm};side=next(iter(ss)) if len(ss)==1 else 2
+ return dict(part='cap',wall=['outer','inner','unknown'][side])
+
+def analyze(name):
+ a=np.load(R/('evidence/'+name+'.npz'));gate=json.loads((R/('evidence/'+name+'-gate.json')).read_text());details=[];counts=collections.Counter();stages=collections.Counter();sides=collections.Counter()
+ for cross in gate['crossings']:
+  ii=cross['triangles'];parts=a['face_parts'][ii];fs=[classify(ids,p) for ids,p in zip(cross['source_indices'],parts)]
+  key=' x '.join(f['part']+':'+f['wall'] for f in fs);counts[key]+=1
+  stage=' x '.join(str(f.get('s_range',f.get('row_range','source'))) for f in fs);stages[stage]+=1
+  ts=[t for f in fs for t in f.get('t_range',[])];sides['start' if max(ts)<.5 else 'end' if min(ts)>.5 else 'mixed']+=1
+  details.append(dict(triangles=ii,faces=fs,source_indices=cross['source_indices'],witnesses=cross['witnesses']))
+ result=dict(candidate=name,total=gate['strict_crossings'],classification=dict(counts),section_pairs=dict(stages),longitudinal_sides=dict(sides),details=details)
+ (O/(name+'-classified.json')).write_text(json.dumps(result,indent=2));print(json.dumps({k:v for k,v in result.items() if k!='details'},indent=2))
+ return result
+h=analyze('seam-hermite-physical-7p5-assembly')
+# Straight bridge vertices are only endpoint source vertices, so same labels but s=0/1.
+b=analyze('seam-swapped-7p5-restored-orientation')
+# Offset focal folding: compare generated outer/inner longitudinal increments to center increments.
+folds=[]
+for j,l in enumerate(layers[1:-1],1):
+ outer=np.array([g['pp'][int(x)] for x in l['sides'][0]]);inner=np.array([g['pp'][int(x)] for x in l['sides'][1]]);center=(outer+inner)/2;dc=np.diff(center,axis=0)
+ for side,points in [('outer',outer),('inner',inner)]:
+  dp=np.diff(points,axis=0);dot=np.sum(dp*dc,axis=1)/np.sum(dc*dc,axis=1)
+  folds.append(dict(section=j,s=j/6,wall=side,min_projected_edge_ratio=float(dot.min()),reversed_t_intervals=[[float(l['t'][k]),float(l['t'][k+1])] for k in np.flatnonzero(dot<0)]))
+(O/'offset-folds.json').write_text(json.dumps(folds,indent=2));print('FOLDS',json.dumps(folds,indent=2))
+# Dense analytic centerline curvature and offset evolute test along joining direction s.
+u=np.linspace(0,1,1001)[:,None,None];c0=g['c0'][None];c1=g['c1'][None];d0=g['d0'][None];d1=g['d1'][None]
+c=(2*u**3-3*u*u+1)*c0+(u**3-2*u*u+u)*d0+(-2*u**3+3*u*u)*c1+(u**3-u*u)*d1
+v=(6*u*u-6*u)*c0+(3*u*u-4*u+1)*d0+(-6*u*u+6*u)*c1+(3*u*u-2*u)*d1
+acc=(12*u-6)*c0+(6*u-4)*d0+(-12*u+6)*c1+(6*u-2)*d1
+curv=np.linalg.norm(np.cross(v,acc),axis=-1)/np.linalg.norm(v,axis=-1)**3
+thick=(1-u[:,:,0])*np.linalg.norm(g['v0'],axis=1)[None]+u[:,:,0]*np.linalg.norm(g['v1'],axis=1)[None]
+ratio=curv*thick/2;chord=g['c1']-g['c0'];projection=np.sum(v*chord[None],axis=-1)/np.sum(chord*chord,axis=-1)[None]
+res=[]
+for k,t in enumerate(g['t']):
+ m=int(np.argmax(ratio[:,k]));res.append(dict(t=float(t),max_half_thickness_times_curvature=float(ratio[m,k]),at_s=m/1000,min_chord_progress=float(projection[:,k].min()),thickness_at_max=float(thick[m,k]),curvature_radius_at_max=float(1/curv[m,k])))
+(O/'centerline-curvature.json').write_text(json.dumps(res,indent=2));print('CURVATURE',json.dumps([x for x in res if x['max_half_thickness_times_curvature']>1],indent=2))
+cc=g['cent'];tt=[]
+for j in range(6):
+ for k in range(56):
+  a=j*57+k;b=a+1;c=a+57;d=c+1;tt.extend([[a,b,c],[b,d,c]])
+np.savez_compressed(O/'center-surface-diagnostic.npz',points=cc.reshape(-1,3),triangles=np.array(tt))
+vs=np.gradient(cc,1/6,axis=0);vt=np.gradient(cc,1/56,axis=1);cos=np.sum(vs*vt,axis=2)/np.linalg.norm(vs,axis=2)/np.linalg.norm(vt,axis=2)
+print('CENTER TANGENT COS',np.max(abs(cos)),np.unravel_index(np.argmax(abs(cos)),cos.shape))
+# Principal curvature includes mixed s-t derivative, unlike coordinate curve curvature alone.
+vss=np.gradient(vs,1/6,axis=0);vst=np.gradient(vs,1/56,axis=1);vtt=np.gradient(vt,1/56,axis=1);n=np.cross(vs,vt);n/=np.linalg.norm(n,axis=2)[...,None]
+I=np.empty(cc.shape[:2]+(2,2));II=I.copy();I[:,:,0,0]=(vs*vs).sum(2);I[:,:,0,1]=I[:,:,1,0]=(vs*vt).sum(2);I[:,:,1,1]=(vt*vt).sum(2);II[:,:,0,0]=(vss*n).sum(2);II[:,:,0,1]=II[:,:,1,0]=(vst*n).sum(2);II[:,:,1,1]=(vtt*n).sum(2)
+kappa=np.max(abs(np.linalg.eigvals(np.linalg.solve(I,II))),axis=2);half=np.array([(1-u)*np.linalg.norm(g['v0'],axis=1)/2+u*np.linalg.norm(g['v1'],axis=1)/2 for u in g['us']]);q=kappa*half
+report={'method':'Finite-difference principal curvature on original 7x57 center grid, diagnostic only','max_half_thickness_times_principal_curvature':float(q.max()),'exceeding_one_st':[[float(g['us'][i]),float(g['t'][k]),float(q[i,k])] for i,k in np.argwhere(q>1)],'max_abs_tangent_cosine':float(abs(cos).max())}
+(O/'surface-curvature.json').write_text(json.dumps(report,indent=2));print('PRINCIPAL',json.dumps(report,indent=2))
+# Controlled diagnostic: same center/triangulation, vary only offset thickness, open interior walls.
+tri=[]
+for side in range(2):
+ off=side*5*57
+ for j in range(4):
+  for k in range(56):
+   a=off+j*57+k;b=a+1;c=a+57;d=c+1;tri.extend([[a,b,c],[b,d,c]])
+for scale in [1.,.75,.5,.25,.1]:
+ pp=np.concatenate([(g['cent'][1:-1]+sg*scale*g['norm'][1:-1]*half[1:-1,:,None]).reshape(-1,3) for sg in [-1,1]])
+ np.savez_compressed(O/f'interior-offset-{scale}.npz',points=pp,triangles=np.array(tri))
+# A vertex displacement must point consistently to the same side of EVERY incident center triangle.
+cf=np.array(tt);cp=cc.reshape(-1,3);nf=g['norm'].reshape(-1,3);fn=np.cross(cp[cf[:,1]]-cp[cf[:,0]],cp[cf[:,2]]-cp[cf[:,0]]);fn/=np.linalg.norm(fn,axis=1)[:,None];dd=np.einsum('ij,ikj->ik',fn,nf[cf]);mixed=(dd.min(1)<0)&(dd.max(1)>0)
+summary={'center_triangles':len(cf),'mixed_sign_vertex_offset_directions':int(mixed.sum()),'mixed_faces':[{'center_face':int(i),'s_range':[float(np.min(cf[i]//57)/6),float(np.max(cf[i]//57)/6)],'t_range':[float(np.min(cf[i]%57)/56),float(np.max(cf[i]%57)/56)],'normal_cosines':dd[i].tolist()} for i in np.flatnonzero(mixed)]}
+(O/'offset-transversality.json').write_text(json.dumps(summary,indent=2));print('MIXED',mixed.sum(),dd.min(),dd.max())
+generated=[]
+for j,l in enumerate(layers[1:-1],1):
+ for side in range(2):
+  for k,sid in enumerate(l['sides'][side]):generated.append([int(sid),j,k,side,0 if side==0 else 1])
+ for end,k in [(0,0),(1,56)]:
+  for f,sid in zip([.25,.5,.75],l['ends'][end][1:-1]):generated.append([int(sid),j,k,2,f])
+np.savez_compressed(O/'offset-reach-field.npz',s=g['us'],t=g['t'],center=cc,offset_normals=g['norm'],half_thickness=half,principal_curvature_max_abs=kappa,principal_curvature_eigenvalues=np.linalg.eigvals(np.linalg.solve(I,II)),radius=1/np.maximum(kappa,1e-15),half_thickness_times_curvature=q,first_fundamental_form=I,second_fundamental_form=II,generated_vertex_map=np.array(generated),center_triangles=cf,center_face_offset_normal_cosines=dd,center_faces_mixed_transversality=mixed,cap_source_side0=layers[0]['sides'][0],cap_source_side1=layers[0]['sides'][1],cap_source_t=layers[0]['t'],mantle_source_side0=layers[-1]['sides'][0],mantle_source_side1=layers[-1]['sides'][1],mantle_source_t=layers[-1]['t'])

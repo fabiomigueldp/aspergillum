@@ -1,0 +1,80 @@
+# Altare
+
+**Cópia de desenvolvimento: compactação pré-lançamento, ainda sem versão de distribuição.** 414 IDs preservados, 51.608 estados antes de novas famílias. O esquema de estados dos 135 Atelier e do Clássico mudou: não instalar esta cópia sobre mundos existentes nem empacotá-la como 0.12.3. A integração deve receber uma nova versão e um teste em mundo novo descartável. [Contrato, evidências e migração explícita de snapshots](docs/CATALOG_COMPACTION.md).
+
+As instruções de download e compatibilidade da 0.12.3 abaixo são históricas e não descrevem esta cópia compactada.
+
+**0.12.3 — Cruzeta e escolhas do editor.** Oitavo modelo: marcenaria aberta, quadros apoiados, X duplo cavilhado e marchetaria proporcional. Dez toalhas compartilhadas, com oito cores do Floral IHS. [Construção e compatibilidade](docs/CROSSBRACE_0.12.1.md) · [Dimensões do editor](docs/EDITOR_DIMENSIONS_0.12.2.md) · [Guadalupe e prazo de edição](docs/EDITOR_CHOICES_0.12.3.md).
+
+A [marcenaria 0.6.1](docs/JOINERY_0.6.1.md) acrescenta Arca e Balaústres ao [contrato de personalização](docs/CUSTOMIZATION_0.5.0.md). Os dois modelos usam nogueira, todos os tecidos e as oito cores do Floral IHS, sem aplique adicional.
+
+O uso principal é construção e ornamentação no Criativo. [Colunata e renda](docs/COLONNADE_0.7.0.md) acrescenta mármore claro e douramento, com a coleção completa de toalhas. [Acabamentos e estados](docs/VARIATIONS.md) explica as variações; não se trata de receitas de craft.
+
+## Novas possibilidades
+
+- **Estruturas:** pilastras com bases/capitéis, arcadas ogivais em relevo e mesa aberta com cavaletes, sapatas, montantes, escoras e travessas.
+- **Materiais:** mármore, calcário e nogueira.
+- **Toalhas:** linho curto/longo, bordado curto/longo, branco/Cordeiro, Floral IHS em oito cores, branco-verde/IHS, preto/prata, renda floral ou sem toalha. Dobras estáticas com profundidade, bordados e festões recortados.
+- **Apliques:** sem aplique, cruz dourada em relevo ou placa do Cordeiro. Na mesa aberta, o aplique tem suporte suspenso próprio.
+- **413 acabamentos**, além do bloco clássico: os 396 anteriores e 17 acabamentos da Cruzeta. Centro único em frentes ímpares, duas metades alinhadas em pares. Retângulos até 16 × 8, em qualquer orientação, máximo de 128 módulos.
+
+O editor configura o conjunto conectado inteiro. Toalha e estrutura ocupam somente as células da base: o tampo termina exatamente em `y + 1`, deixando livres as células superiores. Trocar a aparência não move, captura ou recria os vasos. Itens que não sejam colocáveis ainda precisam de um adaptador próprio; outros add-ons conservam suas regras de suporte.
+
+Os recortes do tecido usam transparência binária; as dobras e a estrutura são geometria. Bordado fino vem dos mapas de cor, normal e MER. O tecido permanece estático e replicável pelo estado do bloco, sem simulação contínua ou entidades auxiliares. As referências são inspiração artística, não escaneamentos documentais. [Fonte refinada e prompt](assets-src/atelier/SOURCE_V2.md).
+
+## Cores litúrgicas
+
+O desenho **Floral IHS** oferece branco, vermelho, verde, roxo, róseo, preto, dourado e prateado festivos. São 104 combinações de cor/estrutura/material; nove vermelhas reutilizam receitas existentes. O bordado central, as flores claras e o ouro conservam suas cores. A cobertura sobre o tampo permanece branca.
+
+Esta família funciona nos oito modelos, com os materiais próprios de cada estrutura. Pilastras, ogivas e cavaletes aceitam relevo adicional no vermelho. Nas demais cores, o controle de relevo mostra a indisponibilidade e lembra a escolha durante a edição. Todos os desenhos ficam na mesma tela. A família permite escolher cores; não aplica calendário nem regras de celebração automaticamente. [Contrato, referências e autoria](docs/TEXTILES_0.4.0.md).
+
+O polimento da coleção inclui fonte artística mais limpa, bainha com cordão, trama nos normais, dobras menos angulosas e cantos finos inclinados. O linho superior tem espessura própria sobre o tampo estrutural, mantendo a cota de apoio.
+
+A 0.4.1 corrige as frestas entre facetas e a sobreposição de desenhos nas junções. Faixas e símbolos conservam suas proporções independentemente do recorte; a faixa verde fica reta. Máscaras ovais limpam o entorno do IHS e do Cordeiro. Os fios prateados do tema preto recebem resposta própria, mantendo o fundo fosco. [Diagnóstico e critérios](docs/CLOTH_POLISH_0.4.1.md) · [comparação antes/depois](out/cloth-comparison-0.4.1/index.html).
+
+O Content Log da 0.4.1 confirmou a rejeição das caixas de colisão dos 66 blocos de cavaletes: os IDs não eram registrados e a aplicação terminava em rollback. A 0.4.2 usa caixas estáveis `origin/size`, resolve todas as permutações antes da primeira escrita e registra a cadeia de causas. Refina também a estrutura dos cavaletes, pilastras e ogivas, preservando integralmente as texturas. [Diagnóstico](docs/STRUCTURES_0.4.2.md) · [comparação antes/depois](out/structure-comparison-0.4.2/index.html).
+
+## Testar a 0.12.3
+
+[Baixar Altare-0.12.3.mcaddon](dist/releases/Altare-0.12.3.mcaddon) · [Relatório oficial](dist/validation/0.12.3/release-summary.json) · [Correção do editor](docs/EDITOR_FIX_0.11.1.md) · [Reteste visual](docs/OGIVE_DETAIL_0.11.2.md).
+
+[Ogivas: comparar antes e depois](out/ogive-comparison-0.11.2/index.html).
+
+Antes da matriz histórica abaixo, escolher **Cruzeta** no editor e testar 1 × 1, 7 × 2 e 8 × 2, sem toalha, com linho curto, renda e Floral IHS. O tampo e objetos superiores não podem se mover. [Matriz visual preservada](docs/CROSSBRACE_0.12.1.md) · [Reteste das dimensões](docs/EDITOR_DIMENSIONS_0.12.2.md).
+
+1. Importar em uma cópia do mundo e ativar BP/RP **`[0,12,3]`**, sem outra revisão Altare concorrente. Alvo mínimo 1.26.40; Script API 2.9.0/UI 2.1.0 estáveis; sem experimentos. A ferramenta deve abrir a tela sem `InvalidObservableError`, inclusive ao alternar materiais fixos e aplique indisponível.
+2. Executar `/function altare/dev_kit`; montar 7 × 2 módulos, com um bloco de altura. Usar **Acabamento do altar**, escolher Ogivas e Sem toalha; conferir pontas, recessos, impostas, apoios e retorno dos cantos em movimento. Alternar tecidos, materiais e relevo; repetir em 8 × 2 e conferir o centro dividido.
+3. Usar **Acabamento do altar** na lateral frontal. Na mesma tela, escolher Cavaletes, Nogueira e Sem toalha; usar Aplicar. Reabrir, escolher Cordeiro e aplicar. Cancelar não altera blocos; Restaurar escolhas recupera a configuração aberta. Conferir dois cavaletes nas extremidades, escoras conectadas e vão central aberto.
+4. Colocar pedra vanilla e caldeirinha sobre o tampo; alternar cavaletes, pilastras e ogivas. Testar também **Floral IHS**, branco/roxo/róseo; salvar e reabrir. Objetos superiores devem permanecer na mesma posição.
+5. Repetir em 8 × 2, 3 × 2 e 1 × 1. Conferir centros, recortes, quatro orientações, colisão da mesa aberta e ambos os modos gráficos. Exportar o Content Log, que deve permanecer sem novos erros do Altare.
+
+Os testes do pacote importado e de multiplayer são feitos pelo usuário. As capturas são diagnósticos com os modelos/texturas distribuídos, produzidos fora do Minecraft; não confirmam suporte, iluminação ou paridade do renderizador real.
+
+**Altares existentes:** só mudam de família ao aplicar a ferramenta. Os IDs/estados clássicos e os recursos visuais de Guadalupe foram preservados. Acrescentar um módulo padrão herda o acabamento vizinho, mas é necessário reaplicar para recentralizar os motivos. Dois altares encostados no mesmo nível são um único conjunto. [Atualização e downgrade](docs/MIGRATION_0.4.0.md).
+
+## Limites
+
+Ainda é uma revisão diagnóstica, sem receitas/economia de Sobrevivência, edição em Aventura, formas em L/curvas, altura fracionária, vários itens por célula ou física dinâmica do tecido. A mesa aberta usa dois cavaletes de extremidade, com um montante por célula de profundidade em cada um; não acrescenta apoios intermediários conforme o comprimento. O recorte ornamental não é uma malha de renda fio a fio. Seleção mantém o cubo completo; colisão da mesa segue tampo/apoios/travessas, com caixas conservadoras nas escoras diagonais e sem corpo sólido central.
+
+Quebrar um módulo descarta seus estados locais de contorno e papel central. Nas receitas novas, o ID do item conserva a família/aparência; no bloco clássico, o acabamento volta aos defaults. Reaplicar a ferramenta após reconstruir. A 0.12.3 usava 80.000 combinações de estados e 89.744 com Aspergillum local. A compactação isolada passa a 51.608 e 61.352, respectivamente, abaixo da referência de desempenho 65.536. Isso não é validação de desempenho nativo nem garantia de compatibilidade de saves. Custos, avisos e condições de promoção estão no [contrato 0.9.0](docs/UNIVERSAL_TEXTILES_0.9.0.md).
+
+## Desenvolvimento
+
+O [Render Studio](../../docs/RENDER_STUDIO.md) da bancada compartilhada compõe os modelos reais em cenários Minecraft e exporta PNG até 4K. Na raiz do Aspergillum: `npm run studio:altare`; para gerar a coleção: `npm run render:altars -- --presets all --size 2560`. É uma ferramenta externa. As regras de personalização são compartilhadas com o editor do pacote 0.5.0.
+
+Executar nesta pasta, com as dependências fixadas da raiz:
+
+```powershell
+npm run check
+npm run package
+node tools/verify-baseline.mjs
+node tools/verify-world-compatibility.mjs
+node tools/verify-world-compatibility.mjs dist/releases/Altare-0.4.2.mcaddon
+npm run capture -- --matrix structures --views front,oblique --width 2000 --height 1000 --output out/structures-0.5.0
+npm run capture -- --matrix structures --presets trestle-bare-7,trestle-white-7 --views back --width 2000 --height 1000 --output out/trestle-back-0.5.0
+npm run capture -- --presets guadalupe-7x2,guadalupe-8x2 --views front,oblique --width 2000 --height 1000 --output out/legacy-0.5.0
+node tools/verify-captures.mjs out/structures-0.5.0 out/trestle-back-0.5.0 out/legacy-0.5.0
+node tools/compare-structures.mjs out/structures-0.4.2
+```
+
+`packs/`, `dist/` e `out/` são gerados e ignorados. `assets-src/atelier/` contém geometria, perfis de queda, pintura e fonte artística. `src/domain/catalog.ts` define as receitas públicas. [Contrato de cores e contornos](docs/TEXTILES_0.4.0.md) · [base arquitetônica 0.3.0](docs/COLLECTION_0.3.0.md), [arquitetura](docs/ARCHITECTURE.md), [design](docs/DESIGN.md), [testes](docs/TESTING.md), [roadmap](docs/ROADMAP.md), [frontal de Guadalupe](docs/GUADALUPE_FRONTAL.md) e [changelog](CHANGELOG.md).

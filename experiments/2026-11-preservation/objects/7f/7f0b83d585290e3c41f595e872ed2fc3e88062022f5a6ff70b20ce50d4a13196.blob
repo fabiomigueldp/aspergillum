@@ -1,0 +1,42 @@
+{
+  "blender": "4.3.2",
+  "engine": "Cycles CPU",
+  "samples": 16,
+  "seed": 73,
+  "resolution": [
+    640,
+    640
+  ],
+  "viewTransform": "Standard",
+  "normalLighting": ".18 + .82 * max(0, storedVertexNormal dot normalize([.25,.35,1])) as emission",
+  "culling": "Geometry Backfacing from original indexed winding; transparent backside",
+  "alpha": "nearest texture alpha > .5",
+  "referenceScope": "South-only official local attributes; existing transform matrices reused. No independent hierarchy/rotation validation.",
+  "camera": {
+    "location": [
+      2.3689210414886475,
+      4.703573226928711,
+      9.952975273132324
+    ],
+    "target": [
+      -0.04016503319144249,
+      3.5472121238708496,
+      0.3166312873363495
+    ],
+    "orthoScale": 0.33317872881889343,
+    "up": [
+      -0.028045881539583206,
+      0.9932916164398193,
+      -0.11218352615833282
+    ],
+    "right": [
+      0.9701425433158875,
+      0.0,
+      -0.24253563582897186
+    ],
+    "referenceUp": "Bedrock +Y"
+  },
+  "importReadbackValidatedEveryLoop": true,
+  "noBrowser": true,
+  "noNormalMapShader": true
+}

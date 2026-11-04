@@ -1,0 +1,77 @@
+# V2: normais PBR e redução de cascas finas
+
+**LAB independente, não aprovado. Não é uma captura nem um teste do Minecraft.** A V1, a escultura V75 original, P85 e o addon 0.1.3 continuam preservados.
+
+## Duas causas diferentes, dois testes concretos
+
+### 1. Facetamento de iluminação: normal map de verdade
+
+Foi gerado um mapa de normais tangente a partir da malha V75 avaliada, por projeção em cada texel. Não é imagem de iluminação fingindo relevo. A cor contém cor-base de pedra e oclusão local; não há iluminação direcional pintada nem emissão. O mapa conserva relevo de pálpebras/boca que desaparecia na geometria reduzida.
+
+A comparação `evidence/pbr-flat-control-head-close.png` / `evidence/pertexel-normal-head-close.png` usa os mesmos cubos, albedo, UVs, câmera, luz e culling. Muda somente o normal map. O renderer Blender inverte o verde DirectX para sua convenção OpenGL, como conversão explícita de ferramenta, não como prova do shader Minecraft.
+
+- Mantidos 7.793 cubos: não houve aumento de triângulos para esse ensaio.
+- Atlas de cor e normal reduzidos de 4096² para 2048²; aproximadamente 32 MiB brutos somados se ambos forem RGBA, sem mipmaps.
+- 1.660.069 texels projetados;99,47% encontraram a fonte por raio, os demais usaram o ponto mais próximo.
+- Ainda há 173.983 texels com Z tangente negativo. Isso denuncia correspondência ruim das paredes cruzadas; o bake NÃO corrige a malha ruim.
+- Feições recuperam relevo, mas facetas geométricas, silhueta e sombras não são eliminadas por normal mapping. Não passa o acabamento solicitado.
+
+A primeira etapa interpolava normais apenas nos vértices baixos; seu erro de quantização era 0,17° em média, mas ela não capturava todos os detalhes. Esse resultado em`normal-encoding.json` pertence ao ensaio anterior e **não valida o bake por texel posterior**.
+
+### 2. Perfurações: a redução cruzou as duas paredes da calota
+
+Controles novos isolaram a causa:
+
+- `diagnostic-high-source-cull.png`: fonte highpoly, calota íntegra.
+- `diagnostic-direct-triangles-cull.png`: malha reduzida renderizada diretamente, sem cubos nem textura alfa, já perfurada.
+- `hybrid-cull-close-bounces512.png`: subir o limite de transparências de 64 para 512 não remove o defeito.
+- Recalcular orientação não mudou faces do véu/manto; corrigiu apenas 24 triângulos nos tornozelos. Portanto não bastava inverter normais.
+
+Foi feito um ensaio localizado com a superfície média original da calota: primeiro reduzir uma única superfície, só depois recriar a espessura original de 0,0006 unidade, offset −1. Resultado: 349 triângulos da superfície e 768 na casca fechada, zero bordas abertas e zero arestas não-manifold. A imagem`diagnostic-midsurface-first-cap-cull.png` não mostra as perfurações da redução antiga.
+
+**Esse ensaio não está integrado ao addon.** A cabeça highpoly e a auréola dessa imagem são apenas contexto diagnóstico. A calota não está ligada ao manto nesse ensaio; a ponte original e a deformação V74 precisam de correspondência/validação antes de qualquer substituição. Não foi retomado nenhum estudo artístico rejeitado.
+
+## Pacote de teste PBR
+
+`Paz-V75-PBR-NORMALS-LAB-NOT-RELEASE.mcaddon` inclui uma escultura e duas placas de calibração. Geometria, texturas, entidades, UUIDs e render controller têm identidade própria; não substituem o addon original.
+
+Requer modo **Vibrant Visuals** e versão mínima declarada 1.21.120. O modo clássico ignora normal maps. Não alegamos suporte PBR de entidades no modo RTX.
+
+Comandos de mundo descartável:
+
+- `/summon paz_v75_pbr:sculpture`
+- `/summon paz_v75_pbr:calibration_dx`
+- `/summon paz_v75_pbr:calibration_gl`
+
+As placas têm normal neutra e inclinações conhecidas, com labels assimétricos e uma segunda face em rotação XYZ composta. Os dois mapas diferem no sinal verde. O objetivo é determinar no motor o sinal tangente correto e a rotação de normais. DirectX é hipótese inicial apoiada pelo guia oficial NVIDIA para RTX; o sinal em entidade customizada VV, com alpha test e cubo plano, não foi confirmado.
+
+## Bloqueios reais
+
+1. A casca reduzida antiga continua no pacote PBR. Não se deve confundir o sucesso local da nova calota com integração completa.
+2. Não há execução Minecraft neste ambiente. Faltam importação, Content Log, teste das placas de calibração, shader/culling/mips no modo VV e perfil no dispositivo alvo.
+3. O suporte geral a PBR de entidades é documentado; a combinação específica`entity_alphatest` + cubos planos rotacionados + normal map precisa do teste real.
+4. A técnica de normal mapping não substitui retopologia com limites de erro, preservação de silhueta e espessura. Ainda é necessário reconstruir a casca coerente completa e revisar a figura em várias vistas.
+
+## Fontes primárias
+
+- [Microsoft:Vibrant Visuals Resource Packs](https://learn.microsoft.com/en-us/minecraft/creator/documents/vibrantvisuals/vvresourcepacks?view=minecraft-bedrock-stable):texture sets para entidades, capability pbr, engine mínimo.
+- [Microsoft:PBR overview](https://learn.microsoft.com/en-us/minecraft/creator/documents/vibrantvisuals/pbroverview?view=minecraft-bedrock-stable):VV estende PBR a entidades; RTX limita esse suporte a blocos.
+- [Microsoft:Texture Sets](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/texturesetsreference/texturesetsconcepts/texturesetsintroduction?view=minecraft-bedrock-stable):camadas normal/cor/MER; clássico usa apenas cor.
+- [NVIDIA:guia Minecraft RTX](https://www.nvidia.com/en-us/geforce/guides/minecraft-rtx-texturing-guide/):convenção DirectX no fluxo Substance.
+- [Adobe:DirectX versus OpenGL](https://experienceleague.adobe.com/en/docs/substance-3d/bakers/common-questions/what-is-the-difference-between-the-opengl-and-directx-normal-format):diferença no canal verde.
+
+## Revisão e verificações adicionais
+
+Revisão estrutural independente encontrou e fez corrigir: ausência de −X na calibração, bounds insuficientes e texto contraditório de culling nos metadados. O pacote final tem FLAT, +X, −X, +Y, −Y, +XY e bounds ampliados. O normal map do render final é identificado por hash; o render anterior está marcado como substituído.
+
+A calota isolada também passou no teste de interseção: nenhum par não-adjacente de triângulos se sobrepôs no BVH. Isso cobre somente a calota, não garante integração/ausência de contatos tangenciais arbitrários na escultura inteira.
+
+O componente legado`minecraft:pushable` foi omitido no V2. A [mudança oficial 1.26.10](https://learn.microsoft.com/en-us/minecraft/creator/documents/update1.26.10?view=minecraft-bedrock-stable) deixou de processá-lo; não adicionamos os novos componentes que tornam a entidade empurrável. A física permanece sem gravidade/colisão. O comportamento ainda requer teste real.
+
+## Resultado da avaliação visual comparativa
+
+Reter o bake por texel como técnica: recupera pálpebras/boca e suaviza planos aparentes no controle idêntico. Ainda há sombras angulosas, aresta diagonal na testa, silhueta facetada e perfurações. Não está artisticamente aprovado.
+
+Reter a ordem de construção da casca (reduzir superfície antes de aplicar espessura), mas **rejeitar o resultado artístico atual da calota**: apesar de eliminar perfurações, a borda frontal ficou ondulada/franzida e a faixa dupla do high-source não foi preservada. É preciso manter as restrições de contorno/faixa ao reduzir. O método é útil; essa peça isolada não substitui a V75 nem está no addon.
+
+A cabeça highpoly presente no diagnóstico da calota é somente contexto e não evidencia melhoria facial causada pelo novo método de casca.

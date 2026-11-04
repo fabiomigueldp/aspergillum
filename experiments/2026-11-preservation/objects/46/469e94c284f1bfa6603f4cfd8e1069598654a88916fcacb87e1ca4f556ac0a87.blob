@@ -1,0 +1,86 @@
+import test from 'node:test';
+import {createHash} from 'node:crypto';
+import assert from 'node:assert/strict';
+import {CLASSIC_POSES,CLASSIC_STATES,encodeClassic,decodeClassic,repairClassic,migrateLegacyClassicSnapshot} from '../src/domain/classic-layout.ts';
+import {rotateEdges} from '../src/domain/palette-layout.ts';
+import {planFinish} from '../src/domain/surface.ts';
+// @ts-ignore asset compiler is JavaScript by design
+import {compileClassic} from '../tools/classic-pack.mjs';
+// @ts-ignore authoritative unchanged model expressions
+import {visibility,geometryName} from '../assets-src/model.mjs';
+const math={floor:Math.floor,mod:(a:number,b:number)=>a%b};
+const functions=new Map<string,Function>();
+function evaluate(s:unknown,states:Record<string,number>):unknown{
+ if(typeof s!=='string')return s;
+ let fn=functions.get(s);if(!fn){fn=Function('q','math',`return (${s});`);functions.set(s,fn);}
+ return fn({block_state:(k:string)=>states[k]},math);
+}
+const material=(id:string)=>({texture:`altare_${id}`,render_method:'opaque',ambient_occlusion:1,face_dimming:true});
+function oldMaterials(stone:number,cloth:number,frontal:number){return {'*':material(`stone_${stone}`),stone:material(`stone_${stone}`),linen:material('linen'),top:material('linen'),seam:material(cloth>=3?'seam_white_gold':'linen'),hem:material(`hem_${[2,4].includes(cloth)?'long':'short'}_${cloth>=3?'gold':'plain'}`),frontal:material(`frontal_${Math.max(1,frontal)}`),frame:material('frontal_frame')};}
+test('classic codebook is exactly 50 poses and 3000 reachable states; all effective outputs preserve the old block',()=>{
+ const b=compileClassic()['minecraft:block'];
+ assert.equal(CLASSIC_STATES,3000);assert.equal(CLASSIC_POSES.length,50);
+ assert.equal(createHash('sha256').update(JSON.stringify(CLASSIC_POSES)).digest('hex'),'f66361d205f1805def0943dbb0a510e0b1808bafb53fa4cb99bb2c0764dccfbd','Published pose indices must not be reordered');
+ assert.equal(new Set(CLASSIC_POSES.map(p=>`${p.edges},${p.frontal}`)).size,50);
+ assert.equal(Object.values(b.description.states).reduce((n:number,s:any)=>n*s.length,1),3000);
+ for(const domain of Object.values(b.description.states) as any[])assert.ok(domain.length<=16);
+ assert.doesNotMatch(JSON.stringify(b),/altare:(edges|frontal)/);
+ const expectedCommon={'minecraft:collision_box':true,'minecraft:selection_box':true,'minecraft:destructible_by_mining':{seconds_to_destroy:1.5},'minecraft:destructible_by_explosion':{explosion_resistance:6},'minecraft:movable':{movement_type:'immovable'},'minecraft:map_color':'#d1c9b5','minecraft:light_dampening':15,'minecraft:tick':{interval_range:[80,120],looping:true},'altare:surface':{}};
+ for(const [k,v] of Object.entries(expectedCommon))assert.deepEqual(b.components[k],v);
+ const encoded=new Set<string>();
+ for(const p of CLASSIC_POSES)for(let facing=0;facing<4;facing++)for(let stone=0;stone<3;stone++)for(let cloth=0;cloth<5;cloth++){
+  const t={...p,edges:rotateEdges(p.edges,facing),facing,stone,cloth},states=encodeClassic(t);
+  encoded.add(JSON.stringify(states));assert.deepEqual(decodeClassic(states),t);
+  const c={...b.components};let matches=0;
+  for(const perm of b.permutations)if(evaluate(perm.condition,states)){Object.assign(c,perm.components);matches++;}
+  assert.equal(matches,2);
+  const oldStates=Object.fromEntries(Object.entries(t).map(([k,v])=>[`altare:${k}`,v]));
+  const expectedVisibility=Object.fromEntries(Object.entries(visibility(facing)).map(([k,v])=>[k,!!evaluate(v,oldStates)]));
+  const actual=c['minecraft:geometry'];
+  assert.equal(actual.identifier,`geometry.altare.${geometryName([2,4].includes(cloth),facing)}`);
+  assert.deepEqual(Object.fromEntries(Object.entries(actual.bone_visibility).map(([k,v])=>[k,!!evaluate(v,states)])),expectedVisibility);
+  assert.deepEqual(c['minecraft:material_instances'],oldMaterials(stone,cloth,p.frontal));
+ }
+ assert.equal(encoded.size,3000);
+});
+test('all rectangular planner poses and eight rosette contours are preserved',()=>{
+ const poses=new Set<string>();
+ for(let w=1;w<=16;w++)for(let d=1;d<=8;d++)for(let facing=0;facing<4;facing++)for(const ornamental of [false,true]){
+  const width=facing%2?d:w,depth=facing%2?w:d;
+  const tiles=Array.from({length:width*depth},(_,i)=>({position:{x:i%width,y:0,z:Math.floor(i/width)},stone:0,cloth:0,frontal:0,facing:0,edges:15}));
+  for(const t of planFinish(tiles,{stone:0,cloth:0,facing,ornamental})){poses.add(`${rotateEdges(t.edges,-facing)},${t.frontal}`);assert.deepEqual(decodeClassic(encodeClassic(t)),{edges:t.edges,frontal:t.frontal,facing:t.facing,stone:t.stone,cloth:t.cloth});}
+ }
+ assert.equal(poses.size,42);
+ assert.deepEqual(CLASSIC_POSES.filter(p=>p.frontal===5).map(p=>p.edges),[1,3,5,7,9,11,13,15]);
+});
+test('migration is pure and rejects every removed pose without silent repair',()=>{
+ let accepted=0,rejected=0;
+ for(let edges=0;edges<16;edges++)for(let frontal=0;frontal<12;frontal++)for(let facing=0;facing<4;facing++)for(let stone=0;stone<3;stone++)for(let cloth=0;cloth<5;cloth++){
+  const t={edges,frontal,facing,stone,cloth};
+  const snapshot={id:'altare:mensa',states:Object.fromEntries(Object.entries(t).map(([k,v])=>[`altare:${k}`,v]))};
+  const before=JSON.stringify(snapshot),r=migrateLegacyClassicSnapshot(snapshot);
+  assert.equal(JSON.stringify(snapshot),before);
+  if(r.ok){accepted++;assert.deepEqual(decodeClassic(r.snapshot.states),t);}else{rejected++;assert.equal(r.reason,'unrepresentable-pose');assert.equal(r.snapshot,snapshot);assert.throws(()=>encodeClassic(t));}
+ }
+ assert.equal(accepted,3000);assert.equal(rejected,8520);
+ assert.equal(migrateLegacyClassicSnapshot({id:'other',states:{}}).ok,false);
+ assert.equal(migrateLegacyClassicSnapshot({id:'altare:mensa',states:{}}).ok,false);
+ const t={edges:0,frontal:5,facing:0,stone:0,cloth:0};assert.equal(repairClassic(t).frontal,0);assert.equal(t.frontal,5);
+ for(const bad of [-1,16,1.5,NaN])assert.throws(()=>encodeClassic({...t,edges:bad}));
+ for(const bad of [-1,10,1.5,'0',null])assert.throws(()=>decodeClassic({'altare:shape':bad,'altare:detail':0,'altare:facing':0,'altare:stone':0,'altare:cloth':0}));
+});
+
+test('migration rejects malformed or ambiguous old states without throwing',()=>{
+ const valid={'altare:edges':15,'altare:frontal':0,'altare:facing':0,'altare:stone':0,'altare:cloth':1};
+ const invalid:unknown[]=[null,[],Object.entries(valid),'states',false,NaN,{}, {...valid,extra:1},{...valid,'altare:shape':0,'altare:detail':0}];
+ for(const [key,max] of Object.entries({'altare:edges':15,'altare:frontal':11,'altare:facing':3,'altare:stone':2,'altare:cloth':4})){
+  for(const value of ['0',NaN,Infinity,-1,max+1,.5,null,undefined,true])invalid.push({...valid,[key]:value});
+  const missing={...valid} as Record<string,unknown>;delete missing[key];invalid.push(missing);
+ }
+ for(const states of invalid){
+  const snapshot={id:'altare:mensa',states:states as Record<string,unknown>};
+  const result=migrateLegacyClassicSnapshot(snapshot);
+  assert.equal(result.ok,false);if(!result.ok){assert.equal(result.reason,'invalid-states');assert.equal(result.snapshot,snapshot);}
+ }
+ assert.equal(migrateLegacyClassicSnapshot({id:'altare:mensa',states:valid}).ok,true);
+});

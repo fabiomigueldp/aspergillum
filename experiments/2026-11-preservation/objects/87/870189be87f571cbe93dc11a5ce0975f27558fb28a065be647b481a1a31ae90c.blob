@@ -1,0 +1,10 @@
+import numpy as np,json,sys
+from pathlib import Path
+r=Path('lit_surface_v16/lighting_research');base=np.load(r/'source-id-pixels.npz');clipids=base['clip'][:,:,:3]*[65536,32,4]-1;baseids=base['masked'][:,:,:3]*[65536,32,4]-1;basecov=np.load(r/'coverage48-source-id-pixels.npz');clipcov=basecov['clip'][:,:,:3];cov0=basecov['masked'][:,:,:3];rg=(slice(40,81),slice(220,301));w=[(493,471),(559,449),(510,468),(500,471)];report={}
+tags=sys.argv[1:] or ['roi68-depth1','roi68-depth2','roi68-depth3'];cases=[('baseline',baseids,cov0)]
+for tag in tags:
+ z=np.load(r/(tag+'-identity-coverage.npz'));cases.append((tag,z['ids'][:,:,:3]*[65536,32,4]-1,z['coverage'][:,:,:3]))
+for tag,ids,cov in cases:
+ diff=np.max(abs(ids-clipids),axis=2);wrong=diff>.01;lost=clipcov[:,:,0]-cov[:,:,0];rr=lost[rg];out={'ID_one_sample_BOX_001':{'central3321_mismatch_pixels':int(wrong[rg].sum()),'crop94000_mismatch_pixels':int(wrong.sum()),'witnesses':{str((x,y)):{'current':np.rint(ids[y-400,x-270]).astype(int).tolist(),'clip':np.rint(clipids[y-400,x-270]).astype(int).tolist()} for x,y in w}},'coverage48_BLACKMAN_HARRIS_1_5':{'central_mean_lost_band_fraction':float(rr.mean()),'central_max_lost_band_fraction':float(rr.max()),'central_band_loss_gt1percent_pixels':int((rr>.01).sum()),'central_band_gain_gt1percent_pixels':int((rr<-.01).sum()),'witnesses':{str((x,y)):{'current_band_shell_other':cov[y-400,x-270].tolist(),'clip_band_shell_other':clipcov[y-400,x-270].tolist(),'lost_band_fraction':float(lost[y-400,x-270])} for x,y in w}}}
+ report[tag]=out
+(r/'trim-identity-comparison.json').write_text(json.dumps(report,indent=2));print(json.dumps({k:{'id_mismatches':v['ID_one_sample_BOX_001']['central3321_mismatch_pixels'],'loss_count':v['coverage48_BLACKMAN_HARRIS_1_5']['central_band_loss_gt1percent_pixels'],'mean_lost':v['coverage48_BLACKMAN_HARRIS_1_5']['central_mean_lost_band_fraction'],'witnesses':v['coverage48_BLACKMAN_HARRIS_1_5']['witnesses']} for k,v in report.items()},indent=2))

@@ -1,0 +1,62 @@
+"""Restore only the previously dropped alpha-zero rectangles as a causal control.
+Every depth3 kept cube and its index remains exactly unchanged. No baseline output
+is rewritten; only this control's files plus appended documentation are produced.
+"""
+from pathlib import Path
+import copy,gzip,hashlib,json
+import numpy as np
+from PIL import Image
+from build_trim import child_cube,quad,counts,sha,savej
+W=Path(__file__).resolve().parent;B=W.parent.parent;S=B/'opaque_transport_v15/shared_mask'
+name='roi68-depth3-restored-transparent';prior=W/'roi68-depth3.geo.json';source=S/'shared_mask_2048.geo.json';texture=W/'shared_mask_2048.png';mapping=W/'roi68-depth3-cube-map.npz';rects=W/'roi68-depth3-rectangles.jsonl.gz'
+inputs={str(p.relative_to(B)):sha(p)for p in [prior,source,texture,mapping,rects]}
+j=json.loads(prior.read_text());before=copy.deepcopy(j);src=json.loads(source.read_text());g=j['minecraft:geometry'][0];baseline=src['minecraft:geometry'][0]
+with gzip.open(rects,'rt')as f: records=[json.loads(line)for line in f]
+m={k:np.load(mapping)[k] for k in np.load(mapping).files};extra=[];maxerr=0.
+alpha=np.asarray(Image.open(texture).convert('RGBA'))[:,:,3]
+old_lengths={p:len(b['cubes'])for p,b in enumerate(g['bones'])}
+for rec in records:
+    rec['original_trim_retained']=rec['retained'];rec['restored_transparent']=not rec['retained']
+    if rec['retained']:continue
+    assert rec['classification']=='transparent' and rec['opaque_texels']==0 and rec['new_cube_index'] is None and rec['part']==0
+    part=rec['part'];oldi=rec['original_cube_index'];parent=baseline['bones'][part]['cubes'][oldi];rect=rec['rect_texels'];x0,y0,x1,y1=rect
+    assert np.all(alpha[y0:y1,2048+x0:2048+x1]==0)
+    c=child_cube(parent,rect);newi=len(g['bones'][part]['cubes']);g['bones'][part]['cubes'].append(c)
+    assert c['pivot']==parent['pivot'] and c['rotation']==parent['rotation']
+    q=quad(parent);U=q[3]-q[0];V=q[1]-q[0];xx0,yy0,xx1,yy1=np.array(rect)/2048
+    expected=q[0]+np.array([xx0,xx0,xx1,xx1])[:,None]*U+np.array([yy0,yy1,yy1,yy0])[:,None]*V
+    err=float(np.max(np.linalg.norm(quad(c)-expected,axis=1)));maxerr=max(maxerr,err)
+    rec.update(retained=True,new_cube_index=newi,atlas_uv_rect=[2048+x0,y0,2048+x1,y1],float64_parent_affine_max_error_blocks=err)
+    extra.append({'part':part,'original_cube_index':oldi,'new_cube_index':newi,'parent_rect_texels':rect,'is_subdivided_child':True,'is_restored_transparent':True,'native_face':rec['native_face'],'half':rec['half'],'classification':'transparent','opaque_texels':0})
+assert len(extra)==476
+for p,b in enumerate(g['bones']):
+    assert b['cubes'][:old_lengths[p]]==before['minecraft:geometry'][0]['bones'][p]['cubes']
+    assert {k:v for k,v in b.items()if k!='cubes'}=={k:v for k,v in before['minecraft:geometry'][0]['bones'][p].items()if k!='cubes'}
+assert all(g['bones'][p]==before['minecraft:geometry'][0]['bones'][p]for p in range(1,len(g['bones'])))
+assert g['description']==before['minecraft:geometry'][0]['description']
+# Exact integer-lattice rectangle partition certificate per selected parent.
+parents={r['original_cube_index']for r in records};templates={}
+for pi in parents:
+    rr=[r for r in records if r['original_cube_index']==pi]
+    key=tuple(sorted(tuple(r['rect_texels'])for r in rr))
+    if key not in templates:
+        cov=np.zeros((2048,2048),np.uint8)
+        for x0,y0,x1,y1 in key:cov[y0:y1,x0:x1]+=1
+        assert np.all(cov==1)
+        templates[key]={'leaves_per_parent':len(key),'covered_texels':int(np.count_nonzero(cov)),'overlap_texels':int(np.count_nonzero(cov>1)),'missing_texels':int(np.count_nonzero(cov==0))}
+# All output cubes, ordered by bone and index. Legacy map arrays retain semantics.
+combined={k:list(v)for k,v in m.items()};combined['is_restored_transparent']=[False]*len(m['part'])
+for r in extra:
+    for k in combined:combined[k].append(r[k])
+order=sorted(range(len(combined['part'])),key=lambda i:(int(combined['part'][i]),int(combined['new_cube_index'][i])))
+combined={k:np.asarray(v)[order]for k,v in combined.items()}
+for p in range(len(g['bones'])):assert np.array_equal(combined['new_cube_index'][combined['part']==p],np.arange(len(g['bones'][p]['cubes'])))
+gp=W/f'{name}.geo.json';gp.write_text(json.dumps(j,separators=(',',':'),allow_nan=False))
+np.savez_compressed(W/f'{name}-cube-map.npz',**combined)
+with gzip.open(W/f'{name}-rectangles.jsonl.gz','wt')as f:
+    for r in records:f.write(json.dumps(r,separators=(',',':'),allow_nan=False)+'\n')
+savej(W/f'{name}-restored-quads.json',extra)
+report={'status':'LAB causal control, awaiting matched render and independent audit','purpose':'Separate deletion of transparent intersections from changes caused by subdivision, Float32 rounding, or triangulation. Every retained depth3 cube remains bit-value identical at its original index; the 476 removed alpha-zero leaf rectangles are appended to part00.','inputs':inputs,'prior_retained_cubes_exact':True,'prior_retained_cube_order_exact':True,'prior_retained_cube_count':counts(before)['cubes'],'prior_band_cube_count':old_lengths[0],'restored_part':0,'restored_cubes':len(extra),'restored_quad_new_index_range_inclusive':[old_lengths[0],len(g['bones'][0]['cubes'])-1],'all_restored_rectangles_actual_source_alpha_zero':True,'source_alpha_modified':False,'texture_sha256':sha(texture),'unchanged_other_bones':list(range(1,len(g['bones']))),'selected_parent_count':len(parents),'integer_texel_partition_certificates':list(templates.values()),'max_float64_restored_corner_error_from_parent_affine_blocks':maxerr,'original_depth3_counts':counts(before),'control_counts':counts(j),'geometry_bytes':gp.stat().st_size,'geometry_sha256':sha(gp),'cube_map_schema':{k:{'shape':list(v.shape),'dtype':str(v.dtype)}for k,v in combined.items()},'limitations':['Ideal full original square partition; floating-point child corner rounding is reported, not claimed absent.','No atlas, alpha, PBR, native source surface, material, light, or camera edits.','No Minecraft/runtime/performance claim.','Actual ray results remain a separate test.'],'outputs':{'geometry':str(gp.relative_to(B)),'texture':str(texture.relative_to(B)),'cube_map':str((W/f'{name}-cube-map.npz').relative_to(B)),'rectangles':str((W/f'{name}-rectangles.jsonl.gz').relative_to(B)),'restored_quads':str((W/f'{name}-restored-quads.json').relative_to(B))}}
+for p,h in inputs.items():assert sha(B/p)==h
+savej(W/f'{name}-report.json',report)
+print(json.dumps({k:report[k]for k in ['prior_retained_cubes_exact','prior_retained_cube_order_exact','restored_cubes','restored_quad_new_index_range_inclusive','control_counts','geometry_bytes','max_float64_restored_corner_error_from_parent_affine_blocks','outputs']},indent=2),flush=True)

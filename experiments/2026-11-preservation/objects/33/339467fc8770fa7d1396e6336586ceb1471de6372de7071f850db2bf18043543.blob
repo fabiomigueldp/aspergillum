@@ -1,0 +1,8 @@
+import bpy,json
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False);dg=bpy.context.evaluated_depsgraph_get();out=[]
+for o in bpy.data.objects:
+ if o.name.startswith('Menino') and any(k in o.name for k in ['perna','tornozelo','pé']):
+  d={'name':o.name,'type':o.type,'hidden_render':o.hide_render,'dimensions':list(o.dimensions),'location':list(o.location)}
+  if o.type=='CURVE':d['bevel_depth']=o.data.bevel_depth;d['points']=[{'co':list(p.co),'radius':p.radius} for s in o.data.splines for p in s.bezier_points]
+  out.append(d)
+json.dump(out,open(r+'child-leg-proportion-diagnosis.json','w'),indent=2);print(out)

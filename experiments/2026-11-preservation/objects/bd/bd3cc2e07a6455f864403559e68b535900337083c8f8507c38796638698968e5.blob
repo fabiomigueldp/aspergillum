@@ -1,0 +1,22 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> aspergillum-bedrock-addon@2.0.0 test
+> vitest run --run tests/infrastructure/break-recovery-location.test.ts tests/application/compact-event-routing.test.ts tests/application/aspersorium-compact-runtime.test.ts tests/application/sacristan-table-compact-runtime.test.ts tests/application/recovery-failure-semantics.test.ts
+
+
+ RUN  v3.2.7 /workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103
+
+ ✓ tests/infrastructure/break-recovery-location.test.ts (18 tests) 43ms
+ ✓ tests/application/recovery-failure-semantics.test.ts (8 tests) 65ms
+ ✓ tests/application/compact-event-routing.test.ts (78 tests) 378ms
+ ✓ tests/application/sacristan-table-compact-runtime.test.ts (42 tests) 809ms
+   ✓ real sacristan table application with compact block states > docks, recolors and retrieves every finish at all sixteen rotations with exact metadata  579ms
+ ✓ tests/application/aspersorium-compact-runtime.test.ts (39 tests) 859ms
+   ✓ real aspersorium application with compact block states > fills all 17 occupancy values in every rotation without changing the stored item  304ms
+   ✓ real aspersorium application with compact block states > docks and retrieves all finishes in all rotations, conserving partial water and exact metadata  348ms
+
+ Test Files  5 passed (5)
+      Tests  185 passed (185)
+   Start at  19:28:50
+   Duration  2.08s (transform 1.77s, setup 0ms, collect 3.08s, tests 2.15s, environment 1ms, prepare 847ms)
+

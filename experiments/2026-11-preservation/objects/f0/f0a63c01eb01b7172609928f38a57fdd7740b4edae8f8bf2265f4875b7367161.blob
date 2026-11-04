@@ -1,0 +1,125 @@
+# V9 · encaixe anatômico com faixa e controle intrínseco
+
+**Pesquisa local, sem exportação. Retida como candidata técnica preferida após revisão geométrica independente e visual.** `retained-anatomy.npz` é cópia byte-idêntica de `intrinsic097-c30-iteration00.npz`. A comparação de sete vistas de cada alternativa não encontrou ganho visual que justificasse a deformação maior deAcumulada03. Não existe afirmação de interface limpa, ausência literal de compressão ou aprovação do addon. O manifesto é `retained-manifest.json`.
+
+## Escopo preservado
+
+- Baseline original: `../../body_interface_v8/anatomy_fit/baseline-welded.npz`, 692 vértices e 1.376 triângulos.
+- V8 de comparação: `../../body_interface_v8/anatomy_fit/retained-anatomy.npz`.
+- Casca V7 e faixa V5 congeladas, com os hashes em `input-hashes-final.json`.
+- Mesma conectividade, ordem de faces, índices fonte e componente microscópica herdada de 3v/2f.
+- 280 vértices protegidos, incluindo 88 orelhas, e os 410 fora do domínio ativo V8 permanecem **bit a bit intactos**.
+- Não foram apagadas faces, alterado alpha, trocada a anatomia pela highpoly, editada a casca/faixa, exportado addon ou publicado algo.
+- Todos os arquivos produzidos pelo ajuste ficam neste diretório. As versões históricas dos scripts e as 37 geometrias tentadas estão preservadas.
+
+## Alternativas auditáveis
+
+| Medida contra o baseline original | V8 | Intrinsic00 | Acumulada03 |
+|---|---:|---:|---:|
+| Casca: pares estritos | 670 | 607 | 572 |
+| Cap / ponte / manto | 260 / 410 / 0 | 207 / 400 / 0 | 207 / 365 / 0 |
+| Novos pares casca vs original / V8 | 40 / — | 41 / 29 | 7 / 7 |
+| Faixa: pares estritos | 1.115 | 797 | 798 |
+| Novos pares faixa vs original / V8 | 111 / — | 12 / 12 | 14 / 14 |
+| Área mínima relativa | 0,136658 | 0,969367 | 0,968963 |
+| Área máxima relativa | 1,350085 | 1,060794 | 1,060654 |
+| Menor stretch principal | 0,147186 | 0,968192 | 0,963633 |
+| Maior stretch principal | 1,365900 | 1,032648 | 1,040211 |
+| Maior anisotropia | 6,308 | 1,063180 | 1,067670 |
+| Máxima rotação de normal | 42,145° | 12,261° | 12,261° |
+| Máximo deslocamento original | 9,756 mm | 9,233 mm | 9,416 mm |
+| p95 dos vértices movidos | 2,885 mm | 5,050 mm | 5,558 mm |
+| Mediana dos movidos | 0,971 mm | 1,041 mm | 1,112 mm |
+| Vértices movidos | 274 | 281 | 281 |
+| Novas auto-interseções estritas / inversões | 0 / 0 | 0 / 0 | 0 / 0 |
+
+A comparação usa o mesmo baseline original, não redefine a geometria V8 deformada como referência de qualidade. Os relatórios `*-full-report.json` incluem adicionalmente as medidas contra V8. Nessa segunda referência, a grande expansão da face144 é a recuperação do colapso V8, não expansão de sete vezes contra a fonte original.
+
+**Nuca, face soldada144/source_face6360:** V8 retinha13,666% da área original. Intrinsic00 retém99,877%; seus stretches principais são0,969675 e1,030005 e a normal gira12,008° em relação ao original. A correção não consiste apenas em normais: a geometria mudou.
+
+A seleção deIntrinsic00 considera a menor deformação e não só a contagem. Acumulada03 reduz35 pares da casca e os novos pares shell29→7 vsV8, mas aumenta o p95 de deslocamento, a deformação intrínseca e acrescenta2 novos pares da faixa. O coordenador mede diferença de posição entre elas até3,84mm, exigindo revisão visual própria.
+
+Hashes:
+
+- Intrinsic00: `c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db`.
+- Acumulada03: `b736287967143275c9cdf6ba0fc5e6b1ee3f683b301b9dde2da4c0ae60a2e0c7`.
+
+## Qualidade: critério proposto e seu limite
+
+O critério experimental explícito para evitar colapso foi: área de cada face principal ≥95% da original, **ambos** stretches principais entre0,95 e1,05, rotação de normal ≤20°, sem inversões nem novas auto-interseções. Os alvos internos da penalidade foram mais restritos: stretch0,97…1,03, área mínima0,97 e normal12°. Esses valores são uma proposta técnica de tolerância, **não autorização para comprimir pele visível**, nem uma interpretação silenciosa de “sem compressão”.
+
+Os stretches são os valores singulares do mapa linear do triângulo original para o atual, usando uma base ortonormal 2D do triângulo fonte. Área isolada não basta: ela é o produto dos dois stretches e pode esconder uma contração compensada por expansão.
+
+**As duas alternativas têm compressão pequena mas real.** Intrinsic00 possui533 faces com área menor que a original e624 com alguma contração intrínseca acima da tolerância numérica1e−8. Sua pior contração direcional é3,181%; Acumulada03 chega3,637%. Portanto nenhuma satisfaz “sem compressão” literal.
+
+Dois testes dessa interpretação foram preservados:
+
+1. `noncompression1001-c3`: alvo de área≥1,001, sem restrição intrínseca. A última geometria tem área mínima1,0 e nenhuma redução de área detectada, **mas** stretch mínimo0,7053 e máximo1,4192. Não é ausência de compressão intrínseca. Além disso deixa3.433 pares casca e1.202 faixa, por isso foi rejeitada.
+2. `strictintrinsic1001-c30`: alvo também para stretch mínimo≥1,001. As penalidades suaves não conseguiram satisfazer o alvo: último ensaio tem stretch mínimo0,96675 e área mínima0,98064, com1.893 pares casca e1.041 faixa. É tentativa malsucedida, não solução sem compressão. Convergência do otimizador não torna restrições suaves satisfeitas.
+
+Esses ensaios **não provam impossibilidade matemática de toda solução não compressiva**. A impossibilidade provada neste escopo se limita aos pares entre triângulos totalmente fixos, abaixo.
+
+## Orelhas e obstrução exata
+
+O diagnóstico independente em `../independent_diagnosis/` separou pontos ocultos de faces realmente expostas, usando910 direções,21 amostras por face e amostragem adicional de contorno/autoclusão.
+
+- 203/214 faces incidentes às orelhas têm alguma amostra exposta.
+- Preservar cada face parcialmente exposta mantém88/88 vértices de orelha protegidos.
+- Há8 pontos individualmente ocultos, mas4 são incidentes a interior de face visível e4 a bordas expostas. Isso não autoriza liberá-los automaticamente.
+- A análise de toda anatomia não encontrou expansão segura útil do domínioV8; os únicos3 pontos ocultos extras pertencem à componente microscópica herdada.
+- Com a casca/faixa congeladas e esses vértices fixos, **462 pares casca e657 pares faixa** já envolvem faces totalmente fixas das orelhas. Pelo domínio fixoV8 completo, os limites são465 e705. Esses pares não podem desaparecer alterando somente vértices móveis.
+
+Logo não é possível obter interface global limpa **dentro dessa máscara e desses obstáculos congelados**. Não é uma licença para retrair orelhas visíveis, nem prova de que outros desenhos de vestimenta sejam inviáveis. Os renders adicionais do coordenador mostram a ponte na cavidade das orelhas; esse problema não foi ocultado pela anatomia.
+
+## Método e iterações
+
+O solver parte sempre do baseline original e admite deslocamentos3D em vez de recuos escalares somente ao longo da normal. A função objetivo combina:
+
+- Fidelidade à posição original e suavidade dos deslocamentos em grafo.
+- Preservação de comprimentos de aresta.
+- Penalidades explícitas de área e rotação de normal.
+- Penalidades diretas nos dois stretches principais por triângulo.
+- Obstáculos simultâneos da casca V7 e da faixa V5.
+
+A superfície interna da casca é a seleção física documentada emV8. Na faixa são as856 faces puras `source_side=1`, orientadas para a cabeça; a parte externa tem856 faces e as bordas200. A seleção foi confirmada independentemente, não inferida somente pelo nome do array.
+
+Usam-se vértices, meios de aresta e centroides. Para a faixa, a cobertura por raios ao longo da normal evita extrapolar planos para fora da superfície finita. Sobre cruzamentos reais, o triângulo anatômico é recortado contra o footprint do triângulo-obstáculo em coordenadas baricêntricas. Os cantos desse recorte geram restrições locais: não é um aumento global cego do offset. O alvo local de afastamento é0,3mm, sem certificação de folga global.
+
+As iterações sem acumulação podem voltar a colidir quando restrições antes ativas são removidas. Isso aconteceu emIntrinsic00→01 e seguintes, com oscilação. O ensaio acumulado conserva as restrições derivadas de cruzamentos anteriores; melhora a contagem, mas cresce a deformação e as restrições continuam sendo aproximações locais. Todos os resultados foram medidos depois, não presumidos corretos por sucesso do otimizador.
+
+Intrinsic00 atingiu o limite de1.300 iterações L-BFGS, não convergência formal. Sua geometria foi encaminhada por seus testes objetivos e não por uma alegação de ótimo. Os relatórios guardam o estado do solver em cada iteração. Os gradientes analíticos foram comparados por diferenças finitas em uma perturbação pequena, com erro relativo amostrado abaixo1,6×10⁻⁶; esse teste não é prova global do otimizador.
+
+## Tentativas preservadas
+
+| Prefixo | Etapas | Motivo de não promoção automática |
+|---|---:|---|
+| `quality097-c30` | 3 | Planos da faixa extrapolados; deslocamento até18,86mm e falha dos gates. |
+| `bounded097-c3` | 4 | Área recuperada, mas mais contatos de casca e deformação intrínseca excessiva. |
+| `bounded097-c30` | 4 | Área mínima96,67%, porém stretch0,898…1,232; área escondia anisotropia. |
+| `noncompression1001-c3` | 4 | Sem redução de área, mas compressão intrínseca forte e encaixe pior. |
+| `clipped097-c30` | 6 | Contatos locais melhoram, mas sem barreira de stretch e oscilação entre passos. |
+| `intrinsic097-c30` | 6 | It00 é alternativa preferida; passos seguintes oscilam. |
+| `accumulated097-c30` | 6 | It03 é alternativa; passos04/05 mantêm contatos e deformam mais. |
+| `strictintrinsic1001-c30` | 4 | Alvo sem compressão intrínseca não atingido pelas penalidades suaves. |
+
+Nenhuma tentativa foi sobrescrita por outra. No primeiro log, o diagnóstico de igualdade do baseline passou por conversão numérica mm→world e apareceu falso; o teste foi corrigido nos estágios seguintes. As posições fora do domínio nas geometrias persistidas são explicitamente repostas a partir dos bytes originais e a auditoria final é exata. Os scripts de cada estágio também permanecem: `attempt01_solver.py` original; `attempt02_solver.py` bounded/área; `attempt03_solver.py` clipping; `attempt04_solver.py` intrinsic sem acumulação; `attempt05_solver.py` accumulated; `fit_constrained.py` é o estágio atual com parâmetros de stretch.
+
+## Reprodução
+
+A partir da raizV75:
+
+```sh
+blender -b --factory-startup -t 2 --python body_interface_v9/constrained_fit/attempt04_solver.py -- outro-prefixo 0.97 30 0.1 6
+blender -b --factory-startup -t 2 --python body_interface_v9/constrained_fit/fit_constrained.py -- outro-prefixo-acumulado 0.97 30 0.1 6
+blender -b --factory-startup -t 2 --python body_interface_v9/constrained_fit/fit_constrained.py -- outro-prefixo-estrito 1.001 30 0.1 4 '' 1.001 1.03
+OPENBLAS_NUM_THREADS=1 python body_interface_v9/constrained_fit/document_trials.py
+OPENBLAS_NUM_THREADS=1 python body_interface_v9/constrained_fit/document_trials.py accumulated097-c30-iteration03
+```
+
+Os scripts recusam sobrescrever um prefixo que já contenha iteration00. Use prefixos novos para preservar os ensaios existentes. `*-contacts.npz` guarda os pares de cada etapa. `*-full-report.json` registra identidades fonte, mudanças geométricas contra original/V8, tentativas e os novos pares localizados. Os12 novos pares de faixa deIntrinsic00 pertencem às faces anatômicas651,916,1230,1333; nenhum foi escondido ou classificado automaticamente como aceitável.
+
+## Revisão independente e limites
+
+O agente independente informou reprodução deIntrinsic00:607/797 pares,29/12 novos vsV8, face144 recuperada para99,877%,280 protegidos e410 fora do domínio exatos, sem auto-interseções estritas novas nem inversões; túnica60 pares inalterados. Halo29 é apenas proxy antigo, não valida halo híbrido final. Acumulada03 também foi auditada e renderizada separadamente. O parecer visual em `../evidence/review-visual-v9.md` examinou sete vistas por candidata: feições e silhueta perceptível preservadas, mas a sombra sob a faixa ficou mais contínua e as intrusões vermelha/azul nas orelhas seguem presentes. Acumulada03 não mostrou ganho visual que justificasse a deformação maior. A retenção técnica deIntrinsic00 foi então autorizada pelo coordenador, sem exportação. Consulte os relatórios finais em `../independent_diagnosis/` e `../evidence/`.
+
+BVH e teste estrito de segmento–triângulo não certificam tangências, coplanaridade geral, folga mínima, footprint físico dos pixels alpha, normalmap, culling, mipmap ou Minecraft. A componente microscópica herdada continua impedindo um passe integral sem ressalvas. Não existe exportaçãoV9 nem validação do jogo neste diretório.

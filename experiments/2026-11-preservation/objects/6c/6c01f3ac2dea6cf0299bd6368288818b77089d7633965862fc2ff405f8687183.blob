@@ -1,0 +1,16 @@
+# Junção ombro/axila — gate de reconstrução não satisfeito
+
+Ação solicitada: reconstrução controlável reversível da junção manga–torso de V75, mantendo torso e sem inventar detalhes.
+
+Concluído: leitura não mutante de V75, inventário de objetos/atributos e auditoria de conectividade por altura. `junction-feasibility.json` contém dados e `junction-feasibility.py` permite reproduzir. Coordenadas dessa auditoria são as da malha-base, não a chave inferior da túnica V75; isso não altera a conclusão de conectividade.
+
+- Corte Z2,11: componente do punho com2.107vértices, Zmín1,9648.
+- Corte Z2,12: componente salta para73.360vértices e alcança a túnica até Z0,501.
+- Até ombroZ3,12: componente contém127.037vértices, incluindo ambos os lados do corpo.
+- Só existe o objeto integrado de130.642vértices; não há manga/torso de origem separados nem atributos de face-set para reconstruir a segmentação.
+
+A fusão não se limita a uma costura de ombro/axila. Está presente desde a região baixa da manga. Não existe uma manga independente com parede interna recuperável apenas desconectando um anel superior. Para reconstruí-la seria necessário definir artisticamente uma faixa extensa de separação, reconstruir a parede interna da manga e o trecho de torso antes oculto/fundido. O modelo atual e a foto de perfil não determinam essas superfícies.
+
+Isso NÃO prova impossibilidade matemática de modelar uma manga nova. Prova que a estratégia de extrair/reconstruir apenas a junção superior preservando integralmente torso e evitando superfícies inferidas não é executável com os dados encontrados. A alternativa é uma reconstrução escultórica interpretativa explicitamente assumida e avaliada por múltiplas referências, não recuperação fiel de informação existente.
+
+Decisão: gate não satisfeito; nenhum novo blend/variante criado, nenhum campoV84 repetido, nenhum corte aplicado aV75. Sem ação negada por permissão; o bloqueio é técnico/de evidência. Addon não tocado.

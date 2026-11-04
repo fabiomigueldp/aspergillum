@@ -1,0 +1,79 @@
+{
+  "method": "Independently reconstruct removed face corners and occluder oriented halfspaces from original JSON only, ignoring reported centers/bases. A face with four corners strictly inside one other convex cuboid lies entirely inside that cuboid. Check pruned JSON only removes certified faces and does not alter surviving coordinates/UVs.",
+  "rows": [
+    {
+      "tier": 300,
+      "checks": {
+        "same_cube_count": true,
+        "same_cube_transforms": true,
+        "remaining_uv_unchanged": true,
+        "no_added_faces": true,
+        "certificate_exact_removed_face_set": true,
+        "all_claimed_occluders_different": true,
+        "all_four_corners_strictly_inside": true,
+        "combined_only_same_band_pruning": true
+      },
+      "removed_quads": 32,
+      "retained_band_quads": 1768,
+      "total_band_quads": 1800,
+      "minimum_independent_clearance_mm": 0.0026897375560978485,
+      "maximum_certificate_corner_error_blocks": 2.7755575615628914e-17,
+      "hashes": {
+        "opaque_transport_v15/opaque_band/budget-0300/band.geo.json": "cb039f3caa947054417e4a93769fd8f8ad7a48edafe6ebfd1be7d61018284066",
+        "opaque_transport_v15/opaque_band/budget-0300/pruned/band.geo.json": "4c75e4c625f67d4fbe2c146282d87dc768e0c255a6faf9a1482b86dbcdea6590",
+        "opaque_transport_v15/opaque_band/budget-0300/pruned/containment-certificate.json": "df1da8816f317b21b30bbf9452ff1b5b07100c37517154808dd466c7c59bcb1f",
+        "opaque_transport_v15/opaque_band/budget-0300/pruned/combined-v14.geo.json": "92fe20cb449f5732db7344b75bb4844bd814aa15f7ea41f83c1967a9a8143c02"
+      }
+    },
+    {
+      "tier": 700,
+      "checks": {
+        "same_cube_count": true,
+        "same_cube_transforms": true,
+        "remaining_uv_unchanged": true,
+        "no_added_faces": true,
+        "certificate_exact_removed_face_set": true,
+        "all_claimed_occluders_different": true,
+        "all_four_corners_strictly_inside": true,
+        "combined_only_same_band_pruning": true
+      },
+      "removed_quads": 57,
+      "retained_band_quads": 4143,
+      "total_band_quads": 4200,
+      "minimum_independent_clearance_mm": 0.0011848527743678794,
+      "maximum_certificate_corner_error_blocks": 5.551115123125783e-17,
+      "hashes": {
+        "opaque_transport_v15/opaque_band/budget-0700/band.geo.json": "ae88051aec7e9e28bc01c9fbbb611c7590ef7cae6485d84f3ee481d7d53294ea",
+        "opaque_transport_v15/opaque_band/budget-0700/pruned/band.geo.json": "dc725be6c8b238da0abd97afc1e4d593fe56dcaba15898788a03573b07ac0a89",
+        "opaque_transport_v15/opaque_band/budget-0700/pruned/containment-certificate.json": "85bbae814238b13343e782ea6795e2dbb393dec3668e0664cb83a7e24f456af6",
+        "opaque_transport_v15/opaque_band/budget-0700/pruned/combined-v14.geo.json": "15aa97e8a8d25f75fddddcb79d316269df21f52409df900efefedd8038d5b6a6"
+      }
+    },
+    {
+      "tier": 1400,
+      "checks": {
+        "same_cube_count": true,
+        "same_cube_transforms": true,
+        "remaining_uv_unchanged": true,
+        "no_added_faces": true,
+        "certificate_exact_removed_face_set": true,
+        "all_claimed_occluders_different": true,
+        "all_four_corners_strictly_inside": true,
+        "combined_only_same_band_pruning": true
+      },
+      "removed_quads": 196,
+      "retained_band_quads": 8204,
+      "total_band_quads": 8400,
+      "minimum_independent_clearance_mm": 0.001003708051568403,
+      "maximum_certificate_corner_error_blocks": 5.551115123125783e-17,
+      "hashes": {
+        "opaque_transport_v15/opaque_band/budget-1400/band.geo.json": "760a88bc524c3a470814c752d0aad668b04510c513b2c78c1043203f0646fd4d",
+        "opaque_transport_v15/opaque_band/budget-1400/pruned/band.geo.json": "ae3dea8d2459c3893d7e18ba52218b373f0e1f7d2b84c774bb7f3d172c6972ab",
+        "opaque_transport_v15/opaque_band/budget-1400/pruned/containment-certificate.json": "6b89e30c3d8d6466c29b8bc5da723ffdfdb1ddd11a1ad61577f3bd1d7bf70e52",
+        "opaque_transport_v15/opaque_band/budget-1400/pruned/combined-v14.geo.json": "2324f8f4c17bd6f81b6de6ba35452e2f61cf8b72bd4eea22890d79690b8eaee4"
+      }
+    }
+  ],
+  "conclusion": "These removals preserve the outer boundary of the union of opaque closed original cuboids; certificates are not camera-dependent visibility guesses. Finite independent arithmetic has >=1 micrometre clearance.",
+  "limitations": "Proof is geometric opaque-solid model only, with observer outside solids. It does not certify engine face handling/material/filtering or remove overlapping partially internal faces."
+}

@@ -1,0 +1,22 @@
+from pathlib import Path
+import numpy as np,json,hashlib
+from scipy.spatial.transform import Rotation
+from PIL import Image
+R=Path(__file__).resolve().parents[1];B=R.parent;root=B.parent;gpath=R/'resource_pack/models/entity/paired_cap_band.geo.json';g=json.loads(gpath.read_text())['minecraft:geometry'][0];maps=json.loads((R/'evidence/alpha-triangle-map.json').read_text());errors=[];counters={};uv_ok=True;finite=True
+for m in maps:
+ pi=m['part'];ci=counters.get(pi,0);counters[pi]=ci+1;c=g['bones'][pi]['cubes'][ci];ori=np.array(c['origin']);size=np.array(c['size']);pivot=np.array(c['pivot'])*[-1,1,1];rot=np.array(c['rotation'])*[-1,-1,1];M=Rotation.from_euler('xyz',rot,degrees=True).as_matrix();fr=np.array([-ori[0]-size[0],ori[1],ori[2]]);assert size[2]==0;assert set(c['uv'])=={'south'}
+ for xy,target in zip(m['mask_local'],[m['a'],m['b'],m['c']]):
+  p=fr+np.array([xy[0],xy[1],0]);q=M@(p-pivot)+pivot;errors.append(np.linalg.norm(q-np.array(target)))
+ uv=c['uv']['south'];u,v=uv['uv'];w,h=uv['uv_size'];uv_ok &=0<=u<=u+w<=2048 and 0<=v<=v+h<=2048;finite &=np.isfinite(np.concatenate([ori,size,pivot,rot])).all()
+color=np.array(Image.open(R/'resource_pack/textures/entity/paired_cap_band.png').convert('RGBA'));alphas=np.unique(color[:,:,3]).tolist();checks={
+ 'retained_V75_source':('paz-refinement/gui-test/checkpoint-V75-20261102/V75-tunic-lower-trial.blend','2c14fbc7566217ad350ef926abc1dc4a1bc41f457eaab8f10351e90b1f4777d9'),
+ 'first_hybrid_LAB':('paz-bedrock-v75-prototype-20261103/Paz-V75-HYBRID-LAB-NOT-RELEASE.mcaddon','398d85b7ebfb3affbc5103d9590565d14e344eea05084fc92ff73523e5961312'),
+ 'PBR_V2_LAB':('paz-bedrock-v75-prototype-20261103/pbr_normals_v2/Paz-V75-PBR-NORMALS-LAB-NOT-RELEASE.mcaddon','7ef829d2ac14353e3989302c44d484b8c602aa8b401a26e4e28961f907283bdb')}
+old_root=root/'shell_band_v4/curvature_candidate'
+old=json.loads((old_root/'evidence/asset-validation.json').read_text())
+old_checks={p:hashlib.sha256((old_root/p).read_bytes()).hexdigest()==h for p,h in old['input_files'].items()}
+assert all(old_checks.values())
+locks={}
+for label,(p,sha) in checks.items():
+ f=root.parent/p;actual=hashlib.sha256(f.read_bytes()).hexdigest();locks[label]={'sha256':actual,'matches_before':actual==sha}
+report={'cubes':sum(len(b['cubes']) for b in g['bones']),'faces':len(maps),'all_single_south_faces':True,'no_poly_mesh':all('poly_mesh' not in b for b in g['bones']),'max_serialization_triangle_error_model_units':float(max(errors)),'max_serialization_triangle_error_blocks':float(max(errors)/16),'finite_values':bool(finite),'uv_bounds_pass':bool(uv_ok),'albedo_alpha_values':alphas,'source_and_prior_prototypes':locks,'input_files':{str(p.relative_to(R)):hashlib.sha256(p.read_bytes()).hexdigest() for p in R.glob('resource_pack/**/*') if p.is_file()},'V4_asset_files_preserved':old_checks,'runtime_tested':False,'status':'Static asset validation only. No renderer or engine compatibility claim.'};(R/'evidence/asset-validation.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2));assert max(errors)<1e-5 and finite and uv_ok and alphas==[0,255] and all(x['matches_before'] for x in locks.values())

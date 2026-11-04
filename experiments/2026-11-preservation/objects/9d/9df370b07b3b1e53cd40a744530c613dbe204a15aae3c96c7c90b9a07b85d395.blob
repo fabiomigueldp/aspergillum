@@ -1,0 +1,20 @@
+"""Remove rasterizer position/tessellation differences, not attribute errors.
+The reference UV and normal values remain entirely from official Blockbench.
+Only the unchanged before-renderer positions and triangle indices are reused.
+"""
+import json,copy
+from pathlib import Path
+import numpy as np
+R=Path(__file__).resolve().parent
+data=json.loads((R/'paz-planar-band.json').read_text());before=data['variants']['before'];official=data['variants']['reference']
+controlled={'vertices':before['vertices'],'triangles':before['triangles'],'quads':before['quads'],'uvs':[],'normals':[]}
+max_match=0
+for i in range(0,len(before['vertices']),4):
+ a=np.array(before['vertices'][i:i+4]);b=np.array(official['vertices'][i:i+4]);distance=np.linalg.norm(a[:,None]-b[None],axis=2);perm=distance.argmin(axis=1)
+ assert len(set(perm))==4 and distance[np.arange(4),perm].max()<1e-6
+ max_match=max(max_match,float(distance[np.arange(4),perm].max()))
+ for key in ['uvs','normals']:controlled[key].extend(np.array(official[key][i:i+4])[perm].tolist())
+data['name']='paz-band-topology-control';data['label']='Paz band: official attributes on unchanged renderer positions + triangles';data['variants']['reference']=controlled;data['oracleScope']='Official Blockbench local UVs/normals, mapped onto the original before-renderer positions and triangle indices. This deliberately isolates attributes from subpixel position/tessellation effects.'
+(R/'paz-band-topology-control.json').write_text(json.dumps(data))
+manifest=json.loads((R/'manifest.json').read_text());manifest['scenes']=[x for x in manifest['scenes'] if x['name']!=data['name']];manifest['scenes'].append({'name':data['name'],'label':data['label'],'quads':controlled['quads'],'variants':list(data['variants']),'camera':data['camera'],'texture':data['texture'],'southOnly':True,'controlOnly':True,'maxOfficialPositionMatchDeltaBlock':max_match});(R/'manifest.json').write_text(json.dumps(manifest,indent=2))
+print('Independent official attributes mapped to identical original topology; maximum match distance:',max_match)

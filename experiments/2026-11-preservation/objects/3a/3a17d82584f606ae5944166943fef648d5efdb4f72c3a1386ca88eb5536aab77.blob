@@ -1,0 +1,203 @@
+# Revisão visual independente V13: relação faixa V12 × casca V11
+
+Data: 2026-11-03. Estado: **revisão concluída**.
+
+**Parecer final: favorável à retenção técnica local de pesquisa de `valley-source-c1-n4.npz`, SHA-256 `aa27567ac125b12a298c283b0e9c99130fe222bf2ce3bdf9f22edf2908f4404b`, condicionado aos gates geométricos próprios. A candidata elimina a fileira de casca exposta no vale da faixa nas vistas examinadas, sem as quebras diagonais da primeira máscara e sem perda aparente de largura/relevo, cristas ou anatomia auricular. A silhueta não é exatamente igual em todas as vistas; margem superior, encontros temporais e outros contatos continuam fora da correção. Não é aprovação artística global, exportação ou teste Minecraft.**
+
+## Diagnóstico inicial da referência V12
+
+As nove vistas V12 mostram uma sequência de pequenas regiões azuis dentro do corpo ouro da faixa, sobretudo nas laterais anteriores e na frente. São interrupções locais da superfície ouro aparente, não fendas transversais que cortam toda a largura. Onde a luz separa as duas saliências, elas continuam reconhecíveis acima/abaixo desse corredor. As imagens, sozinhas, não mostram se o azul é calota ultrapassando o vale, uma abertura real da faixa ou outro arranjo de superfícies; é necessário correlacionar geometria e raios das mesmas câmeras.
+
+**Não se pode converter os 1.360 pares faixa/casca em 1.360 defeitos visuais.** Contatos internos, sobreposição construtiva oculta, encontro visível e troca da superfície oclusora precisam ser separados. O caráter herdado de uma interseção, mesmo se confirmado na fonte, não prova intenção artística nem torna automaticamente aceitável um recorte visível.
+
+## Materiais e alcance da evidência
+
+Foram lidos `band_ear_v12/README.md`, `band_ear_v12/evidence/review-visual-v12.md`, `band06-render.json`, `band06-nohalo-render.json` e `evidence/source-export.json`. O caminho `evidence/review-visual-v12.md` referido inicialmente não existe na raiz; o parecer está dentro de `band_ear_v12/evidence/`.
+
+Foram inspecionados diretamente todos os PNGs atuais:
+
+- Com halo: `band06-{full-front,head-front,junction-profile,junction-back,left-ear,right-ear}.png`.
+- Sem halo: `band06-nohalo-{left-ear-oblique,right-ear-oblique,rear-open}.png`.
+
+Esses arquivos estão em `band_ear_v12/evidence/`. Os manifestos declaram Cycles48, luz neutra, culling unilateral, casca V11, anatomia V9, faixa V12 inteiramente ouro, corpo/halo legados e ausência de normalmap. São **renders diagnósticos externos do Blender, não capturas de Minecraft**. A casca e a faixa são triângulos nativos de pesquisa, não uma nova exportação Bedrock. Os tons azul/ouro são código por componente; o material fonte listado é pedra, não esse esquema de cores.
+
+A revisão é visual. Não certifica topologia, folga positiva, espessura, ausência global de interseções, validade de cubos/JSON, alfa/PBR, desempenho ou funcionamento na engine. A contagem de contatos é informação recebida da etapa anterior, não cálculo desta revisão.
+
+## Inventário visual independente da referência V12
+
+### 1. Corredor azul dentro da faixa ouro
+
+- **Frente da cabeça:** fileira de pequenos sinais azuis em ambos os lados da faixa; o centro alto permanece ouro. A largura, o arco e o relevo geral da faixa são legíveis. Nenhuma abertura atravessa toda a largura na projeção examinada.
+- **Lateral esquerda e oblíqua esquerda:** múltiplas ilhas azuis estreitas, com extremidades poligonais/afiladas, distribuídas no corredor longitudinal entre as saliências aparentes. Ao avançar para a testa, algumas ilhas são mais largas; ao recuar para a orelha, diminuem até um traço fino. A sequência não é uma linha contínua de azul.
+- **Lateral direita e oblíqua direita:** sequência semelhante, incluindo uma região azul mais larga seguida de traços menores junto à terminação temporal. A iluminação dessa lateral individualiza menos as duas cristas. Isso não demonstra perda de crista.
+- **Perfil:** o pontilhado azul ainda é perceptível, embora menor. O efeito não depende exclusivamente do close das orelhas.
+- **Corpo inteiro:** a escala não permite classificar os menores recortes; ausência de percepção nesta vista não os torna ocultos nas outras.
+
+Coordenadas aproximadas para correlação geométrica, em pixels dos PNGs laterais/oblíquos de 1000 × 1000 (origem no canto superior esquerdo, centro visual aproximado, não máscara exata):
+
+- `band06-left-ear.png`: (783,337), (831,314), (872,300), (896,284).
+- `band06-nohalo-left-ear-oblique.png`: (756,358), (815,336), (870,319), (920,299).
+- `band06-right-ear.png`: (204,347), (154,318), (123,292), (98,258); pequeno traço perto de (255,374).
+- `band06-nohalo-right-ear-oblique.png`: (240,372), (181,343), (138,319), (90,280).
+
+Essas localizações foram enviadas ao diagnóstico geométrico para identificar a superfície efetivamente mais próxima da câmera, o nível no perfil da faixa e a correspondência com a fonte.
+
+### 2. Degraus e terminações temporais
+
+As extremidades não são o mesmo fenômeno que as ilhas azuis anteriores. A esquerda mostra degraus largos na borda superior antes do polo da orelha e um encontro angulado final. A direita mostra uma transição superior em degrau, um pequeno recorte cinza e uma faixa vermelha oblíqua antes da orelha. Não há base visual para classificar todos esses elementos como causados pelos contatos faixa/casca ou para incluí-los automaticamente no recorte do corredor azul.
+
+As cavidades auriculares mantêm o ganho V12: não há ouro invasor evidente no alto/interior ou no pequeno trecho inferior que fora retirado. Pinna, margem e lóbulo seguem expostos. Uma correção V13 deve preservar esse ganho e não esconder azul retraindo a anatomia ou cobrindo a orelha.
+
+### 3. Contorno posterior, pontos escuros e contexto
+
+A traseira sem halo mostra a continuidade ampla do azul/vermelho/verde e o dorso das orelhas, com pequenos sinais escuros junto aos polos superiores. Esses pontos não podem ser chamados de furo, sombra, culling ou contato faixa/casca apenas pela cor escura. A vista posterior com halo oclui grande parte da calota; não serve para certificar a região oculta. A composição de corpo inteiro está registrada, mas não resolve encaixes milimétricos.
+
+## Critério para uma correção comprovada
+
+1. Demonstrar quais recortes visíveis correspondem a uma troca indesejada da superfície oclusora e quais contatos são interiores/encaixes sem efeito visível. Contagem de pares não é critério estético.
+2. Comparar fonte high da faixa/casca nas mesmas câmeras, mantendo o restante do contexto fixo. Isso pode atribuir origem, mas não intenção. Não substituir cabeça ou halo por highpoly para melhorar a apresentação.
+3. Se houver candidata, comparar imagens equivalentes com todas as faces da faixa em ouro, incluindo novas faces. Não aceitar limpeza por recoloração.
+4. Preservar largura, volume, frente e duas cristas da faixa, a anatomia V9, a casca V11 fora de mudança justificada e o recorte auricular V12. Não trocar pequenas ilhas azuis por achatamento, estreitamento, degrau largo, ponta, aba ou abertura nova.
+5. Não declarar aprovação global a partir dessas câmeras. Se uma correção exigisse alterar área frontal protegida ou desenho de crista, seu custo precisa ser explicitado, não escondido sob a expressão “encaixe”.
+
+## Correlação geométrica dos pontos visíveis
+
+O diagnóstico independente enviou `band_shell_v13/independent_diagnosis/visible-blue-ray-witnesses.json`. Li seu método e conferi os 17 resultados resumidos, sem refazer o ray tracing. São raios ortográficos nos centros dos pixels, BVHTree float32, avanço de 2 micrômetros e cruzamentos front-facing ordenados para respeitar o culling. A fonte high é segmentada pelas contagens de `source-export.json`.
+
+- Em **14 dos 17 pontos**, a casca atual está antes da parede externa da faixa no raio da câmera por **0,046174–0,478570 mm**. A parede externa e a parede interna da faixa permanecem atrás: nesses testemunhos, o azul não é ausência/furo de malha ouro.
+- Nos **mesmos 17 raios da fonte high**, a faixa está antes da casca por **0,379406–0,991713 mm**.
+- Três centros aproximados ficaram no ouro atual: esquerda (896,284), direita (255,374) e oblíqua esquerda (920,299). Eles não devem ser relatados como azuis confirmados.
+
+Isso correlaciona sinais observados com **inversão local da ordem das superfícies em relação à fonte**, e não com inferência de intenção artística. Dá fundamento técnico para investigar correção local da superfície oclusora. Não classifica todo o corredor, todas as regiões azuis, todos os contatos ou ângulos não examinados. A comparação renderizada equivalente descrita abaixo corrobora a existência e a origem da diferença no corredor frontal. A faixa high dos renders usa o nível de subdivisão de renderização 2; não se presume que todas as exportações high tenham o mesmo nível sem seus manifestos.
+
+## Comparação fatorial e material neutro
+
+Foram inspecionados diretamente os seis novos PNGs em `band_shell_v13/evidence/` e seus manifestos:
+
+- `factorial-{low-low,low-high,high-low,high-high}-band-front.png`.
+- `neutral-{low-low,high-high}-band-front.png`.
+
+A ordem dos nomes é **casca–faixa**. `low` designa casca V11/faixa V12; `high` designa TESTE34 avaliado e faixa TESTE29 original no nível de subdivisão de renderização 2, conforme `source_context/README.md`. A câmera fechada `band-front` é comum ao conjunto. O halo está oculto nessa câmera e não foi substituído; anatomia V9 e restante do corpo legado continuam fixos. Faixa e casca recebem cores diagnósticas azul/ouro nos quatro fatoriais e a cor de pedra da fonte nos dois neutros.
+
+### Resultado da troca de uma parte por vez
+
+- **low-low:** reproduz o corredor de ilhas azuis, mais largas em alguns trechos e quase puntiformes em outros; o centro alto tem maior trecho ouro contínuo. O relevo da faixa é facetado, mas não colapsa a uma tira plana.
+- **low-high:** mantendo a casca V11 e trocando apenas a faixa pela fonte high, a fileira azul deixa de aparecer na faixa frontal examinada. A faixa apresenta as duas saliências longitudinais contínuas aparentes, largura e arco comparáveis. As terminações fonte não possuem o recorte V12 e não são aprovadas como substituição.
+- **high-low:** mantendo a faixa V12 e trocando apenas a casca pela fonte high, as ilhas azuis ficam maiores/mais numerosas e avançam para o centro. Portanto a fileira não pode ser explicada apenas como um sulco azul da fonte ou como consequência exclusiva da casca reduzida.
+- **high-high:** a fonte high combinada não apresenta o pontilhado azul no corredor frontal examinado; as saliências são contínuas aparentes.
+
+O fatorial, somado aos raios, atribui o problema local à relação entre a aproximação da faixa e a casca; nesta câmera, trocar a faixa high basta para recuperar a ordem visível, enquanto trocar só a casca não basta e agrava o efeito. **Isso comprova regressão de representação em relação à fonte no corredor observado, não intenção artística nem necessidade de eliminar todo encaixe.** Também não recomenda adotar a faixa high inteira: isso reintroduziria terminações anteriores à limpeza V12 e aumentaria geometria sem análise de custo.
+
+### Quanto depende da cor diagnóstica
+
+No neutro low-low, as ilhas deixam de ter contraste azul/ouro e sua aparência de pontilhado é muito menos evidente. Permanecem facetas e variações do relevo em relação à faixa fonte, que aparece mais contínua/suave no neutro high-high. Não é possível atribuir toda diferença de suavidade às interseções, pois a tesselação também mudou, nem localizar cada cruzamento apenas no neutro. O fatorial não sustenta descrever o efeito final em pedra como “buracos azuis”; os azuis são marcadores diagnósticos de uma troca de superfície real, cuja saliência visual depende de material e luz.
+
+Os híbridos com casca high mostram grandes áreas pretas nos encontros das orelhas e laterais inferiores, ausentes do controle low-low. Não foram diagnosticadas aqui, não são melhora e não fazem parte de uma candidata V13. A comparação fatorial deve ser usada para o corredor frontal, sem vender o híbrido como resultado convertido globalmente limpo ou esconder sua incompatibilidade com o contexto mantido fixo.
+
+## Nuance da margem superior
+
+O diagnóstico comunicou outros testemunhos de inversão em v≈1,65–2,7, separados da crista v=3, e registrou projeções em `independent_diagnosis/upper-edge-visible-witnesses.json`. Foram lidas amostras desse arquivo, incluindo raios frontais, mas esta revisão não refez os cálculos nem classificou todas as projeções como visíveis: há vistas e pontos que não são o primeiro plano relevante ou ficam fora do enquadramento.
+
+Nas imagens atuais, a margem superior apresenta pequenas mudanças angulares/degraus em comparação com a fonte high. **A resolução disponível não permite separar visualmente cada micro-oclusão da poligonalização normal da faixa reduzida.** Não recomendo alisar toda a margem nem ampliar intervenção apenas porque high parece mais suave. Eventual correção nessa margem precisa estar vinculada a testemunhos locais de ordem de superfície, conservar a crista v=3 e ser avaliada separadamente. O corredor de ilhas interiores continua sendo o alvo visual inequívoco.
+
+## Primeira candidata n8: revisão frontal e lateral
+
+Foram inspecionados `valley-n8-band-front.png` e `valley-n8-neutral-band-front.png`, comparados respectivamente aos controles low-low colorido e neutro na mesma câmera. A primeira candidata era `constrained_fit/valley-source-mask-n8.npz`; ela não foi recomendada para retenção visual.
+
+- A fileira de ilhas azuis deixa de aparecer na câmera frontal colorida.
+- Arco, largura geral, volume frontal, centro, feições e extensão aparente das orelhas permanecem. Não observo abertura transversal, achatamento grosseiro ou retração auricular nessa câmera.
+- O corredor restaurado mostra uma sequência de facetas diagonais estreitas/quinas mais evidente que no controle, sobretudo do lado esquerdo do quadro. No neutro, o contraste é mais discreto, mas a mudança local de relevo não pode ser julgada apenas pelo desaparecimento do azul.
+
+O preparador comunicou que o blend junto a v=11 tem uma face com rotação de normal de 50,29°. As projeções calculadas dos triângulos críticos estão em `constrained_fit/transition-pixel-witnesses.json`: transição direita u123–125 perto de (705,563) em `band-front` e (159,326) em `right-ear`; transição esquerda u52 perto de (336,511) em `band-front` e (836,321) em `left-ear`. Projeções não equivalem a testes de oclusão. Precisam ser examinadas nas laterais correspondentes para distinguir facetamento aceitável de degrau perceptível do blend.
+
+O diagnóstico comunicou zero cruzamentos entre casca e parede externa do vale candidata, os 17 raios com faixa primeiro, preservação de 108 arestas das cristas por intervalos 3D e 584 pontos originais bit a bit. Isso é evidência geométrica independente, não certificação pelas imagens e não dispensa revisar transições. Contatos internos restantes não são automaticamente defeitos; a fonte também tem encaixe da parede interna na espessura da casca nos raios examinados.
+
+### Laterais, oblíquas e comparação justa sem halo
+
+Foram depois inspecionadas `valley-n8-{left-ear,right-ear,left-ear-oblique,right-ear-oblique}.png` e `valley-n8-neutral-{left-ear,right-ear}.png`. As laterais usam os controles novos `baseline-v12-{left-ear,right-ear}.png` e `baseline-v12-neutral-{left-ear,right-ear}.png`, todos sem halo e nas mesmas câmeras. As oblíquas foram comparadas aos controles V12 `band06-nohalo-{left-ear-oblique,right-ear-oblique}.png`. Não se atribuiu à candidata diferença causada apenas pela remoção do halo.
+
+A fileira azul deixa de aparecer nas quatro vistas coloridas examinadas. Pinna, cavidade, margem, lóbulo e as terminações V12 conservam extensão aparente, sem volta do ouro invasor auricular, nova abertura temporal ampla ou ponta/aba longa. Degraus superiores temporais, pequeno recorte cinza/vermelho direito e bordas escuras junto às orelhas permanecem; não foram corrigidos nem ocultados na avaliação.
+
+As laterais/oblíquas confirmam **novas quebras diagonais repetidas no corredor restaurado**, mais legíveis na esquerda iluminada: aproximadamente x760–900, y295–360 na lateral e x730–950, y300–380 na oblíqua. O relevo longitudinal passa por pequenas mudanças anguladas na transição. Isso não é uma nova crista inteira, dente destacado ou grande aba, mas reduz a regularidade local de leitura em relação ao controle. A direita oferece menor contraste e não prova ausência do mesmo efeito. Nos neutros equivalentes, a diferença é discreta, especialmente à direita; não se caracteriza como falha visual grosseira ou destruição do volume.
+
+A observação é compatível com o alerta geométrico do blend, mas esta revisão não atribui cada pixel a um triângulo sem teste de oclusão. O preparador informou posteriormente que a borda triangular da máscara obriga retorno à corda original, com erro de aproximação de até 1,002 mm; essa explicação deve ser rastreada à análise geométrica, não tratada como medida extraída das imagens.
+
+**Parecer n8: ganho comprovado de cobertura e preservação aparente de anatomia/frente, porém não recomendada para retenção visual como acabamento devido às quebras diagonais novas.** Recomendo testar transição local mais regular delimitada por cristas fixas, mantendo o centro e as terminações. Não recomendo expandir a correção à margem superior apenas para alisar facetas. A n8 permanece comparação técnica, não resultado promovido.
+
+## Transições contínuas n8: C1 e sin²
+
+Foram examinados diretamente os 12 PNGs, todos sem halo:
+
+- `valley-c1-n8-{band-front,left-ear,right-ear}.png` e `valley-c1-n8-neutral-{band-front,left-ear,right-ear}.png`.
+- `valley-sin-n8-{band-front,left-ear,right-ear}.png` e `valley-sin-n8-neutral-{band-front,left-ear,right-ear}.png`.
+
+Ambas usam suporte contínuo entre cristas v=3/13, mesma tesselação n8 e mesmos controles, segundo o preparador. C1 mantém a restauração plena no miolo v5–11 e faz transição até as cristas; sin² varia suavemente o peso no suporte. Não se usa o nome C1 como prova de continuidade matemática global da malha. O custo informado de cada uma é 13.980 faces, contra 6.240 da primeira n8 triangular; esta revisão não avalia orçamento de jogo.
+
+### Resultado visual comparativo
+
+As duas alternativas eliminam a fileira azul nas três câmeras e tornam o corredor mais regular que a n8 triangular. As diagonais marcadas que motivaram a objeção anterior deixam de dominar o relevo. Largura, arco, centro e extensão aparente das duas saliências permanecem; não há achatamento relevante, retorno do ouro nas cavidades, nova abertura temporal ampla, dente ou aba observado. Terminações V12 e anatomia aparente se mantêm. As bordas superiores facetadas e os encontros temporais herdados continuam e não foram tratados como resolvidos.
+
+C1 dá ao sulco longitudinal uma definição um pouco maior na esquerda iluminada; sin² produz uma passagem visual um pouco mais suave. Ambas mantêm relevo suficiente para leitura nesta luz. A direita continua menos contrastada. Nos neutros, diferenças são sutis e não sustentam julgamento de destruição ou melhora global.
+
+**Parecer: ambas favoráveis visualmente ao escopo local nas três câmeras, sem vantagem visual clara o bastante para escolher uma vencedora.** Isso não é igualdade pixel a pixel nem equivalência em todos os ângulos. Se uma for escolhida por menor desvio à fonte, maior margem geométrica ou outro critério, essa justificativa deve ser declarada como geométrica; menor rotação extrema de normal não substitui julgamento visual.
+
+O diagnóstico comunicou passagem das 17 testemunhas e do mapa denso de inversões para ambas. Esses testes não foram refeitos por esta revisão. As diferenças de rotação máxima (35,87° C1 e 14,85° sin²) e fidelidade à fonte não foram usadas para inventar um vencedor visual.
+
+A redução posterior para n4 foi tratada como nova candidata e passou pela inspeção própria abaixo. **A aprovação local das variantes n8 não foi transferida automaticamente a outra densidade.**
+
+## Candidata final C1 n4: revisão independente
+
+### Identidade e imagens
+
+Candidata: `band_shell_v13/constrained_fit/valley-source-c1-n4.npz`, SHA-256 `aa27567ac125b12a298c283b0e9c99130fe222bf2ce3bdf9f22edf2908f4404b`, conferido diretamente no arquivo e nos manifestos de render. A contagem informada é 4.444 faces, 68,21% menor que a variante C1 n8; isso não é validação de orçamento de jogo.
+
+Foram inspecionadas diretamente **dez câmeras coloridas e três repetições neutras**:
+
+- Sem halo: `valley-c1-n4-{band-front,left-ear,right-ear}.png`.
+- Sem halo, pedra neutra: `valley-c1-n4-neutral-{band-front,left-ear,right-ear}.png`.
+- Sem halo: `valley-c1-n4-extra-{junction-back,left-ear-oblique,right-ear-oblique,rear-open}.png`.
+- Com halo legado: `valley-c1-n4-full-{full-front,head-front,junction-profile}.png`.
+
+Todos estão em `band_shell_v13/evidence/`. Os manifestos `valley-c1-n4-{render,neutral-render,extra-render,full-render}.json` identificam a mesma malha candidata, casca V11 e anatomia V9. Culling unilateral e ausência de normalmap permanecem; a faixa colorida usa ouro em todas as faces, inclusive novas. Os neutros usam diffuse diagnóstico na cor base da fonte, não reprodução do material PBR original. Rosto/halo não foram substituídos por highpoly.
+
+Os controles são V12 nas câmeras originais equivalentes, mais `baseline-v12-{left-ear,right-ear}.png`, `baseline-v12-neutral-{left-ear,right-ear}.png` e `baseline-v12-back-junction-back.png` para remover o halo também no controle. O fatorial low-low controla o close `band-front`. C1 n8 é comparação secundária de densidade. Não se compara retirada de halo a melhoria de geometria.
+
+### Frente e relevo
+
+Na frontal fechada, frontal da cabeça e perfil, a fileira azul do vale não reaparece. Arco, largura geral e centro preservam leitura; não observo estreitamento, achatamento relevante ou intervalo atravessando a faixa. As duas saliências continuam legíveis nas regiões favoráveis à luz, principalmente à esquerda. O corredor tem transição longitudinal mais regular que a máscara triangular n8, sem a série de quinas diagonais marcadas que motivou sua não retenção.
+
+A n4 mostra discretas facetas compatíveis com a representação reduzida, mas não identifico regressão visual relevante contra C1 n8 nas três câmeras comuns coloridas/neutras. Isso não afirma igualdade exata de pixels, normais ou superfície. A geometria frontal do vale foi restaurada localmente: “frente preservada” aqui significa desenho, largura, centro e cristas preservados visualmente, não todas as faces frontais byte-idênticas.
+
+### Laterais, oblíquas e orelhas
+
+As duas laterais e oblíquas confirmam ausência das ilhas azuis no vale examinado, sem ressurgimento das quebras diagonais marcadas da máscara triangular. Pinna, cavidade, margem e lóbulo mantêm extensão aparente; não volta ouro invasor às cavidades limpas na V12. As terminações mantêm sua forma aparente, sem nova ponta longa, aba ampla ou grande abertura temporal.
+
+A iluminação direita continua menos favorável à leitura separada das cristas; conectividade geométrica não é certificada por essa projeção. A margem superior facetada, os degraus temporais, o pequeno recorte cinza/vermelho à direita e linhas/pontos escuros superiores permanecem. São limites herdados, não resultados resolvidos por essa correção do vale.
+
+### Traseira e alteração pequena de contorno
+
+A traseira aberta conserva o conjunto azul/vermelho/verde e a extensão posterior das orelhas, incluindo pequenas marcas escuras superiores já observadas. A câmera `junction-back` foi comparada ao novo controle V12 também sem halo. A diferença na margem ouro é estreita e não se apresenta como nova aba larga, bico longo ou aumento grosseiro do volume. Não se declara invisibilidade absoluta da mudança.
+
+Li `valley-c1-n4-outline.json` e examinei `valley-c1-n4-outline-back.png`. O teste de união binária nativa casca+faixa+anatomia, sem halo e sem outras peças, informa seis vistas de 2048 pixels com cobertura exatamente igual e **69 pixels adicionados** na vista back, com distância máxima de borda bidirecional **0,927734 mm**. O overlay mostra um traço estreito acrescentado no contorno lateral. A localização enviada pelo responsável corresponde aproximadamente a x244–247/y255–292 no render `junction-back` de 1000 pixels. Essa medição limitada à projeção/raster foi feita pelo teste próprio, não extraída a olho, e impede alegar silhueta global exatamente igual ou preservação 3D universal.
+
+### Corpo inteiro e contexto
+
+O render de corpo inteiro conserva composição, relação com halo e proporções aparentes. Sua escala não resolve o vale milimétrico nem pode aprovar interface invisível. Defeitos e limitações do corpo/atlas legados continuam visíveis; o resultado não foi embelezado pela troca de cabeça ou halo.
+
+### Relação com os testes geométricos
+
+O diagnóstico independente comunicou passagem da candidata nos testes de topologia, auto-interseções, coplanaridade, preservação dos pontos/cristas e contatos anatômicos, sem novos contatos faixa/anatomia e com 189 pares anteriores preservados. Também comunicou os 17 raios com faixa primeiro e as 1.376 amostras de inversão resolvidas, sem novas no mapa examinado. Os arquivos incluem `independent_diagnosis/valley-source-c1-n4-independent-review.json`, `valley-source-c1-n4-preservation.json`, `valley-source-c1-n4-ridge-intervals.json` e `valley-source-c1-n4-quick-order-review.json`.
+
+Esses resultados não foram refeitos pela revisão visual. **1.376 amostras de inversão não são os 1.360 pares de triângulos faixa/casca V12**, e nenhuma dessas contagens representa automaticamente número de defeitos visuais. Contatos internos podem continuar como encaixe; a presença na fonte, por si só, não prova intenção artística. O parecer final usa os renders para aparência e os testes independentes para suas afirmações geométricas limitadas.
+
+## Conclusão final e uso permitido
+
+**Favorável à retenção técnica local de pesquisa da C1 n4 identificada acima, condicionada aos gates geométricos próprios e mantendo V12 como rollback.** O alvo comprovado foi a exposição da calota no vale por inversão da ordem de superfícies em relação à fonte. A correção remove esse pontilhado nas vistas examinadas, melhora a transição em relação ao primeiro ensaio e conserva leitura de frente/largura/cristas e anatomia auricular. A redução n8→n4 foi examinada diretamente e não apresentou regressão visual relevante observada.
+
+A escolha de C1 em vez de sin² não veio de um vencedor visual inequívoco: ambas foram favoráveis nas três câmeras comuns; o critério de preferência deve permanecer atribuído à fidelidade geométrica/decisão técnica do responsável. A primeira máscara triangular n8 permanece não recomendada pelo relevo diagonal novo.
+
+Este parecer não aprova acabamento artístico global, todas as direções/luzes/materiais, folga positiva global, ausência de todo contato, espessura, toda a margem superior, os encontros temporais, anatomia ocluída, custo/runtime, cubos/JSON, alfa/PBR/normalmap, exportação, publicação ou execução Minecraft. **Todos os renders são externos do Blender; a candidata continua malha nativa de pesquisa, não versão de jogo.**
+
+## Limite de intervenção
+
+Nenhuma fonte, malha, cena Blender, exportação, publicação ou arquivo V12 foi alterado por esta revisão. O único arquivo escrito por este revisor é `band_shell_v13/evidence/review-visual-v13.md`.

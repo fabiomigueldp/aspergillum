@@ -1,0 +1,41 @@
+{
+  "broad_vertices": 88,
+  "direct_vertex_visible": 70,
+  "local_patch_visible": 72,
+  "visible_contour_vertices": 67,
+  "hidden_candidate_vertices": [
+    67,
+    241,
+    648,
+    653,
+    657,
+    662,
+    669,
+    676
+  ],
+  "hidden_source_indices": [
+    4887,
+    5061,
+    5484,
+    5489,
+    5493,
+    5498,
+    5505,
+    5512
+  ],
+  "hidden_incident_visible_face_vertices": [
+    67,
+    648,
+    662,
+    676
+  ],
+  "hidden_without_visible_incident_face_vertices": [
+    241,
+    653,
+    657,
+    669
+  ],
+  "face_interior_visible_count": 181,
+  "method": "910 full-sphere rays at each ear vertex, nearby face patch, and edges with adjacent-face sign change. Self-occlusion included. Epsilon0.002mm. Face interior exposure checked independently.",
+  "limits": "Finite directions, mesh points and patch samples do not prove universal invisibility. Hidden points adjacent to exposed face interiors may alter visible anatomy if moved. Keep exact exposed contour; small movement needs re-test of entire incident faces and rendered views."
+}

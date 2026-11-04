@@ -1,0 +1,44 @@
+"""Independent V10 mapping of existing V9 contact evidence. No candidate modifications."""
+from pathlib import Path
+import numpy as np,json,hashlib
+from collections import Counter
+import math
+def jsonsafe(x):
+ if isinstance(x,float) and not math.isfinite(x):return None
+ if isinstance(x,list):return [jsonsafe(y) for y in x]
+ if isinstance(x,dict):return {k:jsonsafe(v) for k,v in x.items()}
+ return x
+O=Path(__file__).resolve().parent;B=O.parents[1]
+s=np.load(B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz');a=np.load(B/'body_interface_v9/constrained_fit/retained-anatomy.npz');d=np.load(B/'body_interface_v9/independent_diagnosis/retained-anatomy-review-arrays.npz');m=np.load(B/'lateral_v7/evidence/director-cone-midfield.npz');fld=np.load(B/'lateral_v7/evidence/offset-reach-field.npz');base=np.load(B/'body_interface_v8/anatomy_fit/baseline-welded.npz')
+p=d['shell_pairs'];v=s['points'];f=s['triangles'];av=a['points'];af=a['triangles'];gen=s['generated_vertices'];sid=s['source_indices'];uv=np.full((len(v),2),np.nan);side=np.full(len(v),-1,int);where={int(x):i for i,x in enumerate(sid)}
+for si,key in enumerate(['outer_source_ids','inner_source_ids']):
+ for i,source in enumerate(m[key]):
+  if int(source) in where:uv[where[int(source)]]=m['uv'][i];side[where[int(source)]]=si
+for source,ss,tt,which,frac in fld['generated_vertex_map']:
+ vi=where[int(source)];uv[vi]=[ss/6,tt/56];side[vi]=int(which)
+def edgehit(x,y,tri):
+ e1,e2=tri[1]-tri[0],tri[2]-tri[0];dr=y-x;h=np.cross(dr,e2);det=e1@h
+ if abs(det)<1e-20:return None
+ q=x-tri[0];u=q@h/det;r=np.cross(q,e1);vv=dr@r/det;t=e2@r/det
+ if 1e-8<t<1-1e-8 and u>1e-8 and vv>1e-8 and u+vv<1-1e-8:return {'point':(x+t*dr).tolist(),'edge_parameter':float(t),'body_barycentric':[float(1-u-vv),float(u),float(vv)]}
+ return None
+rows=[];fixed_edges={};npout={'body_shell_pairs':p,'shell_body_pairs':p[:,::-1],'shell_vertex_uv':uv,'shell_vertex_side':side,'ear_vertex_indices':np.flatnonzero(a['protected_ears']),'ear_source_indices':a['source_indices'][a['protected_ears']],'ear_points':av[a['protected_ears']]}
+for bi,si in p:
+ tri=f[si];part=int(s['face_parts'][si]);uvf=uv[tri];finite=uvf[np.isfinite(uvf).all(1)];fix=[]
+ for k in range(3):
+  x,y=tri[k],tri[(k+1)%3]
+  if gen[x] or gen[y]:continue
+  hit=edgehit(v[x],v[y],av[af[bi]])
+  if hit:
+   rec={'body_face':int(bi),'shell_face':int(si),'part':part,'shell_vertices':[int(x),int(y)],'source_indices':sid[[x,y]].tolist(),'shell_edge_points':v[[x,y]].tolist(),'shell_edge_uv':uv[[x,y]].tolist(),**hit};fix.append(rec);fixed_edges[(int(bi),min(int(x),int(y)),max(int(x),int(y)))]=rec
+ rows.append({'body_face':int(bi),'body_source_face':int(a['source_face_indices'][bi]),'shell_face':int(si),'part':part,'generated_vertex_count':int(gen[tri].sum()),'shell_vertices':tri.tolist(),'source_indices':sid[tri].tolist(),'sides':side[tri].tolist(),'vertex_uv':uvf.tolist(),'uv_centroid':finite.mean(0).tolist() if len(finite) else None,'ear_vertices_incident':int(a['protected_ears'][af[bi]].sum()),'body_face_center':av[af[bi]].mean(0).tolist(),'body_face_bit_identical_to_original':bool(np.array_equal(av[af[bi]],base['points'][af[bi]])),'fixed_edge_crossing_witnesses':fix})
+bridge=[r for r in rows if r['part']==1];by_t={};by_s={}
+for r in bridge:
+ if r['uv_centroid'] is None:continue
+ sc,tc=r['uv_centroid'];q=min(int(tc*10),9);by_t[str(q)]=by_t.get(str(q),0)+1;q=min(int(sc*6),5);by_s[str(q)]=by_s.get(str(q),0)+1
+for label,mask in [('negative_x',a['protected_ears']&(av[:,0]<.04)),('positive_x',a['protected_ears']&(av[:,0]>=.04))]:
+ npout[label+'_ear_indices']=np.flatnonzero(mask)
+npout['bridge_shell_body_pairs']=np.array([[r['shell_face'],r['body_face']] for r in bridge]);npout['fixed_edge_barrier_shell_body_pairs']=np.array(sorted(set((r['shell_face'],r['body_face']) for r in bridge if r['fixed_edge_crossing_witnesses'])),int).reshape(-1,2)
+np.savez_compressed(O/'bridge-contact-map.npz',**npout)
+summary={'existing_v9_evidence':'Reuses retained-anatomy-review-arrays.npz; only fixed-edge witnesses recomputed. No general gate rerun.','pairs_total':len(p),'by_part':dict(Counter(str(r['part']) for r in rows)),'bridge_generated_vertices_per_pair':dict(Counter(str(r['generated_vertex_count']) for r in bridge)),'bridge_pair_counts_by_uv_t_decile':by_t,'bridge_pair_counts_by_uv_s_sixth':by_s,'bridge_incident_ear_pairs':sum(r['ear_vertices_incident']>0 for r in bridge),'bridge_all_ear_pairs':sum(r['ear_vertices_incident']==3 for r in bridge),'bridge_fixed_edge_barrier_pairs':sum(bool(r['fixed_edge_crossing_witnesses']) for r in bridge),'bridge_unique_fixed_edge_body_crossings':len(set((r['body_face'],*sorted(q['shell_vertices'])) for r in bridge for q in r['fixed_edge_crossing_witnesses'])),'bridge_fixed_edge_barrier_shell_faces':sorted(set(r['shell_face'] for r in bridge if r['fixed_edge_crossing_witnesses'])),'bridge_fixed_edge_barrier_source_ids':sorted(set(i for r in bridge for q in r['fixed_edge_crossing_witnesses'] for i in q['source_indices'])),'fixed_cap_pairs':sum(r['part']==0 for r in rows),'ear_boxes':{label:{'vertices':int(len(npout[label+'_ear_indices'])),'min':av[npout[label+'_ear_indices']].min(0).tolist(),'max':av[npout[label+'_ear_indices']].max(0).tolist()} for label in ['negative_x','positive_x']},'limits':['A fixed shell edge crossing the interior of a frozen anatomical triangle cannot be removed by moving only a triangle third vertex while retaining that edge as part of the shell.','Counts are strict pair contacts, not number of holes, visible pixels or severity.','Neither t-coordinate nor left/right component names establishes invisibility.','NaN UV means not a bridge boundary/field vertex.','Cap and band constraints are separate from bridge-only feasibility.'],'hashes':{str(path.relative_to(B)):hashlib.sha256(path.read_bytes()).hexdigest() for path in [B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz',B/'body_interface_v9/constrained_fit/retained-anatomy.npz',B/'shell_band_v5/retained_candidate/evidence/band-paired.npz']}}
+(O/'bridge-contact-summary.json').write_text(json.dumps(summary,indent=2));(O/'bridge-contact-details.json').write_text(json.dumps(jsonsafe(rows),indent=2,allow_nan=False));(O/'fixed-edge-crossing-witnesses.json').write_text(json.dumps(jsonsafe(list(fixed_edges.values())),indent=2,allow_nan=False));print(json.dumps(summary,indent=2))

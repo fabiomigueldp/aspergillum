@@ -1,0 +1,111 @@
+{
+  "createdAt": "2026-11-03T21:31:46.738004+00:00",
+  "decision": "NO-GO for release, installation or world migration",
+  "scope": "Isolated diagnostic copy only; selective explosion prevention, not durable recovery",
+  "checks": {
+    "npm run check": {
+      "status": "passed",
+      "addonTestFiles": 33,
+      "addonTests": 338,
+      "recoveryModelTests": 12,
+      "viewerTests": 87,
+      "log": "out/state-compaction/explosion-prevention/check.log"
+    },
+    "regressionBefore": {
+      "status": "expected-fail",
+      "failed": 29,
+      "passed": 47,
+      "log": "out/state-compaction/explosion-prevention/before.log"
+    },
+    "regressionAfter": {
+      "status": "passed",
+      "passed": 76,
+      "log": "out/state-compaction/explosion-prevention/after.log"
+    },
+    "docs": {
+      "status": "passed",
+      "markdownFiles": 55,
+      "log": "out/state-compaction/explosion-prevention/docs.log"
+    },
+    "typecheck": {
+      "status": "passed",
+      "log": "out/state-compaction/explosion-prevention/typecheck.log"
+    },
+    "generatedAssetProof": {
+      "status": "passed",
+      "oldChecks": 9728,
+      "newChecks": 4992,
+      "reservedChecks": 96,
+      "resourceFiles": 285,
+      "log": "out/state-compaction/explosion-prevention/generated-proof.log"
+    },
+    "protectedBytes": {
+      "baselineFiles": 8629,
+      "unchangedFiles": 8628,
+      "expectedChangedFiles": [
+        "packs/behavior/scripts/main.js"
+      ],
+      "newFiles": [],
+      "result": "passed"
+    }
+  },
+  "stateBudget": {
+    "aspergillum": 5008,
+    "altare": 59840,
+    "combined": 64848,
+    "reference": 65536,
+    "remaining": 688
+  },
+  "sourceFiles": [
+    "src/application/block-destruction-safety.ts",
+    "src/application/explosion-prevention.ts",
+    "src/application/player-break-prevention.ts",
+    "src/bootstrap/main.ts",
+    "tests/application/compact-event-routing.test.ts",
+    "docs/EXPLOSION_PREVENTION.md",
+    "docs/PROJECT_STATUS.md",
+    "docs/STATE_AND_CONCURRENCY.md",
+    "docs/TESTING.md",
+    "docs/COMPACT_BLOCK_STATES_2.0.0.md",
+    "docs/PLAYER_BREAK_PREVENTION.md",
+    "docs/ARCHITECTURE.md",
+    "CHANGELOG.md"
+  ],
+  "generatedFiles": [
+    "packs/behavior/scripts/main.js"
+  ],
+  "nativeMinecraft": "not_run",
+  "creatorTools": "not_repeated; prior HTTP 502 failure remains",
+  "mcaddon": "not_produced",
+  "externalChanges": [],
+  "limitations": [
+    "Commands and direct replacement remain unprotected.",
+    "An unknown block ID or unreadable impacted list is not protected.",
+    "Setter failure cancels the whole explosion, including other projects.",
+    "A later subscriber may override exclusion/cancellation.",
+    "Undocking, replay identity and joint durability remain unresolved."
+  ],
+  "independentReview": "Local source review found no blocker in callback scope; no native validation.",
+  "integrationAudit": {
+    "correctTree": "aspergillum-state-compaction-20261103",
+    "legacySiblingTree": "altare-two-pillars-integration-20261103",
+    "legacySiblingCombined": 69584,
+    "auxiliaryVerifierWarning": "Altare verify-native-integration.mjs and verify-catalog-compaction.mjs still hardcode 9744 sibling states. Main validate-collection.mjs reads emitted sibling states correctly. No auxiliary verifier changes in this patch."
+  },
+  "filesSha256": {
+    "src/application/block-destruction-safety.ts": "4024d97aac9e0fa793bec6dd9e1adb79fd74545839243c10425022e785d25ef4",
+    "src/application/explosion-prevention.ts": "e684f9b26fb94b13039ae49d9a8f366239d188b1120fee0d80779ffcaefc4275",
+    "src/application/player-break-prevention.ts": "826f8293d51440d43b05f29d1171e3627ed49beba48a837ad5682df3072c665e",
+    "src/bootstrap/main.ts": "2cc961c0f1cfe21c102ea41f254d995baed0c3d058ee74ee93831d3f110125b1",
+    "tests/application/compact-event-routing.test.ts": "eff3b2e4b7346a55b82d744979a02bd6bf771a1701001b1cbef3dcdedb36bd7b",
+    "docs/EXPLOSION_PREVENTION.md": "3122fabb92220bdb97e263e58b6bcad648e889b87b110328da38961f0363e5a2",
+    "docs/PROJECT_STATUS.md": "b9e09166f6ee190b43205be161ba302a994e70ffd416fa25a226f2f0de1be763",
+    "docs/STATE_AND_CONCURRENCY.md": "dd93b4510c37d2979a46b9e105edc8274ae185e2d8304c9ff65487b17efee3ca",
+    "docs/TESTING.md": "aeca7a3dfb58823515a7905f333f9aadae7da300934aff05e8acfd11d04c8890",
+    "docs/COMPACT_BLOCK_STATES_2.0.0.md": "4333e713d20a4c5fb8b56a77f1ab81490e7edef054b90a192bf7da61640fa231",
+    "docs/PLAYER_BREAK_PREVENTION.md": "ec0dd832b78e46d0ee61d502e0845bbb7433d5ad43b9ec9695f119e2482cea3e",
+    "docs/ARCHITECTURE.md": "fcf683bb8b6539fed9ca874cdd967f9ed47ee72111544736d91e09271de37659",
+    "CHANGELOG.md": "caf1c40cbedd1c4e45bb60f3dcdaaf048d9b5c2984129ea7685e0521953e9ba0",
+    "packs/behavior/scripts/main.js": "6d168db1de7d232f74987930c81029ea808be88c95070b5ab6eb50dead44da3b"
+  }
+}

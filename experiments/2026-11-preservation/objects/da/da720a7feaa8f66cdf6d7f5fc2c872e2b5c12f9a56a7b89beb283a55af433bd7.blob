@@ -1,0 +1,75 @@
+# Nossa Senhora da Paz: preparação segura do addon
+
+Data: 3 de novembro de 2026. **Material de desenvolvimento, não aprovado para lançamento.**
+
+## O que avançou
+
+A versão 0.1.3 agora tem fonte extraída, build determinístico, auditoria executável e testes de regressão. O processo detecta referências quebradas, troca de identidade que afetaria mundos existentes, limites de geometria após rotação, UVs fora da textura, PNGs corrompidos e evidência de teste desatualizada. A emissão de um artefato marcado como release é condicionada até existirem aprovação visual e testes documentados no Minecraft vinculados aos hashes exatos.
+
+**Nenhum dos 15 arquivos internos da 0.1.3 foi alterado.** O modelo de cubos antigo não foi substituído pela escultura atual nem por um proxy. Não houve mudança de gameplay, instalação, atualização de mundo, envio ao GitHub ou publicação. O arquivo .mcaddon nesta pasta é a mesma base experimental reempacotada, não uma versão visualmente melhorada. A versão permanece 0.1.3 porque não se está apresentando uma atualização funcional.
+
+## Resultado atual
+
+- 78 testes automatizados passaram.
+- Auditoria tanto da fonte extraída como do arquivo original passou nas verificações implementadas.
+- 46 cubos; dimensões visuais calculadas de 7,975 × 27,59005 × 7,06875 pixels.
+- As quatro orientações e suas referências estão consistentes com o perfil existente.
+- Identificador `paz_glicerio:imagem`, quatro UUIDs, versões, dependência BP → RP e todos os hashes internos foram preservados.
+- A geometria tem aproximadamente 1,72 bloco de altura. A caixa de seleção e a colisão originais terminam em 16 pixels. A parte superior é visual, mas não é selecionável/colidível por essas caixas. Não foi aplicada uma caixa de seleção maior que o limite da API.
+- Teste no Minecraft: **não executado**. Aprovação visual: **ausente**. Compatibilidade real com saves: **não comprovada**.
+
+## Usar
+
+Requer apenas Python 3.10 ou superior e sua biblioteca padrão.
+
+```bash
+python -m unittest discover -s tests -v
+python tools/addon.py audit
+python tools/addon.py build --output artifacts/copia-experimental.mcaddon
+```
+
+O build não sobrescreve um arquivo existente. O relatório não pode compartilhar destino com o pacote, a fonte, o lock ou a evidência; somente um relatório identificado deste auditor pode ser atualizado. Ordenação, timestamps e compressão do ZIP são fixados. A reprodução binária foi verificada no ambiente de teste; versões diferentes de zlib podem gerar bytes comprimidos diferentes, embora os hashes dos arquivos internos permaneçam iguais.
+
+Para auditar o pacote original:
+
+```bash
+python tools/addon.py audit --source baseline/Nossa-Senhora-da-Paz-0.1.3-development.mcaddon --report artifacts/original-audit.json
+```
+
+O comando seguinte **deve falhar agora**, porque a evidência mantém os testes como não executados:
+
+```bash
+python tools/addon.py release --output artifacts/release.mcaddon
+```
+
+`release` apenas verifica evidências e grava um arquivo local. Não faz publicação. Uma aprovação preenchida manualmente no JSON não prova, por si só, que uma revisão aconteceu: os campos devem ser preenchidos somente a partir de revisão humana e testes reais. Os hashes impedem reutilizar acidentalmente uma evidência de outro pacote. Nunca marcar testes como feitos para desbloquear o comando.
+
+## Estrutura
+
+- `baseline/`: cópia intacta do pacote de entrada.
+- `baseline-lock.json`: identidade e checksums da entrada.
+- `source/`: os 15 arquivos originais, sem alterações.
+- `tools/addon.py`: auditoria, build e validação de evidências.
+- `tests/test_addon.py`: 78 testes, incluindo regressões e casos negativos.
+- `evidence/release-evidence.json`: registro explicitamente pendente.
+- `MINECRAFT-QA.md`: roteiro para mundo descartável.
+- `artifacts/`: auditorias JSON, logs e pacote experimental reempacotado.
+- `SOURCES.md`: documentação oficial consultada.
+
+## Limites importantes
+
+Este é um auditor específico do exportador existente, não uma implementação completa do schema Bedrock. Aceita um único osso raiz sem transformações, cubos com UV por face e rotações de cubo em um eixo. Hierarquias, inflates, rotações em vários eixos e componentes novos são rejeitados até que o auditor seja ampliado e validado. Essa restrição reduz falsos positivos em dados fora do perfil. Ainda não representa validação completa do schema Bedrock ou garantia contra todo dado inválido.
+
+Os cálculos de volume não medem fidelidade à estátua, qualidade anatômica, interseções visuais ou clareza da textura dentro do jogo. O gate não substitui julgamento visual nem a revisão de logs reais.
+
+A fonte conserva `min_engine_version: [1,26,40]`, formato de bloco `1.21.80` e geometria `1.16.0`. Esses números pertencem a contratos diferentes e não devem ser igualados automaticamente. Não foi declarada compatibilidade com versões anteriores. Não foi necessário adicionar `minecraft:loot`: a documentação oficial estabelece que, quando omitido, o bloco solta a si próprio. O comportamento deve ainda ser confirmado na sessão de QA.
+
+## Próxima integração
+
+A escultura aprovada terá de ser convertida deliberadamente para a linguagem visual do addon. Antes disso, decidir em teste de jogo se a imagem permanece decorativa com interação na base ou se precisa de uma solução de múltiplos blocos. Uma migração desse tipo não está implementada e pode afetar estados/saves. Não mudar IDs, UUIDs, estados nem o formato de mundo para contornar essa decisão.
+
+Até a aprovação, conservar a 0.1.3 somente como referência técnica e testar exclusivamente em cópias descartáveis. Não remover/desativar packs de um mundo valioso para experimentar rollback; restaurar uma cópia de backup completa é mais seguro do que tentar desfazer uma migração dentro de um save já alterado.
+
+## Revisão técnica R2
+
+A revisão independente da primeira ferramenta encontrou validações ausentes para estados extras, componentes dentro de permutações, valores de mineração/explosão, campos de geometria/material e limites visíveis incompletos. Também encontrou colisão de caminhos entre pacote e relatório. Esses casos foram corrigidos com testes de regressão. Na nova revisão independente, os 78 testes passaram, os nove casos de conteúdo foram bloqueados e a colisão pacote/relatório foi impedida antes de gravar. A revisão foi limitada ao perfil declarado, sem garantia de validação universal. O pacote 0.1.3 não continha essas mutações; os testes as introduzem somente em cópias ou em memória. Esta revisão altera a ferramenta, não o addon.

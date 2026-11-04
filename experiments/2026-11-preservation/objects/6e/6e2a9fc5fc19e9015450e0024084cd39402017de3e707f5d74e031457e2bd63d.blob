@@ -1,0 +1,13 @@
+import bpy,bmesh,json,hashlib
+from mathutils import Vector
+ROOT='/workspace/scratch/212c580ada5b/paz-refinement/'
+bpy.ops.wm.open_mainfile(filepath=ROOT+'Nossa_Senhora_da_Paz_v20_estudo.blend')
+s=bpy.context.scene;portrait=s.camera;portrait.name='Retrato comparativo'
+c=portrait.copy();c.data=portrait.data.copy();s.collection.objects.link(c);c.name='Vista geral';s.camera=c;c.location=(-4,-8,3.7);c.rotation_euler=(Vector((0,0,2.08))-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=4.35
+s.render.resolution_x=800;s.render.resolution_y=1100;s.cycles.samples=64;s.render.filepath=ROOT+'v20-overview.png'
+bpy.ops.render.render(write_still=True)
+report={}
+for name in ['Maria — anatomia feminina adaptada CC0','Maria — véu reconstruído de perfil','Maria — plano contínuo do manto']:
+ o=bpy.data.objects[name];ev=o.evaluated_get(bpy.context.evaluated_depsgraph_get());m=ev.to_mesh();bm=bmesh.new();bm.from_mesh(m);report[name]={'evaluated_vertices':len(bm.verts),'open_edges':sum(e.is_boundary for e in bm.edges),'non_manifold_edges':sum(not e.is_manifold for e in bm.edges),'reversible_shape_keys':list(o.data.shape_keys.key_blocks.keys()) if o.data.shape_keys else []};bm.free();ev.to_mesh_clear()
+bpy.ops.wm.save_as_mainfile(filepath=ROOT+'Nossa_Senhora_da_Paz_v20_estudo.blend')
+json.dump(report,open(ROOT+'v20-check.json','w'),indent=2,ensure_ascii=False)

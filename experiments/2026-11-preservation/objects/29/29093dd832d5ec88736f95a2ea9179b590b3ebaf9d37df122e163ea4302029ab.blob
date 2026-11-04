@@ -1,0 +1,32 @@
+import bpy,json,math,hashlib
+from mathutils import Vector,Matrix
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V43-hand-contact-trial.blend',use_scripts=False)
+def checksum(o):
+ h=hashlib.sha256()
+ if o.type=='MESH':
+  for v in o.data.vertices:h.update(str(tuple(v.co)).encode())
+  if o.data.shape_keys:
+   for k in o.data.shape_keys.key_blocks:
+    for v in k.data:h.update(str(tuple(v.co)).encode())
+ return h.hexdigest()
+other={o.name:checksum(o) for o in bpy.data.objects if not o.name.startswith('Menino')}
+t=bpy.data.objects['Menino — túnica e mangas contínuas'];hand=bpy.data.objects['Menino — mão anatômica'];m=t.data;tp=[t.matrix_world@v.co for v in m.vertices];hp=[v.co.copy() for v in hand.data.vertices];elbow=Vector((-.15,-.265,1.32));shoulder=Vector((-.095,-.265,1.50))
+def sm(v):v=max(0,min(1,v));return v*v*(3-2*v)
+def transform(p,full=False):
+ lateral=1 if full else sm((-.09-p.x)/.05)*sm((p.z-1.08)/.07)*sm((1.56-p.z)/.08)
+ bend=1 if full else sm((1.40-p.z)/.14)
+ q=elbow+Matrix.Rotation(math.radians(-25)*bend*lateral,3,'X')@(p-elbow)
+ q=shoulder+Matrix.Rotation(math.radians(-6)*lateral,3,'Y')@(q-shoulder)
+ return q
+newt=[transform(p) for p in tp];newh=[transform(p,True) for p in hp];t.shape_key_add(name='Basis');tk=t.shape_key_add(name='TESTE48 — braço visível do Menino junto ao corpo');tk.value=1;inv=t.matrix_world.inverted()
+for i,v in enumerate(tk.data):v.co=inv@newt[i]
+hand.shape_key_add(name='Basis');hk=hand.shape_key_add(name='TESTE48 — mão do Menino acompanha antebraço rígido');hk.value=1
+for i,v in enumerate(hk.data):v.co=newh[i]
+oldhandbv=BVHTree.FromPolygons(hp,[tuple(f.vertices) for f in hand.data.polygons]);newhandbv=BVHTree.FromPolygons(newh,[tuple(f.vertices) for f in hand.data.polygons]);oldtbv=BVHTree.FromPolygons(tp,[tuple(f.vertices) for f in m.polygons]);newtbv=BVHTree.FromPolygons(newt,[tuple(f.vertices) for f in m.polygons]);edgeerr=max(abs((hp[e.vertices[0]]-hp[e.vertices[1]]).length-(newh[e.vertices[0]]-newh[e.vertices[1]]).length) for e in hand.data.edges)
+report={'scope':'Only negative-X visible child arm/hand; hidden-side arm unchanged; Maria unchanged','elbow_rotation_deg':-25,'shoulder_adduction_deg':-6,'hand_rigid_edge_max_error_m':edgeerr,'changed_tunic_vertices':sum((p-q).length>1e-7 for p,q in zip(tp,newt)),'max_tunic_delta_m':max((p-q).length for p,q in zip(tp,newt)),'hand_tunic_triangle_overlap_baseline':len(oldhandbv.overlap(oldtbv)),'hand_tunic_triangle_overlap_trial':len(newhandbv.overlap(newtbv)),'non_child_hashes_unchanged':other=={o.name:checksum(o) for o in bpy.data.objects if not o.name.startswith('Menino')},'rollback':'Both TESTE48 shape keys value0 restores V43'};json.dump(report,open(r+'V48-child-verification.json','w'),indent=2);print(report);bpy.ops.wm.save_as_mainfile(filepath=r+'V48-child-arm-trial.blend')
+s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=600;s.render.resolution_y=900;s.render.resolution_percentage=100;c=s.camera;ct=Vector((.025,-.265,1.25))
+for val,label,views in [(0,'before',[('profile_ref',(-5,0,0))]),(1,'after',[('front',(0,-5,0)),('profile_ref',(-5,0,0)),('threequarter',(-3,-5,0))])]:
+ tk.value=val;hk.value=val
+ for view,off in views:
+  c.location=ct+Vector(off);c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=1.65;s.render.filepath=r+'V48-child-'+label+'-'+view+'.png';bpy.ops.render.render(write_still=True)

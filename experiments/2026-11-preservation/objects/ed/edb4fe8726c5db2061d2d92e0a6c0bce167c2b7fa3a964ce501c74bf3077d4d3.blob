@@ -1,0 +1,19 @@
+from pathlib import Path
+O=Path(__file__).resolve().parent
+exec(compile((O/'ray_diagnosis.py').read_text().split("views={'left-ear'")[0],str(O/'ray_diagnosis.py'),'exec'))
+z=np.load(B/'shell_band_v3/evidence/band-source.npz');meshes['render_source_band']={k:z[k] for k in z.files};bvh['render_source_band']=BVHTree.FromPolygons(z['points'].tolist(),z['triangles'].tolist(),all_triangles=True)
+rr=json.loads((O/'visible-blue-ray-witnesses.json').read_text())['rows'];out=[]
+for r in rr:
+ rb=hits('render_source_band',r['origin'],r['direction']);fb=next((h for h in rb if h['front_facing']),None);fs=next((h for h in r['hits']['source_shell'] if h['front_facing']),None);r['render_source_band_hits']=rb;r['render_band_shell_source_depth_mm']=fb['distance_mm']-fs['distance_mm'] if fb and fs else None
+ b=next(h for h in r['hits']['band'] if h['front_facing']);p=np.array(b['point']);n=np.array(b['normal']);ray={k:hits(k,p+n*.015,-n,.05,8) for k in ['shell','band','anatomy']}
+ for k in ray:
+  for h in ray[k]:h['signed_band_normal_coordinate_mm']=float((np.array(h['point'])-p)@n)*1000
+ ext=[h for h in ray['shell'] if h['front_facing'] and abs(h['signed_band_normal_coordinate_mm'])<5]
+ sh=ext[0] if ext else None;inside=next((h for h in ray['shell'] if not h['front_facing'] and sh and h['distance_mm']>sh['distance_mm']),None);bi=next((h for h in ray['band'] if not h['front_facing'] and -.002<h['signed_band_normal_coordinate_mm']/1000<0),None);an=next((h for h in ray['anatomy'] if h['front_facing'] and h['signed_band_normal_coordinate_mm']<0),None)
+ v={'view':r['view'],'pixel':r['pixel'],'point_band_outer':p.tolist(),'band_outward_normal':n.tolist(),'normal_ray_hits':ray,'current_camera_shell_ahead_mm':r.get('current_shell_ahead_of_band_mm'),'source_camera_shell_ahead_mm':r.get('source_shell_ahead_of_band_mm'),'render_band_shell_source_depth_mm':r['render_band_shell_source_depth_mm'],'band_face':b['face']}
+ if sh and inside and bi and an:
+  s=sh['signed_band_normal_coordinate_mm'];si=inside['signed_band_normal_coordinate_mm'];ib=bi['signed_band_normal_coordinate_mm'];a=an['signed_band_normal_coordinate_mm'];th=s-si
+  v.update(shell_face=sh['face'],shell_normal=list(sh['normal']),band_shell_normal_dot=float(np.dot(sh['normal'],n)),shell_outer_ahead_band_mm=s,band_thickness_along_normal_mm=-ib,shell_thickness_along_band_normal_mm=th,band_inner_to_anatomy_mm=ib-a,translation_to_put_shell_outer_01mm_behind_band_inner_mm=s-ib+.1,body_margin_after_hypothetical_translation_mm=(ib-.1-th)-a)
+ out.append(v)
+(O/'visible-blue-ray-witnesses-render-source.json').write_text(json.dumps(rr,indent=2));(O/'visible-patch-clearance-witnesses.json').write_text(json.dumps({'method':'For selected pixel witnesses, cast from 15 mm outside band along its exterior face normal. Intersections are float32 BVH estimates. Hypothetical shell translation is along -band normal, preserving this local ray wall thickness, placing shell outer 0.1 mm behind band inner. It is not authorization or proof of whole-patch safety; transition, tangent directions, unseen intersections still need validation.','rows':out},indent=2))
+for r in out:print(r['view'],r['pixel'],'render_src_ahead',r['render_band_shell_source_depth_mm'],'shell_ahead',r.get('shell_outer_ahead_band_mm'),'move',r.get('translation_to_put_shell_outer_01mm_behind_band_inner_mm'),'body_margin',r.get('body_margin_after_hypothetical_translation_mm'),'n',np.round(r['band_outward_normal'],3))

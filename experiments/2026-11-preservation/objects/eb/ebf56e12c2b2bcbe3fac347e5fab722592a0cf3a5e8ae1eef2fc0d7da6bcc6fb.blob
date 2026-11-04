@@ -1,0 +1,22 @@
+import bpy,numpy as np,json,collections
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False);o=bpy.data.objects['TESTE 34 — conexão de superfícies avaliadas'];dg=bpy.context.evaluated_depsgraph_get();m=o.evaluated_get(dg).to_mesh();p=np.array([v.co[:] for v in m.vertices]);fs=[tuple(f.vertices) for f in m.polygons];out=[]
+h=bpy.data.objects['Maria — anatomia feminina adaptada CC0'];hb=BVHTree.FromObject(h,dg)
+for radius in [.05,.07,.09]:
+ sel=((p[:,1]+.01556)**2+(p[:,2]-3.31112)**2<radius**2)&(p[:,0]<-.025);removed=[i for i,f in enumerate(fs) if all(sel[v] for v in f)];counts=collections.Counter(tuple(sorted((a,b))) for i in removed for a,b in zip(fs[i],fs[i][1:]+fs[i][:1]));edges=[e for e,n in counts.items() if n==1];adj=collections.defaultdict(set)
+ for a,b in edges:adj[a].add(b);adj[b].add(a)
+ seen=set();loops=[]
+ for seed in adj:
+  if seed in seen:continue
+  stack=[seed];seen.add(seed);c=[]
+  while stack:
+   v=stack.pop();c.append(v)
+   for w in adj[v]:
+    if w not in seen:seen.add(w);stack.append(w)
+  pts=p[c];signed=[]
+  for v in pts:
+   hit,n,_,_=hb.find_nearest(Vector(v));signed.append((Vector(v)-hit).dot(n))
+  loops.append({'vertices':len(c),'head_signed_min_max':list(map(float,[min(signed),max(signed)])),'boundary_inside_head_count':sum(d<-.0001 for d in signed),'degree2':all(len(adj[v])==2 for v in c),'bbox':[pts.min(axis=0).tolist(),pts.max(axis=0).tolist()]})
+ out.append({'radius':radius,'removed_faces':len(removed),'boundary_components':loops,'bad_degrees':sum(len(v)!=2 for v in adj.values())})
+json.dump(out,open(r+'neck-reconstruction-boundary-audit.json','w'),indent=2);print(json.dumps(out,indent=2))

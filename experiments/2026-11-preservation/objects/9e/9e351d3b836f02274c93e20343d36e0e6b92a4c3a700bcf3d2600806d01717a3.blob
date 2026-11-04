@@ -1,0 +1,121 @@
+# QA do Altare 0.12.2
+
+## Revisão 0.12.3: Guadalupe e encerramento por prazo
+
+Oito testes novos, sem repetir suítes já aprovadas: quatro de fluxo de expiração/cancelamento e quatro de identidade/intenções de Guadalupe. Matrizes incluem 401 designs arquitetônicos e 416 casos clássicos. [Evidências e reteste](EDITOR_CHOICES_0.12.3.md).
+
+## Dimensões do editor — 0.12.2
+
+Título reativo acompanha as quatro frentes, Restaurar, valores inválidos, direção temporariamente oculta na Cruzeta nua e retorno ao tecido direcional. Cancelar limpa eventos; o título não concede autoridade de escrita no mundo. [Semântica e reteste](EDITOR_DIMENSIONS_0.12.2.md).
+
+## Polimento da Cruzeta — 0.12.1
+
+Escala e periodicidade inteira da marchetaria, continuidade dos meios montantes, recuo simétrico dos fustes e contato com travessas, cavilhas nos centros de X. A matriz CPU de 35 vistas não substitui Minecraft. [Revisão e reteste](CROSSBRACE_0.12.1.md).
+
+## Chanfros de Ogivas — 0.11.2
+
+103 testes; vértices de frente/fundo, mitras e normais nas quatro orientações. Oráculo independente de raios exige envoltória contínua e sem pontas expostas. Relevos ímpares cabem no campo do fundo. `verify-ogive-detail.mjs` protege todos os 397 blocos, 174 mapas, runtime/editor e recursos de outras famílias, além de corpo/toalhas/relevos pares do próprio Ogivas. [Capturas e reteste](OGIVE_DETAIL_0.11.2.md).
+
+## Abertura do editor — 0.11.1
+
+102 testes aprovados. O adaptador de UI rejeita valores sem `clientWritable`, mesmo em dropdowns desabilitados/ocultos. Regressão reproduz o erro antes da correção e cobre também a ausência de autoridade dos valores fixos sobre o acabamento. Confirmar abertura nos sete modelos, material fixo, aplique indisponível, aplicar/cancelar/restaurar, reabertura e sessão exclusiva no pacote exato. [Evidência e reteste](EDITOR_FIX_0.11.1.md). O Content Log no Minecraft permanece pendente.
+
+## Ogivas — 0.11.0
+
+100 testes; curva e recorte derivados do mesmo polígono, intradorso conectado, apoios compartilhados, dez tecidos invariantes, relevos sob o teto ogival, limites pós-rotação e RGB/PBR doador preservado. `verify-ogive.mjs` exige contratos de mundo/runtime/colisão e todos os recursos de outras famílias byte-idênticos à 0.10.1. Comparação controlada em GPU fixada e matriz até 16×8; importação, estabilidade do recorte em movimento e profiling permanecem pendentes. [Contrato e reteste](OGIVE_REBUILD_0.11.0.md).
+
+## Perfis de Pilastras — 0.10.1
+
+90 testes; planos chanfrados voltados para fora, encontros fechados e profundidade monotônica até os apoios, sem pontas nos cantos. Oráculo de raios independente do renderer, normais nos 16 contornos/quatro frentes e ligação à face real das meias pilastras. A auditoria com `--baseline 0.10.0` exige todas as definições de bloco byte-idênticas e nenhum arquivo novo. [Capturas e reteste nativo](PILASTER_DETAIL_0.10.1.md).
+
+## Pilastras — 0.10.0
+
+87 testes; cantos compartilhados, emendas entre módulos, fechamento de apoios, campo recuado, orientação de veios, relevos apoiados e corpo invariante às dez toalhas. `verify-pilasters.mjs` protege os 397 contratos de bloco, runtime, todas as texturas e os demais modelos em relação à 0.9.0. Capturas controladas e matriz 1×1 a 16×8, com o arquivo final. O teste nativo e o profiling permanecem pendentes. [Reteste](PILASTERS_0.10.0.md).
+
+## Matriz atual — 0.9.0
+
+79 testes; validação exaustiva de 78.432 combinações. Renda nos sete modelos, dez escolhas comuns, oito cores também no Clássico/Colunata, papel independente de Guadalupe, contornos reparáveis e relevos proporcionais sob toalhas longas. `verify-universal-textiles.mjs` confere os contratos publicados no arquivo final. Render Studio 2.0.0: 76 testes, cenas schema 1/2, seletor único e smokes compilados. [Reteste nativo e desempenho](UNIVERSAL_TEXTILES_0.9.0.md).
+
+As seções seguintes registram critérios e evidências históricas. Gates de preservação byte a byte dos antigos scripts `verify-*` valem para suas versões; na 0.9.0, a revisão intencional dos tecidos segue a auditoria universal, sem alterar membros estruturais, UUIDs, ordered states/defaults ou colisões.
+
+
+Baseline histórica 0.8.3: **74 testes** de domínio/apresentação, preservação das 198 receitas, membros estruturais invariantes, rascunho sem escrita, restauração/cancelamento, descarte de valores inválidos e fechamento por liberação de sessão. O [reteste 0.8.3](COLONNADE_CLOTH_0.8.3.md) precede a matriz histórica abaixo. O pacote dessa etapa é Altare-0.8.3.mcaddon; itens da 0.4.2 continuam como regressão de colisão e suporte.
+
+## Encaixe do tecido — 0.8.3
+
+Uma cobertura superior em y=16, dobra terminando em sua face inferior, retornos sem cruzamento, costura ligada às duas pontas da renda e terminada na bainha. Conferir afastamento da pedra, junções de módulos até 16×8 e preservação dos rascunhos ao alternar entre todos os acabamentos. `verify-colonnade-cloth.mjs` protege blocos, texturas, geometrias sem renda e demais modelos byte a byte. [Reteste](COLONNADE_CLOTH_0.8.3.md).
+
+## Colunata atual
+
+Casca octogonal fechada em todos os contornos/direções, um fuste por quina, eixos únicos e seção integralmente contida na base/colo. Três níveis contíguos por apoio, saliências fechadas, estrutura invariante ao tecido, contorno/UV/altura válidos. Caneluras foscas e terminadas antes dos colares. `verify-colonnade-detail.mjs` exige definições de bloco, runtime e demais recursos idênticos à 0.8.1, sem novos arquivos. Comparar 24 pares de imagens dos releases com câmera idêntica. [Reteste nativo](COLONNADE_DETAIL_0.8.2.md).
+
+## Colunata — histórico 0.7.0
+
+Dois acabamentos e 16 contornos reversíveis por ID, planos sem direção, suporte y=16, renda periódica com vazados e borda contínua, normalização após quebra e memória de escolhas no editor. `verify-ornate.mjs` protege todos os recursos distribuídos anteriores byte a byte.
+
+## Marcenaria — histórico 0.6.1
+
+24 receitas novas: centros em larguras 1/2/3/7/8/16, profundidades 1/2/8 e quatro frentes; contornos arbitrários após quebra; colisão envolvendo vértices rotacionados, vão central aberto e juntas sem pontas salientes; rollback entre famílias e escolhas de UI suspensas. `verify-joinery.mjs` protege todos os blocos/geometrias/texturas anteriores byte a byte. Orçamentos: 55.728 estados no Altare, 65.472 com Aspergillum, 528 geometrias, 50 cubos, 31,9375 MiB de mapas.
+
+## Matriz histórica 0.4.2
+
+Automação não confirma renderização, seleção, suporte nativo, input, desempenho ou ausência de erros no Minecraft. O usuário confirmou altura de um bloco e frente principal de sete. A 0.4.1 teve falha física confirmada nos cavaletes; todas as caixas de reteste permanecem abertas até importar a 0.4.2 exata. [Causa e correção](STRUCTURES_0.4.2.md).
+
+## Automação
+
+- `npm run check`: tipos estáveis 2.9.0/2.1.0, **38 testes**, geração e validação estrutural. Regressões novas: colisão estável `origin/size`, cobertura de escoras rotacionadas, seleção dos cavaletes de extremidade, preparação sem escrita e cadeia de causas limitada. Preserva as regressões dos bordados/encontros da 0.4.1.
+- Domínio: topologias e limites 1–16/quatro direções, retângulos até 16×8, chunks desconhecidos, centro par/ímpar, conversão clássico/receitas, configuração inválida, preflight e rollback de IDs/estados.
+- Concorrência: locks do retângulo, dimensões, timeout, cancelamento, callback obsoleto. Nenhuma escrita acima do tampo.
+- Codec: todas as 135 identidades anteriores, papéis e máscaras; 63 novas identidades com 112 poses compactas cada, roundtrip de centros e reconciliação de contorno. Revalidação distingue aparência mesmo com estados locais iguais.
+- Arte: emendas de cor/relevo, bordado versus curva de recorte, centros pares, UVs das facetas na base Bedrock, programa completo de Guadalupe e limites pós-rotação.
+- Validação emitida: 11.520 combinações clássicas, 34.560 arquitetônicas e 7.056 de paleta; seleção única de geometria/material; 188 modelos, até 50 cubos; cantos/colisão corretos nas 16 máscaras; topo y=16; mesa sem corpo invisível; UVs/atlas, alpha binário e render method uniforme.
+- 66 conjuntos/142 PNGs únicos, 31,75 MiB de mapas antes de mipmaps/ícones; limite 32 MiB e 256 KiB por camada.
+- `npm run package`: artefato/hash e relatórios em `dist/validation/0.4.2/`. Gate estrito: zero erros e zero warnings oficiais; o schema local também recusa `min/max`, mesmo se o validador oficial os aceitar.
+- Matriz `structures`: 32 vistas, oito configurações, frente/oblíqua e cor/PBR, quatro orientações e larguras 1/3/7/8. Verso dos cavaletes: quatro vistas. Regressão `legacy`: oito vistas de Guadalupe 7/8. Total 44, comandos no README.
+- `node tools/verify-captures.mjs out/structures-0.4.2 out/trestle-back-0.4.2 out/legacy-0.4.2`: hashes do ZIP/build e fontes/PNGs/capturas. `node tools/verify-baseline.mjs` compara 89 arquivos clássicos, identidades e atlas com o arquivo 0.2.1.
+
+- `node tools/compare-structures.mjs`: confere 32 pares contra os arquivos 0.4.1/0.4.2 e exige câmeras/enquadramento iguais. O baseline foi capturado antes da regeneração dos packs. As 120 vistas da 0.4.1 permanecem históricas; `compare-cloth.mjs` e `verify-polish.mjs` continuam fixados nessa revisão, não são gates da 0.4.2.
+- `node tools/verify-world-compatibility.mjs`: 199 blocos publicados da 0.4.1 conservam IDs, arrays ordenados de states/defaults e UUIDs. Geometria estrutural, colisão e visibilidade dos cavaletes mudam intencionalmente.
+- `node tools/verify-structures.mjs`: admite apenas estrutura geométrica, colisão/visibilidade dos 66 blocos de cavaletes, bundle e versão. Todos os PNGs, texture sets, bones de tampo/toalha/aplique, demais componentes de bloco e arte clássica devem ser idênticos ao pacote 0.4.1.
+- Máscara de paleta: cores distintas, ouro/flores invariantes, alpha/altura/metal/rugosidade iguais entre cores, referências compartilhadas de normal/MER; tampo fino sobre estrutura em y=16.
+- Orçamento conjunto automático Altare + Aspergillum local: 62.880, reserva 2.656; outros packs não estão incluídos.
+
+Regressão externa: `npm run check` na raiz, com 107 testes do Aspergillum e 54 do viewer. Log desta revisão em `out/aspergillum-check-0.4.2.log`. Nenhuma alteração de produto foi feita fora de `addons/altare/`.
+
+## Matriz mínima no pacote importado
+
+- [ ] Importar **Altare-0.4.2.mcaddon** numa cópia do mundo, BP/RP `[0,4,2]`, engine mínima 1.26.40, sem experimentos e sem revisão/cache Altare concorrente.
+- [ ] No carregamento: nenhum erro de `collision_box`, membros `min/max` ou ID de cavaletes ausente do registro. Em 7×2, aplicar cavaletes/nogueira sem toalha e com branco/Cordeiro; confirmar sucesso sem rollback e sem mensagem de erro ao jogador.
+- [ ] Inspecionar sapatas, montantes, cabeçotes e diagonais em 1×1, 7×2, 8×2 e 3×3, quatro frentes. Travessas encontram os montantes; apoios aparecem nas duas extremidades, sem pernas isoladas no meio do comprimento. Conferir ogivas, impostas/fecho e pilastras sem faces piscando.
+- [ ] Aproximar junções e cantos das quatro toalhas: sem frestas claras, motivos duplicados por mistura ou pétalas cortadas na repetição floral. Conferir centros pares/ímpares.
+- [ ] Na toalha verde, faixa superior reta e medalhão sem deformação pelo festão. No tema preto, fios prateados distinguíveis do fundo fosco e ausência de retângulo dourado abaixo do símbolo.
+- [ ] Nas variantes Floral IHS branca e prateada, conferir o contorno oval do medalhão: sem área retangular ou linha vermelha residual abaixo do símbolo.
+
+- [ ] Abrir **Floral IHS · cores litúrgicas** em pt_BR/en_US. Experimentar as oito cores nas três estruturas/materiais. Reabrir o formulário e conferir a cor selecionada. O ouro e as flores permanecem, o tampo é branco e o centro é único.
+- [ ] Alternar branco/roxo/róseo/preto/dourado em 7×2 e 8×2; observar bordados, emenda central, contraste e linhas de costura nos gráficos clássicos e Vibrant Visuals.
+- [ ] Aproximar os quatro cantos, inclusive verso da mesa e 1×1. Conferir ausência de prismas espessos, fendas, facetas desaparecendo ou tecido atravessando a estrutura.
+- [ ] Converter 0.3.0 → paleta → coleção anterior com objetos apoiados. Reabrir o mundo. Em paleta par 2×1, quebrar uma metade e reaplicar: o centro temporariamente incompleto deve virar repetição e depois ser recentralizado.
+
+
+- [ ] `/function altare/dev_kit`: módulo e ferramenta com nomes legíveis. Abrir as duas telas em pt_BR/en_US e reabrir para conferir defaults. Cancelar em qualquer tela não muda o altar.
+- [ ] Montar 7×2/altura 1. Testar pilastras/rubi/cruz, ogivas/preto/cruz e cavaletes/nogueira/branco sem aplique. Confirmar estrutura, profundidade, centro único, perímetro, ausência de quedas internas e arcos visíveis sob a toalha.
+- [ ] Testar Cordeiro e IHS em 8×2/4×2: emenda central deve unir as metades sem inversão. Repetir 3×2 e 1×1; quatro cantos da mesa pequena completos. Repetir norte/leste/sul/oeste.
+- [ ] Comparar gráficos clássicos/Vibrant Visuals e câmera a 1/4/8 blocos. Festões não têm retângulo opaco, buracos no bordado, brilho nas emendas, faces faltantes ou z-fighting. Orbitar e observar o verso do tecido na mesa aberta.
+- [ ] Mesa: inspecionar colisão com câmera/jogador junto aos vãos; confirmar apoio do tampo e colisão dos pés/travessas. Não deve existir um corpo cúbico invisível sob a mesa. A caixa de seleção inteira é intencional.
+- [ ] Colocar pedra, vela e caldeirinha sobre a toalha. Trocar tecido/material/estrutura/aplique; apoio, posição, estado e interação dos objetos devem permanecer. Testar vasos externos separadamente.
+- [ ] Num conjunto clássico 0.2.1, conferir Guadalupe antes de converter: lua, fundo, figuras esquerdas, Chi-Rho, figuras direitas, fundo, sol. Converter para família nova e voltar a Clássico/Guadalupe; nenhum objeto superior desaparece.
+- [ ] Salvar/reabrir e descarregar/recarregar chunks. Contorno converge em até seis segundos de ticks ativos; chunks desconhecidos preservam a borda anterior.
+- [ ] Colocar módulo padrão ao lado de família nova herda a aparência; reaplicar centraliza o motivo. Quebrar/recolocar um módulo novo mantém a receita no ID do item, mas não seus estados locais; conferir defaults.
+- [ ] Ferramenta ausente preserva inputs nativos/agachamento. Um gesto com a ferramenta abre um fluxo em mouse/controle/toque.
+- [ ] Dois jogadores no mesmo conjunto e em conjuntos/dimensões separados: exclusão por conjunto, sem alteração parcial pela tela do segundo jogador.
+- [ ] Durante ambas as telas: quebrar/substituir base, acrescentar módulo, sair, morrer, trocar dimensão, afastar-se, trocar slot/modo ou exceder 60 s. Aplicação obsoleta é recusada, locks liberados.
+- [ ] Em cópia descartável: quebra, explosão e setblock. Altare não captura nem duplica vasos; objetos superiores seguem regras vanilla/do próprio add-on.
+- [ ] Buraco, L, 17×8 e >128 módulos são recusados sem alteração. Duas mesas encostadas viram um conjunto; separar uma célula permite edição independente.
+- [ ] Perfil real com 1/16/64 altares, multiplayer/mobile e demais add-ons: registrar CPU/tick, FPS, uso de memória e orçamento combinado de permutações.
+- [ ] Content Log sem novos erros de manifest, geometria, Molang, MaterialInstances, texture sets, collision_box, custom component, dependências ou mensagens `[Altare]` no caminho normal.
+
+Registro mínimo: versão do Minecraft, plataforma, controles, gráficos, idioma, tamanho/orientação, hash do pacote, esperado/observado, captura e Content Log. Para downgrade, seguir [MIGRATION_0.4.0.md](MIGRATION_0.4.0.md); não desativar o pack em mundo com IDs novos ainda presentes.
+
+## Cruzeta — 0.12.0
+
+`crossbrace.node.ts` cobre os 17 acabamentos, teto exato de 80.000 estados, contornos, vertices rotacionados, apoio y=16, colisões, centro aberto, duas faces do tecido, invariância da madeira e round-trip do novo bare simétrico. Regressão da marcenaria e editor mantém a ordem dos sete modelos anteriores. [Roteiro manual e limites da prévia](CROSSBRACE_0.12.0.md).

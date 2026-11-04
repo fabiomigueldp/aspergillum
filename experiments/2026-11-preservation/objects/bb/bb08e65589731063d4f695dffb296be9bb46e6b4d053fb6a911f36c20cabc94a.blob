@@ -1,0 +1,25 @@
+import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';
+import * as THREE from '../../../viewer-3d/node_modules/three/build/three.module.js';
+import {buildBedrockGeometry} from '../../../viewer-3d/src/shared/bedrock-geometry.js';
+import {blockPreviewGeometry} from './block-preview-basis.mjs';
+import {twinPedestalCells} from '../assets-src/atelier/twin-pedestal-cell-study.mjs';
+const root=path.resolve(import.meta.dirname,'..'),out=path.join(root,'out/two-pedestal-integration/uv-comparison');fs.mkdirSync(out,{recursive:true});
+const materials={wood_vertical:'atelier_walnut',wood_horizontal:'joinery_walnut_horizontal',inlay:'crossbrace_inlay'},manifest=[];
+const cases=[[3,2,'exact'],[3,2,'module-grain'],[7,2,'exact'],[7,2,'module-grain'],[3,2,'module-grain',[0,0]]];
+for(const [w,d,uvPolicy,brokenCell] of cases){
+ const model=twinPedestalCells(w,d,0,{uvPolicy,capCuts:uvPolicy==='module-grain'}),palette={named:{}},triangles=[];
+ for(const [key,name] of Object.entries(materials)){const m=new THREE.MeshBasicMaterial();m.userData.texture=path.join(root,`packs/resource/textures/blocks/${name}.png`);palette.named[key]=m;palette.default??=m;}
+ for(const cell of model.cells){
+  if(brokenCell&&cell.x===brokenCell[0]&&cell.z===brokenCell[1])continue;
+  const g=blockPreviewGeometry(cell.doc['minecraft:geometry'][0]),built=buildBedrockGeometry(g,{identifier:g.description.identifier,textureWidth:128,textureHeight:128,formatVersion:cell.doc.format_version},palette,{includePivots:false,includeLocators:false});built.root.position.set(cell.center[0]/16,0,cell.center[2]/16);built.root.updateMatrixWorld(true);
+  built.root.traverseVisible(o=>{if(!o.isMesh)return;const p=o.geometry.attributes.position,uv=o.geometry.attributes.uv,idx=o.geometry.index;
+   for(const group of o.geometry.groups){const m=Array.isArray(o.material)?o.material[group.materialIndex]:o.material;
+    for(let i=group.start;i<group.start+group.count;i+=3){const points=[],coords=[];for(let j=0;j<3;j++){const k=idx?idx.getX(i+j):i+j;points.push(new THREE.Vector3().fromBufferAttribute(p,k).applyMatrix4(o.matrixWorld).toArray());coords.push([uv.getX(k),uv.getY(k)]);}triangles.push({points,uv:coords,texture:m.userData.texture});}
+   }o.geometry.dispose();
+  });
+ }
+ for(const m of Object.values(palette.named))m.dispose();
+ const id=`native-${w}x${d}-${uvPolicy}${brokenCell?'-damaged':''}`,scene={id,w,d,version:'Estudo de arquitetura sobre 0.12.3',title:'ALTARE / ESTUDO DE MADEIRA MODULAR',subtitle:brokenCell?'Uma célula removida · fragmentos tampados · apoios não recentrados':`${w} × ${d} módulos · ${uvPolicy==='exact'?'UV global original':'densidade local constante de madeira'} · mesma geometria externa aprovada`,footer:'PRÉVIA TÉCNICA CPU · estudo não integrado · não é captura do Minecraft',textile:'none',center:[0,.5,0],direction:[-.8,.55,-1],triangles};
+ fs.writeFileSync(path.join(out,id+'.scene.json'),JSON.stringify(scene));manifest.push({id,w,d,uvPolicy,brokenCell,triangles:triangles.length,geometryHash:crypto.createHash('sha256').update(JSON.stringify(model)).digest('hex')});
+}
+fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify({registered:false,baseVersion:'0.12.3',scenes:manifest,sources:['assets-src/atelier/twin-pedestal-prototype.mjs','assets-src/atelier/twin-pedestal-cell-study.mjs'].map(p=>({path:p,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex')})),textures:Object.values(materials).map(n=>({name:n,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,`packs/resource/textures/blocks/${n}.png`))).digest('hex')}))},null,2));console.log(out);

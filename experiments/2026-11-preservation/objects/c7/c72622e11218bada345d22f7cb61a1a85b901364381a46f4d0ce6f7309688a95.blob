@@ -1,0 +1,59 @@
+"""blender -b -t 4 --python SCRIPT -- --candidate NAME=PATH [--candidate ...] --output PATH
+Exact V4 fixed samples. Read-only to inputs. No collision/visual certification.
+"""
+import argparse,sys,json,hashlib,importlib.util
+from pathlib import Path
+from collections import Counter
+import numpy as np
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+ROOT=Path(__file__).resolve().parents[2]
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def canonical(f):return {tuple(sorted(map(int,t))) for t in f}
+def main():
+ ap=argparse.ArgumentParser(description=__doc__)
+ ap.add_argument('--candidate',action='append',default=[])
+ ap.add_argument('--baseline',type=Path,default=ROOT/'shell_band_v4/curvature_candidate/evidence/cap-paired.npz')
+ ap.add_argument('--output',type=Path,required=True)
+ ap.add_argument('--samples',type=Path,default=ROOT/'shell_band_v4/evidence/review-fixed-points.npz')
+ ap.add_argument('--p95-ratio',type=float,default=1.05);ap.add_argument('--p99-ratio',type=float,default=1.10)
+ ap.add_argument('--contact-increase',type=float,default=.005);ap.add_argument('--depth-increase',type=float,default=.00005)
+ ap.add_argument('--run-crossing-gate',action='store_true')
+ a=ap.parse_args(sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else sys.argv[1:])
+ spath=ROOT/'shell_band_v3/evidence/cap-source.npz';samplepath=a.samples
+ source=np.load(spath);params=np.load(ROOT/'shell_band_v4/evidence/cap-source-parameters.npz')['params'];samples=np.load(samplepath)
+ points=samples['points'];high=samples['high_signed_nearest_plane'];head=np.load(ROOT/'shell_band_v4/evidence/head-source.npz')
+ ht=BVHTree.FromPolygons(head['points'].tolist(),head['triangles'].tolist(),all_triangles=True)
+ pair=np.load(ROOT/'shell_band_v4/evidence/cap-source-pairing.npz');mapping=dict(zip(pair['outer'].tolist(),pair['inner'].tolist()))
+ base=np.load(a.baseline);bids=base['source_indices'];bf=bids[base['triangles']]
+ protected=set(map(int,bids[params[bids,0]>=40]));protected_faces=canonical(bf[np.all(params[bf,0]>=40,axis=1)])
+ gate=None
+ if a.run_crossing_gate:
+  spec=importlib.util.spec_from_file_location('independent_gate',ROOT/'shell_band_v3/tools/independent_gate.py');gate=importlib.util.module_from_spec(spec);spec.loader.exec_module(gate)
+ def review(path):
+  d=np.load(path);p=d['points'];f=d['triangles'];ids=d['source_indices'];side=d['source_side'];out=f[np.all(side[f]==0,axis=1)]
+  tree=BVHTree.FromPolygons(p.tolist(),out.tolist(),all_triangles=True)
+  near=[tree.find_nearest(Vector(q)) for q in points];dist=np.array([q[3] for q in near]);low=[]
+  for q in near:
+   hp,hn,_,_=ht.find_nearest(q[0]);low.append(float((q[0]-hp).dot(hn)))
+  low=np.array(low);reg=(high>0)&(low<-.0001);robust=(high>.0001)&(low<-.0001)
+  lookup={int(x):i for i,x in enumerate(ids)};rim=list(range(44*112,45*112));edges=Counter(tuple(sorted((int(t[k]),int(t[(k+1)%3])))) for t in out for k in range(3))
+  oi=ids[side==0];ii=ids[side==1];faces=ids[f];pfaces=canonical(faces[np.all(params[faces,0]>=40,axis=1)])
+  checks={'source_exact_positions':bool(np.array_equal(p,source['points'][ids])), 'source_exact_normals':bool(np.array_equal(d['normals'],source['normals'][ids])), 'unique_source_indices':len(set(map(int,ids)))==len(ids),'protected_row40_vertices_retained':protected<=set(map(int,ids)), 'protected_row40_faces_unchanged':protected_faces==pfaces,'rim112_vertices_retained':all(x in lookup for x in rim),'rim112_edges_retained':all(x in lookup and rim[(i+1)%112] in lookup and tuple(sorted((lookup[x],lookup[rim[(i+1)%112]]))) in edges for i,x in enumerate(rim)), 'source_pairmap_exact':len(oi)==len(ii) and all(mapping.get(int(x))==int(y) for x,y in zip(oi,ii))}
+  record={'input':str(path.resolve()),'sha256':sha(path),'vertices':len(p),'outer_vertices':len(oi),'triangles':len(f),'invariants':checks,'error_mean':float(dist.mean()),'error_p95':float(np.quantile(dist,.95)),'error_p99':float(np.quantile(dist,.99)),'error_max':float(dist.max()),'new_negative_count':int(reg.sum()),'new_negative_area_fraction':float(reg.mean()),'conservative_new_negative_count':int(robust.sum()),'max_inward_depth_where_high_outside':float(max(0,-low[high>0].min())),'signed_delta_p01':float(np.quantile(low-high,.01))}
+  if gate:record['independent_gate']=gate.review(path)
+  return record,dist,low,reg
+ b,bd,bl,br=review(a.baseline)
+ report={'method':'Identical saved 20,000 area-weighted source outer crown points; nearest candidate outer surface, then nearest head face-plane sign. Paired deltas compare identical points.','limitations':'Monte Carlo area estimate. Head sign is a nearest-plane proxy, not exact SDF. Distances are Blender units (assumed meters in threshold descriptions). No certified coplanar/tangency/clearance test and no Minecraft or visual validation. Quality tolerances are provisional engineering policy, not perceptual guarantees.','sample_seed':int(samples['seed']),'fixed_samples_sha256':sha(samplepath),'source_sha256':sha(spath),'sample_count':len(points),'thresholds':{'p95_ratio':a.p95_ratio,'p99_ratio':a.p99_ratio,'contact_increase_fraction':a.contact_increase,'maximum_depth_increase':a.depth_increase},'baseline':b,'candidates':{}}
+ for item in a.candidate:
+  name,path=item.split('=',1);r,dd,ll,rr=review(Path(path));r['paired_vs_baseline']={'error_increase_p95':float(np.quantile(dd-bd,.95)),'error_increase_max':float((dd-bd).max()),'signed_distance_decrease_p01':float(np.quantile(ll-bl,.01)),'contact_newly_degraded_count':int((rr&~br).sum()),'contact_recovered_count':int((br&~rr).sum()),'contact_net_increase_fraction':float(rr.mean()-br.mean()),'triangle_reduction_fraction':1-r['triangles']/b['triangles'],'outer_vertex_reduction_fraction':1-r['outer_vertices']/b['outer_vertices']}
+  checks={'p95_within_limit':r['error_p95']<=b['error_p95']*a.p95_ratio+1e-12,'p99_within_limit':r['error_p99']<=b['error_p99']*a.p99_ratio+1e-12,'contact_within_limit':rr.mean()<=br.mean()+a.contact_increase+1e-12,'maximum_depth_within_limit':r['max_inward_depth_where_high_outside']<=b['max_inward_depth_where_high_outside']+a.depth_increase+1e-12,'has_cost_reduction':r['triangles']<b['triangles']}
+  strict={key: r[key]<=b[key]+1e-12 for key in ('error_p95','error_p99','new_negative_area_fraction','max_inward_depth_where_high_outside')}
+  strict['has_cost_reduction']=r['triangles']<b['triangles'];r['strict_no_measurable_loss_gates']=strict
+  r['passes_strict_quality_and_invariants']=all(strict.values()) and all(r['invariants'].values())
+  r['passes_strict_with_collision_screen']=r['passes_strict_quality_and_invariants'] and bool(gate) and r['independent_gate']['passes_screen']
+  r['quality_cost_gates']=checks;r['passes_quality_and_invariants']=all(checks.values()) and all(r['invariants'].values())
+  r['passes_all_requested_screens']=r['passes_quality_and_invariants'] and (r['independent_gate']['passes_screen'] if gate else True)
+  r['collision_screen_executed']=bool(gate);report['candidates'][name]=r
+ a.output.parent.mkdir(parents=True,exist_ok=True);a.output.write_text(json.dumps(report,indent=2,default=lambda x: x.item() if isinstance(x,np.generic) else str(x)));print(json.dumps(report,indent=2,default=lambda x: x.item() if isinstance(x,np.generic) else str(x)))
+if __name__=='__main__':main()

@@ -1,0 +1,12 @@
+import bpy,numpy as np,hashlib,json
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/'
+def hashes():
+ out={}
+ for o in bpy.data.objects:
+  if o.type!='MESH' or o.name=='Menino — cabelo contínuo V50 reversível':continue
+  h=hashlib.sha256();a=np.empty(len(o.data.vertices)*3,dtype=np.float32);o.data.vertices.foreach_get('co',a);h.update(a.tobytes());h.update(np.array(o.matrix_world,dtype=np.float32).tobytes())
+  if o.data.shape_keys:
+   for k in o.data.shape_keys.key_blocks:k.data.foreach_get('co',a);h.update(a.tobytes());h.update(str((k.name,k.value)).encode())
+  out[o.name]=h.hexdigest()
+ return out
+bpy.ops.wm.open_mainfile(filepath=r+'V50-child-hair-trial.blend',use_scripts=False);before=hashes();bpy.ops.wm.open_mainfile(filepath=r+'V51-child-hair-trial.blend',use_scripts=False);after=hashes();out={'all_other_mesh_geometry_transforms_and_shape_keys_identical':before==after,'different_objects':[n for n in before if before[n]!=after.get(n)]};json.dump(out,open(r+'V51-scope-verification.json','w'),indent=2);print(out)

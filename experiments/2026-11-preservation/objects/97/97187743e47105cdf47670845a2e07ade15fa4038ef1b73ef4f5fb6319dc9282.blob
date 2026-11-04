@@ -1,0 +1,7 @@
+from pathlib import Path
+import sys, json
+O=Path(__file__).resolve().parent;sys.path.insert(0,str(O));sys.dont_write_bytecode=True
+import scan_boundary as sb
+for k in [.05,.1,.15,.2,.3,.4]:
+ for amp in [20,25,30]:sb.build(f'posterolateral-k{str(k).replace(".","p")}-{amp:02d}mm',[k,1,0],amp)
+(O/'posterolateral-summary.json').write_text(json.dumps(sb.summary,indent=2))

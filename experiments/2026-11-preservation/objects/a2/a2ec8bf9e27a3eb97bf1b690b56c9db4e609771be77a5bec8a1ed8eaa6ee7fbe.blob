@@ -1,0 +1,27 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+const base='/workspace/scratch/212c580ada5b/altare-two-pillars-integration-20261103/addons/altare';
+const {twinPedestalRecipe}=await import(base+'/assets-src/atelier/twin-pedestal-recipe-study.mjs');
+const paths=['assets-src/atelier/twin-pedestal-family-study.mjs','assets-src/atelier/twin-pedestal-recipe-study.mjs','assets-src/atelier/twin-pedestal-cell-study.mjs','assets-src/atelier/twin-pedestal-collision-study.mjs','assets-src/atelier/garment.mjs'];
+const hash=()=>Object.fromEntries(paths.map(p=>[p,crypto.createHash('sha256').update(fs.readFileSync(base+'/'+p)).digest('hex')]));const before=hash();
+const directions=[[0,-1],[1,0],[0,1],[-1,0]],colors=['white','red','green','purple','rose','black','gold','silver'];let plans=0,cells=0,maxCubes=0,maxQuads=0;
+for(let width=1;width<=16;width++)for(let depth=1;depth<=16;depth++){if(Math.min(width,depth)>8)continue;for(let f=0;f<4;f++){
+ const color=colors[(width+depth+f)%8],p=twinPedestalRecipe(width,depth,f,{textile:'floral',color}),keys=new Set(p.cells.map(c=>c.x+','+c.z)),[fx,fz]=directions[f],tx=-fz,tz=fx;
+ assert.equal(p.cells.length,width*depth);plans++;
+ const front=p.cells.filter(c=>!keys.has((c.x+fx)+','+(c.z+fz))).sort((a,b)=>(a.x*tx+a.z*tz)-(b.x*tx+b.z*tz));assert.equal(front.length,width);
+ const roleFor=new Map(front.map((c,i)=>[c,width%2?(i===(width-1)/2?1:0):(i===width/2-1?2:i===width/2?3:0)]));
+ const shafts=new Set();
+ for(const c of p.cells){cells++;let mask=0;for(let side=0;side<4;side++){const[dX,dZ]=directions[side];if(!keys.has((c.x+dX)+','+(c.z+dZ)))mask|=1<<side;}
+  assert.equal(c.edges,mask);assert.equal(c.facing,f);assert.equal(c.recipe,'floral_'+color);assert.equal(c.textileRole,roleFor.get(c)??0);
+  for(let side=0;side<4;side++){const role=side===f?(roleFor.get(c)??0):0;assert.equal(c.materials['cloth_'+side],`textile_ruby_${role}${color==='red'?'':'_'+color}`);}
+  const g=c.doc['minecraft:geometry'][0],cs=g.bones.flatMap(b=>b.cubes),wood=g.bones.find(b=>b.name==='mensa').cubes;
+  assert.ok(Math.abs(Math.max(...wood.map(x=>x.origin[1]+x.size[1]))-15.91)<1e-7);assert.equal(g.bones.find(b=>b.name==='garment_top').cubes[0].origin[1],15.91);
+  for(const b of g.bones)if(b.name.endsWith('_shaft'))shafts.add(b.name);
+  for(const cube of cs){assert.ok(cube.size.every(x=>Number.isFinite(x)&&x>0));for(const uv of Object.values(cube.uv))assert.ok(c.materials[uv.material_instance],`missing material ${uv.material_instance}`);}
+  maxCubes=Math.max(maxCubes,cs.length);maxQuads=Math.max(maxQuads,cs.reduce((n,c)=>n+Object.keys(c.uv).length,0));assert.ok(c.collision.length<=16);
+ }
+ assert.equal(shafts.size,2);
+}}
+assert.equal(plans,768);assert.equal(cells,33984);assert.ok(maxCubes<=60);assert.ok(maxQuads<=192);
+const after=hash(),result={plans,cells,maxCubes,maxQuads,allEightColors:true,method:'Independent neighbor-derived edges, tangent-ordered fronts and explicit centered-role/material checks across complete oriented editor domain',stableInputs:JSON.stringify(before)===JSON.stringify(after),sourceHashes:before};fs.writeFileSync('/tmp/altare-independent-pedestal-contracts.json',JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));

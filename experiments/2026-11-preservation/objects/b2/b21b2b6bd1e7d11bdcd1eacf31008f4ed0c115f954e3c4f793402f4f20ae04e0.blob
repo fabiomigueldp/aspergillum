@@ -1,0 +1,101 @@
+{
+  "createdAt": "2026-11-03T22:30:32.509952+00:00",
+  "decision": "NO-GO for release, installation or world migration",
+  "scope": "Limited deferred-break recovery location guard in isolated diagnostic copy",
+  "behavior": "After checking captured snapshot, require a loaded valid block with isAir === true before item construction/spawn/delete. Refuse otherwise without automatic retry.",
+  "checks": {
+    "focusedRuntimeTests": {
+      "status": "passed",
+      "files": 5,
+      "tests": 185,
+      "newTests": 20,
+      "newInfrastructureTests": 18,
+      "newBootstrapTests": 2,
+      "log": "out/state-compaction/break-location/after.log"
+    },
+    "preFixRegression": {
+      "status": "expected-fail",
+      "failed": 16,
+      "passed": 2,
+      "scope": "First 18 infrastructure tests against the previous production recovery function",
+      "log": "out/state-compaction/break-location/before.log"
+    },
+    "typecheck": {
+      "status": "passed",
+      "log": "out/state-compaction/break-location/typecheck.log"
+    },
+    "scriptBundle": {
+      "status": "passed",
+      "log": "out/state-compaction/break-location/build-script.log"
+    },
+    "documentation": {
+      "status": "passed",
+      "markdownFiles": 56,
+      "log": "out/state-compaction/break-location/docs.log"
+    },
+    "priorRiskCharacterizations": "Retained: after-effect duplicate delivery, spawn/delete failure, delayed replay while address is air, failed rollback loss. Mock destruction now correctly exposes live air.",
+    "independentReview": "Approved source/diff review, no blocker. Not native validation.",
+    "protectedBytes": {
+      "unchangedFiles": 8628,
+      "expectedChangedFiles": [
+        "packs/behavior/scripts/main.js"
+      ],
+      "result": "passed",
+      "scope": "Read-only integrity comparison of already pinned art/source/pack bytes; no regenerated assets or repeated state/visual proof"
+    },
+    "sourcePatch": "Verified round-trip for all 13 source files"
+  },
+  "notRepeated": [
+    "Exhaustive state/codec and visual proofs",
+    "Offline journal and quarantine proofs",
+    "General build/check",
+    "Creator Tools"
+  ],
+  "notRun": [
+    "Minecraft",
+    "Package generation",
+    "Installation, publication or world changes"
+  ],
+  "availabilityCost": "Water, fire, replacement blocks and unreadable/unloaded addresses can also block legitimate recovery. Snapshot retained for inspection, no automatic retry.",
+  "limitations": [
+    "No generation identity; stale replay in air remains unsafe.",
+    "No exactly-once, atomicity or durable persistence guarantee.",
+    "Spawn-before-delete and undocking remain non-atomic.",
+    "Break handlers have already cancelled loading/released table sessions before scheduling recovery.",
+    "A reoccupied block that is destroyed again before the callback may be indistinguishable from the original destruction."
+  ],
+  "sourceFiles": [
+    "src/infrastructure/break-recovery.ts",
+    "tests/mocks/compact-runtime.ts",
+    "tests/infrastructure/break-recovery-location.test.ts",
+    "tests/application/aspersorium-compact-runtime.test.ts",
+    "tests/application/sacristan-table-compact-runtime.test.ts",
+    "tests/application/compact-event-routing.test.ts",
+    "tests/application/recovery-failure-semantics.test.ts",
+    "docs/BREAK_RECOVERY_LOCATION_GUARD.md",
+    "docs/RECOVERY_PROTOCOL_DIAGNOSTIC.md",
+    "docs/STATE_AND_CONCURRENCY.md",
+    "docs/PROJECT_STATUS.md",
+    "docs/TESTING.md",
+    "CHANGELOG.md"
+  ],
+  "generatedFiles": [
+    "packs/behavior/scripts/main.js"
+  ],
+  "filesSha256": {
+    "src/infrastructure/break-recovery.ts": "da3d9ede1da870822401eeec968ec9d5588308f32550261acf25cd8169c1389c",
+    "tests/mocks/compact-runtime.ts": "41d5a615e8a1ae2e811b3ff81c4e5a1fbb3a46d3ef4dd3077bdb46603d712040",
+    "tests/infrastructure/break-recovery-location.test.ts": "4735129934b02c8e07ffbb8b8ad98503ced992ade213519bd07be2765e3441c5",
+    "tests/application/aspersorium-compact-runtime.test.ts": "e3071b8bb65e44a9e26c14d247414ed0689ffe887d4bf362ac8d548023a2a4fa",
+    "tests/application/sacristan-table-compact-runtime.test.ts": "67537dccd3bca0c622e39f8925eed893cd54f3eca9aa1ad0ff53f3b64cd885a6",
+    "tests/application/compact-event-routing.test.ts": "cd2bb949dddc9020a018794e1941af681d469572297034fa7da00c7f73fe2252",
+    "tests/application/recovery-failure-semantics.test.ts": "2a9c14eb66c0ab6a0fb65b0fed83e40349d0feb694146e9dfd277d26d0f5b917",
+    "docs/BREAK_RECOVERY_LOCATION_GUARD.md": "458c8e255e9c6d515d297ec4b190920f520d7a00d5fd389bc749b94f7c6df430",
+    "docs/RECOVERY_PROTOCOL_DIAGNOSTIC.md": "3286b9fba5cc4c1b3ea9bd187295351ad22c4afda0d8f7aaf9336baf6d06b27d",
+    "docs/STATE_AND_CONCURRENCY.md": "b11c68b73d0ed4c0f06cdb43a0799daaf46ac85169367e792d19d9f5b353426f",
+    "docs/PROJECT_STATUS.md": "9f3394a2ca9f8337448cfc02ec9ae87b8534c055964631671215f62d6905dafd",
+    "docs/TESTING.md": "5b39ede6ea93a32c1aefae21e8283c60d7667fe4e76d7db2014fd26fae9e5466",
+    "CHANGELOG.md": "76f56af072b527720a6bd68fa5bcacdce9212ca8d62896cc6c0dea64e9ec54df",
+    "packs/behavior/scripts/main.js": "49fa5f208df410070536a26a5c636d0d9d5425624f189919906323a0ce1db5d9"
+  }
+}

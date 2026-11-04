@@ -1,0 +1,31 @@
+--- 0.12.1/scripts/main.js
++++ 0.12.2/scripts/main.js
+@@ -465,7 +465,7 @@
+ };
+ 
+ // src/presentation/menu.ts
+-import { CustomForm, ObservableBoolean, ObservableNumber } from "@minecraft/server-ui";
++import { CustomForm, ObservableBoolean, ObservableNumber, ObservableUIRawMessage } from "@minecraft/server-ui";
+ 
+ // src/domain/customization.ts
+ var MODELS = ["classic", ...STRUCTURES, "coffer", "baluster", "colonnade", "crossbrace"];
+@@ -518,12 +518,18 @@
+   const ornamental = new ObservableBoolean(draft.ornamental, { clientWritable: true });
+   const classic = new ObservableBoolean(false), architectural = new ObservableBoolean(false), color = new ObservableBoolean(false), relief = new ObservableBoolean(false), unavailable = new ObservableBoolean(false), material = new ObservableBoolean(false), joinery = new ObservableBoolean(false), ornate = new ObservableBoolean(false), directional = new ObservableBoolean(true);
+   const none = new ObservableNumber(0, { clientWritable: true }), cleanups = [];
+-  const title = { rawtext: [tr("menu.title"), { text: ` \xB7 ${facing % 2 ? b.maxZ - b.minZ + 1 : b.maxX - b.minX + 1} \xD7 ${facing % 2 ? b.maxX - b.minX + 1 : b.maxZ - b.minZ + 1}` }] };
++  const titleFor = (front) => ({ rawtext: [tr("menu.title"), { text: ` \xB7 ${front % 2 ? b.maxZ - b.minZ + 1 : b.maxX - b.minX + 1} \xD7 ${front % 2 ? b.maxX - b.minX + 1 : b.maxZ - b.minZ + 1}` }] });
++  const title = new ObservableUIRawMessage(titleFor(draft.facing));
++  let titleFacing = draft.facing;
+   const form = new CustomForm(player, title);
+   function refresh() {
+     updating = true;
+     try {
+       const c = customizationCapabilities(draft);
++      if (draft.facing !== titleFacing) {
++        title.setData(titleFor(draft.facing));
++        titleFacing = draft.facing;
++      }
+       classic.setData(!c.architectural);
+       architectural.setData(c.architectural && !c.ornate);
+       color.setData(c.color);

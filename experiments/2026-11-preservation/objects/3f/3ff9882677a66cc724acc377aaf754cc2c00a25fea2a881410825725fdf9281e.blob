@@ -1,0 +1,12 @@
+"""Reproduce/verify source-only geometry extraction without editing source files."""
+from pathlib import Path
+import numpy as np,json,hashlib,shutil
+B=Path(__file__).resolve().parents[2];R=B/'band_shell_v13';a=np.load(B/'evidence/source_meshes.npz');r=json.loads((B/'evidence/source-export.json').read_text());start=r['parts'][0]['high_triangles'];count=r['parts'][1]['high_triangles'];f=a['high_f'][start:start+count];offset=int(a['high_f'][:start].max())+1;objects=json.loads((B/'shell_band_v3/evidence/source-objects.json').read_text());nv=objects[r['parts'][1]['name']]['verts'];v=a['high_v'][offset:offset+nv];local=f-offset;parts=np.where((local>=160386).all(1),2,0)
+p=R/'source_context/original-high-shell.npz'
+if p.exists():
+ d=np.load(p);assert np.array_equal(d['points'],v) and np.array_equal(d['triangles'],local) and np.array_equal(d['face_parts'],parts)
+else:np.savez_compressed(p,points=v,triangles=local,face_parts=parts,source_global_indices=np.arange(offset,offset+nv),provenance=json.dumps({'purpose':'Source-only comparison, not Bedrock candidate','object':r['parts'][1]['name'],'source_high_triangle_slice':[start,start+count],'source_high_vertex_slice':[offset,offset+nv],'unused_source_vertices_preserved':int(nv-len(np.unique(local))),'raw_source_orientation':True}))
+q=R/'source_context/original-render-high-band.npz';source=B/'shell_band_v3/evidence/band-source.npz'
+if q.exists():assert q.read_bytes()==source.read_bytes()
+else:shutil.copyfile(source,q)
+print(json.dumps({'shell_source_vertices':nv,'shell_faces':len(local),'source_arrays_verified':True,'render_band_byte_identical':True}))

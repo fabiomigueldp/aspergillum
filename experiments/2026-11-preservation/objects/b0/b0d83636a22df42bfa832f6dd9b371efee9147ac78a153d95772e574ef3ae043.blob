@@ -1,0 +1,16 @@
+exec(open(__import__('pathlib').Path(__file__).resolve().parent/'audit-v49-root-pairs.py').read().split('report={}')[0])
+report=json.load(open(r+'V49-root-contact-detail.json'))
+hp,tp,hf,tf,tb=states[1];dirs=[Vector((1,.317,.219)).normalized(),Vector((-.231,1,.417)).normalized(),Vector((.413,-.217,1)).normalized()];inside=[];ambiguous=[]
+for i,p in enumerate(hp):
+ results=[]
+ for d in dirs:
+  origin=p.copy();n=0
+  for j in range(100):
+   loc,norm,face,dist=tb.ray_cast(origin,d)
+   if loc is None:break
+   n+=1;origin=loc+d*1e-6
+  results.append(n%2)
+ if len(set(results))>1:ambiguous.append(i)
+ if sum(results)>=2:inside.append(i)
+report['ray_parity_three_directions']={'inside_vertices':len(inside),'ambiguous_vertices':ambiguous,'original_z_range':[min(h.data.vertices[i].co.z for i in inside),max(h.data.vertices[i].co.z for i in inside)],'inside_distal_z_lt_1_17':sum(h.data.vertices[i].co.z<1.17 for i in inside)}
+json.dump(report,open(r+'V49-root-contact-detail.json','w'),indent=2);print(report['ray_parity_three_directions'])

@@ -1,0 +1,44 @@
+import bpy,json,math,itertools
+from mathutils import Vector,Matrix
+from mathutils.bvhtree import BVHTree
+from collections import defaultdict
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'cuff-bounded-diagnostic.blend',use_scripts=False)
+t=bpy.data.objects['Maria — túnica e mangas integradas'];t.shape_key_clear();tm=t.data;weights=[v.value for v in tm.attributes['.sculpt_mask'].data];tp=[v.co.copy() for v in tm.vertices];support={i for i,w in enumerate(weights) if w>0};edges=[tuple(e.vertices) for e in tm.edges if any(i in support for i in e.vertices)];polys=[tuple(p.vertices) for p in tm.polygons if any(i in support for i in p.vertices)]
+h=bpy.data.objects['Maria — mão ao peito anatômica'];m=h.data;dg=bpy.context.evaluated_depsgraph_get();before=[v.co.copy() for v in h.evaluated_get(dg).data.vertices];base=[v.co.copy() for v in m.vertices];bv=BVHTree.FromObject(t,dg);sets=defaultdict(set)
+for p,a in zip(m.polygons,m.attributes['.sculpt_face_set'].data):sets[a.value].update(p.vertices)
+upper=[i for i,p in enumerate(base) if p.z>3.0];faces=[list(p.vertices) for p in m.polygons if all(i in set(upper) for i in p.vertices)];pivot=Vector((.11,-.18,2.96));baseline_gaps=[min(bv.find_nearest(before[i])[3] for i in sets[fs]) for fs in [3,4,5,11,21]];trials=[];best=None
+for ax,ay,az in itertools.product([-10,-6,-3,0],[-8,0,8],[-8,0,8]):
+ R=Matrix.Rotation(math.radians(az),3,'Z')@Matrix.Rotation(math.radians(ay),3,'Y')@Matrix.Rotation(math.radians(ax),3,'X');pts=[pivot+R@(p-pivot) for p in before];shift=0.
+ for it in range(20):
+  need=0.
+  for i in upper:
+   q,n,_,_=bv.find_nearest(pts[i]);signed=(pts[i]-q).dot(n)
+   if signed<.0008:need=max(need,(.0008-signed)/max(.05,-n.y))
+  if need<1e-7:break
+  shift+=need
+  for p in pts:p.y-=need
+ trans=Vector((0,-shift,0));newt=[p+weights[i]*(pivot+R@(p-pivot)+trans-p) for i,p in enumerate(tp)]
+ ratios=[(newt[i]-newt[j]).length/(tp[i]-tp[j]).length for i,j in edges if (tp[i]-tp[j]).length>1e-9];norm=[]
+ for ids in polys:
+  a,b,c=[tp[i] for i in ids[:3]];x,y,z=[newt[i] for i in ids[:3]];n=(b-a).cross(c-a);nn=(y-x).cross(z-x)
+  if n.length and nn.length:norm.append(math.degrees(n.angle(nn)))
+ gaps=[min(bv.find_nearest(pts[i])[3] for i in sets[fs]) for fs in [3,4,5,11,21]];signed=[]
+ for i in upper:
+  q,n,_,_=bv.find_nearest(pts[i]);signed.append((pts[i]-q).dot(n))
+ info={'angles_deg':[ax,ay,az],'outward_shift':shift,'mean_tip_gap':sum(gaps)/len(gaps),'tip_gaps':gaps,'min_clearance':min(signed),'sleeve_edge_ratio':[min(ratios),max(ratios)],'sleeve_normal_max':max(norm),'wrist_max_displacement':max((pts[i]-before[i]).length for i,p in enumerate(base) if p.z<3.0)}
+ valid=min(signed)>=0 and min(ratios)>=.8 and max(ratios)<=1.2 and max(norm)<=15
+ info['passes_distortion']=valid;trials.append(info)
+ if valid and info['mean_tip_gap']<sum(baseline_gaps)/5-.0005:
+  overlap=len(BVHTree.FromPolygons(pts,faces).overlap(BVHTree.FromPolygons(newt,[tuple(p.vertices) for p in tm.polygons])))
+  info['triangle_intersections_upper']=overlap
+  if overlap==0 and (best is None or info['mean_tip_gap']<best[0]):best=(info['mean_tip_gap'],pts,newt,info)
+json.dump({'baseline_gaps':baseline_gaps,'baseline_mean':sum(baseline_gaps)/5,'trials':trials,'chosen':best[3] if best else None},open(r+'V46-rigid-hand-cuff-verification.json','w'),indent=2)
+if best is None:print('NO SAFE CANDIDATE');raise SystemExit
+score,pts,newt,info=best;k=h.shape_key_add(name='TESTE46 — mão inteira rígida, manga acompanhando');k.value=1
+for i,v in enumerate(k.data):v.co=m.vertices[i].co+pts[i]-before[i]
+t.shape_key_add(name='Basis');tk=t.shape_key_add(name='TESTE46 — manga campo geodésico limitado');tk.value=1
+for i,v in enumerate(tk.data):v.co=newt[i]
+bpy.ops.wm.save_as_mainfile(filepath=r+'V46-rigid-hand-cuff-trial.blend');print('CHOSEN',info)
+center=sum(base,Vector())/len(base);s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=600;s.render.resolution_y=800;s.render.resolution_percentage=100;c=s.camera
+for view,off in [('front',(0,-5,0)),('threequarter',(-3,-5,.2)),('profile',(5,0,0)),('reverse',(-5,0,0)),('close',(-3,-5,.2))]:
+ ct=Vector((.15,-.19,2.87)) if view=='close' else center;c.location=ct+Vector(off);c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=.36 if view=='close' else .48;s.render.filepath=r+'V46-hand-'+view+'.png';bpy.ops.render.render(write_still=True)

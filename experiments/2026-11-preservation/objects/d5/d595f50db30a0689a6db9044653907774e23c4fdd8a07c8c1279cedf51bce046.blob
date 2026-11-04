@@ -1,0 +1,44 @@
+# Latest frozen candidate: adaptive-consistent
+
+**Use adaptive-consistent-assembly.npz**, SHA256 `712a550fbbb56090ae700e30e4e21153d04c16139062ebcd2a72e818f3e34f7b`, for independent review. The earlier adaptive-final remains frozen below for comparison.
+
+After independent review identified the coupling between offset directions and obstacle support constraints, one additional constrained solve used the previous final directors and a0.21mm construction target. All six support-plane distances measured against the resulting FINAL geometry now exceed0.2mm: minimum0.2123017mm, remaining0.5823656,0.6077466,2.2506130,2.5207035,2.5338586mm. These are six local signed support-plane constraints, **not** a global clearance certificate.
+
+Gate remains zero crossings and all topology checks pass. Center displacement maximum19.0240631mm, p95 over285 pairs8.9685943mm, shell maximum19.4577463mm. All120 moved centers, source preservation, original thickness and zero mixed/nonpositive director products remain as below. adaptive-consistent-build.json includes measured final constraints; adaptive-consistent-preservation.json confirms exact fixed geometry. No visual/game approval.
+
+Reproduce this extra solve with build_consistent_clearance.py, FIDELITY=.133352143, PREFIX=consistent-1, PRIOR=fidelity-0p133-midfield.npz, OPENBLAS_NUM_THREADS=1. The adaptive-consistent assembly copies consistent-1 geometry and adds the measured build/provenance string. Its gate and sampled source-distance reports are separate.
+
+---
+
+# Adaptive lateral patch: constrained center relaxation
+
+Frozen candidate: **adaptive-final-assembly.npz**, SHA256 `a6193a2f7fcd12f0e61b7a17845b0e879a848d1c357a917aacf43e5bb2d037d1`.
+
+This candidate passes the applied independent geometric screen. It is **not** approved visually, in Minecraft, for exact clearance, or against other sculpture objects. No render, export, installation or publication was done. Source V75/V5/V6 and other lateral_v7 work were not modified.
+
+## Concrete hypothesis and construction
+
+Near-antiparallel lateral folds are repaired by moving only 120 generated center vertices, not by reducing thickness or changing normals for appearance. The original 1100 center triangles/connectivity are kept. An anisotropic thin-plate least-squares objective regularizes second differences in s, t and their mixed derivative, using the observed approximate physical grid-step ratio 3:1. All source endpoints and the t=.2..8 strip are fixed. A displacement penalty of0.133352143 keeps the candidate closer to the Hermite control.
+
+Source-director half-space constraints on endpoint zipper triangles with one movable center prevent the relaxation folding through fixed endpoint wall directions. Their requested dot product is0.2 relative to the unconstrained face area, not a uniform final cosine guarantee. Three actual residual mantle faces (global assembly IDs10958,10959,10976) provide obstacle support planes for generated outer vertices186439/186440, with target0.2mm against the preceding offset estimate. These are local linear construction constraints, not a certificate of global0.2mm clearance after all director updates.
+
+Offsets use area-weighted center normals projected into positive incident-normal cones, then normalized. Original pair thickness is retained, including lateral interpolated arcs. No source vertex, source face, source winding or central shell coordinate is changed. The NPZ contains source_indices, generated_vertices, face_parts and a provenance JSON string. Part0=cap5866 triangles, part1=bridge2296, part2=orientation-restored mantle4322.
+
+## Measured outcome
+
+- Independent gate:12484 triangles,6244 vertices, Euler2, zero strict crossings, boundary edges, non-two-face edges, inconsistent winding, bad links, unused vertices, degenerate triangles or opposed-coplanar adjacent candidates.
+- Zero mixed-sign center director triangles and zero nonpositive face/vertex director products. Minimum cone cosine among adjusted generated pairs0.34686.
+- Original generated wall pair thickness0.93678–5.04950mm retained to floating point accuracy. This is paired thickness, not global minimum clearance.
+- Center displacement versus Hermite: maximum19.024mm; p95 over all285 generated pairs8.968mm. Maximum shell displacement19.458mm. These are material shape changes requiring artistic review.
+- One-sided area-weighted bridge-to-evaluated-TESTE74 source distance,10000 samples: median2.505mm, p958.573mm, maximum11.312mm. Source itself intersects; this is fidelity only, not acceptance. Sampling seed20261103.
+- Source geometry, topology and central strip preservation verified separately in adaptive-final-preservation.json.
+
+## Controlled progression and stopping point
+
+Baseline cone construction had56 crossings. Unconstrained thin-plate relaxation reduced this to12 but left two mixed-director source-adjacent faces. Endpoint constraints reduced to4, with all director products positive. The three mantle obstacle planes removed the remaining4. Increasing the displacement penalty from0.01 to0.1 and0.133352143 reduced movement while retaining zero crossings. At0.177827941,6 OUTER×OUTER bridge crossings return, involving lateral rows2..5 and t indices1..4. At0.316227766 there are26 crossings, and at1 there are86 plus infeasible normal cones. The retained candidate is the lower-displacement passing sample, not a claimed globally minimum-distance solution. Rejected NPZs and gates are preserved.
+
+## Reproduction
+
+From the project root, run build_relaxed.py, build_constrained.py and build_clearance.py under this directory in that order. Then run build_minimum_change.py with environment variables FIDELITY=.133352143, PREFIX=fidelity-0p133 and OPENBLAS_NUM_THREADS=1. The final NPZ copies that resulting assembly and adds its build report as the provenance field. independent_gate.py under shell_band_v3/tools was run in Blender4.3.2 with -b -t3 on every assembly. measure_source_distance.py in this directory accepts the prefix after Blender's -- separator.
+
+The gate's strict intersection test does not certify tangency, general coplanar overlap, minimum distance, or contact against head/halo/other objects. The complete source and central strip remain immutable constraints; head contact and visual approval are pending the parent's independent review.

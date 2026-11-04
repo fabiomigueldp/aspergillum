@@ -1,0 +1,92 @@
+import {nativePoseFor,nativePoseData,nativeCentered} from './native-pedestal-layout.ts';
+import {frontalRole} from './frontal-layout.ts';
+import {designById,centerRole,SURFACES,TEXTILE_VALUES,compactLayout} from './catalog.ts';
+import {repairClassicTextile} from './classic-textile-layout.ts';
+import {paletteRoleAfterContour} from './palette-layout.ts';
+import {repairClassic} from './classic-layout.ts';
+export interface Position { x:number; y:number; z:number }
+export interface Tile { position:Position; stone:number; cloth:number; frontal:number; facing:number; edges:number; design?:string; textileRole?:number; nativePose?:number }
+export interface Finish { stone:number; cloth:number; ornamental:boolean; facing:number; design?:string }
+export const LIMIT = 128;
+export const DIRECTIONS = [{x:0,z:-1},{x:1,z:0},{x:0,z:1},{x:-1,z:0}] as const;
+export const positionKey = (p:Position):string => `${p.x},${p.y},${p.z}`;
+export const neighbor = (p:Position,i:number):Position => ({x:p.x+DIRECTIONS[i]!.x,y:p.y,z:p.z+DIRECTIONS[i]!.z});
+export const sameTile = (a:Tile|null|undefined,b:Tile):boolean => !!a && positionKey(a.position)===positionKey(b.position)
+  && a.stone===b.stone && a.cloth===b.cloth && a.frontal===b.frontal && a.facing===b.facing && a.edges===b.edges && a.design===b.design&&(a.textileRole??0)===(b.textileRole??0)&&a.nativePose===b.nativePose;
+export function withEdges(tile:Tile,edges:number):Tile {
+ if(designById(tile.design)?.codec==='native')return {...tile};
+ const next={...tile,edges},d=designById(tile.design);if(!tile.design)return repairClassic(next);if(d?.codec==='classic_textile')return {...next,...repairClassicTextile(next)};return compactLayout(d)?{...next,frontal:paletteRoleAfterContour(next)}:next;
+}
+
+/** A placed extension inherits the finish, never a neighbour's centre role. */
+export function isolatedTile(tile:Tile,position:Position):Tile {
+ if(designById(tile.design)?.codec==='native')return pendingTile(position);
+ return {...tile,position:{...position},edges:15,frontal:0,...(tile.textileRole!==undefined?{textileRole:0}:{})};
+}
+
+/** A provisional extension is visibly plain and carries no native support pose. */
+export function pendingTile(position:Position):Tile {return {position:{...position},stone:0,cloth:0,frontal:0,facing:0,edges:15};}
+
+/** A pending plain extension should reopen its single native composition, even
+ * when the player targets the provisional cell. This only selects a draft. */
+export function editorSeed(tiles:readonly Tile[]):Tile {
+ const first=tiles[0];if(!first)throw Error('changed');
+ const native=tiles.find(t=>designById(t.design)?.codec==='native');
+ if(native&&tiles.every(t=>t.design===native.design||!t.design&&t.stone===0&&t.cloth===0&&t.frontal===0))return native;
+ return first;
+}
+
+/** undefined means unloaded/unknown, never air. Preserve the last known edge in that case. */
+export function edgeMask(connected:readonly (boolean|undefined)[],previous=15):number {
+  return connected.reduce<number>((mask,value,i)=>value===false || (value===undefined && !!(previous&(1<<i)))?mask|(1<<i):mask,0);
+}
+export function collectSurface(origin:Position,read:(p:Position)=>Tile|null|undefined):Tile[] {
+  const seen=new Set<string>();const queue=[origin];const tiles:Tile[]=[];
+  for(let head=0;head<queue.length;head++){
+    const p=queue[head]!;const key=positionKey(p);if(seen.has(key))continue;seen.add(key);
+    const value=read(p);if(value===undefined)throw Error('unloaded');if(value===null)continue;
+    tiles.push(value);if(tiles.length>LIMIT)throw Error('limit');
+    for(let i=0;i<4;i++)queue.push(neighbor(p,i));
+  }
+  if(!tiles.length)throw Error('changed');
+  return tiles;
+}
+export function bounds(tiles:readonly Tile[]) {
+  return {minX:Math.min(...tiles.map(t=>t.position.x)),maxX:Math.max(...tiles.map(t=>t.position.x)),
+    minZ:Math.min(...tiles.map(t=>t.position.z)),maxZ:Math.max(...tiles.map(t=>t.position.z))};
+}
+export function validateRectangle(tiles:readonly Tile[]):void {
+  if(!tiles.length || tiles.length>LIMIT)throw Error('limit');
+  const b=bounds(tiles),w=b.maxX-b.minX+1,d=b.maxZ-b.minZ+1;
+  if(Math.max(w,d)>16 || Math.min(w,d)>8)throw Error('limit');
+  if(w*d!==tiles.length || new Set(tiles.map(t=>positionKey(t.position))).size!==tiles.length
+    || tiles.some(t=>t.position.y!==tiles[0]!.position.y))throw Error('rectangle');
+}
+export function planFinish(tiles:readonly Tile[],finish:Finish):Tile[] {
+  validateRectangle(tiles);
+  const design=designById(finish.design);
+  if(finish.design&&!design)throw Error('configuration');
+  if(!Number.isInteger(finish.stone)||finish.stone<0||finish.stone>2
+    ||!Number.isInteger(finish.cloth)||finish.cloth<0||finish.cloth>4
+    ||!Number.isInteger(finish.facing)||finish.facing<0||finish.facing>3)throw Error('configuration');
+  const b=bounds(tiles),positions=new Set(tiles.map(t=>positionKey(t.position)));
+  const horizontal=finish.facing%2===0;
+  const width=horizontal?b.maxX-b.minX+1:b.maxZ-b.minZ+1;
+  return tiles.map(t=>{
+    const edges=edgeMask(DIRECTIONS.map((_,i)=>positions.has(positionKey(neighbor(t.position,i)))));
+    let index=horizontal?t.position.x-b.minX:t.position.z-b.minZ;
+    if(finish.facing>=2)index=width-1-index;
+    let frontal=0;
+    if((design||finish.ornamental) && (edges&(1<<finish.facing))){
+      frontal=design?(['edges','symmetric'].includes(design.codec??'')?0:centerRole(width,index)):frontalRole(width,index);
+    }
+    const {design:previousDesign,textileRole:previousRole,nativePose:previousPose,...base}=t;
+    if(design?.codec==='native'){
+      const depth=horizontal?b.maxZ-b.minZ+1:b.maxX-b.minX+1;
+      const nativePose=nativePoseFor(width,depth,finish.facing,t.position.x-b.minX,t.position.z-b.minZ,frontal,nativeCentered(design.textile));
+      return {...base,design:design.id,stone:SURFACES.indexOf(design.surface),cloth:TEXTILE_VALUES.indexOf(design.textile),nativePose,...nativePoseData(nativePose,nativeCentered(design.textile))};
+    }
+    const sharedClassic=design?.codec==='classic_textile';
+    return {...base,...(design?{design:design.id}:{}),stone:design&&!sharedClassic?SURFACES.indexOf(design.surface):finish.stone,cloth:design?TEXTILE_VALUES.indexOf(design.textile):finish.cloth,facing:design?.codec==='symmetric'?0:finish.facing,edges,frontal:sharedClassic?(finish.ornamental&&(edges&(1<<finish.facing))?frontalRole(width,index):0):frontal,...(sharedClassic?{textileRole:edges&(1<<finish.facing)?centerRole(width,index):0}:{})};
+  });
+}

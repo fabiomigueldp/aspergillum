@@ -1,0 +1,37 @@
+{
+  "method": "One-way sampled distance of bridge surfaces to evaluated TESTE34 source. Source includes its own inverted mantle and self-crossings; this is a change measurement, not quality or clearance approval.",
+  "results": {
+    "bridge-exact": {
+      "area_sample_count": 10000,
+      "seed": 20261103,
+      "distance_units": "Blender source units, assumed meters",
+      "distance_p50": 3.332000986233652e-08,
+      "distance_p95": 2.98395519848782e-07,
+      "distance_max_sampled": 2.098018376273103e-05
+    },
+    "bridge-paired": {
+      "area_sample_count": 10000,
+      "seed": 20261103,
+      "distance_units": "Blender source units, assumed meters",
+      "distance_p50": 0.00014353280130308121,
+      "distance_p95": 0.000968806562013924,
+      "distance_max_sampled": 0.0021600283216685057
+    },
+    "bridge-swapped-7p5": {
+      "area_sample_count": 10000,
+      "seed": 20261103,
+      "distance_units": "Blender source units, assumed meters",
+      "distance_p50": 0.0009620480705052614,
+      "distance_p95": 0.003062088473234325,
+      "distance_max_sampled": 0.005602365825325251
+    },
+    "bridge-hermite-physical-7p5": {
+      "area_sample_count": 10000,
+      "seed": 20261103,
+      "distance_units": "Blender source units, assumed meters",
+      "distance_p50": 0.0022473022108897567,
+      "distance_p95": 0.008932836633175609,
+      "distance_max_sampled": 0.012383668683469296
+    }
+  }
+}

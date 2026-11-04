@@ -1,0 +1,112 @@
+{
+  "source_sha256": "2c14fbc7566217ad350ef926abc1dc4a1bc41f457eaab8f10351e90b1f4777d9",
+  "source_triangles": 1052300,
+  "surface_samples": 4463115,
+  "sampling": "barycentric lattice max edge step <= 0.45 voxel; sampled shell with enclosed-cavity fill, not exact conservative triangle-box intersection",
+  "resolution_xyz": [
+    25,
+    23,
+    96
+  ],
+  "height_voxels": 96,
+  "source_pitch": 0.039173826575279236,
+  "target_height_blocks": 3.7606873512268066,
+  "model_units_per_voxel": 0.6267812252044678,
+  "axis_mapping": "Blender(x,y,z) -> Bedrock(-x,z,-y), original X/Z preserved; bottom Y=0",
+  "occupied_voxels": 20529,
+  "enclosed_voxels_filled_before_crop": 10051,
+  "cuboids": 340,
+  "emitted_faces": 2040,
+  "greedy_order": [
+    2,
+    0,
+    1
+  ],
+  "greedy_variants": [
+    {
+      "order": [
+        0,
+        1,
+        2
+      ],
+      "cuboids": 401
+    },
+    {
+      "order": [
+        0,
+        2,
+        1
+      ],
+      "cuboids": 372
+    },
+    {
+      "order": [
+        1,
+        0,
+        2
+      ],
+      "cuboids": 472
+    },
+    {
+      "order": [
+        1,
+        2,
+        0
+      ],
+      "cuboids": 420
+    },
+    {
+      "order": [
+        2,
+        0,
+        1
+      ],
+      "cuboids": 340
+    },
+    {
+      "order": [
+        2,
+        1,
+        0
+      ],
+      "cuboids": 360
+    }
+  ],
+  "reconstruction_exact_to_voxel_grid": true,
+  "texture_rgba": [
+    16,
+    8
+  ],
+  "palette_srgb": [
+    [
+      208,
+      206,
+      202
+    ],
+    [
+      182,
+      179,
+      172
+    ]
+  ],
+  "bounds_model_units": {
+    "min": [
+      -7.90953,
+      0.0,
+      -6.934435
+    ],
+    "max": [
+      7.760001,
+      60.170998000000004,
+      7.481533000000001
+    ]
+  },
+  "limitations": [
+    "No Minecraft runtime validation.",
+    "Voxel stair stepping, lost subvoxel details, possible small surface sampling gaps.",
+    "Closed holes filled; genuinely open meshes remain hollow.",
+    "All six cuboid faces emitted; internal faces add cost.",
+    "Offline renders are geometry reconstruction only, not in-game screenshots.",
+    "Thousands of cuboids are not a performance guarantee; 50-cube guidance applies to blocks, not a proven entity ceiling."
+  ]
+}

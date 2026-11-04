@@ -131,3 +131,7 @@ Comece pelo [índice da documentação](docs/README.md), pelo [estado atual](doc
 ## Licença
 
 Código e assets próprios sob a licença MIT. Minecraft é marca da Microsoft/Mojang; este projeto não é afiliado nem endossado por elas.
+
+## Trabalho preservado na main
+
+O [arquivo de estudos de novembro de 2026](experiments/2026-11-preservation/README.md) reúne as fontes históricas de Altare/Aspergillum, o modelo Nossa Senhora da Paz, seu add-on e os diagnósticos, com manifestos e restauração por hash. Esses estudos permanecem separados do runtime e não são releases nem atualizações de saves.

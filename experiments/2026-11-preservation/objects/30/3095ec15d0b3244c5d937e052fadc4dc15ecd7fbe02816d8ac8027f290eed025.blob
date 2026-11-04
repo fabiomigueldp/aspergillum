@@ -1,0 +1,80 @@
+{
+  "status": "PARTIAL_PBR_EXPERIMENT_NOT_EQUIVALENCE",
+  "runtime_tested": false,
+  "directx_convention": "Legacy assumed DX negative green; Bedrock tangent basis still unvalidated. No automatic abs(z) or normal flipping.",
+  "band": {
+    "method": "Exact evaluated band-source UV grid triangle and physical source wall 0/1 at each target texel; no spatial nearest fallback. Returns and new closures use flat native-face normals.",
+    "source_uv_is": "Geometric source-parameter lineage, not texture UVs. Interpolated at target barycentric weights then exact high-source cell lookup."
+  },
+  "anatomy": {
+    "method": "Original legacy atlas pixel from same repaired low triangle and canonical source-face barycentric location. On moved triangles, normal rotates between canonical old/new face frames before target tangent encoding; this is a declared rigid per-face transfer model, not a newly baked highpoly body.",
+    "identity_faces_bit_exact": 736,
+    "changed_faces": 640,
+    "same_face_alpha_fallback_texels": 307,
+    "alpha_edge_fallback": "When a moved-face texel addresses an unbaked old alpha-zero pixel, use nearest covered texel inside that same 20x20 source-face tile, with deterministic first-row tie break. Every occurrence is recorded. No spatial nearest or other source face is used.",
+    "microcomponent": "Native vertices 437\u2013439 and opposed faces 424/1131 preserved. Legacy normal atlas copied for their identity geometry; no use of cancelling zero vertex normals.",
+    "legacy_limits": "Original per-texel bake has part-restricted nearest fallbacks and negative tangent Z; original sampled values are preserved, not claimed historically correct or silently repaired. See pbr_normals_v2/evidence/per-texel-normal-bake.json."
+  },
+  "shell": {
+    "method": "All 12,664 faces retain geometric flat normals, including 246 new rim faces. Existing source-vertex/baseline-face lineage is frozen but there is no verified per-texel high-source surface map.",
+    "blocker": "Full original-detail equivalence for shell is pending a wall/region-constrained correspondence chain. Geometric smooth vertex normals would invent cross-edge shading, so are not used."
+  },
+  "statistics": {
+    "0": {
+      "faces": 4444,
+      "covered_texels": 871177,
+      "source_faces": 4186,
+      "flat_faces": 258,
+      "negative_tangent_z_covered": 57,
+      "angular_error_max": 0.37715136820158257,
+      "below_old_alpha_sample_count": 0,
+      "source_covered_texels": 820665,
+      "flat_covered_texels": 50512,
+      "same_face_alpha_fallback_texels": 0,
+      "mean_reencoding_angular_error_source_covered": 0.17161408399094985,
+      "geometric_flat_quantization_error_deg": 0.31775544206983286
+    },
+    "1": {
+      "faces": 12664,
+      "covered_texels": 2491441,
+      "source_faces": 0,
+      "flat_faces": 12664,
+      "negative_tangent_z_covered": 0,
+      "angular_error_max": 0.0,
+      "below_old_alpha_sample_count": 0,
+      "source_covered_texels": 0,
+      "flat_covered_texels": 2491441,
+      "same_face_alpha_fallback_texels": 0,
+      "mean_reencoding_angular_error_source_covered": 0.0,
+      "geometric_flat_quantization_error_deg": 0.31775544206983286
+    },
+    "15": {
+      "faces": 1376,
+      "covered_texels": 276834,
+      "source_faces": 1376,
+      "flat_faces": 0,
+      "negative_tangent_z_covered": 10144,
+      "angular_error_max": 0.3640305574891759,
+      "below_old_alpha_sample_count": 0,
+      "source_covered_texels": 276834,
+      "flat_covered_texels": 0,
+      "same_face_alpha_fallback_texels": 307,
+      "mean_reencoding_angular_error_source_covered": 0.014205751466556437,
+      "geometric_flat_quantization_error_deg": 0.31775544206983286
+    }
+  },
+  "texel_provenance": "pbr-texel-provenance.npz records exact high-source face/barycentric per band texel, exact legacy pixel per anatomy texel, per-pixel same-face alpha fallback flag and old-to-new frame per anatomy face. method 3 maps to source native face via transport record. All upper-left legacy texels are bit-exact.",
+  "input_sha256": {
+    "shell_band_v3/evidence/band-source.npz": "17c8af8120aca2b0e9336ab8e1866cbbc9c82915b0996d6bed3b25ceb0b7efb8",
+    "shell_band_v3/evidence/band-source-parameters.npz": "0a22c357678b8370f4c338d42cf3059133480ae19bc9e5d784102404bb6c2128",
+    "shell_band_v3/evidence/band-source-wall-classes.npz": "5523f8d38a4a5d001b527812ee84238d8cfbfe8c6897f68c2c3042d39d3b8841",
+    "assembly_transport_v14/export_work/transport_faces.jsonl.gz": "f45aec19ca76193ea9177a4c5f50d9ceea11c2a9af659930094f7282be1d8562",
+    "assembly_transport_v14/export_work/legacy-normal-dx.png": "b09802ad642c4d3cbc88f0a7b734a9a3c45336f38fb09716bfd585627e2a1e17",
+    "pbr_normals_v2/evidence/per-texel-normal-bake.json": "acda4b4125516e71aa26ea98fc41374199081e35cf349bf456953f6808e0f7e5"
+  },
+  "output_sha256": {
+    "resource_pack/textures/entity/paz_v75_v14_lab_pbr_experimental_normal_dx.png": "f2a48b36bcb2855bb7e2cf698acedf884d35f9d902bfc51a98c66da7239b2f00",
+    "resource_pack/textures/entity/paz_v75_v14_lab_pbr_experimental.png": "b6a55bb305085b8fe760672aa4ab72bb368b8f2f9843cfe8dfb164a0491a3aa5",
+    "export_work/pbr-texel-provenance.npz": "7a651dd7913c93456d8a46823d53ad2d74d31a9f46ad58599dc3f86e300086d6"
+  }
+}

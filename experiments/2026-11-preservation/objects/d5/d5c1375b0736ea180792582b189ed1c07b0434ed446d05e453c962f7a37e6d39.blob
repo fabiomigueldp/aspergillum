@@ -1,0 +1,11 @@
+import bpy,numpy as np,json
+from pathlib import Path
+R=Path(__file__).resolve().parents[1];S=R.parent.parent/'paz-refinement/gui-test/checkpoint-V75-20261102/V75-tunic-lower-trial.blend';bpy.ops.wm.open_mainfile(filepath=str(S),use_scripts=False);report={}
+for part,name in [('cap','Maria — véu reconstruído de perfil'),('band','TESTE 29 — faixa embutida com terminação suave')]:
+ o=bpy.data.objects[name];o.hide_viewport=False;o.hide_set(False)
+ while len(o.data.materials)<3:o.data.materials.append(o.data.materials[0])
+ for m in o.modifiers:
+  if m.type=='SUBSURF':m.levels=m.render_levels
+  if m.type=='SOLIDIFY':m.material_offset=1;m.material_offset_rim=2
+ bpy.context.view_layer.update();dg=bpy.context.evaluated_depsgraph_get();me=bpy.data.meshes.new_from_object(o.evaluated_get(dg),depsgraph=dg);me.transform(o.matrix_world);me.calc_loop_triangles();v=np.array([x.co[:] for x in me.vertices]);f=np.array([x.vertices[:] for x in me.loop_triangles]);side=np.array([me.polygons[x.polygon_index].material_index for x in me.loop_triangles]);source=np.load(R/f'evidence/{part}-source.npz');assert np.array_equal(v,source['points']);assert np.array_equal(f,source['triangles']);np.savez_compressed(R/f'evidence/{part}-source-wall-classes.npz',wall_class=side);report[part]={'coordinates_exactly_match_source':True,'triangle_indices_exactly_match_source':True,'wall_class_counts':{str(i):int((side==i).sum()) for i in np.unique(side)},'source_material_offset_used':'Only in transient Blender session: 0 original outer, 1 duplicated inner, 2 rim. No source write.'}
+(R/'evidence/source-wall-classes.json').write_text(json.dumps(report,indent=2));print(report)

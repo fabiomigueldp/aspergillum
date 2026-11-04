@@ -1,0 +1,24 @@
+"""Independent-from-generator algebraic invariants and intrinsic metrics inventory.
+Does not replace the external Blender crossing/visibility review.
+"""
+from pathlib import Path
+import numpy as np,json,hashlib
+O=Path(__file__).resolve().parent;B=O.parents[1];base=np.load(B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz');p0=base['points'];f=base['triangles'];parts=base['face_parts'];sid={int(s):i for i,s in enumerate(base['source_indices'])};mid=np.load(B/'lateral_v7/adaptive_patch/consistent-1-midfield.npz');outer=np.array([sid[int(i)] for i in mid['outer_source_ids']]);inner=np.array([sid[int(i)] for i in mid['inner_source_ids']]);dc=p0[inner]-p0[outer];th=np.linalg.norm(dc,axis=1);d=dc/th[:,None];tt=mid['triangles'];c0=(p0[outer]+p0[inner])/2;rawc=np.cross(c0[tt[:,1]]-c0[tt[:,0]],c0[tt[:,2]]-c0[tt[:,0]]);sgn=np.sign(np.median(np.einsum('fi,fvi->fv',rawc,d[tt])))
+t=p0[f];e1=t[:,1]-t[:,0];e2=t[:,2]-t[:,0];raw=np.cross(e1,e2);ar=np.linalg.norm(raw,axis=1);nn=raw/ar[:,None];ll=np.linalg.norm(e1,axis=1);ex=e1/ll[:,None];ey=np.cross(nn,ex);R=np.zeros((len(f),2,2));R[:,0,0]=ll;R[:,0,1]=np.sum(e2*ex,axis=1);R[:,1,1]=np.sum(e2*ey,axis=1);Ri=np.linalg.inv(R)
+rows=[]
+for path in sorted(O.glob('*.npz')):
+ if path.name.endswith('-contacts.npz'):continue
+ a=np.load(path)
+ if 'points' not in a or a['points'].shape!=p0.shape:continue
+ p=a['points'];E=np.stack([p[f[:,1]]-p[f[:,0]],p[f[:,2]]-p[f[:,0]]],axis=2);sv=np.linalg.svd(E@Ri,compute_uv=False);rr=np.cross(E[:,:,0],E[:,:,1]);length=np.linalg.norm(rr,axis=1);cos=np.sum(rr*nn,axis=1)/length;area=length/ar
+ row={'tag':path.stem,'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'same_triangles':bool(np.array_equal(a['triangles'],f)),'same_source_ids':bool(np.array_equal(a['source_indices'],base['source_indices'])),'same_face_parts':bool(np.array_equal(a['face_parts'],parts)),'all_parts':{}}
+ for k in [0,1,2]:
+  mask=parts==k;si=np.flatnonzero(mask);row['all_parts'][str(k)]={'min_stretch':float(sv[mask].min()),'max_stretch':float(sv[mask].max()),'min_area_ratio':float(area[mask].min()),'max_area_ratio':float(area[mask].max()),'min_stretch_face':int(si[np.unravel_index(sv[mask].argmin(),sv[mask].shape)[0]]),'max_stretch_face':int(si[np.unravel_index(sv[mask].argmax(),sv[mask].shape)[0]]),'max_normal_rotation_degrees':float(np.rad2deg(np.arccos(np.clip(cos[mask],-1,1))).max()),'negative_normal_dot_faces':si[cos[mask]<=0].tolist()}
+ c=(p[outer]+p[inner])/2;newd=p[inner]-p[outer];newth=np.linalg.norm(newd,axis=1);newd/=newth[:,None];rawc=np.cross(c[tt[:,1]]-c[tt[:,0]],c[tt[:,2]]-c[tt[:,0]]);nc=rawc/np.linalg.norm(rawc,axis=1)[:,None]*sgn;cd=np.einsum('fi,fvi->fv',nc,newd[tt]);row['paired_bridge']={'thickness_error_max_mm':float(np.max(np.abs(newth-th))*1000),'wall_offset_vector_error_max_mm':float(np.linalg.norm(p[inner]-p[outer]-dc,axis=1).max()*1000),'minimum_director_cosine':float(cd.min()),'nonpositive_director_products':int(np.sum(cd<=0)),'mixed_director_faces':int(np.sum((cd.min(1)<0)&(cd.max(1)>0)))}
+ delta=np.linalg.norm(p-p0,axis=1);moved=delta>1e-11;row['moved_by_part']={str(k):int(np.sum(moved[np.unique(f[parts==k])])) for k in [0,1,2]};row['moved_source_vertices']=int(np.sum(moved&~base['generated_vertices']));row['moved_bbox']=np.array([p0[moved].min(0),p0[moved].max(0)]).tolist() if moved.any() else None
+ (O/(path.stem+'-quality.json')).write_text(json.dumps(row,indent=2));rows.append(row)
+(O/'all-trials-quality.json').write_text(json.dumps(rows,indent=2))
+# Restore each scan's own summary without dropping attempts from earlier runs.
+for prefix,name in [('boundary-','boundary-summary.json'),('posterolateral-','posterolateral-summary.json'),('support-','support-summary.json'),('grid-','scan-summary.json')]:
+ rr=[json.loads(p.read_text()) for p in sorted(O.glob(prefix+'*-metrics.json'))];(O/name).write_text(json.dumps(rr,indent=2))
+files=['lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz','body_interface_v9/constrained_fit/retained-anatomy.npz','shell_band_v5/retained_candidate/evidence/band-paired.npz'];(O/'input-hashes.json').write_text(json.dumps({p:hashlib.sha256((B/p).read_bytes()).hexdigest() for p in files},indent=2));print('Audited',len(rows),'trials.')

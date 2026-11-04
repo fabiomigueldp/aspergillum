@@ -1,0 +1,9 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-detached-seed-feasibility.py').read().split('# A detached seed')[0])
+violations=[];norays=[];separated=[]
+for v in sorted(boundary):
+ h,n,fi,dist=hb.ray_cast(Vector((-1,p[v,1],p[v,2])),Vector((1,0,0)),2)
+ if h is None:norays.append(v);continue
+ gap=float(h.x-p[v,0])
+ if gap<.0001:violations.append({'vertex':v,'gap_to_left_envelope':gap,'point':p[v].tolist(),'skin_first_hit':list(h)})
+ else:separated.append(gap)
+report={'boundary_vertices':len(boundary),'no_skin_ray':len(norays),'outside_left_envelope':len(separated),'incompatible_with_fixed_left_graph':len(violations),'violations':violations,'minimum_left_gap':min(separated,default=None),'method':'Exact skin-ray envelope at boundary vertices; necessary condition only. No geometry generated or changed.'};json.dump(report,open(r+'neck-exterior-envelope-boundary-audit.json','w'),indent=2);print({k:v for k,v in report.items() if k!='violations'})

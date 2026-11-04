@@ -1,0 +1,18 @@
+{
+  "scope": "Unregistered exact visual slicing study; no block catalog or runtime change",
+  "configurations": 512,
+  "tileInstances": 19584,
+  "maxCubesPerCell": 42,
+  "counts": {
+    "fullVisual": 14431,
+    "shapeAndMaterials": 1160,
+    "shapeOnly": 1160
+  },
+  "notes": [
+    "Full visual signatures preserve approved global UVs and materials.",
+    "Shape-only/material signatures are diagnostic counts, NOT actual compatible state counts: discarding UVs would change texture mapping.",
+    "Cube-representation signatures can overcount geometrically equivalent decompositions; these are measured construction counts, not a theoretical lower bound.",
+    "Counts exclude cloth, color variants, ownership metadata and palette padding.",
+    "Existing block states remain 80000; any positive registration requires an explicitly approved pre-release compatibility change."
+  ]
+}

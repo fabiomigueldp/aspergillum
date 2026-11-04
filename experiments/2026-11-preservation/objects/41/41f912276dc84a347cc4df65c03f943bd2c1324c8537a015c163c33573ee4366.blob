@@ -1,0 +1,31 @@
+from audit_primary_rays import *
+O=Path(__file__).resolve().parent;base=json.load(open(O/'primary-ray-report.json'));grid=np.load(O/'primary-ray-grid.npz');clip=json.load(open(O/'camera-clip.json'))['quads']['clip_start'];q=scene('quads')
+def audit(pixels):
+ r=trace(q,pixels,stacks=True);s=[[]for _ in pixels]
+ for ti,ix,depth,bc,uv,opaque,front in r['intersections']:
+  for j,k in enumerate(ix):
+   if depth[j]>=clip:s[k].append((int(ti),float(depth[j]-clip),bool(front and opaque[j])))
+ rows=[]
+ for i,stack in enumerate(s):
+  stack.sort(key=lambda a:(a[1],a[0]));ideal=next(a for a in stack if a[2]);t32=np.float32(ideal[1]);ulp=float(np.spacing(t32));ts=[a for a in stack if not a[2]];same=[a for a in ts if np.float32(a[1])==t32];close=[a for a in ts if abs(a[1]-ideal[1])<ulp];near=min(ts,key=lambda a:abs(a[1]-ideal[1]))if ts else None
+  # Simulate one-nextafter after each transparent: mathematically sorted geometric depth, no tie reordering.
+  tmin=0.;out=None
+  for a in stack:
+   if a[1]<tmin:continue
+   if a[2]:out=a;break
+   tmin=float(np.nextafter(np.float32(a[1]),np.float32(np.inf)))
+  def item(a):
+   if a is None:return None
+   ti,depth,accept=a;return {'triangle':ti,'part':int(q['part'][ti]),'native_face':int(q['native_face'][ti]),'half':int(q['half'][ti]),'t_nearclip_blocks':depth,'t_float32':float(np.float32(depth)),'signed_gap_from_ideal_um':(depth-ideal[1])*1e6,'opaque_front':accept}
+  rows.append({'pixel':pixels[i].tolist(),'ideal':item(ideal),'nearest_transparent':item(near),'same_float32_t_transparents':[item(a)for a in same],'within_one_ulp_transparents':[item(a)for a in close],'t_float32_ulp_um':ulp*1e6,'one_nextafter_exact_order_first':item(out),'one_nextafter_exact_order_miss':out is None or out[0]!=ideal[0]})
+ return r,rows
+p=grid['pixels'];sel=(p[:,0]>=490)&(p[:,0]<=570)&(p[:,1]>=440)&(p[:,1]<=480);p=p[sel];r,rows=audit(p);diff=grid['clip_minus_quad_mean_rgb'][sel];summary={}
+for name,mask in [('all',np.ones(len(p),bool)),('scar_dark_10',diff>=10),('nearby_clean_abs3',np.abs(diff)<=3)]:
+ sub=[a for a,b in zip(rows,mask)if b];summary[name]={'n':len(sub),'same_float32_t_transparent':sum(bool(a['same_float32_t_transparents'])for a in sub),'transparent_within_one_ulp':sum(bool(a['within_one_ulp_transparents'])for a in sub),'one_nextafter_exact_order_miss':sum(a['one_nextafter_exact_order_miss']for a in sub)}
+witnesses=[]
+for w in base['witnesses']:
+ i=int(np.flatnonzero((p==w['pixel']).all(1))[0]);witnesses.append({'kind':w['kind'],'clip_minus_quad_mean_rgb':w['clip_minus_quad_mean_rgb'],**rows[i]})
+sp=np.array([np.array(w['pixel'])+[dx,dy]for w in base['witnesses']for dy in [-.4,-.2,0,.2,.4]for dx in [-.4,-.2,0,.2,.4]]);sr,srows=audit(sp);cl=scene('clipped');cr=trace(cl,sp);na=scene('native');nr=trace(na,sp);sub_summary=[]
+for j,w in enumerate(base['witnesses']):
+ ix=np.arange(j*25,(j+1)*25);qh=sr['hit'][ix];ch=cr['hit'][ix];nh=nr['hit'][ix];sub_summary.append({'kind':w['kind'],'pixel':w['pixel'],'n':25,'source_face_mismatch_clip':int(np.sum((q['part'][qh]!=cl['part'][ch])|(q['native_face'][qh]!=cl['native_face'][ch]))),'source_face_mismatch_native':int(np.sum((q['part'][qh]!=na['part'][nh])|(q['native_face'][qh]!=na['native_face'][nh]))),'same_float32_t_transparent':sum(bool(srows[i]['same_float32_t_transparents'])for i in ix),'transparent_within_one_ulp':sum(bool(srows[i]['within_one_ulp_transparents'])for i in ix),'one_nextafter_exact_order_miss':sum(srows[i]['one_nextafter_exact_order_miss']for i in ix)})
+report={'scope':'Float32 t rounding sensitivity of exact intersections, NOT captured Cycles/Embree intersections. Stored clip_start is subtracted for Cycles orthographic ray parameter.','clip_start_blocks':clip,'source_code_offset':'v4.3.2 intern/cycles/kernel/bvh/util.h: intersection_t_offset advances positive t by one float32 ULP; integrator/shade_surface.h retains origin and updates tmin after transparent surface.','limitations':['The actual Embree intersection kernel computes t with its own float32 operations; rounding exact float64 t is a sensitivity model, not an emulation.','Sort ties and renderer sample locations are not reconstructed.','Regular 5x5 offsets within each witness pixel are not the actual 48 Blackman-Harris samples.'],'summary':summary,'witnesses':witnesses,'subpixel_5x5':sub_summary};(O/'float32-ties-report.json').write_text(json.dumps(report,indent=2));(O/'float32-ties-all-pixels.json').write_text(json.dumps(rows,indent=2));(O/'float32-ties-subpixels.json').write_text(json.dumps(srows,indent=2));print(json.dumps(summary,indent=2));print(json.dumps(sub_summary[:5],indent=2))

@@ -1,0 +1,17 @@
+from pathlib import Path
+import bpy,numpy as np,json,hashlib,time
+from mathutils import Vector
+R=Path(__file__).resolve().parents[1];E=R/'evidence';S=R.parent/'opaque_transport_v15/evidence/shared-2048-diagnostic.blend'
+bpy.ops.wm.open_mainfile(filepath=str(S));s=bpy.context.scene;s.render.threads_mode='FIXED';s.render.threads=8;s.cycles.samples=48;s.cycles.use_denoising=False;cam=s.camera;cam.location=(.035,-3.5,3.58);cam.rotation_euler=(Vector((.035,-.30,3.58))-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.ortho_scale=.52;s.render.resolution_x=s.render.resolution_y=1000;s.render.resolution_percentage=100
+vl=s.view_layers[0];vl.use_pass_diffuse_direct=True;vl.use_pass_diffuse_indirect=True;vl.use_pass_diffuse_color=True
+s.use_nodes=True;nt=s.node_tree;nt.nodes.clear();rl=nt.nodes.new('CompositorNodeRLayers');co=nt.nodes.new('CompositorNodeComposite');nt.links.new(rl.outputs['Image'],co.inputs[0]);names={}
+for label,aliases in [('diffuse-direct',('DiffDir','Diffuse Direct')),('diffuse-indirect',('DiffInd','Diffuse Indirect')),('diffuse-color',('DiffCol','Diffuse Color'))]:
+ sock=next(o for o in rl.outputs if o.name in aliases);out=nt.nodes.new('CompositorNodeOutputFile');out.base_path=str(E);out.format.file_format='OPEN_EXR';out.format.color_depth='32';out.format.color_mode='RGBA';out.file_slots[0].path=label+'-';nt.links.new(sock,out.inputs[0]);names[label]=sock.name
+s.render.image_settings.file_format='OPEN_EXR_MULTILAYER';s.render.image_settings.color_depth='32';s.render.filepath=str(E/'baseline-light-passes.exr');t=time.perf_counter();bpy.ops.render.render(write_still=True);elapsed=time.perf_counter()-t
+s.render.image_settings.file_format='PNG';s.render.image_settings.color_mode='RGBA';s.render.image_settings.color_depth='8';bpy.data.images['Render Result'].save_render(str(E/'baseline-light-passes.png'),scene=s)
+arrays={}
+for label in names:
+ p=E/(label+'-0001.exr');im=bpy.data.images.load(str(p));arr=np.array(im.pixels[:],np.float32).reshape(im.size[1],im.size[0],4)[::-1];arrays[label]=arr;im.save_render(str(E/(label+'.png')),scene=s)
+np.savez_compressed(E/'light-pass-linear-pixels.npz',**arrays)
+(E/'light-passes.json').write_text(json.dumps({'source_scene_sha256':hashlib.sha256(S.read_bytes()).hexdigest(),'outputs':names,'render_seconds_not_benchmark':elapsed,'source_geometry_material_lighting_unchanged':True,'linear_npz_row_order':'top to bottom PNG convention','PNG':'Standard view transform only for visual inspection; use linear NPZ/EXR for numerical data','engine':'external Blender Cycles, not Minecraft'},indent=2)+'\n')
+print('light passes ready')

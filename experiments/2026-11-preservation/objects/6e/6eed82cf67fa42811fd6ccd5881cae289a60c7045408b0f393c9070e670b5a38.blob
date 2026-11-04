@@ -1,0 +1,8 @@
+import bpy,json,collections
+from mathutils import Vector
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False);o=bpy.data.objects['Maria — mão ao peito anatômica'];m=o.data;dg=bpy.context.evaluated_depsgraph_get();em=o.evaluated_get(dg).to_mesh();p=[v.co.copy() for v in em.vertices];sets=collections.defaultdict(set)
+for f,a in zip(m.polygons,m.attributes['.sculpt_face_set'].data):sets[a.value].update(f.vertices)
+rep={str(k):{'count':len(v),'bounds':[[min(p[i][a] for i in v),max(p[i][a] for i in v)] for a in range(3)]} for k,v in sets.items()};json.dump(rep,open(r+'V75-finger-face-set-diagnosis.json','w'),indent=2)
+s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=600;s.render.resolution_y=800;s.render.resolution_percentage=100;c=s.camera;center=sum(p,Vector())/len(p)
+for view,off in [('front',(0,-5,0)),('profile',(-5,0,0)),('threequarter',(-3,-5,.2))]:
+ c.location=center+Vector(off);c.rotation_euler=(center-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=.48;s.render.filepath=r+'V75-chest-hand-'+view+'.png';bpy.ops.render.render(write_still=True)

@@ -1,0 +1,54 @@
+import bpy,bmesh,numpy as np,json,math
+from pathlib import Path
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+ROOT=Path(__file__).resolve().parents[1];OLD=ROOT.parent;d=np.load(OLD/'evidence/source_meshes.npz');meta=json.load(open(OLD/'evidence/source-export.json'))
+hv=d['high_v'];hf=d['high_f'];lv=d['low_v'];lf=d['low_f'];lm=d['low_m'];hn=np.zeros_like(hv);ln=np.zeros_like(lv);hfixed=hf.copy();lfixed=lf.copy();report=[]
+foff=0
+for pi,part in enumerate(meta['parts']):
+ item={'name':part['name']}
+ for level,v,f in [('high',hv,hf),('low',lv,lf)]:
+  if level=='high':indices=np.arange(foff,foff+part['high_triangles'])
+  else:indices=np.where(lm==pi)[0]
+  ff=f[indices];first=int(ff.min());last=int(ff.max())+1;vv=v[first:last]
+  mesh=bpy.data.meshes.new('audit');mesh.from_pydata(vv.tolist(),[],(ff-first).tolist());mesh.update()
+  bm=bmesh.new();bm.from_mesh(mesh);bm.faces.ensure_lookup_table();bm.faces.index_update();tag=bm.faces.layers.int.new('source_triangle')
+  for i,face in enumerate(bm.faces):face[tag]=i
+  bad_boundary=sum(e.is_boundary for e in bm.edges);bad_nonmanifold=sum(len(e.link_faces)>2 for e in bm.edges)
+  before={face[tag]:tuple(v.index for v in face.verts) for face in bm.faces}
+  bmesh.ops.recalc_face_normals(bm,faces=list(bm.faces));bm.normal_update()
+  after=np.empty_like(ff);flipped=0
+  for face in bm.faces:
+   i=face[tag];a=tuple(v.index for v in face.verts);after[i]=np.array(a)+first
+   old=before[i]
+   if a not in (old,old[1:]+old[:1],old[2:]+old[:2]):flipped+=1
+  bm.to_mesh(mesh);bm.free();mesh.update()
+  normals=np.array([v.normal[:] for v in mesh.vertices]);item[level]={'flipped_triangles':flipped,'boundary_edges':bad_boundary,'nonmanifold_edges':bad_nonmanifold,'triangles':len(ff)}
+  if level=='high':hfixed[indices]=after;hn[first:last]=normals
+  else:lfixed[indices]=after;ln[first:last]=normals
+  bpy.data.meshes.remove(mesh)
+ report.append(item);foff+=part['high_triangles'];print(item,flush=True)
+# Verify triangle vertex sets and all positions unchanged: only ordering/orientation can change.
+assert np.array_equal(np.sort(hf,axis=1),np.sort(hfixed,axis=1));assert np.array_equal(np.sort(lf,axis=1),np.sort(lfixed,axis=1))
+print('Build corrected source BVH',flush=True);bvh=BVHTree.FromPolygons(hv.tolist(),hfixed.tolist(),all_triangles=True)
+ns=[];ao=[];distances=[]
+# Source high-poly smooth normals are interpolated barycentrically at nearest point.
+for i,p0 in enumerate(lv):
+ p,face_n,fi,dist=bvh.find_nearest(Vector(p0));a,bb,c=hv[hfixed[fi]];q=np.array(p);v0=bb-a;v1=c-a;v2=q-a
+ d00=np.dot(v0,v0);d01=np.dot(v0,v1);d11=np.dot(v1,v1);d20=np.dot(v2,v0);d21=np.dot(v2,v1);den=d00*d11-d01*d01
+ if abs(den)>1e-24:
+  wb=(d11*d20-d01*d21)/den;wc=(d00*d21-d01*d20)/den;weights=np.clip([1-wb-wc,wb,wc],0,1);weights/=sum(weights);normal=weights@hn[hfixed[fi]]
+ else:normal=np.array(face_n)
+ normal/=max(np.linalg.norm(normal),1e-10);n=Vector(normal);distances.append(dist);ns.append(normal)
+ tangent=n.cross(Vector((0,0,1)))
+ if tangent.length<.01:tangent=n.cross(Vector((0,1,0)))
+ tangent.normalize();bitangent=n.cross(tangent);hits=0.;num=24
+ for k in range(num):
+  rr=math.sqrt((k+.5)/num);ang=k*2.399963229728653;direction=math.cos(ang)*rr*tangent+math.sin(ang)*rr*bitangent+math.sqrt(1-rr*rr)*n
+  result=bvh.ray_cast(p+n*.0018,direction,.20)
+  if result[0] is not None:hits+=max(0,1-result[3]/.20)
+ ao.append(1-.7*hits/num)
+ if i%1000==0:print('bake',i,flush=True)
+np.savez_compressed(ROOT/'evidence/repaired_meshes.npz',high_v=hv,high_f=hfixed,high_n=hn,low_v=lv,low_f=lfixed,low_n=ln,low_m=lm,source_normal=np.array(ns),ao=np.array(ao))
+(ROOT/'evidence/orientation-repair.json').write_text(json.dumps({'parts':report,'geometry_coordinates_unchanged':True,'triangle_vertex_sets_unchanged':True,'note':'BMesh recalculate normals, no welding, remesh, hidden faces or added triangles. Open/nonmanifold defects remain geometry defects.'},ensure_ascii=False,indent=2))
+print('COMPLETE',flush=True)

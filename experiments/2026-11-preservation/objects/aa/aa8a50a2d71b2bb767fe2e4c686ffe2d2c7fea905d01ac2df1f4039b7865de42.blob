@@ -1,0 +1,1357 @@
+[
+  {
+    "tag": "roi68-depth1",
+    "scope": "Actual saved candidate Blender float32 input; independent ideal barycentric/nearest-alpha oracle. t ULP coincidence remains a sensitivity measure, not actual Cycles traversal.",
+    "summary": {
+      "all": {
+        "n": 3321,
+        "transparent_within_one_ulp": 515,
+        "same_float32_t_transparent": 404,
+        "preceding_transparent_within_one_ulp": 262,
+        "first_opaque_vs_baseline": {
+          "count": 3321,
+          "both_hit": 3321,
+          "part_mismatch": 0,
+          "native_face_mismatch": 0,
+          "half_mismatch_when_same_source": 0,
+          "depth_abs_mm_percentiles": {
+            "median": 0.0,
+            "p95": 6.846923827907858e-05,
+            "p99": 0.00011046843191309124,
+            "max": 0.0001640472557795647
+          },
+          "polygon_normal_angle_degrees_percentiles": {
+            "median": 0.0,
+            "p95": 0.0036375796741530426,
+            "p99": 0.005211999872424912,
+            "max": 0.007441224594607584
+          },
+          "interpolated_stored_corner_normal_angle_degrees_percentiles": {
+            "median": 0.0,
+            "p95": 0.00494378504258058,
+            "p99": 0.00616811205376672,
+            "max": 0.014196642408684654
+          },
+          "geometric_loop_triangle_normal_angle_degrees_percentiles": {
+            "median": 0.0,
+            "p95": 0.00472619479284264,
+            "p99": 0.0071665080817932296,
+            "max": 0.012740810001198435
+          }
+        }
+      },
+      "original_dark_10": {
+        "n": 301,
+        "transparent_within_one_ulp": 164,
+        "same_float32_t_transparent": 126,
+        "preceding_transparent_within_one_ulp": 83,
+        "first_opaque_vs_baseline": {
+          "count": 301,
+          "both_hit": 301,
+          "part_mismatch": 0,
+          "native_face_mismatch": 0,
+          "half_mismatch_when_same_source": 0,
+          "depth_abs_mm_percentiles": {
+            "median": 1.588960696352615e-05,
+            "p95": 6.332173496659266e-05,
+            "p99": 7.389535472412945e-05,
+            "max": 7.771297516612208e-05
+          },
+          "polygon_normal_angle_degrees_percentiles": {
+            "median": 0.0011791225942231344,
+            "p95": 0.005651698032776443,
+            "p99": 0.0068395478219903695,
+            "max": 0.007441224594607584
+          },
+          "interpolated_stored_corner_normal_angle_degrees_percentiles": {
+            "median": 0.0026750387103916013,
+            "p95": 0.005864604156414522,
+            "p99": 0.010338963995242485,
+            "max": 0.014196642408684654
+          },
+          "geometric_loop_triangle_normal_angle_degrees_percentiles": {
+            "median": 0.001450643752082211,
+            "p95": 0.0071665080817932296,
+            "p99": 0.012246312924369247,
+            "max": 0.012740810001198435
+          }
+        }
+      },
+      "original_clean_abs3": {
+        "n": 2737,
+        "transparent_within_one_ulp": 253,
+        "same_float32_t_transparent": 199,
+        "preceding_transparent_within_one_ulp": 125,
+        "first_opaque_vs_baseline": {
+          "count": 2737,
+          "both_hit": 2737,
+          "part_mismatch": 0,
+          "native_face_mismatch": 0,
+          "half_mismatch_when_same_source": 0,
+          "depth_abs_mm_percentiles": {
+            "median": 0.0,
+            "p95": 7.085682947050027e-05,
+            "p99": 0.00011877377611213522,
+            "max": 0.0001640472557795647
+          },
+          "polygon_normal_angle_degrees_percentiles": {
+            "median": 0.0,
+            "p95": 0.0031743556263851454,
+            "p99": 0.004503939856121441,
+            "max": 0.006514955962717393
+          },
+          "interpolated_stored_corner_normal_angle_degrees_percentiles": {
+            "median": 0.0,
+            "p95": 0.004019196759933991,
+            "p99": 0.005963169421949448,
+            "max": 0.011419881283459141
+          },
+          "geometric_loop_triangle_normal_angle_degrees_percentiles": {
+            "median": 0.0,
+            "p95": 0.0038923425311937817,
+            "p99": 0.006255437142762507,
+            "max": 0.008280312534036115
+          }
+        }
+      }
+    },
+    "witnesses": [
+      {
+        "pixel": [
+          493,
+          471
+        ],
+        "first_opaque": {
+          "triangle": 614,
+          "part": 0,
+          "native_face": 134,
+          "half": 1,
+          "polygon": 307,
+          "local_loop_triangle": 614,
+          "distance_mm": 3082.508767510657,
+          "barycentric": [
+            0.5584092752447696,
+            0.06626647304159261,
+            0.37532425171363776
+          ],
+          "point": [
+            0.03162000027298927,
+            -0.41749123490390894,
+            3.5948204253668994
+          ],
+          "UV": [
+            0.8438310629284094,
+            0.2792046376223848
+          ],
+          "flat_corner_normal": [
+            -0.04398814306064185,
+            -0.8734473764409149,
+            0.48492754495755264
+          ],
+          "triangle_geometric_normal": [
+            -0.04397733303181255,
+            -0.8735264160483588,
+            0.48478613289276207
+          ]
+        },
+        "transparent_near_ulp_count": 1,
+        "stack_within_10_um": [
+          {
+            "triangle": 614,
+            "native_face": 134,
+            "half": 1,
+            "part": 0,
+            "original_cube_index": 269,
+            "new_polygon": 307,
+            "distance_camera_mm": 3082.508767510657,
+            "signed_gap_to_ideal_um": 0.0,
+            "alpha_opaque": true,
+            "front": true,
+            "uv": [
+              0.8438310629284094,
+              0.2792046376223848
+            ]
+          },
+          {
+            "triangle": 651,
+            "native_face": 138,
+            "half": 1,
+            "part": 0,
+            "original_cube_index": 277,
+            "new_polygon": 325,
+            "distance_camera_mm": 3082.508806751991,
+            "signed_gap_to_ideal_um": 0.03924133373800487,
+            "alpha_opaque": false,
+            "front": true,
+            "uv": [
+              0.6603954673622013,
+              0.9461545424428057
+            ]
+          }
+        ]
+      },
+      {
+        "pixel": [
+          559,
+          449
+        ],
+        "first_opaque": {
+          "triangle": 452,
+          "part": 0,
+          "native_face": 111,
+          "half": 0,
+          "polygon": 226,
+          "local_loop_triangle": 452,
+          "distance_mm": 3091.2064310022,
+          "barycentric": [
+            0.23156013217317656,
+            0.7620175015400433,
+            0.006422366286780118
+          ],
+          "point": [
+            0.06593999901413918,
+            -0.4087935732761795,
+            3.606260426364312
+          ],
+          "UV": [
+            0.751605591571695,
+            0.11578006608658828
+          ],
+          "flat_corner_normal": [
+            0.1399758647559993,
+            -0.843854957913325,
+            0.517991860255459
+          ],
+          "triangle_geometric_normal": [
+            0.1399127702996278,
+            -0.8438517437348153,
+            0.5180141419911188
+          ]
+        },
+        "transparent_near_ulp_count": 0,
+        "stack_within_10_um": [
+          {
+            "triangle": 452,
+            "native_face": 111,
+            "half": 0,
+            "part": 0,
+            "original_cube_index": 222,
+            "new_polygon": 226,
+            "distance_camera_mm": 3091.2064310022,
+            "signed_gap_to_ideal_um": 0.0,
+            "alpha_opaque": true,
+            "front": true,
+            "uv": [
+              0.751605591571695,
+              0.11578006608658828
+            ]
+          }
+        ]
+      },
+      {
+        "pixel": [
+          510,
+          468
+        ],
+        "first_opaque": {
+          "triangle": 3721,
+          "part": 0,
+          "native_face": 894,
+          "half": 1,
+          "polygon": 1860,
+          "local_loop_triangle": 3721,
+          "distance_mm": 3083.015234432565,
+          "barycentric": [
+            0.2285632673967375,
+            0.294991181849518,
+            0.4764455507537445
+          ],
+          "point": [
+            0.04045999994874001,
+            -0.416984768236157,
+            3.596380425392193
+          ],
+          "UV": [
+            0.6928591831508156,
+            0.352504409075241
+          ],
+          "flat_corner_normal": [
+            -0.03855425570995101,
+            -0.8207001061404839,
+            0.5700569314968903
+          ],
+          "triangle_geometric_normal": [
+            -0.038520770125266814,
+            -0.8206811290381689,
+            0.5700865151094111
+          ]
+        },
+        "transparent_near_ulp_count": 1,
+        "stack_within_10_um": [
+          {
+            "triangle": 3729,
+            "native_face": 895,
+            "half": 0,
+            "part": 0,
+            "original_cube_index": 1790,
+            "new_polygon": 1864,
+            "distance_camera_mm": 3083.0152051445584,
+            "signed_gap_to_ideal_um": -0.02928800713064561,
+            "alpha_opaque": false,
+            "front": true,
+            "uv": [
+              0.9305299535007296,
+              0.39627894173627987
+            ]
+          },
+          {
+            "triangle": 3721,
+            "native_face": 894,
+            "half": 1,
+            "part": 0,
+            "original_cube_index": 1789,
+            "new_polygon": 1860,
+            "distance_camera_mm": 3083.015234432565,
+            "signed_gap_to_ideal_um": 0.0,
+            "alpha_opaque": true,
+            "front": true,
+            "uv": [
+              0.6928591831508156,
+              0.352504409075241
+            ]
+          }
+        ]
+      },
+      {
+        "pixel": [
+          500,
+          471
+        ],
+        "first_opaque": {
+          "triangle": 648,
+          "part": 0,
+          "native_face": 138,
+          "half": 0,
+          "polygon": 324,
+          "local_loop_triangle": 648,
+          "distance_mm": 3082.325605717755,
+          "barycentric": [
+            0.16767878115629797,
+            0.08322023974169844,
+            0.7491009791020036
+          ],
+          "point": [
+            0.03526000013947487,
+            -0.4176743966968109,
+            3.594820425337059
+          ],
+          "UV": [
+            0.9372752447755008,
+            0.08383939057814899
+          ],
+          "flat_corner_normal": [
+            -0.04394112412125901,
+            -0.873431316495388,
+            0.4849607334373512
+          ],
+          "triangle_geometric_normal": [
+            -0.04395858895493624,
+            -0.8733921933092905,
+            0.48502960644014065
+          ]
+        },
+        "transparent_near_ulp_count": 1,
+        "stack_within_10_um": [
+          {
+            "triangle": 648,
+            "native_face": 138,
+            "half": 0,
+            "part": 0,
+            "original_cube_index": 276,
+            "new_polygon": 324,
+            "distance_camera_mm": 3082.325605717755,
+            "signed_gap_to_ideal_um": 0.0,
+            "alpha_opaque": true,
+            "front": true,
+            "uv": [
+              0.9372752447755008,
+              0.08383939057814899
+            ]
+          },
+          {
+            "triangle": 639,
+            "native_face": 137,
+            "half": 1,
+            "part": 0,
+            "original_cube_index": 275,
+            "new_polygon": 319,
+            "distance_camera_mm": 3082.325630250243,
+            "signed_gap_to_ideal_um": 0.02453248804101804,
+            "alpha_opaque": false,
+            "front": true,
+            "uv": [
+              0.5422516540329286,
+              0.9594529569651092
+            ]
+          }
+        ]
+      },
+      {
+        "pixel": [
+          559,
+          440
+        ],
+        "first_opaque": {
+          "triangle": 34494,
+          "part": 1,
+          "native_face": 4111,
+          "half": 1,
+          "polygon": 8223,
+          "local_loop_triangle": 16446,
+          "distance_mm": 3095.604627940432,
+          "barycentric": [
+            0.04340266643289464,
+            0.7120886806702004,
+            0.244508652896905
+          ],
+          "point": [
+            0.06593999901413918,
+            -0.4043953771004162,
+            3.610940426909208
+          ],
+          "UV": [
+            0.6222543264484526,
+            0.04340266643289464
+          ],
+          "flat_corner_normal": [
+            0.10410599858560161,
+            -0.8594506137726584,
+            0.5005063271770854
+          ],
+          "triangle_geometric_normal": [
+            0.10409358084546656,
+            -0.8594506931189493,
+            0.500508773673475
+          ]
+        },
+        "transparent_near_ulp_count": 0,
+        "stack_within_10_um": [
+          {
+            "triangle": 34499,
+            "native_face": 4112,
+            "half": 1,
+            "part": 1,
+            "original_cube_index": 8225,
+            "new_polygon": 8225,
+            "distance_camera_mm": 3095.6016480608705,
+            "signed_gap_to_ideal_um": -2.979879561326726,
+            "alpha_opaque": false,
+            "front": true,
+            "uv": [
+              0.8233397440033071,
+              0.3780426599199638
+            ]
+          },
+          {
+            "triangle": 34494,
+            "native_face": 4111,
+            "half": 1,
+            "part": 1,
+            "original_cube_index": 8223,
+            "new_polygon": 8223,
+            "distance_camera_mm": 3095.604627940432,
+            "signed_gap_to_ideal_um": 0.0,
+            "alpha_opaque": true,
+            "front": true,
+            "uv": [
+              0.6222543264484526,
+              0.04340266643289464
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "tag": "roi68-depth2",
+    "scope": "Actual saved candidate Blender float32 input; independent ideal barycentric/nearest-alpha oracle. t ULP coincidence remains a sensitivity measure, not actual Cycles traversal.",
+    "summary": {
+      "all": {
+        "n": 3321,
+        "transparent_within_one_ulp": 303,
+        "same_float32_t_transparent": 244,
+        "preceding_transparent_within_one_ulp": 149,
+        "first_opaque_vs_baseline": {
+          "count": 3321,
+          "both_hit": 3321,
+          "part_mismatch": 0,
+          "native_face_mismatch": 0,
+          "half_mismatch_when_same_source": 0,
+          "depth_abs_mm_percentiles": {
+            "median": 0.0,
+            "p95": 6.855611900391523e-05,
+            "p99": 0.00010509176204820393,
+            "max": 0.00021759865376225207
+          },
+          "polygon_normal_angle_degrees_percentiles": {
+            "median": 0.0,
+            "p95": 0.0064711914899123375,
+            "p99": 0.010120261471472068,
+            "max": 0.013997485725707842
+          },
+          "interpolated_stored_corner_normal_angle_degrees_percentiles": {
+            "median": 0.0,
+            "p95": 0.00814581319122754,
+            "p99": 0.013935818615493988,
+            "max": 0.028422586395954217
+          },
+          "geometric_loop_triangle_normal_angle_degrees_percentiles": {
+            "median": 0.0,
+            "p95": 0.008694554540023052,
+            "p99": 0.013901608125316194,
+            "max": 0.02192024524569655
+          }
+        }
+      },
+      "original_dark_10": {
+        "n": 301,
+        "transparent_within_one_ulp": 101,
+        "same_float32_t_transparent": 79,
+        "preceding_transparent_within_one_ulp": 54,
+        "first_opaque_vs_baseline": {
+          "count": 301,
+          "both_hit": 301,
+          "part_mismatch": 0,
+          "native_face_mismatch": 0,
+          "half_mismatch_when_same_source": 0,
+          "depth_abs_mm_percentiles": {
+            "median": 2.2634485397077242e-05,
+            "p95": 7.018349856835471e-05,
+            "p99": 8.162172848713567e-05,
+            "max": 0.00010048999277145754
+          },
+          "polygon_normal_angle_degrees_percentiles": {
+            "median": 0.0029420094790089794,
+            "p95": 0.010339573434889506,
+            "p99": 0.012180234332473495,
+            "max": 0.013997485725707842
+          },
+          "interpolated_stored_corner_normal_angle_degrees_percentiles": {
+            "median": 0.0052061494939584846,
+            "p95": 0.014445961803153561,
+            "p99": 0.016817165653006255,
+            "max": 0.020971941066138033
+          },
+          "geometric_loop_triangle_normal_angle_degrees_percentiles": {
+            "median": 0.004329299543250861,
+            "p95": 0.013901608125316194,
+            "p99": 0.021447321620308695,
+            "max": 0.02192024524569655
+          }
+        }
+      },
+      "original_clean_abs3": {
+        "n": 2737,
+        "transparent_within_one_ulp": 136,
+        "same_float32_t_transparent": 112,
+        "preceding_transparent_within_one_ulp": 64,
+        "first_opaque_vs_baseline": {
+          "count": 2737,
+          "both_hit": 2737,
+          "part_mismatch": 0,
+          "native_face_mismatch": 0,
+          "half_mismatch_when_same_source": 0,
+          "depth_abs_mm_percentiles": {
+            "median": 0.0,
+            "p95": 6.7821085814046e-05,
+            "p99": 0.00011327668191896111,
+            "max": 0.00021759865376225207
+          },
+          "polygon_normal_angle_degrees_percentiles": {
+            "median": 0.0,
+            "p95": 0.004577943767129583,
+            "p99": 0.007028647713379427,
+            "max": 0.01179113251727711
+          },
+          "interpolated_stored_corner_normal_angle_degrees_percentiles": {
+            "median": 0.0,
+            "p95": 0.006180907804096967,
+            "p99": 0.010916098823655629,
+            "max": 0.028422586395954217
+          },
+          "geometric_loop_triangle_normal_angle_degrees_percentiles": {
+            "median": 0.0,
+            "p95": 0.006466551124673448,
+            "p99": 0.010774872192068316,
+            "max": 0.018803416455903603
+          }
+        }
+      }
+    },
+    "witnesses": [
+      {
+        "pixel": [
+          493,
+          471
+        ],
+        "first_opaque": {
+          "triangle": 762,
+          "part": 0,
+          "native_face": 134,
+          "half": 1,
+          "polygon": 381,
+          "local_loop_triangle": 762,
+          "distance_mm": 3082.508776850236,
+          "barycentric": [
+            0.1168191777588109,
+            0.13253369122352132,
+            0.7506471310176678
+          ],
+          "point": [
+            0.03162000027298927,
+            -0.4174912255643304,
+            3.594820425366901
+          ],
+          "UV": [
+            0.8438308913772085,
+            0.2792047944397027
+          ],
+          "flat_corner_normal": [
+            -0.0439988836354982,
+            -0.8734276441268699,
+            0.4849621105960918
+          ],
+          "triangle_geometric_normal": [
+            -0.043965328166261704,
+            -0.8735021110191554,
+            0.48483101382266364
+          ]
+        },
+        "transparent_near_ulp_count": 0,
+        "stack_within_10_um": [
+          {
+            "triangle": 762,
+            "native_face": 134,
+            "half": 1,
+            "part": 0,
+            "original_cube_index": 269,
+            "new_polygon": 381,
+            "distance_camera_mm": 3082.508776850236,
+            "signed_gap_to_ideal_um": 0.0,
+            "alpha_opaque": true,
+            "front": true,
+            "uv": [
+              0.8438308913772085,
+              0.2792047944397027
+            ]
+          }
+        ]
+      },
+      {
+        "pixel": [
+          559,
+          449
+        ],
+        "first_opaque": {
+          "triangle": 466,
+          "part": 0,
+          "native_face": 111,
+          "half": 0,
+          "polygon": 233,
+          "local_loop_triangle": 466,
+          "distance_mm": 3091.206406639446,
+          "barycentric": [
+            0.4631600554920044,
+            0.5238789876180537,
+            0.012960956889941868
+          ],
+          "point": [
+            0.06593999901413918,
+            -0.4087935976389333,
+            3.606260426364308
+          ],
+          "UV": [
+            0.7516201196112428,
+            0.1157900138730011
+          ],
+          "flat_corner_normal": [
+            0.13991402696209443,
+            -0.8439255722682449,
+            0.5178935156293865
+          ],
+          "triangle_geometric_normal": [
+            0.1398466736749622,
+            -0.8439386817602939,
+            0.5178903448518288
+          ]
+        },
+        "transparent_near_ulp_count": 0,
+        "stack_within_10_um": [
+          {
+            "triangle": 466,
+            "native_face": 111,
+            "half": 0,
+            "part": 0,
+            "original_cube_index": 222,
+            "new_polygon": 233,
+            "distance_camera_mm": 3091.206406639446,
+            "signed_gap_to_ideal_um": 0.0,
+            "alpha_opaque": true,
+            "front": true,
+            "uv": [
+              0.7516201196112428,
+              0.1157900138730011
+            ]
+          }
+        ]
+      },
+      {
+        "pixel": [
+          510,
+          468
+        ],
+        "first_opaque": {
+          "triangle": 4005,
+          "part": 0,
+          "native_face": 894,
+          "half": 1,
+          "polygon": 2002,
+          "local_loop_triangle": 4005,
+          "distance_mm": 3083.015234432565,
+          "barycentric": [
+            0.2285632673967375,
+            0.294991181849518,
+            0.4764455507537445
+          ],
+          "point": [
+            0.04045999994874001,
+            -0.416984768236157,
+            3.596380425392193
+          ],
+          "UV": [
+            0.6928591831508156,
+            0.352504409075241
+          ],
+          "flat_corner_normal": [
+            -0.03855425570995101,
+            -0.8207001061404839,
+            0.5700569314968903
+          ],
+          "triangle_geometric_normal": [
+            -0.038520770125266814,
+            -0.8206811290381689,
+            0.5700865151094111
+          ]
+        },
+        "transparent_near_ulp_count": 0,
+        "stack_within_10_um": [
+          {
+            "triangle": 4005,
+            "native_face": 894,
+            "half": 1,
+            "part": 0,
+            "original_cube_index": 1789,
+            "new_polygon": 2002,
+            "distance_camera_mm": 3083.015234432565,
+            "signed_gap_to_ideal_um": 0.0,
+            "alpha_opaque": true,
+            "front": true,
+            "uv": [
+              0.6928591831508156,
+              0.352504409075241
+            ]
+          }
+        ]
+      },
+      {
+        "pixel": [
+          500,
+          471
+        ],
+        "first_opaque": {
+          "triangle": 840,
+          "part": 0,
+          "native_face": 138,
+          "half": 0,
+          "polygon": 420,
+          "local_loop_triangle": 840,
+          "distance_mm": 3082.3256007361424,
+          "barycentric": [
+            0.3353574820445111,
+            0.16644053536280512,
+            0.4982019825926838
+          ],
+          "point": [
+            0.03526000013947487,
+            -0.4176744016784237,
+            3.594820425337058
+          ],
+          "UV": [
+            0.9372752478240854,
+            0.08383937051112778
+          ],
+          "flat_corner_normal": [
+            -0.04391231384309819,
+            -0.8734540932282121,
+            0.4849223192593089
+          ],
+          "triangle_geometric_normal": [
+            -0.04396195683500816,
+            -0.8733918651589081,
+            0.4850298920947866
+          ]
+        },
+        "transparent_near_ulp_count": 1,
+        "stack_within_10_um": [
+          {
+            "triangle": 840,
+            "native_face": 138,
+            "half": 0,
+            "part": 0,
+            "original_cube_index": 276,
+            "new_polygon": 420,
+            "distance_camera_mm": 3082.3256007361424,
+            "signed_gap_to_ideal_um": 0.0,
+            "alpha_opaque": true,
+            "front": true,
+            "uv": [
+              0.9372752478240854,
+              0.08383937051112778
+            ]
+          },
+          {
+            "triangle": 815,
+            "native_face": 137,
+            "half": 1,
+            "part": 0,
+            "original_cube_index": 275,
+            "new_polygon": 407,
+            "distance_camera_mm": 3082.325621821348,
+            "signed_gap_to_ideal_um": 0.021085205137438834,
+            "alpha_opaque": false,
+            "front": true,
+            "uv": [
+              0.5422515240121878,
+              0.9592635529712562
+            ]
+          }
+        ]
+      },
+      {
+        "pixel": [
+          559,
+          440
+        ],
+        "first_opaque": {
+          "triangle": 35038,
+          "part": 1,
+          "native_face": 4111,
+          "half": 1,
+          "polygon": 8223,
+          "local_loop_triangle": 16446,
+          "distance_mm": 3095.604627940432,
+          "barycentric": [
+            0.04340266643289464,
+            0.7120886806702004,
+            0.244508652896905
+          ],
+          "point": [
+            0.06593999901413918,
+            -0.4043953771004162,
+            3.610940426909208
+          ],
+          "UV": [
+            0.6222543264484526,
+            0.04340266643289464
+          ],
+          "flat_corner_normal": [
+            0.10410599858560161,
+            -0.8594506137726584,
+            0.5005063271770854
+          ],
+          "triangle_geometric_normal": [
+            0.10409358084546656,
+            -0.8594506931189493,
+            0.500508773673475
+          ]
+        },
+        "transparent_near_ulp_count": 0,
+        "stack_within_10_um": [
+          {
+            "triangle": 35043,
+            "native_face": 4112,
+            "half": 1,
+            "part": 1,
+            "original_cube_index": 8225,
+            "new_polygon": 8225,
+            "distance_camera_mm": 3095.6016480608705,
+            "signed_gap_to_ideal_um": -2.979879561326726,
+            "alpha_opaque": false,
+            "front": true,
+            "uv": [
+              0.8233397440033071,
+              0.3780426599199638
+            ]
+          },
+          {
+            "triangle": 35038,
+            "native_face": 4111,
+            "half": 1,
+            "part": 1,
+            "original_cube_index": 8223,
+            "new_polygon": 8223,
+            "distance_camera_mm": 3095.604627940432,
+            "signed_gap_to_ideal_um": 0.0,
+            "alpha_opaque": true,
+            "front": true,
+            "uv": [
+              0.6222543264484526,
+              0.04340266643289464
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "tag": "roi68-depth3",
+    "scope": "Actual saved candidate Blender float32 input; independent ideal barycentric/nearest-alpha oracle. t ULP coincidence remains a sensitivity measure, not actual Cycles traversal.",
+    "summary": {
+      "all": {
+        "n": 3321,
+        "transparent_within_one_ulp": 173,
+        "same_float32_t_transparent": 136,
+        "preceding_transparent_within_one_ulp": 99,
+        "first_opaque_vs_baseline": {
+          "count": 3321,
+          "both_hit": 3321,
+          "part_mismatch": 0,
+          "native_face_mismatch": 0,
+          "half_mismatch_when_same_source": 0,
+          "depth_abs_mm_percentiles": {
+            "median": 0.0,
+            "p95": 7.029379478495912e-05,
+            "p99": 0.00011347837798325614,
+            "max": 0.0001871245007833977
+          },
+          "polygon_normal_angle_degrees_percentiles": {
+            "median": 0.0,
+            "p95": 0.008508897540888545,
+            "p99": 0.017707706327159074,
+            "max": 0.03836850050664717
+          },
+          "interpolated_stored_corner_normal_angle_degrees_percentiles": {
+            "median": 0.0,
+            "p95": 0.01332406311847811,
+            "p99": 0.025625657049158413,
+            "max": 0.04807554630389387
+          },
+          "geometric_loop_triangle_normal_angle_degrees_percentiles": {
+            "median": 0.0,
+            "p95": 0.012410113050434596,
+            "p99": 0.023682193458166034,
+            "max": 0.04681892663708851
+          }
+        }
+      },
+      "original_dark_10": {
+        "n": 301,
+        "transparent_within_one_ulp": 66,
+        "same_float32_t_transparent": 50,
+        "preceding_transparent_within_one_ulp": 41,
+        "first_opaque_vs_baseline": {
+          "count": 301,
+          "both_hit": 301,
+          "part_mismatch": 0,
+          "native_face_mismatch": 0,
+          "half_mismatch_when_same_source": 0,
+          "depth_abs_mm_percentiles": {
+            "median": 2.439666557663145e-05,
+            "p95": 7.386727629565826e-05,
+            "p99": 9.828285607582643e-05,
+            "max": 0.00010812728135078942
+          },
+          "polygon_normal_angle_degrees_percentiles": {
+            "median": 0.004138423168616016,
+            "p95": 0.01605421549201714,
+            "p99": 0.02166054515565199,
+            "max": 0.03836850050664717
+          },
+          "interpolated_stored_corner_normal_angle_degrees_percentiles": {
+            "median": 0.005672883003043674,
+            "p95": 0.021202827100783896,
+            "p99": 0.0386276222430638,
+            "max": 0.045854003845854245
+          },
+          "geometric_loop_triangle_normal_angle_degrees_percentiles": {
+            "median": 0.004822161120968729,
+            "p95": 0.02192024524569655,
+            "p99": 0.044545956579843,
+            "max": 0.04681892663708851
+          }
+        }
+      },
+      "original_clean_abs3": {
+        "n": 2737,
+        "transparent_within_one_ulp": 74,
+        "same_float32_t_transparent": 59,
+        "preceding_transparent_within_one_ulp": 38,
+        "first_opaque_vs_baseline": {
+          "count": 2737,
+          "both_hit": 2737,
+          "part_mismatch": 0,
+          "native_face_mismatch": 0,
+          "half_mismatch_when_same_source": 0,
+          "depth_abs_mm_percentiles": {
+            "median": 0.0,
+            "p95": 6.874138254175928e-05,
+            "p99": 0.00011683212365554116,
+            "max": 0.0001871245007833977
+          },
+          "polygon_normal_angle_degrees_percentiles": {
+            "median": 0.0,
+            "p95": 0.005525303703703018,
+            "p99": 0.014488775050372984,
+            "max": 0.035312444462308044
+          },
+          "interpolated_stored_corner_normal_angle_degrees_percentiles": {
+            "median": 0.0,
+            "p95": 0.008784122004181981,
+            "p99": 0.021991443535269283,
+            "max": 0.04807554630389387
+          },
+          "geometric_loop_triangle_normal_angle_degrees_percentiles": {
+            "median": 0.0,
+            "p95": 0.007846186752358866,
+            "p99": 0.019869127155926924,
+            "max": 0.03648237473404727
+          }
+        }
+      }
+    },
+    "witnesses": [
+      {
+        "pixel": [
+          493,
+          471
+        ],
+        "first_opaque": {
+          "triangle": 1062,
+          "part": 0,
+          "native_face": 134,
+          "half": 1,
+          "polygon": 531,
+          "local_loop_triangle": 1062,
+          "distance_mm": 3082.50879479571,
+          "barycentric": [
+            0.23391812965059788,
+            0.26478538464405493,
+            0.5012964857053472
+          ],
+          "point": [
+            0.03162000027298928,
+            -0.4174912076188564,
+            3.5948204253669043
+          ],
+          "UV": [
+            0.8438310303565842,
+            0.27923976620632474
+          ],
+          "flat_corner_normal": [
+            -0.04386422947950915,
+            -0.8736266822051983,
+            0.48461567196212957
+          ],
+          "triangle_geometric_normal": [
+            -0.04401589406531526,
+            -0.8738169816617842,
+            0.4842586949442621
+          ]
+        },
+        "transparent_near_ulp_count": 0,
+        "stack_within_10_um": [
+          {
+            "triangle": 1062,
+            "native_face": 134,
+            "half": 1,
+            "part": 0,
+            "original_cube_index": 269,
+            "new_polygon": 531,
+            "distance_camera_mm": 3082.50879479571,
+            "signed_gap_to_ideal_um": 0.0,
+            "alpha_opaque": true,
+            "front": true,
+            "uv": [
+              0.8438310303565842,
+              0.27923976620632474
+            ]
+          }
+        ]
+      },
+      {
+        "pixel": [
+          559,
+          449
+        ],
+        "first_opaque": {
+          "triangle": 494,
+          "part": 0,
+          "native_face": 111,
+          "half": 0,
+          "polygon": 247,
+          "local_loop_triangle": 494,
+          "distance_mm": 3091.206406639446,
+          "barycentric": [
+            0.4631600554920044,
+            0.5238789876180537,
+            0.012960956889941868
+          ],
+          "point": [
+            0.06593999901413918,
+            -0.4087935976389333,
+            3.606260426364308
+          ],
+          "UV": [
+            0.7516201196112428,
+            0.1157900138730011
+          ],
+          "flat_corner_normal": [
+            0.13991402696209443,
+            -0.8439255722682449,
+            0.5178935156293865
+          ],
+          "triangle_geometric_normal": [
+            0.1398466736749622,
+            -0.8439386817602939,
+            0.5178903448518288
+          ]
+        },
+        "transparent_near_ulp_count": 0,
+        "stack_within_10_um": [
+          {
+            "triangle": 494,
+            "native_face": 111,
+            "half": 0,
+            "part": 0,
+            "original_cube_index": 222,
+            "new_polygon": 247,
+            "distance_camera_mm": 3091.206406639446,
+            "signed_gap_to_ideal_um": 0.0,
+            "alpha_opaque": true,
+            "front": true,
+            "uv": [
+              0.7516201196112428,
+              0.1157900138730011
+            ]
+          }
+        ]
+      },
+      {
+        "pixel": [
+          510,
+          468
+        ],
+        "first_opaque": {
+          "triangle": 4573,
+          "part": 0,
+          "native_face": 894,
+          "half": 1,
+          "polygon": 2286,
+          "local_loop_triangle": 4573,
+          "distance_mm": 3083.015234432565,
+          "barycentric": [
+            0.2285632673967375,
+            0.294991181849518,
+            0.4764455507537445
+          ],
+          "point": [
+            0.04045999994874001,
+            -0.416984768236157,
+            3.596380425392193
+          ],
+          "UV": [
+            0.6928591831508156,
+            0.352504409075241
+          ],
+          "flat_corner_normal": [
+            -0.03855425570995101,
+            -0.8207001061404839,
+            0.5700569314968903
+          ],
+          "triangle_geometric_normal": [
+            -0.038520770125266814,
+            -0.8206811290381689,
+            0.5700865151094111
+          ]
+        },
+        "transparent_near_ulp_count": 0,
+        "stack_within_10_um": [
+          {
+            "triangle": 4573,
+            "native_face": 894,
+            "half": 1,
+            "part": 0,
+            "original_cube_index": 1789,
+            "new_polygon": 2286,
+            "distance_camera_mm": 3083.015234432565,
+            "signed_gap_to_ideal_um": 0.0,
+            "alpha_opaque": true,
+            "front": true,
+            "uv": [
+              0.6928591831508156,
+              0.352504409075241
+            ]
+          }
+        ]
+      },
+      {
+        "pixel": [
+          500,
+          471
+        ],
+        "first_opaque": {
+          "triangle": 1223,
+          "part": 0,
+          "native_face": 138,
+          "half": 0,
+          "polygon": 611,
+          "local_loop_triangle": 1223,
+          "distance_mm": 3082.3256178479155,
+          "barycentric": [
+            0.0038548057134163427,
+            0.3292852967270697,
+            0.666859897559514
+          ],
+          "point": [
+            0.03526000013947487,
+            -0.41767438456665135,
+            3.594820425337061
+          ],
+          "UV": [
+            0.9372590746429116,
+            0.0838393379091163
+          ],
+          "flat_corner_normal": [
+            -0.044096520807616724,
+            -0.8733674045056414,
+            0.48506172143320364
+          ],
+          "triangle_geometric_normal": [
+            -0.04396411521748005,
+            -0.8731951077888132,
+            0.4853838278175605
+          ]
+        },
+        "transparent_near_ulp_count": 1,
+        "stack_within_10_um": [
+          {
+            "triangle": 1223,
+            "native_face": 138,
+            "half": 0,
+            "part": 0,
+            "original_cube_index": 276,
+            "new_polygon": 611,
+            "distance_camera_mm": 3082.3256178479155,
+            "signed_gap_to_ideal_um": 0.0,
+            "alpha_opaque": true,
+            "front": true,
+            "uv": [
+              0.9372590746429116,
+              0.0838393379091163
+            ]
+          },
+          {
+            "triangle": 1167,
+            "native_face": 137,
+            "half": 1,
+            "part": 0,
+            "original_cube_index": 275,
+            "new_polygon": 583,
+            "distance_camera_mm": 3082.3256554322534,
+            "signed_gap_to_ideal_um": 0.03758433786416049,
+            "alpha_opaque": false,
+            "front": true,
+            "uv": [
+              0.5422519007443242,
+              0.9594688531447964
+            ]
+          }
+        ]
+      },
+      {
+        "pixel": [
+          559,
+          440
+        ],
+        "first_opaque": {
+          "triangle": 36126,
+          "part": 1,
+          "native_face": 4111,
+          "half": 1,
+          "polygon": 8223,
+          "local_loop_triangle": 16446,
+          "distance_mm": 3095.604627940432,
+          "barycentric": [
+            0.04340266643289464,
+            0.7120886806702004,
+            0.244508652896905
+          ],
+          "point": [
+            0.06593999901413918,
+            -0.4043953771004162,
+            3.610940426909208
+          ],
+          "UV": [
+            0.6222543264484526,
+            0.04340266643289464
+          ],
+          "flat_corner_normal": [
+            0.10410599858560161,
+            -0.8594506137726584,
+            0.5005063271770854
+          ],
+          "triangle_geometric_normal": [
+            0.10409358084546656,
+            -0.8594506931189493,
+            0.500508773673475
+          ]
+        },
+        "transparent_near_ulp_count": 0,
+        "stack_within_10_um": [
+          {
+            "triangle": 36131,
+            "native_face": 4112,
+            "half": 1,
+            "part": 1,
+            "original_cube_index": 8225,
+            "new_polygon": 8225,
+            "distance_camera_mm": 3095.6016480608705,
+            "signed_gap_to_ideal_um": -2.979879561326726,
+            "alpha_opaque": false,
+            "front": true,
+            "uv": [
+              0.8233397440033071,
+              0.3780426599199638
+            ]
+          },
+          {
+            "triangle": 36126,
+            "native_face": 4111,
+            "half": 1,
+            "part": 1,
+            "original_cube_index": 8223,
+            "new_polygon": 8223,
+            "distance_camera_mm": 3095.604627940432,
+            "signed_gap_to_ideal_um": 0.0,
+            "alpha_opaque": true,
+            "front": true,
+            "uv": [
+              0.6222543264484526,
+              0.04340266643289464
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

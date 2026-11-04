@@ -1,0 +1,32 @@
+import bpy,numpy as np,json,collections
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False);o=bpy.data.objects['TESTE 34 — conexão de superfícies avaliadas'];dg=bpy.context.evaluated_depsgraph_get();m=o.evaluated_get(dg).to_mesh();p=np.array([v.co[:] for v in m.vertices]);fs=[tuple(f.vertices) for f in m.polygons];hb=BVHTree.FromObject(bpy.data.objects['Maria — anatomia feminina adaptada CC0'],dg);vf=collections.defaultdict(set)
+for i,f in enumerate(fs):
+ for v in f:vf[v].add(i)
+sel=((p[:,1]+.01556)**2+(p[:,2]-3.31112)**2<.05**2)&(p[:,0]<-.025);removed={i for i,f in enumerate(fs) if all(sel[v] for v in f)};steps=[]
+for it in range(len(fs)):
+ counts=collections.Counter(tuple(sorted((a,b))) for i in removed for a,b in zip(fs[i],fs[i][1:]+fs[i][:1]));adj=collections.defaultdict(set)
+ for (a,b),n in counts.items():
+  if n==1:adj[a].add(b);adj[b].add(a)
+ inside=[]
+ for v in adj:
+  h,n,_,_=hb.find_nearest(Vector(p[v]));sd=(Vector(p[v])-h).dot(n)
+  if sd<-.00001:inside.append(v)
+ seen=set();sizes=[]
+ for v in adj:
+  if v in seen:continue
+  todo=[v];seen.add(v);size=0
+  while todo:
+   a=todo.pop();size+=1
+   for b in adj[a]:
+    if b not in seen:seen.add(b);todo.append(b)
+  sizes.append(size)
+ steps.append({'step':it,'removed_faces':len(removed),'boundary_component_sizes':sizes,'bad_degrees':sum(len(a)!=2 for a in adj.values()),'insufficient_clearance_vertices':len(inside)})
+ if not inside:break
+ extra=set().union(*(vf[v] for v in inside))-removed
+ points=p[list({v for f in extra for v in fs[f]})]
+ if np.any(points[:,2]<3.22) or np.any(points[:,2]>3.42) or np.any(points[:,0]>.025):steps[-1]['stopped']='Growth leaves bounded posterior neck region';break
+ if not extra:break
+ removed|=extra
+json.dump({'steps':steps,'removed_faces':sorted(removed)},open(r+'neck-contact-boundary-growth.json','w'),indent=2);print(steps)

@@ -1,0 +1,38 @@
+import bpy,math,json
+from mathutils import Matrix,Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/'
+bpy.ops.wm.open_mainfile(filepath=r+'V26-coordinated-crown-trial.blend',use_scripts=False)
+R=bpy.data.objects['Maria — auréola lisa'].rotation_euler.to_matrix()@Matrix.Rotation(-math.pi/2,3,'X');Ri=R.transposed()
+head=bpy.data.objects['Maria — anatomia feminina adaptada CC0'];bpy.context.view_layer.update();bvh=BVHTree.FromObject(head,bpy.context.evaluated_depsgraph_get())
+veil=bpy.data.objects['Maria — véu reconstruído de perfil'];mat=veil.data.materials[0]
+N=176;W=16;verts=[];faces=[];miss=0
+for i in range(N+1):
+ a=-1.72+3.44*i/N
+ edge=3.50-.14*math.sin(a)**2-.35*max(0,-math.cos(a))
+ tt=max(0,min(1,(edge-3.38)/.185));edge-=.025*tt*tt*(3-2*tt)
+ taper=max(.12,min(1,(1.72-abs(a))/.20))
+ side=math.sin(a)**6
+ for j in range(W+1):
+  t=j/W;z=edge+(.018*(1-t)-.004*t-.026*side*t)*taper
+  origin=R@Vector((-.44,1.012,z));direction=R@Vector((math.sin(a),-math.cos(a),0))
+  hit,n,idx,dist=bvh.ray_cast(origin,direction,1)
+  if hit is None:miss+=1;hit=origin+direction*.12;n=direction
+  # A restrained cloth hem profile: broad shallow crest, no hard torus ridge.
+  relief=(.0016+.0022*(math.exp(-((t-.12)/.11)**2)+math.exp(-((t-.88)/.11)**2)))*taper
+  verts.append(tuple(hit+n*relief))
+for i in range(N):
+ for j in range(W):
+  a=i*(W+1)+j;b=a+W+1;faces.append((a,a+1,b+1,b))
+m=bpy.data.meshes.new('Faixa frontal dupla — estudo');m.from_pydata(verts,[],faces);m.update();o=bpy.data.objects.new('TESTE 28 — faixa contínua de borda dupla',m);bpy.context.scene.collection.objects.link(o);o.data.materials.append(mat)
+for p in m.polygons:p.use_smooth=True
+s=o.modifiers.new('Espessura discreta','SOLIDIFY');s.thickness=.0005;s.offset=0
+s=o.modifiers.new('Acabamento suave','SUBSURF');s.levels=1
+# Separate object can be removed/hidden without changing V26 source geometry.
+o['status']='Unapproved study of frontal cloth hem; hide object to return to V26.'
+o['reference']='reference-9.jpg, front border and temple coverage; unseen rear not asserted.'
+json.dump({'ray_misses':miss,'vertices':len(verts),'faces':len(faces),'max_hem_raise':.0038,'temple_drop':.030},open(r+'V28-change-report.json','w'),indent=2)
+bpy.ops.wm.save_as_mainfile(filepath=r+'V28-double-band-trial.blend')
+s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=600;s.render.resolution_y=800;s.render.resolution_percentage=100;c=s.camera
+for view,loc,targ,scale in [('face',(-1.6,-5,3.7),(0,-.08,3.43),.88),('profile',(-5,-.05,3.6),(0,-.15,3.4),1.05)]:
+ c.location=loc;c.rotation_euler=(Vector(targ)-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=scale;s.render.filepath=r+'V28-compare-'+view+'.png';bpy.ops.render.render(write_still=True)

@@ -1,0 +1,36 @@
+✔ scheduled expiry explains closure once without applying the draft or retaining a lock (2.918023ms)
+✔ a lease discovered expired by an interaction gets the same notice before the timer fires (0.325188ms)
+✔ voluntary cancellation before the deadline does not show an expiry warning (0.349808ms)
+✔ non-timeout invalidation before the deadline keeps its existing silent dismissal (0.235244ms)
+✔ native editor cancellation, expiry and invalidation preserve saved pose with zero writes (2.662948ms)
+✔ native editor binds every input as client writable, including disabled and hidden dropdowns (4.02ms)
+✔ fixed dropdown values never authorize a finish change (0.918055ms)
+✔ native editor commits only on Apply, restores the opened altar and cleans subscriptions (1.641776ms)
+✔ invalid client selections are rejected and a released lease closes the view without a finish (1.281101ms)
+✔ native joinery controls show the actual material and never apply a suspended relief (0.718209ms)
+✔ one native cloth selector offers lace on every model and shows direction only for emblems (2.511699ms)
+✔ native editor dimensions follow the draft front and restore without changing world tiles (2.463248ms)
+✔ native title preserves the editing orientation through a symmetric model and closes without stale updates (1.90202ms)
+✔ ornament identity never interprets an architectural centre role as Guadalupe (196.712514ms)
+✔ Guadalupe intent survives saved classic textiles, model switches, explicit choices and Restore (146.93982ms)
+✔ mixed altar keeps genuine Guadalupe but ignores unrelated architectural centres (1.562265ms)
+✔ explicit Guadalupe choice after an architectural transition is retained and Restore removes only that draft choice (0.61868ms)
+✔ twin pedestal UI keeps fixed walnut, all cloths and facing, and preserves suspended Guadalupe (1.415998ms)
+✔ native placement and generic extensions use a plain pending module rather than duplicating native supports (19.91888ms)
+✔ unknown neighbors cancel inheritance without reading or writing beyond local cells (0.95285ms)
+✔ native onTick/onBreak/onPlace never repairs a global pose or writes survivors (1.67476ms)
+✔ native family adds one model and17 recipes without changing joinery identities (5.175174ms)
+✔ every native recipe roundtrips every codebook pose and rejects geometry/pose mismatch (278.494245ms)
+✔ all768 oriented rectangles select global semantic poses and centered textile roles (3515.392475ms)
+✔ native survivors freeze after break and switching away drops native pose (1.81442ms)
+✔ native drafts preserve front, color, Guadalupe and suspended relief (1.362789ms)
+✔ invalid native rectangles and concurrent pose changes perform zero writes; write failure restores native poses (2.981304ms)
+✔ targeting a pending extension seeds the existing native recipe and front without changing tiles (1.000097ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4372.385327

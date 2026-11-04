@@ -1,0 +1,138 @@
+{
+  "scope": "SYNTHETIC OFFLINE EXAMPLES ONLY",
+  "cases": 12,
+  "cliReadOnlySmoke": "passed",
+  "allQuarantinesRetained": true,
+  "allEffectsEmpty": true,
+  "noNativeValidation": true,
+  "results": [
+    {
+      "name": "no_visible_item",
+      "evidencePattern": "no-current-match",
+      "proposal": "collect-more-evidence-no-automatic-reissue",
+      "reasons": [
+        "native-durability-and-downgrade-not-verified",
+        "event-generation-not-bound-by-native-contract"
+      ],
+      "inputSha256": "ddc8786a0ca25aa374711b89f44193e22f511379e94b2602e2cc2d47208b7881",
+      "reportSha256": "29e2bd50c1c29da8d9d436fd56022bc861c8e17ee3faab738a65c168740ee952"
+    },
+    {
+      "name": "one_exact_item",
+      "evidencePattern": "one-observed-item-location",
+      "proposal": "review-designating-existing-copy",
+      "reasons": [
+        "native-durability-and-downgrade-not-verified",
+        "event-generation-not-bound-by-native-contract"
+      ],
+      "inputSha256": "ee42b7435badd025e11f1ca6f615b60004436ad3dc55d68cc650b66498b4f2a3",
+      "reportSha256": "fe831a285c934942ed007eef7f25304373325ac5f86655e5561ee6db8ab4528d"
+    },
+    {
+      "name": "registry_and_item",
+      "evidencePattern": "registry-and-item-observations",
+      "proposal": "review-coexisting-representations",
+      "reasons": [
+        "native-durability-and-downgrade-not-verified",
+        "event-generation-not-bound-by-native-contract"
+      ],
+      "inputSha256": "7db00f4ea153c45f109687bcc15e9595d0eedae82c0a11301d1fc75f22d9c964",
+      "reportSha256": "316fb981bcdea63e8d6c7fac14e5d2407a7bc96979838c414154e69670509671"
+    },
+    {
+      "name": "two_item_locations",
+      "evidencePattern": "multiple-observed-item-locations",
+      "proposal": "review-multiple-copies",
+      "reasons": [
+        "native-durability-and-downgrade-not-verified",
+        "event-generation-not-bound-by-native-contract"
+      ],
+      "inputSha256": "5df49df9ac84573fac09173922e7cccf6a3b25e7a56fa336b0a261f34ac28f9f",
+      "reportSha256": "183150bed3764c94debdad8e6fcb383ee31ec5ec97fe12b5919d2b918e37ec51"
+    },
+    {
+      "name": "id_content_conflict",
+      "evidencePattern": "unclassified",
+      "proposal": "collect-or-correct-evidence",
+      "reasons": [
+        "item-id-matches-but-content-differs"
+      ],
+      "inputSha256": "faf056426aaa58c1c72a484b42cad22c1979a2d980efabf94c2cf473be3d5ce3",
+      "reportSha256": "73251179761aafba8e73796547ce4e569bc38bc33dd3af55d234cc5d8e61fc20"
+    },
+    {
+      "name": "old_observation",
+      "evidencePattern": "unclassified",
+      "proposal": "collect-or-correct-evidence",
+      "reasons": [
+        "stale-or-mixed-context-observation"
+      ],
+      "inputSha256": "fe9cd77d051bb3d728fbddea60e956a0ce7e0abd28cc95807b90fd9f409a22a3",
+      "reportSha256": "44a8943b485ac32caafc4b7001825a0c387501e08b3b7199979b241fad37608e"
+    },
+    {
+      "name": "old_contract",
+      "evidencePattern": "unclassified",
+      "proposal": "collect-or-correct-evidence",
+      "reasons": [
+        "world-contract-or-time-context-mismatch"
+      ],
+      "inputSha256": "436ccb9643d2996db05f1a2f0ae205dbe9d03a50c166b680eae3b1bb785ffa5a",
+      "reportSha256": "36d5c4024cebf8ed4c052b1e1e8e03d7b7d86ba1e656711ac184a4ec4d10acee"
+    },
+    {
+      "name": "conflicting_operation",
+      "evidencePattern": "unclassified",
+      "proposal": "collect-or-correct-evidence",
+      "reasons": [
+        "operation-id-has-distinct-records",
+        "item-id-has-another-retained-journal"
+      ],
+      "inputSha256": "c3f0457e687fde215b16be5bac2570d77df3aa979cb8a9cb762309a3b875943a",
+      "reportSha256": "19bdae2208525b84ab55de7d7a0281578e0127e4216c8eeff3380a718b7d333d"
+    },
+    {
+      "name": "corrupt_related_journal",
+      "evidencePattern": "unclassified",
+      "proposal": "collect-or-correct-evidence",
+      "reasons": [
+        "unreadable-related-journal"
+      ],
+      "inputSha256": "edcee2f7319927f29b9436869d2f3682bc5f39492287c06c95257f954d62e00d",
+      "reportSha256": "90c455a9d4dc4b0bc2d407528628c3ed36006aa8247c626bb28c4d3dd5b1f0ee"
+    },
+    {
+      "name": "mismatched_generation",
+      "evidencePattern": "unclassified",
+      "proposal": "collect-or-correct-evidence",
+      "reasons": [
+        "reported-generation-mismatch"
+      ],
+      "inputSha256": "83526ff68e0e2db4d0a7ad0f74d9bdbe786d29abd399c75f3df5ad2866119988",
+      "reportSha256": "05823454960f2f146a6bd498fb10553781738614602a6b3f3acf753be30f220e"
+    },
+    {
+      "name": "completed_but_ambiguous",
+      "evidencePattern": "no-current-match",
+      "proposal": "collect-more-evidence-no-automatic-reissue",
+      "reasons": [
+        "native-durability-and-downgrade-not-verified",
+        "event-generation-not-bound-by-native-contract",
+        "completed-phase-is-not-permission-to-remove-tombstone"
+      ],
+      "inputSha256": "4bc30e15828ddf1aa0e3742590f732264ec9bc11e0511e95b577527639dfacc7",
+      "reportSha256": "73463a143fc60b156cdee560c626396c958f5785eaa6d0dc16310c2fb0323433"
+    },
+    {
+      "name": "source_only",
+      "evidencePattern": "registry-only-observations",
+      "proposal": "review-retained-source-with-duplicate-risk",
+      "reasons": [
+        "native-durability-and-downgrade-not-verified",
+        "event-generation-not-bound-by-native-contract"
+      ],
+      "inputSha256": "9f4854d9683d7fc0f6559ed9702e8e02577671b24a9f3262fcb118dd3238b2a7",
+      "reportSha256": "454dbdfc86c7cf81c39e37044fa8d31bdd3ea43ce3c12002519f1c644e21a9ec"
+    }
+  ]
+}

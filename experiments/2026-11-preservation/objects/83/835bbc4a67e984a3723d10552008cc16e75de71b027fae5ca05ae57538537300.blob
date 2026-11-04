@@ -1,0 +1,36 @@
+import bpy,numpy as np,json,sys,hashlib,time
+from pathlib import Path
+from mathutils import Vector
+B=Path('.').resolve();R=B/'lit_surface_v16/lighting_research';E=B/'lit_surface_v16/evidence';T=B/'lit_surface_v16/transparent_trim';V=B/'opaque_transport_v15';c=np.load(V/'shared_mask/transport_arrays.npz');source_lookup={(int(pi),int(ci)):(int(nf),int(h)) for pi,ci,nf,h in zip(c['part'],c['cube_index'],c['native_face'],c['half'])}
+for tag in sys.argv[sys.argv.index('--')+1:]:
+ original=tag in ['baseline','clip'];src=(V/'evidence'/('shared-2048-diagnostic.blend' if tag=='baseline' else 'shared-2048-analytic-clip-control-diagnostic.blend')) if original else E/(tag+'-diagnostic.blend');assert src.exists(),src
+ gp=V/'shared_mask/shared_mask_2048.geo.json' if original else T/(tag+'.geo.json');g=json.loads(gp.read_text())['minecraft:geometry'][0];bones={int(b['name'].split('_')[1]):b for b in g['bones']};lookup=None;mapping_path=None
+ if not original:
+  mapping_path=T/(tag+'-cube-map.npz');m=np.load(mapping_path);lookup={(int(pi),int(ni)):int(oi) for pi,ni,oi in zip(m['part'],m['new_cube_index'],m['original_cube_index'])};assert len(lookup)==len(m['part'])
+ ids={}
+ for pi in [0,1,15]:
+  cubes=bones[pi]['cubes'];assert all(len(c['uv'])==1 for c in cubes);ids[pi]=[source_lookup[(pi,i if original else lookup[(pi,i)])] for i in range(len(cubes))]
+ bpy.ops.wm.open_mainfile(filepath=str(src));s=bpy.context.scene;s.render.threads_mode='FIXED';s.render.threads=2;s.cycles.samples=1;s.cycles.use_adaptive_sampling=False;s.cycles.use_denoising=False;s.cycles.seed=0;s.cycles.pixel_filter_type='BOX';s.cycles.filter_width=.01;s.cycles.max_bounces=0;s.cycles.diffuse_bounces=0;s.render.use_border=False;s.render.use_crop_to_border=False
+ cam=s.camera;cam.location=(.035,-3.5,3.58);cam.rotation_euler=(Vector((.035,-.3,3.58))-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.ortho_scale=.52;s.render.resolution_x=s.render.resolution_y=1000;s.render.resolution_percentage=100
+ checks=[]
+ for ob in s.objects:
+  if ob.type!='MESH':continue
+  me=ob.data;pi=int(ob.name.split(' ')[0].split('_')[1]);pos=np.array([v.co[:] for v in me.vertices],np.float32);uv=np.array([v.uv[:] for v in me.uv_layers.active.data],np.float32);h=lambda a:hashlib.sha256(a.tobytes()).hexdigest();before=[h(pos),h(uv)]
+  if pi in ids:
+   assert len(me.polygons)==len(ids[pi]);n=3 if tag=='clip' else 4;assert all(list(p.vertices)==list(range(p.index*n,p.index*n+n)) for p in me.polygons)
+  a=me.color_attributes.new(name='SourceIdDiagnostic',type='FLOAT_COLOR',domain='CORNER')
+  for p in me.polygons:
+   nf,half=ids[pi][p.index] if pi in ids else (p.index,0);color=((nf+1)/65536,(pi+1)/32,(half+1)/4,1)
+   for li in p.loop_indices:a.data[li].color=color
+  assert before==[h(np.array([v.co[:] for v in me.vertices],np.float32)),h(np.array([v.uv[:] for v in me.uv_layers.active.data],np.float32))];checks.append({'part':pi,'polygons':len(me.polygons),'positions_sha256':before[0],'uv_sha256':before[1]})
+ for mat in bpy.data.materials:
+  if not mat.use_nodes:continue
+  n=mat.node_tree.nodes;l=mat.node_tree.links
+  for bs in list(n):
+   if bs.type!='BSDF_DIFFUSE':continue
+   em=n.new('ShaderNodeEmission');attr=n.new('ShaderNodeAttribute');attr.attribute_name='SourceIdDiagnostic';l.new(attr.outputs['Color'],em.inputs['Color'])
+   for lk in list(bs.outputs[0].links):l.new(em.outputs[0],lk.to_socket)
+   n.remove(bs)
+ s.render.image_settings.file_format='OPEN_EXR';s.render.image_settings.color_depth='32';s.render.image_settings.color_mode='RGBA';s.render.filepath=str(R/f'fullframe-{tag}-ids.exr');t=time.time();bpy.ops.render.render(write_still=True);im=bpy.data.images.load(s.render.filepath);ar=np.array(im.pixels[:],np.float32).reshape(im.size[1],im.size[0],4)[::-1];np.savez_compressed(R/f'fullframe-{tag}-ids.npz',ids=ar)
+ (R/f'fullframe-{tag}-ids.json').write_text(json.dumps({'source':str(src),'source_sha256':hashlib.sha256(src.read_bytes()).hexdigest(),'mapping':str(mapping_path) if mapping_path else 'original transport contract','geometry_and_UV_unchanged':checks,'samples':1,'filter':'BOX0.01','crop':False,'source_ID_decode':'RGB*[65536,32,4]-1=native_face,part,half;legacy parts use original polygon index','seconds':time.time()-t},indent=2))
+ print('FULLFRAME_READY',tag,flush=True)

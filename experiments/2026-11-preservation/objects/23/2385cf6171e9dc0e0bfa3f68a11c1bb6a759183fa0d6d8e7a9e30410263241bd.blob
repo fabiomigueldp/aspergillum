@@ -1,0 +1,53 @@
+# Cruzeta: juntas e marchetaria — 0.12.1
+
+Revisão da [primeira construção](CROSSBRACE_0.12.0.md), após comparação visual de frente, costas, quinas e encontros de módulos. O diagnóstico anterior não foi publicado nem aprovado no Minecraft.
+
+## Alterações justificadas pela inspeção
+
+1. **Marchetaria proporcional.** Na primeira versão, o mesmo recorte de quatro losangos ocupava tanto a travessa larga como a cabeça estreita. Agora cada cabeça tem um motivo legível; os pés conservam apenas dois filetes. Travessas usam períodos completos, sem cortar um losango na ponta. A densidade horizontal fica dentro de 5% da referência do apoio, inclusive quando uma quina encurta o vão. O atlas continua 64², com oito períodos alinhados à grade de pixels. O material continua madeira opaca, sem metal ou emissão.
+2. **Apoios simétricos e juntas fechadas.** O fuste de quina recua 0,12 unidade em todas as quatro faces e passa a ter seção 1,36 × 1,36. As travessas inferiores avançam os mesmos 0,12 até a face real do apoio. Meios montantes continuam compartilhados; UVs complementares recompõem o veio e o motivo completos. Faces internas das meias colunas não são emitidas.
+3. **X duplo cavilhado.** As diagonais continuam em camadas adjacentes de meia profundidade. Uma pequena cavilha de madeira, centrada no cruzamento, atravessa ambas e dá leitura de junção. Não é descrito como meia-madeira localizada nem como simulação física. Fazer o rebaixo localizado integral exigiria mais peças; não se elevou o orçamento para isso.
+
+A mensa, sua altura y=16, os dez tecidos e seus recortes não mudam. O tampo não recebe um chanfro especulativo. Nas imagens CPU inspecionadas, o afastamento do tecido e as quinas continuam legíveis; iluminação, culling nativo e comportamento em movimento ainda exigem o jogo.
+
+## Contratos e custo
+
+- Mesmos 414 blocos, 4.700 geometrias, 17 acabamentos Cruzeta e 80.000 estados Altare.
+- Nenhuma mudança de UUID, codec, state, colisão, aplicação/rollback ou preservação de objetos sobre a mensa.
+- Cruzeta usa até 50 cubos e 235 faces. O teto de 50 é preservado, sem nova exceção de complexidade.
+- Mesmos 33,2255859375 MiB de mapas únicos; só o trio novo `crossbrace_inlay` muda visualmente. Mapas das outras famílias são preservados.
+- Aspergillum permanece 1.2.5; Estúdio permanece 2.3.0 e consome os novos recursos pelo catálogo/hash gerado.
+
+## Verificação reproduzível
+
+```
+npm --prefix addons/altare run check
+HOME=/tmp/altare-creator-home MCT_TEST_PINNED_MC_VERSION=1.26.40 node addons/altare/tools/package.mjs
+python addons/altare/tools/cpu-rasterize.py --test-camera
+node addons/altare/tools/capture-cpu.mjs --matrix
+```
+
+O pin usa a opção existente do Creator Tools e o alvo declarado, porque a consulta de versão offline havia caído indevidamente no fallback 1.26.0. Não altera schemas ou política de avisos.
+
+A matriz gera 35 PNGs: cenas principais 1×1, 3×2, 7×2 e 8×2; todos os dez tecidos e oito cores Floral IHS; quatro frentes; junção frontal/traseira, rasantes frente/verso, vista inferior, 1×3, 2×2 e lateral com linho longo. `--only <id>` permite repetir uma cena; `--out <diretório>` conserva comparações. Os manifests registram hashes dos arquivos de geometria/mapas realmente consumidos.
+
+A revisão independente detectou que a primeira câmera CPU espelhava horizontalmente a projeção inteira. A base foi corrigida apenas no capturador: norte projeta +X à esquerda, sul projeta +X à direita, e +Y continua para cima. Um teste de cinco bases ortonormais com determinante +1 protege essa convenção. Nenhuma arte/UV do tecido distribuído foi invertida para compensar a prévia.
+
+A ferramenta CPU mantém o mesmo adaptador geométrico do projeto e suas UVs. Não executa Chromium, GPU ou PBR, e não prova paridade Bedrock. O Chromium continua bloqueado pelo ambiente; nenhuma restrição foi contornada.
+
+## Resultado desta rodada
+
+- 111/111 testes Altare, 107/107 Aspergillum e 84/84 viewer; tipos, builds, documentação e validação estrutural aprovados.
+- Creator Tools no alvo 1.26.40: zero erros, zero avisos inesperados e os 2.084 avisos limitados das famílias anteriores. Cruzeta não usa exceção. As consultas de registry npm receberam 502; a validação offline é complementada pelos tipos estáveis instalados.
+- 35 PNGs finais, com 137 hashes de geometria/mapas e cinco hashes dos capturadores/adaptadores conferidos. Câmera corrigida e monogramas legíveis, revisados independentemente.
+- Todas as 414 definições de bloco e runtime são byte-idênticos à 0.12.0. Só 555 geometrias Cruzeta, seus três mapas próprios e seis arquivos de metadados de versão mudaram. Da baseline 0.11.2, todos os 397 blocos, 4.108 geometrias e 258 arquivos de textura permanecem idênticos.
+- Os 5.393 arquivos do `.mcaddon` foram comparados aos packs gerados, sem divergência. SHA-256: `5c19edfd4b2b0bf3855b9691e3b875dcb179e98b0ae1a33cef4b02970a1affb7`.
+
+## Reteste do arquivo exato no Minecraft
+
+1. Copiar o mundo, remover revisão concorrente e importar BP/RP **[0,12,1]**, no alvo mínimo 1.26.40, sem experimentos.
+2. Montar 1×1, 2×1, 3×2, 7×2 e 8×2. Examinar frente, verso, quinas e parte inferior: filetes contínuos, um apoio por junta, fustes simétricos, cavilhas centrais e nenhum brilho/cintilação de faces.
+3. Alternar todas as dez toalhas e as quatro frentes; conferir oito cores Floral IHS, seu centro ímpar e centro dividido par. Olhar o verso do tecido através do quadro.
+4. Trocar modelos, aplicar/cancelar/restaurar, remover/repor módulos e salvar/reabrir. Objetos acima da mensa devem permanecer. Testar colisão estreita conservadora, multiplayer, Content Log e desempenho no dispositivo-alvo.
+
+Só essa importação permite encerrar o gate visual/físico. A revisão continua diagnóstica.

@@ -1,0 +1,56 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-cloth-obstacle-surface-trial.py').read().split('counts=collections.Counter')[0])
+patch=set(json.load(open(r+'neck-paired-boundary-feasibility-growth.json'))['patch_faces']);pairlist=np.load(r+'neck-source-layer-pairs.npz')['pairs']+160386;pairmap={int(a):int(b) for a,b in pairlist for a,b in [(a,b),(b,a)]};primary={int(a):int(a) for a,b in pairlist};primary.update({int(b):int(a) for a,b in pairlist});counts=collections.Counter(tuple(sorted((a,b))) for fi in patch for a,b in zip(fs[fi],fs[fi][1:]+fs[fi][:1]));boundary={v for e,n in counts.items() if n==1 for v in e};ids={v for fi in patch for v in fs[fi]};free=sorted({primary[v] for v in ids}-{primary[v] for v in boundary});ix={v:i for i,v in enumerate(free)}
+temp=bpy.data.meshes.new('diagnostic source tessellation');temp.from_pydata(p.tolist(),[],fs);temp.calc_loop_triangles();T=np.array([t.vertices[:] for t in temp.loop_triangles]);F=np.array([t.polygon_index for t in temp.loop_triangles]);bpy.data.meshes.remove(temp);patchtri=np.where(np.isin(F,list(patch)))[0]
+head=bpy.data.objects['Maria — anatomia feminina adaptada CC0'];he=head.evaluated_get(dg);hm=he.to_mesh();hm.calc_loop_triangles();hp=np.array([v.co[:] for v in hm.vertices]);HT=np.array([t.vertices[:] for t in hm.loop_triangles]);he.to_mesh_clear();H=hp[HT];hmin=H[:,:,1:].min(1);hmax=H[:,:,1:].max(1)
+def cross(a,b):return a[0]*b[1]-a[1]*b[0]
+def bary2(pt,t):
+ den=cross(t[1]-t[0],t[2]-t[0])
+ if abs(den)<1e-15:return None
+ b=cross(pt-t[0],t[2]-t[0])/den;c=cross(t[1]-t[0],pt-t[0])/den
+ return np.array([1-b-c,b,c])
+def clip(poly,tri):
+ if cross(tri[1]-tri[0],tri[2]-tri[0])<0:tri=tri[::-1]
+ for a,b in zip(tri,np.roll(tri,-1,axis=0)):
+  if len(poly)==0:break
+  out=[];e=b-a
+  for u,v in zip(poly,np.roll(poly,-1,axis=0)):
+   du=cross(e,u-a);dv=cross(e,v-a)
+   if du>=-1e-13:out.append(u)
+   if (du<0)!=(dv<0):out.append(u+(v-u)*du/(du-dv))
+  poly=np.array(out)
+ return poly
+constraints=[];fixedbad=[];degcloth=0;degskin=set();margin=.0001;worst=None;required=0;overlapcells=0
+for ti in patchtri:
+ vs=T[ti];c=p[vs];cyz=c[:,1:]
+ if abs(cross(cyz[1]-cyz[0],cyz[2]-cyz[0]))<1e-15:degcloth+=1;continue
+ lo=cyz.min(0);hi=cyz.max(0);cand=np.where(np.all(hmax>=lo,axis=1)&np.all(hmin<=hi,axis=1))[0]
+ for hiidx in cand:
+  h=H[hiidx];hyz=h[:,1:]
+  if abs(cross(hyz[1]-hyz[0],hyz[2]-hyz[0]))<1e-15:
+   if np.linalg.norm(np.cross(h[1]-h[0],h[2]-h[0]))>1e-14:degskin.add(int(hiidx))
+   continue
+  poly=clip(cyz.copy(),hyz)
+  if len(poly)<3:continue
+  overlapcells+=1
+  for pt in poly:
+   cw=bary2(pt,cyz);hw=bary2(pt,hyz)
+   if cw is None or hw is None:continue
+   need=float(cw@c[:,0]-hw@h[:,0]+margin)
+   if need<=0:continue
+   coeff={}
+   for v,w in zip(vs,cw):
+    a=primary[int(v)]
+    if a in ix:coeff[ix[a]]=coeff.get(ix[a],0)+max(0,float(w))
+   total=sum(coeff.values())
+   if total<1e-10:fixedbad.append({'cloth_triangle':int(ti),'skin_triangle':int(hiidx),'required':need});continue
+   t=need/total
+   if t>required:required=t;worst={'cloth_triangle':int(ti),'skin_triangle':int(hiidx),'required_max_move':t,'weights':coeff,'need':need}
+   constraints.append((coeff,need))
+print({'cells':overlapcells,'constraints':len(constraints),'fixedbad':len(fixedbad),'required':required,'degcloth':degcloth,'degskin':len(degskin)},flush=True)
+
+from scipy.sparse import coo_matrix,save_npz
+rows=[];cols=[];values=[];rhs=[]
+for j,(coeff,need) in enumerate(constraints):
+ rhs.append(need)
+ for i,w in coeff.items():rows.append(j);cols.append(i);values.append(w)
+M=coo_matrix((values,(rows,cols)),shape=(len(constraints),len(free))).tocsr();save_npz(r+'neck-envelope-constraints.npz',M);np.savez(r+'neck-envelope-constraint-data.npz',rhs=rhs,free=free,points=p,triangles=T,patchtri=patchtri,pairs=pairlist,boundary=sorted(boundary));print('Saved exact inequality system',M.shape,flush=True)

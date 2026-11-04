@@ -1,0 +1,1023 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-11-03T18:13:27.494Z",
+  "configurations": 512,
+  "cellInstances": 19584,
+  "options": {
+    "depthCap": 3,
+    "alignToEndCell": false,
+    "capCuts": true,
+    "twoSided": true
+  },
+  "baseline": {
+    "useful": 8232,
+    "declared": 8232,
+    "fixedBankDeclared": 8704
+  },
+  "rows": [
+    {
+      "recipe": "none",
+      "interior": 56,
+      "perimeter": 392,
+      "whole": 448,
+      "overlap": 0
+    },
+    {
+      "recipe": "linen_short",
+      "interior": 56,
+      "perimeter": 392,
+      "whole": 448,
+      "overlap": 0
+    },
+    {
+      "recipe": "linen_long",
+      "interior": 56,
+      "perimeter": 392,
+      "whole": 448,
+      "overlap": 0
+    },
+    {
+      "recipe": "gold_short",
+      "interior": 56,
+      "perimeter": 392,
+      "whole": 448,
+      "overlap": 0
+    },
+    {
+      "recipe": "gold_long",
+      "interior": 56,
+      "perimeter": 392,
+      "whole": 448,
+      "overlap": 0
+    },
+    {
+      "recipe": "agnus",
+      "interior": 56,
+      "perimeter": 448,
+      "whole": 504,
+      "overlap": 0
+    },
+    {
+      "recipe": "floral_white",
+      "interior": 56,
+      "perimeter": 448,
+      "whole": 504,
+      "overlap": 0
+    },
+    {
+      "recipe": "floral_red",
+      "interior": 56,
+      "perimeter": 448,
+      "whole": 504,
+      "overlap": 0
+    },
+    {
+      "recipe": "floral_green",
+      "interior": 56,
+      "perimeter": 448,
+      "whole": 504,
+      "overlap": 0
+    },
+    {
+      "recipe": "floral_purple",
+      "interior": 56,
+      "perimeter": 448,
+      "whole": 504,
+      "overlap": 0
+    },
+    {
+      "recipe": "floral_rose",
+      "interior": 56,
+      "perimeter": 448,
+      "whole": 504,
+      "overlap": 0
+    },
+    {
+      "recipe": "floral_black",
+      "interior": 56,
+      "perimeter": 448,
+      "whole": 504,
+      "overlap": 0
+    },
+    {
+      "recipe": "floral_gold",
+      "interior": 56,
+      "perimeter": 448,
+      "whole": 504,
+      "overlap": 0
+    },
+    {
+      "recipe": "floral_silver",
+      "interior": 56,
+      "perimeter": 448,
+      "whole": 504,
+      "overlap": 0
+    },
+    {
+      "recipe": "verdant",
+      "interior": 56,
+      "perimeter": 448,
+      "whole": 504,
+      "overlap": 0
+    },
+    {
+      "recipe": "requiem",
+      "interior": 56,
+      "perimeter": 448,
+      "whole": 504,
+      "overlap": 0
+    },
+    {
+      "recipe": "lace",
+      "interior": 56,
+      "perimeter": 392,
+      "whole": 448,
+      "overlap": 0
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "floral_colors_only",
+      "sharedRecipes": [
+        "floral_white",
+        "floral_red",
+        "floral_green",
+        "floral_purple",
+        "floral_rose",
+        "floral_black",
+        "floral_gold",
+        "floral_silver"
+      ],
+      "sharedInteriorEntries": 56,
+      "useful": 7840,
+      "savedUseful": 392,
+      "declared": 7840,
+      "savedDeclared": 392,
+      "fixedBankDeclared": 8960,
+      "savedFixedBank": -256,
+      "minimumCombined": 69192,
+      "fixedCombined": 70312,
+      "withinReference": false,
+      "slots": [
+        {
+          "id": "none",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "linen_short",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "linen_long",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "gold_short",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "gold_long",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "agnus",
+          "entries": 504,
+          "packed": {
+            "declared": 504,
+            "cardinalities": [
+              3,
+              12,
+              14
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_white_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_red_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_green_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_purple_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_rose_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_black_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_gold_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_silver_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "verdant",
+          "entries": 504,
+          "packed": {
+            "declared": 504,
+            "cardinalities": [
+              3,
+              12,
+              14
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "requiem",
+          "entries": 504,
+          "packed": {
+            "declared": 504,
+            "cardinalities": [
+              3,
+              12,
+              14
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "lace",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "shared_interior_pool",
+          "entries": 56,
+          "packed": {
+            "declared": 56,
+            "cardinalities": [
+              1,
+              4,
+              14
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 256
+        }
+      ],
+      "colocatedPool": {
+        "hostRecipe": "floral_white",
+        "declared": 7840,
+        "fixedBankDeclared": 8704
+      }
+    },
+    {
+      "name": "all_covered_textiles",
+      "sharedRecipes": [
+        "linen_short",
+        "linen_long",
+        "gold_short",
+        "gold_long",
+        "agnus",
+        "floral_white",
+        "floral_red",
+        "floral_green",
+        "floral_purple",
+        "floral_rose",
+        "floral_black",
+        "floral_gold",
+        "floral_silver",
+        "verdant",
+        "requiem",
+        "lace"
+      ],
+      "sharedInteriorEntries": 56,
+      "useful": 7392,
+      "savedUseful": 840,
+      "declared": 7392,
+      "savedDeclared": 840,
+      "fixedBankDeclared": 8960,
+      "savedFixedBank": -256,
+      "minimumCombined": 68744,
+      "fixedCombined": 70312,
+      "withinReference": false,
+      "slots": [
+        {
+          "id": "none",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "linen_short_perimeter",
+          "entries": 392,
+          "packed": {
+            "declared": 392,
+            "cardinalities": [
+              2,
+              14,
+              14
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "linen_long_perimeter",
+          "entries": 392,
+          "packed": {
+            "declared": 392,
+            "cardinalities": [
+              2,
+              14,
+              14
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "gold_short_perimeter",
+          "entries": 392,
+          "packed": {
+            "declared": 392,
+            "cardinalities": [
+              2,
+              14,
+              14
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "gold_long_perimeter",
+          "entries": 392,
+          "packed": {
+            "declared": 392,
+            "cardinalities": [
+              2,
+              14,
+              14
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "agnus_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_white_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_red_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_green_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_purple_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_rose_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_black_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_gold_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_silver_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "verdant_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "requiem_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "lace_perimeter",
+          "entries": 392,
+          "packed": {
+            "declared": 392,
+            "cardinalities": [
+              2,
+              14,
+              14
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "shared_interior_pool",
+          "entries": 56,
+          "packed": {
+            "declared": 56,
+            "cardinalities": [
+              1,
+              4,
+              14
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 256
+        }
+      ],
+      "colocatedPool": {
+        "hostRecipe": "linen_short",
+        "declared": 7392,
+        "fixedBankDeclared": 8704
+      }
+    },
+    {
+      "name": "all_recipes_interior_pool",
+      "sharedRecipes": [
+        "none",
+        "linen_short",
+        "linen_long",
+        "gold_short",
+        "gold_long",
+        "agnus",
+        "floral_white",
+        "floral_red",
+        "floral_green",
+        "floral_purple",
+        "floral_rose",
+        "floral_black",
+        "floral_gold",
+        "floral_silver",
+        "verdant",
+        "requiem",
+        "lace"
+      ],
+      "sharedInteriorEntries": 112,
+      "useful": 7392,
+      "savedUseful": 840,
+      "declared": 7392,
+      "savedDeclared": 840,
+      "fixedBankDeclared": 8960,
+      "savedFixedBank": -256,
+      "minimumCombined": 68744,
+      "fixedCombined": 70312,
+      "withinReference": false,
+      "slots": [
+        {
+          "id": "none_perimeter",
+          "entries": 392,
+          "packed": {
+            "declared": 392,
+            "cardinalities": [
+              2,
+              14,
+              14
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "linen_short_perimeter",
+          "entries": 392,
+          "packed": {
+            "declared": 392,
+            "cardinalities": [
+              2,
+              14,
+              14
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "linen_long_perimeter",
+          "entries": 392,
+          "packed": {
+            "declared": 392,
+            "cardinalities": [
+              2,
+              14,
+              14
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "gold_short_perimeter",
+          "entries": 392,
+          "packed": {
+            "declared": 392,
+            "cardinalities": [
+              2,
+              14,
+              14
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "gold_long_perimeter",
+          "entries": 392,
+          "packed": {
+            "declared": 392,
+            "cardinalities": [
+              2,
+              14,
+              14
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "agnus_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_white_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_red_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_green_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_purple_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_rose_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_black_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_gold_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "floral_silver_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "verdant_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "requiem_perimeter",
+          "entries": 448,
+          "packed": {
+            "declared": 448,
+            "cardinalities": [
+              2,
+              14,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "lace_perimeter",
+          "entries": 392,
+          "packed": {
+            "declared": 392,
+            "cardinalities": [
+              2,
+              14,
+              14
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 512
+        },
+        {
+          "id": "shared_interior_pool",
+          "entries": 112,
+          "packed": {
+            "declared": 112,
+            "cardinalities": [
+              1,
+              7,
+              16
+            ],
+            "padding": 0
+          },
+          "bankDeclared": 256
+        }
+      ],
+      "colocatedPool": {
+        "hostRecipe": "none",
+        "declared": 7392,
+        "fixedBankDeclared": 8704
+      }
+    }
+  ],
+  "notes": [
+    "Measurement only. No runtime, registry, recipe, catalog, world, selection or migration contract is adopted.",
+    "Source family explicitly uses depthCap3 and alignToEndCell:false. Both visual slicing and native collision receive the same sourceModel.",
+    "Only edges=0 cells may share; all edges!=0 cells retain recipe identity. Logical facing remains in every key.",
+    "Equivalence includes canonical structural cubes with UV/material slots, native collision, and garment cubes with actual texture keys substituted only on emitted faces. Wood materials are identical across all recipes. Unused dye/seam bindings are not counted.",
+    "All textile recipes have the same interior linen-only garment output; bare wood has no garment and cannot be equated to linen. Pooling distinct bare and linen profiles in a single block ID still uses separate codebook entries.",
+    "A new global assembly recipe would have to be recovered from all relevant loaded perimeter blocks. Pick-block on shared interiors, borderless fragments, partial loading, mixed or damaged perimeters and copying interiors lose current local recipe semantics.",
+    "This does not solve those ownership/inference problems. The parent is evaluating whether the measured savings justify a separate contract.",
+    "Covered-top overlap at15.91..16 remains unresolved. Counts are from the unchanged structural-plus-garment study, not a rendering approval.",
+    "The all-covered-only scenario avoids moving bare cells into a shared pool when doing so adds no sharing benefit.",
+    "Dedicated shared-pool IDs add a fixed bank. Hosting generic interior codes in one canonical recipe bank retains perimeter recipe identity and keeps fixed-bank cost at8704, but still changes interior semantics."
+  ],
+  "inputHashes": {
+    "tools/audit-pedestal-interior-sharing.mjs": "96cee551b9d234878762f5a65e2bb6ce14f5f2ca2fd9baf7ec458be149554b3b",
+    "addons/altare/assets-src/atelier/twin-pedestal-family-study.mjs": "947aad7c7fbcc80a4dbea24bf9490339f22ab9e2d3aca822db2e7ba1b717891a",
+    "addons/altare/assets-src/atelier/twin-pedestal-cell-study.mjs": "44afd91906335e29019e88f71b2ccc82299fde59efbb8863f9d44e1bac27350f",
+    "addons/altare/assets-src/atelier/twin-pedestal-collision-study.mjs": "cb93acf7cb6a2f030d39621e1b251b01108a7e09175445ddcbda0eaf46927449",
+    "addons/altare/assets-src/atelier/garment.mjs": "b579581ed9506b2d08148d82b92d780871eb8f9b3fcee8f45985d19325936f6f",
+    "addons/altare/tools/universal-pack.mjs": "8de5a9f9eea51786b372199cc1f54c5eafbf8e307885b29195a72cf4f1178801"
+  }
+}

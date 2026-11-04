@@ -1,0 +1,21 @@
+"""Controlled normal-map variant: source-parameter correspondence, same geometry/albedo."""
+import bpy,numpy as np,json,time
+from pathlib import Path
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+R=Path(__file__).resolve().parents[1];C=R/'curvature_candidate';B=R.parent/'shell_band_v3';cap=np.load(C/'evidence/cap-paired.npz');src=np.load(B/'evidence/cap-source.npz');par=np.load(R/'evidence/cap-source-parameters.npz')['params'];uv=np.column_stack([(par[:,0]+1)*par[:,2],(par[:,0]+1)*par[:,1]]);wc=np.load(B/'evidence/cap-source-wall-classes.npz')['wall_class'];hf=src['triangles'];hn=src['normals'];uv3=np.column_stack([uv,np.zeros(len(uv))]);trees={};faces={};
+for side in [0,1]:
+ faces[side]=hf[wc==side];trees[side]=BVHTree.FromPolygons(uv3.tolist(),faces[side].tolist(),all_triangles=True)
+g=json.loads((C/'resource_pack/models/entity/paired_cap_band.geo.json').read_text())['minecraft:geometry'][0];maps=json.loads((C/'evidence/alpha-triangle-map.json').read_text());WAT=g['description']['texture_width'];HAT=g['description']['texture_height'];im=bpy.data.images.load(str(C/'resource_pack/textures/entity/paired_cap_band_normal_per_wall_dx.png'));im.colorspace_settings.name='Non-Color';normal=np.array(im.pixels[:],np.float32).reshape(HAT,WAT,4)[::-1].copy();al=bpy.data.images.load(str(C/'resource_pack/textures/entity/paired_cap_band.png'));alpha=np.array(al.pixels[:],np.float32).reshape(HAT,WAT,4)[::-1,:,:,][...,3];stats={'changed_cap_texels':0,'negative_tangent_z':0,'unchanged_parts':'Band and cap rim copied exactly from bounded per-wall bake','method':'Affine source-parameter interpolation at each exported texel, high UV-surface lookup restricted to matching cap wall, barycentric source smooth normals. No 3D projection ray or nearest-wall ambiguity.','geometry_changed':False,'albedo_changed':False,'normal_convention':'DirectX green negative; still no engine tangent validation'};start=time.time();ci=0
+for m in maps:
+ if m['part']!=0:continue
+ c=g['bones'][0]['cubes'][ci];ci+=1;ti=m['cube'];idx=cap['triangles'][ti];sides=cap['source_side'][idx]
+ if not np.all(sides==sides[0]):continue
+ side=int(sides[0]);p=cap['points'][idx];edges=np.linalg.norm(np.roll(p,-1,axis=0)-p,axis=1);idx=np.roll(idx,-int(np.argmax(edges)));params=uv[cap['source_indices'][idx]]
+ a,b,cc=np.array([m['a'],m['b'],m['c']]);U=b-a;w=np.linalg.norm(U);U/=w;vec=cc-a;t=np.dot(vec,U);V=vec-t*U;h=np.linalg.norm(V);V/=h;N=np.cross(U,V);M=np.column_stack([U,V,N]);tx,ty=c['uv']['south']['uv'];W,H=c['uv']['south']['uv_size'];ww,hh=c['size'][:2];mu,mv=m['mask_local'][0];yy,xx=np.mgrid[0:H,0:W];px=(xx+.5)/W*ww-mu;py=(1-(yy+.5)/H)*hh-mv;lc=py/h;lb=(px-t*lc)/w;weights=np.stack([1-lb-lc,lb,lc],-1);locations=weights@params;mask=alpha[ty:ty+H,tx:tx+W]>.5;tree=trees[side];ff=faces[side]
+ for y,x in zip(*np.where(mask)):
+  q,_,fi,_=tree.find_nearest(Vector((float(locations[y,x,0]),float(locations[y,x,1]),0.)));tri=ff[fi];aa,bb,dd=uv[tri];v0=bb-aa;v1=dd-aa;v2=np.array(q)[:2]-aa;den=v0[0]*v1[1]-v0[1]*v1[0]
+  if abs(den)<1e-20:raise RuntimeError('Degenerate UV triangle')
+  wb=(v2[0]*v1[1]-v2[1]*v1[0])/den;wd=(v0[0]*v2[1]-v0[1]*v2[0])/den;bs=np.clip([1-wb-wd,wb,wd],0,1);bs/=sum(bs);n=bs@hn[tri];n/=np.linalg.norm(n);nbb=np.array([n[0],n[2],-n[1]]);tangent=nbb@M;stats['negative_tangent_z']+=int(tangent[2]<0);tangent[1]*=-1;normal[ty+y,tx+x,:3]=tangent*.5+.5;stats['changed_cap_texels']+=1
+ if ci%1000==0:print('Parametric cap bake',ci,round(time.time()-start),flush=True)
+out=bpy.data.images.new('Source parameter cap normals',width=WAT,height=HAT,alpha=True);out.colorspace_settings.name='Non-Color';out.pixels.foreach_set(normal[::-1].flatten());out.filepath_raw=str(C/'resource_pack/textures/entity/paired_cap_band_normal_param_dx.png');out.file_format='PNG';out.save();stats['seconds']=time.time()-start;stats['negative_cap_tangent_z_fraction']=stats['negative_tangent_z']/stats['changed_cap_texels'];(C/'evidence/parametric-normal-bake.json').write_text(json.dumps(stats,indent=2));print(stats,flush=True)

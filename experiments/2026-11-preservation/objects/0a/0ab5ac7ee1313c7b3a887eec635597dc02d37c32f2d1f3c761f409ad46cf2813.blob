@@ -1,0 +1,2442 @@
+{
+  "status": "NO_V10_CANDIDATE_RETAINED",
+  "frozen_baseline": "lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz",
+  "frozen_body": "body_interface_v9/constrained_fit/retained-anatomy.npz",
+  "frozen_band": "shell_band_v5/retained_candidate/evidence/band-paired.npz",
+  "attempt_count": 97,
+  "all_preserve_same_connectivity": true,
+  "all_mantle_exact": true,
+  "inputs_current_sha256": {
+    "lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz": "712a550fbbb56090ae700e30e4e21153d04c16139062ebcd2a72e818f3e34f7b",
+    "body_interface_v9/constrained_fit/retained-anatomy.npz": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+    "shell_band_v5/retained_candidate/evidence/band-paired.npz": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647"
+  },
+  "conclusion": "No trial combines resolved visible ear interface, valid geometric screen, bounded native shape changes and preserved multi-view silhouette. Boundary30 is an explicit successful-local-direction/rejected-global-shape counterexample; exact immutable-edge evidence applies only to fixed-boundary hypothesis, not all possible remodelling.",
+  "attempts": [
+    {
+      "candidate": "boundary-medial-05mm.npz",
+      "sha256": "babeaf46114fc24f02aac2f4605321680a80561b9811fd65d1763e2d87660062",
+      "status": "research_not_promoted",
+      "body_pairs": 1359,
+      "body_parts": {
+        "0": 824,
+        "1": 535,
+        "2": 0
+      },
+      "new_body_pairs": 1195,
+      "self_pairs": 0,
+      "band_pairs": 1125,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.8732886026305816,
+      "bridge_stretch_range": [
+        0.8727822799599946,
+        1.8985162943422906
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "boundary-medial-10mm.npz",
+      "sha256": "9d37dd9cea9eb1c2e1a6f1a40b38071a07a4e7132e18463e836f01abfea486f9",
+      "status": "research_not_promoted",
+      "body_pairs": 987,
+      "body_parts": {
+        "0": 563,
+        "1": 424,
+        "2": 0
+      },
+      "new_body_pairs": 945,
+      "self_pairs": 0,
+      "band_pairs": 942,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.7489174387099614,
+      "bridge_stretch_range": [
+        0.7479790419368703,
+        2.904485689440343
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "boundary-medial-15mm.npz",
+      "sha256": "cad64e1be49b394cce2df5cf587ff15ce542669a3b9137e3156ce76ae5b331a4",
+      "status": "research_not_promoted",
+      "body_pairs": 771,
+      "body_parts": {
+        "0": 506,
+        "1": 265,
+        "2": 0
+      },
+      "new_body_pairs": 738,
+      "self_pairs": 0,
+      "band_pairs": 841,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.628277836278079,
+      "bridge_stretch_range": [
+        0.6269936108230376,
+        3.937513961648159
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "boundary-medial-20mm.npz",
+      "sha256": "a59647850455edf270c6843eeacdfab54af3d06d37603bf2dc1ffaf45ffab7e0",
+      "status": "research_not_promoted",
+      "body_pairs": 716,
+      "body_parts": {
+        "0": 453,
+        "1": 263,
+        "2": 0
+      },
+      "new_body_pairs": 683,
+      "self_pairs": 0,
+      "band_pairs": 835,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.514004000128005,
+      "bridge_stretch_range": [
+        0.5124689198733208,
+        4.98102212152229
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "boundary-medial-30mm.npz",
+      "sha256": "468efc6ae145293c55b889f1214c710be362ddd7893c5854bd5abedd18d77033",
+      "status": "research_not_promoted",
+      "body_pairs": 709,
+      "body_parts": {
+        "0": 445,
+        "1": 264,
+        "2": 0
+      },
+      "new_body_pairs": 678,
+      "self_pairs": 0,
+      "band_pairs": 825,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.33161475605149165,
+      "bridge_stretch_range": [
+        0.32977821181846956,
+        7.081127664058944
+      ],
+      "bridge_mixed_director_faces": 1
+    },
+    {
+      "candidate": "boundary-medial-40mm.npz",
+      "sha256": "f198cefd85b82f9213a3a41f182a84f7aff678d6f3aaacaf534f5f0b6d3a9149",
+      "status": "research_not_promoted",
+      "body_pairs": 712,
+      "body_parts": {
+        "0": 446,
+        "1": 266,
+        "2": 0
+      },
+      "new_body_pairs": 682,
+      "self_pairs": 0,
+      "band_pairs": 819,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.28831538040913124,
+      "bridge_stretch_range": [
+        0.2710701278490774,
+        9.188802198591315
+      ],
+      "bridge_mixed_director_faces": 2
+    },
+    {
+      "candidate": "boundary-posterior-05mm.npz",
+      "sha256": "8fec8103bfab5612e4f1d27eec7026cc7497eed7bba274cb05c4fc42c4839ba3",
+      "status": "research_not_promoted",
+      "body_pairs": 610,
+      "body_parts": {
+        "0": 228,
+        "1": 382,
+        "2": 0
+      },
+      "new_body_pairs": 388,
+      "self_pairs": 0,
+      "band_pairs": 1828,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.8622255639069043,
+      "bridge_stretch_range": [
+        0.76849385513524,
+        1.768175743709003
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "boundary-posterior-10mm.npz",
+      "sha256": "6e389805ebf2ef88157480417a58268d4fae8d0886cc4f3b59da6e021011a692",
+      "status": "research_not_promoted",
+      "body_pairs": 448,
+      "body_parts": {
+        "0": 199,
+        "1": 249,
+        "2": 0
+      },
+      "new_body_pairs": 359,
+      "self_pairs": 0,
+      "band_pairs": 1324,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.7295046272725325,
+      "bridge_stretch_range": [
+        0.6703011706320567,
+        2.703069596830775
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "boundary-posterior-15mm.npz",
+      "sha256": "0cc86214add36919b2e75bf5bc5f5e610d623ca167ddc63dd4014cd9290e2b50",
+      "status": "research_not_promoted",
+      "body_pairs": 403,
+      "body_parts": {
+        "0": 212,
+        "1": 191,
+        "2": 0
+      },
+      "new_body_pairs": 369,
+      "self_pairs": 0,
+      "band_pairs": 1063,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.605171243923922,
+      "bridge_stretch_range": [
+        0.5977267765050293,
+        3.6977543612733035
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "boundary-posterior-20mm.npz",
+      "sha256": "b0c80b66ef582242dd972683f8481f80d9964adf7aad21629cd244042e21694c",
+      "status": "research_not_promoted",
+      "body_pairs": 347,
+      "body_parts": {
+        "0": 189,
+        "1": 158,
+        "2": 0
+      },
+      "new_body_pairs": 320,
+      "self_pairs": 0,
+      "band_pairs": 932,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.4955790782869613,
+      "bridge_stretch_range": [
+        0.501639699546724,
+        4.718066336092962
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "boundary-posterior-30mm.npz",
+      "sha256": "19f428ce7a5f246cef5a2daa2224faae55d1c0c8ebbc96997284c62e8b7ad1b0",
+      "status": "research_not_promoted",
+      "body_pairs": 212,
+      "body_parts": {
+        "0": 177,
+        "1": 35,
+        "2": 0
+      },
+      "new_body_pairs": 185,
+      "self_pairs": 0,
+      "band_pairs": 866,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.31943358528375165,
+      "bridge_stretch_range": [
+        0.30065740517687534,
+        6.791943815325104
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "boundary-posterior-40mm.npz",
+      "sha256": "aa0b0e1b9841ba3951391cf44dcb643cb670e3c2f91f965d3444848e5b316bda",
+      "status": "research_not_promoted",
+      "body_pairs": 227,
+      "body_parts": {
+        "0": 200,
+        "1": 27,
+        "2": 0
+      },
+      "new_body_pairs": 200,
+      "self_pairs": 12,
+      "band_pairs": 846,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.19597093620165879,
+      "bridge_stretch_range": [
+        0.17778268460117308,
+        8.885325527027582
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "boundary-postinferior-05mm.npz",
+      "sha256": "78fd5f89c87df17cac45e0284a8759054f3fea0edc9077a0d902373fef522958",
+      "status": "research_not_promoted",
+      "body_pairs": 564,
+      "body_parts": {
+        "0": 189,
+        "1": 375,
+        "2": 0
+      },
+      "new_body_pairs": 177,
+      "self_pairs": 0,
+      "band_pairs": 1920,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.785033606452873,
+      "bridge_stretch_range": [
+        0.504710848648642,
+        1.555412586344813
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "boundary-postinferior-10mm.npz",
+      "sha256": "ba7aacd59b4dfd58647195b8e031f65f3ba09b556beb698dd41187c0c3d6082b",
+      "status": "research_not_promoted",
+      "body_pairs": 574,
+      "body_parts": {
+        "0": 215,
+        "1": 359,
+        "2": 0
+      },
+      "new_body_pairs": 315,
+      "self_pairs": 0,
+      "band_pairs": 1852,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.5978130818822014,
+      "bridge_stretch_range": [
+        0.2543600874908891,
+        2.3502629197028093
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "boundary-postinferior-15mm.npz",
+      "sha256": "2bc949691bd703cdf1c05693bd0957580df330d2ccadbe8921a6c704de0fd9f1",
+      "status": "research_not_promoted",
+      "body_pairs": 609,
+      "body_parts": {
+        "0": 255,
+        "1": 354,
+        "2": 0
+      },
+      "new_body_pairs": 431,
+      "self_pairs": 0,
+      "band_pairs": 1698,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.472554920432057,
+      "bridge_stretch_range": [
+        0.14431358571054947,
+        3.2745005822241886
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "boundary-postinferior-20mm.npz",
+      "sha256": "b6c256d92e83199795af53ea519418af4911bdfa6be82839c0e67e419e401d35",
+      "status": "research_not_promoted",
+      "body_pairs": 595,
+      "body_parts": {
+        "0": 280,
+        "1": 315,
+        "2": 0
+      },
+      "new_body_pairs": 498,
+      "self_pairs": 0,
+      "band_pairs": 1498,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.370010554150154,
+      "bridge_stretch_range": [
+        0.10867057005048729,
+        4.2575191069700535
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "boundary-postinferior-30mm.npz",
+      "sha256": "feeaf7b82412b99545fe4ceb15bc84ee39b6ff04ce8cfdabda45d203d2aae5cb",
+      "status": "research_not_promoted",
+      "body_pairs": 552,
+      "body_parts": {
+        "0": 330,
+        "1": 222,
+        "2": 0
+      },
+      "new_body_pairs": 506,
+      "self_pairs": 0,
+      "band_pairs": 1285,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.2615691147571294,
+      "bridge_stretch_range": [
+        0.07706807138732859,
+        6.295645159370611
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "boundary-postinferior-40mm.npz",
+      "sha256": "448d4b72caa71e2dcb04033f3e369a50727b53f73a920814edebc351a964a498",
+      "status": "research_not_promoted",
+      "body_pairs": 529,
+      "body_parts": {
+        "0": 333,
+        "1": 196,
+        "2": 0
+      },
+      "new_body_pairs": 493,
+      "self_pairs": 4,
+      "band_pairs": 1268,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.16731847654157483,
+      "bridge_stretch_range": [
+        0.09563706179828298,
+        8.372685263818372
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "boundary-postmedial-05mm.npz",
+      "sha256": "f91de6f5546ffe8c44f2f0405f4b085fd1cf229cd0bc975dc0547b717a4f9c6c",
+      "status": "research_not_promoted",
+      "body_pairs": 984,
+      "body_parts": {
+        "0": 663,
+        "1": 321,
+        "2": 0
+      },
+      "new_body_pairs": 828,
+      "self_pairs": 0,
+      "band_pairs": 1138,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.8259208808206149,
+      "bridge_stretch_range": [
+        0.8164301086115904,
+        1.9610008099799612
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "boundary-postmedial-10mm.npz",
+      "sha256": "dbb75d583ac1bd1fccea78ac21fdee4d9c67be8bdcd97f3fd16e2727be9171ed",
+      "status": "research_not_promoted",
+      "body_pairs": 1233,
+      "body_parts": {
+        "0": 866,
+        "1": 367,
+        "2": 0
+      },
+      "new_body_pairs": 1176,
+      "self_pairs": 0,
+      "band_pairs": 879,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.6528933214870518,
+      "bridge_stretch_range": [
+        0.6364248415303132,
+        2.971817573450837
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "boundary-postmedial-15mm.npz",
+      "sha256": "56dbc0b0be11c0387965d24d5bebe80825299b9acb1e37e9c2fedd013a93a914",
+      "status": "research_not_promoted",
+      "body_pairs": 874,
+      "body_parts": {
+        "0": 561,
+        "1": 313,
+        "2": 0
+      },
+      "new_body_pairs": 840,
+      "self_pairs": 0,
+      "band_pairs": 841,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.4820509968878685,
+      "bridge_stretch_range": [
+        0.46188886395990847,
+        4.002677107823118
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "boundary-postmedial-20mm.npz",
+      "sha256": "2f74daf09024adbd1584d5ae807d46c477cb4178a01d479ae6759c403063e02d",
+      "status": "research_not_promoted",
+      "body_pairs": 821,
+      "body_parts": {
+        "0": 510,
+        "1": 311,
+        "2": 0
+      },
+      "new_body_pairs": 788,
+      "self_pairs": 0,
+      "band_pairs": 837,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.31694751055999815,
+      "bridge_stretch_range": [
+        0.2972593913870538,
+        5.043264172208519
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "boundary-postmedial-30mm.npz",
+      "sha256": "5619c4fd317aa5941ae29f1d90abeff59863ace59f56adcd962b28505a5a0788",
+      "status": "research_not_promoted",
+      "body_pairs": 751,
+      "body_parts": {
+        "0": 469,
+        "1": 282,
+        "2": 0
+      },
+      "new_body_pairs": 718,
+      "self_pairs": 0,
+      "band_pairs": 827,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.11156616665838191,
+      "bridge_stretch_range": [
+        0.11036062536619663,
+        7.138495211546977
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "boundary-postmedial-40mm.npz",
+      "sha256": "19d2cce5d9417c2b2b6924a4b5c04d68a716a454b8d1a1089b8d70e0bc70957f",
+      "status": "research_not_promoted",
+      "body_pairs": 652,
+      "body_parts": {
+        "0": 413,
+        "1": 239,
+        "2": 0
+      },
+      "new_body_pairs": 619,
+      "self_pairs": 231,
+      "band_pairs": 819,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.009480499086252616,
+      "bridge_stretch_range": [
+        0.056839303184967854,
+        9.24274885209163
+      ],
+      "bridge_mixed_director_faces": 1
+    },
+    {
+      "candidate": "grid-inferior-02mm.npz",
+      "sha256": "bb93c93557c1bf69f886e3cd7d23a011bbaa88443f78962122fcfd9189517d37",
+      "status": "research_not_promoted",
+      "body_pairs": 618,
+      "body_parts": {
+        "0": 207,
+        "1": 411,
+        "2": 0
+      },
+      "new_body_pairs": 57,
+      "self_pairs": 0,
+      "band_pairs": 2013,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.7562491722065142,
+      "bridge_stretch_range": [
+        0.7293631542907527,
+        1.1999173284187796
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "grid-inferior-05mm.npz",
+      "sha256": "d6e00a937e53a8897f9d813d10e11a3899df174de6b129da69ba2326f2bae4c3",
+      "status": "research_not_promoted",
+      "body_pairs": 612,
+      "body_parts": {
+        "0": 207,
+        "1": 405,
+        "2": 0
+      },
+      "new_body_pairs": 94,
+      "self_pairs": 5,
+      "band_pairs": 2003,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.40150952286452396,
+      "bridge_stretch_range": [
+        0.35882115411645044,
+        1.5170213487226996
+      ],
+      "bridge_mixed_director_faces": 1
+    },
+    {
+      "candidate": "grid-inferior-10mm.npz",
+      "sha256": "e4f6670907c194565fd578f0bcd731b4b35d2c47cdee0513258df6a9ed2ce342",
+      "status": "research_not_promoted",
+      "body_pairs": 612,
+      "body_parts": {
+        "0": 207,
+        "1": 405,
+        "2": 0
+      },
+      "new_body_pairs": 142,
+      "self_pairs": 6,
+      "band_pairs": 1985,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.11511737076858539,
+      "bridge_stretch_range": [
+        0.08908591933963092,
+        2.0737596788191284
+      ],
+      "bridge_mixed_director_faces": 2
+    },
+    {
+      "candidate": "grid-inferior-20mm.npz",
+      "sha256": "236834b7b0164a0a9cf6d63b121e6a6dae4fdc36c697f3461cd0026cace1d580",
+      "status": "research_not_promoted",
+      "body_pairs": 593,
+      "body_parts": {
+        "0": 207,
+        "1": 386,
+        "2": 0
+      },
+      "new_body_pairs": 181,
+      "self_pairs": 28,
+      "band_pairs": 2000,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.02631000269085425,
+      "bridge_stretch_range": [
+        0.02242759999167343,
+        3.238594989350596
+      ],
+      "bridge_mixed_director_faces": 9
+    },
+    {
+      "candidate": "grid-inferior-30mm.npz",
+      "sha256": "a94b2bb1f13d1b81df501b6897fb6c38f0cb1a1bece12e4871db1c49bab30e02",
+      "status": "research_not_promoted",
+      "body_pairs": 625,
+      "body_parts": {
+        "0": 207,
+        "1": 418,
+        "2": 0
+      },
+      "new_body_pairs": 251,
+      "self_pairs": 94,
+      "band_pairs": 1993,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.03177563913173462,
+      "bridge_stretch_range": [
+        0.030068039251639197,
+        4.432957095440685
+      ],
+      "bridge_mixed_director_faces": 12
+    },
+    {
+      "candidate": "grid-lateral-02mm.npz",
+      "sha256": "6097875352435bf565eb3a0c74a8c6fafa60c8adf3db2a52a72f1816255f4be0",
+      "status": "research_not_promoted",
+      "body_pairs": 604,
+      "body_parts": {
+        "0": 207,
+        "1": 397,
+        "2": 0
+      },
+      "new_body_pairs": 46,
+      "self_pairs": 6,
+      "band_pairs": 1966,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.8921189862430793,
+      "bridge_stretch_range": [
+        0.8911890100320008,
+        1.1845293698727537
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "grid-lateral-05mm.npz",
+      "sha256": "37777fc8fb3d91e8133f47e7e71e12e25273a2bdd78eeb9f2da8eec4daa7abe8",
+      "status": "research_not_promoted",
+      "body_pairs": 600,
+      "body_parts": {
+        "0": 207,
+        "1": 393,
+        "2": 0
+      },
+      "new_body_pairs": 92,
+      "self_pairs": 9,
+      "band_pairs": 1923,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.7555398803015022,
+      "bridge_stretch_range": [
+        0.7532059385163389,
+        1.4790001067757026
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "grid-lateral-10mm.npz",
+      "sha256": "4dfcb574584d98537bf47dab5f4f165d8d0519c3fe804c96edbce34905825afb",
+      "status": "research_not_promoted",
+      "body_pairs": 576,
+      "body_parts": {
+        "0": 207,
+        "1": 369,
+        "2": 0
+      },
+      "new_body_pairs": 138,
+      "self_pairs": 12,
+      "band_pairs": 1890,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.6420127286463123,
+      "bridge_stretch_range": [
+        0.6362955974743566,
+        2.0656205865710895
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "grid-lateral-20mm.npz",
+      "sha256": "d9af36e75d9a7fa205bacd5b7332b86a385c33690c772f99bffa5209b39a5300",
+      "status": "research_not_promoted",
+      "body_pairs": 506,
+      "body_parts": {
+        "0": 207,
+        "1": 299,
+        "2": 0
+      },
+      "new_body_pairs": 159,
+      "self_pairs": 41,
+      "band_pairs": 1763,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.5152250325181169,
+      "bridge_stretch_range": [
+        0.5115407977001953,
+        3.5163233275568917
+      ],
+      "bridge_mixed_director_faces": 5
+    },
+    {
+      "candidate": "grid-lateral-30mm.npz",
+      "sha256": "4469400aa49552e3fa1e62beb61b5d8736d90e701b2281b9d22b44e23a20f379",
+      "status": "research_not_promoted",
+      "body_pairs": 418,
+      "body_parts": {
+        "0": 207,
+        "1": 211,
+        "2": 0
+      },
+      "new_body_pairs": 121,
+      "self_pairs": 83,
+      "band_pairs": 1729,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.38449979098211834,
+      "bridge_stretch_range": [
+        0.3769544833982458,
+        5.030287276843731
+      ],
+      "bridge_mixed_director_faces": 19
+    },
+    {
+      "candidate": "grid-medial-02mm.npz",
+      "sha256": "8ce0abe388d4f3938e8f95238adeaab234d1c178bed5d4bf6bdcb20e867c0a88",
+      "status": "research_not_promoted",
+      "body_pairs": 617,
+      "body_parts": {
+        "0": 207,
+        "1": 410,
+        "2": 0
+      },
+      "new_body_pairs": 54,
+      "self_pairs": 0,
+      "band_pairs": 2044,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.8348620895301555,
+      "bridge_stretch_range": [
+        0.8319466991030872,
+        1.139130133860685
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "grid-medial-05mm.npz",
+      "sha256": "f3bc68e77462440ea018f2770873ae82a16a62580c0deed5c6c281bbadce3bd6",
+      "status": "research_not_promoted",
+      "body_pairs": 627,
+      "body_parts": {
+        "0": 207,
+        "1": 420,
+        "2": 0
+      },
+      "new_body_pairs": 133,
+      "self_pairs": 0,
+      "band_pairs": 2125,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.6168441438507847,
+      "bridge_stretch_range": [
+        0.6147822702553806,
+        1.3929967340565559
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "grid-medial-10mm.npz",
+      "sha256": "a7e62e61d3e5144e21bad7faaf76ea12f1e5fba06b9a5cd619a86ffbdb2e708a",
+      "status": "research_not_promoted",
+      "body_pairs": 647,
+      "body_parts": {
+        "0": 207,
+        "1": 440,
+        "2": 0
+      },
+      "new_body_pairs": 226,
+      "self_pairs": 0,
+      "band_pairs": 2031,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.24806231937824194,
+      "bridge_stretch_range": [
+        0.24642585948073323,
+        1.880479942731987
+      ],
+      "bridge_mixed_director_faces": 3
+    },
+    {
+      "candidate": "grid-medial-20mm.npz",
+      "sha256": "8c34c1e87ff3ca808f6d4c6640849733a2a50471c29c601dc748b7228b5e93b2",
+      "status": "research_not_promoted",
+      "body_pairs": 554,
+      "body_parts": {
+        "0": 207,
+        "1": 347,
+        "2": 0
+      },
+      "new_body_pairs": 203,
+      "self_pairs": 45,
+      "band_pairs": 1744,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.10474510391821885,
+      "bridge_stretch_range": [
+        0.10216388856448164,
+        3.0075068072806173
+      ],
+      "bridge_mixed_director_faces": 14
+    },
+    {
+      "candidate": "grid-medial-30mm.npz",
+      "sha256": "bccb527b70e6456aacdc9118bc794c358c043ccea3148be708b8c49613617d24",
+      "status": "research_not_promoted",
+      "body_pairs": 521,
+      "body_parts": {
+        "0": 207,
+        "1": 314,
+        "2": 0
+      },
+      "new_body_pairs": 191,
+      "self_pairs": 170,
+      "band_pairs": 1699,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.009123351358717505,
+      "bridge_stretch_range": [
+        0.00887113856239804,
+        4.50767004349924
+      ],
+      "bridge_mixed_director_faces": 36
+    },
+    {
+      "candidate": "grid-posterior-02mm.npz",
+      "sha256": "71cd7f86801a234364dc9d0af9559c161595a94c7937da6223380abc3c4c78b8",
+      "status": "research_not_promoted",
+      "body_pairs": 608,
+      "body_parts": {
+        "0": 207,
+        "1": 401,
+        "2": 0
+      },
+      "new_body_pairs": 54,
+      "self_pairs": 0,
+      "band_pairs": 2007,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.8435761839544423,
+      "bridge_stretch_range": [
+        0.8208003973898355,
+        1.2456501974887988
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "grid-posterior-05mm.npz",
+      "sha256": "c3142f109b87c24d8495ee10ca057a15d567599e8d692c13c9702dc96822b33e",
+      "status": "research_not_promoted",
+      "body_pairs": 603,
+      "body_parts": {
+        "0": 207,
+        "1": 396,
+        "2": 0
+      },
+      "new_body_pairs": 121,
+      "self_pairs": 0,
+      "band_pairs": 2011,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.6139197391773967,
+      "bridge_stretch_range": [
+        0.5677342227491847,
+        1.6407641572355607
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "grid-posterior-10mm.npz",
+      "sha256": "1a65859f8dc107db837dd6f54efe68348bb5777a06acec6c79cf73cf81f91935",
+      "status": "research_not_promoted",
+      "body_pairs": 606,
+      "body_parts": {
+        "0": 207,
+        "1": 399,
+        "2": 0
+      },
+      "new_body_pairs": 185,
+      "self_pairs": 0,
+      "band_pairs": 1968,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.2827482302025054,
+      "bridge_stretch_range": [
+        0.2320190590214607,
+        2.3422669325200722
+      ],
+      "bridge_mixed_director_faces": 2
+    },
+    {
+      "candidate": "grid-posterior-20mm.npz",
+      "sha256": "ee7478af0a5fd7105dfcaddf190b9586514e99255e33c26a43b96a76095b9aac",
+      "status": "research_not_promoted",
+      "body_pairs": 508,
+      "body_parts": {
+        "0": 207,
+        "1": 301,
+        "2": 0
+      },
+      "new_body_pairs": 164,
+      "self_pairs": 120,
+      "band_pairs": 1709,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.12479241230272474,
+      "bridge_stretch_range": [
+        0.08621625109866286,
+        3.8194790679788535
+      ],
+      "bridge_mixed_director_faces": 16
+    },
+    {
+      "candidate": "grid-posterior-30mm.npz",
+      "sha256": "0e3d92d9b2b992fc17892527628f50351920e1c72a2ec9167f555fdeef331173",
+      "status": "research_not_promoted",
+      "body_pairs": 462,
+      "body_parts": {
+        "0": 207,
+        "1": 255,
+        "2": 0
+      },
+      "new_body_pairs": 135,
+      "self_pairs": 327,
+      "band_pairs": 1668,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.036288408349897334,
+      "bridge_stretch_range": [
+        0.02534111338015345,
+        5.336298487361157
+      ],
+      "bridge_mixed_director_faces": 28
+    },
+    {
+      "candidate": "grid-posteroinferior-02mm.npz",
+      "sha256": "bb0d2441c522edf85de023aeea64e5f4d8cf6e760fad147bf50d327223eb3f0a",
+      "status": "research_not_promoted",
+      "body_pairs": 613,
+      "body_parts": {
+        "0": 207,
+        "1": 406,
+        "2": 0
+      },
+      "new_body_pairs": 23,
+      "self_pairs": 0,
+      "band_pairs": 2015,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.9496951440973439,
+      "bridge_stretch_range": [
+        0.8318886395211816,
+        1.146067330987374
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "grid-posteroinferior-05mm.npz",
+      "sha256": "a5d326c097accf1b6a7e1a6713eff4ce44f0a987ad8f44f8c3d2c7076ecbb840",
+      "status": "research_not_promoted",
+      "body_pairs": 610,
+      "body_parts": {
+        "0": 207,
+        "1": 403,
+        "2": 0
+      },
+      "new_body_pairs": 49,
+      "self_pairs": 0,
+      "band_pairs": 2015,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.8762216199417974,
+      "bridge_stretch_range": [
+        0.6259144362376481,
+        1.3999063916926393
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "grid-posteroinferior-10mm.npz",
+      "sha256": "70e685d6176f9cf2efc07e540b52974844632d962829b226ee38744d4673d615",
+      "status": "research_not_promoted",
+      "body_pairs": 608,
+      "body_parts": {
+        "0": 207,
+        "1": 401,
+        "2": 0
+      },
+      "new_body_pairs": 93,
+      "self_pairs": 0,
+      "band_pairs": 2016,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.7607469066655435,
+      "bridge_stretch_range": [
+        0.392336871154435,
+        1.9390145627329434
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "grid-posteroinferior-20mm.npz",
+      "sha256": "c71030e29f8822f411dac92541c216984d84c15cf681c4cf617e4084b4235152",
+      "status": "research_not_promoted",
+      "body_pairs": 614,
+      "body_parts": {
+        "0": 207,
+        "1": 407,
+        "2": 0
+      },
+      "new_body_pairs": 158,
+      "self_pairs": 0,
+      "band_pairs": 1989,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.574717772457806,
+      "bridge_stretch_range": [
+        0.1761982077742172,
+        3.261768548714366
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "grid-posteroinferior-30mm.npz",
+      "sha256": "d9bb3677d77b9d4149ebf1c20541ccc496b7d3fe0fa903beec8e891ac4ecaa5d",
+      "status": "research_not_promoted",
+      "body_pairs": 624,
+      "body_parts": {
+        "0": 207,
+        "1": 417,
+        "2": 0
+      },
+      "new_body_pairs": 211,
+      "self_pairs": 0,
+      "band_pairs": 1989,
+      "moved_vertices": 270,
+      "moved_source_vertices": 0,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.5046721568829581,
+      "bridge_stretch_range": [
+        0.10697110298906419,
+        4.717836338796438
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "posterolateral-k0p05-20mm.npz",
+      "sha256": "20535d891503568d2a4049100326ea8f958dd755f9c72925de541fbb93f73ad4",
+      "status": "research_not_promoted",
+      "body_pairs": 343,
+      "body_parts": {
+        "0": 185,
+        "1": 158,
+        "2": 0
+      },
+      "new_body_pairs": 308,
+      "self_pairs": 0,
+      "band_pairs": 1084,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.5180544632125751,
+      "bridge_stretch_range": [
+        0.5234453953981558,
+        4.690843646186998
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "posterolateral-k0p05-25mm.npz",
+      "sha256": "2e3a1659962c514378ca5fd565b48aa251601be0bb54eda58a8b9a66947776aa",
+      "status": "research_not_promoted",
+      "body_pairs": 231,
+      "body_parts": {
+        "0": 163,
+        "1": 68,
+        "2": 0
+      },
+      "new_body_pairs": 197,
+      "self_pairs": 0,
+      "band_pairs": 1041,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.43668718454020355,
+      "bridge_stretch_range": [
+        0.4171889236799419,
+        5.724699280623344
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "posterolateral-k0p05-30mm.npz",
+      "sha256": "9dc882091273bd1432af4d715ebafd63466b487acbd43ebc1235c8d41561bd92",
+      "status": "research_not_promoted",
+      "body_pairs": 201,
+      "body_parts": {
+        "0": 174,
+        "1": 27,
+        "2": 0
+      },
+      "new_body_pairs": 167,
+      "self_pairs": 0,
+      "band_pairs": 989,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.3435861050898533,
+      "bridge_stretch_range": [
+        0.3236363226305289,
+        6.76620645955756
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "posterolateral-k0p1-20mm.npz",
+      "sha256": "ce6df2aeae52aa9351b7dbc330c9deed7236b4016284c68d068bc223d58f5c29",
+      "status": "research_not_promoted",
+      "body_pairs": 315,
+      "body_parts": {
+        "0": 146,
+        "1": 169,
+        "2": 0
+      },
+      "new_body_pairs": 288,
+      "self_pairs": 0,
+      "band_pairs": 1057,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.54109057868019,
+      "bridge_stretch_range": [
+        0.5334217989468792,
+        4.672862231931037
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "posterolateral-k0p1-25mm.npz",
+      "sha256": "3613835b1f2ac76abf3e3770ac6b00526e2a0d733e8d719f8d9191ed2f740327",
+      "status": "research_not_promoted",
+      "body_pairs": 189,
+      "body_parts": {
+        "0": 97,
+        "1": 92,
+        "2": 0
+      },
+      "new_body_pairs": 162,
+      "self_pairs": 0,
+      "band_pairs": 1042,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.4533864095890943,
+      "bridge_stretch_range": [
+        0.43338552889697113,
+        5.710053131883461
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "posterolateral-k0p1-30mm.npz",
+      "sha256": "ecbb17dc8a3584cae747bbfa148133e5fd37ae54958fd0024f85e3a768d99978",
+      "status": "research_not_promoted",
+      "body_pairs": 150,
+      "body_parts": {
+        "0": 123,
+        "1": 27,
+        "2": 0
+      },
+      "new_body_pairs": 123,
+      "self_pairs": 0,
+      "band_pairs": 1032,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.37047630783830526,
+      "bridge_stretch_range": [
+        0.3491683315756661,
+        6.755161818849865
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "posterolateral-k0p15-20mm.npz",
+      "sha256": "171324047d14a47d3cb07a87b5a49196c074e5765d96e9cb46f9114aec2802bb",
+      "status": "research_not_promoted",
+      "body_pairs": 262,
+      "body_parts": {
+        "0": 97,
+        "1": 165,
+        "2": 0
+      },
+      "new_body_pairs": 235,
+      "self_pairs": 0,
+      "band_pairs": 1000,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.5625452920564697,
+      "bridge_stretch_range": [
+        0.5444219692705558,
+        4.664237981590347
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "posterolateral-k0p15-25mm.npz",
+      "sha256": "d88745631e5a7e1e69684840da374fa1fef7916dd42a722d6a7c77868d6f53d6",
+      "status": "research_not_promoted",
+      "body_pairs": 168,
+      "body_parts": {
+        "0": 62,
+        "1": 106,
+        "2": 0
+      },
+      "new_body_pairs": 141,
+      "self_pairs": 0,
+      "band_pairs": 997,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.471843668057194,
+      "bridge_stretch_range": [
+        0.45123313818303606,
+        5.707488145966578
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "posterolateral-k0p15-30mm.npz",
+      "sha256": "8210125f8c122f14361258aa1f4ef27c3adc9d2a57c9bc6a1acb50327d9b037c",
+      "status": "research_not_promoted",
+      "body_pairs": 98,
+      "body_parts": {
+        "0": 45,
+        "1": 53,
+        "2": 0
+      },
+      "new_body_pairs": 71,
+      "self_pairs": 0,
+      "band_pairs": 987,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.39955182965827063,
+      "bridge_stretch_range": [
+        0.37672158016810336,
+        6.758893259875977
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "posterolateral-k0p2-20mm.npz",
+      "sha256": "f0ff8ff6e2cd1e5af8bbb9ec8a2c61f179ecedf05aeb489c877a630bf0b7059a",
+      "status": "research_not_promoted",
+      "body_pairs": 236,
+      "body_parts": {
+        "0": 71,
+        "1": 165,
+        "2": 0
+      },
+      "new_body_pairs": 209,
+      "self_pairs": 0,
+      "band_pairs": 981,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.5746925373473097,
+      "bridge_stretch_range": [
+        0.5563841607339006,
+        4.665036740915507
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "posterolateral-k0p2-25mm.npz",
+      "sha256": "b532e30e8e4075ca83d1b7a69c74c67b1c36f16636c6c004b8a277d83cb3afe2",
+      "status": "research_not_promoted",
+      "body_pairs": 188,
+      "body_parts": {
+        "0": 35,
+        "1": 153,
+        "2": 0
+      },
+      "new_body_pairs": 161,
+      "self_pairs": 0,
+      "band_pairs": 970,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.4918610872984313,
+      "bridge_stretch_range": [
+        0.470537581847787,
+        5.717035657377355
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "posterolateral-k0p2-30mm.npz",
+      "sha256": "a0b2078e31d68ec848dd3f0f2ab7af55c9d8ed4cb3019414d2c3678fc24e6480",
+      "status": "research_not_promoted",
+      "body_pairs": 92,
+      "body_parts": {
+        "0": 18,
+        "1": 74,
+        "2": 0
+      },
+      "new_body_pairs": 65,
+      "self_pairs": 0,
+      "band_pairs": 958,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.43036998193662657,
+      "bridge_stretch_range": [
+        0.405862446429299,
+        6.777391385109915
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "posterolateral-k0p3-20mm.npz",
+      "sha256": "90be26a09c3cb5eca5f8a82a8620dc187f977e24279636fed0a354b71eb08324",
+      "status": "research_not_promoted",
+      "body_pairs": 248,
+      "body_parts": {
+        "0": 62,
+        "1": 186,
+        "2": 0
+      },
+      "new_body_pairs": 219,
+      "self_pairs": 0,
+      "band_pairs": 979,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.6017893114358118,
+      "bridge_stretch_range": [
+        0.5829427948286124,
+        4.69490430893258
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "posterolateral-k0p3-25mm.npz",
+      "sha256": "a996a2b8884e917f778fdb566f675be4b3ae7e070f2fb615a78e0e7ca4c39ed3",
+      "status": "research_not_promoted",
+      "body_pairs": 191,
+      "body_parts": {
+        "0": 29,
+        "1": 162,
+        "2": 0
+      },
+      "new_body_pairs": 164,
+      "self_pairs": 0,
+      "band_pairs": 972,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.535863889159655,
+      "bridge_stretch_range": [
+        0.5063093722342945,
+        5.77222862487386
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "posterolateral-k0p3-30mm.npz",
+      "sha256": "4a88f38724a28695b54309eb6851ca77ed73a54d5b6ce9ff29abcceba9ddf8c4",
+      "status": "research_not_promoted",
+      "body_pairs": 143,
+      "body_parts": {
+        "0": 0,
+        "1": 143,
+        "2": 0
+      },
+      "new_body_pairs": 116,
+      "self_pairs": 0,
+      "band_pairs": 972,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.4702048536308487,
+      "bridge_stretch_range": [
+        0.4201896869541507,
+        6.8581878660360225
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "posterolateral-k0p4-20mm.npz",
+      "sha256": "9b2ca37ff85cda24756c0095c6802b74102bf971207ec8a622a72be751943adb",
+      "status": "research_not_promoted",
+      "body_pairs": 266,
+      "body_parts": {
+        "0": 67,
+        "1": 199,
+        "2": 0
+      },
+      "new_body_pairs": 224,
+      "self_pairs": 0,
+      "band_pairs": 944,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.6103200830418767,
+      "bridge_stretch_range": [
+        0.5715744770308253,
+        4.761938483392147
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "posterolateral-k0p4-25mm.npz",
+      "sha256": "2d13ec6da4e2a7c650a400ef950b85e12d8715b108b0dca892c0cc76eab2bc53",
+      "status": "research_not_promoted",
+      "body_pairs": 224,
+      "body_parts": {
+        "0": 24,
+        "1": 200,
+        "2": 0
+      },
+      "new_body_pairs": 197,
+      "self_pairs": 0,
+      "band_pairs": 936,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.5143356410564284,
+      "bridge_stretch_range": [
+        0.47156342248182676,
+        5.8744466306961165
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "posterolateral-k0p4-30mm.npz",
+      "sha256": "293247988ceb1bbe3363ed4d5754e916574254648362a16faa2def96afb78527",
+      "status": "research_not_promoted",
+      "body_pairs": 143,
+      "body_parts": {
+        "0": 0,
+        "1": 143,
+        "2": 0
+      },
+      "new_body_pairs": 116,
+      "self_pairs": 0,
+      "band_pairs": 936,
+      "moved_vertices": 1496,
+      "moved_source_vertices": 1188,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.4197175935553063,
+      "bridge_stretch_range": [
+        0.37581707221553134,
+        6.995682010452857
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "relax065-t2-iteration00.npz",
+      "sha256": "04519b4458f770c5e64efdfbdd4ae84bedf7ae6bbaef82568c4ca065e1af73f1",
+      "status": "research_not_promoted",
+      "body_pairs": 133,
+      "body_parts": {
+        "0": 98,
+        "1": 35,
+        "2": 0
+      },
+      "new_body_pairs": 106,
+      "self_pairs": 0,
+      "band_pairs": 850,
+      "moved_vertices": 1452,
+      "moved_source_vertices": 1164,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.6015411175590534,
+      "bridge_stretch_range": [
+        0.6481639278873851,
+        1.5343473635310696
+      ],
+      "bridge_mixed_director_faces": 5
+    },
+    {
+      "candidate": "relax065-t2-iteration01.npz",
+      "sha256": "46a43b60ca4e8c288185b998df09fc7ece4171e34fb8141f126f345ccc807449",
+      "status": "research_not_promoted",
+      "body_pairs": 139,
+      "body_parts": {
+        "0": 104,
+        "1": 35,
+        "2": 0
+      },
+      "new_body_pairs": 112,
+      "self_pairs": 0,
+      "band_pairs": 842,
+      "moved_vertices": 1452,
+      "moved_source_vertices": 1164,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.6026474790861207,
+      "bridge_stretch_range": [
+        0.6484986463833486,
+        1.5352601686657183
+      ],
+      "bridge_mixed_director_faces": 6
+    },
+    {
+      "candidate": "relax065-t2-iteration02.npz",
+      "sha256": "88bd5d94c912d4ac39e17d70643409085e7d0d056360b8a39167e9490c289141",
+      "status": "research_not_promoted",
+      "body_pairs": 137,
+      "body_parts": {
+        "0": 102,
+        "1": 35,
+        "2": 0
+      },
+      "new_body_pairs": 110,
+      "self_pairs": 0,
+      "band_pairs": 842,
+      "moved_vertices": 1452,
+      "moved_source_vertices": 1164,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.6030969869313756,
+      "bridge_stretch_range": [
+        0.648363520664825,
+        1.5350937094912638
+      ],
+      "bridge_mixed_director_faces": 6
+    },
+    {
+      "candidate": "relax065-t2-iteration03.npz",
+      "sha256": "b3444dccbbecb44a16ba193dcd43149a19a3d6c05ce4fa2220f5fc832447ae83",
+      "status": "research_not_promoted",
+      "body_pairs": 137,
+      "body_parts": {
+        "0": 102,
+        "1": 35,
+        "2": 0
+      },
+      "new_body_pairs": 110,
+      "self_pairs": 0,
+      "band_pairs": 842,
+      "moved_vertices": 1452,
+      "moved_source_vertices": 1164,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.6034852728409169,
+      "bridge_stretch_range": [
+        0.6482959386925471,
+        1.5351173466058607
+      ],
+      "bridge_mixed_director_faces": 6
+    },
+    {
+      "candidate": "relax075-continuation-iteration00.npz",
+      "sha256": "82d97ed3b0fb01baceee76b9b2bdcfb24681d60b57ea2312d24b6435c6ba52bf",
+      "status": "research_not_promoted",
+      "body_pairs": 510,
+      "body_parts": {
+        "0": 158,
+        "1": 352,
+        "2": 0
+      },
+      "new_body_pairs": 229,
+      "self_pairs": 24,
+      "band_pairs": 1463,
+      "moved_vertices": 1182,
+      "moved_source_vertices": 924,
+      "seven_view_contour_vertices_exact": true,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.6880350154074732,
+      "bridge_stretch_range": [
+        0.7035580827196891,
+        1.3911303029870612
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "relax075-continuation-iteration01.npz",
+      "sha256": "b0c18970133569d4a827cf610ac7235f973d9164589666e4ca696dbca1c6c7a2",
+      "status": "research_not_promoted",
+      "body_pairs": 519,
+      "body_parts": {
+        "0": 154,
+        "1": 365,
+        "2": 0
+      },
+      "new_body_pairs": 271,
+      "self_pairs": 20,
+      "band_pairs": 1436,
+      "moved_vertices": 1182,
+      "moved_source_vertices": 924,
+      "seven_view_contour_vertices_exact": true,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.6769334273624609,
+      "bridge_stretch_range": [
+        0.6911048040702787,
+        1.4031905374208475
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "relax075-continuation-iteration02.npz",
+      "sha256": "9fd0d0e45bdcbfd273f19885d22910ab67bbcfe68e39ffda404be0c32ada6256",
+      "status": "research_not_promoted",
+      "body_pairs": 523,
+      "body_parts": {
+        "0": 162,
+        "1": 361,
+        "2": 0
+      },
+      "new_body_pairs": 289,
+      "self_pairs": 23,
+      "band_pairs": 1428,
+      "moved_vertices": 1182,
+      "moved_source_vertices": 924,
+      "seven_view_contour_vertices_exact": true,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.6898355203867743,
+      "bridge_stretch_range": [
+        0.6991071272662839,
+        1.4193987266712074
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "relax075-continuation-iteration03.npz",
+      "sha256": "ace935ec6cec237565b0a7e70b587181bc26d1939cb14868f8c77f100396350c",
+      "status": "research_not_promoted",
+      "body_pairs": 522,
+      "body_parts": {
+        "0": 185,
+        "1": 337,
+        "2": 0
+      },
+      "new_body_pairs": 314,
+      "self_pairs": 30,
+      "band_pairs": 1418,
+      "moved_vertices": 1182,
+      "moved_source_vertices": 924,
+      "seven_view_contour_vertices_exact": true,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.6534007723237722,
+      "bridge_stretch_range": [
+        0.6905083853999288,
+        1.454957217145696
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "relax075-continuation-iteration04.npz",
+      "sha256": "1e116a26e0fc1f9d9f18fc02773a75d8c5a7804f750d240be995c70a7a64b8e0",
+      "status": "research_not_promoted",
+      "body_pairs": 507,
+      "body_parts": {
+        "0": 178,
+        "1": 329,
+        "2": 0
+      },
+      "new_body_pairs": 306,
+      "self_pairs": 33,
+      "band_pairs": 1432,
+      "moved_vertices": 1182,
+      "moved_source_vertices": 924,
+      "seven_view_contour_vertices_exact": true,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.6738319463095224,
+      "bridge_stretch_range": [
+        0.7109639865572137,
+        1.4609067078618716
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "relax075-continuation-iteration05.npz",
+      "sha256": "5aaf825d37ba30a858ac67f36c57fcd459ff6eed617e7efdff99f7bad9496906",
+      "status": "research_not_promoted",
+      "body_pairs": 513,
+      "body_parts": {
+        "0": 181,
+        "1": 332,
+        "2": 0
+      },
+      "new_body_pairs": 316,
+      "self_pairs": 42,
+      "band_pairs": 1430,
+      "moved_vertices": 1182,
+      "moved_source_vertices": 924,
+      "seven_view_contour_vertices_exact": true,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.6478335680556193,
+      "bridge_stretch_range": [
+        0.6538213181279142,
+        1.4993775329365455
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "relax075-contour-iteration00.npz",
+      "sha256": "461a0e687c68d57c57adf0734801081042a5fe5d4d84b4c9ffe575a9f17dc3f1",
+      "status": "research_not_promoted",
+      "body_pairs": 200,
+      "body_parts": {
+        "0": 26,
+        "1": 174,
+        "2": 0
+      },
+      "new_body_pairs": 171,
+      "self_pairs": 434,
+      "band_pairs": 1063,
+      "moved_vertices": 1182,
+      "moved_source_vertices": 924,
+      "seven_view_contour_vertices_exact": true,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.34847527553075475,
+      "bridge_stretch_range": [
+        0.40972909556749365,
+        2.4462148167508704
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "relax075-contour-iteration01.npz",
+      "sha256": "f4298d625cea5ceee021609c11ce613b914cf62d8d8e94edc957d131df0ea7af",
+      "status": "research_not_promoted",
+      "body_pairs": 146,
+      "body_parts": {
+        "0": 31,
+        "1": 115,
+        "2": 0
+      },
+      "new_body_pairs": 111,
+      "self_pairs": 360,
+      "band_pairs": 1075,
+      "moved_vertices": 1182,
+      "moved_source_vertices": 924,
+      "seven_view_contour_vertices_exact": true,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.48636199757223614,
+      "bridge_stretch_range": [
+        0.41238637088398167,
+        2.5440817029711695
+      ],
+      "bridge_mixed_director_faces": 0
+    },
+    {
+      "candidate": "relax075-contour-iteration02.npz",
+      "sha256": "3af081f1e4bfa1ca0f6d90f3e2972ee768b6d9cb5230a2269530bc2e2dd61443",
+      "status": "research_not_promoted",
+      "body_pairs": 142,
+      "body_parts": {
+        "0": 20,
+        "1": 122,
+        "2": 0
+      },
+      "new_body_pairs": 114,
+      "self_pairs": 369,
+      "band_pairs": 1057,
+      "moved_vertices": 1182,
+      "moved_source_vertices": 924,
+      "seven_view_contour_vertices_exact": true,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.4827111998510777,
+      "bridge_stretch_range": [
+        0.39609291201888935,
+        2.5192712914914974
+      ],
+      "bridge_mixed_director_faces": 1
+    },
+    {
+      "candidate": "relax075-contour-iteration03.npz",
+      "sha256": "30910ec4dd9e52ccdb546ac757815e7db38490a8652bac120cd9ea18a2bb68cd",
+      "status": "research_not_promoted",
+      "body_pairs": 143,
+      "body_parts": {
+        "0": 29,
+        "1": 114,
+        "2": 0
+      },
+      "new_body_pairs": 110,
+      "self_pairs": 362,
+      "band_pairs": 1051,
+      "moved_vertices": 1182,
+      "moved_source_vertices": 924,
+      "seven_view_contour_vertices_exact": true,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.46402995875163644,
+      "bridge_stretch_range": [
+        0.3916827992444788,
+        2.5382321650228863
+      ],
+      "bridge_mixed_director_faces": 1
+    },
+    {
+      "candidate": "support-earonly-posterior-20mm.npz",
+      "sha256": "ea0593bbbd997a0bd0ee9fb1a58f33b4278418476f683479d9f6ac09fb0eba11",
+      "status": "research_not_promoted",
+      "body_pairs": 290,
+      "body_parts": {
+        "0": 124,
+        "1": 166,
+        "2": 0
+      },
+      "new_body_pairs": 255,
+      "self_pairs": 141,
+      "band_pairs": 1074,
+      "moved_vertices": 686,
+      "moved_source_vertices": 568,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.37795836470124444,
+      "bridge_stretch_range": [
+        0.43506865214783497,
+        19.277987673874485
+      ],
+      "bridge_mixed_director_faces": 21
+    },
+    {
+      "candidate": "support-earonly-posterior-25mm.npz",
+      "sha256": "ca5ab800c3e49ed1c0256540b45025b9d5f0d7df5570495d6a1016cc53815389",
+      "status": "research_not_promoted",
+      "body_pairs": 160,
+      "body_parts": {
+        "0": 88,
+        "1": 72,
+        "2": 0
+      },
+      "new_body_pairs": 125,
+      "self_pairs": 173,
+      "band_pairs": 1043,
+      "moved_vertices": 686,
+      "moved_source_vertices": 568,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.33115811058734973,
+      "bridge_stretch_range": [
+        0.5139454809894473,
+        24.178836505434294
+      ],
+      "bridge_mixed_director_faces": 22
+    },
+    {
+      "candidate": "support-earonly-posterior-30mm.npz",
+      "sha256": "7ba97939f905d73016925b425f19d826802563aa95352ef362764448e8f8cbdb",
+      "status": "research_not_promoted",
+      "body_pairs": 142,
+      "body_parts": {
+        "0": 99,
+        "1": 43,
+        "2": 0
+      },
+      "new_body_pairs": 107,
+      "self_pairs": 277,
+      "band_pairs": 1022,
+      "moved_vertices": 686,
+      "moved_source_vertices": 568,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.2975091733709937,
+      "bridge_stretch_range": [
+        0.5665063678023968,
+        29.08218068969049
+      ],
+      "bridge_mixed_director_faces": 23
+    },
+    {
+      "candidate": "support-earonly-posterior-35mm.npz",
+      "sha256": "6b54c9a54ea60d8d2bb3235522daa15860260dfde0eb16e00a9c88da18f898a4",
+      "status": "research_not_promoted",
+      "body_pairs": 136,
+      "body_parts": {
+        "0": 99,
+        "1": 37,
+        "2": 0
+      },
+      "new_body_pairs": 101,
+      "self_pairs": 357,
+      "band_pairs": 1007,
+      "moved_vertices": 686,
+      "moved_source_vertices": 568,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.27665078065130266,
+      "bridge_stretch_range": [
+        0.5747711690050061,
+        33.98693169720831
+      ],
+      "bridge_mixed_director_faces": 18
+    },
+    {
+      "candidate": "support-tight-posterior-20mm.npz",
+      "sha256": "5d830e54833421774956b4534f40766c26d6a91510952c298f11737535574658",
+      "status": "research_not_promoted",
+      "body_pairs": 307,
+      "body_parts": {
+        "0": 141,
+        "1": 166,
+        "2": 0
+      },
+      "new_body_pairs": 272,
+      "self_pairs": 0,
+      "band_pairs": 1035,
+      "moved_vertices": 983,
+      "moved_source_vertices": 812,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.20474270493368998,
+      "bridge_stretch_range": [
+        0.17576790086388125,
+        8.24209360830695
+      ],
+      "bridge_mixed_director_faces": 1
+    },
+    {
+      "candidate": "support-tight-posterior-25mm.npz",
+      "sha256": "f36342591b834478748c3efff85dacfedddceebcf757a37a2da3c6a29e7e8e64",
+      "status": "research_not_promoted",
+      "body_pairs": 174,
+      "body_parts": {
+        "0": 102,
+        "1": 72,
+        "2": 0
+      },
+      "new_body_pairs": 139,
+      "self_pairs": 10,
+      "band_pairs": 988,
+      "moved_vertices": 983,
+      "moved_source_vertices": 812,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.1967260917239142,
+      "bridge_stretch_range": [
+        0.1608453600741772,
+        10.188500838141852
+      ],
+      "bridge_mixed_director_faces": 10
+    },
+    {
+      "candidate": "support-tight-posterior-30mm.npz",
+      "sha256": "85a2a1e59245b763dc57c41d19843a9f23f6000ff1b01aa627f31d9489dcc44d",
+      "status": "research_not_promoted",
+      "body_pairs": 152,
+      "body_parts": {
+        "0": 109,
+        "1": 43,
+        "2": 0
+      },
+      "new_body_pairs": 117,
+      "self_pairs": 57,
+      "band_pairs": 969,
+      "moved_vertices": 983,
+      "moved_source_vertices": 812,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.2317625431407069,
+      "bridge_stretch_range": [
+        0.2100734423414455,
+        12.14002024992206
+      ],
+      "bridge_mixed_director_faces": 10
+    },
+    {
+      "candidate": "support-tight-posterior-35mm.npz",
+      "sha256": "71d77339561d3c008ab190b833a1a577c6b0b5e443b32f2f205424f8d1dac974",
+      "status": "research_not_promoted",
+      "body_pairs": 144,
+      "body_parts": {
+        "0": 107,
+        "1": 37,
+        "2": 0
+      },
+      "new_body_pairs": 109,
+      "self_pairs": 166,
+      "band_pairs": 943,
+      "moved_vertices": 983,
+      "moved_source_vertices": 812,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.36646928353232844,
+      "bridge_stretch_range": [
+        0.3236630776412091,
+        14.094573047205325
+      ],
+      "bridge_mixed_director_faces": 19
+    },
+    {
+      "candidate": "support-tightlow-posterior-20mm.npz",
+      "sha256": "631a8115cc3c14328edfbcce3784fd57555da4937399fc6a325e4eacb67496b6",
+      "status": "research_not_promoted",
+      "body_pairs": 273,
+      "body_parts": {
+        "0": 107,
+        "1": 166,
+        "2": 0
+      },
+      "new_body_pairs": 236,
+      "self_pairs": 0,
+      "band_pairs": 1044,
+      "moved_vertices": 911,
+      "moved_source_vertices": 740,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.20474270493368998,
+      "bridge_stretch_range": [
+        0.17576790086388125,
+        8.24209360830695
+      ],
+      "bridge_mixed_director_faces": 1
+    },
+    {
+      "candidate": "support-tightlow-posterior-25mm.npz",
+      "sha256": "b6efcc5159315c229b6f039fe162b218009a31a957361ab3d2b8d1b3f71b42cc",
+      "status": "research_not_promoted",
+      "body_pairs": 152,
+      "body_parts": {
+        "0": 80,
+        "1": 72,
+        "2": 0
+      },
+      "new_body_pairs": 115,
+      "self_pairs": 10,
+      "band_pairs": 1034,
+      "moved_vertices": 911,
+      "moved_source_vertices": 740,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.1967260917239142,
+      "bridge_stretch_range": [
+        0.1608453600741772,
+        10.188500838141852
+      ],
+      "bridge_mixed_director_faces": 10
+    },
+    {
+      "candidate": "support-tightlow-posterior-30mm.npz",
+      "sha256": "6891676429b37c69d804e4d380abd1a10ba0287bb86d9cf666b88c85bb77003b",
+      "status": "research_not_promoted",
+      "body_pairs": 130,
+      "body_parts": {
+        "0": 87,
+        "1": 43,
+        "2": 0
+      },
+      "new_body_pairs": 93,
+      "self_pairs": 61,
+      "band_pairs": 1033,
+      "moved_vertices": 911,
+      "moved_source_vertices": 740,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.2317625431407069,
+      "bridge_stretch_range": [
+        0.2100734423414455,
+        12.14002024992206
+      ],
+      "bridge_mixed_director_faces": 10
+    },
+    {
+      "candidate": "support-tightlow-posterior-35mm.npz",
+      "sha256": "ea900dbddc59a970377ff48094a9ab1a604a0df53338f38e0e0261152ea78905",
+      "status": "research_not_promoted",
+      "body_pairs": 127,
+      "body_parts": {
+        "0": 90,
+        "1": 37,
+        "2": 0
+      },
+      "new_body_pairs": 92,
+      "self_pairs": 162,
+      "band_pairs": 1014,
+      "moved_vertices": 911,
+      "moved_source_vertices": 740,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.12042411645540288,
+      "bridge_stretch_range": [
+        0.3236630776412091,
+        14.094573047205325
+      ],
+      "bridge_mixed_director_faces": 19
+    },
+    {
+      "candidate": "support-widevertical-posterior-20mm.npz",
+      "sha256": "7501ca219764209b7f345b7ab9e2ec2418c2b179620bd03fcaa1bc2d4419eb70",
+      "status": "research_not_promoted",
+      "body_pairs": 407,
+      "body_parts": {
+        "0": 241,
+        "1": 166,
+        "2": 0
+      },
+      "new_body_pairs": 372,
+      "self_pairs": 8,
+      "band_pairs": 1033,
+      "moved_vertices": 1362,
+      "moved_source_vertices": 1102,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.40051572040298555,
+      "bridge_stretch_range": [
+        0.3589796758475646,
+        5.1932637637354935
+      ],
+      "bridge_mixed_director_faces": 3
+    },
+    {
+      "candidate": "support-widevertical-posterior-25mm.npz",
+      "sha256": "38bf67db51e9e4a97d3d62c4bd336ed5c9df04a10fab91f94f01bee296c6ad3c",
+      "status": "research_not_promoted",
+      "body_pairs": 276,
+      "body_parts": {
+        "0": 204,
+        "1": 72,
+        "2": 0
+      },
+      "new_body_pairs": 241,
+      "self_pairs": 30,
+      "band_pairs": 984,
+      "moved_vertices": 1362,
+      "moved_source_vertices": 1102,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.3156645309825678,
+      "bridge_stretch_range": [
+        0.28095959735846265,
+        6.348704882581666
+      ],
+      "bridge_mixed_director_faces": 9
+    },
+    {
+      "candidate": "support-widevertical-posterior-30mm.npz",
+      "sha256": "ce68fbb4b3fb1f90cfab0f07d61ae547ea92bc0b33098dde4dd17aa86b96e07c",
+      "status": "research_not_promoted",
+      "body_pairs": 248,
+      "body_parts": {
+        "0": 205,
+        "1": 43,
+        "2": 0
+      },
+      "new_body_pairs": 213,
+      "self_pairs": 65,
+      "band_pairs": 967,
+      "moved_vertices": 1362,
+      "moved_source_vertices": 1102,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.22866302742771766,
+      "bridge_stretch_range": [
+        0.19594787045542067,
+        7.510984102910785
+      ],
+      "bridge_mixed_director_faces": 13
+    },
+    {
+      "candidate": "support-widevertical-posterior-35mm.npz",
+      "sha256": "69e983defe4f02baf007d85ceb5fadff73e82a8da3966bc12fa85710e69b7bf2",
+      "status": "research_not_promoted",
+      "body_pairs": 255,
+      "body_parts": {
+        "0": 218,
+        "1": 37,
+        "2": 0
+      },
+      "new_body_pairs": 220,
+      "self_pairs": 182,
+      "band_pairs": 943,
+      "moved_vertices": 1362,
+      "moved_source_vertices": 1102,
+      "seven_view_contour_vertices_exact": false,
+      "mantle_exact": true,
+      "triangles_and_source_ids_exact": true,
+      "minimum_area_ratio": 0.22173727478030023,
+      "bridge_stretch_range": [
+        0.1816729030495815,
+        8.67746492700989
+      ],
+      "bridge_mixed_director_faces": 21
+    }
+  ]
+}

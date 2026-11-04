@@ -1,0 +1,19 @@
+# Próxima região: cabelo do Menino (plano antes de editar)
+
+Base preservada: V49, admitida como etapa visual reversível. Escopo: apenas objeto `Menino — cabelo rente`; não alterar cabeça, rosto, pescoço, túnica, Maria ou cuff. Sem proporções inferidas nas partes invisíveis da referência.
+
+## Evidência
+- Referência real perfil: https://arquivo.arq.br/projetos/paroquia-nossa-senhora-da-paz (reference-8.jpg local). Cabelo curto acompanha crânio e região temporal, com pequenas ondulações, não uma tampa reta na altura superior da testa.
+- V49-child-hair-plan-profile.png e -front.png mostram faixa serrilhada e calota alta. A aparência que inicialmente pareceu grânulos não são objetos de cachos: só existe um objeto de cabelo.
+- Cabelo: 1612 vértices, 1532 faces, 158 arestas de bordo, região z1.865319..1.937292. Solidify de 6mm, offset+1.
+- Avaliação contra cabeça: 3224 vértices avaliados; 1612 exatamente/até0.2mm coincidentes com couro cabeludo, os restantes até6mm externos. Nenhum interior. A duplicação coincidente e degrau brusco de espessura explicam a linha de contato artificial; a causa não é textura nem material.
+
+## Plano concreto
+1. Em cópia V49, ocultar reversivelmente cabelo atual e gerar um único revestimento exterior de crânio seguindo a superfície da cabeça, com cobertura temporal mais baixa conforme perfil visível, sem cobrir orelha/rosto.
+2. Delimitar borda contínua suave por contorno (não seleção serrilhada de triângulos brutos), retopologizando somente cabelo. Evitar a camada inteira coincidente e a parede vertical de6mm. Taperar a espessura perto da borda, com uma pequena terminação embutida; não colar novo remendo sobre a tampa antiga.
+3. Primeiro validar só silhueta e continuidade, sem textura nem cachos esféricos. Se houver ganho confirmado, adicionar fluxo de mechas curtas rasas compatível com o perfil, nunca ranhuras profundas para esconder defeito estrutural.
+4. Comparar frente/perfil/3-4 com câmeras/luzes fixas e close da borda. Auditar que todos outros objetos/chaves/matrizes são idênticos; procurar fresta preta, quinas, auto-interseções e orelha inadvertidamente coberta.
+
+Critério de rejeição: aspecto de capacete mais pesado, continuidade pior ou recorte temporal sem apoio na referência. Restaurar cabelo original por visibilidade e não promover candidato. Nenhuma geometria foi alterada na investigação.
+
+Limite: referência frontal do Menino não foi demonstrada neste recorte; manter simetria conservadora e não alegar fidelidade de cachos/partes ocultas. O rosto atual tem proporções/planos adultos e também exige revisão separada posterior.

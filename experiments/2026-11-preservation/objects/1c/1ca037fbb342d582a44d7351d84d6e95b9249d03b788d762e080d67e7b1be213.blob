@@ -1,0 +1,36 @@
+# Redesenho estrutural calota–manto — plano antes da implementação
+
+## Evidência e diagnóstico
+Referências existentes8 (perfil de corpo inteiro) e9 (rosto oblíquo) foram mantidas como evidência visual. Foto8 sustenta pano contínuo da cabeça à nuca/ombro e queda longa; não sustenta geometria exata das costas. Preservar a inclinação/feições e não usar sombras como medidas.
+
+Auditoria da construçãoV34:1096 triângulos ligam calota e manto;1083 pertencem ao componente atual de auto-interseção. A costura antiga interpolou perímetros completos de tamanhos456/640 por fração do índice após alinhamento por proximidade. Ela conectou cascas já espessadas, não uma superfície média comum. A calota tem espessura nominal0,6mm e o manto6mm. Logo não é justificável continuar tratando o defeito como duas pequenas colisões locais.
+
+## Limites
+- V75 e todas suas chaves intactas, preservadas fora da cópia.
+- Não alterar cabeça/pele, faixa frontalV29, auréola, túnica, braços/mãos, Menino ou base.
+- Redesenhar geometria do objeto unificado de pano; preservar a queda inferior e bainhaV74 como geometria-alvo, sem destruí-las.
+- Calota frontal visível e contorno de ombro são alvos de conservação, não superfícies descartáveis. Costas não documentadas serão hipótese explicitamente identificada.
+- Retirar a conexãoV34 na cópia; não sobrepor novo pano ao antigo nem fechar por booleano indiscriminado.
+
+## Método proposto
+1. Recuperar superfícies-fonte sem Solidify, com proveniência de linhas/colunas: calota5040v/4929faces e manto800v/711faces.
+2. Traçar uma única superfície média com fluxo longitudinal coroa→nuca→ombro→queda, e bordas laterais observadas. Definir correspondência por marcos anatômicos/tecido e arclength orientado, nunca simplesmente fração de índices entre dois perímetros espessados.
+3. Manter domínio inferior como alvo fixo e retopologizar zona superior inteira; amostrar filas regulares e transições tangentes, inicialmente sem pregas acrescentadas.
+4. Espessura como campo positivo contínuo sobre essa única superfície, com transição0,6→6mm apenas onde admissível. Construir duas camadas pareadas e fechar somente bordas físicas. Nunca ligar dois loops de cascas como se fossem um disco.
+5. Testar topologia e obstáculos antes de detalhar; congelar fotos/câmeras para revisão visual.
+
+## Critérios de aprovação
+- Proveniência e deltas dos objetos preservados iguais a zero.
+- Domínio orientável, sem arestas não manifold ou faces degeneradas; perímetros simples antes do fechamento.
+- Triangulação explícita Blender após todos modifiers; zero novas interseções pano–pele/túnica e zero auto-interseções não adjacentes do novo pano. Comparar contatos pré-existentes por região; não aceitar saldo líquido.
+- Espessura positiva medida entre pares, sem troca de camadas; nenhum segmento de borda atravessa triângulo preservado. Além das passagens transversais, auditar coplanaridade/tangências antes de certificar.
+- Normais/áreas e gradientes de espessura registrados; nenhum estiramento extremo ocultado por smooth.
+- Comparações frontal, perfil observado, perfil oposto e contexto na mesma câmera/luz/resolução; vistas não documentadas identificadas como inferência. Ganho visual independente obrigatório.
+
+## Estado / próximo gate
+O diagnóstico justifica abandonar a costura. Ainda não há correspondência validada da superfície média ao longo da testa/têmpora/nuca e não existe nesta etapa um novo domínio regular comprovado. Por isso NÃO implementei um loft arbitrário nem salvei candidato. A etapa executável seguinte é recuperar e visualizar as superfícies médias/contornos de fonte, classificar a borda física e fixar marcos; somente após esse gate construir o novo pano em cópia. Isso é preparação estrutural, não melhoria visual entregue.
+
+## Recuperação inicial executada
+Extraídas as gaiolas médias das fontes com chaves ativas avaliadas e Solidify/Subsurf desativados apenas na sessão não salva. Calota: um contorno simples112 vértices, sem grau inválido ou arestas com mais de duas faces. Manto: um contorno retangular simples176 vértices (duas linhas80 e laterais), também regular. Isto torna possível trabalhar antes da espessura, mas NÃO valida correspondência espacial ou contato.
+
+Dados `cap-mantle-source-cap.npz`, `cap-mantle-source-mantle.npz`, `cap-mantle-source-domain-audit.json` e classificação de linhas/colunas. As chaves posteriores aplicadas no objeto bakedV75, incluindo bainhaV74, não estão nessas fontes e devem ser preservadas por transferência controlada; substituir diretamente pelo cage-fonte perderia melhorias. Esse é outro gate obrigatório antes da implementação.

@@ -1,0 +1,31 @@
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+const root='/workspace/scratch/212c580ada5b/altare-two-pillars-integration-20261103/addons/altare';
+const {DESIGNS,LEGACY_ID}=await import(root+'/src/domain/catalog.ts');
+const {planFinish,withEdges}=await import(root+'/src/domain/surface.ts');
+const {decodeTile,encodeTile}=await import(root+'/src/domain/block-codec.ts');
+const {rotateEdges}=await import(root+'/src/domain/palette-layout.ts');
+const fn=new Map(); const canon=o=>Array.isArray(o)?o.map(canon):o&&typeof o==='object'?Object.fromEntries(Object.keys(o).sort().map(k=>[k,canon(o[k])])):o;
+const hash=o=>crypto.createHash('sha256').update(JSON.stringify(canon(o))).digest('hex');
+const evalx=(s,state)=>{if(typeof s!=='string')return s; if(!fn.has(s))fn.set(s,Function('q','math',`return (${s});`)); return fn.get(s)({block_state:k=>state[k]},{floor:Math.floor,mod:(a,b)=>a%b});};
+function effective(b,s){const c={...b.components};for(const p of b.permutations??[])if(evalx(p.condition,s))Object.assign(c,p.components);const g=c['minecraft:geometry'];if(g?.bone_visibility)c['minecraft:geometry']={...g,bone_visibility:Object.fromEntries(Object.entries(g.bone_visibility).map(([k,v])=>[k,!!evalx(v,s)]))};return c;}
+const rows=s=>Object.entries(s).reduce((rs,[k,vs])=>rs.flatMap(r=>vs.map(v=>({...r,[k]:v}))),[{}]);
+const position={x:0,y:0,z:0};const results=[];
+for(const file of fs.readdirSync(root+'/packs/behavior/blocks').sort()){
+ const b=JSON.parse(fs.readFileSync(root+'/packs/behavior/blocks/'+file))['minecraft:block'],id=b.description.identifier,d=DESIGNS.find(d=>d.id===id);if(d?.codec==='native')continue;
+ const declared=rows(b.description.states),comp=new Map(),tuples=new Set();
+ for(const s of declared){const t=decodeTile(id,position,s),sig=hash({id,facing:t.facing,stone:t.stone,cloth:t.cloth,components:effective(b,s)});if(!comp.has(sig))comp.set(sig,[]);comp.get(sig).push(t);tuples.add(JSON.stringify([rotateEdges(t.edges,-t.facing),t.frontal,t.textileRole??0]));}
+ results.push({id,codec:d?.codec??(d?.palette?'compact':'classic'),declared:declared.length,exactWithFacing:comp.size,tuples:tuples.size,aliases:[...comp.values()].filter(a=>a.length>1).map(a=>a.map(t=>({edges:t.edges,frontal:t.frontal,textileRole:t.textileRole,facing:t.facing,stone:t.stone,cloth:t.cloth}))) });
+}
+const classes=[['classic',undefined],['compact',DESIGNS.find(d=>d.codec==='compact'&&d.structure==='pilaster')],['classic_textile',DESIGNS.find(d=>d.codec==='classic_textile')],['edges',DESIGNS.find(d=>d.codec==='edges')],['symmetric',DESIGNS.find(d=>d.codec==='symmetric')]];
+const reach=[];
+for(const [name,d] of classes){const poses=new Set(),closure=new Set(),failures=[];let rectangleCells=0;
+ for(let w=1;w<=16;w++)for(let dep=1;dep<=8;dep++){if(w*dep>128)continue;for(let facing=0;facing<4;facing++)for(const ornamental of [false,true]){
+ const width=facing%2?dep:w,depth=facing%2?w:dep;
+ const tiles=Array.from({length:width*depth},(_,i)=>({position:{x:i%width,y:0,z:Math.floor(i/width)},stone:0,cloth:0,frontal:0,facing:0,edges:15}));
+ for(const t of planFinish(tiles,{stone:0,cloth:0,facing,ornamental,...(d?{design:d.id}:{})})){rectangleCells++;const key=t=>JSON.stringify([rotateEdges(t.edges,-t.facing),t.frontal,t.textileRole??0]);poses.add(key(t));closure.add(key(t));for(let edges=0;edges<16;edges++){const n=withEdges(t,edges);closure.add(key(n));try{encodeTile(n);}catch{failures.push(key(n));}}}
+ }}
+ reach.push({name,rectangleCells,plannerPoses:poses.size,afterContourRepair:closure.size,poses:[...poses].sort(),closure:[...closure].sort(),unencodable:[...new Set(failures)]});
+}
+const report={root,created:new Date().toISOString(),method:'Exhaustive declared Cartesian states. Signature preserves recipe ID, logical facing, semantic stone/cloth and every effective component (including unused material bindings); geometry identifier preserved. Planner covers every authorized local width1..16 depth1..8, facing0..3, ornament false/true and every contour mutation0..15.',totals:{declared:results.reduce((n,r)=>n+r.declared,0),exactWithFacing:results.reduce((n,r)=>n+r.exactWithFacing,0)},reach,results};
+fs.writeFileSync('/tmp/recipe-reachability-report.json',JSON.stringify(report,null,2));console.log(JSON.stringify({totals:report.totals,aliases:results.filter(r=>r.exactWithFacing<r.declared).map(({aliases,...r})=>r),reach:reach.map(({poses,closure,...r})=>r)},null,2));

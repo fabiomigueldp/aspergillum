@@ -1,0 +1,14 @@
+# Graus internos do colar — prova rejeitada
+
+Reavaliados todos os obstáculos com `calc_loop_triangles()` do Blender e `all_triangles=True`, não triangulação implícita dos quads. Persistem dois pares com a face 180902, mas os IDs corretos do colar são 890 e 891 (a triangulação implícita reportava 890 e 893). Pele continua zero.
+
+Foi testada uma translação XYZ mínima do único par interno inicialmente penetrante, sujeita aos semiespaços dos dois triângulos da face preservada, com margem de 10 micrômetros. Ambos os vértices do par receberam exatamente o mesmo deslocamento, preservando vetor de espessura e toda fronteira.
+
+Deslocamento 0,431098 mm. Resultado: pele zero, porém um par externo persiste e surgem quatro auto-interseções. Área máxima chega a 3,99785 vezes a inicial; nenhuma inversão de normal. Rejeitado. Nenhum .blend salvo, centro vazio.
+
+Causa importante: o triângulo 891 contém dois vértices FIXOS, 183606 e 183605, a +0,03861 e −0,51739 mm do plano do triângulo obstáculo. Portanto é impossível colocar esse triângulo inteiro em um só dos semiespaços desse plano movendo apenas seus nós internos. A aresta fixa cruza o plano fora do triângulo obstáculo, de modo que isso NÃO prova impossibilidade geométrica geral; prova que a formulação por plano separador da face não serve neste caso. Mover o nó sozinho também atravessa triângulos vizinhos do próprio colar.
+
+Um próximo método teria de tratar os triângulos finitos com separadores alternativos aresta–aresta e vários nós internos acoplados, incluindo restrições simultâneas contra o próprio colar. Não existe nessa prova um solver dessas restrições não convexas nem garantia de caminho livre. Não aumentei a margem, não ampliei máscara, não suavizei para esconder a falha e não iterei deslocamentos cosméticos. V75 permanece baseline.
+
+## Correção factual após revisão independente
+A afirmação acima de que a aresta fixa cruza o plano fora do triângulo estava ERRADA. Verificação baricêntrica direta confirma interseção interior: aresta 183606–183605, triângulo 170534/183618/170535, t=0,069442621685, u=0,295028836548, v=0,386916788914, resíduo zero. Logo, nenhum movimento somente dos nós internos pode separar esse colar mantendo a aresta fixa. A auditoria anterior de borda verificava pele, não todos os triângulos do tecido preservado: escopo não estava certificado contra tecido. A investigação prossegue apenas na cirurgia estrutural da fronteira, sem solver interno impossível.

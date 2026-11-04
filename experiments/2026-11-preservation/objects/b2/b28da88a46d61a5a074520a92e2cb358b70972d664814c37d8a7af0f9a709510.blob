@@ -1,0 +1,52 @@
+# Independent review: Altare twin-pedestal integration 0.13.0
+
+Reviewed 2026-11-03. Working copy: altare-two-pillars-integration-20261103. Read-only review of production files; independent scripts and reports were written only under /tmp. No world changes, installation, Minecraft execution, Chromium execution, release, or package publication.
+
+## Result
+
+The new family's emitted assets and editor/runtime contracts passed the independent checks below. This is not release approval: the combined state-budget gate still fails. The generated report records Altare 59,840 + Aspergillum 9,744 = 69,584, exceeding the strict 65,536 reference by 4,048. Other installed add-ons are outside this local calculation. Offline checks and CPU images cannot establish native engine behavior or performance.
+
+## Exhaustive generated-asset audit
+
+Script: /tmp/altare-independent-generated-audit.mjs
+Report: /tmp/altare-independent-generated-audit.json
+
+- Evaluated all 8,232 declared states across 17 recipe IDs directly from generated blocks, merged every matching permutation, and checked no overlaps for the same component.
+- Strict decoding passed. Every recipe defaults to an isolated 1x1 altar, front 0; centered textile defaults retain the whole motif.
+- All geometry UV slots and material bindings resolve to actual terrain atlas entries; walnut grain direction and oriented textile/center/color bindings passed.
+- Collision boxes remain identical across finishes and center roles for a given base pose. All boxes lie in their local cells. Eight floral colors use identical geometry across all 504 center poses.
+- Confirmed 448 base collision profiles, 2,742 native geometry resources, maximum 59 cube records, 189 faces, and 16 collision boxes. The family uses its explicit 60-cube/192-face/16-box study budget, not the former 50-cube fallback.
+- Required model/provisional-placement strings exist in Portuguese and English.
+- Block hashes and rule counts are included in the JSON report.
+
+## Editor, textiles, persistence
+
+- Appended model index 8 preserves existing model indices. Fixed walnut, unavailable relief, directional bare altar, all ten cloth choices and eight Floral colors behave consistently with the menu contracts.
+- Hidden color/front/ornament choices remain suspended within a draft. This is not a promise to remember irrelevant hidden choices after committing a different recipe and reopening.
+- Provisional extension regression was found and corrected: editorSeed selects the native recipe and facing when the other tiles are plain legacy placeholders. Verified all four facings and both tile orders. An explicit lateral interaction still overrides the front.
+- Opening/Cancel no longer reconciles or writes. Unknown adjacent blocks cancel placement. Native poses freeze under local reconciliation/tick; whole-shape Apply is required after extension or break. The provisional-tile message now explains this.
+- nativePose participates in late conflict detection; normal commits retain preflight and rollback handling. No claim of crash-atomic durable transactions is made.
+- Versioned source manifest poses.v1.json is the authoritative pose/context mapping. Art hashes are resources, not saved identities. Existing groups must remain equivalent under rebuild; refinement that splits a group fails rather than silently renumbering saves.
+- Rotation domain was corrected from 512 to 768 legal orientation plans, including 8x16 and 1x16. My independent neighbor/front-based check passed all 33,984 cells in 768 plans.
+
+## Tests personally rerun
+
+- Menu/customization/universal textiles and cell/codebook/collision studies: 32/32 passed.
+- Recipe composition study: 2/2 passed, covering 612 representative assemblies.
+- Final native codec/runtime/menu/editor-timeout selection: 28/28 passed.
+- Separate exhaustive spatial contract script: 768 plans, 33,984 cells, all eight colors, maximum 59 cubes and 189 faces.
+- Exhaustive generated-asset audit: all 8,232 states passed.
+
+Logs and scripts are /tmp/altare-independent-ui-study-tests.log, /tmp/altare-independent-recipe-tests.log, /tmp/altare-independent-native-ui-final.log, and /tmp/altare-independent-pedestal-contracts.{mjs,json,log}. The earlier spatial report predates a recipe helper refactor; the generated-asset audit targets the stable final build.
+
+## Visual checks of final emitted blocks
+
+Individually inspected out/native-pedestal-cpu/02-native-lace-3x2.png, floral-purple.png, and front-1.png. No visible broken joint, cloth/wood overlap, absent pedestal, missing-texture artifact, or mirrored visible motif in these three frames. The rotated view shows the pedestal axis rotated, while the designated ornamental face is outside the visible faces. These are labeled CPU technical previews, not Minecraft screenshots. Broader study render inspection belongs to the geometry reviewer's separate report.
+
+## Budget warning
+
+The proposed 4,128 savings from equal-looking palette/universal states do not preserve current semantics. Keeping facing leaves only 144 component-equivalent states available, all redundant textileRole variants in u_classic_lace. The other 3,984 require discarding logical facing. Do not use that arithmetic to claim an 80-state margin. Report: /tmp/altare-facing-review.json.
+
+## Remaining boundaries
+
+The combined budget must be solved before release. Existing save migration across older family compaction is separate from this new-family review and requires the version-matched backup/migration work already assigned elsewhere. Native multibox collision, actual rendering, runtime event behavior and performance remain untested in Minecraft. No world has been altered by this review.

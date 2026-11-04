@@ -1,0 +1,33 @@
+import bpy,math,json
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V52-child-face-trial.blend',use_scripts=False)
+def sm(t):t=max(0,min(1,t));return t*t*(3-2*t)
+def metrics(o,old,new):
+ fs=[tuple(f.vertices) for f in o.data.polygons];b=BVHTree.FromPolygons(new,fs);pairs=[(i,j) for i,j in b.overlap(b) if i<j and not set(fs[i])&set(fs[j])];rat=[]
+ for f in fs:
+  def area(p):return sum((p[f[j]]-p[f[0]]).cross(p[f[j+1]]-p[f[0]]).length/2 for j in range(1,len(f)-1))
+  a=area(old)
+  if a>1e-12:rat.append(area(new)/a)
+ return {'max_delta_m':max((a-b).length for a,b in zip(old,new)),'area_ratio_min':min(rat),'area_ratio_max':max(rat),'self_intersections':len(pairs)}
+h=bpy.data.objects['Menino — base infantil anatômica CC0'];dg=bpy.context.evaluated_depsgraph_get();old=[v.co.copy() for v in h.evaluated_get(dg).data.vertices];new=[p.copy() for p in old];adj=[set() for p in old]
+for e in h.data.edges:a,b=e.vertices;adj[a].add(b);adj[b].add(a)
+weights=[sm((p.y+.335)/.025)*(1-sm((p.y+.26)/.025))*sm((p.z-1.642)/.025)*(1-sm((p.z-1.69)/.025))*(1-sm((abs(p.x-.025)-.065)/.02)) for p in old]
+for it in range(6):
+ nxt=[]
+ for i,p in enumerate(new):
+  mean=sum((new[j] for j in adj[i]),Vector())/len(adj[i]);d=(mean-p)*(.35*weights[i]);nxt.append(p+d)
+ new=nxt
+k=h.shape_key_add(name='TESTE53 — continuidade submento localizada');k.value=1
+for i,p in enumerate(new):k.data[i].co=h.data.vertices[i].co+p-old[i]
+report={'head':metrics(h,old,new),'head_front_y_lt_minus_335_max_delta':max((a-b).length for a,b in zip(old,new) if a.y<-.335)}
+n=bpy.data.objects['Menino — pescoço'];m=n.matrix_world.copy();inv=m.inverted();old=[m@v.co for v in n.data.vertices];new=[]
+for p in old:
+ w=sm((p.z-1.585)/.09)*(1-sm((p.z-1.72)/.04));q=p.copy();q.x=.025+(p.x-.025)*(1+.22*w);q.y=-.265+(p.y+.265)*(1+.16*w)-.008*w;new.append(q)
+n.shape_key_add(name='Basis');k=n.shape_key_add(name='TESTE53 — flare cervical superior');k.value=1
+for i,p in enumerate(new):k.data[i].co=inv@p
+report['neck']=metrics(n,old,new);report['source']='V52';report['rollback']='Both TESTE53 keys=0 restore V52';report['topology']='Head and neck remain separate closed meshes; no Boolean or claim of shared topology';json.dump(report,open(r+'V53-child-neck-verification.json','w'),indent=2);bpy.ops.wm.save_as_mainfile(filepath=r+'V53-child-neck-trial.blend')
+s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=700;s.render.resolution_y=700;s.render.resolution_percentage=100;c=s.camera;ct=Vector((.025,-.265,1.82));c.data.ortho_scale=.43
+for label,off in [('profile',(-3,0,0)),('front',(0,-3,0)),('threequarter',(-2,-3,0))]:
+ c.location=ct+Vector(off);c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler();s.render.filepath=r+'V53-child-neck-'+label+'.png';bpy.ops.render.render(write_still=True)
+print(report)

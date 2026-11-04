@@ -1,0 +1,7 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-cloth-obstacle-surface-trial.py').read().split('counts=collections.Counter')[0])
+seam=[i for i,f in enumerate(fs) if min(f)<160386<=max(f)];mantle_pairs=np.load(r+'neck-source-layer-pairs.npz')['pairs']+160386;layer={int(a):0 for a,b in mantle_pairs};layer.update({int(b):1 for a,b in mantle_pairs});stats=collections.Counter();bounds={}
+for fi in seam:stats[tuple(sorted({layer.get(v,-1) for v in fs[fi] if v>=160386}))]+=1
+src={}
+for name in ['Maria — véu reconstruído de perfil','Maria — plano contínuo do manto']:
+ ob=bpy.data.objects[name];src[name]={'verts':len(ob.data.vertices),'polygons':len(ob.data.polygons),'modifiers':[{'name':m.name,'type':m.type,'thickness':getattr(m,'thickness',None),'levels':getattr(m,'levels',None)} for m in ob.modifiers]}
+comp=json.load(open(r+'neck-self-intersection-component-audit.json'))['components'][0];C=set(comp['faces']);rp={'seam_faces':len(seam),'seam_faces_in_intersection_component':len(set(seam)&C),'seam_mantle_layer_incidence':{str(k):v for k,v in stats.items()},'sources':src};json.dump(rp,open(r+'cap-mantle-redesign-intake.json','w'),indent=2);print(rp)

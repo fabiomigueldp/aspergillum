@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+from pathlib import Path
+import json,wave,hashlib,ctypes,os
+out=Path(__file__).resolve().parent;project=out.parents[2];r=Path(os.environ.get('ASPERGILLUM_AUDIO_AUDIT_ROOT',str(project))).resolve();b=project.parent/'altare-two-pillars-integration-20261103'
+out=Path(os.environ.get('ASPERGILLUM_AUDIO_AUDIT_OUTPUT',str(out))).resolve();out.mkdir(parents=True,exist_ok=True)
+sha=lambda d:hashlib.sha256(d).hexdigest()
+rows=[]
+for rec in json.loads((r/'assets-src/audio/audio-recipes.json').read_text())['recipes']:
+ row={'output':rec['output']}
+ for k in ['source','master']:
+  p=rec[k];paths=[b/p,r/p];z=[q.read_bytes() for q in paths]
+  row[k]={'path':p,'exists':[q.exists() for q in paths],'equal':z[0]==z[1],'baselineSha256':sha(z[0]),'currentSha256':sha(z[1])}
+  if k=='master':
+   streams=[]
+   for path in paths:
+    with wave.open(str(path),'rb') as w:streams.append((w.getparams()._asdict(),w.readframes(w.getnframes())))
+   row[k]['wave']={'baselineParams':streams[0][0],'currentParams':streams[1][0],'identicalPcmBytes':streams[0][1]==streams[1][1],'baselinePcmSha256':sha(streams[0][1]),'currentPcmSha256':sha(streams[1][1])}
+ rows.append(row)
+d={'files':rows,'summary':{k:{'availablePairs':sum(all(x[k]['exists']) for x in rows),'equalPairs':sum(x[k]['equal'] for x in rows)} for k in ['source','master']}}
+d['summary']['master']['identicalPcmPairs']=sum(x['master']['wave']['identicalPcmBytes'] for x in rows)
+(out/'authoring-inputs.json').write_text(json.dumps(d,indent=2)+'\n')
+v=ctypes.CDLL('libvorbis.so.0');v.vorbis_version_string.restype=ctypes.c_char_p
+(out/'libvorbis-version.txt').write_text(v.vorbis_version_string().decode()+'\n');print(d['summary'])

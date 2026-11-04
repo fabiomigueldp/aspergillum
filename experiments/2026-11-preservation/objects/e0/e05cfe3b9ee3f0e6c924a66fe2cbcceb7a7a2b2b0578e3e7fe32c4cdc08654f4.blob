@@ -1,0 +1,75 @@
+# V9 · diagnóstico independente de orelhas e faixa
+
+Pesquisa geométrica nativa. Não é exportação, addon, publicação, teste Minecraft ou aprovação da interface completa. Todos os scripts deste diretório escrevem somente neste diretório. Os arrays V7, V8, V5 e fonte são somente lidos.
+
+## Candidata retida
+
+A revisão final da cópia retida está em `REVIEW_RETAINED_ANATOMY.md`; os dois checkpoints e seus compromissos estão em `REVIEW_V9_CANDIDATES.md`. O gate foi repetido sobre o arquivo final, byte-idêntico aIntrinsic00.
+
+## Resultado que limita o problema
+
+Preservar os 88 vértices da caixa conservadora de orelhas e manter casca/faixa imóveis impõe um **limite inferior verificável de 462 pares estritos com a casca e 657 com a faixa**. Os 657 pares da faixa envolvem 32 faces inteiramente compostas desses vértices; não podem desaparecer por movimentar outros vértices. Aplicando ainda todo o domínio inativo V8, os limites sobem para 465 e 705. Esses pares são os mesmos no baseline e V8.
+
+`fixed-contact-lower-bound.json` dá as faces, e `independent-baseline-v8-contacts.npz` guarda os pares completos. A diferença entre esse limite e o número final **não é uma garantia de contatos simultaneamente removíveis**: qualidade, contorno e outras restrições podem impor conflitos adicionais. Pares não são furos nem medida direta de gravidade.
+
+## Visibilidade de orelhas e contorno
+
+O teste usa 910 direções distribuídas em toda a esfera: 36 azimutes em 11 elevações, os dois polos e 512 direções Fibonacci. Inclui os dois lados, frente, trás, alto e baixo. São usados os triângulos estruturais V7, faixa V5 e anatomia baseline, em coordenadas originais. A cavidade exposta da orelha não é considerada oculta só porque está numa caixa lateral.
+
+1. Cada uma das 214 faces incidentes aos 88 vértices de orelha recebe 21 amostras baricêntricas, incluindo vértices/bordas.
+2. Raios partem da superfície com deslocamento numérico de 0,002 mm. Verificam as direções do hemisfério frontal de cada face, inclusive uma pequena margem de tangência. Um raio não bloqueado mostra exposição amostrada.
+3. **203/214 faces têm alguma amostra exposta**. Congelar todos os vértices de qualquer face parcialmente exposta conserva 88/88 orelhas.
+4. O teste separado de vértice, vizinhança imediata e arestas com mudança de orientação aparente encontra 70 vértices diretamente visíveis, 72 com pequena vizinhança visível e 67 incidentes a contornos aparentes visíveis. A união protege 80 vértices.
+5. Oito pontos não mostram exposição nesses testes: IDs locais 67, 241, 648, 653, 657, 662, 669, 676. **Isso não autoriza movimentá-los**: todos pertencem a faces com alguma exposição na amostragem densa. Quatro (67, 648, 662, 676) afetam inclusive interiores visíveis nas quatro amostras centrais; os outros quatro têm exposição amostrada nas bordas das faces incidentes.
+
+A proposta reproduzível mais conservadora é portanto **manter os 88 fixos** nesta conectividade. `ear-visibility-real-mask.npz` registra a regra por face; `ear-vertex-contour-mask.npz` separa exposição pontual, vizinhança, contorno e os oito candidatos incertos. Estes oito são somente uma hipótese para ensaio futuro rigorosamente limitado, não uma máscara segura de mobilidade. Mover o vértice oculto de um triângulo parcialmente visível pode alterar seu plano, normal e porção visível.
+
+`ear-visibility-mask.npz` é a primeira variante ainda mais conservadora, que ignora autoclusão do corpo e considera apenas casca/faixa. Ela encontra 205/214 faces potencialmente expostas e também protege88/88. Não confundir os dois testes.
+
+A ampliação para todos os 692 vértices foi feita em `allbody-vertex-contour-mask.npz`. Seus campos ainda têm prefixo `ear_` herdado do script, mas representam **todo o corpo**. Os únicos pontos sem exposição amostrada de vizinhança/contorno/interior incidente fora do domínio ativo V8 e da proteção explícita são437/438/439, a componente microscópica defeituosa já herdada. Não há expansão útil da nuca sustentada por esse teste; ela não deve ser mobilizada como solução.
+
+### Confiança e limites
+
+Um raio positivo fornece evidência de exposição para aquele ponto/direção. Nenhum conjunto finito de raios prova invisibilidade universal. Gaps estreitos entre direções, exposição entre amostras, autoclusão depois de deformação, precisão BVH, culling, textura alfa e normalmap permanecem limites. Mesmo os pontos ocultos amostrados precisam ter suas faces incidentes e todo o caminho do deslocamento reavaliados. Uma galeria de quatro vistas tampouco prova invisibilidade.
+
+A galeria nativa `BASELINE_NINE_VIEWS.png` cobre frente, ambos lados/3⁄4, traseiras, inferior e superior. O azul identifica faces incidentes à máscara ampla de orelhas, não somente a anatomia da orelha. As vistas complementares produzidas pelo coordenador em `../evidence/v8-control-left-ear.png` e `v8-control-right-ear.png` mostram a ponte vermelha atravessando as cavidades expostas. Esse conflito real não é resolvido por declarar toda a região lateral oculta.
+
+## Faixa: orientação física e folga
+
+A faixa nativa tem958 vértices/1.912 triângulos, com856 faces puras de cada parede e200 faces mistas de borda. A identificação da parede interna foi verificada pela geometria, antes de usar os nomes:
+
+- As856 normais de faces side0 têm produto radial positivo contra o centro aproximado da cabeça: mínimo+0,001495, máximo+0,231984. É a parede externa.
+- As856 normais de side1 têm produto radial negativo: mínimo−0,231460, máximo−0,000462. É a parede voltada à cavidade.
+- As normais também se alinham/opõem às normais da anatomia mais próxima, com medianas+0,9489/−0,9509. Há exceções locais nas dobras, portanto esse segundo teste não é uma regra absoluta.
+- O pareamento de vértices mede espessura entre0,212 e0,500 mm, mediana0,468 mm. Esse valor é espessura da faixa, **não folga para a anatomia**.
+
+`band-physical-diagnosis.npz:inner_face_indices` lista as856 faces físicas internas; `outer_face_indices` lista as856 externas; `rim_face_indices` lista as200 bordas. Usar bordas como planos infinitos da cavidade seria incorreto. Mesmo planos internos precisam ter suporte espacial local: uma faixa aberta em torno da testa não define um semiespaço global válido para a cabeça inteira.
+
+### A faixa não tem folga uniforme
+
+Os1.210 pares estritos baseline×faixa e1.115 V8×faixa contêm pontos de interseção reais: a distância mínima entre os conjuntos triangulares é zero nesses pontos. Portanto não existe uma folga global positiva já estabelecida. Distâncias a centros/vértices abaixo apenas descrevem a distribuição local, não podem substituir essa conclusão.
+
+Classificação por paridade com três raios de direções diferentes, sobre os centros das faces:
+
+- Parede externa:363 centros dentro da anatomia,485 fora,8 incertos.
+- Parede interna:492 dentro,359 fora,5 incertos.
+- Bordas:172 dentro,27 fora,1 incerto.
+
+A distância assinada ao plano da superfície anatômica mais próxima, na parede interna, vai de−5,625 a+3,236 mm, mediana−0,228 mm. Sinal negativo indica centro da faixa no lado interno dessa superfície local. Não é certificado de distância assinada global: o campo vem do triângulo mais próximo, e a topologia possui defeitos herdados.
+
+A distribuição também é espacialmente desigual. Na frente Y<−0,30,164/176 centros externos estão fora da cabeça e129 são vistos por pelo menos um raio de câmera. Nas laterais,351/680 centros externos já estão dentro; na parede interna, são28/176 embutidos na frente e464/680 nas laterais. A faixa está predominantemente sobreposta à testa frontal, mas amplamente embutida nas laterais. `band-regional-counts.json` detalha isso.
+
+As amostras de câmera encontram366 faces externas,4 internas e18 de borda visíveis. Nenhum centro classificado dentro por todos os três raios de paridade aparece visível. Isso é uma checagem de consistência, não garantia sobre a face inteira. A faixa frontal apresenta também interferência com a própria casca, visível como pequenas lacunas; o corpo sozinho não valida nem corrige faixa×casca.
+
+## Reprodução
+
+A partir da raiz do projeto:
+
+- `blender -b --factory-startup -t 2 --python body_interface_v9/independent_diagnosis/diagnose_visibility_band.py`
+- `blender -b --factory-startup -t 2 --python body_interface_v9/independent_diagnosis/classify_vertex_contour.py`
+- `blender -b --factory-startup -t 2 --python body_interface_v9/independent_diagnosis/classify_allbody_visibility.py`
+- `blender -b --factory-startup -t 2 --python body_interface_v9/independent_diagnosis/contact_limits.py`
+- `blender -b --factory-startup -t 2 --python body_interface_v9/independent_diagnosis/render_gallery.py`
+- `blender -b --factory-startup -t 2 --python body_interface_v9/independent_diagnosis/review_candidate.py -- CAMINHO_NPZ TAG`
+
+O revisor independente lê a candidata final, não o código do solver. Mede os pares estritos contra casca/faixa e as outras partes, deltas contra baseline/V8, proteção literal, áreas, orientação, arestas, singular values do mapa tangente (stretch intrínseco), topologia e auto-interseções. A componente microscópica3v/2f é mantida e declarada separadamente. As partes híbridas6/7/8/10/14 do mapa legado são apenas proxies, não validação da forma híbrida final.

@@ -1,0 +1,19 @@
+import bpy,json,collections
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False);dg=bpy.context.evaluated_depsgraph_get()
+def mesh(n):
+ o=bpy.data.objects[n];m=o.evaluated_get(dg).to_mesh();p=[o.matrix_world@v.co for v in m.vertices];f=[tuple(v.vertices) for v in m.polygons];o.evaluated_get(dg).to_mesh_clear();return p,f,BVHTree.FromPolygons(p,f)
+hp,hf,h=mesh('Maria — anatomia feminina adaptada CC0');mp,mf,m=mesh('TESTE 34 — conexão de superfícies avaliadas');pairs=h.overlap(m);ids={b for a,b in pairs if 3.05<(sum(mp[i].z for i in mf[b])/len(mf[b]))<3.42};vertfaces=collections.defaultdict(set)
+for f in ids:
+ for i in mf[f]:vertfaces[i].add(f)
+comps=[];seed=Vector((-.07,-.01556,3.31112))
+while ids:
+ todo=[ids.pop()];c=set(todo)
+ while todo:
+  f=todo.pop()
+  for v in mf[f]:
+   for g in vertfaces[v]:
+    if g in ids:ids.remove(g);c.add(g);todo.append(g)
+ verts={i for f in c for i in mf[f]};pts=[mp[i] for i in verts];comps.append({'face_count':len(c),'faces':sorted(c),'bbox':[[min(p[k] for p in pts),max(p[k] for p in pts)] for k in range(3)],'minimum_seed_distance':min((p-seed).length for p in pts)})
+comps.sort(key=lambda x:x['minimum_seed_distance']);json.dump(comps,open(r+'neck-local-contact-components.json','w'),indent=2);print([{k:v for k,v in c.items() if k!='faces'} for c in comps[:10]])

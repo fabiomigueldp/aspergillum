@@ -1,0 +1,58 @@
+✖ scheduled expiry explains closure once without applying the draft or retaining a lock (6.827206ms)
+✖ a lease discovered expired by an interaction gets the same notice before the timer fires (1.432274ms)
+✔ voluntary cancellation before the deadline does not show an expiry warning (0.452059ms)
+✔ non-timeout invalidation before the deadline keeps its existing silent dismissal (0.553364ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 2
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1423.359819
+
+✖ failing tests:
+
+test at addons/altare/tests/editor-timeout.node.ts:36:1
+✖ scheduled expiry explains closure once without applying the draft or retaining a lock (6.827206ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + []
+  - [
+  -   'error.expired'
+  - ]
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/212c580ada5b/altare-editor-review-20261103/addons/altare/tests/editor-timeout.node.ts:40:42)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [],
+    expected: [ 'error.expired' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at addons/altare/tests/editor-timeout.node.ts:44:1
+✖ a lease discovered expired by an interaction gets the same notice before the timer fires (1.432274ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + []
+  - [
+  -   'error.expired'
+  - ]
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/212c580ada5b/altare-editor-review-20261103/addons/altare/tests/editor-timeout.node.ts:46:9)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [],
+    expected: [ 'error.expired' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

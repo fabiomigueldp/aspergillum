@@ -1,0 +1,27 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import crypto from 'node:crypto';
+import * as THREE from './repo/viewer-3d/node_modules/three/build/three.module.js';
+const root=import.meta.dirname;
+const sourceFiles=[['blockbench-bedrock.js','f27d89e774003486b1161b0578971f686fece0a8'],['blockbench-cube.js','70cb939ab827f999f9178fac05839a2ecb005d5b'],['blockbench-three-custom.js','c700631f613689344764b210af7d4fc56c1eba33']];
+const source=sourceFiles.map(([name,expected])=>{const b=fs.readFileSync(`${root}/reference/${name}`);const hash=crypto.createHash('sha1').update(`blob ${b.length}\0`).update(b).digest('hex');if(hash!==expected)throw Error('Reference hash mismatch: '+name);return b.toString();});
+const [bs,cs,ts]=source;
+const parse=bs.slice(bs.indexOf('\tfunction parseCube('),bs.indexOf('\tfunction parseBone('));
+const update=cs.slice(cs.indexOf('\tupdateUV(element,'),cs.indexOf('\tupdateHighlight(element,'));
+const shape=ts.slice(ts.indexOf('THREE.BufferGeometry.prototype.setShape'),ts.indexOf('Object.assign( THREE.Euler.prototype'));
+class Face {constructor(){this.uv=[0,0,0,0];this.rotation=0;this.texture=false;}extend(x){if(x.uv){this.uv[0]=x.uv[0];this.uv[1]=x.uv[1];}this.rotation=x.rotation??0;}get uv_size(){return [this.uv[2]-this.uv[0],this.uv[3]-this.uv[1]];}set uv_size(v){this.uv[2]=this.uv[0]+v[0];this.uv[3]=this.uv[1]+v[1];}getTexture(){return false;}}
+class Cube {constructor(x){this.rotation=[...(x.rotation??[0,0,0])];this.origin=[...(x.origin??[0,0,0])];this.from=[0,0,0];this.from.V3_set=x=>this.from.splice(0,3,...x);this.to=[0,0,0];this.faces=Object.fromEntries(['east','west','up','down','south','north'].map(n=>[n,new Face()]));}addTo(){return this;}init(){return this;}}
+const context={THREE,Cube,Texture:class {},Canvas:{face_order:['east','west','up','down','south','north']},Project:{texture_width:64,texture_height:64},Format:{}};
+vm.createContext(context);vm.runInContext(shape+'\n'+parse+'\nvar controller={'+update+'dispatchEvent(){},updatePixelGrid(){}};',context);
+const fixtures=[];
+for(const depth of [0,2])for(const width of [7,-7])for(const height of [9,-9]){
+ const input={origin:[-7,2,3],size:[5,4,depth],pivot:[-2,2,3],rotation:[0,0,0],uv:{south:{uv:[11,13],uv_size:[width,height]}}};
+ context.input=input;
+ vm.runInContext('var parsed=parseCube(input,{name:"reference",color:0},{}); parsed.mesh=new THREE.Mesh(new THREE.BoxGeometry(1,1,1)); parsed.mesh.geometry.setShape(parsed.from,parsed.to); controller.updateUV(parsed);',context);
+ const geo=context.parsed.mesh.geometry,p=geo.attributes.position,uv=geo.attributes.uv,n=geo.attributes.normal;
+ const expected=[];
+ for(let i=16;i<20;i++)expected.push({position:[-p.getX(i),p.getY(i),p.getZ(i)],uv:[uv.getX(i),uv.getY(i)],normal:[-n.getX(i)||0,n.getY(i),n.getZ(i)]});
+ fixtures.push({name:`south-depth${depth}-u${width}-v${height}`,input,expected});
+}
+const report={sourceCommit:'ec0b2827104d0799c153bfb5f867579c0c44652f',sourceFiles:sourceFiles.map(([file,gitBlob])=>({file,gitBlob})),method:'Execute unchanged official parseCube, setShape and updateUV with data/UI stubs. Reflect X into the unchanged Bedrock-coordinate viewer basis. Unit-box normals are preserved. No application launch; zero-depth preview epsilon deliberately excluded.',fixtures};
+fs.mkdirSync(`${root}/repo/viewer-3d/tests/fixtures`,{recursive:true});fs.writeFileSync(`${root}/repo/viewer-3d/tests/fixtures/blockbench-south.json`,JSON.stringify(report,null,2)+'\n');console.log(`Wrote ${fixtures.length} independently derived fixtures.`);

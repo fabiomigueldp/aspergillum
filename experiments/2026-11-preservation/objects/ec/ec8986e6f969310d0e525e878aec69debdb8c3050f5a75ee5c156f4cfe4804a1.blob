@@ -1,0 +1,528 @@
+{
+  "version": "0.13.0",
+  "renderer": "CPU barycentric rasterization of shared buildBedrockGeometry meshes",
+  "limitation": "Alternative technical preview. No WebGL, PBR, game lighting or Minecraft parity. Official Chromium renderer unavailable in this execution environment.",
+  "cameraConvention": "right-handed; direction centre to camera; right = worldUp cross direction",
+  "rendererSources": {
+    "tools/capture-native-cpu.mjs": "e5315c62d455bdfe68992488517f40e2601b0916bac97a3d2a2c27dc5ba5e094",
+    "tools/cpu-rasterize.py": "7b939263a3fb7147f2ee9ec0a71b53f986914d426d7d2b566c23d7287c51c62e",
+    "tools/block-preview-basis.mjs": "17589a3deb7cd98baba5098a6a5c923579a553e79a7be179169f3ca2ac57635c",
+    "../../viewer-3d/src/shared/bedrock-geometry.js": "24dbd8979e54bb33be799e578109d6a5444a9254d1ad0f4c25160241c3e17e11",
+    "../../viewer-3d/src/shared/bedrock-uv.js": "e6701522cba86fa1449c5969387907870bf9b8169aed1a216fb211ad5c7a63b1"
+  },
+  "sourceHashes": {
+    "packs/resource/models/blocks/native_twin_8ec4f12ea799f116cfc51451.geo.json": "822c7914f492482e6fe129a9cfac5efd227fab9f3584e3422d734d52b4ef5686",
+    "packs/resource/textures/blocks/atelier_walnut.png": "f780cb89fd0cbd6353534bc9a5df465242e65330243386d69d747e00167968f8",
+    "packs/resource/textures/blocks/joinery_walnut_horizontal.png": "66624c3cd5ae70a32865104e6d188276a406905a9ad7c6b3743fa2d8cbb25e32",
+    "packs/resource/textures/blocks/crossbrace_inlay.png": "956784eb27b97ba8676cdf6908b231bd134b711fe0cc8eb91e12e5a001b41e37",
+    "packs/resource/models/blocks/native_twin_3221fac3b00ceb0276d750b9.geo.json": "044608acec7211d625abfe578b5b44b0510c3b3a3fa16c3f7ee345611c86328e",
+    "packs/resource/models/blocks/native_twin_4265700169bdc940b188b8fa.geo.json": "417d559c6120f4ce98947aecaf33021e9b300c42d116d19c02a99360be7f084e",
+    "packs/resource/models/blocks/native_twin_4d5ccf9f8049473ae19531bc.geo.json": "7e3c8f7fbed21c05416e00d06f56ca0d99889d2fce5897f1b10d6fc9d386cb16",
+    "packs/resource/models/blocks/native_twin_1875ab9a08cf2a6903e3dbe4.geo.json": "53a31129c2efeee226eba3aa2803bad63570c25e8ddc347b825f50c869ff68de",
+    "packs/resource/models/blocks/native_twin_bc1aa25e5eb3f97c2e2cbad2.geo.json": "3f27276938e032ddc91a3d22374311fdce061e6be6042eec5424f1f886ef8a8f",
+    "packs/resource/models/blocks/native_twin_0894151603f328322c338dbb.geo.json": "3b5ead375daef233438958ff269afe2bb8370ed3b936925276bff334b70925f2",
+    "packs/resource/textures/blocks/linen.png": "2929ae99d2625dda41bd77eac7f631bf2d03eea3a58988d6b426ce5832d77174",
+    "packs/resource/textures/blocks/ornate_lace.png": "86a9ccf417d9f1d90ee20b3821e931c8e1f581dd65eae52a2b3560cd235976f2",
+    "packs/resource/models/blocks/native_twin_1a60d807c2094078398d7897.geo.json": "b44704a030c1e64250296976d6c5a33466af22d714dab3c9ff1a02a9714cb507",
+    "packs/resource/models/blocks/native_twin_e432383a203d200d455c229e.geo.json": "ff208f95b53950bd1d5fc26775e0622dc65057c62db34c92fea75b292220f721",
+    "packs/resource/models/blocks/native_twin_c5185a48d813197ab14a73b1.geo.json": "5e08a8b979e03191ec381bf768b1c3bd929c6b6ed10714de310428e7068ba857",
+    "packs/resource/models/blocks/native_twin_12d5e1328bfddc92a59c3389.geo.json": "c280e96e0645afc744ca439a78dd2bc6502d66ffe766f2d87a9db36e779b60e1",
+    "packs/resource/models/blocks/native_twin_2a8613ffb4cc46e2fb1f28f3.geo.json": "6860dfbd24ef2c9e9af10e7b8dcea0609e6704b9978cbc82ae98023aef5277d4",
+    "packs/resource/models/blocks/native_twin_8a8110ef5e1c80654b4abc85.geo.json": "5dcce53a74fc9b383d69162eb0109405d9b3f3319f4d32867ba1bc98bb6e780b",
+    "packs/resource/models/blocks/native_twin_282590ab54cf63cd653b4194.geo.json": "8fbe88e47a077c12b13572b61d0b791ef7cce227505facb99fd9832e033dee15",
+    "packs/resource/models/blocks/native_twin_fb47670fa4ac7911dce6d227.geo.json": "4152d04bf0f46b0f701e5811da82a771fc362a471852cd7097fe3da9ade4847d",
+    "packs/resource/models/blocks/native_twin_62e3a21427b1e3e6182738c6.geo.json": "d42fa6959385767329683714de4aba7e01f6b1802abd7345997a1b81984eda55",
+    "packs/resource/models/blocks/native_twin_d390c34f0277e9eaca7a2a87.geo.json": "43c94e9d969e9133ae9d63500fba85531c76abc7b702a7601e5de12ca9d38540",
+    "packs/resource/models/blocks/native_twin_e83b0f0a04a2c020d2470e24.geo.json": "14a031c20bf0aa6345a99f01163befc612ecda91290697e0ace3f75e22210a9c",
+    "packs/resource/models/blocks/native_twin_0ef52e9ef3a05d0357e78563.geo.json": "9022f90c10fde18184528acfad67cac304f4ae4d84a3732fa2a32f1f9b85981e",
+    "packs/resource/models/blocks/native_twin_afc6e580e87df80a991a3b14.geo.json": "03e8dda24f5de52c534bdb45190936048017e11397caef49f189cdb623ce6548",
+    "packs/resource/models/blocks/native_twin_a98ac07a6e84c829e1deb1d2.geo.json": "49feb566228a9a2923eccaa20d87aebb3a5d75aca3cd5b92407ee82f59f04aae",
+    "packs/resource/models/blocks/native_twin_e0a647208a0a197fdd8a20b8.geo.json": "622ab02368caa219b024e87903dcf0d5522f6faf0e14410fdbf5bfe50cc1a860",
+    "packs/resource/textures/blocks/hem_short_plain.png": "fe42684f352c33f5d71ad98602fcd0d5056a5f9c79ec85594a22ee6e044dc7b4",
+    "packs/resource/models/blocks/native_twin_90707d0be9797b92091114dd.geo.json": "bc61ab9370393575fbd3932722aec852df79ff0008a7ee5e934de6fa5c92f160",
+    "packs/resource/models/blocks/native_twin_52add96509ed4842ff095a21.geo.json": "5e3834226fa5d565d91eed80f2f2af022907e9b600886c616408ea7c51374ec4",
+    "packs/resource/models/blocks/native_twin_06a9c3265995a120bf436f93.geo.json": "4d23653823803724c008b89adc26310ed3b03cb1c6dd7fe279c7af6c020c170c",
+    "packs/resource/models/blocks/native_twin_76df4ba30c59e53f4a4b4778.geo.json": "a033cbb16402cdd6b59055cc81b6a046d501f41ee6f066a532d18c3f5c77c65c",
+    "packs/resource/models/blocks/native_twin_e4b6de41b95b57b629acd52c.geo.json": "51753c71daac4dac8f68c39e987f19ebe9b346c8c3214740697331073780eb54",
+    "packs/resource/models/blocks/native_twin_9db2ae15ddb881ba50ac200b.geo.json": "4976b70e4c534b8f7a8d35dc20c4862d9eac8e8a204fe1c6bd7daf3da9221be3",
+    "packs/resource/textures/blocks/hem_long_plain.png": "df5613b842d7c45cddaba6987aeb1e347826b363c712ea785ab16ea4fd85ba47",
+    "packs/resource/models/blocks/native_twin_4e04ae30081d8ec2aa05d85c.geo.json": "f88d88f1d4acead2f34be781029683fd807a382c2c9668555530a1790e0d6d5e",
+    "packs/resource/models/blocks/native_twin_7382142b60a773ff49c7f2ae.geo.json": "b6a95550d97e9de0c0106d54b8549892ed1ee8c356f8b19e062cf3d525a0b599",
+    "packs/resource/models/blocks/native_twin_82d078b5e3c88804ba6d2642.geo.json": "2a2f68ba3235230969c2b1d65e92c65006444026135bd014f4175d8bf68a3804",
+    "packs/resource/models/blocks/native_twin_d9d8e21c324e47af9e6291f2.geo.json": "c79b4806d89e614d265a27b8acf474bc903f01232bc21a617e8ea58050520352",
+    "packs/resource/models/blocks/native_twin_b73a99723313d34674ab22c5.geo.json": "24c7a634d4a5a408ff7d80416c1eb7a737b8c1d1da9fa911471941d2c5d75957",
+    "packs/resource/textures/blocks/seam_white_gold.png": "abeef1ad08079a0eed9e186e5e78948e41d80a1cbecb1730a98fa177834585b9",
+    "packs/resource/textures/blocks/hem_short_gold.png": "2a563e5dc8dd7459b02e6f0745999c9cdb8f6d601b8e9657a4d02b40831de0f2",
+    "packs/resource/textures/blocks/hem_long_gold.png": "09c08c4af6226494b0d45675fdc7fd114c5fa7e805ec86d74dddc7dde5b13cc8",
+    "packs/resource/models/blocks/native_twin_c0d1687b9ef6f4dae0c2df17.geo.json": "d92d54c3fe7265085b814273a8168db3649fb771baf93d7a00b2de3793abc679",
+    "packs/resource/textures/blocks/textile_agnus_0.png": "7266dba3b442459f3549d775f16606a244ce896f6029a692992c02282c35a679",
+    "packs/resource/models/blocks/native_twin_6fc74e7984e7cf37a8526656.geo.json": "fa0c0e1b12d52ff1d70e8e298fc9f7da00ffca7b4576e5ab691c083ebeacbc37",
+    "packs/resource/textures/blocks/textile_agnus_1.png": "65e07d4f0ccd0a9fcfa11ff854db06cdd6894cc792f51bd53d951c1bc2bf3722",
+    "packs/resource/models/blocks/native_twin_9b38b042591bda53f00dd445.geo.json": "7f71a492a519ce01cd42e0837466c7bd71cbea2e7bb8a8df8131c13a1cae7bf4",
+    "packs/resource/models/blocks/native_twin_79059763b7ff597ed5810c07.geo.json": "90b8966963fb8898a253c591ce40fb4b8ba2ae2e90f9f3e08faef9090592b4c8",
+    "packs/resource/models/blocks/native_twin_8ac713bda679cfee46fd888b.geo.json": "6dab94c22c364485a7a54bde7248f80a5660ef3083c10561eeafaf2c02b0f267",
+    "packs/resource/models/blocks/native_twin_9a951b24ddac3b47352da423.geo.json": "6710b0c653e75616176b17e7711973404afcabe4839fe18f96d73767a05d9c10",
+    "packs/resource/models/blocks/native_twin_1759057d7f25db0b055dded3.geo.json": "024bc544bfab191c4028c11b69b6a52c8469c77999f0fbc9c94d8e7306835933",
+    "packs/resource/textures/blocks/textile_verdant_0.png": "311fea294dcc9a8b733969be14e72a48330880f1a59787f7c1f0ac0d12cb7b1f",
+    "packs/resource/models/blocks/native_twin_6d3e18ef8602dbee5a07963e.geo.json": "fa963c17de1061f9a003c21409ba5c0784e94d1753ee89c2c743374b06b4813f",
+    "packs/resource/textures/blocks/textile_verdant_1.png": "9f2900cf8ab0e3fb72874832e953a35d4f360d3d508e4cde0ef46da24185ec4b",
+    "packs/resource/models/blocks/native_twin_829e3b85b553a315197ce318.geo.json": "146a982bde5d8a1e491e32880de9f88176cc8ae5491b0457721e17498ec2bcd5",
+    "packs/resource/models/blocks/native_twin_cfca69f427a145ed0c058525.geo.json": "ccd56c371fd8113c667f7cbe110a9ad93739feb57c2e864dce535a5f4f0ddbf7",
+    "packs/resource/models/blocks/native_twin_bffe55b99f34bbdd898adecf.geo.json": "3c633949a4c01195fc8eda206dd9b011ec52b1525c7f16cad0ceaa8ae1038160",
+    "packs/resource/models/blocks/native_twin_cc4b1581a13fad3b0f5cd51c.geo.json": "53547f3d05893ba9fbe475b53dfa8646c48d33bccec694d0bdad2845c1fa52b5",
+    "packs/resource/models/blocks/native_twin_1534a00973778f7d6e0e9baa.geo.json": "6ac6f6d9dbc86a1870db5cf3e1863c249a1f333d01263b67470c1c511229bd78",
+    "packs/resource/textures/blocks/seam_black_silver.png": "33b0bee5e6a0ab12cca7a48026f8c22d3b007173e8edcd71af626fed8ba1a6ba",
+    "packs/resource/textures/blocks/textile_requiem_0.png": "c45c41da24efccd8cf0333a68c6413e0d1d2e8457f2da5176751ecb03d536b41",
+    "packs/resource/models/blocks/native_twin_b139735bab4e472717e9458d.geo.json": "25a88d5dc3da42fb7ba6f2b0c8d72d682919f693343d3eb4717c68ad1fdbca59",
+    "packs/resource/textures/blocks/textile_requiem_1.png": "7d1c36d2b36215d9b26bac13cf5976c069d43dcb86a34b97910d229358c46003",
+    "packs/resource/models/blocks/native_twin_af314b7099f5df39cc7d82db.geo.json": "88284d89d663843dcbc94b6a494e0d62dede12a1f372f88d1ced58cd6739a373",
+    "packs/resource/models/blocks/native_twin_02fc8a662b0e2cf9c002b0c0.geo.json": "6f26ef3905345defea478f26ac3c54e27ba97013819c91a14c663ae841e1c3fa",
+    "packs/resource/models/blocks/native_twin_8178785811164fcd41151ba0.geo.json": "c2396c7e36f36af08b028bb345bbc6caa502a3ced48b48d34654716c0f289827",
+    "packs/resource/models/blocks/native_twin_3124d6e91073d908b3034234.geo.json": "7dc780dea022d542ff8252b3bf9d248b8ce18eacde9035d64934bba22a0d209e",
+    "packs/resource/models/blocks/native_twin_00b313bd86fdde6a578cca26.geo.json": "830831eab8c0de7250422a2ac8354c614089f014d3d333b65a64c6c45e8c61a5",
+    "packs/resource/textures/blocks/textile_ruby_0_white.png": "46b3ac9754677d4289dd0ff9b69856006c1bd9e913cf8549ea25b59e7fdd54e5",
+    "packs/resource/models/blocks/native_twin_3ae0852c8945aedcf0b9b1d8.geo.json": "161e7659250498ca815f69d55a0f76e2cd39863907ed1e29daebabaa4aab696b",
+    "packs/resource/textures/blocks/textile_ruby_2_white.png": "6ec4e8c73c6c1b6f6b52972aea1acf42e637c90318a177bede644dc31d8637ef",
+    "packs/resource/textures/blocks/textile_ruby_3_white.png": "62e438e83a07b7ff432ee1c1033727f219d32eaf0c7ad255129fc0223f80e5f0",
+    "packs/resource/models/blocks/native_twin_bed24146ca3cf1f4e603b3c2.geo.json": "380e6e2db40c7b0cd6ce4f68a983c98f6c262962fb181075a7dda78c7502fd39",
+    "packs/resource/models/blocks/native_twin_e5da0de397a9ea98e6a38f22.geo.json": "9fd44f2cce8942a19656e4a6ef664c0289fe3311a4e23f383d9d08d4a9d20750",
+    "packs/resource/models/blocks/native_twin_c13de84eee038a2e5e7beaf4.geo.json": "453dbd6fee6c90181acc4bc76cd06956854fa0284a410676889fc1b1d9aab699",
+    "packs/resource/models/blocks/native_twin_448069600405c928bbfefbf1.geo.json": "e4e8cb034b1f95acdf3f50abb9b58ff257d73639594b31280f3c90fc0414b754",
+    "packs/resource/textures/blocks/seam_red_gold.png": "e721f1dd53a15c736f8674c94100c84f25e0871283a3ac5aead1da4afa17cb11",
+    "packs/resource/textures/blocks/textile_ruby_0.png": "8acb0409e4c61646f64a1d669a1539f2071108dc8707fcf98f9c52dd220d3d7d",
+    "packs/resource/textures/blocks/textile_ruby_2.png": "3b26371c8aa1da0ee642e03c7f486e93071cac4199963bbce9ad792efdb940e3",
+    "packs/resource/textures/blocks/textile_ruby_3.png": "c39890dfc1cdc7427c310ebeaa72dd04245a1bb608261bc9bc0c049ae81d1d54",
+    "packs/resource/textures/blocks/seam_green_gold.png": "9521d1ea44bf991138b29b5076168fb83de40b69402289c1bbe6681e385a9a86",
+    "packs/resource/textures/blocks/textile_ruby_0_green.png": "555027fb3237865bd99b47c9e227a9b6c6cc387a04102716ddedc5eaeb829e93",
+    "packs/resource/textures/blocks/textile_ruby_2_green.png": "1b816fe5ea0b59dd637cc8e0eb2c8d4360786bcecfa42d3ad6f54b4d0802a936",
+    "packs/resource/textures/blocks/textile_ruby_3_green.png": "4e6916e17e5dc97ddd599bbe54988ac7775e6b71daa737051a343524a07dc38c",
+    "packs/resource/textures/blocks/seam_purple_gold.png": "a34f0d6357c316f5f87cf5ef03b679ddde38b1ce41d910306eadaea5c6f11ea7",
+    "packs/resource/textures/blocks/textile_ruby_0_purple.png": "957e7b7f946ebe7156c4efa7b12f0667208f769e575d77021510e9775902bda8",
+    "packs/resource/textures/blocks/textile_ruby_2_purple.png": "986c79af6f8c8b9d26ea8ecf8bd490afe56ed9b37b5c823032f988072f58ab9b",
+    "packs/resource/textures/blocks/textile_ruby_3_purple.png": "6723b96c2ef1c0869261e6eb4f09d55811c24e45d36a229f756df602b1e781e3",
+    "packs/resource/textures/blocks/seam_rose_gold.png": "4dd572515a9f9a63e994a06c8d09cd1ee8dcbd5aa906a8d72feb39b35a33d267",
+    "packs/resource/textures/blocks/textile_ruby_0_rose.png": "10d340499b7993fc89389a8a11fce6ab8cbdd51ae01ecd05782db15f85410648",
+    "packs/resource/textures/blocks/textile_ruby_2_rose.png": "2a4885eebd5319b08baf83af93d075c64c2c9bd6c7731af6f289bc7b8d82ab52",
+    "packs/resource/textures/blocks/textile_ruby_3_rose.png": "4124420afeaf59ff62b679105eb08f8eda832ae484976d3391e18f369bd51fe4",
+    "packs/resource/textures/blocks/seam_black_gold.png": "b029321e4a2308a9e18f29688b70717dfa423371e9935b9f80452c240f69e6ac",
+    "packs/resource/textures/blocks/textile_ruby_0_black.png": "8918bef2eca6524b766512788c9fc83caf33db635d87458d50aa50ebef144684",
+    "packs/resource/textures/blocks/textile_ruby_2_black.png": "c53ba28dc0518c55a099ed1f78ca8ab5dbc39dba50dca1697332444842bd5446",
+    "packs/resource/textures/blocks/textile_ruby_3_black.png": "b8118736898f0962dc203584fe4bd0e57300ada0578e0a21db5e7cf2be120f24",
+    "packs/resource/textures/blocks/seam_gold_gold.png": "d779837e7b876d297990c8c9505bea1e65519f75d71eadf64d2c8a0af1bbf197",
+    "packs/resource/textures/blocks/textile_ruby_0_gold.png": "5b9acbb2dec96b41ecc5d15992eea0a308cf2df93c634c4b3444572c36280df3",
+    "packs/resource/textures/blocks/textile_ruby_2_gold.png": "f779e1ec3c9dbb680fb308633f1473a7166a63071e6b81dd07fa059765855e24",
+    "packs/resource/textures/blocks/textile_ruby_3_gold.png": "b065e6aceb5f24f8ba1b6a5f08ec578fb5d5bad04a666c27ba9b4199187255b4",
+    "packs/resource/textures/blocks/seam_silver_gold.png": "9e42ce336e81c4f4004c1382ceac72c2ea991ca7526e092384ed41fe8a522777",
+    "packs/resource/textures/blocks/textile_ruby_0_silver.png": "87d7375bf74e8f73a4464e0655edcbee2ebcadb547f5220f10198609fe2660a0",
+    "packs/resource/textures/blocks/textile_ruby_2_silver.png": "cec99d1b53700f4fe2b8ce58cbc4df5d8ddd534c9446cf41558b77a4644c526a",
+    "packs/resource/textures/blocks/textile_ruby_3_silver.png": "d2f31f603767510ede869c217046a11f96c6e297e4e65e80e5b52d2ecc1019e0",
+    "packs/resource/models/blocks/native_twin_abdae1ec93ac850a3fa2e3e1.geo.json": "3f146e5d8f30a98f9f99d27bede675de1efa8f6567b73c76979cf1aea845ee29",
+    "packs/resource/models/blocks/native_twin_48e4a4bb148e250515709d11.geo.json": "51ec5fa8c9718ffb682a262f325b68456c7507118ad4bb6d17beef560ed4b0ae",
+    "packs/resource/models/blocks/native_twin_de307733afed75851e554c9e.geo.json": "bbf466e306e4e733a25c80b1d94bf16106ce49550facaef9ce34ada0f300adfb",
+    "packs/resource/models/blocks/native_twin_d4787ac48ac82d7e5162ead7.geo.json": "991ee56b012a05f0da52386c2ba22afa5abb42bfaf7a154ede22edc2fb9206d4",
+    "packs/resource/models/blocks/native_twin_f2fab3a8446def9904581298.geo.json": "979e560cb3f75d29a071c9bc917163610b871669435fa02a3930ce3b6339e75d",
+    "packs/resource/models/blocks/native_twin_b7676e2d2b5615f1482d8111.geo.json": "388874955709cdbf21a4a858025f2b51f4bb0eaee06f6d3aa86f3a07c3fa6218",
+    "packs/resource/models/blocks/native_twin_1d981f2402fc84ae8e41345f.geo.json": "1e2c7e472acfe0776119b2ddcd1e76978406fa4a90fb704f51c9abda0f99fa60",
+    "packs/resource/models/blocks/native_twin_1b980c25e82e635e9acc39e7.geo.json": "052df08362db69aed2389bc41e10d00fe35d033a469a062e2f2a14d09a79b365",
+    "packs/resource/models/blocks/native_twin_00245eaabee540846b9f5cbf.geo.json": "99bb32ac8590eb962c576d9466f848bfdc0ffccb108fe954bd09f515a693fb0b",
+    "packs/resource/textures/blocks/textile_ruby_1_purple.png": "4608e646a39341ad3561275b75ac216dbae17dde61061ea5dff5f12faac1fb9a",
+    "packs/resource/models/blocks/native_twin_a780a5e261c9b0c2e33c762e.geo.json": "518bb05b505132907c59f156e3ec316b0ed5a20e469e974b57ca80e0c7a70353",
+    "packs/resource/models/blocks/native_twin_3248cbd0e2c1d0c85c09fa0f.geo.json": "77ea017895fbade02133015bc59dca0b2b6916f26cb2f47906107d01b29e47b9",
+    "packs/resource/models/blocks/native_twin_568c686ab37c98b2c4ffe910.geo.json": "890a2d4e44e67ab3b9698064c5b0e811584b1520a36b17a6367625e9ced64610",
+    "packs/resource/models/blocks/native_twin_d6037d3c02f57af275c4d304.geo.json": "76555089ade8c908f498e65bf7d9cb5d2cf8b7aac4a82ec885ee80bc0ed16c33",
+    "packs/resource/models/blocks/native_twin_369f9daf4f9cb45cb19ffe33.geo.json": "9ef045f904140ae61ce04c40315a70d8e3e5fe80023500c47162c2f5a3f2bdb4",
+    "packs/resource/models/blocks/native_twin_d00b362042af2d46cbb7c6bd.geo.json": "75212a246754cd4a372ffdac13cca93aed52e4bb0aa4d4c30ac6d2c2eb45bc6b",
+    "packs/resource/models/blocks/native_twin_16acc4116d96852526454629.geo.json": "e6b393e623ac76646e9f74b33ce5dac96723c40bc9fcc3b18c670649f536a887",
+    "packs/resource/models/blocks/native_twin_3a6bade6b0a878d5f39953c8.geo.json": "35779b3bda56cd6e4fa14f5d08431edf9189519490aa6384618ab35488209328",
+    "packs/resource/models/blocks/native_twin_ce2fa6fdef99a68f28b8f393.geo.json": "d42ce32c02223e0718c89573e59a442c231001b5d1003a41e8e41b12a82fb22f",
+    "packs/resource/models/blocks/native_twin_3789325d1f9bfa7daa2f2a79.geo.json": "3f1eec9d067cae97fc3eddd8d845bfae861d1bbb9a9187fd6c09f27d15d81a73",
+    "packs/resource/models/blocks/native_twin_af388d0f4728a264433cd754.geo.json": "f8a4d95ba894bcaaf0dee5654b422af451baaa10bea78b22a93f3b7ebd62d437",
+    "packs/resource/models/blocks/native_twin_d6874837d54d0a05c402943c.geo.json": "3c2dcfdd26af50e17249798471f85ebc54b61f47ae8cd876524ac225566bebe9",
+    "packs/resource/models/blocks/native_twin_f82350ad6341e052fb0a6397.geo.json": "38dca3a48533a67e0eff6e937bd07cf3d14518d4232e14903d7e68b29decda53",
+    "packs/resource/models/blocks/native_twin_b8d3d78180c3b2428fd4d1b0.geo.json": "da3db8af9fc176c4f7a3d5c3821b13016ebbcccc2429d2a9a62943fb08ea2085",
+    "packs/resource/models/blocks/native_twin_2c199ef5a7f9c505634ba7a3.geo.json": "31c82aee2f6c3d6ccec041c56dddc32afbc49a68ab2aff90dee60ce205f637cc",
+    "packs/resource/models/blocks/native_twin_c11788735e7cecb163775cb1.geo.json": "76ac7530e86d81356cd4704d813958a0b6aeb7e02862e5014f8c10734c740bfd",
+    "packs/resource/models/blocks/native_twin_852a0b8d5f3193be82c65be9.geo.json": "9b7924d94d198f5978f647bed8be3cd28fec246afeebd7bc11fd71dd3937dd0b",
+    "packs/resource/models/blocks/native_twin_5200bc55a79d92179eb33133.geo.json": "d3da85a95d08679a657805b948fd94d60863d67e879d44d09c83e03cdddf1001",
+    "packs/resource/models/blocks/native_twin_3740dd85bb392a69b64dee47.geo.json": "8767c640a1c7c422b1066dd184114d34023b579de4e0d938dbc8a8e1f5e2a96d",
+    "packs/resource/models/blocks/native_twin_2233fcbff71d7dc6052ee3e9.geo.json": "fd7024ef21a870b842e1f4162a0d79b47bcbede89ca330f9a8deb29f20196164",
+    "packs/resource/models/blocks/native_twin_abe91559d85b40cea1a17470.geo.json": "6ffcbc8c9e429980d93da9a8d57baf14adc978fddc3dd25d7e9f9ddccbd0c45f",
+    "packs/resource/models/blocks/native_twin_988d7a70effa6e8a5f6cb0f9.geo.json": "2d95aa28fd398c60a7e8ffbdb68acf9f1ca144555af52ed41eb35cfec97ef717",
+    "packs/resource/models/blocks/native_twin_979f307670a2b076823c74e8.geo.json": "e67faf431b27b926e87cfd814df0f9e19b8e410d8a38a66bb3cade3ec411ba31",
+    "packs/resource/models/blocks/native_twin_175de3ccb98682f9f3eaf2f5.geo.json": "8a574ffc0a1698524614e7d49ffff630b8d41b57fdb026202010055ba0c5b34a",
+    "packs/resource/models/blocks/native_twin_fcf3412ff741027022444b39.geo.json": "2eae01bbeac9127f097b201e566292d64dcba32a76f72517d62e66b06bc111d6",
+    "packs/resource/models/blocks/native_twin_b71a22e2a175c3275875742d.geo.json": "0131b08c27b3ff3f5ddb4a43082e8a7af41e5d43d60282d5a363c4d1978616e7",
+    "packs/resource/models/blocks/native_twin_eb306ecc8db0a5d3c4ac6f33.geo.json": "1cbf10d16a33f2812d70697376ff58d5806543b078d9c7bc0832cf619def563e",
+    "packs/resource/models/blocks/native_twin_713174973cb0617256f1c19a.geo.json": "05ef45baf7571755d32c1bdc354683e78fe0b668405c7de13458d495d1fd3cd0",
+    "packs/resource/models/blocks/native_twin_0e0e8d108ee0bc23fbb26682.geo.json": "3a088f62bda8284920d38a3f180c35a2a5b32f97757391d68a8bd57e6425f66c",
+    "packs/resource/models/blocks/native_twin_30316b1e93d16b70003e5cc9.geo.json": "5729aa46df6b8f3aac3b360af964ae3f32e40817e16f45039481558a69726746",
+    "packs/resource/models/blocks/native_twin_da62040b3b991ba430451871.geo.json": "3c309ea26d18cbb9526b0a735202f4c34daf414e73367ab0581cf36913f96f50"
+  },
+  "scenes": [
+    {
+      "id": "01-native-bare-3x2",
+      "w": 3,
+      "d": 2,
+      "textile": "none",
+      "direction": [
+        -0.8,
+        0.32,
+        -1
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "01-native-bare-3x2.png"
+    },
+    {
+      "id": "02-native-lace-3x2",
+      "w": 3,
+      "d": 2,
+      "textile": "lace",
+      "direction": [
+        -0.8,
+        0.32,
+        -1
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "02-native-lace-3x2.png"
+    },
+    {
+      "id": "03-native-front-3x2",
+      "w": 3,
+      "d": 2,
+      "textile": "none",
+      "direction": [
+        0,
+        0.06,
+        -1
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "03-native-front-3x2.png"
+    },
+    {
+      "id": "04-native-lace-7x2",
+      "w": 7,
+      "d": 2,
+      "textile": "lace",
+      "direction": [
+        -0.45,
+        0.28,
+        -1
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "04-native-lace-7x2.png"
+    },
+    {
+      "id": "05-native-detail-1x1",
+      "w": 1,
+      "d": 1,
+      "textile": "none",
+      "direction": [
+        -0.65,
+        0.25,
+        -1
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "05-native-detail-1x1.png"
+    },
+    {
+      "id": "textile-linen_short",
+      "w": 3,
+      "d": 2,
+      "textile": "linen_short",
+      "direction": [
+        -0.8,
+        0.32,
+        -1
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "textile-linen_short.png"
+    },
+    {
+      "id": "textile-linen_long",
+      "w": 3,
+      "d": 2,
+      "textile": "linen_long",
+      "direction": [
+        -0.8,
+        0.32,
+        -1
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "textile-linen_long.png"
+    },
+    {
+      "id": "textile-gold_short",
+      "w": 3,
+      "d": 2,
+      "textile": "gold_short",
+      "direction": [
+        -0.8,
+        0.32,
+        -1
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "textile-gold_short.png"
+    },
+    {
+      "id": "textile-gold_long",
+      "w": 3,
+      "d": 2,
+      "textile": "gold_long",
+      "direction": [
+        -0.8,
+        0.32,
+        -1
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "textile-gold_long.png"
+    },
+    {
+      "id": "textile-agnus",
+      "w": 3,
+      "d": 2,
+      "textile": "agnus",
+      "direction": [
+        -0.8,
+        0.32,
+        -1
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "textile-agnus.png"
+    },
+    {
+      "id": "textile-verdant",
+      "w": 3,
+      "d": 2,
+      "textile": "verdant",
+      "direction": [
+        -0.8,
+        0.32,
+        -1
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "textile-verdant.png"
+    },
+    {
+      "id": "textile-requiem",
+      "w": 3,
+      "d": 2,
+      "textile": "requiem",
+      "direction": [
+        -0.8,
+        0.32,
+        -1
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "textile-requiem.png"
+    },
+    {
+      "id": "floral-white",
+      "w": 4,
+      "d": 2,
+      "textile": "floral",
+      "color": "white",
+      "direction": [
+        -0.8,
+        0.32,
+        -1
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "floral-white.png"
+    },
+    {
+      "id": "floral-red",
+      "w": 4,
+      "d": 2,
+      "textile": "floral",
+      "color": "red",
+      "direction": [
+        -0.8,
+        0.32,
+        -1
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "floral-red.png"
+    },
+    {
+      "id": "floral-green",
+      "w": 4,
+      "d": 2,
+      "textile": "floral",
+      "color": "green",
+      "direction": [
+        -0.8,
+        0.32,
+        -1
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "floral-green.png"
+    },
+    {
+      "id": "floral-purple",
+      "w": 4,
+      "d": 2,
+      "textile": "floral",
+      "color": "purple",
+      "direction": [
+        -0.8,
+        0.32,
+        -1
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "floral-purple.png"
+    },
+    {
+      "id": "floral-rose",
+      "w": 4,
+      "d": 2,
+      "textile": "floral",
+      "color": "rose",
+      "direction": [
+        -0.8,
+        0.32,
+        -1
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "floral-rose.png"
+    },
+    {
+      "id": "floral-black",
+      "w": 4,
+      "d": 2,
+      "textile": "floral",
+      "color": "black",
+      "direction": [
+        -0.8,
+        0.32,
+        -1
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "floral-black.png"
+    },
+    {
+      "id": "floral-gold",
+      "w": 4,
+      "d": 2,
+      "textile": "floral",
+      "color": "gold",
+      "direction": [
+        -0.8,
+        0.32,
+        -1
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "floral-gold.png"
+    },
+    {
+      "id": "floral-silver",
+      "w": 4,
+      "d": 2,
+      "textile": "floral",
+      "color": "silver",
+      "direction": [
+        -0.8,
+        0.32,
+        -1
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "floral-silver.png"
+    },
+    {
+      "id": "front-1",
+      "w": 3,
+      "d": 2,
+      "textile": "floral",
+      "color": "purple",
+      "facing": 1,
+      "direction": [
+        1,
+        0.28,
+        -0.45
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "front-1.png"
+    },
+    {
+      "id": "front-2",
+      "w": 3,
+      "d": 2,
+      "textile": "floral",
+      "color": "purple",
+      "facing": 2,
+      "direction": [
+        0.45,
+        0.28,
+        1
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "front-2.png"
+    },
+    {
+      "id": "front-3",
+      "w": 3,
+      "d": 2,
+      "textile": "floral",
+      "color": "purple",
+      "facing": 3,
+      "direction": [
+        -1,
+        0.28,
+        0.45
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "front-3.png"
+    },
+    {
+      "id": "rotated-16x8-front1",
+      "w": 16,
+      "d": 8,
+      "textile": "lace",
+      "facing": 1,
+      "direction": [
+        1,
+        0.6,
+        -0.6
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "rotated-16x8-front1.png"
+    },
+    {
+      "id": "narrow-1x16",
+      "w": 1,
+      "d": 16,
+      "textile": "lace",
+      "direction": [
+        -1,
+        0.3,
+        -0.35
+      ],
+      "title": "ALTARE / DOIS PEDESTAIS · 0.13.0",
+      "footer": "PRÉVIA TÉCNICA CPU · build de desenvolvimento · não é captura do Minecraft",
+      "file": "narrow-1x16.png"
+    }
+  ]
+}

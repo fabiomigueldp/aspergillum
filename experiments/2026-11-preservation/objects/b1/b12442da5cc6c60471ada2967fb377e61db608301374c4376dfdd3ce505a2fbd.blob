@@ -1,0 +1,4 @@
+import bpy,numpy as np,json
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-arm-chain/';bpy.ops.wm.open_mainfile(filepath=r+'V84-whole-arm-chain-TRIAL.blend',use_scripts=False);o=bpy.data.objects['Maria — túnica e mangas integradas'];p=np.load(r+'chain-arrays.npz')['after'];fs=[tuple(f.vertices) for f in o.data.polygons];b=BVHTree.FromPolygons([Vector(x) for x in p],fs);pairs=[(a,c) for a,c in b.overlap(b) if a<c and not set(fs[a])&set(fs[c])];pts=np.array([p[list(fs[a])].mean(0) for a,c in pairs]);print('COLLISION BOUNDS',pts.min(0),pts.max(0));print('QUANTILES',np.quantile(pts,[.1,.5,.9],axis=0));json.dump({'bounds':[pts.min(0).tolist(),pts.max(0).tolist()],'quantiles':np.quantile(pts,[.1,.5,.9],axis=0).tolist()},open(r+'collision-location.json','w'))

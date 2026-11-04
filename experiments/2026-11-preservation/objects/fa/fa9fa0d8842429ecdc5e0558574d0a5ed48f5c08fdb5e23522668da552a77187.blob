@@ -1,0 +1,198 @@
+# Changelog
+
+## 0.12.2 · Dimensões do editor — 2026-11-03
+
+- O título do editor acompanha a frente do rascunho: norte/sul mostram 7 × 2; leste/oeste mostram 2 × 7, por exemplo. Restaurar também atualiza as dimensões.
+- Título reativo somente do servidor, com tradução preservada; nenhuma escrita no mundo ou mudança de state é introduzida.
+- Geometria e texturas da Cruzeta 0.12.1 preservadas. [Correção e reteste](docs/EDITOR_DIMENSIONS_0.12.2.md).
+
+## 0.12.1 · Polimento da Cruzeta — 2026-11-03
+
+- Marchetaria com motivos inteiros em escala próxima nas travessas/cabeças; pés só com filetes e UVs complementares nos meios montantes.
+- Fustes quadrados com recuo simétrico, travessas inferiores encostadas e cavilha de madeira atravessando cada X duplo.
+- Até 50 cubos, sem alterar os tetos, IDs, estados, colisões ou recursos de outras famílias.
+- Matriz CPU ampliada para 35 vistas, todos os tecidos, oito cores, frente/verso, rasantes e underside. [Revisão e reteste](docs/CROSSBRACE_0.12.1.md).
+
+## 0.12.0 · Cruzeta em nogueira — 2026-11-03
+
+- Novo modelo aberto em nogueira, com apoios compartilhados, travessas, diagonais em meia espessura e marchetaria de madeira clara sem metal.
+- Dez desenhos de toalha e oito cores Floral IHS; 17 novos IDs, todos os 397 contratos anteriores preservados.
+- Sem toalha usa contorno simétrico: 80.000 combinações Altare, sem elevar o teto diagnóstico.
+- Estúdio 2.3.0 integra o oitavo modelo e dois presets. Prévia CPU alternativa disponível; renderer Chromium bloqueado neste ambiente.
+- [Contrato e reteste](docs/CROSSBRACE_0.12.0.md). Importação, Content Log e profiling do arquivo exato permanecem pendentes.
+
+## 0.11.2 — 2026-10-31 — chanfros de Ogivas
+
+- Intradorso com chanfro contínuo e mitras fechadas na ponta e entre facetas; transporte correto das rotações compostas para os quatro lados.
+- Relevo ímpar dimensionado para o campo do fundo. Corpo, apoios, perfis, toalhas e relevos pares preservados.
+- Mesmos 110 registros/257 faces máximos, sem novos recursos, mapas, blocos ou estados. Runtime/editor da 0.11.1 preservado; 103 testes e Estúdio 2.2.1. [Construção e reteste](docs/OGIVE_DETAIL_0.11.2.md).
+
+## 0.11.1 — 2026-10-31 — abertura do editor nativo
+
+- Corrige `InvalidObservableError` ao construir dropdowns desabilitados/ocultos: o valor fixo compartilhado passa a ser `clientWritable`, sem participar do rascunho.
+- O adaptador de teste reproduz a exigência da API e protege cancelamento, aplicação, restauração e sessões. Modelos, estados, colisões e texturas preservados.
+- BP/RP `[0,11,1]`; reteste no Minecraft pendente. [Causa, evidência e passos](docs/EDITOR_FIX_0.11.1.md).
+
+## 0.11.0 — 2026-10-31 — reconstrução de Ogivas
+
+- Arcadas cegas em todo o perímetro, com curvas simétricas, intradorso em profundidade e encontros contínuos, substituindo as barras frontais sobrepostas.
+- Pilares de quina compartilhados, apoios intermediários, impostas e perfis da base/friso/mesa; veios orientados e relevos ajustados ao teto ogival e ao tecido.
+- Mesmo corpo nas dez toalhas, sem expansão de IDs, estados, colisões ou runtime. Três recortes de cor reutilizam normal/MER existentes; demais modelos e mapas preservados.
+- Estúdio 2.2.0, 100 testes e comparação controlada. Custo geométrico diagnóstico limitado; importação exata e profiling pendentes. [Construção e reteste](docs/OGIVE_REBUILD_0.11.0.md).
+
+## 0.10.1 — 2026-10-31 — perfis de Pilastras
+
+- Painéis com rebaixos chanfrados ligados aos apoios, encontros diagonais fechados e rotação correta nas quatro frentes.
+- Bases e capitéis com cursos mais definidos, chanfros mais largos e coroamento da mesa revisto; relevos ajustados ao novo campo útil.
+- Mesmos cubos, blocos, estados, mapas e runtime; menos faces emitidas. Estúdio 2.1.1; 90 testes, incluindo cobertura dos cantos e ligação às faces reais dos apoios. [Perfis e reteste](docs/PILASTER_DETAIL_0.10.1.md).
+
+## 0.10.0 — 2026-10-31 — reconstrução de Pilastras
+
+- Painéis recuados, pilastras intermediárias e quinas compartilhadas; fustes chanfrados, bases/capitéis em cursos contíguos, cornija e mesa com perfil próprio.
+- Relevos encostados no apoio real e dimensionados para o campo exposto; veios da nogueira orientados por peça. As dez toalhas usam o mesmo corpo estrutural.
+- Sem IDs, states, texturas, colisões ou runtime novos. Contornos compilados com custo limitado e JSON compacto; demais modelos protegidos. Estúdio 2.1.0, 87 testes. [Construção e reteste](docs/PILASTERS_0.10.0.md).
+
+## 0.9.0 — 2026-10-31 — coleção universal de toalhas
+
+- Dez escolhas de toalha compartilhadas pelos sete modelos; renda universal e outros tecidos/cores na Colunata. Guadalupe independente no Clássico.
+- Construtor comum de cobertura, caimento e cantos; renda com rede fina, rosetas abertas, folhas e bainha dupla. Costuras com materiais próprios e relevos proporcionais sob quedas longas.
+- Preserva os 225 blocos e estados publicados. Acrescenta 172 IDs compactos, incluindo 54 poses pareadas de toalha/Guadalupe. Catálogo: 78.432 estados, sob exceção diagnóstica de desempenho documentada.
+- Estúdio 2.0.0 com seletor único e migração de cenas schema 1 para schema 2; 79 testes do add-on. [Contrato, custos e reteste](docs/UNIVERSAL_TEXTILES_0.9.0.md).
+
+## 0.8.3 — 2026-10-31 — encaixe do linho e da renda
+
+- Remove sobreposição entre linho e dobra superior; retornos de borda se encontram sem cruzar volumes.
+- Quinas com costura diagonal ligada às duas faces da renda e terminada na mesma fase da bainha; caimento mais suave.
+- Perfil compartilhado de cobertura/dobra/caimento. Sem mudanças de IDs, blocos, texturas, runtime ou modelo sem renda; 74 testes.
+- Estúdio 1.8.3, miniaturas e comparação controlada. [Encaixe e reteste](docs/COLONNADE_CLOTH_0.8.3.md).
+
+
+## 0.8.2 — 2026-10-31 — fustes e apoios da colunata
+
+- Fustes octogonais e uma coluna única por quina; eixos e reforços de canto revistos.
+- Bases e capitéis em três níveis, com filetes dourados finos, colares e remates de pedra; caneluras terminam antes dos colares.
+- Superfícies de apoio e fechamentos conferidos; mesmas definições de bloco, runtime, limites de complexidade e memória. 69 testes.
+- Estúdio 1.8.2, miniaturas e comparação controlada. [Construção e reteste](docs/COLONNADE_DETAIL_0.8.2.md).
+
+
+## 0.8.1 — 2026-10-31 — construção da colunata
+
+- Molduras de pedra em volume e filetes dourados, sobre painéis recuados; fustes de seis faces, bases, capitéis e montantes de canto.
+- Rodapé em três cursos, arquitrave em dois níveis, projeções do tampo e renda ajustadas; saliências fechadas e encontros contínuos.
+- Mesmos IDs, estados, colisões e runtime. Complexidade controlada por contorno e por faces, restrita à colunata; 67 testes.
+- Estúdio 1.8.1 com modelos e miniaturas atualizados. [Contrato, orçamento, comparação e reteste](docs/COLONNADE_REBUILD_0.8.1.md).
+
+
+## 0.7.1 — 2026-10-31 — perfis e renda refinados
+
+- Capitéis em dois níveis, compartilhados nos cantos, e arquitrave contínua sob o tampo. Fustes com caneluras na superfície; molduras com biséis mais legíveis.
+- Renda com bainha curva, fios e flores mais encorpados; douramento periódico e menos ruidoso.
+- Mesmos IDs, estados, colisões, apoio e runtime. Comparação de 24 pares de vistas entre pacotes, preservação dos demais modelos e 58 testes.
+- [Contrato e reteste](docs/COLONNADE_POLISH_0.7.1.md).
+
+## 0.7.0 — 2026-10-31 — Colunata dourada e renda
+
+- Novo corpo em mármore claro, painéis emoldurados, colunas e capitéis dourados, inspirado na referência do usuário; com e sem renda branca vazada.
+- Codec simétrico com somente 16 contornos por acabamento: 32 combinações novas, sem direção redundante. Os recursos e IDs antigos são preservados.
+- Estúdio 1.7.0 e editor nativo com opção de renda, retenção das escolhas de outros modelos e controles pertinentes.
+- Uso prioritário no Criativo; documentação distingue acabamentos, estados e crafts. [Modelo e reteste](docs/COLONNADE_0.7.0.md) · [Variações](docs/VARIATIONS.md).
+
+## 0.6.1 — 2026-10-31 — marcenaria sacra
+
+- Arca com painéis rebaixados, montantes, travessas e rodapé; mesa balaustrada com apoios facetados e travessas que se encontram nos cantos.
+- Dois modelos em nogueira, todos os tecidos e oito cores do Floral IHS. Veios horizontais nas travessas, verticais nos montantes; colisão aberta nos balaústres.
+- 24 receitas novas, codec compacto, 51 testes e preservação byte a byte dos blocos, modelos e texturas anteriores. Limite conjunto local: 65.472 estados; novas expansões exigem revisão desse orçamento.
+- Estúdio 1.6.0: seis modelos e duas composições novas, mantendo escolhas suspensas ao trocar de estrutura.
+- [Construção e critérios](docs/JOINERY_0.6.1.md) · [Reteste](docs/RELEASE_0.6.1.md).
+
+## 0.5.0 — 2026-10-30 — catálogo e personalização unificados
+
+- Uma tela nativa com estrutura, material, toalha, cor e relevo; rascunho, Aplicar, Cancelar e Restaurar escolhas. A liberação da sessão fecha o formulário sem polling.
+- Floral IHS unifica rubi e paleta; escolhas compatíveis são preservadas e relevo temporariamente indisponível é lembrado. Reabertura exata das 198 receitas publicadas.
+- Domínio de personalização compartilhado com o estúdio 1.5.0, com miniaturas reais, abas Altar/Cena/Imagem e desfazer/refazer.
+- Ogivas deixam de encolher conforme a toalha. Cotas estruturais centralizadas; mesmo apoio y=16, colisões, IDs, states, texturas e orçamento.
+- [Contrato, limites e arquitetura](docs/CUSTOMIZATION_0.5.0.md) · [Reteste](docs/RELEASE_0.5.0.md).
+
+## Ferramenta local — 2026-10-30
+
+- Ponte visual para o Render Studio compartilhado: composição pelo domínio real, snapshot com hashes e reaproveitamento das geometrias/texturas efetivas. Cenários Minecraft, câmeras e exportações pertencem ao viewer, sem mudanças nos packs ou na versão 0.4.2.
+
+## 0.4.2 — 2026-10-30 — cavaletes e construção 3D
+
+- Corrige a causa identificada no Content Log: 66 blocos de cavaletes eram rejeitados pelas caixas `min/max`. Colisão multipartes passa a `origin/size` estável, com volumes calculados a partir dos vértices rotacionados, tampo y=16 e vão central aberto.
+- Resolve antecipadamente as permutações de destino e recuperação. ID não registrado aborta sem escrever; falhas posteriores conservam rollback defensivo. O Content Log passa a mostrar a cadeia de causas, ID/states e posição quando aplicável.
+- Cavaletes com sapatas e cabeçotes contínuos, montantes e escoras diagonais conectados às travessas. Pilastras com base/fuste/capitel distintos; ogivas mais profundas, com impostas e fecho central. Máximo de 50 cubos, sem novos IDs/states.
+- Todos os mapas de textura, bones de toalha/tampo/aplique e recursos clássicos/Guadalupe preservados. Mesmos 199 blocos, 53.136 estados, 66 materiais e 31,75 MiB de mapas.
+- 38 testes, captura comparável das estruturas e verificação estrita dos arquivos distribuídos. Reteste do pacote exato, apoio, colisão e Content Log no Minecraft continuam pendentes.
+
+## 0.4.1 — 2026-10-30 — revisão dos bordados e encontros
+
+- Elimina a mistura de desenhos distintos nas junções: repetição espelhada a partir de trechos autorados, com pétalas completas. O domínio dos símbolos é uniforme e independente do festão; faixa verde reta e margem livre antes da bainha.
+- Facetas e mitras compartilham os mesmos extremos em toda a altura; espessura para dentro e queda vertical removem as frestas geradas pelo deslocamento/inclinação individuais. Mantém dobras laterais, topo y=16 e orçamento de cubos.
+- Separa resposta PBR de fios prateados, ouro e tecido escuro. Mantém oito cores, estados, colisões, runtime e arte clássica/Guadalupe; sem novos arquivos distribuídos nem aumento de memória/permutações.
+- Máscaras ovais do IHS e do Cordeiro excluem fragmentos laterais e linhas residuais da fonte. O IHS claro deixa de mostrar a área retangular do recorte.
+- 33 testes, vistas aproximadas reproduzíveis, comparação antes/depois e verificação estrita das alterações permitidas entre os arquivos 0.4.0/0.4.1. Teste físico e Content Log continuam pendentes.
+
+## 0.4.0 — 2026-10-30 — toalhas e paleta litúrgica
+
+- Fonte de bordados v2, bainha com cordão e trama discreta nos normais. Dobras mais suaves e levemente inclinadas; cantos com encontros finos. Linho superior de 0,09 unidade sobre o tampo estrutural, preservando y=16.
+- Família Floral IHS em branco, vermelho, verde, roxo, róseo, preto, dourado e prateado festivos; três estruturas × três materiais, sem aplique adicional. Recoloração sem rotação global de matiz, preservando ouro/flores/alpha/PBR. Cobertura do tampo sempre branca.
+- 63 IDs novos; vermelho reutiliza nove receitas anteriores. Codec compacto de 112 estados por ID; novos contornos inválidos limpam apenas o papel central até reaplicar. Os 136 blocos publicados preservam identidade, states e defaults.
+- 53.136 estados Altare; 62.880 com o Aspergillum local. 66 texture sets e 142 PNGs únicos, 31,75 MiB RGBA. Os 28 color maps novos reutilizam normal/MER; máximo 50 cubos por geometria.
+- Nova opção na ferramenta, nomes pt_BR/en_US, 30 testes, matriz de cores e comparação controlada da coleção. Validador oficial e correspondência de hashes continuam obrigatórios; Content Log e teste físico permanecem pendentes.
+
+
+## 0.3.0 — 2026-10-30 — coleção arquitetônica diagnóstica
+
+- Três estruturas com volume: pilastras, arcadas ogivais e mesa aberta com pés/travessas; mármore, calcário e nogueira. Apliques de cruz/placa do Cordeiro, com suporte suspenso na mesa.
+- Quatro temas de toalha: branco/Cordeiro, rubi/IHS, verde/IHS e preto/cruzes, além de sem toalha. Fonte imagegen preservada, festões alpha-test, dobras facetadas e motivos centrais com aspecto físico constante em larguras pares/ímpares.
+- Catálogo de 135 receitas, 180 modelos novos, 46.080 permutações totais. Mantém IDs/estados clássicos, UUIDs e fontes de Guadalupe; novo codec e conversão explícita com identidade na revalidação/rollback. Não altera células superiores nem captura vasos.
+- Editor em duas telas, extensão por módulo padrão com herança de aparência e colisão multipartes da mesa. Tampo contínuo em y=16, sem APIs experimentais, solver ou entidades visuais.
+- 38 conjuntos/114 mapas, 24,75 MiB RGBA, limite 26 MiB e 256 KiB por camada; máximo 50 cubos. Validação cobre condições emitidas, orientações, recortes, UVs, apoios e catálogo inteiro.
+- 24 testes; matriz visual da coleção e regressão Guadalupe com correspondência entre capturas e pacote. Teste do arquivo exato e Content Log permanecem pendentes no Minecraft. Migração/downgrade e extensão da biblioteca documentados.
+
+## 0.2.1 — 2026-10-30 — frontal de Guadalupe para teste
+
+- Mantém o programa iconográfico da candidata 0.2.0 e respeita os orçamentos oficiais: painéis novos em 256², com a mesma densidade de amostragem; 11,8125 MiB de mapas RGBA, teto de 12 MiB e 256 KiB por camada.
+- Compila oito geometrias, duas quedas × quatro frentes, com somente a face ornamental possível em cada uma: 48 cubos em vez de 63. Mantém as seis dobras por lateral, molduras e cota de apoio. A seleção usa os estados existentes e não altera a identidade do bloco.
+- Validação das condições reais emitidas, das oito variantes, dos limites oficiais e das emendas de cor/relevo. Dezoito testes e Creator Tools sem erros nem avisos; aprovação física permanece pendente.
+- A candidata anterior foi preservada para rastreabilidade. A revisão distribuída para teste é 0.2.1; fontes, prompt, composição e migração estão documentados.
+
+## 0.2.0 — 2026-10-30 — candidata interna rejeitada
+
+- Nova arte a partir das referências ampliadas: lua com perfil e estrelas, sol com face/radiação/ondas, quatro figuras aladas, Chi-Rho em esmalte, arabescos e acantos. Fonte imagegen, prompt e compilação de mapas preservados em `assets-src/guadalupe/`.
+- Compositor de papéis no domínio: em sete blocos, lua / arabescos / figuras esquerdas / centro / figuras direitas / arabescos / sol. Larguras pares mantêm centro dividido; 3/4 recebem composições compactas completas; 1/2 priorizam o monograma.
+- Moldura com profundidade própria, barras contínuas e somente dois fechamentos externos. Cubos passam de 47 para 63, sem entidades nem solver.
+- Mapas de painéis 512×256 aproveitam a imagem inteira; o domínio físico 128×84 preserva proporções dos símbolos. Vinte materiais, 60 PNGs, 19,3125 MiB RGBA antes de mipmaps/ícones, teto de 20 MiB.
+- `altare:frontal` ganha valores 6–11; 0–5 preservados, sem mudar UUIDs/IDs. Reaplicar o acabamento atualiza os conjuntos antigos; downgrade documentado. Orçamento fixo de 11.520 combinações.
+- Dezoito testes aprovados, mas o pacote recebeu 32 avisos oficiais de custo de geometria/texturas e não foi liberado. Substituído pela 0.2.1. O tampo de um bloco, o apoio e as proteções de concorrência permanecem.
+
+## 0.1.3 — 2026-10-30 — polimento e diagnóstico de contorno
+
+- Linho com trama de menor contraste; bainha de ramo contínuo, costuras e bordado em 256². Os seis segmentos passam a mostrar a barra inteira, sem cortar suas últimas linhas conforme o caimento.
+- Mármore com veios irregulares suaves; calcário com granulação e poros; pedra escura com textura mineral própria. As três superfícies deixam de compartilhar o mesmo desenho de ondas.
+- Frontal com folhagens, volutas, filetes pontilhados, medalhões e monograma refinados; resolução 256² somente nos ornamentos. Treze materiais, 47 cubos por modelo e 7,5 MiB de mapas RGBA antes de mipmaps/ícones.
+- Converte explicitamente X/pivôs/rotação do espaço de autoria para o formato Bedrock. O defeito de laterais sem toalha foi reproduzido com a base de importação do Blockbench; a confirmação no Minecraft continua pendente.
+- Ponte de captura específica de blocos, comparação da 0.1.2 com a mesma câmera/luz, matriz sem/com mapas PBR e quatro orientações. Não altera o renderer de attachables.
+- Treze testes e verificação de correspondência entre capturas, fontes e bytes do arquivo distribuído. UUIDs, IDs, estados públicos, gameplay e suporte superior preservados.
+
+## 0.1.2 — 2026-10-30 — diagnóstico
+
+- Atlas usam arrays de caminhos compatíveis com o schema oficial.
+- Drop próprio usa o default documentado do bloco, sem loot table redundante ou proxy de item.
+- Gate oficial estrito continua rejeitando qualquer erro ou warning; sem whitelist genérica.
+
+## 0.1.1 — 2026-10-30 — candidata com avisos offline
+
+- Declara capability PBR obrigatória no Resource Pack e bloqueia sua omissão no validador.
+- Respeita interação previamente cancelada por outro handler.
+- Preserva os recursos e limites da primeira candidata; QA físico ainda pendente.
+- Rejeitada pelo gate de warnings: atlas em forma string e referência redundante ao item implícito do bloco. Usar 0.1.2.
+
+## 0.1.0 — 2026-10-30 — candidata rejeitada offline
+
+- Introduz altar modular independente, retângulos de até 128 módulos, três pedras, cinco apresentações de toalha e frontal direcional inspirado na referência.
+- Tampo integrado termina em 16 unidades e conserva a célula superior; dobras estáticas, costura e bainhas usam fontes determinísticas color/normal/MER.
+- Contornos locais, centro par/ímpar, configuração nativa, locks de conjunto, revalidação e rollback defensivo.
+- Dez testes, inspeção estrutural e captura reproduzível em múltiplos ângulos. A captura detectou metades afastadas; a fonte foi corrigida e ganhou regressão antes do empacotamento.
+- Creator Tools rejeitou o manifest pela capability PBR ausente. Não importar esta candidata; usar 0.1.2.

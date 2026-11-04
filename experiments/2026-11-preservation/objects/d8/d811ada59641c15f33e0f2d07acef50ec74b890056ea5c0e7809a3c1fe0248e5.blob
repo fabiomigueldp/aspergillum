@@ -1,0 +1,8 @@
+import bpy,numpy as np,json,hashlib
+from pathlib import Path
+R=Path(__file__).resolve().parents[1];B=R.parent
+bpy.ops.wm.open_mainfile(filepath=str(R/'evidence/retained-structural-diagnostic.blend'),use_scripts=False)
+items=[('V12 retained band NATIVE local research',R/'structural_rebuild/retained-band.npz','retained_band_sha256'),('Frozen V11 shell NATIVE research',B/'ear_rim_v11/structural_rebuild/retained-shell.npz','frozen_shell_sha256'),('Frozen V9 anatomy NATIVE research',B/'body_interface_v9/constrained_fit/retained-anatomy.npz','frozen_anatomy_sha256')];checks={}
+for name,p,key in items:
+ d=np.load(p);o=bpy.data.objects[name];pts=np.array([v.co[:] for v in o.data.vertices]);faces=np.array([f.vertices[:] for f in o.data.polygons]);r={'points_equal_expected_float32':bool(np.array_equal(pts,d['points'].astype(np.float32).astype(float))),'triangles_exact':bool(np.array_equal(faces,d['triangles'])),'hash_metadata_matches':bpy.context.scene[key]==hashlib.sha256(p.read_bytes()).hexdigest(),'vertices':len(pts),'triangles':len(faces)};assert r['points_equal_expected_float32'] and r['triangles_exact'] and r['hash_metadata_matches'];checks[name]=r
+checks['minecraft_tested']=False;checks['bedrock_exported']=False;checks['published']=False;(R/'evidence/frozen-scene-check.json').write_text(json.dumps(checks,indent=2));print(json.dumps(checks))

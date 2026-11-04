@@ -1,0 +1,380 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> aspergillum-bedrock-addon@2.0.0 test
+> vitest run --run tests/application/compact-event-routing.test.ts
+
+
+ RUN  v3.2.7 /workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103
+
+ ❯ tests/application/compact-event-routing.test.ts (76 tests | 29 failed) 317ms
+   ✓ compact states through registered production event routes > deduplicates item and block input for aspersorium, then routes break and player-after-break once 14ms
+   ✓ compact states through registered production event routes > deduplicates item and block input for table, then routes break and player-after-break once 8ms
+   ✓ compact states through registered production event routes > playerHotbarSelectedSlotChange cancels production loading before delayed commit 2ms
+   ✓ compact states through registered production event routes > playerDimensionChange cancels production loading before delayed commit 2ms
+   ✓ compact states through registered production event routes > playerGameModeChange cancels production loading before delayed commit 3ms
+   ✓ compact states through registered production event routes > playerInventoryItemChange cancels production loading before delayed commit 1ms
+   ✓ compact states through registered production event routes > entityDie cancels production loading before delayed commit 1ms
+   ✓ compact states through registered production event routes > playerSpawn cancels production loading before delayed commit 3ms
+   ✓ compact states through registered production event routes > playerLeave cancels production loading before delayed commit 2ms
+   ✓ compact states through registered production event routes > playerHotbarSelectedSlotChange invalidates production table callbacks without losing its stored item 4ms
+   ✓ compact states through registered production event routes > playerDimensionChange invalidates production table callbacks without losing its stored item 2ms
+   ✓ compact states through registered production event routes > playerGameModeChange invalidates production table callbacks without losing its stored item 2ms
+   ✓ compact states through registered production event routes > entityDie invalidates production table callbacks without losing its stored item 2ms
+   ✓ compact states through registered production event routes > playerSpawn invalidates production table callbacks without losing its stored item 4ms
+   ✓ compact states through registered production event routes > playerLeave invalidates production table callbacks without losing its stored item 2ms
+   ✓ compact states through registered production event routes > preserves a replacement snapshot before a registered break callback executes its deferred recovery 5ms
+   ✓ table session identity regression fixes > keeps a newly opened table session alive after the old close callback 2ms
+   ✓ table session identity regression fixes > refuses stale table edit on a replacement item without a break event 3ms
+   ✓ table session identity regression fixes > refuses stale table profile on a replacement item without a break event 2ms
+   ✓ table session identity regression fixes > refuses stale table restore on a replacement item without a break event 3ms
+   ✓ table session identity regression fixes > refuses stale table retrieve on a replacement item without a break event 3ms
+   ✓ known lifecycle limitations retained outside the codec scope > records delayed break replay consuming the current missing snapshot 2ms
+   ✓ known lifecycle limitations retained outside the codec scope > records delayed break replay consuming the current replacement snapshot 3ms
+   ✓ known lifecycle limitations retained outside the codec scope > records loss after both the aspersorium docking write and hand rollback fail 3ms
+   ✓ known lifecycle limitations retained outside the codec scope > records loss after both the table docking write and hand rollback fail 1ms
+   ✓ conservative prevention through the real player-before-break subscription > cancels occupied aspersorium without transferring, deleting, or mutating gameplay state 2ms
+   ✓ conservative prevention through the real player-before-break subscription > cancels occupied table without transferring, deleting, or mutating gameplay state 2ms
+   ✓ conservative prevention through the real player-before-break subscription > cancels visually empty aspersorium with an orphaned snapshot 6ms
+   ✓ conservative prevention through the real player-before-break subscription > cancels visually empty table with an orphaned snapshot 1ms
+   ✓ conservative prevention through the real player-before-break subscription > cancels reserved aspersorium contents instead of treating them as an empty block 1ms
+   ✓ conservative prevention through the real player-before-break subscription > cancels reserved table contents instead of treating them as an empty block 1ms
+   ✓ conservative prevention through the real player-before-break subscription > retains unreadable aspersorium shard bytes and cancels its break 1ms
+   ✓ conservative prevention through the real player-before-break subscription > retains unreadable table shard bytes and cancels its break 1ms
+   ✓ conservative prevention through the real player-before-break subscription > cancels known aspersorium when reading its permutation fails 2ms
+   ✓ conservative prevention through the real player-before-break subscription > cancels known table when reading its permutation fails 1ms
+   ✓ conservative prevention through the real player-before-break subscription > allows valid empty aspersorium and never reverses another cancellation 1ms
+   ✓ conservative prevention through the real player-before-break subscription > allows valid empty table and never reverses another cancellation 4ms
+   ✓ conservative prevention through the real player-before-break subscription > leaves unrelated blocks alone while retaining the existing aspergillum mining cancellation 3ms
+   ✓ conservative prevention through the real player-before-break subscription > keeps cancellation if feedback scheduling throws 2ms
+   ✓ conservative prevention through the real player-before-break subscription > delayed feedback never consumes a replacement snapshot 2ms
+   ✓ conservative prevention through the real player-before-break subscription > refuses missing/legacy state schemas on aspersorium 1ms
+   ✓ conservative prevention through the real player-before-break subscription > refuses missing/legacy state schemas on table 1ms
+   ✓ conservative prevention through the real player-before-break subscription > preserves unsupported neighbors while refusing empty aspersorium break 1ms
+   ✓ conservative prevention through the real player-before-break subscription > preserves unsupported neighbors while refusing empty table break 1ms
+   ✓ conservative prevention through the real player-before-break subscription > throttles repeated feedback without allowing a repeated break 2ms
+   ✓ conservative prevention through the real player-before-break subscription > keeps cancellation after player invalidation or HUD failure 2ms
+   ✓ conservative prevention through the real player-before-break subscription > does not end a customization session when destruction was prevented 4ms
+   × selective prevention through the real explosion-before subscription > excludes occupied aspersorium synchronously without writes, delivery or delayed recovery 10ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > excludes occupied table synchronously without writes, delivery or delayed recovery 1ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > excludes visually empty aspersorium with an orphaned snapshot 1ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > excludes visually empty table with an orphaned snapshot 7ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > preserves unreadable aspersorium shard bytes and excludes its block 3ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > preserves unreadable table shard bytes and excludes its block 3ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > excludes aspersorium with an unsupported neighbor in the same shard 2ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > excludes table with an unsupported neighbor in the same shard 1ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > excludes reserved aspersorium states 1ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > excludes reserved table states 1ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > excludes aspersorium with legacy or missing states 1ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > excludes table with legacy or missing states 1ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > excludes identified aspersorium if its permutation becomes unavailable 1ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > excludes identified table if its permutation becomes unavailable 1ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > leaves valid empty aspersorium in the explosion without rewriting its list 1ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > leaves valid empty table in the explosion without rewriting its list 1ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > excludes an identified but invalid aspersorium 2ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > excludes an identified but invalid table 1ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > excludes aspersorium when registry reading fails without attempting repair 1ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > excludes table when registry reading fails without attempting repair 1ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > leaves other add-ons and unidentifiable blocks alone without reading their registry 5ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > retains unprotected order and duplicate occurrences while excluding both occupied kinds 2ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > does not inspect or reverse an already cancelled explosion 1ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > leaves an empty impact list untouched 1ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > does not cancel unrelated explosions when the impact list cannot be read 8ms
+     → expected [Function] to not throw an error but 'Error: Expected exactly one productio…' was thrown
+   × selective prevention through the real explosion-before subscription > cancels conservatively if exclusion throws (mutation before throw: false), without retry 2ms
+     → expected [Function] to not throw an error but 'Error: Expected exactly one productio…' was thrown
+   × selective prevention through the real explosion-before subscription > cancels conservatively if exclusion throws (mutation before throw: true), without retry 2ms
+     → expected [Function] to not throw an error but 'Error: Expected exactly one productio…' was thrown
+   × selective prevention through the real explosion-before subscription > does not end a customization session when explosion damage is excluded 2ms
+     → Expected exactly one production explosion-before subscription
+   × selective prevention through the real explosion-before subscription > never schedules exclusion after the cancellable event has returned 2ms
+     → Expected exactly one production explosion-before subscription
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 29 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > excludes occupied aspersorium synchronously without writes, delivery or delayed recovery
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > excludes occupied table synchronously without writes, delivery or delayed recovery
+Error: Expected exactly one production explosion-before subscription
+ ❯ dispatch tests/application/compact-event-routing.test.ts:425:42
+    423|   function dispatch(event: ReturnType<typeof eventFor>): void {
+    424|     const subscribers = engine.before.get("explosion");
+    425|     if (subscribers?.length !== 1) throw new Error("Expected exactly o…
+       |                                          ^
+    426|     for (const callback of subscribers) callback(event);
+    427|   }
+ ❯ tests/application/compact-event-routing.test.ts:445:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/29]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > excludes visually empty aspersorium with an orphaned snapshot
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > excludes visually empty table with an orphaned snapshot
+Error: Expected exactly one production explosion-before subscription
+ ❯ dispatch tests/application/compact-event-routing.test.ts:425:42
+    423|   function dispatch(event: ReturnType<typeof eventFor>): void {
+    424|     const subscribers = engine.before.get("explosion");
+    425|     if (subscribers?.length !== 1) throw new Error("Expected exactly o…
+       |                                          ^
+    426|     for (const callback of subscribers) callback(event);
+    427|   }
+ ❯ tests/application/compact-event-routing.test.ts:461:38
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/29]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > preserves unreadable aspersorium shard bytes and excludes its block
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > preserves unreadable table shard bytes and excludes its block
+Error: Expected exactly one production explosion-before subscription
+ ❯ dispatch tests/application/compact-event-routing.test.ts:425:42
+    423|   function dispatch(event: ReturnType<typeof eventFor>): void {
+    424|     const subscribers = engine.before.get("explosion");
+    425|     if (subscribers?.length !== 1) throw new Error("Expected exactly o…
+       |                                          ^
+    426|     for (const callback of subscribers) callback(event);
+    427|   }
+ ❯ tests/application/compact-event-routing.test.ts:471:38
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/29]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > excludes aspersorium with an unsupported neighbor in the same shard
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > excludes table with an unsupported neighbor in the same shard
+Error: Expected exactly one production explosion-before subscription
+ ❯ dispatch tests/application/compact-event-routing.test.ts:425:42
+    423|   function dispatch(event: ReturnType<typeof eventFor>): void {
+    424|     const subscribers = engine.before.get("explosion");
+    425|     if (subscribers?.length !== 1) throw new Error("Expected exactly o…
+       |                                          ^
+    426|     for (const callback of subscribers) callback(event);
+    427|   }
+ ❯ tests/application/compact-event-routing.test.ts:480:38
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/29]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > excludes reserved aspersorium states
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > excludes reserved table states
+Error: Expected exactly one production explosion-before subscription
+ ❯ dispatch tests/application/compact-event-routing.test.ts:425:42
+    423|   function dispatch(event: ReturnType<typeof eventFor>): void {
+    424|     const subscribers = engine.before.get("explosion");
+    425|     if (subscribers?.length !== 1) throw new Error("Expected exactly o…
+       |                                          ^
+    426|     for (const callback of subscribers) callback(event);
+    427|   }
+ ❯ tests/application/compact-event-routing.test.ts:489:38
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/29]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > excludes aspersorium with legacy or missing states
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > excludes table with legacy or missing states
+Error: Expected exactly one production explosion-before subscription
+ ❯ dispatch tests/application/compact-event-routing.test.ts:425:42
+    423|   function dispatch(event: ReturnType<typeof eventFor>): void {
+    424|     const subscribers = engine.before.get("explosion");
+    425|     if (subscribers?.length !== 1) throw new Error("Expected exactly o…
+       |                                          ^
+    426|     for (const callback of subscribers) callback(event);
+    427|   }
+ ❯ tests/application/compact-event-routing.test.ts:496:38
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/29]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > excludes identified aspersorium if its permutation becomes unavailable
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > excludes identified table if its permutation becomes unavailable
+Error: Expected exactly one production explosion-before subscription
+ ❯ dispatch tests/application/compact-event-routing.test.ts:425:42
+    423|   function dispatch(event: ReturnType<typeof eventFor>): void {
+    424|     const subscribers = engine.before.get("explosion");
+    425|     if (subscribers?.length !== 1) throw new Error("Expected exactly o…
+       |                                          ^
+    426|     for (const callback of subscribers) callback(event);
+    427|   }
+ ❯ tests/application/compact-event-routing.test.ts:503:38
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/29]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > leaves valid empty aspersorium in the explosion without rewriting its list
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > leaves valid empty table in the explosion without rewriting its list
+Error: Expected exactly one production explosion-before subscription
+ ❯ dispatch tests/application/compact-event-routing.test.ts:425:42
+    423|   function dispatch(event: ReturnType<typeof eventFor>): void {
+    424|     const subscribers = engine.before.get("explosion");
+    425|     if (subscribers?.length !== 1) throw new Error("Expected exactly o…
+       |                                          ^
+    426|     for (const callback of subscribers) callback(event);
+    427|   }
+ ❯ tests/application/compact-event-routing.test.ts:507:71
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/29]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > excludes an identified but invalid aspersorium
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > excludes an identified but invalid table
+Error: Expected exactly one production explosion-before subscription
+ ❯ dispatch tests/application/compact-event-routing.test.ts:425:42
+    423|   function dispatch(event: ReturnType<typeof eventFor>): void {
+    424|     const subscribers = engine.before.get("explosion");
+    425|     if (subscribers?.length !== 1) throw new Error("Expected exactly o…
+       |                                          ^
+    426|     for (const callback of subscribers) callback(event);
+    427|   }
+ ❯ tests/application/compact-event-routing.test.ts:513:38
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/29]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > excludes aspersorium when registry reading fails without attempting repair
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > excludes table when registry reading fails without attempting repair
+Error: Expected exactly one production explosion-before subscription
+ ❯ dispatch tests/application/compact-event-routing.test.ts:425:42
+    423|   function dispatch(event: ReturnType<typeof eventFor>): void {
+    424|     const subscribers = engine.before.get("explosion");
+    425|     if (subscribers?.length !== 1) throw new Error("Expected exactly o…
+       |                                          ^
+    426|     for (const callback of subscribers) callback(event);
+    427|   }
+ ❯ tests/application/compact-event-routing.test.ts:520:38
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/29]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > leaves other add-ons and unidentifiable blocks alone without reading their registry
+Error: Expected exactly one production explosion-before subscription
+ ❯ dispatch tests/application/compact-event-routing.test.ts:425:42
+    423|   function dispatch(event: ReturnType<typeof eventFor>): void {
+    424|     const subscribers = engine.before.get("explosion");
+    425|     if (subscribers?.length !== 1) throw new Error("Expected exactly o…
+       |                                          ^
+    426|     for (const callback of subscribers) callback(event);
+    427|   }
+ ❯ tests/application/compact-event-routing.test.ts:527:82
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/29]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > retains unprotected order and duplicate occurrences while excluding both occupied kinds
+Error: Expected exactly one production explosion-before subscription
+ ❯ dispatch tests/application/compact-event-routing.test.ts:425:42
+    423|   function dispatch(event: ReturnType<typeof eventFor>): void {
+    424|     const subscribers = engine.before.get("explosion");
+    425|     if (subscribers?.length !== 1) throw new Error("Expected exactly o…
+       |                                          ^
+    426|     for (const callback of subscribers) callback(event);
+    427|   }
+ ❯ tests/application/compact-event-routing.test.ts:535:85
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/29]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > does not inspect or reverse an already cancelled explosion
+Error: Expected exactly one production explosion-before subscription
+ ❯ dispatch tests/application/compact-event-routing.test.ts:425:42
+    423|   function dispatch(event: ReturnType<typeof eventFor>): void {
+    424|     const subscribers = engine.before.get("explosion");
+    425|     if (subscribers?.length !== 1) throw new Error("Expected exactly o…
+       |                                          ^
+    426|     for (const callback of subscribers) callback(event);
+    427|   }
+ ❯ tests/application/compact-event-routing.test.ts:540:44
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/29]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > leaves an empty impact list untouched
+Error: Expected exactly one production explosion-before subscription
+ ❯ dispatch tests/application/compact-event-routing.test.ts:425:42
+    423|   function dispatch(event: ReturnType<typeof eventFor>): void {
+    424|     const subscribers = engine.before.get("explosion");
+    425|     if (subscribers?.length !== 1) throw new Error("Expected exactly o…
+       |                                          ^
+    426|     for (const callback of subscribers) callback(event);
+    427|   }
+ ❯ tests/application/compact-event-routing.test.ts:545:33
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/29]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > does not cancel unrelated explosions when the impact list cannot be read
+AssertionError: expected [Function] to not throw an error but 'Error: Expected exactly one productio…' was thrown
+
+- Expected: 
+undefined
+
++ Received: 
+"Error: Expected exactly one production explosion-before subscription"
+
+ ❯ tests/application/compact-event-routing.test.ts:552:39
+    550|     event.getImpactedBlocks.mockImplementationOnce(() => { throw new E…
+    551|     vi.spyOn(console, "warn").mockImplementation(() => {});
+    552|     expect(() => dispatch(event)).not.toThrow();
+       |                                       ^
+    553|     expect(event.cancel).toBe(false); expect(event.setImpactedBlocks).…
+    554|     expect(console.warn).toHaveBeenCalledWith(expect.stringContaining(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/29]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > cancels conservatively if exclusion throws (mutation before throw: false), without retry
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > cancels conservatively if exclusion throws (mutation before throw: true), without retry
+AssertionError: expected [Function] to not throw an error but 'Error: Expected exactly one productio…' was thrown
+
+- Expected: 
+undefined
+
++ Received: 
+"Error: Expected exactly one production explosion-before subscription"
+
+ ❯ tests/application/compact-event-routing.test.ts:565:39
+    563|     });
+    564|     vi.spyOn(console, "warn").mockImplementation(() => {});
+    565|     expect(() => dispatch(event)).not.toThrow();
+       |                                       ^
+    566|     expect(event.cancel).toBe(true); expect(event.setImpactedBlocks).t…
+    567|     expect(effected).toEqual(afterEffect ? [stone.asBlock()] : [stone.…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/29]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > does not end a customization session when explosion damage is excluded
+Error: Expected exactly one production explosion-before subscription
+ ❯ dispatch tests/application/compact-event-routing.test.ts:425:42
+    423|   function dispatch(event: ReturnType<typeof eventFor>): void {
+    424|     const subscribers = engine.before.get("explosion");
+    425|     if (subscribers?.length !== 1) throw new Error("Expected exactly o…
+       |                                          ^
+    426|     for (const callback of subscribers) callback(event);
+    427|   }
+ ❯ tests/application/compact-event-routing.test.ts:575:38
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/29]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > selective prevention through the real explosion-before subscription > never schedules exclusion after the cancellable event has returned
+Error: Expected exactly one production explosion-before subscription
+ ❯ dispatch tests/application/compact-event-routing.test.ts:425:42
+    423|   function dispatch(event: ReturnType<typeof eventFor>): void {
+    424|     const subscribers = engine.before.get("explosion");
+    425|     if (subscribers?.length !== 1) throw new Error("Expected exactly o…
+       |                                          ^
+    426|     for (const callback of subscribers) callback(event);
+    427|   }
+ ❯ tests/application/compact-event-routing.test.ts:582:38
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/29]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  29 failed | 47 passed (76)
+   Start at  18:29:37
+   Duration  1.75s (transform 629ms, setup 0ms, collect 614ms, tests 317ms, environment 0ms, prepare 118ms)
+

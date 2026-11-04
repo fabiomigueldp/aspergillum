@@ -1,0 +1,7 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-paired-midsurface-obstacle-proof.py').read().split('for outer in range(12):')[0])
+bad=[]
+for vs,weights in samples:
+ if any(primary[v] in ix for v in vs):continue
+ point=sum((Vector(p[v])*w for v,w in zip(vs,weights)),Vector());h,n,face,dist=hb.find_nearest(point);sd=(point-h).dot(n)
+ if sd<0:bad.append({'sample_vertices':vs,'point':list(point),'signed':sd,'nearest_skin_face':face})
+fixedfaces=[i for i in patch if all(primary[v] in fixed for v in fs[i])];hb_pairs=hb.overlap(BVHTree.FromPolygons(p.tolist(),fs));fixedhits=[(a,b) for a,b in hb_pairs if b in fixedfaces];report={'fixed_negative_samples':bad,'all_boundary_fixed_faces':fixedfaces,'skin_hits_on_frozen_faces':fixedhits};json.dump(report,open(r+'neck-fixed-shell-obstacle-audit.json','w'),indent=2);print({'negative_samples':bad,'frozen_face_count':len(fixedfaces),'frozen_skin_hits':len(fixedhits)})

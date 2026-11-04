@@ -1,0 +1,8 @@
+import bpy,numpy as np,json
+from pathlib import Path
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+R=Path(__file__).resolve().parents[1];E=R/'evidence';s=np.load(E/'seam-source-inspection.npz');v=s['points'];f=s['triangles'];tree=BVHTree.FromPolygons(v.tolist(),f.tolist(),all_triangles=True);out={}
+for name in ['bridge-exact','bridge-paired','bridge-swapped-7p5','bridge-hermite-physical-7p5']:
+ d=np.load(E/(name+'.npz'));p=d['points'];ff=d['triangles'];t=p[ff];a=np.linalg.norm(np.cross(t[:,1]-t[:,0],t[:,2]-t[:,0]),axis=1)*.5;rng=np.random.default_rng(20261103);ii=rng.choice(len(t),10000,p=a/a.sum());u=rng.random((10000,2));q=np.sqrt(u[:,0]);weights=np.column_stack((1-q,q*(1-u[:,1]),q*u[:,1]));points=np.einsum('ni,nij->nj',weights,t[ii]);dist=np.array([tree.find_nearest(Vector(x))[3] for x in points]);out[name]={'area_sample_count':10000,'seed':20261103,'distance_units':'Blender source units, assumed meters','distance_p50':float(np.quantile(dist,.5)),'distance_p95':float(np.quantile(dist,.95)),'distance_max_sampled':float(dist.max())}
+(E/'bridge-source-deviation.json').write_text(json.dumps({'method':'One-way sampled distance of bridge surfaces to evaluated TESTE34 source. Source includes its own inverted mantle and self-crossings; this is a change measurement, not quality or clearance approval.','results':out},indent=2));print(out)

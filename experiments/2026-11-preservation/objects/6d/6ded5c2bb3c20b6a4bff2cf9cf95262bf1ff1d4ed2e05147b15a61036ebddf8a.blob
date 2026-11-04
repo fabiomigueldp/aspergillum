@@ -1,0 +1,9 @@
+import bpy,json,numpy as np,hashlib
+from mathutils import Quaternion,Vector
+r='/workspace/scratch/212c580ada5b/paz-sleeve-proxy/';bpy.ops.wm.open_mainfile(filepath=r+'V85-PROXY-MANGA-NAO-INTEGRADA.blend',use_scripts=False)
+h=bpy.data.objects['PROXY85 mão rígida — dedos originais'];arm=bpy.data.objects['PROXY85 controles'];g=h.vertex_groups.new(name='cotovelo_punho');g.add(list(range(len(h.data.vertices))),1.,'REPLACE');m=h.modifiers.new('Mão acoplada rigidamente ao punho','ARMATURE');m.object=arm
+bpy.context.view_layer.update();dg=bpy.context.evaluated_depsgraph_get()
+def arr():return np.array([v.co[:] for v in h.evaluated_get(dg).data.vertices])
+p=arr();bone=arm.pose.bones['cotovelo_punho'];bone.rotation_mode='QUATERNION';bone.rotation_quaternion=Quaternion(Vector((1,0,0)),.1);bpy.context.view_layer.update();q=arr();edges=np.array([e.vertices[:] for e in h.data.edges]);a=np.linalg.norm(p[edges[:,0]]-p[edges[:,1]],axis=1);b=np.linalg.norm(q[edges[:,0]]-q[edges[:,1]],axis=1)
+report={'test':'Lower-arm bone .1rad, restored to rest after test','hand_moves_max_m':float(np.linalg.norm(p-q,axis=1).max()),'hand_rigid_edge_length_max_error_m':float(np.abs(a-b).max())};bone.rotation_quaternion=Quaternion();bpy.context.view_layer.update();report['rest_return_max_error_m']=float(np.abs(arr()-p).max());json.dump(report,open(r+'rig-test.json','w'),indent=2)
+bpy.ops.wm.save_as_mainfile(filepath=r+'V85-PROXY-MANGA-NAO-INTEGRADA.blend');print(report)

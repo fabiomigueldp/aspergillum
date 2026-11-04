@@ -1,0 +1,609 @@
+{
+  "version": "0.12.1",
+  "renderer": "CPU barycentric rasterization of shared buildBedrockGeometry meshes",
+  "limitation": "Alternative technical preview. No WebGL, PBR, game lighting or Minecraft parity. Official Chromium renderer unavailable in this execution environment.",
+  "cameraConvention": "right-handed; direction centre to camera; right = worldUp cross direction",
+  "rendererSources": {
+    "tools/capture-cpu.mjs": "e7154570f63d568285b93289492bc96c163b321717eefcee4bb12fb6931d2dd8",
+    "tools/cpu-rasterize.py": "e2aab147ba2a8919022828d6affcb049ac4d130d785e782b5d39790521ae6140",
+    "tools/block-preview-basis.mjs": "17589a3deb7cd98baba5098a6a5c923579a553e79a7be179169f3ca2ac57635c",
+    "../../viewer-3d/src/shared/bedrock-geometry.js": "24dbd8979e54bb33be799e578109d6a5444a9254d1ad0f4c25160241c3e17e11",
+    "../../viewer-3d/src/shared/bedrock-uv.js": "e6701522cba86fa1449c5969387907870bf9b8169aed1a216fb211ad5c7a63b1"
+  },
+  "sourceHashes": {
+    "packs/resource/models/blocks/atelier_crossbrace_none_none_0_e9.geo.json": "1b5fe140e0669cf58a73d5a08b80765cfe195842998ec0ca87b7cb44c907a583",
+    "packs/resource/textures/blocks/atelier_walnut.png": "f780cb89fd0cbd6353534bc9a5df465242e65330243386d69d747e00167968f8",
+    "packs/resource/textures/blocks/joinery_walnut_horizontal.png": "66624c3cd5ae70a32865104e6d188276a406905a9ad7c6b3743fa2d8cbb25e32",
+    "packs/resource/textures/blocks/linen.png": "2929ae99d2625dda41bd77eac7f631bf2d03eea3a58988d6b426ce5832d77174",
+    "packs/resource/textures/blocks/seam_white_gold.png": "abeef1ad08079a0eed9e186e5e78948e41d80a1cbecb1730a98fa177834585b9",
+    "packs/resource/textures/blocks/frontal_frame.png": "340eb819bc68a8872c5bd5d8ccc9b1c689777463b3d032081ea5a2de3f6f1e88",
+    "packs/resource/textures/blocks/atelier_agnus.png": "a8bfc9531cd32581786af9f928db79d35c1016b336d8ada7d478577035410b4d",
+    "packs/resource/textures/blocks/crossbrace_inlay.png": "956784eb27b97ba8676cdf6908b231bd134b711fe0cc8eb91e12e5a001b41e37",
+    "packs/resource/models/blocks/atelier_crossbrace_none_none_0_e1.geo.json": "16bb6edfcb6f57f36a2141c1950d9e6c916b35caf1850c244d465b84b807113c",
+    "packs/resource/models/blocks/atelier_crossbrace_none_none_0_e3.geo.json": "c982f4e7cdd5e7dd2b12b25183f624b43c31b4bbdb5becee5ed25f241bbee2fc",
+    "packs/resource/models/blocks/atelier_crossbrace_none_none_0_e12.geo.json": "861832901f6acb73d9bde4d19a153df2d4c36b9b652e2a6a96e7267d7de4c1f7",
+    "packs/resource/models/blocks/atelier_crossbrace_none_none_0_e4.geo.json": "5c9aa50bc6a240e7b4bf03e095b6377a41b1cf3ceebc613b20ddf510de4828a3",
+    "packs/resource/models/blocks/atelier_crossbrace_none_none_0_e6.geo.json": "74e70fee12028183a455ab940936d9dbead429409f19d8d881c8e640f9968a52",
+    "packs/resource/models/blocks/universal_crossbrace_linen_short_none_0_e9.geo.json": "d026f045fba76f4dd4f399856a58e84625d80bb7c2ae548b4ea0415e20163ac8",
+    "packs/resource/textures/blocks/hem_short_plain.png": "fe42684f352c33f5d71ad98602fcd0d5056a5f9c79ec85594a22ee6e044dc7b4",
+    "packs/resource/models/blocks/universal_crossbrace_linen_short_none_0_e1.geo.json": "93bec7708672f967809a7db57506911f99bb500f436c6275b73c9e7790377ab5",
+    "packs/resource/models/blocks/universal_crossbrace_linen_short_none_0_e3.geo.json": "3de74b82faddae77aa23c368d533e657f40bc11f1a9beadd8ddf06ae4d6029ec",
+    "packs/resource/models/blocks/universal_crossbrace_linen_short_none_0_e12.geo.json": "5237a90d8d772352cd744f5480957c18bccd1a6a2a8006fba2e333890dd02a6d",
+    "packs/resource/models/blocks/universal_crossbrace_linen_short_none_0_e4.geo.json": "70c5531c1918fb563904077f8b1e7a52d79902263fbb76cbab406ee1e21423d9",
+    "packs/resource/models/blocks/universal_crossbrace_linen_short_none_0_e6.geo.json": "31f1218665efddd1c788786b8552cd2160c84b60ab77778dd64436f83c5746f7",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_0_e9.geo.json": "04f5b3c9137f0d25146bed3c1e92b479da331655f63adb7d0d3c7f028d14ec84",
+    "packs/resource/textures/blocks/seam_green_gold.png": "9521d1ea44bf991138b29b5076168fb83de40b69402289c1bbe6681e385a9a86",
+    "packs/resource/textures/blocks/textile_ruby_0_green.png": "555027fb3237865bd99b47c9e227a9b6c6cc387a04102716ddedc5eaeb829e93",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_0_e1.geo.json": "663bcfe039b6eddb6030892e90ec6bc87632e8282337d1536cb33240a8455348",
+    "packs/resource/textures/blocks/textile_ruby_2_green.png": "1b816fe5ea0b59dd637cc8e0eb2c8d4360786bcecfa42d3ad6f54b4d0802a936",
+    "packs/resource/textures/blocks/textile_ruby_3_green.png": "4e6916e17e5dc97ddd599bbe54988ac7775e6b71daa737051a343524a07dc38c",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_0_e3.geo.json": "3e38f44a796512394922c7728276a90295286dc274923900acd00b61d42c852d",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_0_e12.geo.json": "b052062ea7aefe7e42a74104feff88a0acd9fc5096afd72afdf5bdb3c6264440",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_0_e4.geo.json": "0217c2e5ae3e19e1bc7be132cdac9376bb777bff68f8475debb017f1d9f2719b",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_0_e6.geo.json": "4bee9aa3784074c1c1f7d13854b60932354c740e50c6bf137fb7b8fdb9c65a6a",
+    "packs/resource/models/blocks/atelier_crossbrace_none_none_0_e15.geo.json": "315b6bd03f8765a65f5304fbbe0cde7f6779e04ee87853c771b2f13fa2a2adbf",
+    "packs/resource/models/blocks/universal_crossbrace_lace_none_0_e9.geo.json": "1dea2c3cd738e461ac80114bbeda80ddf8711c1226fa8607fa6cc6deb51c2bed",
+    "packs/resource/textures/blocks/ornate_lace.png": "86a9ccf417d9f1d90ee20b3821e931c8e1f581dd65eae52a2b3560cd235976f2",
+    "packs/resource/models/blocks/universal_crossbrace_lace_none_0_e1.geo.json": "3ebeb4ddaff6b91b23be1d1d39877e5db89d990996fec4902925d9e07eb1f371",
+    "packs/resource/models/blocks/universal_crossbrace_lace_none_0_e3.geo.json": "988c59b9b356cef30d150c8c6186bb1b7c8bd40e37b14dbc35f6125589bde603",
+    "packs/resource/models/blocks/universal_crossbrace_lace_none_0_e12.geo.json": "7707ce9b2e44b698e7b324d830b1480fc2326920b951e52679c07278f70f83b4",
+    "packs/resource/models/blocks/universal_crossbrace_lace_none_0_e4.geo.json": "e53322a8cc237c429c58e2880360c064b4524ee38cedc0ba7ee7b2f87afeb65c",
+    "packs/resource/models/blocks/universal_crossbrace_lace_none_0_e6.geo.json": "d9d60628910c6de86ac492d9d019ce52ae44b709b0b4f521f85024e5178ec817",
+    "packs/resource/models/blocks/universal_crossbrace_linen_long_none_0_e9.geo.json": "f9f99df4d05c0ae3a8a1488bf0e46b41d8e0ab310d0d3ba72bdeecef9b6aeb9e",
+    "packs/resource/textures/blocks/hem_long_plain.png": "df5613b842d7c45cddaba6987aeb1e347826b363c712ea785ab16ea4fd85ba47",
+    "packs/resource/models/blocks/universal_crossbrace_linen_long_none_0_e1.geo.json": "e0b625459d2ac5895902fec3766ae031529802a2ec531fe3244d91b369d0ce5a",
+    "packs/resource/models/blocks/universal_crossbrace_linen_long_none_0_e3.geo.json": "0c08df4c7725c61f66ec9c8418e37d5dd18efe16506e2f2dfd8a0966a17b6b30",
+    "packs/resource/models/blocks/universal_crossbrace_linen_long_none_0_e12.geo.json": "eab2394ffaaae77af3333d77a7e04d80c7c930e9993d3a8d1d85cea9ddda4651",
+    "packs/resource/models/blocks/universal_crossbrace_linen_long_none_0_e4.geo.json": "058204b7f3e886c054cc48674bceae01d80ce59ca09778ba51ad5b86fe13b2c0",
+    "packs/resource/models/blocks/universal_crossbrace_linen_long_none_0_e6.geo.json": "45ddcc617942b85d8f9794a1a77474edd61f74e3d50ad9f4155e02f9d3a75338",
+    "packs/resource/models/blocks/universal_crossbrace_gold_short_none_0_e9.geo.json": "d749b0f55d9fe357523d3446c369a0bab80f8143ba13959e05d79fd5a3e4180a",
+    "packs/resource/textures/blocks/hem_short_gold.png": "2a563e5dc8dd7459b02e6f0745999c9cdb8f6d601b8e9657a4d02b40831de0f2",
+    "packs/resource/models/blocks/universal_crossbrace_gold_short_none_0_e1.geo.json": "84b89fcba7813a2a11bd5b23879ed7c7da2b94800c30f0661149f0576da4f077",
+    "packs/resource/models/blocks/universal_crossbrace_gold_short_none_0_e3.geo.json": "2f77ff41d7ea5d9bdb4ce38972e363f2dcb6f544d3f718cd07891af93e82b1ea",
+    "packs/resource/models/blocks/universal_crossbrace_gold_short_none_0_e12.geo.json": "a9d4f4d26a948bcaf1f57b1acaf6bb80b3baa2400d35e8eb7c93f632401cb924",
+    "packs/resource/models/blocks/universal_crossbrace_gold_short_none_0_e4.geo.json": "aaf4a6acd1d6acac3300bc914ab0f46a57b619ee7f3178d2132e6ae895352a53",
+    "packs/resource/models/blocks/universal_crossbrace_gold_short_none_0_e6.geo.json": "b9f2d6c617a0a2ad2f229640eca7273cbcac3e5a28c252c0fba385c3c58228fb",
+    "packs/resource/models/blocks/universal_crossbrace_gold_long_none_0_e9.geo.json": "09b17d493ac924832c149a9228e98b4731285bd3143adf747cfb35d1629d4036",
+    "packs/resource/textures/blocks/hem_long_gold.png": "09c08c4af6226494b0d45675fdc7fd114c5fa7e805ec86d74dddc7dde5b13cc8",
+    "packs/resource/models/blocks/universal_crossbrace_gold_long_none_0_e1.geo.json": "f588638772ac3627696f34756405e1ab3e8a2aa0e6dc622d0cd5fcc5cb207c31",
+    "packs/resource/models/blocks/universal_crossbrace_gold_long_none_0_e3.geo.json": "aa1a6d28238cd143c74da6d71ca9f31d7b1d20d002066789d585889d4353f24b",
+    "packs/resource/models/blocks/universal_crossbrace_gold_long_none_0_e12.geo.json": "edcb43b775a1e699375d4cf2692e70250e4f58fd50da55942c4ddc601b033afb",
+    "packs/resource/models/blocks/universal_crossbrace_gold_long_none_0_e4.geo.json": "208ff9c08083d610e114b62683b67f88bb3687a4a95566856f29d13928607ac4",
+    "packs/resource/models/blocks/universal_crossbrace_gold_long_none_0_e6.geo.json": "38f2577c4a209184a5901458981157aa603d109f97a672de0578e49209254216",
+    "packs/resource/models/blocks/atelier_crossbrace_agnus_none_0_e9.geo.json": "416a6baaae06f900f42416138c985d50b5b85d8b6563bef1f23954b75b6682ba",
+    "packs/resource/textures/blocks/textile_agnus_0.png": "7266dba3b442459f3549d775f16606a244ce896f6029a692992c02282c35a679",
+    "packs/resource/models/blocks/atelier_crossbrace_agnus_none_0_e1.geo.json": "ec7e4ed13fc38b9f21de3d90e9607735053db4f3ea2aaed1803e3344b30f0fa9",
+    "packs/resource/textures/blocks/textile_agnus_1.png": "65e07d4f0ccd0a9fcfa11ff854db06cdd6894cc792f51bd53d951c1bc2bf3722",
+    "packs/resource/models/blocks/atelier_crossbrace_agnus_none_0_e3.geo.json": "d1adc0ecda30409434ddb17e07fb25e01703a4bd0b73c8f2237696b21d8e050c",
+    "packs/resource/models/blocks/atelier_crossbrace_agnus_none_0_e12.geo.json": "83dbb8f20f20a3c770dacdbc060e766f01269ece32a933608e34006cea45905a",
+    "packs/resource/models/blocks/atelier_crossbrace_agnus_none_0_e4.geo.json": "78ed681e6e14a029372d8f07ef5948b06d257d8a06891c947480f7744ade20a7",
+    "packs/resource/models/blocks/atelier_crossbrace_agnus_none_0_e6.geo.json": "15e0270705133fd9d2d7f1f146e28aa71aa7e25f7b0689e09c49514c5e17e876",
+    "packs/resource/models/blocks/atelier_crossbrace_verdant_none_0_e9.geo.json": "e942507225c2edd9b002d7a4feffac85364aa433208bc5d02a56156783c74ad8",
+    "packs/resource/textures/blocks/textile_verdant_0.png": "311fea294dcc9a8b733969be14e72a48330880f1a59787f7c1f0ac0d12cb7b1f",
+    "packs/resource/models/blocks/atelier_crossbrace_verdant_none_0_e1.geo.json": "372a99229ccb18206e01701a9321d79d5ef11b6341563c6a5457e3d85f07a20e",
+    "packs/resource/textures/blocks/textile_verdant_1.png": "9f2900cf8ab0e3fb72874832e953a35d4f360d3d508e4cde0ef46da24185ec4b",
+    "packs/resource/models/blocks/atelier_crossbrace_verdant_none_0_e3.geo.json": "7c1b1aaaf3422d05f9234594a1ecac6f6c060fe4dccfefedcf8146001c8e5a0c",
+    "packs/resource/models/blocks/atelier_crossbrace_verdant_none_0_e12.geo.json": "149dc12123130bc1f929e6dd991f593bd065e7f8e152feada580010adeae7726",
+    "packs/resource/models/blocks/atelier_crossbrace_verdant_none_0_e4.geo.json": "b40969ec7b36867180f1de64ca41dd514af2be0c2e35eea1e0330550af27e769",
+    "packs/resource/models/blocks/atelier_crossbrace_verdant_none_0_e6.geo.json": "ce89cb8cef5a31d147d8dd91595f4eb75ac501bc61d41445b3a9112c80ae0151",
+    "packs/resource/models/blocks/atelier_crossbrace_requiem_none_0_e9.geo.json": "b26d5e498d835abe4d54aea89e2703d6fbbf4901b5366d606dc1f2c1c66e6267",
+    "packs/resource/textures/blocks/seam_black_silver.png": "33b0bee5e6a0ab12cca7a48026f8c22d3b007173e8edcd71af626fed8ba1a6ba",
+    "packs/resource/textures/blocks/textile_requiem_0.png": "c45c41da24efccd8cf0333a68c6413e0d1d2e8457f2da5176751ecb03d536b41",
+    "packs/resource/models/blocks/atelier_crossbrace_requiem_none_0_e1.geo.json": "8220161df01b985bbf93070d3f005750a6fbcee9a4b232ac15361f67da9e9217",
+    "packs/resource/textures/blocks/textile_requiem_1.png": "7d1c36d2b36215d9b26bac13cf5976c069d43dcb86a34b97910d229358c46003",
+    "packs/resource/models/blocks/atelier_crossbrace_requiem_none_0_e3.geo.json": "38711af0d57a7c0a7c8f64a8d1131a429cd35af1df659ae23f65e8fc4d0a7fa2",
+    "packs/resource/models/blocks/atelier_crossbrace_requiem_none_0_e12.geo.json": "1c6d275ee1ff46e2051150b6852ecd054553c36172477506c80fbdd9a2400e06",
+    "packs/resource/models/blocks/atelier_crossbrace_requiem_none_0_e4.geo.json": "87ed96f9d89e62bd3365dabf99ec405d75ec776adf45146773184f442eb591fb",
+    "packs/resource/models/blocks/atelier_crossbrace_requiem_none_0_e6.geo.json": "c5140e37dce8945a9b20871edd91d0dc87f0771dfcd2f14b6d96d94e8806633d",
+    "packs/resource/textures/blocks/textile_ruby_0_white.png": "46b3ac9754677d4289dd0ff9b69856006c1bd9e913cf8549ea25b59e7fdd54e5",
+    "packs/resource/textures/blocks/textile_ruby_2_white.png": "6ec4e8c73c6c1b6f6b52972aea1acf42e637c90318a177bede644dc31d8637ef",
+    "packs/resource/textures/blocks/textile_ruby_3_white.png": "62e438e83a07b7ff432ee1c1033727f219d32eaf0c7ad255129fc0223f80e5f0",
+    "packs/resource/textures/blocks/seam_red_gold.png": "e721f1dd53a15c736f8674c94100c84f25e0871283a3ac5aead1da4afa17cb11",
+    "packs/resource/textures/blocks/textile_ruby_0.png": "8acb0409e4c61646f64a1d669a1539f2071108dc8707fcf98f9c52dd220d3d7d",
+    "packs/resource/textures/blocks/textile_ruby_2.png": "3b26371c8aa1da0ee642e03c7f486e93071cac4199963bbce9ad792efdb940e3",
+    "packs/resource/textures/blocks/textile_ruby_3.png": "c39890dfc1cdc7427c310ebeaa72dd04245a1bb608261bc9bc0c049ae81d1d54",
+    "packs/resource/textures/blocks/seam_purple_gold.png": "a34f0d6357c316f5f87cf5ef03b679ddde38b1ce41d910306eadaea5c6f11ea7",
+    "packs/resource/textures/blocks/textile_ruby_0_purple.png": "957e7b7f946ebe7156c4efa7b12f0667208f769e575d77021510e9775902bda8",
+    "packs/resource/textures/blocks/textile_ruby_2_purple.png": "986c79af6f8c8b9d26ea8ecf8bd490afe56ed9b37b5c823032f988072f58ab9b",
+    "packs/resource/textures/blocks/textile_ruby_3_purple.png": "6723b96c2ef1c0869261e6eb4f09d55811c24e45d36a229f756df602b1e781e3",
+    "packs/resource/textures/blocks/seam_rose_gold.png": "4dd572515a9f9a63e994a06c8d09cd1ee8dcbd5aa906a8d72feb39b35a33d267",
+    "packs/resource/textures/blocks/textile_ruby_0_rose.png": "10d340499b7993fc89389a8a11fce6ab8cbdd51ae01ecd05782db15f85410648",
+    "packs/resource/textures/blocks/textile_ruby_2_rose.png": "2a4885eebd5319b08baf83af93d075c64c2c9bd6c7731af6f289bc7b8d82ab52",
+    "packs/resource/textures/blocks/textile_ruby_3_rose.png": "4124420afeaf59ff62b679105eb08f8eda832ae484976d3391e18f369bd51fe4",
+    "packs/resource/textures/blocks/seam_black_gold.png": "b029321e4a2308a9e18f29688b70717dfa423371e9935b9f80452c240f69e6ac",
+    "packs/resource/textures/blocks/textile_ruby_0_black.png": "8918bef2eca6524b766512788c9fc83caf33db635d87458d50aa50ebef144684",
+    "packs/resource/textures/blocks/textile_ruby_2_black.png": "c53ba28dc0518c55a099ed1f78ca8ab5dbc39dba50dca1697332444842bd5446",
+    "packs/resource/textures/blocks/textile_ruby_3_black.png": "b8118736898f0962dc203584fe4bd0e57300ada0578e0a21db5e7cf2be120f24",
+    "packs/resource/textures/blocks/seam_gold_gold.png": "d779837e7b876d297990c8c9505bea1e65519f75d71eadf64d2c8a0af1bbf197",
+    "packs/resource/textures/blocks/textile_ruby_0_gold.png": "5b9acbb2dec96b41ecc5d15992eea0a308cf2df93c634c4b3444572c36280df3",
+    "packs/resource/textures/blocks/textile_ruby_2_gold.png": "f779e1ec3c9dbb680fb308633f1473a7166a63071e6b81dd07fa059765855e24",
+    "packs/resource/textures/blocks/textile_ruby_3_gold.png": "b065e6aceb5f24f8ba1b6a5f08ec578fb5d5bad04a666c27ba9b4199187255b4",
+    "packs/resource/textures/blocks/seam_silver_gold.png": "9e42ce336e81c4f4004c1382ceac72c2ea991ca7526e092384ed41fe8a522777",
+    "packs/resource/textures/blocks/textile_ruby_0_silver.png": "87d7375bf74e8f73a4464e0655edcbee2ebcadb547f5220f10198609fe2660a0",
+    "packs/resource/textures/blocks/textile_ruby_2_silver.png": "cec99d1b53700f4fe2b8ce58cbc4df5d8ddd534c9446cf41558b77a4644c526a",
+    "packs/resource/textures/blocks/textile_ruby_3_silver.png": "d2f31f603767510ede869c217046a11f96c6e297e4e65e80e5b52d2ecc1019e0",
+    "packs/resource/models/blocks/atelier_crossbrace_none_none_0_e13.geo.json": "356b28ee25e598eef4564d9aaaa58f0a07bfc3cd9b79ca921510c653ac66a88e",
+    "packs/resource/models/blocks/atelier_crossbrace_none_none_0_e7.geo.json": "f7612588ca21138db66d7482355b85be6eb02ebcfe0b481e801a4557586b55ab",
+    "packs/resource/models/blocks/atelier_crossbrace_none_none_0_e11.geo.json": "f298e4126e0da2e25affef10f43819465e4208f899721a725ec4ba6fe352e0f2",
+    "packs/resource/models/blocks/atelier_crossbrace_none_none_0_e10.geo.json": "bdb2c55e1b79e10de054ac2f16dae5a22ed17b6fd8f8642fe7a5b94f711cd050",
+    "packs/resource/models/blocks/atelier_crossbrace_none_none_0_e14.geo.json": "6e977a1480917f3461d553053b1168d650074a747152dac59f9bf572fb9f2ef7",
+    "packs/resource/models/blocks/universal_crossbrace_linen_long_none_0_e11.geo.json": "c66e895d2d7f67b0942e76c87f0a600a3b64f2e6356e47c96e795372a5c7bcdb",
+    "packs/resource/models/blocks/universal_crossbrace_linen_long_none_0_e14.geo.json": "25fbf3beb50f3d2bfd377ba5ce9b27a18b2e38db0387f97c788402efa853f233",
+    "packs/resource/textures/blocks/textile_ruby_1_purple.png": "4608e646a39341ad3561275b75ac216dbae17dde61061ea5dff5f12faac1fb9a",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_1_e9.geo.json": "82d43a9651dbd608dba48debe82346e866f854eb0139ea141559d3c4047ae1ca",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_1_e1.geo.json": "5fa28fbe52745bbb0e445b43ee910344518975ea84f08d2517bba59b89a142b6",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_1_e3.geo.json": "9af3152381eaf5f92618c2de1cd21f9c0c03bf4df0c0e68734ae75c176cf814c",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_1_e12.geo.json": "a56eeae1f639f2aa810b83eb572756204da33819d4bc035ef5d0d0fd68a236ed",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_1_e4.geo.json": "75993276433e05627b91fad6327f2dfe9afef9387e8fa5b84a39b4aaca807ae7",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_1_e6.geo.json": "6eaf63a28e78ed443bc32a8bc46418ba87d4a7b49db216c05db796940777ce60",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_2_e9.geo.json": "9613594cb807f846458e8ee59bb8b128f4942486bc0b36b67be1d1ca9cc3f440",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_2_e1.geo.json": "5e6d880d6f87fca5245581539a55a5a8f547dbb418c58991395c35ba12c5d490",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_2_e3.geo.json": "541f66e3bc5922edf202829e0734f0686d99077a2db2450c73c27b3f11731d02",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_2_e12.geo.json": "08aedefa194ef8960c0d8bb028f5b61e1690c55edc436b81d5eb610b44ec6de4",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_2_e4.geo.json": "5a0b782fa183ea9529ca366b99779c82d9afdf376b42aa7fd868520d278ebc65",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_2_e6.geo.json": "45daf0dfaa74637dafdda31bdb2a97a7a64d175030d9adbc403415b4b7b4cf63",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_3_e9.geo.json": "5f4bac4ec66b65e52011127591312bddb7e8631374c7c3bdf9abe2a1dede92d6",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_3_e1.geo.json": "82d8cea625203c99318d2ec7ac19ee8fcce07dc17cb33136b0dfd026bb01e6fb",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_3_e3.geo.json": "b0c18b8fe75f2758c9aa250dcf525594c4dab82cb69431095a24ee6f93aef920",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_3_e12.geo.json": "c0e5e741b4c95a5ef6e042bbd76351698965f49d9e352ec29b4229dcb21edab4",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_3_e4.geo.json": "54aa69fafd09b26ab22e4b085288a6afa03d403b6045ff5745779346146c2c9b",
+    "packs/resource/models/blocks/atelier_crossbrace_ruby_none_3_e6.geo.json": "0786501aa9c8930976f54b23523c48b4de5ef87a36234869c97f53804f66d71f"
+  },
+  "scenes": [
+    {
+      "id": "crossbrace-3x2-bare",
+      "w": 3,
+      "d": 2,
+      "textile": "none",
+      "direction": [
+        -0.52,
+        0.38,
+        -1
+      ],
+      "file": "crossbrace-3x2-bare.png"
+    },
+    {
+      "id": "crossbrace-7x2-linen",
+      "w": 7,
+      "d": 2,
+      "textile": "linen_short",
+      "direction": [
+        -0.45,
+        0.38,
+        -1
+      ],
+      "file": "crossbrace-7x2-linen.png"
+    },
+    {
+      "id": "crossbrace-8x2-floral",
+      "w": 8,
+      "d": 2,
+      "textile": "floral",
+      "color": "green",
+      "direction": [
+        -0.45,
+        0.38,
+        -1
+      ],
+      "file": "crossbrace-8x2-floral.png"
+    },
+    {
+      "id": "crossbrace-detail",
+      "w": 1,
+      "d": 1,
+      "textile": "none",
+      "direction": [
+        -0.65,
+        0.25,
+        -1
+      ],
+      "file": "crossbrace-detail.png"
+    },
+    {
+      "id": "crossbrace-7x2-bare",
+      "w": 7,
+      "d": 2,
+      "textile": "none",
+      "direction": [
+        -0.45,
+        0.38,
+        -1
+      ],
+      "file": "crossbrace-7x2-bare.png"
+    },
+    {
+      "id": "crossbrace-7x2-lace",
+      "w": 7,
+      "d": 2,
+      "textile": "lace",
+      "direction": [
+        -0.45,
+        0.38,
+        -1
+      ],
+      "file": "crossbrace-7x2-lace.png"
+    },
+    {
+      "id": "textile-none",
+      "w": 3,
+      "d": 2,
+      "textile": "none",
+      "direction": [
+        -0.45,
+        0.22,
+        -1
+      ],
+      "file": "textile-none.png"
+    },
+    {
+      "id": "textile-linen_short",
+      "w": 3,
+      "d": 2,
+      "textile": "linen_short",
+      "direction": [
+        -0.45,
+        0.22,
+        -1
+      ],
+      "file": "textile-linen_short.png"
+    },
+    {
+      "id": "textile-linen_long",
+      "w": 3,
+      "d": 2,
+      "textile": "linen_long",
+      "direction": [
+        -0.45,
+        0.22,
+        -1
+      ],
+      "file": "textile-linen_long.png"
+    },
+    {
+      "id": "textile-gold_short",
+      "w": 3,
+      "d": 2,
+      "textile": "gold_short",
+      "direction": [
+        -0.45,
+        0.22,
+        -1
+      ],
+      "file": "textile-gold_short.png"
+    },
+    {
+      "id": "textile-gold_long",
+      "w": 3,
+      "d": 2,
+      "textile": "gold_long",
+      "direction": [
+        -0.45,
+        0.22,
+        -1
+      ],
+      "file": "textile-gold_long.png"
+    },
+    {
+      "id": "textile-lace",
+      "w": 3,
+      "d": 2,
+      "textile": "lace",
+      "direction": [
+        -0.45,
+        0.22,
+        -1
+      ],
+      "file": "textile-lace.png"
+    },
+    {
+      "id": "textile-agnus",
+      "w": 3,
+      "d": 2,
+      "textile": "agnus",
+      "direction": [
+        -0.45,
+        0.22,
+        -1
+      ],
+      "file": "textile-agnus.png"
+    },
+    {
+      "id": "textile-verdant",
+      "w": 3,
+      "d": 2,
+      "textile": "verdant",
+      "direction": [
+        -0.45,
+        0.22,
+        -1
+      ],
+      "file": "textile-verdant.png"
+    },
+    {
+      "id": "textile-requiem",
+      "w": 3,
+      "d": 2,
+      "textile": "requiem",
+      "direction": [
+        -0.45,
+        0.22,
+        -1
+      ],
+      "file": "textile-requiem.png"
+    },
+    {
+      "id": "floral-white",
+      "w": 4,
+      "d": 2,
+      "textile": "floral",
+      "color": "white",
+      "direction": [
+        -0.45,
+        0.22,
+        -1
+      ],
+      "file": "floral-white.png"
+    },
+    {
+      "id": "floral-red",
+      "w": 4,
+      "d": 2,
+      "textile": "floral",
+      "color": "red",
+      "direction": [
+        -0.45,
+        0.22,
+        -1
+      ],
+      "file": "floral-red.png"
+    },
+    {
+      "id": "floral-green",
+      "w": 4,
+      "d": 2,
+      "textile": "floral",
+      "color": "green",
+      "direction": [
+        -0.45,
+        0.22,
+        -1
+      ],
+      "file": "floral-green.png"
+    },
+    {
+      "id": "floral-purple",
+      "w": 4,
+      "d": 2,
+      "textile": "floral",
+      "color": "purple",
+      "direction": [
+        -0.45,
+        0.22,
+        -1
+      ],
+      "file": "floral-purple.png"
+    },
+    {
+      "id": "floral-rose",
+      "w": 4,
+      "d": 2,
+      "textile": "floral",
+      "color": "rose",
+      "direction": [
+        -0.45,
+        0.22,
+        -1
+      ],
+      "file": "floral-rose.png"
+    },
+    {
+      "id": "floral-black",
+      "w": 4,
+      "d": 2,
+      "textile": "floral",
+      "color": "black",
+      "direction": [
+        -0.45,
+        0.22,
+        -1
+      ],
+      "file": "floral-black.png"
+    },
+    {
+      "id": "floral-gold",
+      "w": 4,
+      "d": 2,
+      "textile": "floral",
+      "color": "gold",
+      "direction": [
+        -0.45,
+        0.22,
+        -1
+      ],
+      "file": "floral-gold.png"
+    },
+    {
+      "id": "floral-silver",
+      "w": 4,
+      "d": 2,
+      "textile": "floral",
+      "color": "silver",
+      "direction": [
+        -0.45,
+        0.22,
+        -1
+      ],
+      "file": "floral-silver.png"
+    },
+    {
+      "id": "join-front",
+      "w": 2,
+      "d": 1,
+      "textile": "none",
+      "direction": [
+        0,
+        0.02,
+        -1
+      ],
+      "center": [
+        0.5,
+        0.5,
+        -0.44
+      ],
+      "frame": [
+        1.8,
+        1.1
+      ],
+      "file": "join-front.png"
+    },
+    {
+      "id": "join-back",
+      "w": 2,
+      "d": 1,
+      "textile": "none",
+      "direction": [
+        0,
+        0.02,
+        1
+      ],
+      "center": [
+        0.5,
+        0.5,
+        0.44
+      ],
+      "frame": [
+        1.8,
+        1.1
+      ],
+      "file": "join-back.png"
+    },
+    {
+      "id": "cross-front-grazing",
+      "w": 1,
+      "d": 1,
+      "textile": "none",
+      "direction": [
+        -0.85,
+        0.08,
+        -0.5
+      ],
+      "file": "cross-front-grazing.png"
+    },
+    {
+      "id": "cross-back-grazing",
+      "w": 1,
+      "d": 1,
+      "textile": "none",
+      "direction": [
+        0.85,
+        0.08,
+        0.5
+      ],
+      "file": "cross-back-grazing.png"
+    },
+    {
+      "id": "corner-underside",
+      "w": 1,
+      "d": 1,
+      "textile": "none",
+      "direction": [
+        -0.65,
+        -0.5,
+        -1
+      ],
+      "file": "corner-underside.png"
+    },
+    {
+      "id": "narrow-1x3",
+      "w": 1,
+      "d": 3,
+      "textile": "none",
+      "direction": [
+        -1,
+        0.25,
+        -0.35
+      ],
+      "file": "narrow-1x3.png"
+    },
+    {
+      "id": "square-2x2",
+      "w": 2,
+      "d": 2,
+      "textile": "none",
+      "direction": [
+        -0.65,
+        0.4,
+        -1
+      ],
+      "file": "square-2x2.png"
+    },
+    {
+      "id": "side-linen-long",
+      "w": 1,
+      "d": 2,
+      "textile": "linen_long",
+      "direction": [
+        1,
+        0.18,
+        0.3
+      ],
+      "file": "side-linen-long.png"
+    },
+    {
+      "id": "floral-facing-0",
+      "w": 3,
+      "d": 2,
+      "textile": "floral",
+      "color": "purple",
+      "facing": 0,
+      "direction": [
+        -0.45,
+        0.28,
+        -1
+      ],
+      "file": "floral-facing-0.png"
+    },
+    {
+      "id": "floral-facing-1",
+      "w": 3,
+      "d": 2,
+      "textile": "floral",
+      "color": "purple",
+      "facing": 1,
+      "direction": [
+        -0.45,
+        0.28,
+        -1
+      ],
+      "file": "floral-facing-1.png"
+    },
+    {
+      "id": "floral-facing-2",
+      "w": 3,
+      "d": 2,
+      "textile": "floral",
+      "color": "purple",
+      "facing": 2,
+      "direction": [
+        -0.45,
+        0.28,
+        -1
+      ],
+      "file": "floral-facing-2.png"
+    },
+    {
+      "id": "floral-facing-3",
+      "w": 3,
+      "d": 2,
+      "textile": "floral",
+      "color": "purple",
+      "facing": 3,
+      "direction": [
+        -0.45,
+        0.28,
+        -1
+      ],
+      "file": "floral-facing-3.png"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+# Parecer independente da anatomia V9 retida
+
+**Retida como melhora técnica local. Não é interface limpa, ausência literal de compressão ou aprovação global.**
+
+Arquivo final reaberto e testado: `../constrained_fit/retained-anatomy.npz`.
+
+SHA-256: `c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db`.
+
+A cópia final é byte a byte igual a `intrinsic097-c30-iteration00.npz`. O gate completo foi repetido lendo a cópia retida; invariantes, proteção, métricas, contatos e outras partes coincidem exatamente com o checkpoint revisado. Evidência: `retained-identity.json` e `retained-anatomy-review.json`.
+
+## Resultado final confirmado
+
+- CascaV7:670→607 pares contraV8, com29 novos,92 removidos e578 comuns. Contra o baseline original:41 novos e3.603 removidos. Não declarar ausência de contatos novos.
+- FaixaV5:1.115→797 pares contraV8, com12 novos,330 removidos e785 comuns. Contra o baseline original:12 novos e425 removidos.
+- Mesmos692 vértices e1.376 triângulos. Todos os280 protegidos e410 fora do domínio ativoV8 estão bit a bit preservados. Orelhas88/88 fixas.
+- Área mínima0,969367 do original; stretch intrínseco0,968192…1,032648; rotação máxima12,261°. A face144 da nuca, antes com13,666% da área original, agora retém99,877%.
+-281 vértices movidos; máximo9,233mm, p95dosmovidos5,050mm, mediana1,041mm. Não confundir a melhor preservação local de forma com deslocamentos menores em todos os pontos: o p95 é maior que naV8.
+- Zero inversões ou novos cruzamentos estritos próprios. O teste explícito dos8.659 pares adjacentes também dá zero após rejeitar corretamente um resíduo numérico na aresta comum das faces111/824.
+- O defeito microscópico3v/2f herdado permanece. Ele continua reprovando o gate integral; não é regressãoV9.
+- Túnica60 pares, sem novos. Halo Maria proxy29, sem novos. Outras partes válidas examinadas sem contatos novos. Híbridos6/7/8/10/14 não certificados por esses proxies.
+- Oito hashes dos inputs congelados conferidos, todos intactos.
+
+## Limites essenciais
+
+Com orelhas e obstáculos congelados,462 pares da casca e657 da faixa são matematicamente imutáveis nesta conectividade. Os oito pontos de orelha sem exposição pontual nos910 raios continuam ligados a faces parcialmente expostas; não foram liberados. A ponte permanece visível dentro das cavidades nas imagens dos dois lados.
+
+A classificação por raios encontra alguma direção de exposição em11/29 novos pares da casca e6/12 da faixa. Isso não prova regressão perceptível de pixels, mas impede descrevê-los como todos ocultos. Não existe folga positiva global enquanto persistirem cruzamentos estritos.
+
+A retenção privilegia menor strain e deslocamento frente à alternativaAccumulated03, que obteve572/798 pares mas maior deformação sem ganho visual material observado. A alternativa e suas ressalvas não foram descartadas da documentação.
+
+Relatório completo e comparação: `REVIEW_V9_CANDIDATES.md`. Diagnóstico/máscaras: `README.md`. Nenhum export Bedrock, addon, normalmap, teste de engine ou publicação foi feito nesta revisão.

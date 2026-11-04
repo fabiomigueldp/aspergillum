@@ -1,0 +1,14 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-cloth-obstacle-surface-trial.py').read().split('counts=collections.Counter')[0])
+D=np.load(r+'neck-layer-provenance.npz');params=D['params'];layer=D['layer'];patch=set(json.load(open(r+'neck-collar-targeted-expansion-audit.json'))['patch_faces']);targets=[180876,180881,180885,180886];edgefaces=collections.defaultdict(set)
+for fi,f in enumerate(fs):
+ for a,b in zip(f,f[1:]+f[:1]):edgefaces[tuple(sorted((a,b)))].add(fi)
+adj=collections.defaultdict(set)
+for group in edgefaces.values():
+ for fi in group:adj[fi]|=group-{fi}
+def describe(fi):
+ ids=np.array(fs[fi]);v=p[ids];areas=[]
+ for j in range(1,len(v)-1):areas.append(np.linalg.norm(np.cross(v[j]-v[0],v[j+1]-v[0]))/2)
+ edges=np.linalg.norm(v-np.roll(v,1,axis=0),axis=1);a=params[ids-160386];angles=np.unwrap(np.arctan2(a[:,1],a[:,2]));return {'face':fi,'in_patch':fi in patch,'vertices':ids.tolist(),'area':float(sum(areas)),'edge_min':float(edges.min()),'edge_max':float(edges.max()),'edge_ratio':float(edges.max()/max(1e-12,edges.min())),'bounds':[v.min(0).tolist(),v.max(0).tolist()],'source_rows':[float(a[:,0].min()),float(a[:,0].max())],'source_angle_range':[float(angles.min()),float(angles.max())],'layer_values':sorted(set(map(float,layer[ids-160386]))),'neighbors':sorted(adj[fi])}
+faces=set(targets)
+for _ in range(2):faces|=set().union(*(adj[fi] for fi in faces))
+faces={fi for fi in faces if all(v>=160386 for v in fs[fi])};descriptions=[describe(fi) for fi in sorted(faces)];report={'target_faces':[describe(fi) for fi in targets],'two_ring_faces':len(faces),'two_ring_descriptions':descriptions,'scope':'Non-mutating source-topology audit; no proposed expansion yet'};json.dump(report,open(r+'neck-adjacent-fold-structure-audit.json','w'),indent=2);print(report['target_faces']);print('two ring',len(faces))

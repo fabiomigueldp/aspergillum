@@ -1,0 +1,44 @@
+import bpy,math
+from mathutils import Matrix,Vector
+from mathutils.bvhtree import BVHTree
+from math import sin,cos,pi
+ROOT='/workspace/scratch/212c580ada5b/paz-refinement/'
+bpy.ops.wm.open_mainfile(filepath=ROOT+'Nossa_Senhora_da_Paz_v17_estudo.blend')
+R=bpy.data.objects['Maria — auréola lisa'].rotation_euler.to_matrix()@Matrix.Rotation(-pi/2,3,'X')
+head=bpy.data.objects['Maria — anatomia feminina adaptada CC0'];bvh=BVHTree.FromObject(head,bpy.context.evaluated_depsgraph_get())
+o=bpy.data.objects['Maria — plano contínuo do manto'];o.shape_key_add(name='Manto V13 preservado');k=o.shape_key_add(name='Queda contínua ligada ao véu');k.value=1
+# Existing grid: 10 rows x 80 columns, last four are disconnected dorsal wall.
+for i,v in enumerate(o.data.vertices):
+ row=i//80;col=i%80
+ if row<6:continue
+ a=pi/2+pi*col/79
+ z=3.50-.14*sin(a)**2-.35*max(0,-cos(a))
+ origin=R@Vector((-.44,1.012,z));direction=R@Vector((sin(a),-cos(a),0))
+ hit,n,idx,dist=bvh.ray_cast(origin,direction,1)
+ if hit is None:continue
+ anchor=o.data.vertices[5*80+col].co.copy()
+ t=(row-5)/4
+ # smooth shoulder-to-skull trajectory, eliminating slab above the neck
+ p=anchor.lerp(hit+n*.004,t)
+ if row in (6,7,8):
+  # controlled posterior neck cross-sections, no taut triangular plane
+  if row==6: p=Vector((.012+.118*sin(a),-.018-.115*cos(a),3.185))
+  elif row==7:p=Vector((.02+.115*sin(a),-.05-.11*cos(a),3.28))
+  else:
+   neck=Vector((.02+.115*sin(a),-.05-.11*cos(a),3.28))
+   p=neck.lerp(hit+n*.004,.6)
+ k.data[i].co=p
+for m in o.modifiers:
+ if m.type=='SOLIDIFY':m.thickness=.006
+neckkey=head.shape_key_add(name='Junção inferior do pescoço — encaixe');neckkey.value=1
+for i,v in enumerate(head.data.vertices):
+ w=max(0,min(1,(3.25-v.co.z)/.12))
+ neckkey.data[i].co=v.co+Vector((0,0,-.065*w*w))
+bpy.context.view_layer.update()
+neckbvh=BVHTree.FromObject(head,bpy.context.evaluated_depsgraph_get())
+for i in range(6*80,10*80):
+ p=k.data[i].co.copy();hit,n,idx,dist=neckbvh.find_nearest(p)
+ if hit is not None and (p-hit).dot(n)<.012:k.data[i].co=hit+n*.012
+s=bpy.context.scene;s.render.filepath=ROOT+'v20-face.png';s.cycles.samples=48
+bpy.ops.wm.save_as_mainfile(filepath=ROOT+'Nossa_Senhora_da_Paz_v20_estudo.blend');bpy.ops.render.render(write_still=True)
+c=s.camera;c.location=(-5,-.05,3.6);c.rotation_euler=(Vector((0,-.15,3.4))-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=1.05;s.render.filepath=ROOT+'v20-profile.png';bpy.ops.render.render(write_still=True)

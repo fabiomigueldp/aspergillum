@@ -1,0 +1,22 @@
+"""Ablation of explicitly-local paired cap/bridge support for posterior routing."""
+from pathlib import Path
+import sys, numpy as np
+O=Path(__file__).resolve().parent;sys.path.insert(0,str(O));sys.dont_write_bytecode=True
+import scan_boundary as sb
+S=sb.smoothstep
+supports={
+ 'tight':dict(x0=.08,xw=.03,y0=-.32,yw=.06,yt=-.13,yf=.00,z0=3.38,zw=.05,zt=3.55,zf=3.60),
+ 'tightlow':dict(x0=.08,xw=.03,y0=-.32,yw=.06,yt=-.13,yf=.00,z0=3.38,zw=.05,zt=3.53,zf=3.585),
+ 'widevertical':dict(x0=.08,xw=.03,y0=-.32,yw=.06,yt=-.13,yf=.00,z0=3.35,zw=.07,zt=3.57,zf=3.65),
+ 'earonly':dict(x0=.1,xw=.02,y0=-.30,yw=.04,yt=-.13,yf=.00,z0=3.40,zw=.025,zt=3.55,zf=3.59),
+}
+for name,param in supports.items():
+ def wf(c,width=1,p=param):
+  x,y,z=c.T;return S((abs(x-.04)-p['x0'])/p['xw'])*S((y-p['y0'])/p['yw'])*(1-S((y-p['yt'])/(p['yf']-p['yt'])))*S((z-p['z0'])/p['zw'])*(1-S((z-p['zt'])/(p['zf']-p['zt'])))
+ sb.field_weight=wf
+ for amp in [20,25,30,35]:sb.build(f'support-{name}-posterior-{amp:02d}mm',[0,1,0],amp,{'support_parameters':param,'local_weight':'Explicit compact C2 field; see support_parameters'})
+# Exact support parameters override the inherited generic label in per-candidate report.
+import json
+for row in sb.summary:
+ name=next(k for k in supports if f'support-{k}-' in row['tag']);row['parameters']['support_parameters']=supports[name];row['parameters']['local_weight']='Explicit compact C2 field; see support_parameters';p=O/(row['tag']+'-metrics.json');p.write_text(json.dumps(row,indent=2))
+(O/'support-summary.json').write_text(json.dumps(sb.summary,indent=2))

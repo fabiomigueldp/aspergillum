@@ -1,0 +1,39 @@
+"""Read-only semantic/file assertions and delivery hashes; writes report only here."""
+from pathlib import Path
+import json,hashlib,gzip,ast
+import numpy as np
+from PIL import Image
+W=Path(__file__).resolve().parent;V=W.parent;B=V.parent;R=V/'resource_pack'
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+build=json.load(open(W/'build-report.json'));g0=json.load(open(W/'legacy-geometry.geo.json'))['minecraft:geometry'][0];g=json.load(open(R/'models/entity/paz_v75_v14_lab_sculpture.geo.json'))['minecraft:geometry'][0]
+checks={};checks['input_hashes_unchanged']=all(sha(B/k)==v for k,v in build['inputs_sha256'].items());assert checks['input_hashes_unchanged']
+checks['original_bones_unchanged']=all(g['bones'][i]==g0['bones'][i]for i in build['unchanged_bones']);assert checks['original_bones_unchanged']
+checks['face_counts']={name:len(g['bones'][i]['cubes'])for name,i in [('band',0),('shell',1),('anatomy',15)]};assert list(checks['face_counts'].values())==[4444,12664,1376]
+checks['total_cubes']=sum(len(b['cubes'])for b in g['bones']);assert checks['total_cubes']==23081
+assert 'poly_mesh'not in (R/'models/entity/paz_v75_v14_lab_sculpture.geo.json').read_text()
+rows=[json.loads(x)for x in gzip.open(W/'transport_faces.jsonl.gz','rt')];assert len(rows)==18484
+checks['unique_new_tile_addresses']=len({tuple(r['atlas_uv'])for r in rows});assert checks['unique_new_tile_addresses']==18484
+for r in rows:
+ assert r['cube_index']==r['native_triangle_index'];c=g['bones'][r['part']]['cubes'][r['cube_index']];assert set(c['uv'])=={'south'}and c['size'][2]==0
+ assert c['uv']['south']['uv']==r['atlas_uv'];x,y=r['atlas_uv'];assert x+20<=4096 and y+20<=4096 and (x>=2048 or y>=2048)
+for stem,old in [('paz_v75_v14_lab_sculpture','legacy-color.png'),('paz_v75_v14_lab_sculpture_normal_dx','legacy-normal-dx.png')]:
+ p=R/'textures/entity'/f'{stem}.png';img=np.array(Image.open(p).convert('RGBA'));assert img.shape==(4096,4096,4);assert np.array_equal(img[:2048,:2048],np.array(Image.open(W/old).convert('RGBA')))
+checks['legacy_image_regions_bit_exact']=True
+checks['default_flat_has_no_texture_set']=not (R/'textures/entity/paz_v75_v14_lab_sculpture.texture_set.json').exists();assert checks['default_flat_has_no_texture_set']
+checks['no_behavior_pack_or_mcaddon']=not (V/'behavior_pack').exists()and not list(R.glob('*.mcaddon'));assert checks['no_behavior_pack_or_mcaddon']
+for p in W.glob('*.py'):ast.parse(p.read_text())
+checks['python_sources_parse']=True
+if (W/'pbr-investigation-report.json').exists():
+ pbr=json.load(open(W/'pbr-investigation-report.json'));checks['pbr_status']=pbr['status'];assert pbr['status']=='PARTIAL_PBR_EXPERIMENT_NOT_EQUIVALENCE'
+ npz=dict(np.load(W/'pbr-texel-provenance.npz'));an=dict(np.load(W/'source-anatomy-frozen.npz'));dl=np.load(B/'pbr_normals_v2/evidence/repaired_meshes.npz');low={k:dl[k]for k in ['low_v','low_f']};normal=np.array(Image.open(R/'textures/entity/paz_v75_v14_lab_pbr_experimental_normal_dx.png').convert('RGBA'));oldnormal=np.array(Image.open(W/'legacy-normal-dx.png').convert('RGBA'));count=0
+ for r in rows:
+  if r['part']!=15:continue
+  fi=r['native_triangle_index'];idn=npz['anatomy_identity_face'][fi];assert idn==np.array_equal(an['points'][an['triangles'][fi]],low['low_v'][low['low_f'][an['source_face_indices'][fi]]])
+  if idn:
+   x,y=r['atlas_uv'];sx,sy=r['legacy_correspondence']['legacy_uv'];assert np.array_equal(normal[y:y+20,x:x+20],oldnormal[sy:sy+20,sx:sx+20]);count+=1
+ checks['anatomy_identity_normal_tiles_bit_exact']=count
+ assert np.all(npz['band_high_source_face'][npz['band_high_source_face']>=0]<192512)
+ checks['pbr_legacy_normal_region_bit_exact']=np.array_equal(normal[:2048,:2048],oldnormal);assert checks['pbr_legacy_normal_region_bit_exact']
+files=[p for root in [W,R]for p in root.rglob('*')if p.is_file()and p.name not in ['delivery-check.json','delivery-sha256.json']and p.suffix!='.log'and '__pycache__'not in p.parts]
+manifest={str(p.relative_to(V)):sha(p)for p in sorted(files)}
+(W/'delivery-sha256.json').write_text(json.dumps(manifest,indent=2)+'\n');(W/'delivery-check.json').write_text(json.dumps(checks,indent=2)+'\n');print(json.dumps(checks,indent=2))

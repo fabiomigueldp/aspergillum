@@ -1,0 +1,313 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> aspergillum-bedrock-addon@2.0.0 check
+> npm run typecheck && npm test && npm run verify:recovery-model && npm --prefix viewer-3d test && npm run validate:docs && npm run build
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> aspergillum-bedrock-addon@2.0.0 typecheck
+> tsc --noEmit
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> aspergillum-bedrock-addon@2.0.0 test
+> vitest run
+
+
+ RUN  v3.2.7 /workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103
+
+ ✓ tests/application/compact-placement-runtime.test.ts (7 tests) 1636ms
+   ✓ registered compact block placement handlers > preserves all 289 aspersorium contents and all 17 table contents in every placement rotation  1054ms
+ ✓ tests/application/compact-event-routing.test.ts (25 tests) 465ms
+ ✓ tests/application/sacristan-table-compact-runtime.test.ts (42 tests) 2443ms
+   ✓ real sacristan table application with compact block states > docks, recolors and retrieves every finish at all sixteen rotations with exact metadata  1667ms
+ ✓ tests/block-snapshot.test.mjs (30 tests) 3082ms
+   ✓ complete legacy schema and CLI > enumerates every legacy aspersorium/table state without losing semantic tuple or rotation  2819ms
+ ✓ tests/application/aspersorium-compact-runtime.test.ts (39 tests) 2998ms
+   ✓ real aspersorium application with compact block states > fills all 17 occupancy values in every rotation without changing the stored item  1228ms
+   ✓ real aspersorium application with compact block states > docks and retrieves all finishes in all rotations, conserving partial water and exact metadata  1406ms
+ ✓ tools/verify-preserved-audio.test.mjs (5 tests) 1631ms
+   ✓ preserved audio verification > rejects changed .wav bytes even when all other media are intact  317ms
+   ✓ preserved audio verification > rejects changed .mp3 bytes even when all other media are intact  693ms
+   ✓ preserved audio verification > rejects an incomplete manifest rather than skipping an unpinned output  385ms
+ ✓ tools/addon-manager/addon-manager.test.mjs (6 tests) 1800ms
+   ✓ addon manager > pins unselected Shared dependants and atomically installs Y in Shared and devtest  473ms
+   ✓ addon manager > blocks a world that contains only half of the exact X identity  496ms
+ ✓ tools/package-water-dither-diagnostics.test.mjs (7 tests) 256ms
+ ✓ tests/domain/cone.test.ts (8 tests) 38ms
+ ✓ tools/release/artifact-core.test.mjs (2 tests) 436ms
+   ✓ artifact core > packages deterministically and derives identity from the exact mcaddon  319ms
+ ✓ tools/addon-manager/transaction.test.mjs (2 tests) 21ms
+ ✓ tests/infrastructure/aspersorium-water-state.test.ts (4 tests) 5256ms
+   ✓ compact contents adapters > round-trips every water/occupancy/rotation and preserves cosmetics on every water write  5208ms
+ ✓ tests/presentation/aspersorium-water-visual.test.ts (8 tests) 53ms
+ ✓ tests/domain/customization.test.ts (7 tests) 22ms
+ ✓ tests/presentation/release-ux.test.ts (8 tests) 28ms
+ ✓ tests/infrastructure/docked-registry-preservation.test.ts (22 tests) 39ms
+ ✓ tools/package-render-diagnostics.test.mjs (3 tests) 13ms
+ ✓ tests/domain/docking.test.ts (7 tests) 25ms
+ ✓ tests/application/recovery-failure-semantics.test.ts (8 tests) 149ms
+ ✓ tools/package-entity-water-diagnostic.test.mjs (5 tests) 9ms
+ ✓ tools/addon-manager/projects.test.mjs (4 tests) 26ms
+ ✓ tests/domain/aspergillum.test.ts (11 tests) 86ms
+ ✓ tools/release/release-registry.test.mjs (2 tests) 6ms
+ ✓ tools/addon-manager/lock.test.mjs (1 test) 13ms
+ ✓ tests/infrastructure/action-lease.test.ts (2 tests) 11ms
+ ✓ tests/domain/spray-profile.test.ts (3 tests) 14ms
+ ✓ tests/presentation/variant-shuffle-bag.test.ts (3 tests) 10ms
+ ✓ tests/domain/aspersorium-water.test.ts (3 tests) 34ms
+ ✓ tests/infrastructure/customization-session.test.ts (2 tests) 6ms
+ ✓ tests/domain/rotation.test.ts (2 tests) 6ms
+ ✓ tests/infrastructure/item-variants.test.ts (2 tests) 9ms
+ ✓ tools/sync-installed-addon.test.mjs (3 tests) 12ms
+ ✓ tools/addon-manager.cli.test.mjs (4 tests) 56ms
+
+ Test Files  33 passed (33)
+      Tests  287 passed (287)
+   Start at  17:52:29
+   Duration  12.69s (transform 6.60s, setup 0ms, collect 18.89s, tests 20.69s, environment 81ms, prepare 13.89s)
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> aspergillum-bedrock-addon@2.0.0 verify:recovery-model
+> node --test tools/recovery-analysis.node-test.mjs && node tools/recovery-analysis.mjs
+
+✔ all modeled single-fault boundaries preserve raw evidence and never replay delivery on reload (15.909197ms)
+✔ raw evidence survives unparsed: null (3.106619ms)
+✔ raw evidence survives unparsed: "" (6.69234ms)
+✔ raw evidence survives unparsed: "not JSON" (10.872739ms)
+✔ raw evidence survives unparsed: "{\"future\":999,\"bad-entry\":null}" (9.782801ms)
+✔ raw evidence survives unparsed: "  {\"emoji\":\"🕊\",\"quotes\":\"\\\"\"}\n" (4.564497ms)
+✔ raw evidence survives unparsed: "{\"entries\":{\"a\":{\"futureSecretShape\":[1,2]}}}" (4.300497ms)
+✔ UTF-8 encoding and JSON escape overhead refuse before any mutation (11.748357ms)
+✔ full envelope, including longer intermediate phase, is budgeted before prepare (8.312403ms)
+✔ any preexisting journal including corrupt/future shape blocks all operations (3.537493ms)
+✔ repeated reload does not retry and retains the exact journal (3.136463ms)
+✔ counterexamples defeat stronger claims rather than asserting exactly-once (0.305169ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 551.113216
+{
+  "output": "/workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103/out/state-compaction/recovery-analysis",
+  "coverage": {
+    "rows": 54,
+    "injectedFaults": 51,
+    "successfulPaths": 3,
+    "modes": [
+      "throw-before",
+      "throw-after",
+      "interrupt-after"
+    ],
+    "steps": {
+      "dock": [
+        "prepare",
+        "mark-ambiguous",
+        "registry",
+        "remove-hand",
+        "occupy",
+        "complete"
+      ],
+      "undock": [
+        "prepare",
+        "mark-ambiguous",
+        "clear-block",
+        "delete-registry",
+        "deliver",
+        "complete"
+      ],
+      "break": [
+        "prepare",
+        "mark-ambiguous",
+        "deliver",
+        "delete-registry",
+        "complete"
+      ]
+    }
+  },
+  "successfulAssertions": true
+}
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> aspergillum-model-viewer@2.4.0 test
+> node --test tests/*.node.mjs
+
+✔ pins the supplied clerical skin as the wide default preset (18.401733ms)
+✔ defines distinct canonical right arm and rightItem pivots for wide and slim rigs (0.894189ms)
+✔ builds a player geometry with the exact rightItem hierarchy and standard skin UVs (3.135658ms)
+✔ maps the complete Minecraft skin toward the avatar visual front (0.620497ms)
+✔ normalizes a reproducible scene recipe without mutating gameplay state (0.753329ms)
+✔ validates modern square skins and resolves capture views in requested order (2.300616ms)
+✔ centers the authored leather-grip pivot exactly on rightItem (1.292508ms)
+✔ infers slim only from transparent reserved arm strips and keeps the result advisory (1.288107ms)
+✔ grafts a head wearable at the matching player pivot (49.948707ms)
+✔ maps every nested matching branch to the corresponding animated player bone (3.898666ms)
+✔ aligns a legacy zero-pivot helmet to the player head bone (15.772782ms)
+✔ converts the canonical Bedrock -Z equipment front into the viewer +Z basis once (37.877477ms)
+✔ matches the bounded Hermite load envelope used by the pack (3.61208ms)
+✔ keeps the approved third-person hold and composes load over the vanilla first-person viewmodel (2.230016ms)
+✔ reproduces the bounded vanilla first-person attack curve independently (0.814453ms)
+✔ models the vanilla attack curve and third-person recovery bridge independently (0.655652ms)
+✔ samples numeric Bedrock channels with linear, step and Catmull-Rom interpolation (1.118128ms)
+✔ ships the requested default skin byte-for-byte under the tool-only avatar library (11.417623ms)
+✔ resolves the protected attachable binding and empirical grip from authoritative pack sources (8.543664ms)
+✔ normaliza documentos minecraft:geometry modernos (10.481031ms)
+✔ normaliza geometrias Bedrock legadas sem perder bones (1.760254ms)
+✔ gera IDs estáveis para .json e .geo.json e normaliza texturas (0.74277ms)
+✔ converts Bedrock channels for the established third-person and canonical viewmodel bases (4.705735ms)
+✔ converts authored Bedrock geometry into the Three.js coordinate basis (1.992082ms)
+✔ subtracts an external Bedrock pivot when grafting a bound geometry (2.439627ms)
+✔ resolves bone names case-insensitively and restores authored transforms (2.275889ms)
+✔ returns mesh, locator and material records without relying on global renderer state (12.193144ms)
+✔ honors the upside-down cube pivot convention unique to geometry 1.12 (1.802717ms)
+✔ keeps the rotated panels of a legacy 1.12 barrette assembled (5.891823ms)
+✔ rotates a cube without an explicit pivot around its own center (0.658165ms)
+✔ matches THREE.BoxGeometry row-major vertex order without diagonal shear (3.763707ms)
+✔ preserves signed uv_size for horizontal and vertical Bedrock mirroring (0.340715ms)
+✔ maps THREE +Z to Bedrock south and -Z to north (0.415509ms)
+✔ expands Bedrock Box UV into the six canonical face rectangles (1.097288ms)
+✔ uses explicit per-face uv_size and material instance without quantizing (0.439657ms)
+✔ treats an omitted per-face UV as an intentionally unrendered Bedrock face (0.540116ms)
+✔ exposes all visual subjects used by the add-on (13.358796ms)
+✔ defines normalized cardinal, oblique, top and bottom capture directions (1.433763ms)
+✔ resolves requested views in order and rejects unknown ids (2.050463ms)
+✔ resolves the classic finish by default and preserves requested order (4.164905ms)
+✔ provides readable finish labels and stable texture suffixes (0.866044ms)
+✔ rejects an unknown finish instead of silently capturing the classic one (1.164066ms)
+✔ decouples the visual matrix order from persisted cosmetic indices (0.397633ms)
+✔ defines a deterministic docked sacristy cover preset (13.120655ms)
+✔ normalizes title whitespace and casing without changing the requested finish (1.100813ms)
+✔ keeps the authored default camera but honors an explicitly requested capture view (1.425909ms)
+✔ rejects unsafe or unsupported cover parameters (4.172342ms)
+✔ serializes a stable browser query (1.097185ms)
+✔ defines a stable model-derived inventory icon preset (3.345374ms)
+✔ maps the classic and variant ids to the published texture names (1.07827ms)
+✔ rotates, fits and outlines a transparent model capture at native 32 px (118.759821ms)
+✔ auto uses verified hardware without applying software limits (3.987089ms)
+✔ auto closes a software-disguised hardware browser before bounded fallback (1.506321ms)
+✔ hardware mode fails explicitly, while missing Chromium permits auto fallback (1.66626ms)
+✔ explicit software uses legacy renderer and preserves CPU limit failures (1.531469ms)
+✔ failed pixel probe closes hardware and validates fallback independently (1.218555ms)
+✔ software limits are reapplied after context initialization (4.781571ms)
+✔ invalid settings fail before launch and software renderer detection is conservative (2.611035ms)
+✔ studio presets and the eight liturgical colors resolve real published designs (7.834117ms)
+✔ studio composition uses addon domain roles and dimensions, including split centres (9.377838ms)
+✔ invalid imported scenes are rejected and export dimensions preserve aspect ratio (2.466441ms)
+✔ schema 1 scenes retain classic cloth and former Colonnade lace while schema 2 has universal styles (1.333364ms)
+✔ cross-braced walnut scenes preserve joinery restrictions and every shared textile (17.938139ms)
+✔ native Studio scenes preserve recipe, global pose and all fronts through JSON import/export (194.230763ms)
+✔ physical bounds and front cameras follow the logical altar orientation (0.985887ms)
+✔ unified controls retain the appearance of existing scene presets (9.798122ms)
+✔ suspended relief returns after color or textile changes, including history navigation (3.043662ms)
+✔ joinery controls resolve real wood recipes and restore hidden stone/relief choices (3.762828ms)
+✔ symmetric model round-trips lace scenes and keeps earlier model choices (0.992991ms)
+✔ native Studio customization retains front and suspended color/Guadalupe through switches and undo (8.545885ms)
+✔ native objects fit every supported altar size; counts, working space and supports remain valid (127.333964ms)
+✔ vessels, Gospel book and flowers follow distinct moments and seasons (0.921957ms)
+✔ scenery supports real objects and removes duplicate cross and flowering shrubs (36.213323ms)
+✔ bare or transparent presentations do not pretend to be a prepared liturgical altar (0.567349ms)
+✔ a continuous raised floor supports every native prop footprint, including even and narrow altars (962.858041ms)
+✔ furniture is clear of altar, candles, credence and the central circulation strip (4.322688ms)
+✔ lights are recessed in walls, chairs have seats, and planter trays remain low (35.885296ms)
+✔ camera fitting uses projected object bounds without imaginary empty scene corners (13.156973ms)
+✔ cutaway layers reveal the altar from behind and retain faces previously covered by walls (18.118258ms)
+✔ cloister parterres leave a continuous central approach to the steps (32.571804ms)
+✔ every environment uses pinned native 16x16 textures and a Minecraft block grid (727.07106ms)
+✔ stairs and transparent panes expose only their actual surface, with native texel density (9.417381ms)
+✔ new constructions keep the aisle clear and isolate roofs for the upper inspection view (71.137454ms)
+✔ voxel mesher culls shared faces, keeps partial-block UV scale and outward winding (2.076315ms)
+✔ defines one stable route and standalone document for every 3D laboratory (11.565984ms)
+✔ normalizes legacy fidelity names without producing an invalid route (1.067854ms)
+✔ loads workbench CSS before JavaScript and keeps standalone headless adapters styled (48.175678ms)
+ℹ tests 87
+ℹ suites 0
+ℹ pass 87
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2498.190357
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> aspergillum-bedrock-addon@2.0.0 validate:docs
+> node tools/validate-docs.mjs
+
+Documentation OK (52 Markdown files, version 2.0.0)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> aspergillum-bedrock-addon@2.0.0 build
+> npm run generate:assets && npm run verify:audio-baseline && npm run build:script && npm run validate
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> aspergillum-bedrock-addon@2.0.0 generate:assets
+> node tools/generate-assets.mjs
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> aspergillum-bedrock-addon@2.0.0 verify:audio-baseline
+> node tools/verify-preserved-audio.mjs
+
+Preserved baseline audio verified: 48 OGGs plus source/master/tool hashes (147 files); no encoding or writes.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> aspergillum-bedrock-addon@2.0.0 build:script
+> esbuild src/bootstrap/main.ts --bundle --format=esm --platform=neutral --external:@minecraft/server --external:@minecraft/server-ui --target=es2022 --outfile=packs/behavior/scripts/main.js
+
+
+  packs/behavior/scripts/main.js  98.2kb
+
+⚡ Done in 55ms
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> aspergillum-bedrock-addon@2.0.0 validate
+> node tools/validate.mjs && node tools/validate-animation-choreography.mjs && node tools/validate-vfx.mjs && node tools/validate-audio.mjs && node tools/validate-cosmetic-icons.mjs && node tools/validate-release-readiness.mjs
+
+Validated 130 JSON files, 5 UUIDs, and 149 textures (27.01 MiB decoded).
+Validated camera-safe loading, seam-compensated native arm recovery, perspective-specific item choreography, cooldown gating, and release continuity.
+Loading metrics (120 Hz): visible v=128.7, a=1968.5, turn=0.0°, FP weighted v=41.2, composed seam=0.094°, recovery/terminal frame delta=7.646°/3.892°.
+Recovery bridge: native seam=30.00°, composed frame delta=3.82°, reversals=1.
+Choreography metrics (120 Hz): first-person rotation: v=153.8, a=4500.5, turn=8.0°, reversals=1; first-person position: v=4.2, a=204.1, turn=46.4°, reversals=1; third-person rotation: v=221.4, a=6451.3, turn=10.4°, reversals=1; third-person position: v=6.1, a=311.1, turn=13.6°, reversals=0
+Validated the locator hierarchy, server-authorized world-space bridge, cool-blue droplets, and impacts.
+Audio validation passed: 15 families, 48 mono 48 kHz OGG variants.
+3D inventory visuals valid: 16 string-addressed, state-free proxies reuse the authored mesh, UVs, and PBR textures without raster icons.
+Release readiness OK (2.0.0; 32 localized messages; bounded sound/VFX paths).
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

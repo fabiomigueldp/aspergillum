@@ -1,0 +1,59 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+ RUN  v3.2.7 /workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103
+
+ ❯ tests/infrastructure/docked-registry-preservation.test.ts (14 tests | 10 failed) 33ms
+   ✓ lossless registry boundary before world mutation > keeps canonical V2 metadata and unrelated valid entries across a targeted update/delete 12ms
+   ✓ lossless registry boundary before world mutation > accepts canonical legacy V1 and promotes only the documented zero-charge schema 2ms
+   × lossless registry boundary before world mutation > refuses unknown-root-field without altering any original property bytes 9ms
+     → expected [Function] to throw an error
+   × lossless registry boundary before world mutation > refuses invalid-neighbor without altering any original property bytes 1ms
+     → expected [Function] to throw an error
+   × lossless registry boundary before world mutation > refuses future-neighbor without altering any original property bytes 1ms
+     → expected [Function] to throw an error
+   × lossless registry boundary before world mutation > refuses unknown-item-field without altering any original property bytes 1ms
+     → expected [Function] to throw an error
+   × lossless registry boundary before world mutation > refuses invalid-custom-property without altering any original property bytes 1ms
+     → expected [Function] to throw an error
+   × lossless registry boundary before world mutation > refuses invalid-charges without altering any original property bytes 1ms
+     → expected [Function] to throw an error
+   × lossless registry boundary before world mutation > refuses legacy-nonzero-charges without altering any original property bytes 1ms
+     → expected [Function] to throw an error
+   × lossless registry boundary before world mutation > refuses duplicate-key without altering any original property bytes 0ms
+     → expected [Function] to throw an error
+   × lossless registry boundary before world mutation > refuses noncanonical-json without altering any original property bytes 1ms
+     → expected [Function] to throw an error
+   × lossless registry boundary before world mutation > refuses array-entries without altering any original property bytes 1ms
+     → expected [Function] to throw an error
+   ✓ lossless registry boundary before world mutation > refuses future-shard without altering any original property bytes 0ms
+   ✓ lossless registry boundary before world mutation > refuses an oversized update before mutation, including multibyte text 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/infrastructure/docked-registry-preservation.test.ts > lossless registry boundary before world mutation > refuses unknown-root-field without altering any original property bytes
+ FAIL  tests/infrastructure/docked-registry-preservation.test.ts > lossless registry boundary before world mutation > refuses invalid-neighbor without altering any original property bytes
+ FAIL  tests/infrastructure/docked-registry-preservation.test.ts > lossless registry boundary before world mutation > refuses future-neighbor without altering any original property bytes
+ FAIL  tests/infrastructure/docked-registry-preservation.test.ts > lossless registry boundary before world mutation > refuses unknown-item-field without altering any original property bytes
+ FAIL  tests/infrastructure/docked-registry-preservation.test.ts > lossless registry boundary before world mutation > refuses invalid-custom-property without altering any original property bytes
+ FAIL  tests/infrastructure/docked-registry-preservation.test.ts > lossless registry boundary before world mutation > refuses invalid-charges without altering any original property bytes
+ FAIL  tests/infrastructure/docked-registry-preservation.test.ts > lossless registry boundary before world mutation > refuses legacy-nonzero-charges without altering any original property bytes
+ FAIL  tests/infrastructure/docked-registry-preservation.test.ts > lossless registry boundary before world mutation > refuses duplicate-key without altering any original property bytes
+ FAIL  tests/infrastructure/docked-registry-preservation.test.ts > lossless registry boundary before world mutation > refuses noncanonical-json without altering any original property bytes
+ FAIL  tests/infrastructure/docked-registry-preservation.test.ts > lossless registry boundary before world mutation > refuses array-entries without altering any original property bytes
+AssertionError: expected [Function] to throw an error
+ ❯ tests/infrastructure/docked-registry-preservation.test.ts:61:58
+     59|     if (kind === "noncanonical-json") original = ` \n${original}\n`;
+     60|     writeRaw(original);
+     61|     expect(() => getDockedSnapshot(dimension, location)).toThrow();
+       |                                                          ^
+     62|     expect(() => setDockedSnapshot(dimension, location, snapshot)).toT…
+     63|     expect(() => deleteDockedSnapshot(dimension, location)).toThrow();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  10 failed | 4 passed (14)
+   Start at  17:43:45
+   Duration  1.18s (transform 149ms, setup 0ms, collect 174ms, tests 33ms, environment 0ms, prepare 182ms)
+

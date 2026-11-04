@@ -1,0 +1,86 @@
+{
+  "scope": "Fixed48 samples BLACKMAN_HARRIS1.5, RGB emission binary IDs: band,shell,other object; world black. Only diagnostic shaders/world changed; saved geometry/UV/alpha/backface same. Compare to source48 adaptive lit image as spatial association, not exact path matching.",
+  "witnesses": {
+    "(493, 471)": {
+      "masked_band_shell_other": [
+        0.2291666716337204,
+        0.75,
+        0.02083333395421505
+      ],
+      "clip_band_shell_other": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "lost_band_coverage": 0.7708333134651184,
+      "original_png_darkening": 86.0
+    },
+    "(559, 449)": {
+      "masked_band_shell_other": [
+        0.25,
+        0.75,
+        0.0
+      ],
+      "clip_band_shell_other": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "lost_band_coverage": 0.75,
+      "original_png_darkening": 81.0
+    },
+    "(510, 468)": {
+      "masked_band_shell_other": [
+        0.4583333432674408,
+        0.5416666865348816,
+        0.0
+      ],
+      "clip_band_shell_other": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "lost_band_coverage": 0.5416666269302368,
+      "original_png_darkening": 53.333333333333336
+    },
+    "(500, 471)": {
+      "masked_band_shell_other": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "clip_band_shell_other": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "lost_band_coverage": 0.0,
+      "original_png_darkening": 1.6666666666666667
+    },
+    "(559, 440)": {
+      "masked_band_shell_other": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "clip_band_shell_other": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "lost_band_coverage": 0.0,
+      "original_png_darkening": -2.6666666666666665
+    }
+  },
+  "central_roi": {
+    "pixels": 3321,
+    "lost_band_coverage_gt_0_01_pixels": 927,
+    "mean_lost_band_coverage_dark10": 0.2785852253437042,
+    "mean_lost_band_coverage_clean2": 0.011060510762035847,
+    "pearson_darkening_vs_lost_band_coverage": 0.7594587948729006,
+    "minmax_lost_band_coverage": [
+      0.0,
+      0.7708333134651184
+    ]
+  }
+}

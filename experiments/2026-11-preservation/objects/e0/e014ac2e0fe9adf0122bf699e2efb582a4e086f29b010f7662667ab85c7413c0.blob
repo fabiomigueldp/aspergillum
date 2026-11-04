@@ -1,0 +1,44 @@
+# Twin-pedestal collision study, revision 2
+
+Isolated, unregistered planning. No catalog, old state schema, editor, version, published resource or 80,000-state gate is changed.
+
+## Exhaustive scope and coordinate convention
+
+All 128 dimension pairs (width 1..16, depth 1..8), four facings: **512 configurations and 19,584 occupied tile instances**. Exactly two supports remain at opposite width ends, globally centered in depth. Author-space units are sixteenths of a block. Tile-local bounds are X/Z [-8,8], Y [0,16]. Cells use indices after facing rotation and a world-space center offset; source origin and geometry serialization are independently decoded.
+
+## Three conservative envelopes
+
+- **Detailed reference:** 599 unique normalized profiles, up to 28 boxes/cell. Every tabletop, base and capital course remains separate; shaft uses the AABB of the actual rendered octagonal shell; inlays use rotated AABBs. The narrow-cell case exceeds the project's 16-box validator cap, so it is a reference, not the native candidate.
+- **Course-preserving native candidate:** 599 profiles, at most 16 boxes/cell. Keep all four base courses, shaft, all three tabletop courses and bearer. Enclose each capital separately, including its inlays. Never span between the two supports. Extra union volume versus detailed reference is at most 134.443441 cubic sixteenths per cell (0.032823 block³), or 573.581763 per altar (0.140035 block³).
+- **Economical native candidate:** 467 profiles, at most 8 boxes/cell. One slab, one bearer, separate base/shaft/capital envelopes for each support. Extra union volume versus detailed reference is at most 222.720928 cubic sixteenths per cell (0.054375 block³), or 1090.558797 per altar (0.266250 block³). This independently reproduces the earlier 467-profile count.
+
+Detailed-reference excess over nominal solid octagonal shafts and diamond inlays is bounded above by 10.307731 cubic sixteenths per altar (0.002517 block³). This includes vertex-bound rounding; it is an upper bound rather than a sampled estimate. The shaft's 0.02-unit shell lies toward the solid interior apart from sub-microunit serialization noise. Envelopes also intentionally fill the shaft's hollow render shell as a solid structural post. Native excess is measured by exact axis-aligned union integration, not summing overlapping box volumes.
+
+The native multipart schema is evidenced by existing addons/altare/packs/behavior/blocks/j_crossbrace_none.block.json; addons/altare/tools/validate-collection.mjs checks an array of origin/size boxes capped at 16. No Minecraft runtime or Creator validation is claimed for these new candidates.
+
+## State cost and integration blocker
+
+The unchanged catalog already consumes **80,000 states with zero headroom**. Even the economical standalone collision palette requires additional identities/states. Profile totals are collision-only palette costs, not an assertion that a complete visual/editor integration can use only that many states.
+
+- One identity per economical profile: **467 IDs / 467 states**, aggregate 80,467.
+- One identity per course-preserving profile: **599 IDs / 599 states**, aggregate 80,599.
+- One identity with packed economical-profile properties of cardinalities 13 × 9 × 4: **468 states**, one padding combination.
+- One identity with packed course-preserving-profile properties 15 × 10 × 4: **600 states**, one padding combination.
+- One identity per size with facing and local-cell coordinates: **128 IDs / 19,584 states** in total.
+- One identity per size/facing/cell: **19,584 IDs / 19,584 states**.
+- One identity with full size/facing/cell Cartesian properties: **65,536 states**, including nonexistent cells in smaller sizes.
+- Keeping source-role labels distinct with detailed collision profiles: **1,151 role/profile pairs**. This does not merge mirrored support labels.
+
+A single AABB per cell reduces collision profiles to three but adds up to 3626.6973 cubic sixteenths of phantom collision in one tile. It fills the space beneath the tabletop and is rejected as a solution.
+
+There is no compliant publication path under simultaneous unchanged old schemas, no new identities, and unchanged 80,000 gate. These files document a native-capable geometry plan and the budget decision still needed; they do not silently consume old states or raise the limit. No evidence of Minecraft playtesting is inferred from pure geometry tests.
+
+## Reproduction and API
+
+Run: node --experimental-strip-types --test addons/altare/tests/twin-pedestal-collision-study.node.ts
+
+Import twinPedestalCollision(width, depth, facing) from addons/altare/assets-src/atelier/twin-pedestal-collision-study.mjs. Each cell provides center, x, z; detailed boxes/profileKey; nativeBoxes/nativeProfileKey; economicalBoxes/economicalProfileKey; source roles; and rejected singleBox envelope. All box payloads are exactly { origin, size }. Profile normalization rounds outward to 1e-6 and removes only exact duplicates or completely contained boxes. Conservative course-group envelopes are explicitly constructed as separate alternatives, not disguised as lossless merges.
+
+collisionStudyReport() reproduces this report's numeric data. The JSON includes all 128 per-size summaries and six full cell examples: 1×1, 1×2, 1×3, 3×2, 3×3, 16×8. The implementation deterministically generates every other configuration without persistent writes.
+
+Tests cover all 512 configurations, every source vertex, all support contact heights, legal local clipping, two shafts, a free entire lower center plane including odd/even depths, independent Three-rendered vertices, exact union-volume conservation across tile seams, deduplication safety, budgets and input rejection. Tests do not launch Minecraft, Chromium, or a build.

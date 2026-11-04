@@ -1,0 +1,73 @@
+# V16: causa dos riscos no diagnóstico Cycles
+
+## Resultado principal
+
+**O renderer realmente troca a faixa por superfícies atrás dela em pixels dos riscos.** Isso foi observado emitindo IDs nas superfícies que passam pela mesma máscara alfa e pelo mesmo filtro de backface das cenas salvas. Não é uma conclusão baseada apenas no raycast matemático.
+
+No controle de uma amostra, filtro BOX de largura 0,01, com câmera frontal original e coordenadas PNG:
+
+| Pixel | Primeiro componente/fonte no mascarado | Controle recortado |
+|---|---|---|
+| (493,471) | casca, face 2727, metade 0 | faixa, face 134, metade 1 |
+| (559,449) | casca, face 3717, metade 0 | faixa, face 111, metade 0 |
+| (510,468) | casca, face 2994, metade 1 | faixa, face 894, metade 1 |
+| (500,471), controle próximo | faixa, face 138, metade 0 | igual |
+
+Há 142 divergências de identidade na janela central de 3.321 pixels. O teste preserva os vértices, UVs, máscara e backface salvos; substitui somente a saída opaca por emissão do ID. Uma amostra BOX estreita não reproduz as 48 amostras filtradas do render original. Arquivos: `source-id-comparison.json`, `source-id-pixels.npz`, `masked-source-ids.exr`, `clip-source-ids.exr`, `render_source_ids.py`.
+
+Um segundo controle usa 48 amostras fixas, filtro BLACKMAN_HARRIS 1,5 e emissão binária RGB=faixa/casca/outro objeto, com mundo preto. Na versão mascarada, a fração de amostras que vê a faixa nos três pixels acima é 22,92% / 25% / 45,83%; no controle recortado é 100% em todos. A maioria das demais amostras vê a casca; em (493,471), 2,08% vê outro objeto. Em (500,471), ambos veem 100% faixa. Na janela, 927 pixels perdem mais de 1% de cobertura da faixa; a correlação entre perda de cobertura e escurecimento no PNG original é 0,759. É associação espacial, não replay dos mesmos caminhos: o original usa amostragem adaptativa. Arquivo: `coverage48-comparison.json` e respectivos EXR/NPZ.
+
+**Interpretação:** emissão de normal e albedo uniforme podem parecer quase iguais mesmo quando o componente visível muda, pois a superfície atrás pode ter normal e cor semelhantes. A superfície atrás recebe iluminação diferente, inclusive oclusão pela faixa que deveria ter sido vista. Portanto, uma imagem de normais semelhante não certifica identidade correta do primeiro hit.
+
+## Evidência de precisão e travessia transparente
+
+O executável e a cena usam Blender 4.3.2 / Cycles CPU/Embree. O código desta versão preserva a origem e direção após uma passagem pelo Transparent BSDF, mas avança a distância mínima de interseção para o float seguinte à distância atingida. Não coleta primeiro todos os materiais potencialmente empatados nessa distância. Isso pode eliminar uma superfície opaca quase coplanar quando uma superfície transparente é escolhida primeiro. O offset é de 1 ULP para distâncias positivas; para zero, retorna o menor float normal positivo. [Travessia da superfície](https://github.com/blender/blender/blob/v4.3.2/intern/cycles/kernel/integrator/shade_surface.h#L460-L470), [offset de distância](https://github.com/blender/blender/blob/v4.3.2/intern/cycles/kernel/bvh/util.h#L20-L49).
+
+Na câmera ortográfica, a origem efetiva começa no plano de recorte próximo, não na posição central da câmera. A distância t dos empates deve ser calculada a partir desse plano. Aqui clip_start≈0,1 e direção+Y produzem origem y≈−3,4. O primeiro t da faixa fica na ordem de 3,1; 1 ULP float32 vale aproximadamente 0,238 µm. [Código da câmera](https://github.com/blender/blender/blob/v4.3.2/intern/cycles/kernel/camera/camera.h#L150-L205).
+
+A auditoria independente dos raios em `../independent_rays/float32-ties-report.json` encontra geometria transparente a menos de 1 ULP em 83,4% dos pixels escuros≥10, contra 13,3% dos controles limpos. Isto é coerente com o mecanismo e com as trocas renderizadas. **A ordem real de desempate e a aritmética exata de cada amostra Embree não foram instrumentadas.** Não transformar esta correlação em uma descrição exata de cada caminho, nem afirmar que todos os riscos de todas as vistas foram explicados.
+
+## Dois testes independentes adicionais
+
+### Distância da câmera sem mudar a projeção
+
+Apenas a posição Y da câmera ortográfica foi mudada entre−1/−3,5/−10, mantendo orientação, escala, geometria, material e luz. Render de 64 amostras fixas, seed 0, recorte 470 × 200:
+
+- Em (559,449), o escurecimento médio relativo ao PNG do recorte analítico foi5 / 66,7 / 106 níveis RGB.
+- Em (493,471), foi15,7 / 64,7 / 66 níveis.
+- Na janela central, os pixels escuros≥10 foram 155 / 294 / 338.
+
+Isso demonstra que a precisão de distância/interseção altera materialmente os riscos, embora a projeção e a iluminação física pretendida não mudem. Aproximar a câmera não é correção do asset, e parte dos riscos permanece. As medidas contra o PNG analítico original têm diferença de amostragem; as três câmeras entre si usam configuração idêntica. Arquivos: `camera-distance-renders.json`, `camera-distance-and-reproducer-metrics.json`, `distance-y*-band-crop.png`.
+
+### Reprodutor mínimo sem iluminação
+
+Um único mesh contém dois quads sobrepostos, com máscaras procedurais exatamente complementares e emissão uniforme. A união matemática cobre o quadrado inteiro. Com separação 0 ou 1e−7, 12663 de 25600 pixels interiores mostram o mundo vermelho em vez da superfície. Com separação 1e−5, zero desses pixels interiores se perde. O limite de transparência permanece 512 e só há duas faces. Portanto, o resultado não depende de textura, quantização da máscara, luz, sombra, normais interpoladas ou falta de bounces. Arquivos: `reproduce_coplanar_masks.py`, `coplanar-reproducer.json`, três PNGs.
+
+Este reprodutor demonstra a vulnerabilidade do percurso de transparência coplanar. Ele não é uma miniatura exata do arranjo da faixa nem uma proposta de afastar as faces do asset.
+
+## O que os passes de iluminação mostram
+
+Dados lineares fornecidos pelo ensaio principal: `../evidence/light-pass-linear-pixels.npz`. Em (493,471)e (559,449), Diffuse Direct≈(0,155;0,163;0,174), contra≈(0,648;0,679;0,723)num controle próximo. Diffuse Indirect é zero nos dois pixels. Diffuse Color é constante≈(0,63;0,62;0,59)na janela inteira. A perda está na iluminação direta recebida pelo componente escolhido, não em desbotamento da cor alfa. `light-pass-witnesses.json` preserva valores e vizinhos.
+
+O passe Diffuse Direct inclui a chegada ao mundo após a primeira reflexão difusa, além dos raios explícitos de sombra para fontes. Desligar apenas `visible_shadow` não elimina oclusão de raios difusos destinados ao mundo. Mesmo com limite de bounces 0, Cycles ainda lança o raio BSDF e permite continuar até emissão/mundo; o flag de término é aplicado conforme o próximo resultado. [Estado dos caminhos](https://github.com/blender/blender/blob/v4.3.2/intern/cycles/kernel/integrator/path_state.h#L90-L194), [terminação e chegada ao mundo](https://github.com/blender/blender/blob/v4.3.2/intern/cycles/kernel/integrator/intersect_closest.h#L218-L262), [semântica oficial dos passes](https://docs.blender.org/manual/en/4.5/render/layers/passes.html#light).
+
+Não foi encontrada evidência de corrupção de MIS como causa necessária. O código de transparência preserva o tipo de raio e não soma um bounce comum; soma contador de transparência e avança o RNG. A troca primária observada é uma explicação concreta que dispensa supor um problema amplo de normais.
+
+## Material e limites
+
+A inspeção salva confirma: máscara Closest/CLIP, Transparent BSDF branco (1,1,1,1), Diffuse BSDF uniforme, Backfacing misturado para transparente, 512 bounces transparentes, 12 totais / 4 difusos, CPU/Embree. Não há no material usado um normalmap, bump, transmissão de vidro ou rugosidade capaz de explicar por si os riscos. `saved-scene-settings.json` contém os nós e configurações.
+
+A exclusão de self-hit no código identifica objeto+primitiva; triângulos vizinhos não são automaticamente excluídos. Para raios que saem de uma superfície, Cycles tem outro mecanismo de offset, condicionado a teste da própria primitiva. Isso é distinto do avanço de distância após alfa e pode contribuir para sintomas secundários. Não foi medido aqui como causa dominante. [Self-hit](https://github.com/blender/blender/blob/v4.3.2/intern/cycles/kernel/bvh/util.h#L215-L227), [offset de superfície](https://github.com/blender/blender/blob/v4.3.2/intern/cycles/kernel/integrator/shade_surface.h#L34-L80).
+
+## Decisão de uso
+
+- Evidência positiva: o diagnóstico Cycles perde a faixa na travessia de máscaras quase coplanares, e renderiza componentes de trás nos pixels mais fortes. A causa é compatível com limite de precisão e continuação transparente, não apenas erro ideal de cobertura da máscara.
+- Não há autorização técnica para chamar o asset de correto no Minecraft. Transparent BSDF/Cycles não certifica o shader de cutout, depth test, filtragem ou culling do Bedrock.
+- Não recomendar desligar sombras, alterar bounces, aproximar a câmera, deslocar faces ou usar o controle triangular como se fosse uma correção publicável.
+- O teste de redução da área transparente foi concluído com linhagem conferida e comparação de IDs e aparência. Consulte `REVIEW_TARGETED_TRIM_V16.md`: há melhora local, mas também novas trocas; nenhuma variante foi aprovada.
+
+Nenhum asset V15, cena de origem ou publicação foi alterado nesta investigação. Os únicos arquivos escritos ficam nesta pasta.
+
+### Controle adicional de visibilidade
+
+O ensaio principal também desligou visibilidade de sombra e difusa dos três componentes, com bounces não transparentes zerados. Os riscos centrais desapareceram ou diminuíram fortemente; a iluminação de outras regiões ficou incorreta e alguns riscos laterais persistiram. Isso confirma que suprimir as classes de raios oculta a diferença de iluminação, **não restaura a faixa perdida na identidade primária**. Portanto, é diagnóstico de mecanismo e não correção aprovada.

@@ -1,0 +1,935 @@
+--- a/viewer-3d/src/shared/bedrock-geometry.js
++++ b/viewer-3d/src/shared/bedrock-geometry.js
+@@ -160,7 +160,27 @@
+     inflatedSize[1] * scale,
+     inflatedSize[2] * scale,
+   );
+-  if (cube.mirror ?? bone.mirror) boxGeometry.scale(-1, 1, 1);
++  const mirrored = Boolean(cube.mirror ?? bone.mirror);
++  if (mirrored) boxGeometry.scale(-1, 1, 1);
++
++  if (coordinateBasis === BEDROCK_GEOMETRY_BASIS.BEDROCK && !mirrored) {
++    // BoxGeometry chooses a face normal with `depth > 0 ? 1 : -1`.
++    // A collapsed dimension therefore gives its positive face the negative
++    // normal, even though the face's indexed winding remains positive.
++    // Blockbench keeps the normals of its initial unit box when changing its
++    // shape. Restore those normals only where the effective extent is zero;
++    // do not add preview thickness or change vertices, pivots or indices.
++    const normals = boxGeometry.getAttribute('normal');
++    for (let axis = 0; axis < 3; axis += 1) {
++      if (inflatedSize[axis] * scale !== 0) continue;
++      const normal = [0, 0, 0];
++      normal[axis] = 1;
++      for (let vertex = axis * 8; vertex < axis * 8 + 4; vertex += 1) {
++        normals.setXYZ(vertex, ...normal);
++      }
++    }
++    normals.needsUpdate = true;
++  }
+ 
+   const uvAttribute = boxGeometry.getAttribute('uv');
+   boxGeometry.clearGroups();
+@@ -175,10 +195,18 @@
+     const faceName = THREE_BOX_FACE_ORDER[index];
+     const face = getBedrockFaceRect(cube.uv, faceName, size);
+     if (!face) continue;
++    // Official Blockbench South UVs grow with its reflected +X. This viewer
++    // preserves Bedrock X, so per-face South U must run in the opposite
++    // direction. Keep signed uv_size; legacy and mirror/Box-UV paths are not
++    // part of this narrowly verified correction.
++    const rect = coordinateBasis === BEDROCK_GEOMETRY_BASIS.BEDROCK
++      && !mirrored && cube.uv && !Array.isArray(cube.uv) && faceName === 'south'
++      ? [face.rect[0] + face.rect[2], face.rect[1], -face.rect[2], face.rect[3]]
++      : face.rect;
+     writeBedrockFaceUvs(
+       uvAttribute,
+       index * 4,
+-      face.rect,
++      rect,
+       geometrySummary.textureWidth,
+       geometrySummary.textureHeight,
+     );
+--- /dev/null
++++ b/viewer-3d/tests/bedrock-south-reference.node.mjs
+@@ -0,0 +1,34 @@
++import assert from 'node:assert/strict';
++import fs from 'node:fs';
++import test from 'node:test';
++import * as THREE from 'three';
++import {buildBedrockGeometry} from '../src/shared/bedrock-geometry.js';
++
++// Expected data comes from executable, hash-verified Blockbench functions,
++// not from this renderer's UV writer or a copy of its transformation logic.
++const reference=JSON.parse(fs.readFileSync(new URL('./fixtures/blockbench-south.json',import.meta.url)));
++function build(cube){return buildBedrockGeometry({bones:[{name:'root',pivot:[0,0,0],cubes:[cube]}]},{identifier:'geometry.reference',formatVersion:'1.14.0',textureWidth:64,textureHeight:64},{default:new THREE.MeshBasicMaterial()},{scale:1,includePivots:false,includeLocators:false});}
++function close(actual,expected,message){assert.equal(actual.length,expected.length);for(let i=0;i<actual.length;i++)assert.ok(Math.abs(actual[i]-expected[i])<1e-6,`${message}: ${actual} != ${expected}`);}
++for(const fixture of reference.fixtures){
++ test(`matches official Blockbench South positions and signed UVs: ${fixture.name}`,()=>{
++  const built=build(fixture.input);built.root.updateMatrixWorld(true);const mesh=built.meshRecords[0].mesh;
++  const p=mesh.geometry.attributes.position,uv=mesh.geometry.attributes.uv;
++  for(let i=16;i<20;i++){
++   const world=new THREE.Vector3().fromBufferAttribute(p,i).applyMatrix4(mesh.matrixWorld).toArray();
++   const expected=fixture.expected.find(e=>e.position.every((v,k)=>Math.abs(v-world[k])<1e-6));
++   assert.ok(expected,'matching official corner');close([uv.getX(i),uv.getY(i)],expected.uv,'UV at '+world);
++  }
++ });
++}
++
++for(const axis of [0,1,2])test(`zero dimension ${axis} preserves positive-face normal and winding`,()=>{
++ const size=[5,4,3];size[axis]=0;const face=['east','up','south'][axis];
++ const cube={origin:[-7,2,3],size,pivot:[-2,2,3],rotation:[17,-29,41],uv:{[face]:{uv:[11,13],uv_size:[7,9]}}};
++ const built=build(cube);built.root.updateMatrixWorld(true);const mesh=built.meshRecords[0].mesh,g=mesh.geometry;
++ const group=g.groups[0],indices=Array.from(g.index.array.slice(group.start,group.start+3));
++ const vertices=indices.map(i=>new THREE.Vector3().fromBufferAttribute(g.attributes.position,i).applyMatrix4(mesh.matrixWorld));
++ const winding=vertices[1].clone().sub(vertices[0]).cross(vertices[2].clone().sub(vertices[0])).normalize();
++ const normal=new THREE.Vector3().fromBufferAttribute(g.attributes.normal,indices[0]).applyNormalMatrix(new THREE.Matrix3().getNormalMatrix(mesh.matrixWorld));
++ assert.ok(winding.dot(normal)>0.999999,`normal ${normal.toArray()} opposes triangle ${winding.toArray()}`);
++ assert.equal(g.attributes.position.count,24,'no added thickness or geometry');
++});
+--- /dev/null
++++ b/viewer-3d/tests/fixtures/blockbench-south.json
+@@ -0,0 +1,844 @@
++{
++  "sourceCommit": "ec0b2827104d0799c153bfb5f867579c0c44652f",
++  "sourceFiles": [
++    {
++      "file": "blockbench-bedrock.js",
++      "gitBlob": "f27d89e774003486b1161b0578971f686fece0a8"
++    },
++    {
++      "file": "blockbench-cube.js",
++      "gitBlob": "70cb939ab827f999f9178fac05839a2ecb005d5b"
++    },
++    {
++      "file": "blockbench-three-custom.js",
++      "gitBlob": "c700631f613689344764b210af7d4fc56c1eba33"
++    }
++  ],
++  "method": "Execute unchanged official parseCube, setShape and updateUV with data/UI stubs. Reflect X into the unchanged Bedrock-coordinate viewer basis. Unit-box normals are preserved. No application launch; zero-depth preview epsilon deliberately excluded.",
++  "fixtures": [
++    {
++      "name": "south-depth0-u7-v9",
++      "input": {
++        "origin": [
++          -7,
++          2,
++          3
++        ],
++        "size": [
++          5,
++          4,
++          0
++        ],
++        "pivot": [
++          -2,
++          2,
++          3
++        ],
++        "rotation": [
++          0,
++          0,
++          0
++        ],
++        "uv": {
++          "south": {
++            "uv": [
++              11,
++              13
++            ],
++            "uv_size": [
++              7,
++              9
++            ]
++          }
++        }
++      },
++      "expected": [
++        {
++          "position": [
++            -2,
++            6,
++            3
++          ],
++          "uv": [
++            0.171875,
++            0.796875
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -7,
++            6,
++            3
++          ],
++          "uv": [
++            0.28125,
++            0.796875
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -2,
++            2,
++            3
++          ],
++          "uv": [
++            0.171875,
++            0.65625
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -7,
++            2,
++            3
++          ],
++          "uv": [
++            0.28125,
++            0.65625
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        }
++      ]
++    },
++    {
++      "name": "south-depth0-u7-v-9",
++      "input": {
++        "origin": [
++          -7,
++          2,
++          3
++        ],
++        "size": [
++          5,
++          4,
++          0
++        ],
++        "pivot": [
++          -2,
++          2,
++          3
++        ],
++        "rotation": [
++          0,
++          0,
++          0
++        ],
++        "uv": {
++          "south": {
++            "uv": [
++              11,
++              13
++            ],
++            "uv_size": [
++              7,
++              -9
++            ]
++          }
++        }
++      },
++      "expected": [
++        {
++          "position": [
++            -2,
++            6,
++            3
++          ],
++          "uv": [
++            0.171875,
++            0.796875
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -7,
++            6,
++            3
++          ],
++          "uv": [
++            0.28125,
++            0.796875
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -2,
++            2,
++            3
++          ],
++          "uv": [
++            0.171875,
++            0.9375
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -7,
++            2,
++            3
++          ],
++          "uv": [
++            0.28125,
++            0.9375
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        }
++      ]
++    },
++    {
++      "name": "south-depth0-u-7-v9",
++      "input": {
++        "origin": [
++          -7,
++          2,
++          3
++        ],
++        "size": [
++          5,
++          4,
++          0
++        ],
++        "pivot": [
++          -2,
++          2,
++          3
++        ],
++        "rotation": [
++          0,
++          0,
++          0
++        ],
++        "uv": {
++          "south": {
++            "uv": [
++              11,
++              13
++            ],
++            "uv_size": [
++              -7,
++              9
++            ]
++          }
++        }
++      },
++      "expected": [
++        {
++          "position": [
++            -2,
++            6,
++            3
++          ],
++          "uv": [
++            0.171875,
++            0.796875
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -7,
++            6,
++            3
++          ],
++          "uv": [
++            0.0625,
++            0.796875
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -2,
++            2,
++            3
++          ],
++          "uv": [
++            0.171875,
++            0.65625
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -7,
++            2,
++            3
++          ],
++          "uv": [
++            0.0625,
++            0.65625
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        }
++      ]
++    },
++    {
++      "name": "south-depth0-u-7-v-9",
++      "input": {
++        "origin": [
++          -7,
++          2,
++          3
++        ],
++        "size": [
++          5,
++          4,
++          0
++        ],
++        "pivot": [
++          -2,
++          2,
++          3
++        ],
++        "rotation": [
++          0,
++          0,
++          0
++        ],
++        "uv": {
++          "south": {
++            "uv": [
++              11,
++              13
++            ],
++            "uv_size": [
++              -7,
++              -9
++            ]
++          }
++        }
++      },
++      "expected": [
++        {
++          "position": [
++            -2,
++            6,
++            3
++          ],
++          "uv": [
++            0.171875,
++            0.796875
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -7,
++            6,
++            3
++          ],
++          "uv": [
++            0.0625,
++            0.796875
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -2,
++            2,
++            3
++          ],
++          "uv": [
++            0.171875,
++            0.9375
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -7,
++            2,
++            3
++          ],
++          "uv": [
++            0.0625,
++            0.9375
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        }
++      ]
++    },
++    {
++      "name": "south-depth2-u7-v9",
++      "input": {
++        "origin": [
++          -7,
++          2,
++          3
++        ],
++        "size": [
++          5,
++          4,
++          2
++        ],
++        "pivot": [
++          -2,
++          2,
++          3
++        ],
++        "rotation": [
++          0,
++          0,
++          0
++        ],
++        "uv": {
++          "south": {
++            "uv": [
++              11,
++              13
++            ],
++            "uv_size": [
++              7,
++              9
++            ]
++          }
++        }
++      },
++      "expected": [
++        {
++          "position": [
++            -2,
++            6,
++            5
++          ],
++          "uv": [
++            0.171875,
++            0.796875
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -7,
++            6,
++            5
++          ],
++          "uv": [
++            0.28125,
++            0.796875
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -2,
++            2,
++            5
++          ],
++          "uv": [
++            0.171875,
++            0.65625
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -7,
++            2,
++            5
++          ],
++          "uv": [
++            0.28125,
++            0.65625
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        }
++      ]
++    },
++    {
++      "name": "south-depth2-u7-v-9",
++      "input": {
++        "origin": [
++          -7,
++          2,
++          3
++        ],
++        "size": [
++          5,
++          4,
++          2
++        ],
++        "pivot": [
++          -2,
++          2,
++          3
++        ],
++        "rotation": [
++          0,
++          0,
++          0
++        ],
++        "uv": {
++          "south": {
++            "uv": [
++              11,
++              13
++            ],
++            "uv_size": [
++              7,
++              -9
++            ]
++          }
++        }
++      },
++      "expected": [
++        {
++          "position": [
++            -2,
++            6,
++            5
++          ],
++          "uv": [
++            0.171875,
++            0.796875
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -7,
++            6,
++            5
++          ],
++          "uv": [
++            0.28125,
++            0.796875
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -2,
++            2,
++            5
++          ],
++          "uv": [
++            0.171875,
++            0.9375
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -7,
++            2,
++            5
++          ],
++          "uv": [
++            0.28125,
++            0.9375
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        }
++      ]
++    },
++    {
++      "name": "south-depth2-u-7-v9",
++      "input": {
++        "origin": [
++          -7,
++          2,
++          3
++        ],
++        "size": [
++          5,
++          4,
++          2
++        ],
++        "pivot": [
++          -2,
++          2,
++          3
++        ],
++        "rotation": [
++          0,
++          0,
++          0
++        ],
++        "uv": {
++          "south": {
++            "uv": [
++              11,
++              13
++            ],
++            "uv_size": [
++              -7,
++              9
++            ]
++          }
++        }
++      },
++      "expected": [
++        {
++          "position": [
++            -2,
++            6,
++            5
++          ],
++          "uv": [
++            0.171875,
++            0.796875
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -7,
++            6,
++            5
++          ],
++          "uv": [
++            0.0625,
++            0.796875
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -2,
++            2,
++            5
++          ],
++          "uv": [
++            0.171875,
++            0.65625
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -7,
++            2,
++            5
++          ],
++          "uv": [
++            0.0625,
++            0.65625
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        }
++      ]
++    },
++    {
++      "name": "south-depth2-u-7-v-9",
++      "input": {
++        "origin": [
++          -7,
++          2,
++          3
++        ],
++        "size": [
++          5,
++          4,
++          2
++        ],
++        "pivot": [
++          -2,
++          2,
++          3
++        ],
++        "rotation": [
++          0,
++          0,
++          0
++        ],
++        "uv": {
++          "south": {
++            "uv": [
++              11,
++              13
++            ],
++            "uv_size": [
++              -7,
++              -9
++            ]
++          }
++        }
++      },
++      "expected": [
++        {
++          "position": [
++            -2,
++            6,
++            5
++          ],
++          "uv": [
++            0.171875,
++            0.796875
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -7,
++            6,
++            5
++          ],
++          "uv": [
++            0.0625,
++            0.796875
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -2,
++            2,
++            5
++          ],
++          "uv": [
++            0.171875,
++            0.9375
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        },
++        {
++          "position": [
++            -7,
++            2,
++            5
++          ],
++          "uv": [
++            0.0625,
++            0.9375
++          ],
++          "normal": [
++            0,
++            0,
++            1
++          ]
++        }
++      ]
++    }
++  ]
++}

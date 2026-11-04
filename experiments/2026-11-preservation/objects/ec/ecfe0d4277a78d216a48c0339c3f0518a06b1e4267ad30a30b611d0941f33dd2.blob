@@ -1,0 +1,28 @@
+import bpy,json,hashlib
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/'
+bpy.ops.wm.open_mainfile(filepath=r+'V62-opposite-foot-trial.blend',use_scripts=False)
+dg=bpy.context.evaluated_depsgraph_get()
+def coords(o):
+ e=o.evaluated_get(dg);m=e.to_mesh();p=[o.matrix_world@v.co for v in m.vertices];f=[tuple(v.vertices) for v in m.polygons];e.to_mesh_clear();return p,f
+before={o.name:coords(o)[0] for o in bpy.data.objects if o.type=='MESH'}
+o=bpy.data.objects['Menino — perna.001'];oldcontrol=[{'co':list(p.co),'radius':p.radius} for p in o.data.splines[0].bezier_points]
+n=o.copy();n.data=o.data.copy();n.name='Menino — tornozelo oposto V63 reversível';bpy.context.collection.objects.link(n)
+p=n.data.splines[0].bezier_points[-1];p.co.z-=.015;p.radius=.62
+o.hide_render=True;o.hide_set(True);bpy.context.view_layer.update();dg=bpy.context.evaluated_depsgraph_get()
+np,nf=coords(n);bv=BVHTree.FromPolygons(np,nf);sp=[(a,b) for a,b in bv.overlap(bv) if a<b and not set(nf[a])&set(nf[b])]
+fp,ff=coords(bpy.data.objects['Menino — pé.001']);contact=bv.overlap(BVHTree.FromPolygons(fp,ff))
+deltas={name:max(((a-b).length for a,b in zip(vals,coords(bpy.data.objects[name])[0])),default=0) for name,vals in before.items()}
+report={'source':'V62','change':'Only opposite leg curve lower control lowered 15mm and radius .8 to .62; original hidden intact','original_control_points':oldcontrol,'new_control_points':[{'co':list(p.co),'radius':p.radius} for p in n.data.splines[0].bezier_points],'mesh_geometry_max_delta_m':max(deltas.values()),'all_meshes_unchanged':all(d==0 for d in deltas.values()),'ankle_self_intersection_pairs':len(sp),'ankle_foot_contact_pairs':len(contact),'contact_status':'Intentional insertion between distinct meshes, not welded topology','rollback':'Hide V63 ankle and unhide original Menino — perna.001','anatomy_status':'Conservative junction study, not final anatomy'}
+json.dump(report,open(r+'V63-opposite-ankle-verification.json','w'),indent=2)
+bpy.ops.wm.save_as_mainfile(filepath=r+'V63-opposite-ankle-trial.blend')
+s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=700;s.render.resolution_y=700;s.render.resolution_percentage=100;c=s.camera;ct=Vector((-.04,-.32,.57));c.data.ortho_scale=.34
+for view,off in [('front',(0,-3,0)),('threequarter',(-2,-3,0)),('opposite-profile',(3,0,0))]:
+ c.location=ct+Vector(off);c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler();s.render.filepath=r+'V63-foot-close-'+view+'.png';bpy.ops.render.render(write_still=True)
+# Matched contextual scale, not giant closeup
+s.render.resolution_x=600;s.render.resolution_y=900;ct=Vector((.025,-.265,1.25));c.data.ortho_scale=1.65
+c.location=ct+Vector((-3,-5,0));c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler()
+for version,oldvis in [('V63',False),('V62',True)]:
+ n.hide_render=oldvis;o.hide_render=not oldvis;s.render.filepath=r+version+'-child-ankle-context.png';bpy.ops.render.render(write_still=True)
+print(report)

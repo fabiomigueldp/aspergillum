@@ -1,0 +1,20 @@
+from pathlib import Path
+import json,copy,hashlib
+import numpy as np
+from PIL import Image
+W=Path(__file__).resolve().parent;B=W.parents[1]
+G=B/'assembly_transport_v14/resource_pack/models/entity/paz_v75_v14_lab_sculpture.geo.json';T=B/'assembly_transport_v14/resource_pack/textures/entity/paz_v75_v14_lab_sculpture.png'
+g=json.loads(G.read_text());im=np.array(Image.open(T).convert('RGBA'));assert np.all(im[4092:4096,4092:4096,3]==0)
+band=g['minecraft:geometry'][0]['bones'][0];assert band['name']=='part_00'
+u,v=band['cubes'][0]['uv']['south']['uv'];tile=im[v:v+20,u:u+20];stone=tile[tile[:,:,3]==255][0];im[4092:4096,4092:4096]=stone
+Image.fromarray(im).save(W/'combined-v14-opaque.png')
+assert np.array_equal(im[:2048,:2048],np.array(Image.open(T).convert('RGBA'))[:2048,:2048])
+for D in sorted(W.glob('budget-*')):
+ native=json.loads((D/'band.geo.json').read_text())['minecraft:geometry'][0]['bones'][0];new=copy.deepcopy(g);geo=new['minecraft:geometry'][0];geo['description']['identifier']='geometry.paz.v15.opaque.'+D.name
+ geo['bones'][0]=copy.deepcopy(band);geo['bones'][0]['cubes']=native['cubes']
+ for c in geo['bones'][0]['cubes']:
+  for uv in c['uv'].values():uv['uv']=[4093,4093]
+ assert geo['bones'][1:]==g['minecraft:geometry'][0]['bones'][1:]
+ (D/'combined-v14.geo.json').write_text(json.dumps(new,separators=(',',':'))+'\n')
+ (D/'combination.json').write_text(json.dumps({'source_geo':str(G.relative_to(B)),'source_geo_sha256':hashlib.sha256(G.read_bytes()).hexdigest(),'source_texture':str(T.relative_to(B)),'source_texture_sha256':hashlib.sha256(T.read_bytes()).hexdigest(),'combined_texture':'../combined-v14-opaque.png','changed_bone':'part_00','all_other_bones_exact_json_values':True,'all_source_texture_pixels_unchanged_except_previously_transparent_unused_square':[4092,4092,4096,4096],'solid_uv':[4093,4093],'opaque_rgba':stone.tolist(),'texture_filters_game_runtime':'untested'},indent=2)+'\n')
+ print(D.name,'combined ready')

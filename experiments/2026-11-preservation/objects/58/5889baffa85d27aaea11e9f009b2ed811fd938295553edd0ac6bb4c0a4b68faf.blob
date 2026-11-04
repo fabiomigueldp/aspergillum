@@ -1,0 +1,34 @@
+import bpy,numpy as np,json
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False);dg=bpy.context.evaluated_depsgraph_get();o=bpy.data.objects['Menino — tornozelo afilado V61 reversível'];em=o.evaluated_get(dg).to_mesh();p=np.array([v.co[:] for v in em.vertices]);fs=[tuple(f.vertices) for f in em.polygons];o.evaluated_get(dg).to_mesh_clear();q=p.copy()
+def ss(t):t=np.clip(t,0,1);return t*t*(3-2*t)
+# Preserve anterior tibial line; add broad posterior calf at observed side only.
+for i,(x,y,z) in enumerate(p):
+ center=np.interp(z,[.525,.68,.86],[-.28,-.272,-.265]);rad=np.interp(z,[.525,.68,.86],[.037*.62,.037*.85,.037*1.1]);side=np.clip((y-center)/rad,-1,1);w=ss((z-.575)/.06)*ss((.72-z)/.06);q[i,1]+=.012*w*(side+1)/2
+tri=[]
+for f in fs:
+ for i in range(1,len(f)-1):tri.append([f[0],f[i],f[i+1]])
+tri=np.array(tri);A=p[tri];B=q[tri];na=np.cross(A[:,1]-A[:,0],A[:,2]-A[:,0]);nb=np.cross(B[:,1]-B[:,0],B[:,2]-B[:,0]);area=np.linalg.norm(na,axis=1);valid=area>1e-12;ratio=np.linalg.norm(nb,axis=1)[valid]/area[valid]
+def tree(v):return BVHTree.FromPolygons(v.tolist(),fs)
+bt=tree(p);nt=tree(q)
+def sp(t):return set((a,b) for a,b in t.overlap(t) if a<b and not set(fs[a])&set(fs[b]))
+contacts=[]
+for other in bpy.data.objects:
+ if other==o or other.hide_render or other.type not in ['MESH','CURVE']:continue
+ eo=other.evaluated_get(dg);m=eo.to_mesh();v=[other.matrix_world@v.co for v in m.vertices];f=[tuple(t.vertices) for t in m.polygons];eo.to_mesh_clear()
+ if not f:continue
+ ot=BVHTree.FromPolygons(v,f);before=set(bt.overlap(ot));after=set(nt.overlap(ot))
+ if before or after:contacts.append({'object':other.name,'before':len(before),'after':len(after),'new':len(after-before),'removed':len(before-after),'baseline_leg_contact_z':[float(p[[v for a,b in before for v in fs[a]],2].min()),float(p[[v for a,b in before for v in fs[a]],2].max())] if before else None})
+d=np.linalg.norm(q-p,axis=1);report={'source':'V75','scope':'Only visible left child calf posterior contour; anterior line, X, endpoints, opposite leg, feet and all other objects preserved','changed_vertices':int((d>1e-7).sum()),'max_delta_m':float(d.max()),'area_range':[float(ratio.min()),float(ratio.max())],'flips':int(((na*nb).sum(1)<-1e-15).sum()),'self_pairs_before':len(sp(bt)),'self_pairs_after':len(sp(nt)),'new_self_pairs':len(sp(nt)-sp(bt)),'contact_pairs':contacts,'endpoint_delta':float(d[(p[:,2]<=.57)|(p[:,2]>=.85)].max()),'dimensional_status':'12 mm artistic study, inferred from silhouette; not measured from original'}
+json.dump(report,open(r+'V83-calf-verification.json','w'),indent=2);print(report)
+assert report['flips']==0 and report['new_self_pairs']==0 and all(c['new']==0 for c in contacts)
+me=bpy.data.meshes.new('V83 observed calf editable mesh');me.from_pydata(p.tolist(),[],fs);me.update();n=bpy.data.objects.new('TESTE83 — panturrilha visível do Menino',me);bpy.context.collection.objects.link(n);n.matrix_world=o.matrix_world.copy()
+for mat in o.data.materials:me.materials.append(mat)
+for poly in me.polygons:poly.use_smooth=True
+n.shape_key_add(name='Basis — V75 evaluated visible leg');k=n.shape_key_add(name='TESTE83 — volume posterior localizado');k.value=1
+for v,co in zip(k.data,q):v.co=co
+o.hide_render=True;o.hide_set(True);bpy.ops.wm.save_as_mainfile(filepath=r+'V83-visible-calf-trial.blend')
+s=bpy.context.scene;s.cycles.samples=48;s.render.resolution_x=600;s.render.resolution_y=800;s.render.resolution_percentage=100;c=s.camera;ct=Vector((.025,-.30,.68));c.data.type='ORTHO';c.data.ortho_scale=.55
+for view,off in [('profile',(-5,0,0)),('front',(0,-5,0))]:
+ c.location=ct+Vector(off);c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler();s.render.filepath=r+'V83-child-leg-diagnostic-'+view+'.png';bpy.ops.render.render(write_still=True)

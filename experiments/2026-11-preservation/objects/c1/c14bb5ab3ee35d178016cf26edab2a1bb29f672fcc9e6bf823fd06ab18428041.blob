@@ -1,0 +1,176 @@
+{
+  "baseline": {
+    "vertices_merged_by_float32": 0,
+    "max_coordinate_rounding_mm": 0.00011886663665857864,
+    "degenerate64_under_1e16m2": [],
+    "degenerate32_under_1e16m2": [],
+    "exactly_zero_area32": [],
+    "orientation_reversed32_vs64": [],
+    "minimum_altitude_mm64": 0.1041531474405046,
+    "groups": {
+      "all": {
+        "faces": 12484,
+        "area64_m2_min": 4.260022597417041e-07,
+        "area32_m2_min": 4.260022597417041e-07,
+        "area32_to64_percentiles": [
+          0.999846099279824,
+          0.9999895664732531,
+          1.0,
+          1.0000108841291884,
+          1.0001726341620818
+        ],
+        "minimum_altitude64_mm": 0.1041531474405046,
+        "max_normal_rotation_deg": 0.015144940613446367,
+        "faces_rotation_over_1deg": []
+      },
+      "exact": {
+        "faces": 12484,
+        "area64_m2_min": 4.260022597417041e-07,
+        "area32_m2_min": 4.260022597417041e-07,
+        "area32_to64_percentiles": [
+          0.999846099279824,
+          0.9999895664732531,
+          1.0,
+          1.0000108841291884,
+          1.0001726341620818
+        ],
+        "minimum_altitude64_mm": 0.1041531474405046,
+        "max_normal_rotation_deg": 0.015144940613446367,
+        "faces_rotation_over_1deg": []
+      }
+    },
+    "outlier_faces": []
+  },
+  "candidate": {
+    "vertices_merged_by_float32": 0,
+    "max_coordinate_rounding_mm": 0.0001189496684448975,
+    "degenerate64_under_1e16m2": [],
+    "degenerate32_under_1e16m2": [],
+    "exactly_zero_area32": [],
+    "orientation_reversed32_vs64": [],
+    "minimum_altitude_mm64": 0.00017114865876314468,
+    "groups": {
+      "all": {
+        "faces": 12912,
+        "area64_m2_min": 6.179308647824065e-12,
+        "area32_m2_min": 6.259792493953249e-12,
+        "area32_to64_percentiles": [
+          0.9346907931935593,
+          0.9998069243992818,
+          1.0,
+          1.0001902372723006,
+          1.13160100150913
+        ],
+        "minimum_altitude64_mm": 0.00017114865876314468,
+        "max_normal_rotation_deg": 4.067875730681076,
+        "faces_rotation_over_1deg": [
+          2977,
+          12389,
+          12902
+        ]
+      },
+      "rim": {
+        "faces": 370,
+        "area64_m2_min": 6.179308647824065e-12,
+        "area32_m2_min": 6.259792493953249e-12,
+        "area32_to64_percentiles": [
+          0.9911765770447087,
+          0.9961794081236091,
+          0.9999957624504532,
+          1.0036968807689826,
+          1.013024733140256
+        ],
+        "minimum_altitude64_mm": 0.00017114865876314468,
+        "max_normal_rotation_deg": 4.067875730681076,
+        "faces_rotation_over_1deg": [
+          12389,
+          12902
+        ]
+      },
+      "trimmed": {
+        "faces": 482,
+        "area64_m2_min": 2.3950449493832256e-09,
+        "area32_m2_min": 2.238626463473235e-09,
+        "area32_to64_percentiles": [
+          0.9346907931935593,
+          0.9938088174877536,
+          0.9999974196591519,
+          1.0071444102893754,
+          1.13160100150913
+        ],
+        "minimum_altitude64_mm": 0.0007373117779851898,
+        "max_normal_rotation_deg": 1.7928980561527315,
+        "faces_rotation_over_1deg": [
+          2977
+        ]
+      },
+      "exact": {
+        "faces": 12060,
+        "area64_m2_min": 4.260022597417041e-07,
+        "area32_m2_min": 4.260022597417041e-07,
+        "area32_to64_percentiles": [
+          0.999846099279824,
+          0.999991591950179,
+          1.0,
+          1.0000081807233492,
+          1.0001726341620818
+        ],
+        "minimum_altitude64_mm": 0.12542810832291415,
+        "max_normal_rotation_deg": 0.009552602262566504,
+        "faces_rotation_over_1deg": []
+      }
+    },
+    "outlier_faces": [
+      {
+        "face": 2977,
+        "part": 0,
+        "role": 1,
+        "vertices": [
+          6220,
+          6219,
+          672
+        ],
+        "area64_m2": 1.4517223021493529e-08,
+        "area32_m2": 1.6427704110253476e-08,
+        "area_ratio": 1.13160100150913,
+        "altitude64_mm": 0.0013396703659144275,
+        "normal_cosine": 0.9995104461233656,
+        "points64": [
+          [
+            0.16881717864789708,
+            -0.19400629810677897,
+            3.4863671102069302
+          ],
+          [
+            0.16880883677182545,
+            -0.1939754453658495,
+            3.4863506190733284
+          ],
+          [
+            0.16392704844474792,
+            -0.1750236600637436,
+            3.4771227836608887
+          ]
+        ],
+        "points32": [
+          [
+            0.1688171774148941,
+            -0.1940062940120697,
+            3.4863672256469727
+          ],
+          [
+            0.16880883276462555,
+            -0.19397544860839844,
+            3.4863505363464355
+          ],
+          [
+            0.16392704844474792,
+            -0.1750236600637436,
+            3.4771227836608887
+          ]
+        ]
+      }
+    ]
+  },
+  "method": "Round every stored vertex directly to IEEE754float32 and back tofloat64, recompute areas/orientation with double arithmetic. This is a transport-conditioning diagnostic, not Blender render or Bedrock engine validation."
+}

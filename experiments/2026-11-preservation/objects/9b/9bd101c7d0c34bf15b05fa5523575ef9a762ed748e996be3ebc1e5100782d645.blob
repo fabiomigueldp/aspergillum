@@ -1,0 +1,9 @@
+# ARAP investigation — 2026-11-02
+
+No accepted candidate. The small rigid hand pose (-3deg X, +8deg Z) was evaluated with only the verified anterior sleeve support, 141 fixed boundary vertices and 118 rigid cuff core handles. The torso and back remained unchanged. Local/global ARAP reached max positional update 0.994 micrometers after168 iterations.
+
+Still8 edges exceeded20% strain, maximum ratio1.24833;36 faces rotated more than15deg from baseline (max18.015deg). No faces flipped. Upper-hand triangle intersections0; min signed clearance0.81794mm. Mean fingertip gap remains17.784mm versus21.186mm atV43; this is modest proximity improvement, not restored anatomical support.
+
+This is a negative diagnostic for the present support/handles/pose, not proof that all elastic methods are impossible. Do not relax the checks to claim completion. A subsequent method needs a different verified collar/forearm transition or articulated contact refinement instead of further global hand rotation. PreserveV43 and the bounded5mm diagnostic checkpoint.
+
+Persistent recovery package: libfile_947cd041629c81919cc5edfa88998c84. This later ARAP note is local and was produced after that package; it is not included in that uploaded ZIP.

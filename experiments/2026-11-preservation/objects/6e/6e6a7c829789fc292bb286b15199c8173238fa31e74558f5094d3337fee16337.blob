@@ -1,0 +1,7 @@
+# V72 — estudo bochecha–mandíbula, rejeitado visualmente
+
+Fonte V63, sem incorporar nariz ou véu experimentais. Campo largo de volume em coordenadas da cabeça, com proteção explícita de olhos, nariz central e boca. 9690vértices, máximo7,998mm; área .909505–1.120904;0 faces invertidas e0 novos pares de auto-interseção; demais objetos idênticos.
+
+REJEIÇÃO: render revela bochecha inflada acima da depressão, marcando dobra/sombra nova perto da asa nasal e não preenchendo continuamente o plano facial desejado. Não há ganho convincente frente à referência. Métricas boas não significam anatomia boa. A aplicação de volume por campo gaussiano sem reconstrução dos planos amplos falha aqui; não tentar apenas diminuir amplitude/deslocar centro em sucessivas microversões.
+
+V63 preservada. V72-cheek-jaw-trial.blend é prova reversível, chave TESTE72=0 restaura baseline. V72-whole-face-{photo-oblique,front,profile}.png em mesmas condições das vistas V63. Necessário controle artístico dos planos malares/bucais em vez de mais acréscimo paramétrico de volume.

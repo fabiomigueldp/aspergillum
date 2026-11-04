@@ -1,0 +1,79 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import assert from 'node:assert/strict';
+import {PNG} from 'pngjs';
+const root=path.resolve(import.meta.dirname,'../..');
+const art=path.resolve(root,'../altare-catalog-compaction-20261103');
+const out=import.meta.dirname;
+const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+const inputs={};
+function read(r,p){const b=fs.readFileSync(path.join(r,p));inputs[path.relative(root,path.join(r,p))]=sha(b);return b;}
+const json=(r,p)=>JSON.parse(read(r,p));
+// Artwork comes from the earlier checked build because this copy excludes root PNGs.
+for(const p of ['tools/generate-assets.mjs','assets-src/customization/catalog.json','packs/resource/models/blocks/aspersorium.geo.json','packs/resource/models/blocks/sacristan_table.geo.json','packs/resource/models/blocks/aspersorium.rotations.geo.json','packs/resource/models/blocks/sacristan_table.rotations.geo.json'])assert.deepEqual(read(root,p),read(art,p),`Artwork provenance differs: ${p}`);
+const cosmetics=json(root,'assets-src/customization/catalog.json').cosmetics;
+assert.equal(cosmetics.length,16);
+const index=({occupied,cosmetic})=>occupied?cosmetic+1:0;
+const encode=t=>{assert.equal(typeof t.occupied,'boolean');assert(Number.isInteger(t.cosmetic)&&t.cosmetic>=0&&t.cosmetic<16);const n=index(t);return {page:Math.floor(n/9),slot:n%9};};
+const decode=s=>{assert(Number.isInteger(s.page)&&s.page>=0&&s.page<2);assert(Number.isInteger(s.slot)&&s.slot>=0&&s.slot<9);const n=s.page*9+s.slot;return n>=1&&n<=16?{occupied:true,cosmetic:n-1}:{occupied:false,cosmetic:0};};
+const canonical=v=>Array.isArray(v)?v.map(canonical):v&&typeof v==='object'?Object.fromEntries(Object.entries(v).sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>[k,canonical(v)])):v;
+const funcs=new Map();function evaluate(s,states){if(typeof s!=='string')return s;let f=funcs.get(s);if(!f){f=Function('q','math',`return (${s});`);funcs.set(s,f);}return f({block_state:k=>states[k]},{floor:Math.floor,mod:(a,b)=>a%b});}
+function components(b,s){const c=structuredClone(b.components);for(const p of b.permutations??[])if(evaluate(p.condition,s))Object.assign(c,structuredClone(p.components));if(c['minecraft:geometry']?.bone_visibility)for(const [k,v] of Object.entries(c['minecraft:geometry'].bone_visibility))c['minecraft:geometry'].bone_visibility[k]=!!evaluate(v,s);return canonical(c);}
+const products=states=>Object.entries(states).reduce((rows,[k,vs])=>rows.flatMap(row=>vs.map(v=>({...row,[k]:v}))),[{}]);
+const reports=[];let componentChecks=0,normalizationChecks=0,normalizedEmptyStates=0;
+for(const name of ['aspersorium','sacristan_table']){
+ const b=json(root,`packs/behavior/blocks/${name}.block.json`)['minecraft:block'];
+ const occupiedKey=name==='aspersorium'?'aspergillum:has_aspergillum':'aspergillum:table_has_aspergillum';
+ const cosmeticKey=name==='aspersorium'?'aspergillum:cosmetic':'aspergillum:table_cosmetic';
+ const pageKey='aspergillum:occupied_page',slotKey='aspergillum:occupied_slot';
+ const n=`(q.block_state('${pageKey}') * 9 + q.block_state('${slotKey}'))`;
+ const occupied=`(${n} >= 1 && ${n} <= 16)`;
+ const cosmetic=`(${occupied} ? ${n} - 1 : 0)`;
+ const replacement=s=>s.replaceAll(`q.block_state('${occupiedKey}')`,occupied).replaceAll(`q.block_state('${cosmeticKey}')`,cosmetic);
+ const candidate=structuredClone(b);
+ delete candidate.description.states[occupiedKey];delete candidate.description.states[cosmeticKey];
+ candidate.description.states[pageKey]=[0,1];candidate.description.states[slotKey]=[0,1,2,3,4,5,6,7,8];
+ for(const p of candidate.permutations??[])p.condition=replacement(p.condition);
+ const patchBone=c=>{if(c['minecraft:geometry']?.bone_visibility)for(const[k,v]of Object.entries(c['minecraft:geometry'].bone_visibility))if(typeof v==='string')c['minecraft:geometry'].bone_visibility[k]=replacement(v);};
+ patchBone(candidate.components);for(const p of candidate.permutations??[])patchBone(p.components);
+ const existing=products(b.description.states);let reachable=0,aliases=0;
+ for(const s of existing){
+  const t={occupied:s[occupiedKey],cosmetic:s[cosmeticKey]},e=encode(t),d=decode(e);
+  assert.deepEqual(d,{occupied:t.occupied,cosmetic:t.occupied?t.cosmetic:0});normalizationChecks++;
+  const next={...s,[pageKey]:e.page,[slotKey]:e.slot};delete next[occupiedKey];delete next[cosmeticKey];
+  if(t.occupied||t.cosmetic===0){assert.deepEqual(components(candidate,next),components(b,s));componentChecks++;reachable++;}
+  else {normalizedEmptyStates++;aliases++;}
+
+ }
+ const emitted=products(candidate.description.states);
+ for(const s of emitted){
+  const d=decode({page:s[pageKey],slot:s[slotKey]}),old={...s,[occupiedKey]:d.occupied,[cosmeticKey]:d.cosmetic};delete old[pageKey];delete old[slotKey];
+  assert.deepEqual(components(candidate,s),components(b,old));componentChecks++;
+ }
+ // Verify all visible non-item UVs use the unchanged left atlas half.
+ const geometry=json(root,`packs/resource/models/blocks/${name}.geo.json`)['minecraft:geometry'][0];let cubes=0,maxU=0;
+ for(const bone of geometry.bones){if(bone.name==='resting_aspergillum')continue;assert(!bone.parent||bone.parent!=='resting_aspergillum');for(const c of bone.cubes??[]){cubes++;
+  if(Array.isArray(c.uv)){maxU=Math.max(maxU,c.uv[0]+2*(c.size[0]+c.size[2]));assert(c.uv[0]>=0&&c.uv[0]+2*(c.size[0]+c.size[2])<=128);}
+  else for(const face of Object.values(c.uv??{})){const a=face.uv[0],z=a+face.uv_size[0];assert(Math.min(a,z)>=0&&Math.max(a,z)<=128);maxU=Math.max(maxU,a,z);}
+ }}
+ let pixelsChecked=0;
+ for(const map of ['', '_normal','_mer']){
+  const baseline=PNG.sync.read(read(art,`packs/resource/textures/blocks/${name}${map}.png`));assert.equal(baseline.width,256);assert.equal(baseline.height,256);
+  for(const c of cosmetics){const suffix=c.id==='classic'?'':`_${c.id}`,png=PNG.sync.read(read(art,`packs/resource/textures/blocks/${name}${suffix}${map}.png`));assert.equal(png.width,256);assert.equal(png.height,256);
+   for(let y=0;y<256;y++){const lo=(y*256)*4,hi=lo+128*4;assert.deepEqual(png.data.subarray(lo,hi),baseline.data.subarray(lo,hi));pixelsChecked+=128;}
+  }
+ }
+ reports.push({id:b.description.identifier,declared:existing.length,candidateDeclared:emitted.length,canonicalOldStates:reachable,emptyCosmeticAliases:aliases,nonItemCubes:cubes,maxNonItemU:maxU,atlasPixelsCompared:pixelsChecked,componentEquality:'Every canonical old state and every candidate slot matches all effective components. Noncanonical empty cosmetics differ only in atlas bindings; all pixels referenced by visible geometry match in color/normal/MER.'});
+}
+const sourcePaths=['src/application/aspersorium.ts','src/application/sacristan-table.ts','src/infrastructure/aspersorium-water-state.ts','src/infrastructure/docked-item-registry.ts','src/domain/docking.ts','src/presentation/aspersorium-water-visual.ts','src/infrastructure/constants.ts'];for(const p of sourcePaths)read(root,p);
+const states=reports.reduce((n,r)=>n+r.candidateDeclared,16);assert.equal(states,5488);assert.equal(59840+states,65328);
+const result={schemaVersion:1,createdAt:new Date().toISOString(),root,artSource:art,scope:'Read-only candidate. No production source, generated pack, world, installer, or registry changed.',
+ methodology:'Pair occupancy and cosmetic into one 17-case semantic codebook, packed as 2x9 =18 slots; slot17 is an explicit empty alias. Keep all water_base/water_offset and sixteen rotations unchanged. Match every effective component for canonical old states and every candidate slot; verify empty visible pixels across color/normal/MER. No runtime transaction tests are claimed.',
+ counts:{oldAspergillum:9744,candidateAspergillum:states,saved:9744-states,altare:59840,combined:59840+states,reference:65536,remaining:65536-(59840+states)},
+ verification:{normalizationChecks,losslessCanonicalStateChecks:normalizationChecks-normalizedEmptyStates,componentChecks,normalizedEmptyStates,productionInputsUnchanged:true},blocks:reports,
+ saveImpact:['Changes the published schemas of aspersorium and sacristan_table, even if IDs stay unchanged. Requires a new version and explicit migration; not a drop-in update.','Back up raw registry dynamic-property values, not parsed snapshots: parseDockedRegistryShard sanitizes fields and normalizes entries. Preserve item instance ID, charges, cosmetic, spray profile, unknown future data and dimension/location mapping; report occupied-without-snapshot and empty-with-snapshot mismatches without repairing them.','Export/backup must happen with the old decoder before swapping schemas. Migration of loaded blocks alone misses unloaded chunks, structures and commands.','Any old empty block with nonzero cosmetic is explicitly normalized to empty/cosmetic0; runtime already writes that state on undocking. Water pair(9,8) is retained unchanged as an existing alias of capacity16.','Rollback requires the paired old pack, world and registry snapshot. Reinstalling the old pack alone after state conversion is not safe.'],
+ requiredFutureTests:['Actual adapter transitions: place/dock/undock/recolor/fill/load/break; all rotations and all cosmetics; no item or water duplication.','Partial-write injection at registry, inventory and block permutation writes, plus session cancellation, contention and unknown chunks.','Migration dry run and inverse snapshot roundtrip before any world copy is opened.','Native Content Log, save/reopen and physical smoke by the user.'],
+ limitations:['208-state combined margin is small, not a generous performance or compatibility reserve. Other add-ons consume additional states.','This intentionally extends schema work to Aspergillum. Parent has authorized only read-only analysis, not implementation.','No Minecraft validation, benchmark, live transaction test or automatic world migration was performed.','The artwork is from a prior checked build with byte-identical generator, customization catalog and base geometries; input SHA-256 hashes are recorded.'],inputs};
+for(const [p,h]of Object.entries(inputs))assert.equal(sha(fs.readFileSync(path.resolve(root,p))),h,`Input changed during audit: ${p}`);
+fs.writeFileSync(path.join(out,'aspergillum-occupancy-report.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify({counts:result.counts,verification:result.verification,blocks:reports},null,2));

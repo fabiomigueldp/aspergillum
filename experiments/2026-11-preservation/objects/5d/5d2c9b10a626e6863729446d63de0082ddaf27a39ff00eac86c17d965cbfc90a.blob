@@ -1,0 +1,55 @@
+[
+  {
+    "file": "comparison-trim-and-restoration.png",
+    "sources": [
+      {
+        "label": "V15 · cartões originais",
+        "path": "opaque_transport_v15/evidence/shared-2048-band-front.png",
+        "sha256": "5d552653a3dcc65109b8f00fcd4bb73ac289d9ae5e0ef5c86ab63c50c0d05eb9"
+      },
+      {
+        "label": "V16 · recorte local nível 3",
+        "path": "lit_surface_v16/evidence/roi68-depth3-band-front.png",
+        "sha256": "72f8a40fcd30e62ef376bc8bc5742cab4e60f3663911058e2baec9dc5353e65f"
+      },
+      {
+        "label": "Controle · só transparências recolocadas",
+        "path": "lit_surface_v16/evidence/roi68-depth3-restored-transparent-band-front.png",
+        "sha256": "24b5e3da1ca4f06904e297f64658bc0baf6f04d66934a218922e11a230a99996"
+      },
+      {
+        "label": "Recorte analítico · não é cube Bedrock",
+        "path": "opaque_transport_v15/evidence/shared-2048-analytic-clip-control-band-front.png",
+        "sha256": "cdf7a8351ba3b04c835fb85679d5381004dbb711b1fd5eb3fea83408f65ecd96"
+      }
+    ],
+    "crop_pixels": [
+      175,
+      365,
+      825,
+      705
+    ],
+    "display_scale": 1,
+    "pixel_edits": "none; identical crop/resizing and labels only",
+    "sha256": "0c9c58b6bfe9458a4d8ad9ecb3924860dd4accbe20d53ec01601f1d66711d6fb"
+  },
+  {
+    "file": "comparison-whole.png",
+    "sources": [
+      {
+        "label": "V15 · original",
+        "path": "opaque_transport_v15/evidence/shared-2048-threequarter.png",
+        "sha256": "b4570ba6b9c043505babc0ca7ea718d76e01a156f6e70076cad2fd4d716dc1ff"
+      },
+      {
+        "label": "V16 · nível 3, correção local",
+        "path": "lit_surface_v16/evidence/roi68-depth3-context-threequarter.png",
+        "sha256": "2855f69f8fda0140a623121949ee93b6e35d2a9381fe11f78e62bec3072e8756"
+      }
+    ],
+    "crop_pixels": null,
+    "display_scale": 0.65,
+    "pixel_edits": "none; identical crop/resizing and labels only",
+    "sha256": "d09ff12449e9b42639bc85c985cb8035d7254685e33057683f4e857cde5551a4"
+  }
+]

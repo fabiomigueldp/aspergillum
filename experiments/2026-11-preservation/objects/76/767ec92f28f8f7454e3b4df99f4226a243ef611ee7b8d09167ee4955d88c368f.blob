@@ -1,0 +1,88 @@
+# Revisão visual offline da candidata
+
+## Decisão
+
+**Há evidência suficiente para integrar o patch restrito de South UV e normais de dimensão zero.** A revisão independente concordou. A integração não foi feita por esta tarefa; o patch de produção é o mesmo já aprovado nos testes, sem alterações adicionais.
+
+Não há evidência para anunciar paridade geral entre Aspergillum, Blockbench e Minecraft. Esta é uma validação dos atributos geométricos abrangidos pelo patch.
+
+## O que foi renderizado
+
+Quarenta PNGs finais, em sete comparações, usando Blender 4.3.2 Cycles CPU já disponível. Nenhum navegador ou Chromium foi executado.
+
+1. Fixture assimétrica South, tamanho `[5,4,0]`: quatro cores e marcas diferentes tornam o espelhamento inequívoco.
+2. A mesma fixture com espessura positiva `[5,4,2]`: verifica que a correção UV também se aplica ao sólido e que sua normal já correta permanece igual.
+3. Fixture plana com os dois tamanhos UV negativos: verifica preservação dos sinais.
+4. Asset sólido completo `sacristan_table.geo.json`, 34 cubos, textura original, antes/depois.
+5. As faces South do mesmo asset, antes/depois/referência independente. Não se declara conformidade das demais faces.
+6. Asset plano real: componente `part_00` da faixa NS Paz V14, 4.444 cubos de profundidade zero, cada um com somente South e textura alfa original. Não é a escultura inteira.
+7. Controle adicional da faixa: atributos UV/normais oficiais aplicados às posições e índices do renderer **anterior**. Isola atributos de pequenas diferenças de posições/tesselação da referência oficial.
+
+Imagens principais:
+
+- `fixture-plane-contact.png`: prova visual das duas falhas e da correção.
+- `fixture-solid-contact.png` e `fixture-signed-plane-contact.png`: controles de espessura e sinais.
+- `table-full-contact.png`: asset sólido completo antes/depois.
+- `table-south-contact.png`: South do asset sólido contra referência.
+- `paz-planar-band-contact.png`: faixa plana real contra referência geométrica oficial.
+- `paz-band-topology-control-contact.png`: controle de atributos com topologia fixada.
+
+## Independência da referência
+
+`export-buffers.mjs` executa `parseCube`, `setShape` e `updateUV` oficiais do Blockbench, sem modificações, após conferir os três hashes Git. Commit fixado: `ec0b2827104d0799c153bfb5f867579c0c44652f`. Não copia o flip da candidata para construir a expectativa.
+
+Os atributos antes/depois são extraídos dos módulos Three.js reais. Para a referência, X é refletido para a base Bedrock usada pelo viewer, com reversão correspondente do winding. Nas comparações de assets, as matrizes mundiais já existentes são compartilhadas: esta revisão não revalida hierarquia ou convenções de rotação.
+
+Os scripts e hashes das fontes estão no pacote original, em `../reference/` e `../generate-reference.mjs`. Os caminhos e hashes dos assets usados estão em `manifest.json`; `source-preservation.json` confirma que os quatro arquivos originais de geometria/textura permaneceram inalterados.
+
+## Protocolo de rasterização
+
+- Câmera ortográfica fixa por comparação, com +Y explícito como vertical Bedrock.
+- Textura original com filtro nearest e teste alfa maior que 0,5.
+- Culling pelo winding real dos triângulos; não pela normal de iluminação.
+- Linha superior: textura sem iluminação.
+- Linha inferior: emissão monocromática com intensidade `0,18 + 0,82 × max(0, normal_armazenada · luz)`. Luz fixa normalizada `[0,25; 0,35; 1]`.
+- As normais originais dos buffers são utilizadas explicitamente. Não se permite ao Blender recalculá-las pela geometria, o que ocultaria o defeito anterior.
+- Importação de UV e intensidade validada por leitura de todos os loops no Blender.
+- Mesma exposição, transformação Standard, 640×640, 16 amostras e seed 73.
+- Sem epsilon, espessura artificial, normal map, MER ou shader Bedrock.
+
+## Resultados
+
+Métricas completas: `visual-comparison.json`. Erros de RGB abaixo são médias absolutas premultiplicadas por alfa, na união dos pixels cobertos, na escala 0–255.
+
+- **Fixture plana:** erro UV de 112,423 para 0,000013. Iluminação de 128,742 para 0. A candidata e referência têm iluminação pixel-idêntica; a diferença UV residual fica em um pixel de antialiasing. Posições, índices e silhueta não mudaram.
+- **Fixture sólida:** mesma correção UV; iluminação anterior, candidata e referência já eram idênticas.
+- **Fixture UV negativo:** erro UV de 112,422 para 0,000039; iluminação de 128,742 para 0.
+- **Mesa completa:** zero diferença de silhueta ou iluminação antes/depois. As mudanças de cor decorrem de South UV; não há alteração de volume, posicionamento ou peças.
+- **Mesa South:** erro UV de 4,80463 para 0,000023. Zero pixels de silhueta diferentes; nenhuma diferença de cor maior que 1/255 após a correção.
+- **Faixa plana, comparação geométrica direta:** erro UV de 45,459 para 4,209; iluminação de 114,346 para 4,729. Pixels de silhueta divergentes caem de 5.972 para 172. Não é um match irrestrito de render: as posições oficiais apresentam diferença máxima de `1,19818e-7` bloco e a reflexão troca a diagonal de tesselação.
+- **Controle da faixa com topologia fixa:** candidata e referência ficam **pixel a pixel idênticas**, nos dois modos. Zero diferença de silhueta, UV e iluminação. O controle mantém UV/normais oficiais independentes e usa posições/índices anteriores, não atributos candidatos.
+- Os atributos UV e normais da candidata coincidem exatamente com a referência em todos os controles South. Posições e índices antes/depois são exatamente iguais.
+
+As fissuras restantes na faixa também aparecem na expectativa oficial/controlada; o patch não corrige a geometria, a máscara alfa ou a anatomia do asset. Não deve ser apresentado como uma versão final da escultura.
+
+## Revisão independente
+
+O revisor examinou o exportador, o rasterizador, o controle de topologia, as métricas e as imagens. Não encontrou comparação tautológica nem erro de rasterização remanescente, e julgou suficiente a evidência para integrar o escopo restrito.
+
+Duas rodadas preliminares foram descartadas como prova final: uma tinha referências RNA de atributos invalidadas na importação Blender, corrigidas com realocação e readback; outra usava convenção de câmera Z-up, substituída pela matriz Y-up explícita. Permanecem arquivadas separadamente no workspace, não no conjunto final de evidências. O primeiro erro de sintaxe do harness também não produziu resultados válidos. Nenhum desses ajustes alterou o patch de produção.
+
+## Limites e integração
+
+- Pode integrar os três arquivos de `south-zero-extent.patch`: o módulo geométrico, o teste de regressão e sua fixture oficial.
+- Preservar o escopo: base BEDROCK sem mirror, South per-face UV; normais positivas de dimensão efetiva zero. Box UV mantém suas coordenadas, embora receba correção de normal quando aplicável.
+- A revisão visual cobre South/Z. Os testes anteriores cobrem normais zero nos três eixos; não houve nova cobertura visual de East/Up.
+- Mirror, coordenadas Box UV, outras faces e `uv_rotation` continuam fora da conformidade validada.
+- Não são screenshots do viewer, execução WebGL, teste de material PBR, desempenho ou validação no cliente Minecraft.
+- As transformações dos assets são compartilhadas com o renderer; não foram verificadas de forma independente nesta etapa.
+- Recomenda-se conservar estes fixtures como regressão. A validação visual nativa, quando houver ambiente autorizado, continua útil, mas a ausência dela não impede a integração desta correção de atributos já comprovada.
+
+## Reproduzir a rasterização
+
+Com Blender e Python/numpy/Pillow disponíveis, usar os buffers JSON e texturas incluídos:
+
+1. `blender -b -t 8 --python render_offline.py`
+2. `python compare_renders.py`
+
+Para regenerar os buffers a partir dos módulos originais, o script `export-buffers.mjs` depende dos caminhos do workspace registrado e das dependências Three.js existentes. `add_topology_control.py` deriva o controle dos buffers oficiais, sem acesso à implementação da candidata.

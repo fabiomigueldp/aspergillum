@@ -1,0 +1,54 @@
+# Escolhas e prazo do editor — 0.12.3
+
+## Guadalupe indevida: reprodução e correção
+
+Um altar de Pilastras sem toalha e sem relevo possui `frontal > 0` no centro por motivos de layout. O editor interpretava esse valor arquitetônico como Guadalupe. Ao selecionar Clássico, o toggle já aparecia ligado e Aplicar adicionava ornamentação não escolhida.
+
+Agora a abertura reconhece Guadalupe somente nos blocos clássicos: legado sem design ou catálogo com `structure === 'classic'`. Clássicos com tecidos universais conservam `frontal` para Guadalupe e `textileRole` para o motivo têxtil. O ícone genuíno continua lembrado durante trocas de modelo. Escolhas explícitas do jogador e Restaurar mantêm sua semântica. Em conjuntos mistos, a presença de Guadalupe clássica real é conservada independentemente da ordem; papel arquitetônico isolado não a inventa.
+
+O patch é restrito à leitura inicial do rascunho. Não migra saves, não redefine IDs ou states e não escreve no mundo antes de Aplicar.
+
+## Encerramento por prazo
+
+O prazo existente de 1.200 ticks fecha a tela e descarta o rascunho. Antes, o retorno sem acabamento encerrava o fluxo sem mensagem. Agora, se o retorno ocorre após o prazo, a infraestrutura mostra `error.expired`, já traduzida nos dois idiomas. Não há timer novo, extensão da sessão nem mudança nos locks ou rollback.
+
+Cancelar e invalidação concluídos antes do prazo permanecem silenciosos. O critério usa o instante de retorno, não uma causa explícita: um cancelamento iniciado antes do limite, mas cujo retorno fosse atrasado além dele, também poderia receber o aviso genérico de edição encerrada. Essa ressalva não implica escrita de dados ou retenção de lock.
+
+## Verificação direcionada
+
+- Guadalupe: três dos quatro testes novos falham com o menu 0.12.2; os quatro passam com a correção.
+- A matriz percorre 401 designs arquitetônicos e 416 casos clássicos (legado e 12 tecidos, Guadalupe ligada/desligada, quatro frentes e larguras 1/2/7/8), além de conjuntos mistos e escolha manual após transição. As entradas passam pelo codec de save e permanecem intactas.
+- Prazo: duas falhas antes; quatro testes passam depois. Timer e interação que detecta lease expirado produzem um aviso; cancelamento/invalidação antecipados não produzem. Sem escrita e com timer/lock liberados.
+- Tipos da cópia aprovados. As suítes anteriormente aprovadas não foram repetidas nesta rodada; não se apresenta seu resultado histórico como uma execução nova.
+
+```
+node --experimental-strip-types --test --test-name-pattern 'ornament identity|Guadalupe intent|mixed altar|explicit Guadalupe' tests/menu.node.ts
+node --experimental-strip-types --test tests/editor-timeout.node.ts
+npm run typecheck
+npm run build
+node tools/validate.mjs
+```
+
+Os testes usam adaptadores para UI, relógio e mundo, exercitando a apresentação/infraestrutura reais. Não validam foco, narrador, contraste, toque, controle ou renderização no cliente Bedrock. As revisões independentes de fonte não encontraram bloqueio na distinção entre papéis centrais e Guadalupe.
+
+## Preservação e distribuição
+
+A 0.12.3 foi preparada em cópia isolada. O checkout e o arquivo 0.12.2 anteriores foram preservados. A comparação do pacote confirma 5.386 entradas idênticas, incluindo os 414 blocos, 4.700 arquivos de geometria e 265 arquivos de textura. Nenhum recurso foi adicionado ou removido. Todas as fontes de domínio também permanecem idênticas.
+
+Mudam somente o runtime com as duas correções e seis arquivos de versão. As 5.393 entradas têm CRC íntegro e coincidem com os packs gerados. Artefato: 20.859.137 bytes; SHA-256 `47ea472ff249e46926d4b8f6572a3e0c7c53db6df51dc05ef6a287e3df19c1f4`.
+
+Aspergillum permanece 1.2.5 e Estúdio 2.3.0. Não houve commit, publicação, instalação ou alteração de mundos.
+
+## Validação do pacote
+
+Build e validação estrutural aprovados. Creator Tools oficial: zero erros, 2.084 avisos de complexidade já delimitados e zero avisos inesperados. Alvo offline fixado em 1.26.40. O [relatório completo](../dist/validation/0.12.3/release-summary.json) preserva os avisos. Essa validação não executa o cliente Minecraft.
+
+## Reteste nativo mínimo — pendente
+
+1. Em cópia de mundo, ativar somente BP/RP [0,12,3] do arquivo exato, sem revisão concorrente. Minecraft mínimo 1.26.40, sem experimentos.
+2. Aplicar Pilastras sem toalha/sem relevo; reabrir e escolher Clássico. Guadalupe deve permanecer desligada. Ligar manualmente, alternar modelos e retornar: a escolha deve continuar ligada.
+3. Reabrir um clássico salvo com Guadalupe, inclusive com tecido universal. O ícone deve continuar ligado. Restaurar recupera o estado aberto; Cancelar não escreve.
+4. Abrir o editor e aguardar o prazo: deve fechar sem aplicar e mostrar o aviso de edição encerrada. Reabrir e cancelar antes do limite: nenhum aviso de expiração.
+5. Salvar/recarregar, conferir as escolhas e Content Log sem novos erros. Registrar hash, versão do jogo, idioma e dispositivo de entrada.
+
+O teste Minecraft continua reservado ao usuário. Nenhuma aprovação nativa é declarada.

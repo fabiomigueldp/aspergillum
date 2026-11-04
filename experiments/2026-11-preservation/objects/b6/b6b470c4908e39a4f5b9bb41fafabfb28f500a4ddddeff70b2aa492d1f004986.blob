@@ -1,0 +1,12 @@
+import bpy,numpy as np,json,hashlib
+from pathlib import Path
+O=Path(__file__).resolve().parent;R=O.parent;rows=[]
+for tag,name in [('quads','shared-2048-diagnostic.blend'),('clipped','shared-2048-analytic-clip-control-diagnostic.blend')]:
+ path=R/'evidence'/name;before=hashlib.sha256(path.read_bytes()).hexdigest();bpy.ops.wm.open_mainfile(filepath=str(path));objects=[]
+ for part in [0,1,15]:
+  ob=next(o for o in bpy.context.scene.objects if o.type=='MESH'and o.name.startswith(f'part_{part:02d} '));m=ob.data;m.calc_loop_triangles();n=len(m.polygons);coords=np.array([v.co[:]for v in m.vertices],dtype=np.float64);facecoords=np.array([[coords[i]for i in p.vertices]for p in m.polygons]);normal=np.array([p.normal[:]for p in m.polygons]);vertexnormal=np.array([v.normal[:]for v in m.vertices]);trinormal=np.array([t.normal[:]for t in m.loop_triangles]);triparent=np.array([t.polygon_index for t in m.loop_triangles]);tricorners=np.array([list(t.vertices)for t in m.loop_triangles]);smooth=np.array([p.use_smooth for p in m.polygons]);arrays={'face_vertices':facecoords,'polygon_normal':normal,'vertex_normal':vertexnormal,'loop_triangle_normal':trinormal,'loop_triangle_parent':triparent,'loop_triangle_vertex_indices':tricorners,'all_vertices':coords,'use_smooth':smooth,'object_matrix':np.array(ob.matrix_world)}
+  try:arrays['corner_normals']=np.array([x.vector[:]for x in m.corner_normals])
+  except Exception as e:objects.append({'corner_normals_unavailable':str(e)})
+  dest=O/f'blender-{tag}-part{part:02d}-actual-normals.npz';np.savez_compressed(dest,**arrays);objects.append({'name':ob.name,'mesh':m.name,'vertices':len(m.vertices),'polygons':n,'loop_triangles':len(m.loop_triangles),'all_flat':bool((~smooth).all()),'output':dest.name,'matrix':np.array(ob.matrix_world).tolist()})
+ rows.append({'tag':tag,'blend_path':str(path),'blend_sha256_before':before,'blend_sha256_after':hashlib.sha256(path.read_bytes()).hexdigest(),'blender_version':bpy.app.version_string,'objects':objects})
+(O/'blender-normal-extraction.json').write_text(json.dumps(rows,indent=2));print(json.dumps(rows,indent=2))

@@ -1,0 +1,25 @@
+# Prova acoplada de superfície média — recusada, V75 intacto
+
+Nenhum blendV85/V86 salvo. Saídas apenas NPZ de diagnóstico e JSON. Usamos pares recuperados da topologia original, não camadas independentes de V82. Cada par compartilha deslocamento3D único; vetor entre camadas preservado, contorno e fora do recorte fixos. Função quadrática penaliza deslocamento e gradientes/Laplaciano; obstáculos linearizados por normal próxima em vértices, meios de arestas e centros de faces de ambas camadas.
+
+SLSQP denso foi interrompido sem resultado após custo excessivo; o mesmo subproblema quadrático foi resolvido na forma dual com L-BFGS limitado. Isso é troca de solver, não suposto avanço geométrico.
+
+## Inviabilidade descoberta e corrigida no suporte
+No recorte746faces,30faces tinham todos os vértices congelados pelo contorno;8pares dessas faces cruzavam pele e uma amostra fixa penetrava .488mm. Portanto nenhum solver podia remover tais colisões com esse suporte. Segmentar bordas sem cruzamentos não bastava.
+
+Expansão pareada mínima746→756faces removeu esse bloqueio:580v de contorno,0segmentos inválidos,0pares pele–faces totalmente congeladas. Continua dentro do pescoço delimitado. Esta é correção do domínio do problema, não deformação de V75.
+
+## Prova V85 no suporte anterior (recusada)
+Máximo9,250mm, vetores de espessura preservados a7,8e-18m, contorno/fora delta0.4flips,0novas auto-interseções,529→516pares pele–patch;476novos e489removidos. Parou por amostras fixas negativas.
+
+## Prova V86 no suporte corrigido (também recusada)
+234nós médios livres,290fixos. Máximo9,252mm; contorno/fora delta0; vetores de espessura preservados a7,8e-18m.0flips/0novas auto-interseções. Área de triângulos .5698–3.4549×, o que ainda requer tratamento de qualidade.
+
+Entretanto:529→507pares pele–patch, com477novos e499removidos. Amostras próximas têm cerca de48micrômetros de folga, mas triângulos continuam atravessando pele entre elas. Não usar clearance de amostras para declarar superfície válida. Também não se atingiu convergência completa: última violação linear1,64micrômetro ultrapassou tolerância1micrômetro; deslocamentos entre iterações ainda~.107mm.
+
+O teste BVHTree.overlap usa interseção de triângulos, não só caixas: ver implementação oficial Blender https://github.com/blender/blender/blob/main/source/blender/python/mathutils/mathutils_bvhtree.cc (py_bvhtree_overlap_cb). Não descartar os pares como mero broadphase.
+
+## Causa restante e próximo método distinto
+A correspondência/espessura por pares e o suporte congelado agora estão sob controle. Obstáculos por um conjunto esparso de pontos e normal mais próxima NÃO constituem barreira contínua triângulo–triângulo. Necessário inserir restrições nos pontos reais de interseção com coordenadas baricêntricas, controlar toda a trajetória do passo e tratar a qualidade da tesselação no domínio de origem. Não repetir o mesmo solver apenas aumentando iterações, margem ou peso de suavização; isso não fecha a lacuna do teste geométrico.
+
+Resultados não renderizados como melhoria: falham na validação técnica. Baseline permanece V75 persistido; não há progresso visual novo a anunciar.

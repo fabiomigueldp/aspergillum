@@ -1,0 +1,22 @@
+# Offline recovery model
+
+54 cases: 51 injected faults and 3 successful paths. Assertions: true.
+
+## Assumptions
+- One serialized writer; each modeled write mutates one field atomically.
+- Every applied write survives simulated reload, in program order; no torn writes.
+- An exception may occur before or after a mutation; all exceptions stop forward execution.
+- Raw registry is an opaque UTF-8 string, never parsed/sanitized; missing is explicit null.
+- All participating routes honor journal quarantine; reload never retries effects automatically.
+- The modeled item backup is abstract, not proof of complete ItemStack serialization.
+
+## Limits
+- No Bedrock transaction, fsync, persistence ordering or engine-event guarantee is established.
+- Preserved evidence is not restored gameplay state, availability, or exactly-once delivery.
+- A journal ignored by an older pack cannot enforce quarantine after downgrade.
+- No event generation token means a late old event and a valid new event can be indistinguishable.
+- Completed journal entries also block further modeled operations: no liveness, tombstone GC or reuse policy is proved.
+- Generation is an abstract label only; it is not supplied by native events or proved globally unique.
+- No integrated protocol, repair command, migration, world access, pack change or publication.
+
+Counterexamples and per-step traces are in report.json. Run: node --test tools/recovery-analysis.node-test.mjs && node tools/recovery-analysis.mjs.

@@ -1,0 +1,34 @@
+# Revisão pontual do editor Altare 0.12.2
+
+## Defeito reproduzido e candidato
+
+O prazo existente de 1.200 ticks (60 s a 20 ticks/s) encerra a sessão, fecha o formulário e descarta o rascunho. O chamador recebia `undefined` e retornava sem qualquer feedback. O jogador não tinha indicação de por que a edição havia desaparecido.
+
+A correção candidata foi feita somente em uma cópia isolada. Quando o formulário retorna sem acabamento após o prazo, mostra a mensagem localizada `error.expired` já existente. Não altera duração, locks, aplicação, rollback, modelos, estados ou recursos. Não acrescenta timer, dependência, tradução ou escrita no mundo.
+
+## Evidência nova
+
+- Antes: os dois testes de expiração falharam porque a lista de mensagens estava vazia. Os casos de Cancelar e invalidação antes do prazo passaram.
+- Depois: 4/4 testes novos passaram, incluindo expiração pelo timer e detecção de lease vencido durante interação. Nenhuma escrita, nenhum lock retido, timer limpo.
+- Typecheck da cópia aprovado. Nenhuma suíte antiga foi repetida.
+- Revisão independente não encontrou bloqueio no patch. Ressalva: o critério é o prazo no retorno do formulário, não uma causa de fechamento explícita. Um Cancelar iniciado antes do limite cujo retorno atrasasse até depois dele poderia também receber o aviso genérico de edição encerrada. Não há risco de escrita ou retenção de estado.
+- Patch reaplicado em cópia temporária da base e arquivos resultantes conferidos byte a byte.
+
+Comandos na pasta addons/altare da cópia:
+
+    node --experimental-strip-types --test tests/editor-timeout.node.ts
+    ../../node_modules/.bin/tsc --noEmit -p tsconfig.json
+
+Os adaptadores simulam relógio, mundo e fechamento da UI; a infraestrutura e as sessões são reais. Não é validação de foco, narração, controle, toque, contraste ou da exibição do aviso no cliente Minecraft. Esse teste continua reservado ao usuário.
+
+## Preservação
+
+Não foi gerada uma nova versão nem pacote instalável. A entrega 0.12.2 e o checkout anterior não foram alterados. SHA-256 do mcaddon 0.12.2 preservado: `2b7576872c69fa94f72130c3ae260ebdceafc906c2428985219782a6da4940a9`. Sem commits, publicação ou alteração de mundos.
+
+## Achado separado, ainda sem correção
+
+Ao abrir Pilastras sem toalha e sem relevo, `frontal` pode ser 1 por representar o papel central arquitetônico. A inicialização do menu interpreta `tiles.some(t => t.frontal > 0)` como Guadalupe. Mudar então para Clássico produz `ornamental:true`, sem seleção explícita do toggle. A revisão independente reproduziu esse resultado por execução isolada de domínio. Este candidato não está incluído no patch de prazo.
+
+## Verificação mínima futura, se integrado
+
+Em cópia de mundo, abrir o editor e aguardar o prazo: deve fechar sem aplicar e mostrar aviso de edição encerrada. Reabrir e cancelar antes do prazo: nenhum aviso de expiração. Confirmar Content Log sem erros. Sem instalar ou testar Minecraft nesta revisão.

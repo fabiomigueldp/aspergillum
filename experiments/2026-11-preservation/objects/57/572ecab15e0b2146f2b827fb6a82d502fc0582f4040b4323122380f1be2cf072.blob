@@ -1,0 +1,49 @@
+"""Offline Cycles CPU presentation of triangles exported by the Bedrock adapter."""
+import bpy,json,sys,math,os
+from pathlib import Path
+from mathutils import Vector
+args=sys.argv[sys.argv.index('--')+1:];scene_path=Path(args[0]);output=Path(args[1]);view=args[2] if len(args)>2 else 'hero'
+s=json.loads(scene_path.read_text());bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
+scene=bpy.context.scene;scene.render.engine='CYCLES';scene.cycles.device='CPU';scene.cycles.samples=96;scene.cycles.use_denoising=False
+scene.render.threads_mode='FIXED';scene.render.threads=int(os.environ.get('ALTARE_RENDER_THREADS','4'))
+scene.render.resolution_x=1800;scene.render.resolution_y=1200;scene.render.resolution_percentage=100
+scene.render.image_settings.file_format='PNG';scene.render.film_transparent=False
+scene.world.color=(.3,.3,.3);scene.world.use_nodes=True;scene.world.node_tree.nodes['Background'].inputs['Color'].default_value=(.30,.33,.39,1);scene.world.node_tree.nodes['Background'].inputs['Strength'].default_value=.35
+scene.view_settings.view_transform='AgX';scene.view_settings.look='AgX - Medium High Contrast';scene.view_settings.exposure=.25
+buckets={}
+for t in s['triangles']:buckets.setdefault(t['texture'],[]).append(t)
+for name,triangles in buckets.items():
+ name=str((scene_path.parent/name).resolve()) if not Path(name).is_absolute() else name
+ mat=bpy.data.materials.new(Path(name).stem);mat.use_nodes=True;nodes=mat.node_tree.nodes;links=mat.node_tree.links;shader=nodes.get('Principled BSDF');shader.inputs['Metallic'].default_value=0;shader.inputs['Roughness'].default_value=.45
+ color=nodes.new('ShaderNodeTexImage');color.image=bpy.data.images.load(name);color.interpolation='Closest';links.new(color.outputs['Color'],shader.inputs['Base Color'])
+ mer=Path(name).with_name(Path(name).stem+'_mer.png')
+ if mer.exists():
+  tex=nodes.new('ShaderNodeTexImage');tex.image=bpy.data.images.load(str(mer));tex.image.colorspace_settings.name='Non-Color';sep=nodes.new('ShaderNodeSeparateColor');links.new(tex.outputs['Color'],sep.inputs['Color']);links.new(sep.outputs['Blue'],shader.inputs['Roughness']);links.new(sep.outputs['Red'],shader.inputs['Metallic'])
+ normal=Path(name).with_name(Path(name).stem+'_normal.png')
+ if normal.exists():
+  tex=nodes.new('ShaderNodeTexImage');tex.image=bpy.data.images.load(str(normal));tex.image.colorspace_settings.name='Non-Color';n=nodes.new('ShaderNodeNormalMap');n.inputs['Strength'].default_value=.35;links.new(tex.outputs['Color'],n.inputs['Color']);links.new(n.outputs['Normal'],shader.inputs['Normal'])
+ verts=[];faces=[];uvs=[]
+ for tri in triangles:
+  k=len(verts);verts.extend((x,-z,y) for x,y,z in tri['points']);faces.append((k,k+1,k+2));uvs.extend(tri['uv'])
+ mesh=bpy.data.meshes.new(Path(name).stem);mesh.from_pydata(verts,[],faces);mesh.update();layer=mesh.uv_layers.new(name='UVMap')
+ for polygon in mesh.polygons:
+  for li in polygon.loop_indices:layer.data[li].uv=uvs[mesh.loops[li].vertex_index]
+ obj=bpy.data.objects.new(Path(name).stem,mesh);bpy.context.collection.objects.link(obj);obj.data.materials.append(mat)
+# Ground and softbox lights are presentation only, not part of the resource.
+bpy.ops.mesh.primitive_plane_add(size=max(200,s['w']*20),location=(0,0,-.004));floor=bpy.context.object;floor.name='studio_ground';mat=bpy.data.materials.new('warm_plaster');mat.diffuse_color=(.48,.45,.40,1);mat.use_nodes=True;mat.node_tree.nodes['Principled BSDF'].inputs['Base Color'].default_value=(.48,.45,.40,1);mat.node_tree.nodes['Principled BSDF'].inputs['Roughness'].default_value=.8;floor.data.materials.append(mat)
+def light(name,loc,energy,size,color):
+ data=bpy.data.lights.new(name,'AREA');data.energy=energy;data.shape='DISK';data.size=size;data.color=color;obj=bpy.data.objects.new(name,data);bpy.context.collection.objects.link(obj);obj.location=loc;obj.rotation_euler=(Vector((0,0,.6))-obj.location).to_track_quat('-Z','Y').to_euler()
+scale=max(1,s['w']/4)
+light('key',(-3*scale,4*scale,6),700*scale,4.5,(1,.88,.72));light('fill',(4*scale,1,3.8),380*scale,4,(.75,.86,1));light('rim',(1,-4*scale,5),550*scale,3,(1,.92,.8))
+dirs={'hero':[-.75,.52,-1],'hero_low':[-.65,.23,-1],'front':[0,.08,-1],'back':[.75,.40,1],'detail':[-.95,.20,-1]};d=Vector(dirs[view]);d=Vector((d.x,-d.z,d.y)).normalized();target=Vector((s['profile']['centers'][0]/16 if view=='detail' else 0,0,.5));camera=bpy.data.cameras.new('Camera');obj=bpy.data.objects.new('Camera',camera);bpy.context.collection.objects.link(obj);obj.location=target+d*max(8,s['w']*2);obj.rotation_euler=(target-obj.location).to_track_quat('-Z','Y').to_euler();scene.camera=obj;camera.type='ORTHO';camera.sensor_fit='HORIZONTAL'
+points=[Vector((x,-z,y))-target for t in s['triangles'] for x,y,z in t['points']];right=Vector((0,0,1)).cross(d).normalized();up=d.cross(right);xp=[p.dot(right) for p in points];yp=[p.dot(up) for p in points];camera.ortho_scale=max((max(xp)-min(xp))/.84,(max(yp)-min(yp))*1.5/.74)
+
+if view=='detail':camera.ortho_scale=2.15
+# Keep every orthographic ray origin above the floor, including low frontal views.
+# Otherwise the bottom rows start below ground and reveal the world through it.
+ray_height=camera.ortho_scale*(scene.render.resolution_y/scene.render.resolution_x)/2
+min_distance=(ray_height*abs(up.z)+.25-target.z)/max(d.z,.01)
+obj.location=target+d*max(8,s['w']*2,min_distance)
+assert obj.location.z-ray_height*abs(up.z)>.15, 'Orthographic camera starts below the studio floor'
+scene.render.filepath=str(output);output.parent.mkdir(parents=True,exist_ok=True);bpy.ops.wm.save_as_mainfile(filepath=str(output.with_suffix('.blend')));bpy.ops.render.render(write_still=True)
+print(json.dumps({'scene':str(scene_path),'view':view,'output':str(output),'renderer':'Blender Cycles CPU','samples':96,'geometry_triangles':len(s['triangles']),'prototype':True}))

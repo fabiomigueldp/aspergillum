@@ -1,0 +1,90 @@
+{
+  "status": "Three targeted variants built and self-validated; independent validation/render outcome is separate.",
+  "selection": {
+    "selected_band_cubes": 68,
+    "total_band_cubes": 8888,
+    "selected_cube_fraction": 0.00765076507650765,
+    "dark_candidates_covered": 49,
+    "all_roi_candidates_covered": 68,
+    "source_faces": 52,
+    "band_native_area_blocks2": 0.03362153689119628,
+    "selected_native_area_blocks2": 0.0006710828264584206,
+    "selected_native_area_fraction": 0.019959909287613264,
+    "candidate_source": "lit_surface_v16/independent_rays/trim-candidate-original-cubes.json"
+  },
+  "variants": [
+    {
+      "depth": 1,
+      "geometry": "lit_surface_v16/transparent_trim/roi68-depth1.geo.json",
+      "counts": {
+        "cubes": 41701,
+        "quads": 41718,
+        "triangles_if_each_quad_split_in_two": 83436
+      },
+      "geometry_bytes": 12562098,
+      "retained_children_per_parent": 3,
+      "removed_transparent_texels_per_parent": 1048576,
+      "removed_original_quad_fraction": 0.25,
+      "retained_alpha_texels_per_parent": 2098176,
+      "float64_parent_affine_max_error_blocks": 6.207886773064453e-16
+    },
+    {
+      "depth": 2,
+      "geometry": "lit_surface_v16/transparent_trim/roi68-depth2.geo.json",
+      "counts": {
+        "cubes": 41973,
+        "quads": 41990,
+        "triangles_if_each_quad_split_in_two": 83980
+      },
+      "geometry_bytes": 12646980,
+      "retained_children_per_parent": 7,
+      "removed_transparent_texels_per_parent": 1572864,
+      "removed_original_quad_fraction": 0.375,
+      "retained_alpha_texels_per_parent": 2098176,
+      "float64_parent_affine_max_error_blocks": 9.602787394150765e-16
+    },
+    {
+      "depth": 3,
+      "geometry": "lit_surface_v16/transparent_trim/roi68-depth3.geo.json",
+      "counts": {
+        "cubes": 42517,
+        "quads": 42534,
+        "triangles_if_each_quad_split_in_two": 85068
+      },
+      "geometry_bytes": 12817667,
+      "retained_children_per_parent": 15,
+      "removed_transparent_texels_per_parent": 1835008,
+      "removed_original_quad_fraction": 0.4375,
+      "retained_alpha_texels_per_parent": 2098176,
+      "float64_parent_affine_max_error_blocks": 9.305364597889227e-16
+    }
+  ],
+  "optional_all_band": "Correction: the original all-band depth1 process completed after transport loss; outputs were discovered during the restored-control final hash audit. No retry occurred. Optional and not selected for the matched causal-control renders.",
+  "restored_transparent_control": {
+    "geometry": "lit_surface_v16/transparent_trim/roi68-depth3-restored-transparent.geo.json",
+    "prior_retained_cubes_exact": true,
+    "prior_retained_cube_order_exact": true,
+    "restored_cubes": 476,
+    "restored_new_band_cube_indices": [
+      9840,
+      10315
+    ],
+    "control_counts": {
+      "cubes": 42993,
+      "quads": 43010,
+      "triangles_if_each_quad_split_in_two": 86020
+    },
+    "geometry_bytes": 12966416,
+    "purpose": "Separate deletion of transparent intersections from changes caused by subdivision, Float32 rounding, or triangulation. Every retained depth3 cube remains bit-value identical at its original index; the 476 removed alpha-zero leaf rectangles are appended to part00.",
+    "report": "lit_surface_v16/transparent_trim/roi68-depth3-restored-transparent-report.json"
+  },
+  "optional_all_band_output": {
+    "geometry": "lit_surface_v16/transparent_trim/all-band-depth1.geo.json",
+    "counts": {
+      "cubes": 59341,
+      "quads": 59358,
+      "triangles_if_each_quad_split_in_two": 118716
+    },
+    "geometry_bytes": 18118247
+  }
+}

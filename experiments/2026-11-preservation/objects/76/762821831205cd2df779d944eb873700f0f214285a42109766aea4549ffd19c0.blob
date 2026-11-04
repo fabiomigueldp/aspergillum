@@ -1,0 +1,88 @@
+"""V12 construction invariants, source domains and ridge curves.
+Usage: python audit_preservation.py CANDIDATE_TAG
+Does not rerun frozen V11/V9 geometry gates or claim global clearance.
+"""
+from pathlib import Path
+import sys,json,hashlib
+from collections import Counter,defaultdict
+import numpy as np
+O=Path(__file__).resolve().parent;B=O.parents[1];tag=sys.argv[1];path=O/(tag+'.npz')
+d=np.load(path);basepath=B/'shell_band_v5/retained_candidate/evidence/band-paired.npz';base=np.load(basepath)
+p=d['points'];f=d['triangles'];p0=base['points'];f0=base['triangles'];vm=d['baseline_vertex_indices'];fm=d['baseline_face_indices'];roles=d['face_roles'];parts=d['face_parts'];uv0=np.load(B/'shell_band_v3/evidence/band-source-parameters.npz')['uv'][base['source_indices']]
+meta=json.loads(str(d['provenance']));c=np.load(O/meta['cutter']);planes=[np.unique(np.round(c['planes'][c['face_sides']==s],14),axis=0) for s in [-1,1]]
+def area(poly):
+ if len(poly)<3:return 0.
+ return sum(np.linalg.norm(np.cross(poly[i]-poly[0],poly[i+1]-poly[0]))/2 for i in range(1,len(poly)-1))
+def clip(poly,pls):
+ poly=np.array(poly)
+ for pl in pls:
+  if not len(poly):break
+  out=[]
+  for a,b in zip(poly,np.roll(poly,-1,axis=0)):
+   da=a@pl[:3]+pl[3];db=b@pl[:3]+pl[3];ina=da<=0;inb=db<=0
+   if ina:out.append(a)
+   if ina!=inb:out.append(a+(b-a)*(da/(da-db)))
+  poly=np.array(out).reshape(-1,3)
+ return poly
+raw=np.cross(p[f[:,1]]-p[f[:,0]],p[f[:,2]]-p[f[:,0]]);areas=np.linalg.norm(raw,axis=1)/2
+raw0=np.cross(p0[f0[:,1]]-p0[f0[:,0]],p0[f0[:,2]]-p0[f0[:,0]]);areas0=np.linalg.norm(raw0,axis=1)/2
+expected=np.array([max(0.,areas0[i]-sum(area(clip(t,ps)) for ps in planes)) for i,t in enumerate(p0[f0])]);actual=np.bincount(fm[fm>=0],weights=areas[fm>=0],minlength=len(f0));err=actual-expected
+# Source-domain containment is checked in source barycentric coordinates for all children.
+source_plane_error=[];source_bary_min=[]
+for i in np.flatnonzero(fm>=0):
+ t=p0[f0[fm[i]]];uv=np.linalg.lstsq(np.stack([t[1]-t[0],t[2]-t[0]],axis=1), (p[f[i]]-t[0]).T,rcond=None)[0].T
+ source_bary_min.append(min(uv.min(),(1-uv.sum(1)).min()));n=raw0[fm[i]]/np.linalg.norm(raw0[fm[i]]);source_plane_error.append(np.abs((p[f[i]]-t[0])@n).max())
+cyclic=lambda t:min(tuple(np.roll(t,k)) for k in range(3))
+original_orientation_ok=all(cyclic(vm[t])==cyclic(f0[fm[i]]) for i,t in enumerate(f) if roles[i]==0)
+exact_ids=set(fm[roles==0].tolist());untouched=np.flatnonzero(np.abs(expected-areas0)<1e-16);frontal=np.flatnonzero(np.any(p0[f0,:,] [:,:,1]<-.28,axis=1))
+# Existing paired wall identity is UV equality, not constant source ID offset.
+uvmap={tuple(x):i for i,x in enumerate(uv0) if base['source_side'][i]==1};pairbase=np.array([(i,uvmap[tuple(x)]) for i,x in enumerate(uv0) if base['source_side'][i]==0],int);rev={int(j):i for i,j in enumerate(vm) if j>=0};pairs=np.array([(a,b,rev[a],rev[b]) for a,b in pairbase if a in rev and b in rev],int)
+th0=np.linalg.norm(p0[pairs[:,0]]-p0[pairs[:,1]],axis=1);th=np.linalg.norm(p[pairs[:,2]]-p[pairs[:,3]],axis=1)
+# Verify constrained source ridge segments on each wall, including clipped ends.
+def outside_segment_length(a,b):
+ total=1.
+ for pls in planes:
+  lo,hi=0.,1.
+  for pl in pls:
+   val=a@pl[:3]+pl[3];slope=(b-a)@pl[:3]
+   if abs(slope)<1e-20:
+    if val>0:hi=-1;break
+   elif slope>0:hi=min(hi,-val/slope)
+   else:lo=max(lo,-val/slope)
+  total-=max(0.,hi-lo)
+ return np.linalg.norm(b-a)*max(0.,total)
+ridges=[];ridge_arrays={}
+for side in [0,1]:
+ bedges=set(tuple(sorted((int(t[k]),int(t[(k+1)%3])))) for t in f0[np.all(base['source_side'][f0]==side,axis=1)] for k in range(3))
+ cedges=set(tuple(sorted((int(t[k]),int(t[(k+1)%3])))) for t in f[parts==side] for k in range(3))
+ for profile in [3,13]:
+  src_edges=np.array(sorted(e for e in bedges if np.all(np.abs(uv0[list(e),1]-profile)<1e-7)),int)
+  actual_edges=np.array(sorted(e for e in cedges if np.all(np.abs(d['source_uv'][list(e),1]-profile)<1e-6)),int)
+  wanted=np.array([outside_segment_length(*p0[e]) for e in src_edges]);received=[];unmatched=set(map(tuple,actual_edges.tolist()))
+  for a,b in p0[src_edges]:
+   direction=b-a;ll=direction@direction;s=0.
+   for e in actual_edges:
+    q=p[e];t=(q-a)@direction/ll;res=q-a-t[:,None]*direction
+    if t.min()>=-1e-7 and t.max()<=1+1e-7 and np.linalg.norm(res,axis=1).max()<1e-9:s+=np.linalg.norm(q[1]-q[0]);unmatched.discard(tuple(e))
+   received.append(s)
+  received=np.array(received);adj=defaultdict(set)
+  for a,b in actual_edges:adj[a].add(b);adj[b].add(a)
+  left=set(adj);components=[]
+  while left:
+   stack=[next(iter(left))];seen=set()
+   while stack:
+    x=stack.pop()
+    if x not in seen:seen.add(x);stack.extend(adj[x]-seen)
+   left-=seen;components.append({'vertices':len(seen),'u_range': [float(d['source_uv'][list(seen),0].min()),float(d['source_uv'][list(seen),0].max())]})
+  ridges.append({'source_side':side,'profile':profile,'source_edges':len(src_edges),'candidate_edges':len(actual_edges),'source_length_mm':float(np.linalg.norm(p0[src_edges[:,1]]-p0[src_edges[:,0]],axis=1).sum()*1000),'expected_outside_cutter_mm':float(wanted.sum()*1000),'actual_remaining_mm':float(received.sum()*1000),'max_per_source_edge_error_mm':float(np.abs(wanted-received).max()*1000),'unmatched_candidate_edges':list(unmatched),'components':components})
+  ridge_arrays[f'ridge_s{side}_j{profile}_source_edges']=src_edges;ridge_arrays[f'ridge_s{side}_j{profile}_candidate_edges']=actual_edges
+# Quantization and shape quality are changed-candidate tests, not transport/runtime claims.
+tri=p[f];edge=np.linalg.norm(tri-np.roll(tri,1,axis=1),axis=2);alt=2*areas/edge.max(1);q=p.astype(np.float32).astype(np.float64);qr=np.cross(q[f[:,1]]-q[f[:,0]],q[f[:,2]]-q[f[:,0]]);qa=np.linalg.norm(qr,axis=1)/2;dot=np.einsum('ij,ij->i',raw,qr)/(4*areas*qa);rot=np.degrees(np.arccos(np.clip(dot,-1,1)));cos=[]
+for k in range(3):
+ x=tri[:,(k+1)%3]-tri[:,k];y=tri[:,(k+2)%3]-tri[:,k];cos.append(np.sum(x*y,1)/(np.linalg.norm(x,axis=1)*np.linalg.norm(y,axis=1)))
+angles=np.degrees(np.arccos(np.clip(cos,-1,1)));angles=angles.min(0)
+locks=[basepath,B/'body_interface_v9/constrained_fit/retained-anatomy.npz',B/'ear_rim_v11/structural_rebuild/retained-shell.npz']
+report={'candidate':path.name,'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'preservation':{'surviving_vertices':int((vm>=0).sum()),'positions_bit_exact':bool(np.array_equal(p[vm>=0],p0[vm[vm>=0]])),'original_faces':int((roles==0).sum()),'original_oriented_faces_exact':original_orientation_ok,'untouched_source_faces':len(untouched),'untouched_faces_not_preserved_exact':sorted(set(untouched.tolist())-exact_ids),'frontal_y_below_minus_0_28_source_faces':len(frontal),'frontal_faces_not_preserved_exact':sorted(set(frontal.tolist())-exact_ids),'frozen_hashes':{str(x.relative_to(B)):hashlib.sha256(x.read_bytes()).hexdigest() for x in locks}},'source_domain':{'method':'Float64 clipping of each baseline triangle against disjoint frozen cutter halfspaces; expected original area minus clipped interior versus sum of descendants. Does not by itself exclude coplanar overlapping child triangles.','max_per_ancestor_area_error_m2':float(np.abs(err).max()),'total_expected_inherited_area_mm2':float(expected.sum()*1e6),'total_actual_inherited_area_mm2':float(actual.sum()*1e6),'max_source_plane_error_m':float(max(source_plane_error)),'minimum_child_source_barycentric':float(min(source_bary_min))},'surviving_paired_wall_distance':{'available_source_pairs':len(pairbase),'fully_surviving_pairs':len(pairs),'min_max_mm':[float(th.min()*1000),float(th.max()*1000)],'maximum_change_mm':float(np.max(abs(th-th0))*1000),'limitation':'Only unchanged source pairs, not new termination thickness or global clearance.'},'two_ridges':ridges,'quality':{'minimum_area_m2':float(areas.min()),'minimum_altitude_mm':float(alt.min()*1000),'minimum_angle_degrees':float(angles.min()),'faces_below_0_1_degrees':int((angles<.1).sum())},'float32':{'duplicate_positions':len(p)-len(np.unique(q,axis=0)),'degenerate_triangles_below_1e_minus16_m2':int((qa<1e-16).sum()),'inverted_normal_faces':int((np.einsum('ij,ij->i',raw,qr)<=0).sum()),'maximum_normal_rotation_deg':float(rot.max()),'area_ratio_min_max':[float((qa/areas).min()),float((qa/areas).max())]},'scope':'V12 candidate construction checks only; frozen sources hash-only. Independent reviewer owns strict crossings/contacts and new closure span validation. No Bedrock export or artistic approval.'}
+report['construction_invariants_pass']=bool(report['preservation']['positions_bit_exact'] and original_orientation_ok and not report['preservation']['untouched_faces_not_preserved_exact'] and not report['preservation']['frontal_faces_not_preserved_exact'] and np.abs(err).max()<1e-12 and max(source_plane_error)<1e-10 and min(source_bary_min)>-1e-7 and all(r['max_per_source_edge_error_mm']<1e-5 and not r['unmatched_candidate_edges'] for r in ridges) and report['float32']['duplicate_positions']==0 and report['float32']['inverted_normal_faces']==0 and report['float32']['degenerate_triangles_below_1e_minus16_m2']==0)
+np.savez_compressed(O/(tag+'-preservation-arrays.npz'),expected_ancestor_area_m2=expected,actual_ancestor_area_m2=actual,area_difference_m2=err,surviving_pairs=pairs,triangle_area_m2=areas,triangle_altitude_m=alt,triangle_min_angle_deg=angles,float32_area_ratio=qa/areas,float32_normal_rotation_deg=rot,**ridge_arrays)
+(O/(tag+'-preservation.json')).write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))

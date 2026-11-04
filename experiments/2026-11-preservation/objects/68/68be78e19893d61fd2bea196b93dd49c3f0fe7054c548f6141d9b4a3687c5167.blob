@@ -1,0 +1,126 @@
+{
+  "wall_side_definition": "V5 cap source_side joined to V7 bridge outer_source_ids=0 and inner_source_ids=1. Baseline triangles with all3vertices on same identified wall inherit side. -2mixed and-1unmapped are not assigned artificially.",
+  "method": "Extract exact new-rim/inherited-surface interface edges. Per rim edge-connected component measure all segment distances between wall0 and wall1 attachment curves and shortest path along rim edge graph.",
+  "components": [
+    {
+      "component": 0,
+      "faces": 204,
+      "vertices": 206,
+      "bounds_min": [
+        -0.09733789367431189,
+        -0.22399014483020765,
+        3.4428542367951214
+      ],
+      "bounds_max": [
+        -0.08074584126307727,
+        -0.16367340934276578,
+        3.5332711105346677
+      ],
+      "attachment_edges_by_wall_side": {
+        "-2": 8,
+        "-1": 8,
+        "0": 95,
+        "1": 95
+      },
+      "opposite_wall_curves_present": true,
+      "side0_edge_nearest_side1_distance_mm_percentiles": [
+        0.23746943345937116,
+        0.341924120747968,
+        0.5997768671339326,
+        2.330429003311774,
+        2.7292990095547998
+      ],
+      "exact_segment_pair_minimum": {
+        "distance_mm": 0.23746943345937116,
+        "point0": [
+          -0.09674278038033501,
+          -0.2154675967213214,
+          3.528823467671427
+        ],
+        "point1": [
+          -0.09682893247339268,
+          -0.21526097175502415,
+          3.528902686810478
+        ],
+        "edge0": [
+          6103,
+          6148
+        ],
+        "edge1": [
+          6184,
+          6229
+        ]
+      },
+      "rim_edge_graph_to_opposite_lip_mm_percentiles": [
+        0.33979474919451375,
+        0.43873693894305366,
+        0.6096537561842987,
+        2.438567794856888,
+        2.921116893773013
+      ]
+    },
+    {
+      "component": 1,
+      "faces": 166,
+      "vertices": 168,
+      "bounds_min": [
+        0.15183591200544308,
+        -0.23038684153447228,
+        3.4207841199437192
+      ],
+      "bounds_max": [
+        0.1770052130078874,
+        -0.1709676320552826,
+        3.495628631591797
+      ],
+      "attachment_edges_by_wall_side": {
+        "-2": 8,
+        "-1": 8,
+        "0": 76,
+        "1": 76
+      },
+      "opposite_wall_curves_present": true,
+      "side0_edge_nearest_side1_distance_mm_percentiles": [
+        0.33972238271028343,
+        0.3899455949776751,
+        0.5784978222395126,
+        2.4092106490246383,
+        2.552651829943922
+      ],
+      "exact_segment_pair_minimum": {
+        "distance_mm": 0.33972238271028343,
+        "point0": [
+          0.1747593616720645,
+          -0.22816759664074804,
+          3.4938259729276666
+        ],
+        "point1": [
+          0.17506603347389665,
+          -0.22822345112735418,
+          3.4936909026511387
+        ],
+        "edge0": [
+          6256,
+          6262
+        ],
+        "edge1": [
+          6273,
+          6274
+        ]
+      },
+      "rim_edge_graph_to_opposite_lip_mm_percentiles": [
+        0.3654551661381972,
+        0.458361632656692,
+        0.6058380122934415,
+        2.536662492118619,
+        2.9477434106873646
+      ]
+    }
+  ],
+  "limits": [
+    "Lip distance is actual new closing geometry, not original paired offsets and not global wall minimum.",
+    "Nearest opposite lip can come from a nearby fold; witness coordinates supplied. Rim-edge path is discrete upper bound on surface geodesic.",
+    "Components attached only to one known wall are pocket candidates, not automatically invalid.",
+    "Topology, sample chords and visual inspection remain necessary."
+  ]
+}

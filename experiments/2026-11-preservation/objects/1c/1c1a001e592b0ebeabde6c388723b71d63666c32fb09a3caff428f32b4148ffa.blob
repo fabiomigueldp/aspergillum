@@ -1,0 +1,22 @@
+{
+  "history": [
+    {
+      "iteration": 0,
+      "triangles": 5600,
+      "newly_degraded_count": 32,
+      "recovered_count": 36,
+      "restored_source_points": 9
+    },
+    {
+      "iteration": 1,
+      "triangles": 5636,
+      "newly_degraded_count": 0,
+      "recovered_count": 36,
+      "restored_source_points": 0
+    }
+  ],
+  "retained_candidate": "candidates/cap-restored.npz",
+  "fixed_points_only": true,
+  "needs_holdout": true,
+  "method": "Exact baseline triangle restoration in newly regressed fixed-probe neighborhoods. Protected edges constrain Delaunay; all added vertices restored from baseline V4, never displaced."
+}

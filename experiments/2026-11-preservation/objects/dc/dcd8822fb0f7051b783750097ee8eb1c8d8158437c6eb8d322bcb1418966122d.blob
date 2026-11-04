@@ -1,0 +1,105 @@
+"""V13 local source restoration, never replacing or editing old NPZs.
+Usage: python build_local_source_patch.py TAG --intervals 40:64,104:136 --n 8
+Only run after visible/source evidence establishes the affected UV support.
+"""
+from pathlib import Path
+import sys,json,argparse,hashlib,collections
+import numpy as np
+sys.dont_write_bytecode=True
+from map_source_restore import SourceSampler,O,B,BAND,SHELL,BODY,SOURCE,PARAM,WALL
+
+def smooth(x):
+ x=np.clip(x,0,1);return x*x*(3-2*x)
+
+def main():
+ ap=argparse.ArgumentParser();ap.add_argument('tag');ap.add_argument('--intervals',default='32:80,96:144');ap.add_argument('--evidence-mask');ap.add_argument('--boundary-taper',type=float,default=1.0);ap.add_argument('--transition',choices=['mask','profile','plateau'],default='mask');ap.add_argument('--evidence-context');ap.add_argument('--n',type=int,default=8);ap.add_argument('--vlow',type=float,default=5);ap.add_argument('--vhigh',type=float,default=11);ap.add_argument('--u-taper',type=float,default=1);ap.add_argument('--v-taper',type=float,default=1);args=ap.parse_args();out=O/(args.tag+'.npz');assert not out.exists(),'Never overwrite prior candidate';n=args.n;assert n>=2;intervals=[list(map(float,s.split(':'))) for s in args.intervals.split(',')];vlow=args.vlow;vhigh=args.vhigh;paths=[BAND,SHELL,BODY,SOURCE,PARAM,WALL];hashes={str(p.relative_to(B)):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
+ d=dict(np.load(BAND));p0=d['points'];f0=d['triangles'];uv0=d['source_uv'];parts=d['face_parts'];tuv=uv0[f0];selected=np.zeros(len(f0),bool)
+ for lo,hi in intervals:selected|=(tuv[:,:,0].min(1)>=lo-1e-8)&(tuv[:,:,0].max(1)<=hi+1e-8)
+ selected&=(parts<2)&(tuv[:,:,1].min(1)>=vlow-1e-8)&(tuv[:,:,1].max(1)<=vhigh+1e-8)
+ if args.evidence_mask:
+  evidence=json.loads(Path(args.evidence_mask).read_text());ext=evidence['inversion_band_faces'];key=lambda x:tuple(sorted(tuple(np.round(a,7)) for a in x));inner={key(tuv[i]):int(i) for i in np.flatnonzero(parts==1)};mask=np.zeros(len(f0),bool);mask[ext]=True
+  for i in ext:
+   assert key(tuv[i]) in inner,'Both walls must have matching support';mask[inner[key(tuv[i])]]=True
+  assert np.all(selected[mask]),'Evidence mask must stay inside declared intervals/profile';selected=mask
+ assert selected.any();assert not np.any(d['face_roles'][selected]==2);assert np.all(d['face_roles'][selected]==0),'Patch must not intrude on clipped terminations'
+ # Face selection does not imply all contacts are defects. The support is explicit.
+ edges={};
+ for j,t in enumerate(f0):
+  for a,b in zip(t,np.roll(t,-1)):edges.setdefault(tuple(sorted((int(a),int(b)))),[]).append(j)
+ splitedges=set(tuple(sorted((int(a),int(b)))) for t in f0[selected] for a,b in zip(t,np.roll(t,-1)))
+ points=p0.tolist();uv=uv0.tolist();side=d['source_side'].tolist();base=p0.tolist();parent_v=list(range(len(p0)));support_face=[-1]*len(p0);edgecache={};faces=[];parents=[];roles=[]
+ def append_point(q,param,ss,parent):
+  i=len(points);points.append(q.tolist());base.append(q.tolist());uv.append(param.tolist());side.append(int(ss));parent_v.append(-1);support_face.append(int(parent));return i
+ def edge_point(a,b,k,parent):
+  assert 0<k<n
+  if a>b:a,b,k=b,a,n-k
+  key=(int(a),int(b),int(k))
+  if key not in edgecache:
+   w=k/n;ss=int(d['source_side'][a]) if d['source_side'][a]==d['source_side'][b] else -1;edgecache[key]=append_point((1-w)*p0[a]+w*p0[b],(1-w)*uv0[a]+w*uv0[b],ss,parent)
+  return edgecache[key]
+ def child(t,j,r):faces.append(t);parents.append(j);roles.append(r)
+ for j,t in enumerate(f0):
+  a,b,c=map(int,t)
+  if selected[j]:
+   grid={}
+   for i in range(n+1):
+    for k in range(n-i+1):
+     if i==0 and k==0:v=a
+     elif i==n:v=b
+     elif k==n:v=c
+     elif k==0:v=edge_point(a,b,i,j)
+     elif i==0:v=edge_point(a,c,k,j)
+     elif i+k==n:v=edge_point(b,c,k,j)
+     else:
+      bc=np.array([n-i-k,i,k])/n;v=append_point(bc@p0[t],bc@uv0[t],parts[j],j)
+     grid[i,k]=v
+   for i in range(n):
+    for k in range(n-i):
+     child([grid[i,k],grid[i+1,k],grid[i,k+1]],j,2)
+     if i+k<n-1:child([grid[i+1,k],grid[i+1,k+1],grid[i,k+1]],j,2)
+  else:
+   split=any(tuple(sorted((int(a),int(b)))) in splitedges for a,b in zip(t,np.roll(t,-1)))
+   if not split:child(t.tolist(),j,0);continue
+   boundary=[]
+   for a,b in zip(t,np.roll(t,-1)):
+    boundary.append(int(a))
+    if tuple(sorted((int(a),int(b)))) in splitedges:
+     boundary.extend(edge_point(int(a),int(b),k,j) for k in range(1,n))
+   ss=int(parts[j]) if parts[j]<2 else -1;mid=append_point(p0[t].mean(0),uv0[t].mean(0),ss,j)
+   for a,b in zip(boundary,boundary[1:]+boundary[:1]):child([a,b,mid],j,1)
+ p=np.asarray(points);uv=np.asarray(uv);side=np.asarray(side);base=np.asarray(base);parent_v=np.asarray(parent_v);f=np.asarray(faces,int);parents=np.asarray(parents,int);roles=np.asarray(roles,int);sf=np.asarray(support_face,int);new=np.flatnonzero(parent_v<0)
+ # Interior restoration fades to exact original patch boundary. Original points
+ # are never recomputed, even when source interpolation would be equivalent.
+ weight=np.zeros(len(p));longitudinal=np.zeros(len(p))
+ for lo,hi in intervals:longitudinal=np.maximum(longitudinal,smooth(np.minimum(uv[:,0]-lo,hi-uv[:,0])/args.u_taper))
+ weight[new]=longitudinal[new]*smooth(np.minimum(uv[new,1]-vlow,vhigh-uv[new,1])/args.v_taper)
+ if args.transition=='profile':
+  assert not args.evidence_mask,'Continuous profile support is selected by explicit corridors, not triangulated mask';weight[new]=longitudinal[new]*np.sin(np.pi*np.clip((uv[new,1]-vlow)/(vhigh-vlow),0,1))**2
+ if args.transition=='plateau':
+  assert not args.evidence_mask,'Continuous plateau support is selected by explicit corridors';weight[new]=longitudinal[new]*smooth(np.minimum(uv[new,1]-vlow,vhigh-uv[new,1])/2)
+ if args.evidence_mask:
+  outer_edges=collections.Counter(tuple(sorted((int(a),int(b)))) for t in f0[selected&(parts==0)] for a,b in zip(t,np.roll(t,-1)));boundary=np.array([uv0[list(e)] for e,count in outer_edges.items() if count==1]);distance=np.full(len(p),np.inf)
+  for a,b in boundary:
+   ab=b-a;t=np.clip(((uv-a)*ab).sum(1)/(ab@ab),0,1);distance=np.minimum(distance,np.linalg.norm(uv-(a+t[:,None]*ab),axis=1))
+  weight[new]=smooth(distance[new]/args.boundary_taper)
+ # Only points on the selected patch move; planar neighbor centroid must not.
+ incident_selected=np.zeros(len(p),bool);incident_selected[np.unique(f[roles==2])]=True;weight[~incident_selected]=0
+ sampler=SourceSampler();sourcepoint=np.full_like(p,np.nan);sourceface=np.full(len(p),-1,int);sourcebary=np.full_like(p,np.nan)
+ for ss in [0,1]:
+  ids=np.flatnonzero((parent_v<0)&(side==ss)&(weight>0));ref,fi,bc=sampler.sample(uv[ids],ss);sourcepoint[ids]=ref;sourceface[ids]=fi;sourcebary[ids]=bc;p[ids]=base[ids]+weight[ids,None]*(ref-base[ids])
+ assert np.array_equal(p[:len(p0)],p0);raw=np.cross(p[f[:,1]]-p[f[:,0]],p[f[:,2]]-p[f[:,0]]);norm=np.zeros_like(p)
+ for k in range(3):np.add.at(norm,f[:,k],raw)
+ norm/=np.maximum(np.linalg.norm(norm,axis=1)[:,None],1e-30)
+ vals={}
+ for k,x in d.items():
+  if x.ndim>0 and len(x)==len(p0):
+   shape=(len(p)-len(p0),)+x.shape[1:];fill=False if x.dtype.kind=='b' else np.nan if x.dtype.kind=='f' else -1;vals[k]=np.concatenate([x,np.full(shape,fill,dtype=x.dtype)])
+  elif x.ndim>0 and len(x)==len(f0):vals[k]=x[parents]
+  else:vals[k]=x
+ vals.update(points=p,triangles=f,normals=norm,source_uv=uv,source_side=side,v13_parent_vertex_indices=parent_v,v13_parent_face_indices=parents,v13_face_roles=roles,v13_source_projection_weight=weight,v13_planar_reference_points=base,v13_high_source_face=sourceface,v13_high_source_barycentric=sourcebary,v13_high_source_points=sourcepoint)
+ vals['generated_vertices'][new]=True;vals['source_side_support'][new]=np.where(side[new]>=0,1<<np.maximum(side[new],0),3);vals['v12_vertex_ids'][new]=-1;vals['face_roles'][roles==2]=3
+ metadata={'version':'V13 local source-UV restoration trial','method':'Conforming triangular subdivision in an explicitly bounded valley; project only new samples toward evaluated high source at same UV. Mask mode smoothsteps to actual triangle-union boundary; profile mode uses sin-squared transverse fade to fixed crests; plateau mode restores fully in v5–11 with two-UV C1 fades to v3/v13 and smoothstep longitudinal fade inside the two separated corridors. Both source walls refined; all existing V12 points exactly preserved. Unselected edge-neighbors only retriangulated in original planes.','parameters':vars(args),'parent':str(BAND.relative_to(B)),'input_hashes':hashes,'previous_provenance':json.loads(str(d['provenance'])),'v13_face_roles':{'0':'original V12 triangle unchanged','1':'original V12 plane, conformity-only subdivision','2':'local source-restoration patch'},'face_roles_extension':{'3':'source-restored V13 descendants; old source-plane certificate no longer applies'},'limitations':['Changes geometric interiors of a subset of frontal faces; not a claim that all 488 old frontal triangles stay identical.','Preserves V12 ridge polylines and existing vertices, not exact original high-source curved ridges between sparse samples.','No inference of artistic intent for internal contacts; no global clearance claim.','No game/export/publication.']};vals['provenance']=np.array(json.dumps(metadata));np.savez_compressed(out,**vals)
+ # Local construction checks only; independent review and visual approval remain.
+ ec=collections.Counter(tuple(sorted((int(t[k]),int(t[(k+1)%3])))) for t in f for k in range(3));directed=collections.Counter((int(t[k]),int(t[(k+1)%3])) for t in f for k in range(3));area=np.linalg.norm(raw,axis=1)/2;raw0=np.cross(p0[f0[parents,1]]-p0[f0[parents,0]],p0[f0[parents,2]]-p0[f0[parents,0]]);cos=(raw*raw0).sum(1)/(np.linalg.norm(raw,axis=1)*np.linalg.norm(raw0,axis=1));delta=np.linalg.norm(p-base,axis=1)*1000;pf=p.astype(np.float32).astype(float);rf=np.cross(pf[f[:,1]]-pf[f[:,0]],pf[f[:,2]]-pf[f[:,0]]);fc=(raw*rf).sum(1)/(np.linalg.norm(raw,axis=1)*np.linalg.norm(rf,axis=1));after={str(q.relative_to(B)):hashlib.sha256(q.read_bytes()).hexdigest() for q in paths};assert after==hashes
+ report={'candidate':out.name,'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'parameters':vars(args),'vertices':len(p),'faces':len(f),'old_v12_vertices_all_bit_exact':bool(np.array_equal(p[:len(p0)],p0)),'old_v12_vertices_moved':0,'new_vertices':len(new),'new_vertices_projected':int((delta>1e-9).sum()),'selected_original_faces':np.flatnonzero(selected).tolist(),'selected_face_count':int(selected.sum()),'conformity_neighbor_face_count':int(len(set(parents[roles==1]))),'original_v12_faces_untouched':int((roles==0).sum()),'displacement_from_v12_plane_max_mm':float(delta.max()),'displacement_quantiles_projected_mm':np.quantile(delta[delta>1e-9],[0,.5,.9,1]).tolist(),'boundary_edges':sum(v==1 for v in ec.values()),'nonmanifold_edges':sum(v!=2 for v in ec.values()),'orientation_inconsistent_edges':sum(directed[a,b]!=1 or directed[b,a]!=1 for a,b in ec),'euler':len(p)-len(ec)+len(f),'minimum_face_area_m2':float(area.min()),'degenerate_faces_under_1e-16_m2':int((area<1e-16).sum()),'max_normal_rotation_vs_parent_deg':float(np.rad2deg(np.arccos(np.clip(cos,-1,1))).max()),'normal_rotation_not_inversion_certificate':True,'float32_faces_degenerate':int((np.linalg.norm(rf,axis=1)<2e-16).sum()),'float32_normal_rot_max_deg':float(np.rad2deg(np.arccos(np.clip(fc,-1,1))).max()),'inputs_unchanged':True,'inputs_sha256':hashes,'pending':['independent local intersection/lineage/ridge checks','same-camera native rendering and visual review']};(O/(args.tag+'-construction.json')).write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))
+if __name__=='__main__':main()

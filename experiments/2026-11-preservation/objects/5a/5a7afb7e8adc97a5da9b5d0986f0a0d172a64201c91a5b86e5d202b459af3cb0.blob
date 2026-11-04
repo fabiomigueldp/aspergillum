@@ -1,0 +1,6 @@
+import bpy,json
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[1]
+bpy.ops.wm.open_mainfile(filepath=str(ROOT.parent/'evidence/hybrid-cull-reimported-asset.blend'),use_scripts=False)
+s=bpy.context.scene;s.cycles.transparent_max_bounces=512;s.cycles.samples=32;s.render.filepath=str(ROOT/'evidence/hybrid-cull-close-bounces512.png');bpy.ops.render.render(write_still=True)
+print('DIAG COMPLETE')

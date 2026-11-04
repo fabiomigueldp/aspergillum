@@ -1,0 +1,133 @@
+{
+  "method": {
+    "directions": 910,
+    "barycentric_samples_per_ear_face": 21,
+    "ear_incident_faces": 214,
+    "epsilon_mm": 0.002,
+    "occluders": "V7 native shell, V5 native band and baseline anatomy self-occlusion; finite-sample evidence only",
+    "conservatism": "Any incident face sample with any unobstructed ray in its outward hemisphere protects all 3 face vertices. One-ring variant protects neighbors as well.",
+    "limits": [
+      "Finite directions and barycentric samples cannot prove never visible.",
+      "Nearest signed-plane distances are local, not global certified clearance.",
+      "Parity near open/degenerate geometry is uncertainty flagged; 3 agreeing rays are evidence, not a proof.",
+      "Views sample full sphere incl below; this is broader than a finite gallery of 4 cameras.",
+      "Main fixed-face mask and low-neck mask still required in addition to ear classification."
+    ]
+  },
+  "ear": {
+    "broad_vertices": 88,
+    "incident_faces": 214,
+    "potentially_exposed_faces": 203,
+    "visible_protected_vertices": 88,
+    "sample_hidden_vertices": [],
+    "buffered_hidden_vertices": [],
+    "sample_hidden_source_indices": [],
+    "buffered_hidden_source_indices": []
+  },
+  "band": {
+    "outer_side0": {
+      "faces": 856,
+      "radial_dot_min_max": [
+        0.0014948633255497563,
+        0.2319836609182067
+      ],
+      "distance_mm_percentiles": [
+        0.0025730776623890997,
+        0.15111451200144946,
+        0.3778517711953021,
+        0.880043130325787,
+        1.5576581397366538,
+        2.134187313842391,
+        5.287404717206335
+      ],
+      "signed_nearest_body_plane_distance_mm_percentiles": [
+        -5.287404716414852,
+        -1.7875987477538204,
+        -0.6201444387976991,
+        0.18991119396804215,
+        1.0745209553420096,
+        1.681775655770478,
+        3.6687011195948505
+      ],
+      "inside_body_3ray_agreement_faces": 363,
+      "outside_body_3ray_agreement_faces": 485,
+      "parity_uncertain_faces": 8,
+      "sample_visible_faces": 366,
+      "visible_and_inside_faces": 0
+    },
+    "inner_side1": {
+      "faces": 856,
+      "radial_dot_min_max": [
+        -0.23146048928128585,
+        -0.0004624122218271527
+      ],
+      "distance_mm_percentiles": [
+        0.0012915318747511154,
+        0.15422661517693936,
+        0.3964072544052539,
+        0.8561107841124478,
+        1.3599614720053532,
+        2.1751951138656915,
+        5.624743889008387
+      ],
+      "signed_nearest_body_plane_distance_mm_percentiles": [
+        -5.62474388835652,
+        -2.0664264859228885,
+        -1.0323815066488118,
+        -0.22846012827786993,
+        0.6459120971723457,
+        1.2360944469009896,
+        3.2355335206602924
+      ],
+      "inside_body_3ray_agreement_faces": 492,
+      "outside_body_3ray_agreement_faces": 359,
+      "parity_uncertain_faces": 5,
+      "sample_visible_faces": 4,
+      "visible_and_inside_faces": 0
+    },
+    "mixed_rim": {
+      "faces": 200,
+      "radial_dot_min_max": [
+        -0.1282529389449825,
+        0.13437782928888875
+      ],
+      "distance_mm_percentiles": [
+        0.00067801647979751,
+        0.2788163730557347,
+        0.4831741473030665,
+        0.7342782994357215,
+        1.060002913864645,
+        1.4276284874596294,
+        5.583420844261613
+      ],
+      "signed_nearest_body_plane_distance_mm_percentiles": [
+        -5.583420840922377,
+        -1.3685662194986574,
+        -1.026832801950934,
+        -0.6864968242792711,
+        -0.3673461554990005,
+        0.2682488561592497,
+        2.667868425402638
+      ],
+      "inside_body_3ray_agreement_faces": 172,
+      "outside_body_3ray_agreement_faces": 27,
+      "parity_uncertain_faces": 1,
+      "sample_visible_faces": 18,
+      "visible_and_inside_faces": 1
+    },
+    "paired_thickness_mm_percentiles": [
+      0.21174918138680074,
+      0.41523650082316016,
+      0.4684623518410017,
+      0.4961946423728159,
+      0.5000053597744021
+    ],
+    "orientation": "Side1 is physically cavity-facing: all 856 pure faces have inward radial normal. Side0 all 856 face outward. 200 mixed faces close rims and must be treated separately; do not include their planes as unbounded cavity halfspaces."
+  },
+  "hashes": {
+    "body_interface_v8/anatomy_fit/baseline-welded.npz": "495ccfd3beb46a61e1f0846471f8f8be61c511606dcf20c2c72d0d6d5a36be15",
+    "body_interface_v8/anatomy_fit/retained-anatomy.npz": "c1971f80ca5bd99a8d51461823a42e03ed6400282e31a18586602cd0216b4519",
+    "lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz": "712a550fbbb56090ae700e30e4e21153d04c16139062ebcd2a72e818f3e34f7b",
+    "shell_band_v5/retained_candidate/evidence/band-paired.npz": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647"
+  }
+}

@@ -1,0 +1,75 @@
+# V13: diagnóstico da faixa embutida e correção restrita do vale
+
+Pesquisa isolada. **C1 n4 retida apenas como candidata técnica local**, após revisão geométrica e visual independente. Arquivo: `constrained_fit/retained-band.npz`, idêntico a `valley-source-c1-n4.npz` (SHA256 `aa27567ac125b12a298c283b0e9c99130fe222bf2ce3bdf9f22edf2908f4404b`). Anatomia V9, casca V11, faixa V12 e fontes originais permanecem intactas nos seus arquivos. Nenhuma exportação Bedrock, integração publicada ou teste Minecraft ocorreu.
+
+## Não tratar toda interseção como defeito
+
+A fonte chama o objeto de “faixa embutida com terminação suave”. Faixa e casca usam a mesma cor de pedra, não o ouro/azul empregados nos diagnósticos. O nome e a presença de contato na fonte não provam intenção artística de cada interseção; também não autorizam apagar todo contato.
+
+A revisão independente classificou os 1.360 pares atuais: 477 na parede externa, 839 na interna e 44 nos fechamentos V12. Fonte e imagens distinguem um defeito localizado de relações herdadas que continuam indeterminadas ou compatíveis com encaixe.
+
+## Defeito localizado demonstrado
+
+Quatorze de 17 raios sobre as ilhas azuis visíveis mostram a casca atual à frente de uma faixa externa íntegra atrás, por aproximadamente 0,046–0,479 mm ao longo da câmera. Nos mesmos 17 raios da fonte, a faixa fica à frente da casca, tanto na avaliação viewport quanto na avaliação render da faixa. Não são furos da faixa nesses testemunhos.
+
+A amostragem do vale v=5–11 encontra inversões fonte→redução. Nesses pontos a faixa reduzida está 0,511–0,826 mm mais recuada que a fonte; a casca também recua, em menor grau. Isso aponta aproximação da curvatura da faixa como causa, não expansão global da calota.
+
+A fonte já apresenta sobreposição superior em 147/236 amostras v=0–3. Essa margem e seus microdegraus não serão alisados globalmente por presunção. O centro sem inversão, as duas cristas, a anatomia e as terminações V12 são restrições explícitas. A hipótese de correção é recuperar localmente a curvatura fonte do vale, e não zerar a contagem inteira de pares.
+
+## Comparação fatorial
+
+`evidence/factorial-{low-low,low-high,high-low,high-high}-band-front.png` usa a ordem **casca–faixa**. “Low” corresponde às referências V11/V12; “high” usa TESTE34 original e faixa TESTE29 em nível de render 2. Corpo e halo permanecem legados reduzidos. `neutral-{low-low,high-high}-band-front.png` repete a comparação com a cor de pedra da fonte.
+
+Somente trocar a faixa pela fonte remove as ilhas; somente trocar a casca não as remove. O material neutro reduz o contraste cromático, mas não desfaz a inversão geométrica. Suavidade adicional da fonte também depende da tesselação, não somente dos cruzamentos.
+
+Essas montagens são **híbridos de atribuição de causa**, não candidatas ou propostas de desfazer as correções auriculares. As manchas escuras junto às orelhas da fonte crua não pertencem a uma nova V13. Os renders são externos Blender, nunca Minecraft.
+
+Ver `independent_diagnosis/DIAGNOSTICO_INICIAL_V13.md`, testemunhos, mapas UV e `evidence/review-visual-v13.md`. Os quatro ensaios e suas avaliações ficam em `constrained_fit/`.
+
+## Ensaios locais e escolha retida
+
+1. `valley-source-mask-n8.npz`: restaurava somente as 35 faces externas comprovadas e suas 35 paredes internas. Resolveu todos os alvos geométricos, mas a revisão visual rejeitou as pequenas diagonais novas na transição. A máscara triangular obrigava retorno às cordas antigas em uma faixa muito estreita. Não foi retida.
+2. `valley-source-corridor-n8.npz`: duas regiões UV separadas, transição transversal sin² entre cristas fixas. Resolveu os alvos e recebeu parecer visual local favorável.
+3. `valley-source-c1-n8.npz`: mesmo suporte, restauração plena no vale v5–11 e transição smoothstep de duas unidades UV até v3/13. Visualmente equivalente à sin² nas câmeras examinadas, com maior fidelidade geométrica à fonte no vale. Escolhida para o ensaio de menor custo por esse motivo, não por uma preferência visual inventada.
+4. `valley-source-c1-n4.npz`: mesma regra, densidade menor. Tem 2.224 vértices / 4.444 triângulos, contra 6.992 / 13.980 na n8 e 584 / 1.164 na V12. A redução de 68,21% é de quantidade de triângulos, não medição de desempenho no jogo. Não foram comparadas todas as densidades possíveis.
+
+A C1 n4 conserva exatamente os 584 vértices V12, a geometria das duas cristas (108 intervalos de aresta nas quatro curvas das duas paredes), o centro u80–96, as terminações V12, a casca V11 e a anatomia V9. As arestas das cristas foram subdivididas na mesma reta; os índices não são idênticos, mas as curvas 3D são.
+
+A correção alcança 192 faces ancestrais, 96 por parede, correspondentes a 31,876% da área original da faixa. Parte dessa área é transição necessária para evitar as diagonais, e não uma área inteira com defeito demonstrado. Outros 80 domínios são apenas subdivididos nos planos antigos por conformidade; 892 triângulos antigos permanecem literalmente iguais. Portanto, **não** se afirma que todas as antigas faces frontais continuam idênticas ou que somente 35 faces foram alteradas. O máximo deslocamento de pontos novos em direção à fonte é 1,108 mm; não há extrapolação além dela.
+
+A verificação de ordem C1 n4 passou 17/17 testemunhos de câmera e todas as 1.376 inversões do mapa denso, sem nova inversão nas 15.818 amostras (13.490 têm interseção local comparável com a casca). O menor intervalo externo amostrado é 0,02218 mm, **não uma folga global certificada**. A fonte mantém a parede interna da faixa dentro da espessura da casca nos mesmos 17 raios; retirar todo contato interno não reproduziria essa referência.
+
+O contorno por união das três malhas nativas, rasterizado a 2.048 pixels em sete câmeras, foi idêntico à V12 em seis vistas. Na câmera posterior oblíqua houve 69 pixels de adição, deslocamento máximo de contorno 0,928 mm. Esse teste é quantizado e limitado às vistas, não prova silhueta 3D exata. A inspeção visual final considerou essa diferença estreita, sem nova aba ou ponta percebida, e foi favorável à retenção local. Não se afirma que o efeito seja invisível.
+
+## Leitura dos contatos residuais
+
+A análise inicial da máscara n8 examinou todos os seus 358 segmentos externos residuais em dez câmeras, com três posições por segmento e pequenas perturbações. Encontrou 159 ocultos em todas as amostras/câmeras, 64 potencialmente visíveis com dominância da casca também na fonte, 48 potenciais inversões e 87 indeterminados. Isso **não é uma classificação automaticamente transferível a outra tesselação**.
+
+Apenas casca, faixa e anatomia nativas entraram nos testes de oclusão. Ausência de oclusor entre essas malhas indica visibilidade potencial; halo e materiais alfa do contexto podem mudar a visibilidade total. Nem essa amostragem nem o nome “embutida” certificam intenção artística ou invisibilidade global. Dos 48 testemunhos potenciais, 23 ficam nas terminações que V11/V12 já recortaram; compará-las à fonte sem recorte não basta para chamar essa diferença de novo defeito. A margem superior e as terminações continuam questões separadas, não autorização para ampliar esta correção.
+
+## Reprodução e limitações
+
+Os scripts usam as referências preservadas nas pastas irmãs V3, V9, V11 e V12 do projeto. O pacote de pesquisa não é um addon autônomo. O gerador recusa sobrescrever um checkpoint: use um nome novo e os parâmetros registrados no JSON de construção. `tools/prepare_source_context.py` verifica os arrays de contexto contra a exportação fonte.
+
+Os renders usam geometria nativa para faixa/casca/anatomia e as demais peças do JSON legado, com normais planas, luz fixa e culling. A versão neutra reutiliza a cor base original, mas é um shader difuso de diagnóstico, não o material PBR original ou um teste de iluminação Bedrock. Os protótipos fonte usados no fatorial não substituem cabeça ou halo por highpoly. Nenhum normalmap novo foi usado para esconder defeitos.
+
+
+## Resultado final e limites que permanecem
+
+A C1 n4 passou revisão independente em dez vistas coloridas e três neutras, sem retorno das ilhas do vale, sem as diagonais marcadas da primeira máscara e sem perda aparente de largura, relevo ou anatomia. O material azul/ouro é diagnóstico; a fonte usa cor de pedra. Margem superior facetada, recortes cinza/vermelho temporais e pontos escuros herdados continuam presentes.
+
+A auditoria geométrica avaliou 97.764 pares AABB próprios, incluindo 27.581 adjacentes. Os 739 flags numéricos foram preservados e refinados com 80 dígitos: zero cruzamento estrito confirmado. A sobreposição coplanar foi testada separadamente, com zero área positiva detectada nos limiares usados. A faixa tem uma componente fechada, Euler 2, sem triângulos degenerados nem inversões por float32. O maior erro normal por float32 no patch novo é 0,00896°; os 0,42893° globais pertencem a triângulos finos V12 não modificados.
+
+Os 189 pares faixa/anatomia anteriores permanecem, sem contato novo ancestral ou contato nas regiões restauradas e vizinhas. São contatos residuais, não um encontro globalmente limpo. A revisão independente mediu 10.752 cordas na normal externa, todas atingindo parede interna, entre 0,4061 e 0,5335 mm. Pares no mesmo UV medem 0,4793–0,5002 mm. São amostras locais diferentes, não certificados de espessura mínima global.
+
+Os contatos faixa/casca da candidata final foram recomputados: **1.672 pares, sendo 414 externos, 1.214 internos e 44 nos fechamentos V12**. Há zero cruzamento externo no vale e no patch restaurado. O total por pares mudou com a tesselação; não indica por si só melhora ou piora espacial. A soma dos comprimentos dos segmentos, sem união/deduplicação, é 3.062,387 mm.
+
+Dos 414 segmentos externos, a amostragem nas dez câmeras classificou 171 ocultos nas amostras examinadas, 68 potencialmente visíveis com casca dominante também na referência, 57 potenciais inversões e 118 indeterminados. Os 57 dividem-se em 34 na margem frontal superior e 23 nas terminações anteriormente recortadas (5 também na margem superior). Não é classificação de intenção artística, teste com o contexto completo nem autorização para corrigir toda essa área. Estes números finais substituem os da máscara n8 somente para a candidata retida.
+
+“C1” nomeia a função de peso smoothstep da restauração. **Não significa continuidade diferencial C1 de uma malha formada por triângulos planos**, nem reconstrução exata de toda a fonte. As cristas preservadas são as polilinhas V12, não as curvas highpoly entre amostras.
+
+A cena `evidence/retained-structural-diagnostic.blend` foi salva, reaberta e comparada: pontos iguais aos arrays em float32 e triângulos exatos da faixa V13, casca V11 e anatomia V9. As outras peças continuam provenientes do JSON legado. Isso é prova da cena diagnóstica, não de transporte Bedrock.
+
+Relatórios finais: `independent_diagnosis/REVIEW_FINAL_V13.md`, `evidence/review-visual-v13.md`, `constrained_fit/valley-source-c1-n4-local-audit.json`, `evidence/final-validation.json` e `STATUS.json`. O pacote `V75-V13-BAND-SHELL-RESEARCH-NOT-ADDON.zip` preserva os quatro ensaios, evidências e cena final; cenas intermediárias continuam no workspace e são listadas no manifesto, mas não duplicadas no ZIP.
+
+**Nenhuma exportação Bedrock nova, publicação, teste de desempenho ou validação Minecraft ocorreu.** A integração final ainda depende de transportar a geometria/texturas, revisar os encontros residuais que forem visualmente comprovados e testar no runtime real.

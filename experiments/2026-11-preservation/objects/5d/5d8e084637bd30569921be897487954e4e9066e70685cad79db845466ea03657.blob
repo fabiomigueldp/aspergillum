@@ -1,0 +1,39 @@
+{
+  "status": "ALTERNATIVES_EVALUATED_SHARED_GEOMETRIC_GAIN_VISUAL_NOT_APPROVED",
+  "opaque_budgets": [
+    300,
+    700,
+    1400
+  ],
+  "opaque_faithful_candidate_retained": false,
+  "shared_tiers": [
+    128,
+    512,
+    2048
+  ],
+  "shared_research_candidate": 2048,
+  "shared_geometric_coverage_pass_under_stated_tests": true,
+  "lit_visual_approval": false,
+  "PBR_preservation": false,
+  "Minecraft_tested": false,
+  "published": false,
+  "no_original_mutations": {
+    "band_shell_v13/constrained_fit/retained-band.npz": true,
+    "ear_rim_v11/structural_rebuild/retained-shell.npz": true,
+    "body_interface_v9/constrained_fit/retained-anatomy.npz": true,
+    "assembly_transport_v14/resource_pack/models/entity/paz_v75_v14_lab_sculpture.geo.json": true,
+    "assembly_transport_v14/resource_pack/textures/entity/paz_v75_v14_lab_sculpture.png": true
+  },
+  "diagnostic_render_count": 8,
+  "rendered_PNG_count_excluding_composites": 27,
+  "limitations": [
+    "Geometry and alpha audits assume nearest mip0 and declared arithmetic.",
+    "Opaque family changes source shape and double-crest surface.",
+    "Shared family trades additional cubes for smaller flat atlas and cannot preserve distinct per-face PBR with its shared UV.",
+    "Residual lit rendering scars remain despite primary coverage improvements; exact mechanism unresolved.",
+    "All results are external laboratory evidence; no engine performance/load/VRAM observations."
+  ],
+  "original_V75_sha256": "2c14fbc7566217ad350ef926abc1dc4a1bc41f457eaab8f10351e90b1f4777d9",
+  "independent_visual_review_complete": true,
+  "independent_geometric_review_complete": true
+}

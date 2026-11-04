@@ -1,0 +1,5 @@
+import bpy
+from mathutils import Vector
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False);s=bpy.context.scene;s.cycles.samples=48;s.render.resolution_x=600;s.render.resolution_y=800;s.render.resolution_percentage=100;c=s.camera;ct=Vector((.025,-.30,.68));c.data.type='ORTHO';c.data.ortho_scale=.55
+for view,off in [('profile',(-5,0,0)),('front',(0,-5,0))]:
+ c.location=ct+Vector(off);c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler();s.render.filepath=r+'V75-child-leg-diagnostic-'+view+'.png';bpy.ops.render.render(write_still=True)

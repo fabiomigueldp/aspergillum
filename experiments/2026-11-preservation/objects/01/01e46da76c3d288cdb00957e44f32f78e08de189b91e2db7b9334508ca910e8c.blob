@@ -1,0 +1,145 @@
+{
+  "referenceCommit": "ec0b2827104d0799c153bfb5f867579c0c44652f",
+  "referenceFiles": [
+    [
+      "blockbench-bedrock.js",
+      "f27d89e774003486b1161b0578971f686fece0a8"
+    ],
+    [
+      "blockbench-cube.js",
+      "70cb939ab827f999f9178fac05839a2ecb005d5b"
+    ],
+    [
+      "blockbench-three-custom.js",
+      "c700631f613689344764b210af7d4fc56c1eba33"
+    ]
+  ],
+  "inputs": [
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/visual/../repo/packs/resource/models/blocks/sacristan_table.geo.json",
+      "sha256": "ddd2da84b9c8c0ab9c2ccc040eeff1a54ce7c18b6b1d01a7d928b0387ae93aea"
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/visual/../repo/packs/resource/textures/blocks/sacristan_table.png",
+      "sha256": "c955f616b48989cc9a94a84b88b719552d0fbad6801496dfeb2e4b3adfe3cb9c"
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b//paz-bedrock-v75-prototype-20261103/assembly_transport_v14/resource_pack/models/entity/paz_v75_v14_lab_sculpture.geo.json",
+      "sha256": "60ca91b76eb9f8d4a1cb2bf4f69f6e7e5c97d17abc63db26883cee9d3fead00b",
+      "subset": "part_00 only, 4444 South zero-depth cubes"
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b//paz-bedrock-v75-prototype-20261103/assembly_transport_v14/resource_pack/textures/entity/paz_v75_v14_lab_sculpture.png",
+      "sha256": "4793c77398d1e0301ccd8dfaef53a83ded9befbbcbb88571a9d1479b2a972ac7"
+    }
+  ],
+  "scenes": [
+    {
+      "name": "fixture-plane",
+      "label": "fixture-plane: size [5,4,0], signed UV 1",
+      "quads": 1,
+      "variants": [
+        "before",
+        "after",
+        "reference"
+      ],
+      "camera": [
+        0,
+        0,
+        1
+      ],
+      "texture": "/workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/visual/asymmetric-atlas.png",
+      "southOnly": true
+    },
+    {
+      "name": "fixture-solid",
+      "label": "fixture-solid: size [5,4,2], signed UV 1",
+      "quads": 1,
+      "variants": [
+        "before",
+        "after",
+        "reference"
+      ],
+      "camera": [
+        0,
+        0,
+        1
+      ],
+      "texture": "/workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/visual/asymmetric-atlas.png",
+      "southOnly": true
+    },
+    {
+      "name": "fixture-signed-plane",
+      "label": "fixture-signed-plane: size [5,4,0], signed UV -1",
+      "quads": 1,
+      "variants": [
+        "before",
+        "after",
+        "reference"
+      ],
+      "camera": [
+        0,
+        0,
+        1
+      ],
+      "texture": "/workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/visual/asymmetric-atlas.png",
+      "southOnly": true
+    },
+    {
+      "name": "table-full",
+      "label": "Sacristan table: complete solid asset, 34 cubes",
+      "quads": 189,
+      "variants": [
+        "before",
+        "after"
+      ],
+      "camera": [
+        0.6,
+        0.35,
+        1
+      ],
+      "texture": "/workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/visual/../repo/packs/resource/textures/blocks/sacristan_table.png",
+      "southOnly": false
+    },
+    {
+      "name": "table-south",
+      "label": "Sacristan table: South-only control",
+      "quads": 32,
+      "variants": [
+        "before",
+        "after",
+        "reference"
+      ],
+      "camera": [
+        0,
+        0,
+        1
+      ],
+      "texture": "/workspace/scratch/212c580ada5b/paz-workbench-cube-fix-20261103/visual/../repo/packs/resource/textures/blocks/sacristan_table.png",
+      "southOnly": true
+    },
+    {
+      "name": "paz-planar-band",
+      "label": "Paz V14 part_00 band: 4444 zero-depth South planes",
+      "quads": 4444,
+      "variants": [
+        "before",
+        "after",
+        "reference"
+      ],
+      "camera": [
+        0.25,
+        0.12,
+        1
+      ],
+      "texture": "/workspace/scratch/212c580ada5b//paz-bedrock-v75-prototype-20261103/assembly_transport_v14/resource_pack/textures/entity/paz_v75_v14_lab_sculpture.png",
+      "southOnly": true
+    }
+  ],
+  "notes": [
+    "Render arrays are extracted from the actual before/candidate Three module outputs.",
+    "The official reference uses unchanged Blockbench functions, with X reflection and reversed winding.",
+    "Asset reference reuses existing world transform matrices; only local UV/normal expectations are independent.",
+    "No epsilon, thickness, normal-map shader, MER, Chromium, WebGL or Minecraft."
+  ]
+}

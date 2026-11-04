@@ -1,0 +1,36 @@
+"""Read-only V11 envelope diagnosis. Run in Blender. Outputs only this directory."""
+from pathlib import Path
+import sys,json,hashlib
+import numpy as np
+from mathutils.bvhtree import BVHTree
+from mathutils import Vector
+sys.dont_write_bytecode=True
+O=Path(__file__).resolve().parent;B=O.parent.parent
+s=np.load(B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz');a=np.load(B/'body_interface_v9/constrained_fit/retained-anatomy.npz');ba=np.load(B/'shell_band_v5/retained_candidate/evidence/band-paired.npz');cont=np.load(B/'bridge_ear_v10/evidence/seven-view-contour-mask.npz');rows=json.loads((B/'bridge_ear_v10/independent_diagnosis/bridge-contact-details.json').read_text())
+p=s['points'];f=s['triangles'];av=a['points'];af=a['triangles'];ear=a['protected_ears'];bav=ba['points'];baf=ba['triangles']
+tree=BVHTree.FromPolygons(bav.tolist(),baf.tolist(),all_triangles=True);skinids=np.flatnonzero(~np.any(ear[af],axis=1));skin=BVHTree.FromPolygons(av.tolist(),af[skinids].tolist(),all_triangles=True)
+def nearest(t,q):
+ loc,n,idx,dist=t.find_nearest(Vector(q));return {'distance_mm':float(dist*1000),'point':list(loc),'face':int(idx)}
+def strict_hits(x,y):
+ out=[];e1,e2=y[1]-y[0],y[2]-y[0]
+ for k in range(3):
+  dr=x[(k+1)%3]-x[k];h=np.cross(dr,e2);det=e1@h
+  if abs(det)<1e-12*np.linalg.norm(e1)*np.linalg.norm(e2)*np.linalg.norm(dr):continue
+  ss=x[k]-y[0];u=ss@h/det;q=np.cross(ss,e1);v=dr@q/det;t=e2@q/det
+  if 1e-8<t<1-1e-8 and u>1e-8 and v>1e-8 and u+v<1-1e-8:out.append(x[k]+t*dr)
+ return out
+w=[]
+for r in rows:
+ i,j=r['shell_face'],r['body_face'];pts=strict_hits(p[f[i]],av[af[j]])+strict_hits(av[af[j]],p[f[i]])
+ for q in pts:
+  w.append({'shell_face':i,'body_face':j,'part':r['part'],'ear_vertices_incident':r['ear_vertices_incident'],'point':q.tolist(),'band':nearest(tree,q),'non_ear_skin':nearest(skin,q)})
+summary={'method':'Strict existing pair crossing segments recomputed with scale-relative tolerance. Closest points to frozen V5 band and anatomy faces with no protected-ear vertex. Ear protection is coordinate mask, not anatomical cavity annotation.','sides':{}}
+for side,mask in [('negative_x',av[:,0]<.04),('positive_x',av[:,0]>=.04)]:
+ ep=av[mask&ear];wi=[r for r in w if (r['point'][0]<.04)==(side=='negative_x') and r['ear_vertices_incident']];q=np.array([r['point'] for r in wi]);sid=np.flatnonzero(((p[:,0]<.04)==(side=='negative_x'))&cont['contour_vertices']);np.savez_compressed(O/(side+'-spatial-witnesses.npz'),ear_points=ep,contact_points=q,contour_points=p[sid],contour_vertex_indices=sid)
+ envelope=[]
+ for margin in [0,1,2,4,8,12]:
+  lo=ep.min(0)-margin/1000;hi=ep.max(0)+margin/1000;sm=np.all((p>=lo)&(p<=hi),1);bm=np.all((bav>=lo)&(bav<=hi),1);bmface=np.any(bm[baf],1);am=np.all((av>=lo)&(av<=hi),1)&~ear
+  envelope.append({'margin_mm':margin,'shell_vertices_inside':int(sm.sum()),'contour_vertices_inside':np.flatnonzero(sm&cont['contour_vertices']).tolist(),'band_vertices_inside':int(bm.sum()),'band_faces_incident_inside_vertices':int(bmface.sum()),'non_ear_anatomy_vertices_inside':int(am.sum()),'warning':'Vertex occupancy only; triangles may intersect envelope even without inside vertices.'})
+ summary['sides'][side]={'ear_vertices':len(ep),'ear_box_min':ep.min(0).tolist(),'ear_box_max':ep.max(0).tolist(),'incident_ear_contact_witnesses':len(q),'contact_box_min':q.min(0).tolist(),'contact_box_max':q.max(0).tolist(),'witness_band_distance_mm_percentiles':np.percentile([r['band']['distance_mm'] for r in wi],[0,5,25,50,75,95,100]).tolist(),'witness_non_ear_skin_distance_mm_percentiles':np.percentile([r['non_ear_skin']['distance_mm'] for r in wi],[0,5,25,50,75,95,100]).tolist(),'axis_aligned_ear_boxes':envelope}
+summary['total_witness_points']=len(w);summary['limits']=['Distances from intersection witnesses do not prove envelope clearance or minimum wall thickness.','A cavity cutter should be shaped to visibility/anatomy; protected-ear bounding box is not a certified safe cutter.','Finite-view contour mask reports baseline vertices only; preservation of those vertices does not certify contour preservation.','Fixed-edge witness JSON deduplicates by body face and edge: its stored part label can refer to either incident shell region; bridge-contact-details retains all 16 barrier pairs.']
+(O/'envelope-limits.json').write_text(json.dumps(summary,indent=2));(O/'contact-spatial-witnesses.json').write_text(json.dumps(w,indent=2));print(json.dumps(summary,indent=2))

@@ -1,0 +1,18 @@
+import sys,json,subprocess,numpy as np,shutil
+from pathlib import Path
+R=Path(__file__).resolve().parents[1];sys.path.insert(0,str(R/'tools'));import reduce_lib as lib
+current=R/'candidates/cap-5600.npz';history=[];baseline_n=len(lib.source_ids)
+for it in range(14):
+ report=R/f'evidence/restoration-{it:02d}.json';cmd=['/usr/bin/blender','-b','-t','3','--python',str(R/'tools/find_regression_protection.py'),'--',str(current),str(report)];run=subprocess.run(cmd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True);(R/f'evidence/restoration-{it:02d}.log').write_text(run.stdout)
+ if not report.exists():raise RuntimeError(run.stdout)
+ r=json.loads(report.read_text());d=np.load(current);selected=set(d['source_indices'][d['source_side']==0].tolist());record={'iteration':it,'triangles':len(d['triangles']),'newly_degraded_count':r['newly_degraded_count'],'recovered_count':r['recovered_count'],'restored_source_points':len(r['restore_outer_source_ids'])};history.append(record);print(record,flush=True);(R/'evidence/restoration-progress.json').write_text(json.dumps(history,indent=2))
+ if r['newly_degraded_count']==0:
+  shutil.copyfile(current,R/'candidates/cap-restored.npz');break
+ oldedges=set(lib.fixed_edges);oldn=len(selected);selected.update(r['restore_outer_source_ids'])
+ for t in r['protect_baseline_outer_source_triangles']:
+  for a,b in zip(t,np.roll(t,-1)):lib.fixed_edges.add(tuple(sorted([int(a),int(b)])))
+ if len(selected)==oldn and lib.fixed_edges==oldedges:raise RuntimeError('No new constraint can address residual; stop and report')
+ if len(selected)>=baseline_n:raise RuntimeError('No remaining cost saving; do not promote')
+ ids=np.array(sorted(selected));tri=lib.constrained_tri(ids);mesh=lib.build(ids,tri);current=R/f'candidates/cap-restored-{it:02d}.npz';np.savez_compressed(current,**mesh)
+else:raise RuntimeError('Restoration did not converge; candidates remain research only')
+(R/'evidence/restoration-summary.json').write_text(json.dumps({'history':history,'retained_candidate':'candidates/cap-restored.npz','fixed_points_only':True,'needs_holdout':True,'method':'Exact baseline triangle restoration in newly regressed fixed-probe neighborhoods. Protected edges constrain Delaunay; all added vertices restored from baseline V4, never displaced.'},indent=2))

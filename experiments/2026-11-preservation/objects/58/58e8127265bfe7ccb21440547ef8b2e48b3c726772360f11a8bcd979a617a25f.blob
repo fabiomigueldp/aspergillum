@@ -1,0 +1,20 @@
+import {customizationFromFinish,customizationFinish,customizationCapabilities,changeCustomization,MODELS,CLOTHS} from '../../../addons/altare/src/domain/customization.ts';
+import {designId} from './studio-contract.js';
+export {customizationCapabilities,changeCustomization,MODELS,CLOTHS};
+export function studioCustomization(config){
+ const draft=customizationFromFinish({...config,facing:config.facing??0,design:designId(config)});
+ return {...draft,surface:config.surface,stone:config.stone,cloth:config.cloth,ornamental:config.ornamental,textile:['ruby','palette'].includes(config.textile)?'floral':config.textile,color:config.textile==='ruby'?'red':config.color,relief:config.frontal};
+}
+export function studioAppearance(draft){
+ const finish=customizationFinish(draft),caps=customizationCapabilities(draft);
+ return {family:draft.model,facing:draft.facing,surface:caps.joinery?'walnut':caps.ornate?'marble':draft.surface,textile:draft.textile,color:draft.color,frontal:caps.relief?draft.relief:'none',stone:draft.stone,cloth:draft.model==='classic'&&!finish.design?finish.cloth:draft.cloth,ornamental:draft.ornamental};
+}
+export function createStudioHistory(limit=40){
+ let entries=[],index=-1;
+ return {
+  record(value){const copy=structuredClone(value);if(JSON.stringify(entries[index])===JSON.stringify(copy))return;entries=entries.slice(0,index+1);entries.push(copy);if(entries.length>limit)entries.shift();index=entries.length-1;},
+  undo(){return index>0?structuredClone(entries[--index]):undefined;},
+  redo(){return index<entries.length-1?structuredClone(entries[++index]):undefined;},
+  get canUndo(){return index>0;},get canRedo(){return index<entries.length-1;},
+ };
+}

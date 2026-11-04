@@ -1,0 +1,62 @@
+"""Paired-wall retopology: shared sampling/connectivity, evaluated V75 positions.
+No changes to the source, no reconstructed old formulas, no thickness inflation.
+"""
+import bpy,numpy as np,json,bmesh,hashlib
+from pathlib import Path
+from mathutils.bvhtree import BVHTree
+R=Path(__file__).resolve().parents[1];S=R.parent.parent/'paz-refinement/gui-test/checkpoint-V75-20261102/V75-tunic-lower-trial.blend';before=hashlib.sha256(S.read_bytes()).hexdigest();bpy.ops.wm.open_mainfile(filepath=str(S),use_scripts=False)
+report={'source_sha256':before,'method':'Shared outer/inner parameter sampling and shared topology. Evaluated source positions, not regenerated formula; source thickness not increased.','source_unchanged':None,'parts':{}}
+combined_v=[];combined_f=[];combined_n=[];combined_m=[]
+for part,name,N in [('cap','Maria — véu reconstruído de perfil',5040),('band','TESTE 29 — faixa embutida com terminação suave',3009)]:
+ o=bpy.data.objects[name];o.hide_viewport=False;o.hide_set(False)
+ for m in o.modifiers:
+  if m.type=='SUBSURF':m.levels=m.render_levels
+ bpy.context.view_layer.update();dg=bpy.context.evaluated_depsgraph_get();me=bpy.data.meshes.new_from_object(o.evaluated_get(dg),depsgraph=dg);me.transform(o.matrix_world);me.calc_loop_triangles();hv=np.array([x.co[:] for x in me.vertices]);hn=np.array([x.normal[:] for x in me.vertices]);hf=np.array([x.vertices[:] for x in me.loop_triangles]);np.savez_compressed(R/f'evidence/{part}-source.npz',points=hv,triangles=hf,normals=hn)
+ # Subsurf leaves original input vertices first. Solidify duplicates input vertices.
+ assert len(hv)>=2*N
+ thickness=np.linalg.norm(hv[:N]-hv[N:2*N],axis=1)
+ assert thickness.max()<.001, (part,thickness.min(),thickness.max())
+ if part=='cap':
+  rows=[0,2,6,12,20,28,36,40,42,44];counts=[8,12,16,24,32,40,48,56,80,112]
+  rings=[];samples=[]
+  for row,n in zip(rows,counts):
+   cols=np.floor(np.arange(n)*112/n).astype(int).tolist();rings.append(list(range(len(samples),len(samples)+n)));samples += [row*112+c for c in cols]
+  fs=[]
+  # Same ordered ring connectivity, both shell sides; never independent decimation.
+  fs.append(tuple(reversed(rings[0])))
+  for a,b in zip(rings,rings[1:]):
+   i=j=0;na=len(a);nb=len(b)
+   while i<na or j<nb:
+    if (i+1)/na <= (j+1)/nb:
+     fs.append((a[i%na],a[(i+1)%na],b[j%nb]));i+=1
+    else:
+     fs.append((a[i%na],b[(j+1)%nb],b[j%nb]));j+=1
+  boundary=rings[-1]
+  sampling={'rows':rows,'samples_per_ring':counts,'boundary_samples':len(boundary),'protected_boundary':'All 112 source control-grid vertices on evaluated V75 outer/inner boundary.'}
+ else:
+  stations=sorted(set([0,2,4,8,12,16]+list(range(24,153,8))+[160,164,168,172,174,176]))
+  profiles=[0,3,5,8,11,13,16];samples=[i*17+j for i in stations for j in profiles];w=len(profiles);n=len(stations);fs=[]
+  for i in range(n-1):
+   for j in range(w-1):
+    a=i*w+j;b=(i+1)*w+j;fs.extend([(a,a+1,b+1),(a,b+1,b)])
+  boundary=[j for j in range(w)]+[i*w+w-1 for i in range(1,n)]+[(n-1)*w+j for j in range(w-2,-1,-1)]+[i*w for i in range(n-2,0,-1)]
+  sampling={'longitudinal_stations':stations,'transverse_profiles':profiles,'protected_features':'Two ridges j3/j13, central valley j8, support rows j5/j11 and both boundaries j0/j16. Actual evaluated V75 coordinates.'}
+ samples=np.array(samples);nv=len(samples);v=np.concatenate([hv[samples],hv[samples+N]]);ns=np.concatenate([hn[samples],hn[samples+N]])
+ faces=fs+[tuple(x+nv for x in reversed(f)) for f in fs]
+ for a,b in zip(boundary,boundary[1:]+boundary[:1]):faces.append((a,b,b+nv,a+nv))
+ mesh=bpy.data.meshes.new('V3 '+part);mesh.from_pydata(v.tolist(),[],faces);mesh.update();bm=bmesh.new();bm.from_mesh(mesh);bmesh.ops.recalc_face_normals(bm,faces=bm.faces);boundary_count=sum(e.is_boundary for e in bm.edges);nonman=sum(len(e.link_faces)!=2 for e in bm.edges);bm.to_mesh(mesh);bm.free();mesh.calc_loop_triangles();f=np.array([t.vertices[:] for t in mesh.loop_triangles]);normals=np.array([x.normal[:] for x in mesh.vertices]);
+ # Preserve source normals but align with winding of resulting paired topology.
+ # Original outer/inner source normals already have opposed orientation.
+ dot=(ns*normals).sum(1);normal_flips=int((dot<0).sum());print('NORMAL CONFLICT',part,np.where(dot<0)[0].tolist(),dot[dot<0].tolist(),flush=True)
+ np.savez_compressed(R/f'evidence/{part}-paired.npz',points=v,triangles=f,normals=ns,source_indices=np.concatenate([samples,samples+N]),source_side=np.concatenate([np.zeros(nv,int),np.ones(nv,int)]))
+ # Exact sampled coordinates, plus bidirectional sampled vertex-to-surface error (not Hausdorff).
+ hi=BVHTree.FromPolygons(hv.tolist(),hf.tolist(),all_triangles=True);lo=BVHTree.FromPolygons(v.tolist(),f.tolist(),all_triangles=True)
+ dlow=[hi.find_nearest(tuple(p))[3] for p in v];sample_indices=np.unique(np.linspace(0,len(hv)-1,5000).astype(int));dhi=[lo.find_nearest(tuple(hv[k]))[3] for k in sample_indices]
+ # Same-budget uncontrolled reduction of full two-sided source for diagnosis.
+ ctrl=bpy.data.objects.new('V3 control '+part,me.copy());bpy.context.scene.collection.objects.link(ctrl);bpy.ops.object.select_all(action='DESELECT');ctrl.select_set(True);bpy.context.view_layer.objects.active=ctrl;md=ctrl.modifiers.new('Unconstrained full-shell control','DECIMATE');md.ratio=len(f)/len(hf);md.use_collapse_triangulate=True;bpy.ops.object.modifier_apply(modifier=md.name);ctrl.data.calc_loop_triangles();cv=np.array([x.co[:] for x in ctrl.data.vertices]);cf=np.array([t.vertices[:] for t in ctrl.data.loop_triangles]);np.savez_compressed(R/f'evidence/{part}-same-budget-control.npz',points=cv,triangles=cf)
+ report['parts'][part]={'source_object':name,'source_evaluated_triangles':len(hf),'source_subsurf_level':2,'input_control_vertices':N,'retopology_vertices':len(v),'retopology_triangles':len(f),'same_budget_control_triangles':len(cf),'boundary_edges':boundary_count,'edges_not_two_faces':nonman,'source_normal_opposite_result_vertex_normal':normal_flips,'sampled_paired_wall_distance_range':[float(np.linalg.norm(v[:nv]-v[nv:],axis=1).min()),float(np.linalg.norm(v[:nv]-v[nv:],axis=1).max())],'source_control_pair_distance_range':[float(thickness.min()),float(thickness.max())],'low_vertex_to_source_max':float(max(dlow)),'source_sample_to_low_mean':float(np.mean(dhi)),'source_sample_to_low_p95':float(np.percentile(dhi,95)),'source_sample_to_low_max':float(max(dhi)),'source_vertex_samples':len(dhi),'sampling':sampling}
+ off=sum(len(a) for a in combined_v);combined_v.append(v);combined_n.append(ns);combined_f.append(f+off);combined_m.extend([len(combined_v)-1]*len(f))
+ # Save standalone for viewer inspection; no source scene save.
+ print(part,report['parts'][part],flush=True)
+np.savez_compressed(R/'evidence/paired-shells.npz',points=np.concatenate(combined_v),triangles=np.concatenate(combined_f),normals=np.concatenate(combined_n),parts=np.array(combined_m))
+report['source_unchanged']=hashlib.sha256(S.read_bytes()).hexdigest()==before;report['status']='Isolated cap and band only. No mantle seam integration. No addon released. No Minecraft runtime.';(R/'evidence/paired-shells.json').write_text(json.dumps(report,ensure_ascii=False,indent=2));print('DONE',flush=True)

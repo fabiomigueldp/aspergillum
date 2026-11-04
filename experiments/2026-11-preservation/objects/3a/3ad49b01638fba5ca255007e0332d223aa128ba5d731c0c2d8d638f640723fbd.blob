@@ -1,0 +1,28 @@
+# V84 — cadeia integral do braço baixo: REJEITADA
+
+## Prova distinta de V67
+Parte do checkpoint V75, preservado. Não há ponte distal, nova malha de manga nem dedos inventados. A manga inteira até o ombro recebeu influência harmônica com transição para o torso. Controles no ombro Z3,12, cotovelo Z2,55 e punho Z2,02 distribuem o gesto por cerca de um metro; mão é transladada rigidamente (-30,+80,-100)mm. Estas coordenadas são controles do estudo, não medidas da escultura original.
+
+23.298 vértices influenciados, inclusive transição lateral do torso. Centro do corpo, braço alto, bainhas e demais objetos não receberam alteração. Conectividade da túnica/manga preservada. Cópia com chave reversível; não incorporada ao checkpoint ou addon.
+
+## Verificação técnica
+`chain-audit.json`: 245 novas auto-interseções na região modificada (zero antes); 55 faces com produto escalar de normais negativo; razões de área 0,117–3,896. Reprovação automática.
+
+`collision-location.json`: problemas concentrados aproximadamente X−0,269 a −0,207, Y−0,109 a −0,020, Z1,869 a2,096. A manga/punho recuados invadem o torso que já se fundia à manga. Distribuir a trajetória ao longo do braço evita a ponte em S, mas não resolve a fusão estrutural original.
+
+`contact-audit.json`: mão–Menino zero pares antes/depois; mão–túnica72 pares antes/depois. Contatos preexistentes entre túnica de Maria e objetos infantis inalterados por contagem (não é certificação de contato correto nem de ausência de outras colisões).
+
+## Revisão visual
+Renders pareados `V75-*.png` / `V84-*.png` usam mesma câmera/luz/resolução (600×900,32amostras) em frente, perfil e3/4. Não houve retoque das imagens.
+
+No perfil, a mão deixa o topo e acompanha aproximadamente a lateral da cabeça, aproximando-se da silhueta observada em reference-8.jpg. Manga tem curva mais longa e sem a inversão abrupta de V67. Contudo a frente e3/4 mostram a mão distante e sem relação espacial convincente com o Menino. Uma correspondência projetada não prova fidelidade3D. Portanto não há ganho aprovado.
+
+Não corrigir automaticamente a invasão empurrando a manga para fora, afinando-a ou redesenhando o torso: isso acrescentaria decisões tridimensionais sem suporte da vista disponível. O resultado demonstra que o gesto requer reconstrução de volumetria e separação manga–torso orientada por referências, não apenas deformação da malha atual.
+
+## Reversão
+Para retornar ao V75 dentro da cópia: desativar CADEIA84 na túnica e mão, e ativar TESTE75 da túnica. Preferir reabrir o checkpoint V75 original. O blend V84 é teste rejeitado e não deve ser entregue como nova versão melhor.
+
+Revisão independente solicitada a avaliar_escultura_paz antes de qualquer retenção.
+
+## Revisão independente concluída
+`avaliar_escultura_paz` confirma rejeição: ganho apenas no perfil e manga sem S; frente/3/4 mantêm mão isolada e revelam marca/fenda horizontal no torso no fim da fusão. A cadeia longa evita bojo distal, mas não fornece fronteira topológica adequada. Recomendação: reconstruir manga-base controlável desde ombro/axila antes de deformar; definir rotação/abertura da mão por referência, não assumir que translação basta. Foto8 sugere retorno suave para frente/cima, enquanto os dedos atuais continuam para baixo.

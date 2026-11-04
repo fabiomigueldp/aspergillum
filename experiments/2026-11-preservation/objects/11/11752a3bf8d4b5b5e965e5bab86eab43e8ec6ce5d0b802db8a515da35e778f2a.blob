@@ -1,0 +1,38 @@
+from pathlib import Path
+import json,hashlib,zipfile
+R=Path(__file__).resolve().parents[1];B=R.parent;sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+initial=json.loads((R/'evidence/frozen-inputs.json').read_text());unchanged={p:sha(B/p)==h for p,h in initial.items()};assert all(unchanged.values())
+original=B.parent/'paz-refinement/gui-test/checkpoint-V75-20261102/V75-tunic-lower-trial.blend';assert sha(original)=='2c14fbc7566217ad350ef926abc1dc4a1bc41f457eaab8f10351e90b1f4777d9'
+S=R/'evidence/V16-LOCAL-TRIM-DIAGNOSTIC-NOT-APPROVED.blend'
+required=['lighting_research/RESEARCH_LIGHTING_V16.md','lighting_research/REVIEW_TARGETED_TRIM_V16.md','independent_rays/REVIEW_PRIMARY_RAYS_V16.md','independent_rays/final-independent-verification.json','evidence/review-visual-v16.md','evidence/frozen-scene-check.json','evidence/comparison-trim-and-restoration.png'];assert all((R/p).exists()for p in required)
+status={'status':'CYCLES_PRIMARY_SKIP_CAUSE_DEMONSTRATED_LOCAL_TRIM_IMPROVES_BUT_NEW_REGRESSIONS','preservation':unchanged,'original_V75_sha256':sha(original),'diagnostic_renderer':'Blender4.3.2 Cycles CPU/Embree','first_surface_substitution_rendered':True,'exact_internal_per_ray_sequence_instrumented':False,'source_normal_broad_fix_retested':False,'targeted_depths':[1,2,3],'local_best_measured_depth':3,'global_candidate_approved':False,'new_source_ID_errors_depth3_fullframe':69,'Minecraft_tested':False,'Minecraft_performance_measured':False,'published':False,'source_atlas_changed':False,'opaque_support_changed_under_ideal_nearest_mip0':False,'optional_all_band_depth1':'generated only, not rendered or selected','independent_reviews':required[:5]}
+(R/'STATUS.json').write_text(json.dumps(status,indent=2)+'\n')
+validation={'source_preservation_pass':True,'JSON_alpha_union_proof_pass':True,'restored_control_kept_buffers_bit_identical':True,'rendered_primary_identity_loss_demonstrated':True,'local_visual_improvement_independently_observed':True,'new_regressions_detected':True,'global_fidelity_gate':False,'target_runtime_gate':'not_tested','cost_scope':'counts/bytes measured; RGBA memory estimate only; no game performance measurements','scene_sha256':sha(S),'original_V75_sha256':sha(original),'reproducibility':'Tools reference prior V15 workspace inputs. Full research archive is evidence, not standalone add-on.'}
+(R/'evidence/final-validation.json').write_text(json.dumps(validation,indent=2)+'\n')
+files=[]
+for p in sorted(R.rglob('*')):
+ if not p.is_file() or '__pycache__' in p.parts or p.suffix in ['.zip','.pyc','.blend1']:continue
+ if p.suffix=='.blend' and p!=S:continue
+ if p.parent==R and p.name in ['file-manifest.json','package-validation.json','review-package-validation.json']:continue
+ files.append(p)
+manifest={str(p.relative_to(R)):{'bytes':p.stat().st_size,'sha256':sha(p)}for p in files};(R/'file-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n');files.append(R/'file-manifest.json')
+full=R/'V75-V16-LIT-SURFACE-RESEARCH-NOT-RELEASE.zip'
+with zipfile.ZipFile(full,'w',zipfile.ZIP_DEFLATED,compresslevel=6)as z:
+ for p in files:z.write(p,str(p.relative_to(R)))
+with zipfile.ZipFile(full)as z:
+ assert z.testzip() is None
+ for n in z.namelist():assert z.read(n)==(R/n).read_bytes(),n
+report={'path':full.name,'bytes':full.stat().st_size,'sha256':sha(full),'members':len(files),'CRC_ok':True,'all_member_bytes_match_workspace':True};(R/'package-validation.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
+names=['README.md','STATUS.json','evidence/final-validation.json','evidence/frozen-scene-check.json','evidence/cost-accounting.json','evidence/review-visual-v16.md','lighting_research/RESEARCH_LIGHTING_V16.md','lighting_research/REVIEW_TARGETED_TRIM_V16.md','independent_rays/REVIEW_PRIMARY_RAYS_V16.md','evidence/comparison-provenance.json','evidence/comparison-trim-and-restoration.png','evidence/comparison-whole.png','evidence/lit-image-comparison.json','evidence/V16-LOCAL-TRIM-DIAGNOSTIC-NOT-APPROVED.blend','transparent_trim/roi68-depth3.geo.json','transparent_trim/shared_mask_2048.png','transparent_trim/README.md','lighting_research/fullframe-identity-comparison.json','lighting_research/trim-identity-comparison.json']
+names += [f'evidence/roi68-depth{n}-band-front.png'for n in [1,2,3]]
+names += ['evidence/roi68-depth3-restored-transparent-band-front.png']
+names += [f'evidence/roi68-depth3-context-{v}.png'for v in ['threequarter','head-front','left-ear','right-ear']]
+names += [f'lighting_research/coplanar-complement-separation-{v}.png'for v in ['0','1e-07','1e-05']]
+review=R/'V75-V16-REVIEW-ONLY-NOT-ADDON.zip'
+with zipfile.ZipFile(review,'w',zipfile.ZIP_DEFLATED,compresslevel=6)as z:
+ z.writestr('START-HERE.txt','Review subset: V16 diagnoses primary-hit skipping in Blender Cycles transparent traversal. Local trimming improves it but introduces new errors. NO variant is globally approved; this is not an addon or Minecraft test. Read README and independent reviews. The .blend is actual JSON depth3 reconstruction, not highpoly. Full reproduction depends on documented V15 workspace inputs. Full research archive SHA256: '+sha(full)+'\n')
+ for n in names:z.write(R/n,n)
+with zipfile.ZipFile(review)as z:
+ assert z.testzip() is None
+ for n in names:assert z.read(n)==(R/n).read_bytes(),n
+rr={'path':review.name,'bytes':review.stat().st_size,'sha256':sha(review),'members':len(names)+1,'CRC_ok':True,'all_file_bytes_match_workspace':True,'full_archive_sha256':sha(full),'subset_not_addon':True};(R/'review-package-validation.json').write_text(json.dumps(rr,indent=2)+'\n');print(json.dumps(rr),flush=True)

@@ -1,0 +1,18 @@
+import bpy,numpy as np
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False)
+c=np.load(r+'cap-mantle-source-cap.npz')['points'];m=np.load(r+'cap-mantle-source-mantle.npz')['points'];rows=list(range(0,45,4));cols=list(range(0,112,4));v=[c[i*112+j].tolist() for i in rows for j in cols];f=[];w=len(cols)
+for i in range(len(rows)-1):
+ for j in range(w):k=(j+1)%w;f.append([i*w+j,i*w+k,(i+1)*w+k,(i+1)*w+j])
+f.append(list(reversed(range(w))));off=len(v);mc=np.rint(np.linspace(0,79,15)).astype(int)
+for i in range(10):
+ for j in mc:v.append(m[i*80+j].tolist())
+for i in range(9):
+ for j in range(14):f.append([off+i*15+j,off+i*15+j+1,off+(i+1)*15+j+1,off+(i+1)*15+j])
+for j in range(14):f.append([11*w+7+j,11*w+8+j,off+9*15+j+1,off+9*15+j])
+me=bpy.data.meshes.new('Interactive whole-cloth low-resolution guide');me.from_pydata(v,[],f);me.update();o=bpy.data.objects.new('GUI STUDY — whole-cloth cage NOT APPROVED',me);bpy.context.collection.objects.link(o);o.display_type='WIRE';o.show_in_front=True;o.hide_render=True
+for ob in bpy.context.selected_objects:ob.select_set(False)
+o.select_set(True);bpy.context.view_layer.objects.active=o
+for a in bpy.context.screen.areas:
+ if a.type=='VIEW_3D':
+  a.spaces.active.region_3d.view_location=(0,-.08,3.35);a.spaces.active.region_3d.view_distance=1.1
+bpy.ops.wm.save_as_mainfile(filepath=r+'interactive-whole-cloth-cage-study.blend');print('Saved scaffold486 vertices; original V75 objects unmodified; guide render-hidden.')

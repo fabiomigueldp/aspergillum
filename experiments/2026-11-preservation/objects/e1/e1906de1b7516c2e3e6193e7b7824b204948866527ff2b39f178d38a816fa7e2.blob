@@ -1,0 +1,68 @@
+# Two-pedestal family-proportion textile budget
+
+- configurations: 768
+- dimensionPairs: 192
+- cellInstances: 33984
+- recipes: 17
+- rawKeyOrderModuleGrainVisual: 448
+- moduleGrainVisual: 363
+- moduleGrainWithNative: 363
+- bareWithLogicalFacing: 448
+- combinedPreservingRecipe: 6831
+- combinedPreservingRecipeAndFacing: 8232
+- rawKeyOrderPreservingRecipe: 8232
+- rawKeyOrderPreservingRecipeAndFacing: 8232
+- blindVisualTimesRecipes: 6171
+
+## Per recipe
+- none: 363 visual/native entries; 448 preserving logical facing; 1 standalone cloth outputs; max 42 composed cubes (42 structural and 0 garment individual maxima); max 152 quads / 304 triangles; packed 448 [2,14,16].
+- linen_short: 363 visual/native entries; 448 preserving logical facing; 16 standalone cloth outputs; max 59 composed cubes (42 structural and 17 garment individual maxima); max 189 quads / 378 triangles; packed 448 [2,14,16].
+- linen_long: 363 visual/native entries; 448 preserving logical facing; 16 standalone cloth outputs; max 59 composed cubes (42 structural and 17 garment individual maxima); max 189 quads / 378 triangles; packed 448 [2,14,16].
+- gold_short: 363 visual/native entries; 448 preserving logical facing; 16 standalone cloth outputs; max 59 composed cubes (42 structural and 17 garment individual maxima); max 189 quads / 378 triangles; packed 448 [2,14,16].
+- gold_long: 363 visual/native entries; 448 preserving logical facing; 16 standalone cloth outputs; max 59 composed cubes (42 structural and 17 garment individual maxima); max 189 quads / 378 triangles; packed 448 [2,14,16].
+- agnus: 423 visual/native entries; 504 preserving logical facing; 63 standalone cloth outputs; max 59 composed cubes (42 structural and 17 garment individual maxima); max 189 quads / 378 triangles; packed 504 [3,12,14].
+- floral_white: 423 visual/native entries; 504 preserving logical facing; 63 standalone cloth outputs; max 59 composed cubes (42 structural and 17 garment individual maxima); max 189 quads / 378 triangles; packed 504 [3,12,14].
+- floral_red: 423 visual/native entries; 504 preserving logical facing; 63 standalone cloth outputs; max 59 composed cubes (42 structural and 17 garment individual maxima); max 189 quads / 378 triangles; packed 504 [3,12,14].
+- floral_green: 423 visual/native entries; 504 preserving logical facing; 63 standalone cloth outputs; max 59 composed cubes (42 structural and 17 garment individual maxima); max 189 quads / 378 triangles; packed 504 [3,12,14].
+- floral_purple: 423 visual/native entries; 504 preserving logical facing; 63 standalone cloth outputs; max 59 composed cubes (42 structural and 17 garment individual maxima); max 189 quads / 378 triangles; packed 504 [3,12,14].
+- floral_rose: 423 visual/native entries; 504 preserving logical facing; 63 standalone cloth outputs; max 59 composed cubes (42 structural and 17 garment individual maxima); max 189 quads / 378 triangles; packed 504 [3,12,14].
+- floral_black: 423 visual/native entries; 504 preserving logical facing; 63 standalone cloth outputs; max 59 composed cubes (42 structural and 17 garment individual maxima); max 189 quads / 378 triangles; packed 504 [3,12,14].
+- floral_gold: 423 visual/native entries; 504 preserving logical facing; 63 standalone cloth outputs; max 59 composed cubes (42 structural and 17 garment individual maxima); max 189 quads / 378 triangles; packed 504 [3,12,14].
+- floral_silver: 423 visual/native entries; 504 preserving logical facing; 63 standalone cloth outputs; max 59 composed cubes (42 structural and 17 garment individual maxima); max 189 quads / 378 triangles; packed 504 [3,12,14].
+- verdant: 423 visual/native entries; 504 preserving logical facing; 63 standalone cloth outputs; max 59 composed cubes (42 structural and 17 garment individual maxima); max 189 quads / 378 triangles; packed 504 [3,12,14].
+- requiem: 423 visual/native entries; 504 preserving logical facing; 63 standalone cloth outputs; max 59 composed cubes (42 structural and 17 garment individual maxima); max 189 quads / 378 triangles; packed 504 [3,12,14].
+- lace: 363 visual/native entries; 448 preserving logical facing; 16 standalone cloth outputs; max 59 composed cubes (42 structural and 17 garment individual maxima); max 189 quads / 378 triangles; packed 448 [2,14,16].
+
+## Declared budget
+New family: 8232; padding: 0.
+- Existing 51320 + family 8232 = 59552; remaining under80000: 20448; with sibling9744: 69296.
+- Existing 51608 + family 8232 = 59840; remaining under80000: 20160; with sibling9744: 69584.
+
+## Fixed-bank alternative
+Per-recipe 256-entry pages = 8704; padding 472; 472 more declared states than the minimum.
+- Existing 51320: total 60024; remaining under80000 19976; with sibling9744 69768.
+- Existing 51608: total 60312; remaining under80000 19688; with sibling9744 70056.
+
+## Reference target
+Family headroom: 4184. Minimum combined: 69584 (pass: false); fixed-bank combined: 70056 (pass: false).
+Even one 256-entry bank per recipe costs 4352, exceeding the available4184 by 168; this fixed-bank policy cannot meet the reference without additional base savings.
+
+## Scope and limitations
+- Domain corrected to width/depth1..16 with min(width,depth)<=8:192pairs,768oriented plans. Previous128-pair report preserved separately.
+- Separate family-proportion candidate uses width families1/3/7 and depth families1/2/3 via sourceModel for BOTH visual slicing and native collision. Original study remains unchanged.
+- Shared garment is generated with twoSided:true for the open altar, including reverse drape faces.
+- Face complexity counts explicitly authored UV face records, including interior closure faces; no occlusion-based culling assumed. Every quad is two triangles. These are measurements, not gate changes.
+- Fixed bank uses index = low + 16*high + 256*page. Append page values without reordering low/high/page values or existing codebook entries. This preserves existing numeric mappings; a schema expansion still requires validation and must not renumber the palette.
+- Recount uses capCuts:true and continuous shaft UVs in the stabilized cell study. Baseline reports are preserved separately.
+- Packing enumerates all three-property products with each cardinality1..16, retaining recipe in its own ID and logical facing in the packed codebook, not as a fourth independent axis.
+- Canonical object keys remove insertion-order-only distinctions in source cubes; raw-key-order counts are reported alongside for comparison with the earlier 1,160-profile measurement.
+- Recipe identity is retained even when interior cells have the same visible material. Logical facing is retained in the second count, even for symmetric or hidden cloth.
+- Only actually co-occurring pedestal profile, contour, textile center role and facing are enumerated across all 768 permitted oriented assemblies.
+- Garment is generated from the real shared generator with fixed edges. Face material slots are replaced by their actual texture keys; unused material bindings do not inflate signatures.
+- Collision is the existing nativeBoxes study output, not a new collision design. Cubes are hashed canonically as sorted multisets; arrays inside cubes retain order.
+- This measures structural-plus-garment composition keys, not a validated rendered integration. Existing wooden top reaches16 and linen occupies15.91..16: implement an explicit covered-top clipping/removal policy before rendering. Such changes can alter profile counts.
+- Garment defaults use stoneEdge8.28/cornerEnd8.34, as shared generator; pedestal-specific attachment fit and cube/block limits require validation.
+- The structural wood is deliberately not culled behind cloth. Removing hidden wooden faces could reduce counts, but is not assumed.
+- These are exact construction-codebook entry counts, not padded declared-state totals, theoretical minima, or approved runtime schemas. No catalog/runtime/world changes.
+
+Run: node --experimental-strip-types tools/audit-pedestal-family-budget.mjs

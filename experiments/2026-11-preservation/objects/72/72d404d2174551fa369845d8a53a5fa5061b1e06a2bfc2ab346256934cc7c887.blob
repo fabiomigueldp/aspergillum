@@ -1,0 +1,24 @@
+"""Local ear contour in yz, extruded only through matching side's two shell walls.
+Prism ends x=.04 and +/- .4 are outside the shell in the selected ear yz region.
+Unlike a 3D ear hull, the cutter cannot just graze a lateral outer wall.
+"""
+from pathlib import Path
+import numpy as np,json,hashlib
+from scipy.spatial import ConvexHull
+O=Path(__file__).resolve().parent;B=O.parents[1];a=np.load(B/'body_interface_v9/constrained_fit/retained-anatomy.npz');ap=a['points'];af=a['triangles'];rows=[]
+for scope,margin in [('pinna',.5),('pinna',1.5)]:
+ vs=[];fs=[];sides=[];planes=[];infos=[]
+ for side in [-1,1]:
+  mask=a['protected_ears']&((ap[:,0]-.04)*side>0);ids=np.flatnonzero(mask)
+  if scope=='pinna' and side>0:ids=ids[ap[ids,2]<=3.500]
+  if scope=='incident':ids=np.unique(af[np.any(mask[af],axis=1)])
+  dirs=np.stack([np.cos(np.arange(32)*2*np.pi/32),np.sin(np.arange(32)*2*np.pi/32)],axis=1);q=(ap[ids,1:][:,None,:]+dirs[None,:,:]*(margin/1000)).reshape(-1,2);h2=ConvexHull(q);yz=q[h2.vertices]
+  xx=[-.4,.04] if side<0 else [.04,.4];points=np.concatenate([np.column_stack([np.full(len(yz),x),yz]) for x in xx]);h=ConvexHull(points);used=np.unique(h.simplices);idx=np.full(len(points),-1,int);idx[used]=np.arange(len(used));v=points[used];f=idx[h.simplices]
+  raw=np.cross(v[f[:,1]]-v[f[:,0]],v[f[:,2]]-v[f[:,0]]);flip=np.einsum('ij,ij->i',raw,h.equations[:,:3])<0;f[flip]=f[flip][:,[0,2,1]]
+  infos.append({'side':side,'x_extent':xx,'anatomy_vertex_indices':ids.tolist(),'yz_polygon':yz.tolist(),'cutter_vertices':len(v),'cutter_triangles':len(f)})
+  fs.append(f+sum(map(len,vs)));vs.append(v);sides.extend([side]*len(f));planes.append(h.equations)
+ tag=f'extruded-{scope}-{margin:g}mm';dst=O/(tag+'-cutter.npz')
+ if dst.exists():raise FileExistsError(dst)
+ np.savez_compressed(dst,points=np.concatenate(vs),triangles=np.concatenate(fs),face_sides=np.array(sides),planes=np.concatenate(planes),metadata=np.array(json.dumps({'scope':scope,'margin_mm':margin,'method':'Convex projected yz ear contour extruded x through corresponding half-space only; right ear omits four high temporal outliers 657,662,669,676 (z>3.500). Experimental pinna selection, not anatomical certification','ears':infos,'offset_description':'Frozen ear yz points plus 32-direction radius samples; bounded convex prism including concha cavity.'})))
+ rows.append({'tag':tag,'file':dst.name,'sha256':hashlib.sha256(dst.read_bytes()).hexdigest()})
+(O/'pinna-envelopes-manifest.json').write_text(json.dumps(rows,indent=2));print(json.dumps(rows,indent=2))

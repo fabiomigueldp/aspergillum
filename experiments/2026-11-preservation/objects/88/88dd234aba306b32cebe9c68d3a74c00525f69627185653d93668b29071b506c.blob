@@ -1,0 +1,11 @@
+# Integração de fonte: Altare + mitigação de snapshot
+
+A árvore isolada reúne a mitigação de autoridade do snapshot e o editor nativo revisado. A origem não foi alterada. `report.json` contém os hashes, os testes e os limites.
+
+- 207 testes de runtime e 23 testes UI aprovados; tipos de ambos os add-ons e validação estrutural/docs aprovados.
+- 14 hashes da mitigação de snapshot intactos. Nenhuma diferença fora dos oito arquivos-fonte UI e dos três outputs gerados esperados.
+- Orçamento combinado: 64.848 estados; folga de 688. Não houve mudança de IDs, estados, geometrias, texturas ou colisões.
+- `native-ui.png` é uma prancha documental offline extraída do código integrado, não uma captura do Minecraft.
+- `source-review.zip` reúne fontes finais e evidências; não é pacote instalável. Não houve nova versão, publicação, instalação, Minecraft, Chromium ou Creator Tools.
+
+NO-GO para release, instalação e migração de mundos permanece. As falhas de atomicidade/durabilidade e a validação nativa continuam abertas.

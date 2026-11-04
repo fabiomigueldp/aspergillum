@@ -1,0 +1,158 @@
+{
+  "report_type": "paz-addon-audit",
+  "report_format": 1,
+  "status": "static_checks_passed",
+  "engine_target": [
+    1,
+    26,
+    40
+  ],
+  "block_format": "1.21.80",
+  "geometry": {
+    "identifier": "geometry.paz_glicerio.imagem",
+    "cube_count": 46,
+    "rotated_bounds_pixels": {
+      "min": [
+        -3.9875,
+        0.0,
+        -3.66125
+      ],
+      "max": [
+        3.9875,
+        27.59005,
+        3.4075
+      ],
+      "size": [
+        7.975,
+        27.59005,
+        7.06875
+      ]
+    },
+    "base_overlap_proven": true
+  },
+  "orientations": {
+    "north": {
+      "min": [
+        -3.9875,
+        0.0,
+        -3.66125
+      ],
+      "max": [
+        3.9875,
+        27.59005,
+        3.4075
+      ],
+      "size": [
+        7.975,
+        27.59005,
+        7.06875
+      ]
+    },
+    "south": {
+      "min": [
+        -3.9875000000000003,
+        0.0,
+        -3.4075000000000006
+      ],
+      "max": [
+        3.9875000000000003,
+        27.59005,
+        3.66125
+      ],
+      "size": [
+        7.9750000000000005,
+        27.59005,
+        7.0687500000000005
+      ]
+    },
+    "east": {
+      "min": [
+        -3.407500000000001,
+        0.0,
+        -3.9875000000000003
+      ],
+      "max": [
+        3.66125,
+        27.59005,
+        3.9875000000000003
+      ],
+      "size": [
+        7.068750000000001,
+        27.59005,
+        7.9750000000000005
+      ]
+    },
+    "west": {
+      "min": [
+        -3.66125,
+        0.0,
+        -3.9875
+      ],
+      "max": [
+        3.4075000000000006,
+        27.59005,
+        3.9875
+      ],
+      "size": [
+        7.0687500000000005,
+        27.59005,
+        7.975
+      ]
+    }
+  },
+  "boxes": {
+    "minecraft:collision_box": {
+      "min": [
+        -5,
+        0,
+        -5
+      ],
+      "max": [
+        5,
+        16,
+        5
+      ]
+    },
+    "minecraft:selection_box": {
+      "min": [
+        -5,
+        0,
+        -5
+      ],
+      "max": [
+        5,
+        16,
+        5
+      ]
+    }
+  },
+  "changed_files": [],
+  "source_fingerprint_sha256": "94e64b6353d60687bffcc4b161f931586cd6d01cd7f9f67ba1d71fb0b06b715b",
+  "files_sha256": {
+    "Paz_BP/blocks/imagem.json": "bc75b288652821ee30f180e9702918e37dd0fa158b44b96a83ebfaa1a6113ac7",
+    "Paz_BP/manifest.json": "a9bf45640e8f0548db6c09d2b808253d9389389e908752c2f53bc84e83dbc599",
+    "Paz_BP/pack_icon.png": "b3bd39e5eb79c57db1998828b93b8760b78311537d9cf17384aedc6c63230649",
+    "Paz_BP/texts/en_US.lang": "e2607e964282dfa565fe197c0e61fb398e5c2bfe737ea2ee76f5656a088df009",
+    "Paz_BP/texts/languages.json": "899de231676b8596de09bc8ab713bd555d5f29348fa46144fd24f37efa5d5d08",
+    "Paz_BP/texts/pt_BR.lang": "fceaa269655c2fbad0015f26cf7ee11faeae4c1d9cdea0a04722d12707ddcd8f",
+    "Paz_RP/blocks.json": "6c0f6b79db64df16ff9585a8f77b55a7517e3fad7683e889f0977273746231a0",
+    "Paz_RP/manifest.json": "7f5b3fb6f565584e3886050686fbde9a17c20d79674986a7d4bf70bde828ba6c",
+    "Paz_RP/models/blocks/imagem.geo.json": "7b7b73a334f71328a4ce4680a0348a570449de3a560d2b8072b485bb1e55862c",
+    "Paz_RP/pack_icon.png": "b3bd39e5eb79c57db1998828b93b8760b78311537d9cf17384aedc6c63230649",
+    "Paz_RP/texts/en_US.lang": "e2607e964282dfa565fe197c0e61fb398e5c2bfe737ea2ee76f5656a088df009",
+    "Paz_RP/texts/languages.json": "899de231676b8596de09bc8ab713bd555d5f29348fa46144fd24f37efa5d5d08",
+    "Paz_RP/texts/pt_BR.lang": "fceaa269655c2fbad0015f26cf7ee11faeae4c1d9cdea0a04722d12707ddcd8f",
+    "Paz_RP/textures/blocks/imagem.png": "3322d4fd865714d9f97adb323654128668c39a3905405654f4d1acd59d3449c1",
+    "Paz_RP/textures/terrain_texture.json": "0cd4b79aeaf024454d9f56e1ead4aaf27905afaa3d6d2fcd89992881819907e2"
+  },
+  "warnings": [
+    "Static audit only: Minecraft import/render/physics/save compatibility have NOT been tested.",
+    "The existing 0.1.3 artwork is an unapproved legacy prototype, not the current sculpt.",
+    "Changing pack UUIDs or block IDs is blocked; this is NOT proof of save compatibility.",
+    "Visual geometry reaches 27.5901 px but selection/collision stop at 16 px; upper part is not interactive."
+  ],
+  "release_eligible": false,
+  "runtime_status": "not_run",
+  "art_approval_status": "not_approved",
+  "package_sha256": "7f605c28e89734a27c733f3da6d7dfa7e9f2539ab6b69b055903e7dd9fc86f04"
+}

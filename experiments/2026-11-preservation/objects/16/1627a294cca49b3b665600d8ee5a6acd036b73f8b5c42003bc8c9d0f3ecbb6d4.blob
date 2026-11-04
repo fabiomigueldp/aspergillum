@@ -1,0 +1,77 @@
+"""Package reproducible review artifacts; this never creates an installable add-on."""
+from pathlib import Path
+import json,hashlib,zipfile,shutil,datetime,difflib
+from PIL import Image
+root=Path(__file__).resolve().parents[1]
+out=root/'out/two-pedestal-refined-study'
+repo=root.parents[1]
+stage=repo.parent/'Altare-dois-pedestais-estudo-2'
+stage.mkdir(exist_ok=True)
+images=['01-two-pedestals-3x2.png','02-two-pedestals-front-3x2.png','03-two-pedestals-detail-3x2.png','04-two-pedestals-7x2.png']
+for name in images:
+ if not (out/name).is_file():raise SystemExit('Missing final render: '+name)
+ with Image.open(out/name) as im:
+  assert im.size==(1800,1200);im.verify()
+def copy(src,dst):
+ p=stage/dst;p.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(src,p)
+for name in images:copy(out/name,'renders/'+name)
+for p in out.glob('technical-*.png'):copy(p,'qa/'+p.name)
+for p in out.glob('*.geo.json'):copy(p,'geometry/'+p.name)
+for p in out.glob('*.scene.json'):
+ s=json.loads(p.read_text())
+ for tri in s['triangles']:tri['texture']='../textures/'+Path(tri['texture']).name
+ q=stage/'scenes'/p.name;q.parent.mkdir(exist_ok=True);q.write_text(json.dumps(s))
+for stem in ['atelier_walnut','joinery_walnut_horizontal','crossbrace_inlay']:
+ for suffix in ['', '_normal','_mer']:copy(root/f'packs/resource/textures/blocks/{stem}{suffix}.png',f'textures/{stem}{suffix}.png')
+for rel in ['assets-src/atelier/twin-pedestal-prototype.mjs','assets-src/block-primitives.mjs','tools/export-pedestal-prototype.mjs','tools/cpu-rasterize.py','tests/twin-pedestal-prototype.node.ts']:
+ copy(root/rel,'source/'+rel)
+copy(root/'tools/render-pedestal-blender.py','render.py')
+copy(root/'docs/TWO_PEDESTAL_STUDY.md','docs/TWO_PEDESTAL_STUDY.md')
+copy(out/'tests.log','qa/tests.log')
+copy(out/'manifest.json','qa/generation-manifest.json')
+for p in out.glob('blender-*.log'):copy(p,'qa/'+p.name)
+for p in out.glob('*review.txt'):copy(p,'qa/'+p.name)
+copy(root/'out/two-pedestal-study/03-two-pedestals-detail-3x2.png','comparison/01-before.png')
+copy(out/'03-two-pedestals-detail-3x2.png','comparison/02-after.png')
+(stage/'README.md').write_text('''# Altare: dois pedestais de nogueira, estudo 2
+
+Geometria real gerada para avaliação visual sobre a base 0.12.3. **Não é um .mcaddon e ainda não está integrada ao editor.** A Cruzeta anterior e o pacote 0.12.3 permanecem preservados.
+
+## Imagens
+
+- `renders/01-two-pedestals-3x2.png`: apresentação 3×2.
+- `renders/02-two-pedestals-front-3x2.png`: frontal baixa.
+- `renders/03-two-pedestals-detail-3x2.png`: detalhe do pedestal.
+- `renders/04-two-pedestals-7x2.png`: versão longa.
+- `comparison/`: capitel antes/depois, na mesma câmera.
+
+As quatro imagens finais representam a mesma revisão geométrica. Foram renderizadas offline em Blender Cycles CPU, com os triângulos exportados pelo adaptador do Studio e os mapas de madeira reais. Piso, luzes e câmera são externos de apresentação. **Não são capturas do Minecraft.**
+
+## Reprodução da apresentação
+
+Requer Blender com Cycles CPU. A partir desta pasta:
+
+`blender --background --factory-startup --disable-autoexec --python render.py -- scenes/two-pedestal-3x2.scene.json rerender.png hero`
+
+Os modos são `hero`, `front`, `detail`, `hero_low` e `back`. As texturas são locais e a renderização não depende de rede. O padrão usa 96 amostras, sem denoiser. `ALTARE_RENDER_THREADS` controla a quantidade de threads.
+
+## Fonte e validação
+
+`geometry/` contém seis documentos Bedrock. `source/` contém a geometria paramétrica, primitivas, exportador e testes para aplicar à base do projeto; os testes e o exportador dependem do checkout completo Altare/Studio 0.12.3. `qa/` contém quatro testes aprovados, revisões e logs. `provenance.json` registra hashes.
+
+A revisão 2 modifica apenas os cursos intermediários dos dois capitéis, suavizando a expansão transversal. Permanecem dois apoios, 42 cubos e 304 triângulos. Foram testadas 512 combinações de dimensão/frente, com conferência independente. Não houve teste de colocação, colisão, persistência ou aparência no Minecraft. Os limites de escala e a integração pendente estão em `docs/TWO_PEDESTAL_STUDY.md`.
+''')
+before=(root/'out/two-pedestal-study/candidates/current-source.mjs').read_text().splitlines(keepends=True)
+after=(root/'assets-src/atelier/twin-pedestal-prototype.mjs').read_text().splitlines(keepends=True)
+(stage/'comparison/capital-refinement.diff').write_text(''.join(difflib.unified_diff(before,after,fromfile='prototype-1.mjs',tofile='prototype-2.mjs')))
+files={str(p.relative_to(stage)):hashlib.sha256(p.read_bytes()).hexdigest() for p in stage.rglob('*') if p.is_file() and p.name!='provenance.json'}
+provenance={'prototype':True,'unregistered':True,'studyRevision':2,'baseVersion':'0.12.3','baseArchiveSha256':'47ea472ff249e46926d4b8f6572a3e0c7c53db6df51dc05ef6a287e3df19c1f4','renderer':'Blender Cycles CPU','samples':96,'minecraftTested':False,'files':files}
+(stage/'provenance.json').write_text(json.dumps(provenance,indent=2,ensure_ascii=False))
+archive=stage.with_suffix('.zip')
+with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+ for p in sorted(stage.rglob('*')):
+  if p.is_file():z.write(p,p.relative_to(stage))
+with zipfile.ZipFile(archive) as z:
+ assert z.testzip() is None
+ for name,h in files.items():assert hashlib.sha256(z.read(name)).hexdigest()==h
+print(json.dumps({'archive':str(archive),'bytes':archive.stat().st_size,'sha256':hashlib.sha256(archive.read_bytes()).hexdigest(),'files':len(files)+1},indent=2))

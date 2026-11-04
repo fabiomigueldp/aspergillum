@@ -1,0 +1,44 @@
+import bpy,json,numpy as np,math
+from mathutils import Vector,Matrix
+ROOT='/workspace/scratch/212c580ada5b/paz-directed-v21/'
+bpy.ops.wm.open_mainfile(filepath=ROOT+'camera-aligned-baseline.blend')
+s=bpy.context.scene;head=bpy.data.objects['Maria — anatomia feminina adaptada CC0'];d=json.load(open(ROOT+'camera_fit.json'));P=np.array(d['points']);T=np.array(d['target']);proj=np.array(d['projected']);R=np.array(d['camera_rotation']);scale=d['scale_px'];C=np.array(d['center']);pc=np.array(d['pixel_center'])
+D=(T-proj)/scale;D[:,1]*=-1;worldD=D@R[:,:2].T
+# Anatomical constraints: cranial/ear/neck anchors hold the rest of the source.
+anchors=[]
+for x in [-.18,.18]:
+ for z in [3.16,3.32,3.5,3.63]:anchors.append([x,-.27,z])
+A=np.vstack((P,np.array(anchors)));D=np.vstack((worldD,np.zeros((len(anchors),3))))
+sigma=.05
+K=np.exp(-np.sum((A[:,None]-A[None,:])**2,axis=2)/(2*sigma*sigma));W=np.linalg.solve(K+np.eye(len(A))*.015,D)
+key=head.shape_key_add(name='Correspondências fotográficas — estudo reversível',from_mix=True)
+base=np.array([v.co[:] for v in key.data]);delta=np.empty_like(base)
+for begin in range(0,len(base),10000):
+ q=base[begin:begin+10000];weights=np.exp(-np.sum((q[:,None]-A[None,:])**2,axis=2)/(2*sigma*sigma));delta[begin:begin+len(q)]=weights@W
+# Prevent deformation away from visible face; posterior anatomy remains untouched.
+gate=np.clip((-.23-base[:,1])/.075,0,1);delta*=gate[:,None]
+new=base+delta
+# Map actual reference eyelid contours onto the registered face, rather than generic symmetries.
+q=(new-C)@R;pixels=q[:,:2]*[1,-1]*scale+pc
+curves=[[(222,297),(241,311),(263,319),(283,314)],[(344,333),(359,347),(382,359),(397,352)]]
+relief=np.zeros(len(new))
+for controls in curves:
+ cc=np.array(controls,float);t=np.linspace(0,1,100);curve=((1-t)**3)[:,None]*cc[0]+(3*(1-t)**2*t)[:,None]*cc[1]+(3*(1-t)*t*t)[:,None]*cc[2]+(t**3)[:,None]*cc[3]
+ for start in range(0,len(new),10000):
+  pix=pixels[start:start+10000];dist=np.sum((pix[:,None]-curve[None,:])**2,axis=2);ix=dist.argmin(1);signed=pix[:,1]-curve[ix,1];dx=np.abs(pix[:,0]-curve[ix,0]);fade=np.minimum(1,np.minimum(ix/12,(99-ix)/12));fade=np.maximum(0,fade)*np.exp(-(dx/6)**2)
+  # restrained lid shelf and a closed crease, millimetric on the model scale.
+  val=(.0015*np.exp(-((signed+5)/5)**2)-.0011*np.exp(-(signed/1.8)**2))*fade
+  relief[start:start+len(pix)]+=val
+new+=relief[:,None]*R[:,2][None,:]*gate[:,None]
+for k in head.data.shape_keys.key_blocks:k.value=0
+key.value=1
+for v,p in zip(key.data,new):v.co=p
+head['method_v21']='Explicit camera registration and local Gaussian RBF landmark residual fitting; 2D constraints are approximate, not 3D scan.'
+anchor_pred=P+np.exp(-np.sum((P[:,None]-A[None,:])**2,axis=2)/(2*sigma*sigma))@W
+pp=((anchor_pred-C)@R)[:,:2]*[1,-1]*scale+pc
+metric={'before_rmse_px':d['rmse_px'],'fitted_anchor_rmse_px':float(np.sqrt(np.mean((pp-T)**2))),'max_displacement_m':float(np.linalg.norm(delta,axis=1).max()),'warning':'Error is measured at hand-marked correspondence controls, not independent likeness validation. No unseen anatomy inferred.'}
+json.dump(metric,open(ROOT+'fit_metrics.json','w'),indent=2)
+bpy.ops.wm.save_as_mainfile(filepath=ROOT+'Nossa_Senhora_da_Paz_V21_correspondencias.blend')
+s.cycles.samples=64;s.render.filepath=ROOT+'v21-face-fit.png';bpy.ops.render.render(write_still=True)
+# Unchanged baseline comparison camera and light, preserving causal comparability.
+c=s.camera;c.location=(-5,-.05,3.6);c.rotation_euler=(Vector((0,-.15,3.4))-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=1.05;s.render.resolution_x=600;s.render.resolution_y=800;s.render.filepath=ROOT+'v21-profile.png';bpy.ops.render.render(write_still=True)

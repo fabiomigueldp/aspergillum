@@ -1,0 +1,12 @@
+# Gate de ancoragens contra envelope convexo — reprovado
+
+ConvexHull da anatomia avaliada fixa de Maria:102088 vértices de entrada,29349v no hull e58694faces. Usado envelope de semiespaços deslocados por meia espessura (calota0,3mm; manto3mm) mais margem0,1mm. Esse envelope é conservador, não é a pele real nem uma prova de impossibilidade geral. A formulação de meia espessura pressupõe ancoragem na superfície média; as fontes são gaiolas de origem do Solidify e não constituem por si sós uma medição anatômica.
+
+Ancoragens testadas são exatamente os contornos herdados da prova anterior, sem escolhê-los novamente para favorecer o teste:
+- Arco posterior da calota28..84: **57/57 pontos dentro ou sobre o envelope**,56/56 segmentos com intervalo interno.
+- Topo do manto720..799: **76/80 pontos internos**,77/79 segmentos com intervalo interno.
+-80 transições orientadas por arclength: **80/80 atravessam o envelope**.
+
+A classificação dos segmentos foi feita por clipping analítico contra todos os semiespaços, com raio linear ao longo da transição; não por pontos amostrados. Valores de máximo suporte assinado: calota−58,04..−4,68mm; manto−49,33..+5,14mm. Esses valores são violações de suporte, não distâncias exatas à pele.
+
+**Gate falhou antes de qualquer tecido ou render novo.** Manter esses anchors fixos não atende ao requisito conservador de exterioridade. Não foram deslocados anchors, pele, feições ou bainha. V75 preservada. Não recomendo reduzir margem para forçar aprovação; a concavidade real da cabeça/pescoço pode tornar o hull excessivo. Método posterior precisaria ou definir ancoragens externas novas com revisão da silhueta, ou usar envelope local não convexo validado contra todos os triângulos, explicitamente como outro método.

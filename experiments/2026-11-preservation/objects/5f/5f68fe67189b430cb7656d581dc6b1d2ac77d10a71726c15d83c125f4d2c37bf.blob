@@ -1,0 +1,4180 @@
+{
+  "createdAt": "2026-11-03T20:28:09.933239+00:00",
+  "roots": {
+    "baseline": "/workspace/scratch/212c580ada5b/altare-two-pillars-integration-20261103",
+    "current": "/workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103",
+    "sameToolchainReference": "/workspace/scratch/212c580ada5b/altare-catalog-compaction-20261103"
+  },
+  "ffmpegVersion": "ffmpeg version 7.1.5-0+deb13u1 Copyright (c) 2000-2026 the FFmpeg developers\nbuilt with gcc 14 (Debian 14.2.0-19)\nconfiguration: --prefix=/usr --extra-version=0+deb13u1 --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --arch=amd64 --enable-gpl --disable-stripping --disable-libmfx --disable-omx --enable-gnutls --enable-libaom --enable-libass --enable-libbs2b --enable-libcdio --enable-libcodec2 --enable-libdav1d --enable-libflite --enable-libfontconfig --enable-libfreetype --enable-libfribidi --enable-libglslang --enable-libgme --enable-libgsm --enable-libharfbuzz --enable-libmp3lame --enable-libmysofa --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libtheora --enable-libtwolame --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx265 --enable-libxml2 --enable-libxvid --enable-libzimg --enable-openal --enable-opencl --enable-opengl --disable-sndio --enable-libvpl --enable-libdc1394 --enable-libdrm --enable-libiec61883 --enable-chromaprint --enable-frei0r --enable-ladspa --enable-libbluray --enable-libcaca --enable-libdvdnav --enable-libdvdread --enable-libjack --enable-libpulse --enable-librabbitmq --enable-librist --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libx264 --enable-libzmq --enable-libzvbi --enable-lv2 --enable-sdl2 --enable-libplacebo --enable-librav1e --enable-pocketsphinx --enable-librsvg --enable-libjxl --enable-shared\nlibavutil      59. 39.100 / 59. 39.100\nlibavcodec     61. 19.101 / 61. 19.101\nlibavformat    61.  7.103 / 61.  7.103\nlibavdevice    61.  3.100 / 61.  3.100\nlibavfilter    10.  5.100 / 10.  5.100\nlibswscale      8.  3.100 /  8.  3.100\nlibswresample   5.  3.100 /  5.  3.100\nlibpostproc    58.  3.100 / 58.  3.100\n",
+  "ffprobeVersion": "ffprobe version 7.1.5-0+deb13u1 Copyright (c) 2007-2026 the FFmpeg developers\nbuilt with gcc 14 (Debian 14.2.0-19)\nconfiguration: --prefix=/usr --extra-version=0+deb13u1 --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --arch=amd64 --enable-gpl --disable-stripping --disable-libmfx --disable-omx --enable-gnutls --enable-libaom --enable-libass --enable-libbs2b --enable-libcdio --enable-libcodec2 --enable-libdav1d --enable-libflite --enable-libfontconfig --enable-libfreetype --enable-libfribidi --enable-libglslang --enable-libgme --enable-libgsm --enable-libharfbuzz --enable-libmp3lame --enable-libmysofa --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libtheora --enable-libtwolame --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx265 --enable-libxml2 --enable-libxvid --enable-libzimg --enable-openal --enable-opencl --enable-opengl --disable-sndio --enable-libvpl --enable-libdc1394 --enable-libdrm --enable-libiec61883 --enable-chromaprint --enable-frei0r --enable-ladspa --enable-libbluray --enable-libcaca --enable-libdvdnav --enable-libdvdread --enable-libjack --enable-libpulse --enable-librabbitmq --enable-librist --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libx264 --enable-libzmq --enable-libzvbi --enable-lv2 --enable-sdl2 --enable-libplacebo --enable-librav1e --enable-pocketsphinx --enable-librsvg --enable-libjxl --enable-shared\nlibavutil      59. 39.100 / 59. 39.100\nlibavcodec     61. 19.101 / 61. 19.101\nlibavformat    61.  7.103 / 61.  7.103\nlibavdevice    61.  3.100 / 61.  3.100\nlibavfilter    10.  5.100 / 10.  5.100\nlibswscale      8.  3.100 /  8.  3.100\nlibswresample   5.  3.100 /  5.  3.100\nlibpostproc    58.  3.100 / 58.  3.100\n",
+  "decodeCommand": "ffmpeg -v error -c:a {vorbis|libvorbis} -i INPUT -map 0:a:0 -c:a pcm_f32le -f f32le -",
+  "metricsConvention": "Interleaved float32 PCM, decoder native sample rate/channel count, no forced resample, exact aligned sample comparison; SNR=10log10(sum(baseline\u00b2)/sum(delta\u00b2)).",
+  "files": [
+    {
+      "path": "packs/resource/sounds/aspergillum/aspersorium/fill_01.ogg",
+      "baselineSha256": "d15c50e0af8e5070ea411460a36cc1b05d82afb8ef4042c47e524ff632480194",
+      "currentSha256": "d15c50e0af8e5070ea411460a36cc1b05d82afb8ef4042c47e524ff632480194",
+      "referenceSha256": "d15c50e0af8e5070ea411460a36cc1b05d82afb8ef4042c47e524ff632480194",
+      "baselineBytes": 11517,
+      "currentBytes": 11517,
+      "byteIdenticalToBaseline": true,
+      "byteIdenticalToReference": true
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/aspersorium/fill_02.ogg",
+      "baselineSha256": "2aa38fc7c99a716519182cdae81537c8a8ec64ac118b8f4702ca386afcd8c600",
+      "currentSha256": "703934a15051dfdf8fec0bdd35d8940f2b8dbda1c4c9b9edc2ff36e9417e4eb0",
+      "referenceSha256": "703934a15051dfdf8fec0bdd35d8940f2b8dbda1c4c9b9edc2ff36e9417e4eb0",
+      "baselineBytes": 12314,
+      "currentBytes": 12311,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 70,
+        "currentPacketCount": 70,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 7,
+        "baselineAudioPacketsSha256": "c6ee7bc91fd1aae7a0d12dcac1550a8388e264f360af2aeb81fa3956e21c17e0",
+        "currentAudioPacketsSha256": "435b73eb834f89ae3229775fd27cb49ca0c862e0f59c0e6dfc23fb12e27c8839",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 38400,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 38400,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.800000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.800000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.800000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.800000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 38272,
+          "differingSamples": 10232,
+          "peakAbsoluteDifference": 0.02369949221611023,
+          "rmsDifference": 0.0012199013090497094,
+          "snrDb": 31.920848867680437,
+          "identicalBytes": false,
+          "baselinePcmSha256": "6a306de67444ae3bc910c7c578dacbb7706280c34994dd4a2b565e4ea5ee1889",
+          "currentPcmSha256": "a030944aebd22f2d1dca5d7e06c97cf109ae6c0ba27ac4bef913e1d0d17f8356"
+        },
+        "libvorbis": {
+          "samples": 38272,
+          "differingSamples": 8280,
+          "peakAbsoluteDifference": 0.023681640625,
+          "rmsDifference": 0.0012197765291066414,
+          "snrDb": 31.91997520491733,
+          "identicalBytes": false,
+          "baselinePcmSha256": "e41d67ef15224408903f5469b1b6a68f9438245c5cae050d71ed4b470ce8d83a",
+          "currentPcmSha256": "4e3b0dddf19d870ab40522f8a3553065b0f7393721aa070f0c1f55cfb755ecfd"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/aspersorium/fill_03.ogg",
+      "baselineSha256": "3c68ef4d21d5d54dbb646256c2625e7dd108e9e41253b8cce07afb45c292d240",
+      "currentSha256": "e8ebb2fb5fdbb59fababd633dfe2f8507065baea875ed836f891e42825617c58",
+      "referenceSha256": "e8ebb2fb5fdbb59fababd633dfe2f8507065baea875ed836f891e42825617c58",
+      "baselineBytes": 12440,
+      "currentBytes": 12440,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 71,
+        "currentPacketCount": 71,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 2,
+        "baselineAudioPacketsSha256": "6e3531350b768b1bbf671b410dbd5cfc21297cb6f4f527f5fb08b1187a0c574a",
+        "currentAudioPacketsSha256": "3a0b0c7eab407ef533bf15e8414c3d97a59352c6d525bb725fd41a62b7150124",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 38400,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 38400,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.800000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.800000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.800000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.800000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 38272,
+          "differingSamples": 512,
+          "peakAbsoluteDifference": 0.0016212565824389458,
+          "rmsDifference": 6.648391111909546e-05,
+          "snrDb": 57.40497354182489,
+          "identicalBytes": false,
+          "baselinePcmSha256": "42d4f37ef5451ee204e9ca9f7dafc0a997a69ad1c7f5ee7a4d020277b5125f04",
+          "currentPcmSha256": "798500dd8ca20c5655f8c44af507b7bd582179dc262ec5c7145ff91738d06800"
+        },
+        "libvorbis": {
+          "samples": 38272,
+          "differingSamples": 341,
+          "peakAbsoluteDifference": 0.001617431640625,
+          "rmsDifference": 6.644050359938255e-05,
+          "snrDb": 57.408890688494274,
+          "identicalBytes": false,
+          "baselinePcmSha256": "0ce48b9740a413ab38fb36f72e8365d410881bd5b832c651397df03b672de29f",
+          "currentPcmSha256": "5e442ec039bc0db48aafe803d11b4e5ca54f72dbf60457ddf86a6f2636dbe1bb"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/aspersorium/fill_04.ogg",
+      "baselineSha256": "1565e09836ec66de267e6cec010acfc90039aba268b40eab64b695d1babb0757",
+      "currentSha256": "494d9008438c43a1fe7ccd2f30162cda78521fec95e67021d6e4e5e86e7ad89f",
+      "referenceSha256": "494d9008438c43a1fe7ccd2f30162cda78521fec95e67021d6e4e5e86e7ad89f",
+      "baselineBytes": 13367,
+      "currentBytes": 13369,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 83,
+        "currentPacketCount": 83,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 3,
+        "baselineAudioPacketsSha256": "63f9788f5104f3bdf3378005651c6e0e32ae03bbf64806b257f7ef1ba5165d34",
+        "currentAudioPacketsSha256": "3e233a08a9cf8caf79b92581f409f0ca6979a3f0ce4baf3671e35e71684c30c6",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 38400,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 38400,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.800000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.800000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.800000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.800000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 38272,
+          "differingSamples": 2559,
+          "peakAbsoluteDifference": 0.01609686203300953,
+          "rmsDifference": 0.0008597669928451243,
+          "snrDb": 35.0419811799057,
+          "identicalBytes": false,
+          "baselinePcmSha256": "7f8e14858e9eda926c1debe0b95d7561b1f8afb8b3e18399f1ff63c66e11ac60",
+          "currentPcmSha256": "b8c32de891b74ffcd6fc71899ca827e7f462cb955fa1a274d7260b89b3999178"
+        },
+        "libvorbis": {
+          "samples": 38272,
+          "differingSamples": 2413,
+          "peakAbsoluteDifference": 0.01611328125,
+          "rmsDifference": 0.0008595639071365634,
+          "snrDb": 35.04216214244721,
+          "identicalBytes": false,
+          "baselinePcmSha256": "a0f0da9a2b675cb7faf9fb96a1a7303712a25cb6d05e20f57680881508ad3c28",
+          "currentPcmSha256": "d72af6f05808bad59d85737d5893c8fdfb70acb2433752ea4ce238a5580acf7d"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/dock/mechanical_01.ogg",
+      "baselineSha256": "bfe020ebcdf54d90075f65f66ec534a9fd4c912b5554c1c9c35fe993f84fd653",
+      "currentSha256": "bfe020ebcdf54d90075f65f66ec534a9fd4c912b5554c1c9c35fe993f84fd653",
+      "referenceSha256": "bfe020ebcdf54d90075f65f66ec534a9fd4c912b5554c1c9c35fe993f84fd653",
+      "baselineBytes": 7301,
+      "currentBytes": 7301,
+      "byteIdenticalToBaseline": true,
+      "byteIdenticalToReference": true
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/dock/mechanical_02.ogg",
+      "baselineSha256": "c5f85f14118e055b366daae39571c753950d79aa94a8a97ac1f62f20e688cfd1",
+      "currentSha256": "bf0b4bd19a2ddc8a60141a18ed1ad5620c73f3b8fc322aee92a1be3df8a52037",
+      "referenceSha256": "bf0b4bd19a2ddc8a60141a18ed1ad5620c73f3b8fc322aee92a1be3df8a52037",
+      "baselineBytes": 7097,
+      "currentBytes": 7100,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 21,
+        "currentPacketCount": 21,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 1,
+        "baselineAudioPacketsSha256": "072a74bb2133c655a1b526b8e4eac390069ddd5fadf43f50e78a85b0f4b144b4",
+        "currentAudioPacketsSha256": "a36d1cec9852f70dd3e88eb59641f473eb3ad7dff05d83808039958b45237653",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 14400,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 14400,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.300000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.300000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.300000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.300000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 14272,
+          "differingSamples": 2048,
+          "peakAbsoluteDifference": 0.06194029375910759,
+          "rmsDifference": 0.004478769996307989,
+          "snrDb": 20.784144400126504,
+          "identicalBytes": false,
+          "baselinePcmSha256": "278a06f684e0ee25901ef099e8e963ef056f5535d57ca14b1bfa2dd94e5b59cf",
+          "currentPcmSha256": "8c635dd25d09a252fe1d9e4b70a477d102f502e1054324d024dfbb4e8526ec07"
+        },
+        "libvorbis": {
+          "samples": 14272,
+          "differingSamples": 1991,
+          "peakAbsoluteDifference": 0.06195068359375,
+          "rmsDifference": 0.00447799223053132,
+          "snrDb": 20.783912239923996,
+          "identicalBytes": false,
+          "baselinePcmSha256": "71dc08c7cbd76d5f8f16dc4309e9dc1dfe866de7ee2d15c6a3d51067af49258b",
+          "currentPcmSha256": "63e998e047a6ba856664b8f02629cbe04622b33a0e0cdc7a6ade66697feb39f1"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/dock/mechanical_03.ogg",
+      "baselineSha256": "d006e37d5fc97019c64cab40e45082fad89624718fa8e5e6d8f5a28dca5a10d5",
+      "currentSha256": "95ab1bfb1087e7a4aadece7be762a74be768193a34acafeeda6f965eee772e08",
+      "referenceSha256": "95ab1bfb1087e7a4aadece7be762a74be768193a34acafeeda6f965eee772e08",
+      "baselineBytes": 7227,
+      "currentBytes": 7226,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 25,
+        "currentPacketCount": 25,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 2,
+        "baselineAudioPacketsSha256": "0a8ac072e684b4920b527d417de84752e6197f4a58765450d2638a8961826e11",
+        "currentAudioPacketsSha256": "2abd479495b15a7a8d957e88c9153dcdb1bd1dcae6d6cf58f77c573b42bdb03a",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 14400,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 14400,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.300000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.300000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.300000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.300000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 14272,
+          "differingSamples": 384,
+          "peakAbsoluteDifference": 0.0022970447316765785,
+          "rmsDifference": 9.359424005545209e-05,
+          "snrDb": 54.481914021163426,
+          "identicalBytes": false,
+          "baselinePcmSha256": "f9d6af12a87b5f5f6372f030b9119399cc632f22caafb59acf046e18ce63b58c",
+          "currentPcmSha256": "89f5ac94ee4ba37b8b0db48671ca546968155a7c37380e843d0fbc23906b09a9"
+        },
+        "libvorbis": {
+          "samples": 14272,
+          "differingSamples": 347,
+          "peakAbsoluteDifference": 0.0023193359375,
+          "rmsDifference": 9.357879143382266e-05,
+          "snrDb": 54.48139870182659,
+          "identicalBytes": false,
+          "baselinePcmSha256": "7d10821d83420035ce289b9c8ad14ea1e4d47527c9027d731b424c6a47f233cb",
+          "currentPcmSha256": "5cce375da0fed20aff845ac572180e0a0e8a7d44d55956f5bb061ba6bda44d45"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/dock/water_1_01.ogg",
+      "baselineSha256": "7e25f9f072be97249b7c85fbc311139f9f76deffb414a1fd5a6a4026b474d993",
+      "currentSha256": "6c49c92ff7254bd95ed4d392c544e882fe22d17af8f8f9163cd3efae61132ad1",
+      "referenceSha256": "6c49c92ff7254bd95ed4d392c544e882fe22d17af8f8f9163cd3efae61132ad1",
+      "baselineBytes": 7086,
+      "currentBytes": 7085,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 41,
+        "currentPacketCount": 41,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 3,
+        "baselineAudioPacketsSha256": "6299a34613c1c88554de8f30bfa707a6d8199993a754f6e7cb8d1239606e77fb",
+        "currentAudioPacketsSha256": "0be5162447ef8f2392483858f5c04f7fa7c97a3998b6aedb74023a6e72b24998",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 10560,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 10560,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.220000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.220000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.220000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.220000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 10432,
+          "differingSamples": 765,
+          "peakAbsoluteDifference": 0.002493288367986679,
+          "rmsDifference": 0.00015391901108285916,
+          "snrDb": 50.126501298899335,
+          "identicalBytes": false,
+          "baselinePcmSha256": "fa7343c17bd4a9459632813da7cbc11dfe1ed2556bd23b5fee721a5dc0e1d8c4",
+          "currentPcmSha256": "03c5f1368e75e41b021383362c89c35ade12c405da60e6a2df88e690fd7bb16a"
+        },
+        "libvorbis": {
+          "samples": 10432,
+          "differingSamples": 585,
+          "peakAbsoluteDifference": 0.00250244140625,
+          "rmsDifference": 0.00015402624971061062,
+          "snrDb": 50.11880071236264,
+          "identicalBytes": false,
+          "baselinePcmSha256": "b6ae96c88f72a92166e2e8e85630bf412247830f99c9ec45dafb3eb72067ab65",
+          "currentPcmSha256": "57bf77adc1fcb4b0b099f39f3668028c8028c1117cccb31a2a7572a5d1dc5e52"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/dock/water_1_02.ogg",
+      "baselineSha256": "ef0beafbbffc1ddf91c3af5d662ada7c52cc1c87553aef07308bee7e663e52a7",
+      "currentSha256": "b0a5ab6e99d400308ee9d18a03fcbc73026a0207ec76c1a074b788153913ba4a",
+      "referenceSha256": "b0a5ab6e99d400308ee9d18a03fcbc73026a0207ec76c1a074b788153913ba4a",
+      "baselineBytes": 6676,
+      "currentBytes": 6676,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 25,
+        "currentPacketCount": 25,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 3,
+        "baselineAudioPacketsSha256": "5318c8c91023d2a3b724a30630df1d2ea2bc5f138ce2f3d502f15ffa9780b221",
+        "currentAudioPacketsSha256": "41d57062999e75659fd22efe632a285ff6887ea5d701fa7ffb7916b6b041246f",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 10560,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 10560,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.220000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.220000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.220000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.220000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 10432,
+          "differingSamples": 1152,
+          "peakAbsoluteDifference": 0.0020248955115675926,
+          "rmsDifference": 0.00020923469607206518,
+          "snrDb": 47.40340742333104,
+          "identicalBytes": false,
+          "baselinePcmSha256": "aa82bbc34bff38846769df77560bba0353b9ad4078576bd54440b470fd902668",
+          "currentPcmSha256": "b21ffdaced2526f33803177ff5a3a075e82a4a7d1011c54b4620e387624c4125"
+        },
+        "libvorbis": {
+          "samples": 10432,
+          "differingSamples": 1104,
+          "peakAbsoluteDifference": 0.00201416015625,
+          "rmsDifference": 0.00020928901014209767,
+          "snrDb": 47.399163073152465,
+          "identicalBytes": false,
+          "baselinePcmSha256": "f114771ceff23d0797045ae9b57c122121e67925a5e58111ab53d848b0f08885",
+          "currentPcmSha256": "4bad84dc01657eba435ad623bfb540792710fc809b61d442e0927c3062d5570b"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/dock/water_2_01.ogg",
+      "baselineSha256": "134309e470f6072f4563aa30074f59bf8ee367b84f574e0e3542762ef6239870",
+      "currentSha256": "e18499ced1a5a9f9e3131b51d7fc78d0a070a4ed1a13c7a9343b8c2b8adbdfe7",
+      "referenceSha256": "e18499ced1a5a9f9e3131b51d7fc78d0a070a4ed1a13c7a9343b8c2b8adbdfe7",
+      "baselineBytes": 7007,
+      "currentBytes": 7008,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 20,
+        "currentPacketCount": 20,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 3,
+        "baselineAudioPacketsSha256": "474475e2bf36fe8f32e044e77ab4f2afc99e4fa8aebc8f73274c4e9e244857b1",
+        "currentAudioPacketsSha256": "cd9d161de8ad917c3b09c3be540b6f39a4a2f730c3649b09bf67225974037bc4",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 13440,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 13440,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.280000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.280000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.280000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.280000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 13312,
+          "differingSamples": 4222,
+          "peakAbsoluteDifference": 0.013313576579093933,
+          "rmsDifference": 0.0012975774032990132,
+          "snrDb": 31.58747086372612,
+          "identicalBytes": false,
+          "baselinePcmSha256": "dff88fa7ea5e979e6a1ae79f6d0d48d68b2455f185c594c95acc9c8f95ba3f0a",
+          "currentPcmSha256": "6bf353bb02cb848137ddb205d14530d923c816da3ff484f6a68c2629841fb4dc"
+        },
+        "libvorbis": {
+          "samples": 13312,
+          "differingSamples": 3396,
+          "peakAbsoluteDifference": 0.0133056640625,
+          "rmsDifference": 0.0012975656171632913,
+          "snrDb": 31.58556913160604,
+          "identicalBytes": false,
+          "baselinePcmSha256": "e15a7434d5f620c9e8f760fa36eb0044b2510d2656ace19b316fcb0d237f8de6",
+          "currentPcmSha256": "0a895280fcf2f0db339536e659937f1e3cdafae95a3f322904e4062681c60733"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/dock/water_2_02.ogg",
+      "baselineSha256": "d8f4335adf2488c0f95f9ffaddbd392f090654bed3781f5b7f885b6db7be7eae",
+      "currentSha256": "ad904c6e7be4cc8f338d72c71f7dad2940f7a63c7ac957614d59b3f66fb504b2",
+      "referenceSha256": "ad904c6e7be4cc8f338d72c71f7dad2940f7a63c7ac957614d59b3f66fb504b2",
+      "baselineBytes": 6761,
+      "currentBytes": 6761,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 26,
+        "currentPacketCount": 26,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 1,
+        "baselineAudioPacketsSha256": "ccd8c85a591f810f82e7d00034a475ab5e2ab521f480df546d16e55ed18565ea",
+        "currentAudioPacketsSha256": "434262e45ca112b79d1f6ba3b29c25bea0744894f5d9edbeac63e6a38100ece3",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 13440,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 13440,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.280000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.280000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.280000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.280000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 13312,
+          "differingSamples": 256,
+          "peakAbsoluteDifference": 0.0012766667641699314,
+          "rmsDifference": 6.347107987756332e-05,
+          "snrDb": 57.82807010807211,
+          "identicalBytes": false,
+          "baselinePcmSha256": "ae0bb951cd63d05d8c3e448c949c8bacf61866f4185bc8fb9ead5ac1ac97c163",
+          "currentPcmSha256": "b948dbc11c7bd0a6afdcd87472dc71052a85b00c211e35f439496670aa55997a"
+        },
+        "libvorbis": {
+          "samples": 13312,
+          "differingSamples": 233,
+          "peakAbsoluteDifference": 0.001251220703125,
+          "rmsDifference": 6.344236614542872e-05,
+          "snrDb": 57.83078279530592,
+          "identicalBytes": false,
+          "baselinePcmSha256": "153b10612a7b4a2c5941330cbcb698367cc321a4780e9bced514aba2d423f633",
+          "currentPcmSha256": "6337379061f90b06d94ea28dc3b2f3d2e9aa311c25da9dc538a7ffd58bbe6e4d"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/dock/water_3_01.ogg",
+      "baselineSha256": "35abcd53006449018e2cc677ebcca2ac40fdfba0d4f2337b87497ec3e77726d5",
+      "currentSha256": "fec0d05067b00f8745ae08770e4c4261dd88fe9f0744557fc43b010a05a9ad36",
+      "referenceSha256": "fec0d05067b00f8745ae08770e4c4261dd88fe9f0744557fc43b010a05a9ad36",
+      "baselineBytes": 7308,
+      "currentBytes": 7308,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 24,
+        "currentPacketCount": 24,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 3,
+        "baselineAudioPacketsSha256": "adda938d8c5b8ff09f5cc763aedeeadf94e861c1c99c924978bb0fedd78893ec",
+        "currentAudioPacketsSha256": "6d4cc4fcf72463ea97a607f9e30a758e698ff341b0613c2dbd571af4f1e2cd2d",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 17280,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 17280,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.360000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.360000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.360000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.360000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 18240,
+          "differingSamples": 5116,
+          "peakAbsoluteDifference": 0.00020367605611681938,
+          "rmsDifference": 2.1289893793548307e-05,
+          "snrDb": 66.78688947733986,
+          "identicalBytes": false,
+          "baselinePcmSha256": "d7293fd94509c95e8062a64759a04aab314a3fef6fddd7eb925ad015f486b91a",
+          "currentPcmSha256": "a00cbda197482e4c18c6b85df6fa328ca102b2826bfafb0134b1dadd2c78e244"
+        },
+        "libvorbis": {
+          "samples": 18240,
+          "differingSamples": 1928,
+          "peakAbsoluteDifference": 0.000213623046875,
+          "rmsDifference": 2.1842586433014723e-05,
+          "snrDb": 66.56313924277443,
+          "identicalBytes": false,
+          "baselinePcmSha256": "a3b10fe21c63f7a9fea92c5a26303901ad63d6affe8110d2f489ed87bce39c30",
+          "currentPcmSha256": "13572f411ea63b9d6007974a519bf91b10bfa33596ba593d3278fed3ccc2e6f9"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/dock/water_3_02.ogg",
+      "baselineSha256": "d3e07843d75a76de6cd5896118817e9c994f478b8f88f28a00b077684bdd51d2",
+      "currentSha256": "d3e07843d75a76de6cd5896118817e9c994f478b8f88f28a00b077684bdd51d2",
+      "referenceSha256": "d3e07843d75a76de6cd5896118817e9c994f478b8f88f28a00b077684bdd51d2",
+      "baselineBytes": 7581,
+      "currentBytes": 7581,
+      "byteIdenticalToBaseline": true,
+      "byteIdenticalToReference": true
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/dock/water_4_01.ogg",
+      "baselineSha256": "f06bf23f573eeb4836dba363d4348051da034432e2377828d64ba977b1346ee1",
+      "currentSha256": "76a6fd8911326a70acd719789ba6454315794776115711f19e4931775f8d11fc",
+      "referenceSha256": "76a6fd8911326a70acd719789ba6454315794776115711f19e4931775f8d11fc",
+      "baselineBytes": 8618,
+      "currentBytes": 8622,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 34,
+        "currentPacketCount": 34,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 2,
+        "baselineAudioPacketsSha256": "609dcc6c37cdaa575f1eaf3e61a34d5e915c96155fb95d4729817718e49501c9",
+        "currentAudioPacketsSha256": "6300176984f82f43eec2c9e1432ddd0097f66c28bd402c013de849631353f83e",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 20160,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 20160,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.420000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.420000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.420000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.420000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 20032,
+          "differingSamples": 2673,
+          "peakAbsoluteDifference": 0.0001735500991344452,
+          "rmsDifference": 1.4720551906767275e-05,
+          "snrDb": 70.47138410030118,
+          "identicalBytes": false,
+          "baselinePcmSha256": "f4ac3d74a603d5928c39e0d1bd1016af7e0ef053383dfe768487ecd9683e951e",
+          "currentPcmSha256": "2225b75c6cf48a568fec4d8c5c002e169ecccf91e0ea14a6c8ae089b70a86a25"
+        },
+        "libvorbis": {
+          "samples": 20032,
+          "differingSamples": 1207,
+          "peakAbsoluteDifference": 0.00018310546875,
+          "rmsDifference": 1.520384625494147e-05,
+          "snrDb": 70.18925088027383,
+          "identicalBytes": false,
+          "baselinePcmSha256": "d84a58ac0f377a635932a66289ec1a86bc71b9ab2c64ce1525973695b4fbfb4e",
+          "currentPcmSha256": "bd0a21544ac37fa0394cf0969478213e715ce0d5d2d61a12bdb0a10bfbd37b62"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/dock/water_4_02.ogg",
+      "baselineSha256": "0c28cb259ebbd282f4e36b31792cc9d84baf6131be6fa44edf3674ed88c6ba91",
+      "currentSha256": "55513289fa99343afcdd75c3d7f3d1c028fd88ddfcbdf737d672692b96cd73dc",
+      "referenceSha256": "55513289fa99343afcdd75c3d7f3d1c028fd88ddfcbdf737d672692b96cd73dc",
+      "baselineBytes": 8121,
+      "currentBytes": 8121,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 26,
+        "currentPacketCount": 26,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 2,
+        "baselineAudioPacketsSha256": "52178fda753a82e8b1f46a4b699f9f3bdc1a7259034b8df3ecae8086ca4b9e3c",
+        "currentAudioPacketsSha256": "ba8e05c1caf0a534dfaad18c3f1fbbf9bf4c5a259aacb08f97afcdedcc965d80",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 20160,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 20160,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.420000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.420000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.420000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.420000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 20032,
+          "differingSamples": 4089,
+          "peakAbsoluteDifference": 0.0004067705012857914,
+          "rmsDifference": 6.821832013954396e-05,
+          "snrDb": 57.22720881053885,
+          "identicalBytes": false,
+          "baselinePcmSha256": "d74db18d0dd2a9b2d97e40598252cff61f204a5cb4978bfbb96b65b7713d573d",
+          "currentPcmSha256": "caef2ad8d979c07750da695545eabea0a3b615af33eadc085bc81b799ef157cb"
+        },
+        "libvorbis": {
+          "samples": 20032,
+          "differingSamples": 3174,
+          "peakAbsoluteDifference": 0.00042724609375,
+          "rmsDifference": 6.833775666861704e-05,
+          "snrDb": 57.20992627852833,
+          "identicalBytes": false,
+          "baselinePcmSha256": "2d0a5b4401279531abc146f700d20b1401a68904143e429e9f6f48f31effae4c",
+          "currentPcmSha256": "6378da08fad5c558ac033b030d7b17d785000af9b088d6a7bea6e885c4336332"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/dock/water_4_03.ogg",
+      "baselineSha256": "66bcc85a26cba98defca6adf3d6cbf920dbd4659a7b157a78969804634060545",
+      "currentSha256": "6450a1e3f2d9be86441a69babbc12d9cfb7580a2645faa20a204b2573248d514",
+      "referenceSha256": "6450a1e3f2d9be86441a69babbc12d9cfb7580a2645faa20a204b2573248d514",
+      "baselineBytes": 8607,
+      "currentBytes": 8610,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 31,
+        "currentPacketCount": 31,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 1,
+        "baselineAudioPacketsSha256": "bb8f329bc65ad3b22827461a759a511fe0fd27ff1a25e8fa10af6b0e50e1c8db",
+        "currentAudioPacketsSha256": "3ae6af0c16234b0a9b9fef2304e089883a3f24f62fc2c79a17c7108d2802cc94",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 20160,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 20160,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.420000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.420000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.420000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.420000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 20032,
+          "differingSamples": 2047,
+          "peakAbsoluteDifference": 0.01622559130191803,
+          "rmsDifference": 0.001122014402645453,
+          "snrDb": 32.86310476261055,
+          "identicalBytes": false,
+          "baselinePcmSha256": "034a539bb5b88615ed962a3e6dace7afa2f79e84495fd653520695e7a0785438",
+          "currentPcmSha256": "a531297da9c716b11152784e962eb9684ae5d616dded069c7610a0c7bb5a2147"
+        },
+        "libvorbis": {
+          "samples": 20032,
+          "differingSamples": 1956,
+          "peakAbsoluteDifference": 0.0162353515625,
+          "rmsDifference": 0.0011217149227448497,
+          "snrDb": 32.86357570914069,
+          "identicalBytes": false,
+          "baselinePcmSha256": "2662c5e34009a9487af773c4e64f94cca77d0c5c96e59cdd172688fe29cd18cc",
+          "currentPcmSha256": "37f6a41064a348ac914245667d744999fdbd8c2ac9dfaf9b80ef9a42a9d4ba85"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/dry/dry_01.ogg",
+      "baselineSha256": "f3e4eaa8aae4491d4c3ce633467661565235a943134d6ed3509970e7dd396c2b",
+      "currentSha256": "f3e4eaa8aae4491d4c3ce633467661565235a943134d6ed3509970e7dd396c2b",
+      "referenceSha256": "f3e4eaa8aae4491d4c3ce633467661565235a943134d6ed3509970e7dd396c2b",
+      "baselineBytes": 6036,
+      "currentBytes": 6036,
+      "byteIdenticalToBaseline": true,
+      "byteIdenticalToReference": true
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/dry/dry_02.ogg",
+      "baselineSha256": "e7e689a01c4516d90e49503a8a3a8e9b5f784f0107a59cc1b8ab36dcd5908572",
+      "currentSha256": "6de23ed2034a44795307f664324118e438653a4ec3cc7f21dc435548d7fd43d5",
+      "referenceSha256": "6de23ed2034a44795307f664324118e438653a4ec3cc7f21dc435548d7fd43d5",
+      "baselineBytes": 5914,
+      "currentBytes": 5914,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 15,
+        "currentPacketCount": 15,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 1,
+        "baselineAudioPacketsSha256": "44972793996c95c50af5f95f3179d08d463c64d057478a641fe48a600c077762",
+        "currentAudioPacketsSha256": "6bf939881b2e7708094c1d0267ceb9fb8bed6c3844d071e5b9c85e85ed834431",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 8640,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 8640,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.180000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.180000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.180000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.180000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 8512,
+          "differingSamples": 2046,
+          "peakAbsoluteDifference": 0.0021763816475868225,
+          "rmsDifference": 0.0003580616007129863,
+          "snrDb": 42.83714789686733,
+          "identicalBytes": false,
+          "baselinePcmSha256": "33c00c86712e5ecbf0528168207eaf30f53e20b2e31d82910bd3ad948cbf3b88",
+          "currentPcmSha256": "0fea5b5318919d9e3d3d52509553d69baec895c8dfc22cc772b9e3e2f82bc2dc"
+        },
+        "libvorbis": {
+          "samples": 8512,
+          "differingSamples": 1848,
+          "peakAbsoluteDifference": 0.002197265625,
+          "rmsDifference": 0.0003581163803323642,
+          "snrDb": 42.83409335744593,
+          "identicalBytes": false,
+          "baselinePcmSha256": "3c576da49a2ee570617dcfaa94fd7b8891dcb644ec0e26dc3779642e4d2dff36",
+          "currentPcmSha256": "b4f740a2e7f67add0b6a28682f3e79f5ba18954a4ab9817434930c11505d510d"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/dry/dry_03.ogg",
+      "baselineSha256": "9d82b65f6bad92a8bd901eb84582331e87f60181341a31360cea393f56a2c58c",
+      "currentSha256": "9d82b65f6bad92a8bd901eb84582331e87f60181341a31360cea393f56a2c58c",
+      "referenceSha256": "9d82b65f6bad92a8bd901eb84582331e87f60181341a31360cea393f56a2c58c",
+      "baselineBytes": 5858,
+      "currentBytes": 5858,
+      "byteIdenticalToBaseline": true,
+      "byteIdenticalToReference": true
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/load/commit_1_01.ogg",
+      "baselineSha256": "470ede6e236b7479afa9f282d05b5c16aaa53b1fd33137e276bc9155433814f1",
+      "currentSha256": "5c5cead514a21376683a5ea2ce0b732613ffbafb143e2e86f97f49fa1d792ce8",
+      "referenceSha256": "5c5cead514a21376683a5ea2ce0b732613ffbafb143e2e86f97f49fa1d792ce8",
+      "baselineBytes": 7126,
+      "currentBytes": 7126,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 38,
+        "currentPacketCount": 38,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 3,
+        "baselineAudioPacketsSha256": "fee7c831907ec5e5d24653d7adb0813feef4f3bf9be6624bd077d9e9ecea8949",
+        "currentAudioPacketsSha256": "8cac0dd17a95df59ffbf62961beb0de75a6e2b3171f698671455dc271a6de36f",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 12000,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 12000,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.250000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.250000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.250000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.250000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 11872,
+          "differingSamples": 2464,
+          "peakAbsoluteDifference": 0.0014096684753894806,
+          "rmsDifference": 0.00016300522080400716,
+          "snrDb": 49.724720602218646,
+          "identicalBytes": false,
+          "baselinePcmSha256": "940e91c70d19ed59f42d0807efd75a60d6203fe088df0c7c071c3dcd4a86bda4",
+          "currentPcmSha256": "daa8a4e31652c061a4ce92cfff28d229f0f0cbb5a6a55ca27541a27be71a6c91"
+        },
+        "libvorbis": {
+          "samples": 11872,
+          "differingSamples": 1827,
+          "peakAbsoluteDifference": 0.00140380859375,
+          "rmsDifference": 0.00016283499910250878,
+          "snrDb": 49.7319945830743,
+          "identicalBytes": false,
+          "baselinePcmSha256": "90234330a2384cd818c133cbcced56754ccbfc91e9946306b6766bb4c09d65cb",
+          "currentPcmSha256": "81261ec9e8f69e0530e9e3b98fee47d5d589b047d8f3326e0d354ffcd27afbac"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/load/commit_1_02.ogg",
+      "baselineSha256": "2a2928de81e842176ad837b9ba1a8584d095929b5610e4f781f71cc79d052027",
+      "currentSha256": "2a2928de81e842176ad837b9ba1a8584d095929b5610e4f781f71cc79d052027",
+      "referenceSha256": "2a2928de81e842176ad837b9ba1a8584d095929b5610e4f781f71cc79d052027",
+      "baselineBytes": 7025,
+      "currentBytes": 7025,
+      "byteIdenticalToBaseline": true,
+      "byteIdenticalToReference": true
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/load/commit_1_03.ogg",
+      "baselineSha256": "855d4c2aa6c40a564a761c6a41c73fa90288b2e85cc8f9be75720da690002192",
+      "currentSha256": "d25d0e4611234e446e37313f40d4cee0a545a80a1426c0acfa013d73cd7ae301",
+      "referenceSha256": "d25d0e4611234e446e37313f40d4cee0a545a80a1426c0acfa013d73cd7ae301",
+      "baselineBytes": 7207,
+      "currentBytes": 7210,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 32,
+        "currentPacketCount": 32,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 1,
+        "baselineAudioPacketsSha256": "1a6e30dd1f892974bc834cfd8cb731576f1b4765b6934fa2b97e47d2d54d5080",
+        "currentAudioPacketsSha256": "519ca46cab9f727807519604daafd09dfad3067bb2995796be54ea24a8c25008",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 12000,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 12000,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.250000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.250000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.250000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.250000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 11872,
+          "differingSamples": 352,
+          "peakAbsoluteDifference": 0.000523516908288002,
+          "rmsDifference": 2.7478398293424416e-05,
+          "snrDb": 65.13919117135909,
+          "identicalBytes": false,
+          "baselinePcmSha256": "34e034a656fc7f83aa68630041f2231ffffdad9c2482e85df54ca4cc61b44979",
+          "currentPcmSha256": "4c835bfba6a56778ffb3b5038d0bfb6698dca92049fef367663ac025f932ff8c"
+        },
+        "libvorbis": {
+          "samples": 11872,
+          "differingSamples": 303,
+          "peakAbsoluteDifference": 0.000518798828125,
+          "rmsDifference": 2.7729719095651326e-05,
+          "snrDb": 65.05811577902374,
+          "identicalBytes": false,
+          "baselinePcmSha256": "112abe05ad65f3c940dd2ff5799cc0b718a6cbc2cd649e773bff4a00e0cf8ed4",
+          "currentPcmSha256": "dcaac94a4101597e53ee23fea6342a3bd162f0aba937b6ae8771154da856c8d7"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/load/commit_2_01.ogg",
+      "baselineSha256": "4bc0fa6438aceb281f9c5b740a07de06f3586e8f3bfcdc1d01096cc97a51a230",
+      "currentSha256": "e3e3a435a2262a11e8f24ae4c44a1db66e43ee95d9f8249c4f2cc29c4d3e3768",
+      "referenceSha256": "e3e3a435a2262a11e8f24ae4c44a1db66e43ee95d9f8249c4f2cc29c4d3e3768",
+      "baselineBytes": 7346,
+      "currentBytes": 7348,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 29,
+        "currentPacketCount": 29,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 2,
+        "baselineAudioPacketsSha256": "da106c7f40937d2916c0ca40d32f86c60a34bcfd2c69088a4e232323e5390768",
+        "currentAudioPacketsSha256": "3e0719dc4d8b737376dd11565272f780b7d57d81dacbc44a4bbc1f4ce261f953",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 14400,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 14400,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.300000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.300000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.300000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.300000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 14272,
+          "differingSamples": 3196,
+          "peakAbsoluteDifference": 0.0004886984825134277,
+          "rmsDifference": 5.649480681692021e-05,
+          "snrDb": 58.89762083868695,
+          "identicalBytes": false,
+          "baselinePcmSha256": "e58a059b985cbac9d1cc8ef1c5f62b1b79eb09050fe54b107c559b97349d590e",
+          "currentPcmSha256": "f76633bbd1810e9709bf0eda8cc0987cec8f369a3ab21873bfc78e7dbc1ecd72"
+        },
+        "libvorbis": {
+          "samples": 14272,
+          "differingSamples": 2507,
+          "peakAbsoluteDifference": 0.00048828125,
+          "rmsDifference": 5.6945528033748465e-05,
+          "snrDb": 58.826740569787574,
+          "identicalBytes": false,
+          "baselinePcmSha256": "2360fa1e978ff77beb3b736360a4d51da08282c7f0c85bdeb9f8ecc3ff829695",
+          "currentPcmSha256": "43c27a45be72999c09227b6c73e25cd76c3930bf9765f98d4f359e5670f7a3d1"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/load/commit_2_02.ogg",
+      "baselineSha256": "c964f448e1ad352d46b062a6d0f577fd2b08ca630acd1d670e0ef86342449532",
+      "currentSha256": "78ac14efa576c258afb047c729f5a4181012e293e91d9cbdaea97eb6a3b1baec",
+      "referenceSha256": "78ac14efa576c258afb047c729f5a4181012e293e91d9cbdaea97eb6a3b1baec",
+      "baselineBytes": 7560,
+      "currentBytes": 7561,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 42,
+        "currentPacketCount": 42,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 1,
+        "baselineAudioPacketsSha256": "dffb81203518cdffb493657ce0f0766a557d070db76cf782dfb087ff2917ddf3",
+        "currentAudioPacketsSha256": "801f3a86da0cd81d0d8bac24b73aff16a07fa3443f18514cb5bf77a4a03ba1a4",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 14400,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 14400,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.300000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.300000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.300000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.300000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 14272,
+          "differingSamples": 2043,
+          "peakAbsoluteDifference": 0.00016580801457166672,
+          "rmsDifference": 1.5626530690258718e-05,
+          "snrDb": 70.18466548901881,
+          "identicalBytes": false,
+          "baselinePcmSha256": "23d7ed559101167308dcfbca89dcc88daaa93b54b4e7cbb12bccc1aa5242ee85",
+          "currentPcmSha256": "49104a5bacb8c6deecd714f72368477467b36c1408c89106939fd077c5e6c7db"
+        },
+        "libvorbis": {
+          "samples": 14272,
+          "differingSamples": 1052,
+          "peakAbsoluteDifference": 0.00018310546875,
+          "rmsDifference": 1.6280869906798298e-05,
+          "snrDb": 69.82654464067025,
+          "identicalBytes": false,
+          "baselinePcmSha256": "0c75b1b98cd54582b62211eb398eaef833d87c2a06213b7eef382d8f623a56e8",
+          "currentPcmSha256": "9d4b668ca345efaae1e088339bdfad33fce332bcea4adb3d0e876b7d533b994e"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/load/commit_2_03.ogg",
+      "baselineSha256": "e8592c85275f3ff108441b72c98cfc2df2ad317042a20f9e238ad5211dd4b988",
+      "currentSha256": "9ce4b88dfe8f8b762c51321f4b274c135c1357da36f770a6e86836aba8c120ad",
+      "referenceSha256": "9ce4b88dfe8f8b762c51321f4b274c135c1357da36f770a6e86836aba8c120ad",
+      "baselineBytes": 7417,
+      "currentBytes": 7417,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 43,
+        "currentPacketCount": 43,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 1,
+        "baselineAudioPacketsSha256": "cb456be732c3f6493fbc1c31a14e12b276ccc3695191c92a9c021fabb772ec1e",
+        "currentAudioPacketsSha256": "088173d413f28c631f80d9c2d22fbd36a6ade122a191686f98aee57ae34dde3d",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 14400,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 14400,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.300000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.300000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.300000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.300000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 14272,
+          "differingSamples": 0,
+          "peakAbsoluteDifference": 0.0,
+          "rmsDifference": 0.0,
+          "snrDb": null,
+          "identicalBytes": true,
+          "baselinePcmSha256": "52dd2cddef1b49c6cb8026bf6afdaac3ca1b3ff7cb2fb9757f627a97d31b1678",
+          "currentPcmSha256": "52dd2cddef1b49c6cb8026bf6afdaac3ca1b3ff7cb2fb9757f627a97d31b1678"
+        },
+        "libvorbis": {
+          "samples": 14272,
+          "differingSamples": 0,
+          "peakAbsoluteDifference": 0.0,
+          "rmsDifference": 0.0,
+          "snrDb": null,
+          "identicalBytes": true,
+          "baselinePcmSha256": "85ae0a0a0e21fd88f1c076db94ffe37bc1000ee74ee58568bdd16350498757b5",
+          "currentPcmSha256": "85ae0a0a0e21fd88f1c076db94ffe37bc1000ee74ee58568bdd16350498757b5"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/load/commit_3_01.ogg",
+      "baselineSha256": "95fac9050b2d3ea21bcec5dd6f276d12d9ed0036fe5620c3aa08d5cc4e71d605",
+      "currentSha256": "cb9247dfdde1d3efe5c768208e131de3417bb94edbdc403cba8ea5b5d7d21f73",
+      "referenceSha256": "cb9247dfdde1d3efe5c768208e131de3417bb94edbdc403cba8ea5b5d7d21f73",
+      "baselineBytes": 8081,
+      "currentBytes": 8081,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 40,
+        "currentPacketCount": 40,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 1,
+        "baselineAudioPacketsSha256": "b7bbed6732ba371d7d51b7582e2050bb48b692a4e3050e172f66c1e3d036378e",
+        "currentAudioPacketsSha256": "5cc811036b18026317214dbfd94bd577ef195f5ae2f90f551f491c2a2f8e3513",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 17280,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 17280,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.360000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.360000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.360000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.360000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 17152,
+          "differingSamples": 1591,
+          "peakAbsoluteDifference": 0.0008702278137207031,
+          "rmsDifference": 5.9917959041934344e-05,
+          "snrDb": 58.44736932581617,
+          "identicalBytes": false,
+          "baselinePcmSha256": "24cf2f1efc43abe3e74b3061a7a785b3ef7254036f3ee1a07cb3f8c437870a82",
+          "currentPcmSha256": "badc768b9f4c5cda3669a8adf62fca8a7887bc25a3ef9b6ea7f569de82a44392"
+        },
+        "libvorbis": {
+          "samples": 17152,
+          "differingSamples": 1295,
+          "peakAbsoluteDifference": 0.000885009765625,
+          "rmsDifference": 6.020437819525677e-05,
+          "snrDb": 58.404207282397344,
+          "identicalBytes": false,
+          "baselinePcmSha256": "4c539c6ad4107ce9cc828de4e902037229b281df92c987d13c3eac98a49fedfd",
+          "currentPcmSha256": "e994c73c62c7eaaf162974730d154bb8babf5c908bf4eb3addc012c56cd4e256"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/load/commit_3_02.ogg",
+      "baselineSha256": "e3481d1cdf3f45a149797f13c4d20a1604e4e2003320f8799db7d5aef4c74df9",
+      "currentSha256": "885e4323426b1ba1c6f876a323d17238a205f202f0dd7d204006f822fa750604",
+      "referenceSha256": "885e4323426b1ba1c6f876a323d17238a205f202f0dd7d204006f822fa750604",
+      "baselineBytes": 8380,
+      "currentBytes": 8379,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 46,
+        "currentPacketCount": 46,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 1,
+        "baselineAudioPacketsSha256": "4b7ca9617238c4ce1ee4c3a7805d57a1d9ad605c88a1629570f3f5a541f8adee",
+        "currentAudioPacketsSha256": "23e301ffc50a1d74718ef4d57371f2dd94bb6ae35372f7504f1412d16f2a4599",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 17280,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 17280,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.360000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.360000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.360000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.360000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 17152,
+          "differingSamples": 256,
+          "peakAbsoluteDifference": 0.00047123245894908905,
+          "rmsDifference": 2.284272215314035e-05,
+          "snrDb": 66.70782958458813,
+          "identicalBytes": false,
+          "baselinePcmSha256": "5f3d98e63b677657229132bc04917b6377a7691d3da18b8bd0916daec8929300",
+          "currentPcmSha256": "7ed178f6a065f329c7b1579e7c6551ca36bf2aac2126ff1c3176766f8fe8119b"
+        },
+        "libvorbis": {
+          "samples": 17152,
+          "differingSamples": 201,
+          "peakAbsoluteDifference": 0.00048828125,
+          "rmsDifference": 2.2953329796229804e-05,
+          "snrDb": 66.66396549001931,
+          "identicalBytes": false,
+          "baselinePcmSha256": "86e389de72a61eead22c90bae034476ec4e26e22f0fdf06d4663b03bef6eb11c",
+          "currentPcmSha256": "27274e37dd8fe44faca60cf563a0162ad5db29a391a15e7e3b737acb1cdd3be7"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/load/commit_3_03.ogg",
+      "baselineSha256": "a2d38fcdaa8a89659ff2c2cc14031bd8cee309076a19875ecdf82d4eded36437",
+      "currentSha256": "a9c1da5e1391a309d3ab88c6f02a097d53ff67f8088f484cda56e6ff93f0810e",
+      "referenceSha256": "a9c1da5e1391a309d3ab88c6f02a097d53ff67f8088f484cda56e6ff93f0810e",
+      "baselineBytes": 8327,
+      "currentBytes": 8327,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 53,
+        "currentPacketCount": 53,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 2,
+        "baselineAudioPacketsSha256": "ead9c1c99783974e0e4198a362b9fe044e3cc4778e93c9b946ef254cb064bc81",
+        "currentAudioPacketsSha256": "6f28faebc095e2a79b256ef564b85afb92b5eebcab01d2c7addd8270954e83ba",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 17280,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 17280,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.360000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.360000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.360000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.360000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 17152,
+          "differingSamples": 1855,
+          "peakAbsoluteDifference": 0.0008368249982595444,
+          "rmsDifference": 3.996393303284879e-05,
+          "snrDb": 61.30426231362048,
+          "identicalBytes": false,
+          "baselinePcmSha256": "dcab8232ee9cf6e5b31a5a77ccdb8e6d9326ffccad509f1259e1f044c59c987a",
+          "currentPcmSha256": "65d9bd23fa99d5f0ae0dd6bf7f4841f31efa2a321c85a1e869e3ae40d32ba8aa"
+        },
+        "libvorbis": {
+          "samples": 17152,
+          "differingSamples": 1204,
+          "peakAbsoluteDifference": 0.0008544921875,
+          "rmsDifference": 3.993212966422319e-05,
+          "snrDb": 61.30941442349063,
+          "identicalBytes": false,
+          "baselinePcmSha256": "136f538ad61368dba5ebd4977fb65279390621e0e4a09bd3c2d02dbb257675c4",
+          "currentPcmSha256": "bba569da54f84bafe9a9c93033100dc4b8fe364d9ba372a7ba3184c7fed19f4a"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/load/commit_4_01.ogg",
+      "baselineSha256": "25cb1fbf649d12e37a1a4c479b5c2f764ef1bf910d4218d24312253bfb6988f3",
+      "currentSha256": "959f95b37a676c3fd89552325667d1205017d6c5d6ccf8bb77a0407e0525a39d",
+      "referenceSha256": "959f95b37a676c3fd89552325667d1205017d6c5d6ccf8bb77a0407e0525a39d",
+      "baselineBytes": 8194,
+      "currentBytes": 8194,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 44,
+        "currentPacketCount": 44,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 1,
+        "baselineAudioPacketsSha256": "aee67334ce2195bc7b574f61c1c7081ad77a874b18140ddbbda382d550f1cd7e",
+        "currentAudioPacketsSha256": "09a9de59d4f377eea164df94021bcdeb58d152d86d08ce41a4670d9757a76300",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 20160,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 20160,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.420000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.420000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.420000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.420000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 20032,
+          "differingSamples": 2048,
+          "peakAbsoluteDifference": 0.003050226718187332,
+          "rmsDifference": 0.00048769453082261725,
+          "snrDb": 39.66241059259697,
+          "identicalBytes": false,
+          "baselinePcmSha256": "01c1ea2bf41a4715db02740f2464c2de1eba40b13aaf177272177669b2a94031",
+          "currentPcmSha256": "39124fa7b97641086dc92f5d24ed21a719a3659b039a79dd0c460f1d7ed27991"
+        },
+        "libvorbis": {
+          "samples": 20032,
+          "differingSamples": 1928,
+          "peakAbsoluteDifference": 0.0030517578125,
+          "rmsDifference": 0.0004878420156744989,
+          "snrDb": 39.657808605165414,
+          "identicalBytes": false,
+          "baselinePcmSha256": "1ee50fcbb50d8d39cafd019772d5c9f0be4b351a9dd5995aba1cf3f78daf073e",
+          "currentPcmSha256": "ccbd47988b9b67d3533be45a2b4bef6d54ae611701bc2983ead31514d152c384"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/load/commit_4_02.ogg",
+      "baselineSha256": "b1b99e03a59b4e87e2de89c416026eaf6c9b7fe67093c1e2319cea7317d27c8d",
+      "currentSha256": "4370f1da5f6c98659842117459fbdf60a233026fdac09af423fdf937d9da31d9",
+      "referenceSha256": "4370f1da5f6c98659842117459fbdf60a233026fdac09af423fdf937d9da31d9",
+      "baselineBytes": 8547,
+      "currentBytes": 8547,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 53,
+        "currentPacketCount": 53,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 1,
+        "baselineAudioPacketsSha256": "105fbcd44108db643918e7086766f6f8a858976fcd205febe38327217a0054f8",
+        "currentAudioPacketsSha256": "2671f6003161f50e6dc00f09b32b8576d10611580e3abe9cc21533a1524aebbc",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 20160,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 20160,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.420000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.420000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.420000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.420000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 20032,
+          "differingSamples": 2043,
+          "peakAbsoluteDifference": 9.520351886749268e-05,
+          "rmsDifference": 1.2114711574776452e-05,
+          "snrDb": 71.02066042417506,
+          "identicalBytes": false,
+          "baselinePcmSha256": "aa19f8129f16b8c07a9a6e81b4fd4f42b4351f1292c26a36382e6933ef287a3a",
+          "currentPcmSha256": "53390a111211263423e8355438591c4c861b721bf45199141ea97851b0ca387b"
+        },
+        "libvorbis": {
+          "samples": 20032,
+          "differingSamples": 1138,
+          "peakAbsoluteDifference": 9.1552734375e-05,
+          "rmsDifference": 1.2677616175734563e-05,
+          "snrDb": 70.62408447881039,
+          "identicalBytes": false,
+          "baselinePcmSha256": "0330810c7ce12ddc02726cc12166ef1965bf9dee731c995d822f0309aa353a3d",
+          "currentPcmSha256": "6e4f8b2b445cfc03fd226ec68bb5e1db875f163154a9505e4fa3feb374683398"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/load/commit_4_03.ogg",
+      "baselineSha256": "09c5f543fbd52482728d9aab6c643f4352b9165c6bbefd872f1cd9bfbac14118",
+      "currentSha256": "bde8064ddedec0c445a056dba522d5dbf77ff488b8a892b768eaf5490f48ad42",
+      "referenceSha256": "bde8064ddedec0c445a056dba522d5dbf77ff488b8a892b768eaf5490f48ad42",
+      "baselineBytes": 8428,
+      "currentBytes": 8430,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 40,
+        "currentPacketCount": 40,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 5,
+        "baselineAudioPacketsSha256": "2328832f56b84a6fa86ac19a74e83972c42555a1bdb238ca4efba52463178bef",
+        "currentAudioPacketsSha256": "060bca4c0b7e3d37d148d9a288494a658a7020b2dc673804a190f2d9a97291b2",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 20160,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 20160,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.420000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.420000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.420000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.420000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 20032,
+          "differingSamples": 5177,
+          "peakAbsoluteDifference": 0.012375131249427795,
+          "rmsDifference": 0.0005296360731668383,
+          "snrDb": 39.281846300996094,
+          "identicalBytes": false,
+          "baselinePcmSha256": "db1e0605a7be64866b56600c932920c1e21a6933ce7494a46e95ff8b9db524c1",
+          "currentPcmSha256": "aaaff05aa019c3ba2dd5a776fcca4ea27a60605919434874701190be91cdeebf"
+        },
+        "libvorbis": {
+          "samples": 20032,
+          "differingSamples": 4440,
+          "peakAbsoluteDifference": 0.012359619140625,
+          "rmsDifference": 0.0005297395727116585,
+          "snrDb": 39.27807329243734,
+          "identicalBytes": false,
+          "baselinePcmSha256": "bc86acda6f88fbe0e806e4afddbc242a3b91f97a83cd0dd09d5967c16988e185",
+          "currentPcmSha256": "b3fdc4f3da4218c2cf4da1ff6ab45b82e06428a0f6a42358ea6070773f591ff9"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/load/commit_4_04.ogg",
+      "baselineSha256": "4411b0079d8d8b4b25af69258cdf966583e2dde510c1d8e49165958184bb8b06",
+      "currentSha256": "411b0495b2dbf497f47cbe2b907bbef479fc832f41d7e1b0b70916c797115b15",
+      "referenceSha256": "411b0495b2dbf497f47cbe2b907bbef479fc832f41d7e1b0b70916c797115b15",
+      "baselineBytes": 9066,
+      "currentBytes": 9065,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 61,
+        "currentPacketCount": 61,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 1,
+        "baselineAudioPacketsSha256": "dff76c228e1ecb62b403493c7aae0e55590aebe8f920428f2f56e45dd98992f7",
+        "currentAudioPacketsSha256": "3cef4d0d7722f1d8c08043dc5e09ec99777731bc082259d838f5f6459cd4b68b",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 20160,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 20160,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.420000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.420000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.420000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.420000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 20032,
+          "differingSamples": 256,
+          "peakAbsoluteDifference": 0.00019070692360401154,
+          "rmsDifference": 8.34727310482148e-06,
+          "snrDb": 75.30795759441047,
+          "identicalBytes": false,
+          "baselinePcmSha256": "77296e1cb98f6e28bfd583eb0ea539220c7c1e545c2fd46ac0cc7559657a4a43",
+          "currentPcmSha256": "95136ef434c3635db06dd51ca6b73a89f9c82e9f72f745903fc189364a1969cc"
+        },
+        "libvorbis": {
+          "samples": 20032,
+          "differingSamples": 177,
+          "peakAbsoluteDifference": 0.00018310546875,
+          "rmsDifference": 8.414684960246602e-06,
+          "snrDb": 75.2360340725997,
+          "identicalBytes": false,
+          "baselinePcmSha256": "fa4f65afbcc18c0db6a326e25e6e1042e7899241fab8db70e8c53dbfd883bf23",
+          "currentPcmSha256": "17b4f66ad601b3b81c7778027f30b4c8e1bbe71caf5cc73384b08966e525649b"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/load/prepare_01.ogg",
+      "baselineSha256": "df4a491a0ac09aa5d985f9406f092361698d08e21f54558782de3848026a2e99",
+      "currentSha256": "df4a491a0ac09aa5d985f9406f092361698d08e21f54558782de3848026a2e99",
+      "referenceSha256": "df4a491a0ac09aa5d985f9406f092361698d08e21f54558782de3848026a2e99",
+      "baselineBytes": 6153,
+      "currentBytes": 6153,
+      "byteIdenticalToBaseline": true,
+      "byteIdenticalToReference": true
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/load/prepare_02.ogg",
+      "baselineSha256": "0ab016ec83123f84bc4674982d29e16dd0796e5c670f455ebb2f23bbc5d3fc82",
+      "currentSha256": "4f998920949324504188ea5d85117aaa78372d5cbe4912a9cffe5142fe005458",
+      "referenceSha256": "4f998920949324504188ea5d85117aaa78372d5cbe4912a9cffe5142fe005458",
+      "baselineBytes": 6282,
+      "currentBytes": 6282,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 18,
+        "currentPacketCount": 18,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 1,
+        "baselineAudioPacketsSha256": "5d0dc6212af4d5568bddf45d77710378cbebc4d2ef22920fa92b58570020aff6",
+        "currentAudioPacketsSha256": "dd7b53eec669e21ea02a861807ddeaa0c1dc5aa0a75415bbfaef4afa102814fb",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 11520,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 11520,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.240000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.240000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.240000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.240000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 11392,
+          "differingSamples": 2044,
+          "peakAbsoluteDifference": 2.93052289634943e-05,
+          "rmsDifference": 4.3615321399043266e-06,
+          "snrDb": 80.98910615810158,
+          "identicalBytes": false,
+          "baselinePcmSha256": "89217b826ffce88e48161ecc805e12561b1e8458c574c6f9491d6d4aac553fa8",
+          "currentPcmSha256": "0d2aad6e92ce16150e6ef0e07891efaeb48d7305a92f646d55b3d7e4cc8522e9"
+        },
+        "libvorbis": {
+          "samples": 11392,
+          "differingSamples": 505,
+          "peakAbsoluteDifference": 3.0517578125e-05,
+          "rmsDifference": 6.42533485785256e-06,
+          "snrDb": 77.622528461377,
+          "identicalBytes": false,
+          "baselinePcmSha256": "e795809f5cf12f492542baef21c6de1f744d8d2a9d91c369a8773e8ddebfcd48",
+          "currentPcmSha256": "974c09c356d1b1297cda02557abd64898905d20c962eb5d3be6d64d2f765ff40"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/load/prepare_03.ogg",
+      "baselineSha256": "d4fe9aefb0f652bb27152382cb7be157dc10e186174520239208ad795dd75100",
+      "currentSha256": "d4fe9aefb0f652bb27152382cb7be157dc10e186174520239208ad795dd75100",
+      "referenceSha256": "d4fe9aefb0f652bb27152382cb7be157dc10e186174520239208ad795dd75100",
+      "baselineBytes": 6434,
+      "currentBytes": 6434,
+      "byteIdenticalToBaseline": true,
+      "byteIdenticalToReference": true
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/sprinkle/prepare_01.ogg",
+      "baselineSha256": "5a8c294c12ba056b4f1b0fc1e0f13df957607a647f88d7f727118bfdfef142fb",
+      "currentSha256": "b0f4d6da093e02b5a46ae4a4e1edf412991e00aaf8391c8e41fff6e8970055b1",
+      "referenceSha256": "b0f4d6da093e02b5a46ae4a4e1edf412991e00aaf8391c8e41fff6e8970055b1",
+      "baselineBytes": 6532,
+      "currentBytes": 6531,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 20,
+        "currentPacketCount": 20,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 1,
+        "baselineAudioPacketsSha256": "42ebb4be1e6b7d2746b126b72b1d3e505dc18c1ed24f66a91ec7f1d941631b6c",
+        "currentAudioPacketsSha256": "84fcf582efc58cd6bd0ab446dffa9580093e00a1b8ddce63f3e48d6e28cd27b3",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 11520,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 11520,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.240000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.240000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.240000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.240000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 11392,
+          "differingSamples": 2044,
+          "peakAbsoluteDifference": 0.002565572038292885,
+          "rmsDifference": 0.00029918999188455826,
+          "snrDb": 44.38436660950828,
+          "identicalBytes": false,
+          "baselinePcmSha256": "d4f82ad17be283581ae3cb532933843722058d0eb37a80183a92e1dc6c7ae673",
+          "currentPcmSha256": "052e0e57edf56f112be6c180ca0b953039f1d84fa3b80c6de103f7309f77a234"
+        },
+        "libvorbis": {
+          "samples": 11392,
+          "differingSamples": 1841,
+          "peakAbsoluteDifference": 0.0025634765625,
+          "rmsDifference": 0.0002993351595035501,
+          "snrDb": 44.37818604028082,
+          "identicalBytes": false,
+          "baselinePcmSha256": "5bf3d58f975ddabd22f9e96a7112d3f4fd63af2825bf2c58357da233a197c471",
+          "currentPcmSha256": "7b2723dcac890c1b741a72c233fb726b40815ebd726ffed220f58abf31acf0d6"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/sprinkle/prepare_02.ogg",
+      "baselineSha256": "0c6492a413138c5065b9116af2cbb5c6ccd46e5ecd387c8fab7aef8a8b343186",
+      "currentSha256": "50c5cbc80668d94bf178ac45f0220a4486855d7107316fc51dfe1ecd1b322df3",
+      "referenceSha256": "50c5cbc80668d94bf178ac45f0220a4486855d7107316fc51dfe1ecd1b322df3",
+      "baselineBytes": 6739,
+      "currentBytes": 6739,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 24,
+        "currentPacketCount": 24,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 1,
+        "baselineAudioPacketsSha256": "5c04a931ce286e30b7c6f8591b969825e478c7a0d7e818d7843ae178a791cf74",
+        "currentAudioPacketsSha256": "a7c66b3d4fa73c169c3fc8067cdd4b2f9748a387035cd3ce37293a8a56e877fd",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 11520,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 11520,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.240000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.240000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.240000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.240000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 11392,
+          "differingSamples": 128,
+          "peakAbsoluteDifference": 0.0008451426401734352,
+          "rmsDifference": 3.429814538791216e-05,
+          "snrDb": 62.886406930809514,
+          "identicalBytes": false,
+          "baselinePcmSha256": "81c8d6daf4b6d9ac661326d6ac1002b43a098f9a581006b7b6c46c93df55ae57",
+          "currentPcmSha256": "5006d7b81632c6bda1193137d2a551c096f4bdb21ccba69ca13b185b41e16390"
+        },
+        "libvorbis": {
+          "samples": 11392,
+          "differingSamples": 108,
+          "peakAbsoluteDifference": 0.0008544921875,
+          "rmsDifference": 3.444875704733904e-05,
+          "snrDb": 62.84650975934012,
+          "identicalBytes": false,
+          "baselinePcmSha256": "9847e7d53c70f3b215a25a3d4f4b26a4a8aed954627685388c5f0706b7d178c0",
+          "currentPcmSha256": "b5cabd788d1cb3ba4dc0f9b38ae6dfc7dc45195eaf54e2660a6673d1f6afb4f1"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/sprinkle/prepare_03.ogg",
+      "baselineSha256": "3b2e36703030f797f2375c8af552074f7905950f60850872e5729f691d432bdb",
+      "currentSha256": "cb8f1eff9852ba2d9d93e64216d3cb5d18a7017015b17f57f1913095269f1ae5",
+      "referenceSha256": "cb8f1eff9852ba2d9d93e64216d3cb5d18a7017015b17f57f1913095269f1ae5",
+      "baselineBytes": 6703,
+      "currentBytes": 6703,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 18,
+        "currentPacketCount": 18,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 1,
+        "baselineAudioPacketsSha256": "2578d51dc0da6be5ac1ae9b5ccf193c431c3dce009024e6f781348c4ab057c6b",
+        "currentAudioPacketsSha256": "d7e565c2793ba48e7c6bd983dade11b0e75ca0fa32c988a50eccc3468cbf994b",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 11520,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 11520,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.240000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.240000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.240000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.240000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 11392,
+          "differingSamples": 2048,
+          "peakAbsoluteDifference": 0.0003304225392639637,
+          "rmsDifference": 3.207807787329385e-05,
+          "snrDb": 63.81065738823142,
+          "identicalBytes": false,
+          "baselinePcmSha256": "2167ebe186b57c0895d537b08a8f1e858e7a044d45593df52281845bb2b26da1",
+          "currentPcmSha256": "56de43bb7d957e04659dd81fe97a96649500059936c0989bb71b68340c6d4aef"
+        },
+        "libvorbis": {
+          "samples": 11392,
+          "differingSamples": 1336,
+          "peakAbsoluteDifference": 0.000335693359375,
+          "rmsDifference": 3.239402634896264e-05,
+          "snrDb": 63.72354984895373,
+          "identicalBytes": false,
+          "baselinePcmSha256": "802a8b59b3ac99e429ef23bc873a4792943767b8ab1bcf620c4c41f1f37c0fc1",
+          "currentPcmSha256": "3de0a04ae8a6c8a58ff200bdc364f701db2a692e45bce24f2e9594f5144a6a7a"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/sprinkle/prepare_04.ogg",
+      "baselineSha256": "aeed743f9a478e215374127f982368ee8df1993714575e285d7a27f762826c11",
+      "currentSha256": "aeed743f9a478e215374127f982368ee8df1993714575e285d7a27f762826c11",
+      "referenceSha256": "aeed743f9a478e215374127f982368ee8df1993714575e285d7a27f762826c11",
+      "baselineBytes": 6621,
+      "currentBytes": 6621,
+      "byteIdenticalToBaseline": true,
+      "byteIdenticalToReference": true
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/sprinkle/release_01.ogg",
+      "baselineSha256": "d83bdbb8f25590b2a0543e91402468d11fc25b06d35c5d6961ac3b96ecca7974",
+      "currentSha256": "f2b98fde6cd0847aebcca04524478d17436c8b9eb0235cb2011024613a148010",
+      "referenceSha256": "f2b98fde6cd0847aebcca04524478d17436c8b9eb0235cb2011024613a148010",
+      "baselineBytes": 7820,
+      "currentBytes": 7821,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 46,
+        "currentPacketCount": 46,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 3,
+        "baselineAudioPacketsSha256": "68fe3c8585caa00121414a2c66f71397267ef675c304a2c99cf6be39d3be1f1e",
+        "currentAudioPacketsSha256": "e24947f7c16b32b35fefebd03270a8e340480ada4744978d205273a662e48d7a",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 15360,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 15360,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.320000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.320000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.320000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.320000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 15232,
+          "differingSamples": 2112,
+          "peakAbsoluteDifference": 0.0021078884601593018,
+          "rmsDifference": 0.00020615113740529532,
+          "snrDb": 44.84072392054928,
+          "identicalBytes": false,
+          "baselinePcmSha256": "2478b06f730df8a281eacb7246a602be51821359e0d927efd515e41abb604e33",
+          "currentPcmSha256": "ca69c6c0902aae861cac7b946dc9f5dc9660b13b14bac217f238330e39f4de87"
+        },
+        "libvorbis": {
+          "samples": 15232,
+          "differingSamples": 1912,
+          "peakAbsoluteDifference": 0.002105712890625,
+          "rmsDifference": 0.00020567194788993323,
+          "snrDb": 44.85893747769666,
+          "identicalBytes": false,
+          "baselinePcmSha256": "6edbb00f151fa813123756eff0a9cc31850b349964f165450e9d3635e90d7b9d",
+          "currentPcmSha256": "765b9ed6d1b3d216f6252d54e6c7939af617dcb11824e34d6febc88b405e9783"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/sprinkle/release_02.ogg",
+      "baselineSha256": "6dc3c4ee59e05349857d49c21df6283477d210a06a670d047a2c62621e0800cc",
+      "currentSha256": "a1650841121af0f6e144859dcfd23924a6784a5a5ecf7b30a425b12c5bf48a6d",
+      "referenceSha256": "a1650841121af0f6e144859dcfd23924a6784a5a5ecf7b30a425b12c5bf48a6d",
+      "baselineBytes": 8111,
+      "currentBytes": 8111,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 56,
+        "currentPacketCount": 56,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 1,
+        "baselineAudioPacketsSha256": "a2ec5efd779b4111c4b08808f6cc755107cfd541534862e977e40685b8727350",
+        "currentAudioPacketsSha256": "302bc3f692b54c26e1b336e1ee5d2ea760431d97440ff3da42d4ff715358d50c",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 15360,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 15360,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.320000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.320000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.320000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.320000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 15232,
+          "differingSamples": 256,
+          "peakAbsoluteDifference": 1.1664815247058868e-05,
+          "rmsDifference": 4.3281244797636647e-07,
+          "snrDb": 100.55304568957744,
+          "identicalBytes": false,
+          "baselinePcmSha256": "247b50a517f460675c6d63dd9a34adf868ac9404409ddca41d41313f4e0201fb",
+          "currentPcmSha256": "051d6f5183be59d9da2d433c6f98199f8c24c0d1aab6aa8e4789a9ada442760a"
+        },
+        "libvorbis": {
+          "samples": 15232,
+          "differingSamples": 20,
+          "peakAbsoluteDifference": 3.0517578125e-05,
+          "rmsDifference": 1.1058254921959848e-06,
+          "snrDb": 92.40384419386372,
+          "identicalBytes": false,
+          "baselinePcmSha256": "4f05fdba020f561248c6b11c636259e3c54c42db9eaf30ec96908da020cb2c46",
+          "currentPcmSha256": "9ad9db6eb31194597a3b0ede75c6dcf818daba847023b7f19b5d8d83ea15c6b8"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/sprinkle/release_03.ogg",
+      "baselineSha256": "983c0e961ec7fa2fe753599460ef71ade1af19b3319aa415e04451414ee25e8e",
+      "currentSha256": "23874eb2d2d994f11fcb13b0d525f0f971e46a612479cdc62b30c6d2280ddb5c",
+      "referenceSha256": "23874eb2d2d994f11fcb13b0d525f0f971e46a612479cdc62b30c6d2280ddb5c",
+      "baselineBytes": 7804,
+      "currentBytes": 7803,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 32,
+        "currentPacketCount": 32,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 3,
+        "baselineAudioPacketsSha256": "be61b1bcbffe42f70acb2fc52dc7d2f748860b5404f75fd9b3351c4f0881e546",
+        "currentAudioPacketsSha256": "470d78df8a5a9ef08c32de99ca0e6620b3b853d81b18559f1d65b1b5689ff38e",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 15360,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 15360,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.320000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.320000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.320000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.320000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 15232,
+          "differingSamples": 2558,
+          "peakAbsoluteDifference": 0.0068373531103134155,
+          "rmsDifference": 0.0003070369982308462,
+          "snrDb": 44.16082495844289,
+          "identicalBytes": false,
+          "baselinePcmSha256": "a9e5c554baee9aa65dc932e5d746696ba6f8cede545e8c542af45bf174342e8e",
+          "currentPcmSha256": "6057b35fdcb9b51e0057b143a7ee2d487816d9570a6b53e629ce94ff9e456ddb"
+        },
+        "libvorbis": {
+          "samples": 15232,
+          "differingSamples": 1986,
+          "peakAbsoluteDifference": 0.0068359375,
+          "rmsDifference": 0.00030696389122130514,
+          "snrDb": 44.161346512513546,
+          "identicalBytes": false,
+          "baselinePcmSha256": "251eff24d100eb7c0357d3a17aa1c957b706c7a6d5127a261b12a431f829c815",
+          "currentPcmSha256": "3d0cfad62b485a83a373985b320e9e6597f21be5051c54d236d77c74ac66995a"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/sprinkle/release_04.ogg",
+      "baselineSha256": "4fd274f65fe9b22324a1cb89d1b1421b8da7ef6f0f97c6b0c7e08dbcab53a130",
+      "currentSha256": "4fd274f65fe9b22324a1cb89d1b1421b8da7ef6f0f97c6b0c7e08dbcab53a130",
+      "referenceSha256": "4fd274f65fe9b22324a1cb89d1b1421b8da7ef6f0f97c6b0c7e08dbcab53a130",
+      "baselineBytes": 8351,
+      "currentBytes": 8351,
+      "byteIdenticalToBaseline": true,
+      "byteIdenticalToReference": true
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/sprinkle/release_05.ogg",
+      "baselineSha256": "9279dde38db4fb11f7f2e8566318e2e7c6a6afd15865401da7aebf75fcd76995",
+      "currentSha256": "0b4df5b5e6ef3066cf00fb43a81a8283eed89349275948261d062287a120fc52",
+      "referenceSha256": "0b4df5b5e6ef3066cf00fb43a81a8283eed89349275948261d062287a120fc52",
+      "baselineBytes": 8373,
+      "currentBytes": 8372,
+      "byteIdenticalToBaseline": false,
+      "byteIdenticalToReference": true,
+      "ogg": {
+        "baselinePacketCount": 50,
+        "currentPacketCount": 50,
+        "identificationHeaderEqual": true,
+        "commentHeaderEqual": true,
+        "setupHeaderEqual": true,
+        "audioPacketsEqual": false,
+        "differingAudioPackets": 1,
+        "baselineAudioPacketsSha256": "686a6534682b01d19fca67318f6366280294bf97b3993ff8e150cb21f78e38ba",
+        "currentAudioPacketsSha256": "e8d1ec978da44144ccbf1414aea14e62371895fcf0df1bea56a607c156118515",
+        "baselinePages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 15360,
+            "flags": 4,
+            "serial": 0
+          }
+        ],
+        "currentPages": [
+          {
+            "granule": 0,
+            "flags": 2,
+            "serial": 0
+          },
+          {
+            "granule": 0,
+            "flags": 0,
+            "serial": 0
+          },
+          {
+            "granule": 15360,
+            "flags": 4,
+            "serial": 0
+          }
+        ]
+      },
+      "baselineProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.320000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.320000"
+        }
+      },
+      "currentProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vorbis",
+            "sample_rate": "48000",
+            "channels": 1,
+            "channel_layout": "mono",
+            "start_time": "0.000000",
+            "duration": "0.320000",
+            "tags": {
+              "encoder": "Lavc libvorbis"
+            }
+          }
+        ],
+        "format": {
+          "duration": "0.320000"
+        }
+      },
+      "decoders": {
+        "vorbis": {
+          "samples": 15232,
+          "differingSamples": 256,
+          "peakAbsoluteDifference": 0.0010298499837517738,
+          "rmsDifference": 5.3988991610653756e-05,
+          "snrDb": 59.025041314865916,
+          "identicalBytes": false,
+          "baselinePcmSha256": "89415a74d0183ebd1d619f18ac8faa06619985d62eb1f7da518a9b298216f173",
+          "currentPcmSha256": "c631bf35606860353a2c9aa367be2754b71d07f126a428a45ccc60ab5bbf117c"
+        },
+        "libvorbis": {
+          "samples": 15232,
+          "differingSamples": 231,
+          "peakAbsoluteDifference": 0.00103759765625,
+          "rmsDifference": 5.401366101075426e-05,
+          "snrDb": 59.019073166248084,
+          "identicalBytes": false,
+          "baselinePcmSha256": "7f9ba8e8c46d5526ec47af9b6adb65095b22f967fda68b35d6d8087291589191",
+          "currentPcmSha256": "88ef60798f54614bc88fd5d4379e64e653cb9e0287acf157b88937b7c3ce3193"
+        }
+      }
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/sprinkle/release_06.ogg",
+      "baselineSha256": "ef427ea642a8a76ba41e8b011e47d617fff7a57d809cb8f0475637eda66ef7f5",
+      "currentSha256": "ef427ea642a8a76ba41e8b011e47d617fff7a57d809cb8f0475637eda66ef7f5",
+      "referenceSha256": "ef427ea642a8a76ba41e8b011e47d617fff7a57d809cb8f0475637eda66ef7f5",
+      "baselineBytes": 7435,
+      "currentBytes": 7435,
+      "byteIdenticalToBaseline": true,
+      "byteIdenticalToReference": true
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/undock/undock_01.ogg",
+      "baselineSha256": "bef921a7bef3acde427bf2aeaf70b0b7d45e71084866a1034b9eac01707683c2",
+      "currentSha256": "bef921a7bef3acde427bf2aeaf70b0b7d45e71084866a1034b9eac01707683c2",
+      "referenceSha256": "bef921a7bef3acde427bf2aeaf70b0b7d45e71084866a1034b9eac01707683c2",
+      "baselineBytes": 7116,
+      "currentBytes": 7116,
+      "byteIdenticalToBaseline": true,
+      "byteIdenticalToReference": true
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/undock/undock_02.ogg",
+      "baselineSha256": "66f394ed2cf1be379832638cde2c2b4f056d2fd4338530def5b16724d3f91af8",
+      "currentSha256": "66f394ed2cf1be379832638cde2c2b4f056d2fd4338530def5b16724d3f91af8",
+      "referenceSha256": "66f394ed2cf1be379832638cde2c2b4f056d2fd4338530def5b16724d3f91af8",
+      "baselineBytes": 6943,
+      "currentBytes": 6943,
+      "byteIdenticalToBaseline": true,
+      "byteIdenticalToReference": true
+    },
+    {
+      "path": "packs/resource/sounds/aspergillum/undock/undock_03.ogg",
+      "baselineSha256": "72fe0eb286cd0eb7bb6a21097fe8bf3abef15971f5179c53ae55744b18bf5b3f",
+      "currentSha256": "72fe0eb286cd0eb7bb6a21097fe8bf3abef15971f5179c53ae55744b18bf5b3f",
+      "referenceSha256": "72fe0eb286cd0eb7bb6a21097fe8bf3abef15971f5179c53ae55744b18bf5b3f",
+      "baselineBytes": 6874,
+      "currentBytes": 6874,
+      "byteIdenticalToBaseline": true,
+      "byteIdenticalToReference": true
+    }
+  ],
+  "summary": {
+    "totalOggs": 48,
+    "byteIdenticalToBaseline": 14,
+    "byteDifferentFromBaseline": 34,
+    "byteIdenticalToReference": 48,
+    "changedAudioPackets": 34,
+    "decoders": {
+      "vorbis": {
+        "pcmIdenticalFiles": 1,
+        "samplesCompared": 582336,
+        "samplesDifferent": 70828,
+        "maxPeakAbsoluteDifference": 0.06194029375910759,
+        "minSnrDb": 20.784144400126504,
+        "maxSnrDb": 100.55304568957744
+      },
+      "libvorbis": {
+        "pcmIdenticalFiles": 1,
+        "samplesCompared": 582336,
+        "samplesDifferent": 52814,
+        "maxPeakAbsoluteDifference": 0.06195068359375,
+        "minSnrDb": 20.783912239923996,
+        "maxSnrDb": 92.40384419386372
+      }
+    }
+  },
+  "sourceHashes": {
+    "tools/build-audio.mjs": {
+      "baseline": "6e91596447d9b5aa2a357ac5ead2dc77876b53ed94511fc6940f8b6f1c54e3be",
+      "current": "6e91596447d9b5aa2a357ac5ead2dc77876b53ed94511fc6940f8b6f1c54e3be",
+      "reference": "6e91596447d9b5aa2a357ac5ead2dc77876b53ed94511fc6940f8b6f1c54e3be"
+    },
+    "assets-src/audio/audio-recipes.json": {
+      "baseline": "2fe7cd098fbee0641bcf07ec9a0f2df23f29a537b41878df4e1af23b4c57adf6",
+      "current": "2fe7cd098fbee0641bcf07ec9a0f2df23f29a537b41878df4e1af23b4c57adf6",
+      "reference": "2fe7cd098fbee0641bcf07ec9a0f2df23f29a537b41878df4e1af23b4c57adf6"
+    },
+    "assets-src/audio/audio-catalog.json": {
+      "baseline": "286db88d414170d3a758f4b6607af4afdc22b0291db6b6279c04e91bda20bc38",
+      "current": "286db88d414170d3a758f4b6607af4afdc22b0291db6b6279c04e91bda20bc38",
+      "reference": "286db88d414170d3a758f4b6607af4afdc22b0291db6b6279c04e91bda20bc38"
+    }
+  },
+  "limits": [
+    "No perceptual listening or Minecraft playback test performed.",
+    "This proves exact equality or difference for two installed decoders, not subjective audibility or root cause.",
+    "Identical recipe/tool files do not prove identical input WAV masters or historical codec/filter versions.",
+    "For exact baseline audio preservation, retain original baseline OGG bytes rather than these regenerated outputs."
+  ]
+}

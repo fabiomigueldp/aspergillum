@@ -1,0 +1,51 @@
+{
+  "status": "EXPERIMENTAL_INTEGRATION_DIAGNOSED_NOT_RELEASE",
+  "geometry_transport_and_lineage_passed": true,
+  "only_three_bones_replaced": [
+    0,
+    1,
+    15
+  ],
+  "unchanged_bones": 17,
+  "native_faces_transported": 18484,
+  "cubes": 23081,
+  "quad_faces": 23098,
+  "raster_triangles": 46196,
+  "source_files_unchanged": true,
+  "legacy_atlas_quadrants_bit_exact": true,
+  "atlas_size": [
+    4096,
+    4096
+  ],
+  "scene_reopened_and_checked": true,
+  "reimported_scene_has_only_json_geometry": true,
+  "visual_fidelity_approved": false,
+  "alpha_fidelity_failed_under_nearest_mip0": true,
+  "alpha_center_only_trial_promoted": false,
+  "known_450_ray_regressions": {
+    "conservative": 1,
+    "center_only": 26
+  },
+  "partial_normal_experiment": true,
+  "full_sculpture_pbr_equivalence": false,
+  "shell_highpoly_normal_bake_proven": false,
+  "anatomy_identity_tiles": 736,
+  "source_protected_anatomy_triangles_with_identity_tiles": 463,
+  "anatomy_same_tile_fallbacks": 307,
+  "blockbench_primary_source_uv_oracle_passed": true,
+  "aspergillum_uv_and_normal_equivalence_failed": true,
+  "runtime_minecraft_tested": false,
+  "performance_tested": false,
+  "published": false,
+  "behavior_pack_created": false,
+  "mcaddon_created": false,
+  "visual_review_pngs": 40,
+  "final_scene": "evidence/v14-experimental-reimport.blend",
+  "limits": [
+    "Alpha cells extend outside triangles and leave holes, with visible seams against native control.",
+    "Normal-map experiment improves facial detail but does not remove alpha defects; dark ear shading is shared with the native control and legacy.",
+    "All shell faces and 258 band return/closure faces remain flat normal, not full source PBR.",
+    "The 23,081 cubes and 4096 atlases are unprofiled cost; not an engine hard-limit finding.",
+    "Old native-normal-experiment controls are superseded by exact-contract UV controls; native flat diagnostics are unaffected."
+  ]
+}

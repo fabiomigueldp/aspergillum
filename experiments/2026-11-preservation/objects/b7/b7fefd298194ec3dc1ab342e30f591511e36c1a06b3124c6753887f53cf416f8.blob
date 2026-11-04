@@ -1,0 +1,24 @@
+# Nossa Senhora da Paz: estudo V20 (intermediário)
+
+## Proveniência
+- V13 recuperada do Space, item libfile_fdc97e7ad3d88191b6a329b2ca52ed7a, versão 0. Cópia original preservada.
+- Foto enviada pelo usuário: IMG_3924.jpeg, recuperada do Space.
+- Perfil e rosto históricos observados em https://arquivo.arq.br/projetos/paroquia-nossa-senhora-da-paz (imagens 8 e 9); autoria da escultura: Galileo Emendabili.
+- Anatomia prévia inclui bases CC0 Blender Studio; esta passagem não adicionou outro asset.
+
+## Alterações desta passagem
+1. Escultura localizada reversível por shape key: convexidade de pálpebras fechadas e linha de fechamento mais fina. Sem remesh global ou mudança de topologia da cabeça.
+2. Novo véu fino projetado diretamente sobre a cabeça por raycast BVH. A casca V13 permanece oculta, não foi destruída.
+3. Ligação da queda posterior do manto à borda do véu. A antiga parede vertical separada da cabeça foi substituída por um trajeto contínuo, em shape key reversível. O perfil foi estreitado em torno da nuca antes de abrir nos ombros.
+4. A tentativa de acrescentar sulcos labiais foi descartada após revisão: produzia lábios em camadas. A fonte V20 mantém a boca anterior.
+
+## Evidência visual
+- baseline-matched.png e v20-face.png têm a mesma câmera, luz, enquadramento e material; não usar melhora de iluminação como prova de escultura.
+- v20-profile.png mostra a ligação posterior; v20-overview.png apresenta o conjunto.
+- v20-check.json contém diagnóstico técnico da geometria avaliada, não avaliação de fidelidade.
+
+## Limites
+O estudo NÃO é uma réplica fiel nem uma versão artística aprovada. Rosto, pálpebras, cabelo, mãos, criança e drapeado ainda exigem trabalho. A junção inferior do pescoço foi prolongada dentro da veste para evitar abertura, mas a integração anatômica ainda não foi esculpida como superfície única. O verso não tem documentação suficiente e é interpretativo. Não se alterou o addon Bedrock nem se alegou validação no Minecraft. As versões V14 a V17 são intermediárias e não devem ser distribuídas como concluídas.
+
+## Revisão final do perfil
+A V20 reduziu o plano triangular observado na V18 e fechou a abertura inferior do pescoço. Contudo uma irregularidade localizada na nuca/queda posterior ainda é visível. Isso continua bloqueando a classificação de acabamento final; topologia sem bordas abertas não significa ausência de interseções ou fidelidade artística.

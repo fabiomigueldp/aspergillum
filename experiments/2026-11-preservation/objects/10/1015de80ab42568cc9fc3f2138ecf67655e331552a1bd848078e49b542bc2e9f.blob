@@ -1,0 +1,39 @@
+import bpy,json,math,numpy as np
+from scipy.sparse import coo_matrix
+from scipy.sparse.linalg import factorized
+from mathutils import Vector,Matrix
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'cuff-bounded-diagnostic.blend',use_scripts=False)
+t=bpy.data.objects['Maria — túnica e mangas integradas'];t.shape_key_clear();m=t.data;p=np.array([tuple(v.co) for v in m.vertices]);weights=np.array([v.value for v in m.attributes['.sculpt_mask'].data]);seed=json.load(open(r+'checkpoint-20261102/cuff-mask-seed.json'));support={i for i,w in seed['weights']};adj=[set() for _ in p]
+for e in m.edges:i,j=e.vertices;adj[i].add(j);adj[j].add(i)
+boundary={i for i in support if any(j not in support for j in adj[i])};core={i for i in support if weights[i]>.999999};free=sorted(support-boundary-core);index={i:k for k,i in enumerate(free)};rows=[];cols=[];values=[]
+for i in free:
+ k=index[i];rows.append(k);cols.append(k);values.append(len(adj[i]))
+ for j in adj[i]:
+  if j in index:rows.append(k);cols.append(index[j]);values.append(-1)
+solve=factorized(coo_matrix((values,(rows,cols)),shape=(len(free),len(free))).tocsc())
+h=bpy.data.objects['Maria — mão ao peito anatômica'];hm=h.data;dg=bpy.context.evaluated_depsgraph_get();hp=[v.co.copy() for v in h.evaluated_get(dg).data.vertices];hb=[v.co.copy() for v in hm.vertices];upper={i for i,v in enumerate(hb) if v.z>3.0};handfaces=[tuple(f.vertices) for f in hm.polygons if all(i in upper for i in f.vertices)];tfaces=[tuple(f.vertices) for f in m.polygons];edgeids=np.array([tuple(e.vertices) for e in m.edges if any(i in support for i in e.vertices)]);oldlength=np.linalg.norm(p[edgeids[:,0]]-p[edgeids[:,1]],axis=1);tri=np.array([tuple(f.vertices)[:3] for f in m.polygons if any(i in support for i in f.vertices)]);oldn=np.cross(p[tri[:,1]]-p[tri[:,0]],p[tri[:,2]]-p[tri[:,0]]);oldn/=np.maximum(np.linalg.norm(oldn,axis=1)[:,None],1e-12)
+trials=json.load(open(r+'V46-rigid-hand-cuff-verification.json'))['trials'];chosen=[next(x for x in trials if x['angles_deg']==a) for a in [[-3,0,8]]];reports=[];best=None;pivot=Vector((.11,-.18,2.96));sup=sorted(support)
+for pose in chosen:
+ ax,ay,az=pose['angles_deg'];R=Matrix.Rotation(math.radians(az),3,'Z')@Matrix.Rotation(math.radians(ay),3,'Y')@Matrix.Rotation(math.radians(ax),3,'X');trans=Vector((0,-pose['outward_shift'],0));target=np.array([tuple(pivot+R@(Vector(x)-pivot)+trans) for x in p]);q=p+weights[:,None]*(target-p);q[list(boundary)]=p[list(boundary)];q[list(core)]=target[list(core)];rots=np.tile(np.eye(3),(len(p),1,1));residual=1
+ sup_index={i:k for k,i in enumerate(sup)};ei=np.array([i for i in sup for j in adj[i]]);ej=np.array([j for i in sup for j in adj[i]]);di=np.array([sup_index[i] for i in ei]);fsel=np.array([i in index for i in ei]);fi=ei[fsel];fj=ej[fsel];fk=np.array([index[i] for i in fi]);fixed=np.array([j not in index for j in fj]);pdiff=p[ei]-p[ej]
+ for it in range(1000):
+  cov=np.zeros((len(sup),3,3));np.add.at(cov,di,np.einsum('ni,nj->nij',q[ei]-q[ej],pdiff));uu,ss,vv=np.linalg.svd(cov);rr=uu@vv;bad=np.linalg.det(rr)<0;uu[bad,:,-1]*=-1;rots[sup]=uu@vv
+  rhs=np.zeros((len(free),3));terms=.5*np.einsum('nij,nj->ni',rots[fi]+rots[fj],p[fi]-p[fj]);terms[fixed]+=q[fj[fixed]];np.add.at(rhs,fk,terms)
+  new=np.column_stack([solve(rhs[:,d]) for d in range(3)]);residual=float(np.max(np.linalg.norm(new-q[free],axis=1)));q[free]=new
+  if residual<1e-6:break
+ ratios=np.linalg.norm(q[edgeids[:,0]]-q[edgeids[:,1]],axis=1)/oldlength;nn=np.cross(q[tri[:,1]]-q[tri[:,0]],q[tri[:,2]]-q[tri[:,0]]);nn/=np.maximum(np.linalg.norm(nn,axis=1)[:,None],1e-12);angs=np.degrees(np.arccos(np.clip(np.sum(nn*oldn,axis=1),-1,1)));newh=[pivot+R@(v-pivot)+trans for v in hp];bv=BVHTree.FromPolygons([Vector(v) for v in q],tfaces);signed=[]
+ for i in upper:
+  hit,n,_,_=bv.find_nearest(newh[i]);signed.append((newh[i]-hit).dot(n))
+ overlap=len(BVHTree.FromPolygons(newh,handfaces).overlap(bv));report={'angles':pose['angles_deg'],'iterations':it+1,'residual_m':residual,'edge_ratio_min':float(ratios.min()),'edge_ratio_max':float(ratios.max()),'edges_over_20pct':int(np.sum((ratios<.8)|(ratios>1.2))),'normal_max_deg':float(angs.max()),'normal_over15':int(np.sum(angs>15)),'faces_reversed':int(np.sum(angs>90)),'outside_support_max_delta':float(np.max(np.linalg.norm(q[[i for i in range(len(p)) if i not in support]]-p[[i for i in range(len(p)) if i not in support]],axis=1))),'min_hand_clearance':min(signed),'hand_triangle_intersections':overlap,'mean_tip_gap_previous_pose':pose['mean_tip_gap'],'core_count':len(core),'boundary_count':len(boundary)};report['passes']=report['edges_over_20pct']==0 and report['normal_over15']==0 and overlap==0 and min(signed)>=0;reports.append(report)
+ if report['passes'] and (best is None or pose['mean_tip_gap']<best[0]):best=(pose['mean_tip_gap'],q.copy(),newh,report)
+json.dump({'method':'ARAP local/global elastic solve, fixed boundary, rigid cuff core handles, torso unchanged','trials':reports,'chosen':best[3] if best else None},open(r+'V47-arap-converged-verification.json','w'),indent=2);print(reports)
+if best is None:print('NO SAFE ARAP CANDIDATE');raise SystemExit
+_,q,newh,report=best;t.shape_key_add(name='Basis');k=t.shape_key_add(name='TESTE47 — manga ARAP isolada');k.value=1
+for i,v in enumerate(k.data):v.co=q[i]
+hk=h.shape_key_add(name='TESTE47 — mão rígida com manga elástica');hk.value=1
+for i,v in enumerate(hk.data):v.co=hm.vertices[i].co+newh[i]-hp[i]
+bpy.ops.wm.save_as_mainfile(filepath=r+'V47-arap-hand-cuff-trial.blend')
+center=sum(hb,Vector())/len(hb);s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=600;s.render.resolution_y=800;s.render.resolution_percentage=100;c=s.camera
+for view,off in [('front',(0,-5,0)),('threequarter',(-3,-5,.2)),('profile',(5,0,0)),('reverse',(-5,0,0)),('close',(-3,-5,.2))]:
+ ct=Vector((.15,-.19,2.87)) if view=='close' else center;c.location=ct+Vector(off);c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=.36 if view=='close' else .48;s.render.filepath=r+'V47-hand-'+view+'.png';bpy.ops.render.render(write_still=True)

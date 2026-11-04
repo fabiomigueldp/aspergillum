@@ -1,0 +1,547 @@
+{
+  "included": {
+    "README.md": {
+      "bytes": 9506,
+      "sha256": "a47ab352ae516d44bd956dbf209920ca713e8154ec1c2cb51cef55ef5258b879"
+    },
+    "STATUS.json": {
+      "bytes": 1180,
+      "sha256": "8c4cbe59a2df7b7116e9f3e76732944ec7ddb31acb7c6833c082f4d299b06c7f"
+    },
+    "evidence/V6_ORIENTATION_AND_REJECTED_JOINTS_NOT_MINECRAFT.png": {
+      "bytes": 512251,
+      "sha256": "30b203c10393d19e42236259d39dddeae90e39158f9006b6c596d4638b1c9a5f"
+    },
+    "evidence/bridge-alignment.json": {
+      "bytes": 11430,
+      "sha256": "f60f8f0bc10d6c37f0171605750a69530f8e4d36ac5c3e2807c768390453b83a"
+    },
+    "evidence/bridge-boundary-parameters.npz": {
+      "bytes": 5005,
+      "sha256": "d03975e60d2e1a705b496e72464eea80474c45328cae9a9a615fd332a4f55b50"
+    },
+    "evidence/bridge-exact.npz": {
+      "bytes": 41861,
+      "sha256": "0fab0fb908347711b6f964ce69d5e9935c8ebedeb2281a6655abb5caef837e16"
+    },
+    "evidence/bridge-hermite-7p5-build.json": {
+      "bytes": 656,
+      "sha256": "0cedaccc7b2c123c7f0e9e5863f832f3ee2da2ec5f22cf1b7b22f1c4680bebde"
+    },
+    "evidence/bridge-hermite-7p5-diagnosis.json": {
+      "bytes": 822,
+      "sha256": "eaf77d57451bdf8356cc495697fed2141e5836401ccc1faeaac303575e9feddf"
+    },
+    "evidence/bridge-hermite-7p5.npz": {
+      "bytes": 62952,
+      "sha256": "39251021823030693296486331844c19077a6890fc8c6ab31e6b2db1418328dc"
+    },
+    "evidence/bridge-hermite-physical-7p5-build.json": {
+      "bytes": 697,
+      "sha256": "bda2a434b99002ca9eaffad2a6fbc5f10a0f22fdd9a0cf0c2698b459f8fb8729"
+    },
+    "evidence/bridge-hermite-physical-7p5-diagnosis.json": {
+      "bytes": 112675,
+      "sha256": "5ae1737aaa22b6a7a9c720a519f90219ccfa4fa7921f31dd7c389b3a3f1678f5"
+    },
+    "evidence/bridge-hermite-physical-7p5.npz": {
+      "bytes": 62969,
+      "sha256": "a648d4f98fb8fe887f9b6d35f39e4fbd34bf36bd1af33f2f7b58b159a20ee878"
+    },
+    "evidence/bridge-paired-build.json": {
+      "bytes": 257,
+      "sha256": "8c30c1070c1e2e91bbcadaa59ccf268f88d97d6d8cfad6b0ce07af050d9e600f"
+    },
+    "evidence/bridge-paired-diagnosis.json": {
+      "bytes": 979,
+      "sha256": "9947a703af5747066b288633c875bda7beb8aaa2585e55534f6cf3bb6f6397de"
+    },
+    "evidence/bridge-paired-gate.json": {
+      "bytes": 773421,
+      "sha256": "759be3f5e78fcc3adcabb9c5b7b7fdfc6a9877bb2e628924df131c4af77d99a4"
+    },
+    "evidence/bridge-paired-gate.log": {
+      "bytes": 10888,
+      "sha256": "7616855b711e5cb6036cb956e777cf23d2ae10ef71b537716292cc1df1a0fef2"
+    },
+    "evidence/bridge-paired.npz": {
+      "bytes": 34122,
+      "sha256": "e576a92dc0c13d7ea2e1b0b248c64318e59a8b512af5104adf42d468febefabd"
+    },
+    "evidence/bridge-source-deviation.json": {
+      "bytes": 1423,
+      "sha256": "3b4b2c64c8ea70d477c3426a6ebe4d05fb56a66aa816c35fc0987e585493401b"
+    },
+    "evidence/bridge-source-deviation.log": {
+      "bytes": 1034,
+      "sha256": "2c76fb6dfc07c50cadc3bbaf9f62e4ff0016fa2f4c7f57a48e98e48428a8d007"
+    },
+    "evidence/bridge-swapped-7p5-build.json": {
+      "bytes": 265,
+      "sha256": "75a16284e2a855d68cfd14252fe2a083fe8f2f2c4dfdc118a0266138919f11e6"
+    },
+    "evidence/bridge-swapped-7p5-diagnosis.json": {
+      "bytes": 553,
+      "sha256": "6a816d58c7119c2a8422fb2ce8ca5a85633dff51d57fa6b11b3286774ddf55cc"
+    },
+    "evidence/bridge-swapped-7p5.npz": {
+      "bytes": 34094,
+      "sha256": "e9a3f899b57f0b979caad01c787bfcb09dd4eb8f8a386d2eca3a69280f33bc40"
+    },
+    "evidence/cap-bridge-paired-gate.json": {
+      "bytes": 801614,
+      "sha256": "21b663ec444229887fd72e74c0fc1ff7da4ac3e5c933858b056b48555beeed5a"
+    },
+    "evidence/cap-bridge-paired-gate.log": {
+      "bytes": 7439,
+      "sha256": "009ab22037ae500550f533d45882fcece07e4a1b7d5aea9152d35cd294fd43f6"
+    },
+    "evidence/cap-bridge-paired.npz": {
+      "bytes": 135354,
+      "sha256": "7f497e323cf25f299fb690286c66d0dcae32d2aa89a557defc05ae3509c788ed"
+    },
+    "evidence/cap-bridge-swapped-7p5.npz": {
+      "bytes": 135398,
+      "sha256": "877083eb8c37b9df889ab8a54cefe45c9990acdde6f41048514c3c2dfa83378f"
+    },
+    "evidence/cap-open.npz": {
+      "bytes": 118122,
+      "sha256": "fdeed9089532f4baffd3e6213ae709ee86c7aa44393a7739ae2670c36fd9a812"
+    },
+    "evidence/final-preservation-check.json": {
+      "bytes": 1207,
+      "sha256": "61a058e5ff2dc0b7b9c4086ef177f0d0e3b9a247d9b29e45471fd410f4471edc"
+    },
+    "evidence/input-locks.json": {
+      "bytes": 1945,
+      "sha256": "6b4cd9ba15cfbd91c30d145ca386e22d63a2f68cc19ed63d9ff493f1493d8677"
+    },
+    "evidence/legacy-head-contact.json": {
+      "bytes": 1054,
+      "sha256": "ad35503d16201e515318dbd5056f0a4115f7c2eda2b78ca5f90c0a279eb974a7"
+    },
+    "evidence/legacy-head-contact.log": {
+      "bytes": 877,
+      "sha256": "56d02f625ebae60213df748a026ab98bc85d770fa10a5b433f59151d2665b540"
+    },
+    "evidence/legacy-head-contact.npz": {
+      "bytes": 468296,
+      "sha256": "7bec1255373dc4d7cc775997cf8301a6bd688bc94815027728d75bfe24cbce50"
+    },
+    "evidence/mantle-classes.log": {
+      "bytes": 180,
+      "sha256": "cd0b6c65e045dfccf3747727183b756acf91161f1cd7fd390e3085e0c66fe91a"
+    },
+    "evidence/mantle-control.npz": {
+      "bytes": 10289,
+      "sha256": "d50e3b752942241da284dec77d49422b471b80f2d4bcdfdc72843f5f02d72d58"
+    },
+    "evidence/mantle-correspondence.json": {
+      "bytes": 2028,
+      "sha256": "fca78a6738484efa876e8ec8761199711907b0faa2240ee9c79074f980c56b87"
+    },
+    "evidence/mantle-correspondence.log": {
+      "bytes": 1347,
+      "sha256": "7fd7cbb586402f8c7c45c16d75371194519f4501506b4b268d8b7d1203888760"
+    },
+    "evidence/mantle-cut-7p5-build.json": {
+      "bytes": 404,
+      "sha256": "de4cc9cd130f64ed59212b3e12bf99d92e680c6f8eb072f7c66c886834bc4ac2"
+    },
+    "evidence/mantle-cut-7p5-gate.json": {
+      "bytes": 7342,
+      "sha256": "d754a47a550eb694d4b7d902e93dd5b41b28b830b849e25ea134446b0d9246f6"
+    },
+    "evidence/mantle-cut-7p5-gate.log": {
+      "bytes": 7352,
+      "sha256": "e6a539502b496719e9eeaf72caa94e34662ce78f2eb8e7657cd3d907cb0c5312"
+    },
+    "evidence/mantle-cut-7p5-restored-orientation.npz": {
+      "bytes": 82839,
+      "sha256": "dd7c2cf135e57951df76965994aea6857f1eb25219255d8cc48fb57e9356be71"
+    },
+    "evidence/mantle-cut-7p5.npz": {
+      "bytes": 82596,
+      "sha256": "b4647898b8aaecf5c4442ba2e0a5bd994c5a73f10a36ca8ab6b37233be8a0518"
+    },
+    "evidence/mantle-cut-source-indices.npz": {
+      "bytes": 13097,
+      "sha256": "6e7d65d4c8b9a14f14e8feab32c605abe675034473415d54c1e26cf56f667a6e"
+    },
+    "evidence/mantle-hidden-source.npz": {
+      "bytes": 793387,
+      "sha256": "548645394ee0e4fb2e2b6e362eec4e100bdd2504392fa4f76dac8895ad517e67"
+    },
+    "evidence/mantle-orientation-independent-validation.json": {
+      "bytes": 1115,
+      "sha256": "343dc16f9ab0e6181e4cf700059f831086b4ac5933c17a1d71b7cb82082a7b1c"
+    },
+    "evidence/mantle-paired-build.json": {
+      "bytes": 404,
+      "sha256": "ff45d5b6487028baa2945b33024b080ef4730b880be82a54440a13038bb7c41d"
+    },
+    "evidence/mantle-paired-gate.json": {
+      "bytes": 181007,
+      "sha256": "ec80506cf9ac528d9d0af7455cd0f7d6075328f2c8155835caedb03ad7fd4f86"
+    },
+    "evidence/mantle-paired-gate.log": {
+      "bytes": 7353,
+      "sha256": "1e2e033ee9e77e2c8462c60500e594e2ba88e5104a09fd38e8967679e4a2dc58"
+    },
+    "evidence/mantle-paired.npz": {
+      "bytes": 88996,
+      "sha256": "5805340bde75a85f95bb867e9c31af2912ac1e3e37b42a34fe0f66920809664e"
+    },
+    "evidence/mantle-pairing.npz": {
+      "bytes": 36333,
+      "sha256": "c386b73b85f6df2eeca141425aa63ef8be61a80b211b62d554fe183c5d35cc66"
+    },
+    "evidence/mantle-parameters.log": {
+      "bytes": 479,
+      "sha256": "af8f9f99ab7e5b1b28e12f50fb80fc9f3735bbb2a8e3c2b9a2b0f1b06db670f8"
+    },
+    "evidence/mantle-rest.npz": {
+      "bytes": 807917,
+      "sha256": "1c33445ffa9221c9ab909d6b82a559b503b8133f89ce8062dc92c913a992d1c1"
+    },
+    "evidence/mantle-source-parameters.npz": {
+      "bytes": 841296,
+      "sha256": "e5fe6c6eb7cf7992174e52a4dc326a00e0963d2e1bf52a00b4b5343f7f164c0e"
+    },
+    "evidence/mantle-source-wall-classes.npz": {
+      "bytes": 848,
+      "sha256": "ebe7fb3f0c8bce1617ff3ee10a6d4ce226bfd57317efa7d2ac598f19c5c56866"
+    },
+    "evidence/orientation-ablation-validation.json": {
+      "bytes": 253,
+      "sha256": "2c453f76fbc31b9f64ad31e89696292eb5987237eafc64442456c9d508721e5e"
+    },
+    "evidence/orientation-control-full-front.png": {
+      "bytes": 1168629,
+      "sha256": "12537cd8a395b8efad89ffbb633307af95a3a5dde0f9d4e9ca1d144c7bce4951"
+    },
+    "evidence/orientation-control-head-front.png": {
+      "bytes": 999789,
+      "sha256": "df83518f7e701de6a79007cdcc17229cb39b01b29136c0c2e59b4d99dbd3896c"
+    },
+    "evidence/orientation-control-junction-back.png": {
+      "bytes": 1025099,
+      "sha256": "45020a3623ce0561bab4401b61da259194c812176c15a3914964ec600f57eccb"
+    },
+    "evidence/orientation-control-junction-profile.png": {
+      "bytes": 1207471,
+      "sha256": "6b0de192d5b40a1386858e60e25df77ad762a00d03b53e07eec06a88e8ae7fe0"
+    },
+    "evidence/orientation-control-render.json": {
+      "bytes": 838,
+      "sha256": "425e505ac306623bd80c780227548f74193eeb876714db738d2974db47c4910d"
+    },
+    "evidence/orientation-control-render.log": {
+      "bytes": 21778,
+      "sha256": "9c5515b3199f9058e0fd51443830d634ed18d5bb5c38527fa6fcf1c96a54449d"
+    },
+    "evidence/physical-hermite-full-front.png": {
+      "bytes": 1197492,
+      "sha256": "2853de28adc24c0bb9dc1420cd3c80043ea159e56ff06082ae279aa4cecbb1be"
+    },
+    "evidence/physical-hermite-head-front.png": {
+      "bytes": 1015597,
+      "sha256": "c954d6352c19a43186de80682de9fed57642b8deb71fa3bdbfd8d5ddf4ea0e1f"
+    },
+    "evidence/physical-hermite-junction-back.png": {
+      "bytes": 1080220,
+      "sha256": "6501d494867dde64d27dc1a5243570bd6e9988067a7aadf2c2eaa5eb29220be7"
+    },
+    "evidence/physical-hermite-junction-profile.png": {
+      "bytes": 1223199,
+      "sha256": "075af60c849b1213379341cd11219d74e148f8cdcd154bfc664504b47643e8df"
+    },
+    "evidence/physical-hermite-render.json": {
+      "bytes": 847,
+      "sha256": "aa9010b71db997866d0777ffee008bf6d0e8934806de6f7f5708977d07c2ce81"
+    },
+    "evidence/physical-hermite-render.log": {
+      "bytes": 21519,
+      "sha256": "528c0a63d92f47f35102117d63b44fcec49bc2082cce1a25dd85358633cef3b8"
+    },
+    "evidence/rejected-hermite-render.json": {
+      "bytes": 838,
+      "sha256": "89609952a3e39923599c3eebae3f05932742f01bfef428d3644bc531336d6886"
+    },
+    "evidence/rejected-hermite-render.log": {
+      "bytes": 21647,
+      "sha256": "59c0848a9152d062d4c563de1c019b9ea3496134ba7b10df62eefb64ae251dea"
+    },
+    "evidence/rejected-paired-render.json": {
+      "bytes": 833,
+      "sha256": "a71f73db00e4fdb63f53394581b34578e0ab06eb25bf8c5cd771f0c39a2e9c7e"
+    },
+    "evidence/rejected-paired-render.log": {
+      "bytes": 21754,
+      "sha256": "5872841c91c8fd87e5dd6f6278857e02b6a15ebaeb20919f1893b47925e6a61f"
+    },
+    "evidence/render-final-validation.json": {
+      "bytes": 609,
+      "sha256": "fe9ee1a9470c42b40a1536e7b68eb56f32aaa65d89f3a11a8894b10b965c3c53"
+    },
+    "evidence/restored-orientation-full-front.png": {
+      "bytes": 1197190,
+      "sha256": "f9fd870113d3f4e7566928ce1c01ba672a01e103012236911c9924bf35938a8f"
+    },
+    "evidence/restored-orientation-head-front.png": {
+      "bytes": 1014466,
+      "sha256": "b893c203b10848b3830a11ccfe36dc5d84fcae16d1ca141c7decaa837f2b5d2c"
+    },
+    "evidence/restored-orientation-junction-back.png": {
+      "bytes": 1080760,
+      "sha256": "0d9d5c1ee32a2c17ef491129adb2c4fbe2b0aa932dd32b38cec24d2cb36ed766"
+    },
+    "evidence/restored-orientation-junction-profile.png": {
+      "bytes": 1221706,
+      "sha256": "b4620597cc405b0f3d6adf96013b4473f0c4256df164bd34c1e4a702696712a6"
+    },
+    "evidence/restored-orientation-render.json": {
+      "bytes": 850,
+      "sha256": "9cb5e4cec5adf8680c9f40956661504f6b1db686b8b7ebcb791844b95b6d73db"
+    },
+    "evidence/restored-orientation-render.log": {
+      "bytes": 22075,
+      "sha256": "f795b0e0a8381c37d040f5a863c2a078c09c0c0be06fbc3202e4543adfe38a4c"
+    },
+    "evidence/review-integration-visual.md": {
+      "bytes": 6111,
+      "sha256": "37b2d8fb762fafa37a480ff707fef436d76ae9c505c72fd55cad50ad9de72258"
+    },
+    "evidence/seam-crossing-attribution.json": {
+      "bytes": 76141,
+      "sha256": "7f6ea875bf84dcff4d958fd6dd46b9dddb5668e486f9a2eff5916adf9073116b"
+    },
+    "evidence/seam-hermite-7p5-assembly-gate.json": {
+      "bytes": 652381,
+      "sha256": "cdbbed5a0fca6f0589f7718abae43da4170cb17c4d5357139b882b0bcf2ec2b9"
+    },
+    "evidence/seam-hermite-7p5-assembly-gate.log": {
+      "bytes": 1040,
+      "sha256": "4501e813330a0ee78edbd914d2f9700cb2f4b90cb6057f8ad9368f19d7094a0e"
+    },
+    "evidence/seam-hermite-7p5-assembly.npz": {
+      "bytes": 228499,
+      "sha256": "2e81149a3b580b0369eb8b56c7742be6258aae601552844adf9747d2f735e876"
+    },
+    "evidence/seam-hermite-physical-7p5-assembly-gate.json": {
+      "bytes": 120459,
+      "sha256": "954ab85f8261e5e188fc4a6c180c0186a16f62c159ce1851276bd99c959e557a"
+    },
+    "evidence/seam-hermite-physical-7p5-assembly-gate.log": {
+      "bytes": 1050,
+      "sha256": "87fe1e9e510bd0426118c14b932f1980f6532eb57fcdc82be46fed3cf62afd4f"
+    },
+    "evidence/seam-hermite-physical-7p5-assembly.npz": {
+      "bytes": 228754,
+      "sha256": "12b2639a68210dd24118605fd7df48bc273e7e0651d856e5ae51fad1babba4c6"
+    },
+    "evidence/seam-paired-assembly-gate.json": {
+      "bytes": 1228974,
+      "sha256": "7acbfe20ce0b723cddeb253ae1b2a4eb6b5c0b0223499dcf21f465252b83d56e"
+    },
+    "evidence/seam-paired-assembly-gate.log": {
+      "bytes": 1037,
+      "sha256": "ae27945c95b7ac405a32cc187e696d7b7feeeb607fa97d7227860490c9b99a92"
+    },
+    "evidence/seam-paired-assembly.npz": {
+      "bytes": 206518,
+      "sha256": "fb4001b4f62e7a3bddee58b029b637dd85530a7c4ac698d39a5102d2b1c335c9"
+    },
+    "evidence/seam-parts-export.json": {
+      "bytes": 1487,
+      "sha256": "21e673de7da422a87ee46218d0dca097ce5a1bda9d18c47d5db1deeba4c6ffe0"
+    },
+    "evidence/seam-parts-export.log": {
+      "bytes": 1638,
+      "sha256": "4c4055ae3a2435700f75d25ed8b34e30d0abdffb4f93c66a8dbe2f0d88521c96"
+    },
+    "evidence/seam-reconstruction-proof.json": {
+      "bytes": 1007,
+      "sha256": "23b13b17f0c12b103480b61d51d448597cf9c397d9336f79224584711bc13671"
+    },
+    "evidence/seam-reconstruction-proof.npz": {
+      "bytes": 588005,
+      "sha256": "5492e532de5d3b2ea0ebcf45eeefee5b379df40ce7c4d788c031a2e6edbf57cc"
+    },
+    "evidence/seam-source-geometric-gate.json": {
+      "bytes": 1288564,
+      "sha256": "a49378f137d2115985b1e0ddd0a6118818d11cb4b4b840b179d18d42bf32561c"
+    },
+    "evidence/seam-source-geometric-gate.log": {
+      "bytes": 1049,
+      "sha256": "cfc8094691529e5d7c5a49c03cc38ac34bb1a1912f349cf1b518be32fc1fa265"
+    },
+    "evidence/seam-source-inspection.json": {
+      "bytes": 103140,
+      "sha256": "11421f52c1f9942df45257196558b39492fd7f6b7c412212e1af52dca12f8182"
+    },
+    "evidence/seam-source-inspection.log": {
+      "bytes": 2392,
+      "sha256": "91d593d72da5c02b8e36043fa17a76257a56f7e2fa427f6e87df4d9e7f01b354"
+    },
+    "evidence/seam-source-paths.json": {
+      "bytes": 4096,
+      "sha256": "f0a1f18bb6d620228eb43743609fcf29fc5951e0200017333b0223d9dc0f3c43"
+    },
+    "evidence/seam-swapped-7p5-assembly-gate.json": {
+      "bytes": 63083,
+      "sha256": "4dde2a0784b12a9017c890b78900d0f811b35bce568a12280f4385c5060f1c6d"
+    },
+    "evidence/seam-swapped-7p5-assembly-gate.log": {
+      "bytes": 1041,
+      "sha256": "6eade5f07f7d0a251404e864872b515618089663ca5ab2b9b2ce743ac6a8ec26"
+    },
+    "evidence/seam-swapped-7p5-assembly.npz": {
+      "bytes": 199984,
+      "sha256": "402d462ab4408c992790018eab28516ca26d838a6718fad10ded281e00284cc3"
+    },
+    "evidence/seam-swapped-7p5-restored-orientation-gate.json": {
+      "bytes": 63098,
+      "sha256": "70714a22494fc70df3c5ab65af160ebc1992b9992ce687c1e26a40f0f8c9cf38"
+    },
+    "evidence/seam-swapped-7p5-restored-orientation-gate.log": {
+      "bytes": 1050,
+      "sha256": "7b66bf0c6a00004d8908908b12b7cd4b4469228f2b451542ba60abbabfd466ce"
+    },
+    "evidence/seam-swapped-7p5-restored-orientation.npz": {
+      "bytes": 200415,
+      "sha256": "04ccc03e5409aa11d4286d26d0271d66cecddfb8261e008a679dae8a4df28393"
+    },
+    "evidence/seam-topology-analysis.json": {
+      "bytes": 1081,
+      "sha256": "84e46915cea06332e99a0e67ededd73905d767a869d3f095aef24d903a486117"
+    },
+    "evidence/seam-welded-compact.npz": {
+      "bytes": 922017,
+      "sha256": "47a4e6d4dd02217f0bdc33302b252301e7331707bdb926e954c29f41242950b7"
+    },
+    "evidence/seam-welded-geometric-gate.json": {
+      "bytes": 1257811,
+      "sha256": "f049ec4ddcee19ddcbedb8f3357a9d0414e3e45905242c1b0cd634be766a3028"
+    },
+    "evidence/seam-welded-geometric-gate.log": {
+      "bytes": 1036,
+      "sha256": "cc6e099f6edb9477b233b8aaba27cf0ebc2dc205b1291b2316d46bc8aebfd1ad"
+    },
+    "evidence/v5-seam-cut-indices.npz": {
+      "bytes": 9962,
+      "sha256": "04dfd1d63535af0ecb81b573a17692f54ccf0be0c35c7f9804c02c2a066cd51c"
+    },
+    "evidence/wall-direction-row-comparison.json": {
+      "bytes": 3464,
+      "sha256": "08343f87f456367c2f50377eb0e4731cb2905a886874a068cf41430b1021cb41"
+    },
+    "evidence/wall-direction-row-comparison.npz": {
+      "bytes": 15350,
+      "sha256": "11aa172914ba7973345ba45ce8be064c8a3a4645760a54b20cacc388434c6383"
+    },
+    "tools/analyze_bridge_alignment.py": {
+      "bytes": 2180,
+      "sha256": "8573de1d964c84bcf90b5f78460558b2c0a090b4548750db8ef280ca9546ea28"
+    },
+    "tools/analyze_seam.py": {
+      "bytes": 2635,
+      "sha256": "31e0664250573c0537d9aa359cb819f10bac8be7e64834fe92ad2299635fde43"
+    },
+    "tools/build_bridge_paired.py": {
+      "bytes": 4025,
+      "sha256": "3090dc7b046a6d3ded23201adeb793e364f6c9a567ce5566d802968b9a934b58"
+    },
+    "tools/build_bridge_swapped_7p5.py": {
+      "bytes": 4616,
+      "sha256": "6db9bd0650bc1cdb6fddd9207acad5dd196e240958e7ceb9d0544dd8b6e8a158"
+    },
+    "tools/build_cut_mantle.py": {
+      "bytes": 3735,
+      "sha256": "2686a16b30b2eb1eb0673356c6d160cbaf99b01ec9e53995838839682cc80f0d"
+    },
+    "tools/build_hermite_bridge.py": {
+      "bytes": 6024,
+      "sha256": "a5f5cfa6b76e651976cf9891224efc266a66277363c491e93aef40d5557fe524"
+    },
+    "tools/build_hermite_physical_bridge.py": {
+      "bytes": 6116,
+      "sha256": "2e3ac0a984d0c9284f513a26be4a9ad82ddcc86bc72a7eb3dc02225426d849b0"
+    },
+    "tools/build_paired_mantle.py": {
+      "bytes": 3544,
+      "sha256": "8af0ec1e075d47f1f6f61016b768f3ec60ca387716ba2259e2cd1a57c1215cb8"
+    },
+    "tools/check_legacy_head_contact.py": {
+      "bytes": 2330,
+      "sha256": "7bb5684c828d49bc6fa1a1d8e2a1f78e16a0d6f9233941f7c798072749fba286"
+    },
+    "tools/classify_seam_crossings.py": {
+      "bytes": 2761,
+      "sha256": "e1ca14f5ea48003d26af5e4b4180218b367c97fd5eeb2df3ca3159867b3cb9db"
+    },
+    "tools/compare_wall_directions.py": {
+      "bytes": 2298,
+      "sha256": "b9ba5ee0d03535695837d434432b07d87ad09692239148bd3f9e5edc20c3810f"
+    },
+    "tools/export_mantle_classes.py": {
+      "bytes": 1221,
+      "sha256": "a9a6854ddffc4a3fa53817d7e6f92d906b15642bbe0d0528a4ff8ac2302ef908"
+    },
+    "tools/export_seam_parts.py": {
+      "bytes": 2196,
+      "sha256": "2d807ea0526dcfb3a2bf02706986b51c10e4229959d6ec2db162bb8294f6504a"
+    },
+    "tools/inspect_mantle_correspondence.py": {
+      "bytes": 1975,
+      "sha256": "c6c43a70201516c4fd7412c31d8fe3b044415c87de9b1fb3e5dbbe8e2304dd1d"
+    },
+    "tools/inspect_mantle_parameters.py": {
+      "bytes": 1723,
+      "sha256": "2c3cb8c36f8b71214e21e47b4bc2ae97a4ae5e19053a0c18370eaa1ed04bcb87"
+    },
+    "tools/inspect_seam.py": {
+      "bytes": 1897,
+      "sha256": "a3259feadbafa557e91b98a26042365f64c7222deb0613980c481a2a412d4956"
+    },
+    "tools/make_integration_comparison.py": {
+      "bytes": 1223,
+      "sha256": "4e8742571c722cbd4a1a8e1576bf1de2c9b160956530df5bce38387c5c2d302b"
+    },
+    "tools/measure_bridge_deviation.py": {
+      "bytes": 1375,
+      "sha256": "4501b737de903fcf0767bdd8054390e26f32eaf679776552f19abdef2d736b85"
+    },
+    "tools/prove_seam_reconstruction.py": {
+      "bytes": 3796,
+      "sha256": "a5891a619c245b4786e706322dac6b86218ac6855bc384480147cfbd87f819e4"
+    },
+    "tools/render_integration_diagnostic.py": {
+      "bytes": 6045,
+      "sha256": "03560c28e256c81437c67f2961ac69829a71366809088d2c93772ec21e788b68"
+    },
+    "tools/restore_mantle_orientation.py": {
+      "bytes": 2720,
+      "sha256": "d663abbf18439cfa22acb76e18849e3604cc55f9a4abc1868b6965698e45a425"
+    }
+  },
+  "excluded_existing_workspace_files": [
+    "evidence/orientation-control-diagnostic.blend",
+    "evidence/physical-hermite-diagnostic.blend",
+    "evidence/rejected-hermite-diagnostic.blend",
+    "evidence/rejected-hermite-full-front.png",
+    "evidence/rejected-hermite-head-front.png",
+    "evidence/rejected-hermite-junction-back.png",
+    "evidence/rejected-hermite-junction-profile.png",
+    "evidence/rejected-paired-diagnostic.blend",
+    "evidence/rejected-paired-full-front.png",
+    "evidence/rejected-paired-head-front.png",
+    "evidence/rejected-paired-junction-back.png",
+    "evidence/rejected-paired-junction-profile.png",
+    "evidence/restored-orientation-diagnostic.blend",
+    "evidence/seam-partitions.npz",
+    "evidence/seam-source-evaluated-compact.npz",
+    "evidence/seam-source-inspection.npz"
+  ],
+  "not_installable_addon": true
+}

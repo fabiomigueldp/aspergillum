@@ -1,0 +1,21 @@
+# Revisão geométrica independente V11
+
+Parecer: `REVIEW_FINAL_V11.md`. Candidata preferida para retenção técnica local: `../structural_rebuild/polygonal-pinna-0.5mm-clean.npz`. Não é aprovação global ou exportação.
+
+## Reprodução
+
+A partir da raiz `paz-bedrock-v75-prototype-20261103`, use Blender 4.3.2 e Python com NumPy, SciPy e mpmath:
+
+1. `blender -b -t 2 --python ear_rim_v11/independent_diagnosis/review_rebuilt_rim.py -- ear_rim_v11/structural_rebuild/polygonal-pinna-0.5mm-clean.npz polygonal-pinna-0.5mm-clean`
+2. `python ear_rim_v11/independent_diagnosis/resolve_predicate_witnesses.py polygonal-pinna-0.5mm-clean`
+3. `python ear_rim_v11/independent_diagnosis/check_patch_domains.py polygonal-pinna-0.5mm-clean`
+4. `python ear_rim_v11/independent_diagnosis/measure_rim_lips.py polygonal-pinna-0.5mm-clean`
+5. `python ear_rim_v11/independent_diagnosis/measure_exact_rim_chords.py polygonal-pinna-0.5mm-clean`
+6. `python ear_rim_v11/independent_diagnosis/check_float32_transport.py polygonal-pinna-0.5mm-clean`
+7. `python ear_rim_v11/independent_diagnosis/measure_contact_traces.py polygonal-pinna-0.5mm-clean`
+
+O passo 2 concilia a triagem de auto-interseções com predicados de 80 dígitos. Os arrays `self_pairs` preservam flags brutos e não devem ser chamados de cruzamentos confirmados. O resultado final está em `-review.json` e `-predicate-check.json`.
+
+`map_envelope_limits.py` e `check_hull_scope.py` registram a investigação inicial dos envelopes e o alerta temporal direito. `check_retriangulated_domains.py extruded-pinna-0.5mm-clean` confere os sete patches da alternativa arredondada anterior em 65 dígitos; a poligonal não precisou dessa limpeza adicional.
+
+Os scripts escrevem somente neste diretório. Os NPZs candidatos, inputs V5/V7/V9 e renders são lidos de diretórios existentes; não foram alterados. As medições de raios por BVH no relatório geral são preliminares e têm limite float32; o parecer usa `-exact-chords.json` e `-rim-lips.json`. Somas de segmentos de contato não são união espacial nem profundidade. A revisão visual e contorno da união são separados.

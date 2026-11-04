@@ -1,0 +1,1580 @@
+[
+  {
+    "name": "Maria \u2014 v\u00e9u reconstru\u00eddo de perfil",
+    "type": "MESH",
+    "hidden": true,
+    "hidden_get": false,
+    "hide_viewport": true,
+    "vertices": 5040,
+    "bbox": [
+      [
+        -0.1080012395977974,
+        0.18881964683532715
+      ],
+      [
+        -0.42529115080833435,
+        -0.05352877452969551
+      ],
+      [
+        3.370568037033081,
+        3.738604784011841
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": [
+      [
+        "Espessura de pedra",
+        "SOLIDIFY",
+        true
+      ],
+      [
+        "Suavidade localizada",
+        "SUBSURF",
+        true
+      ]
+    ]
+  },
+  {
+    "name": "TESTE 29 \u2014 faixa embutida com termina\u00e7\u00e3o suave",
+    "type": "MESH",
+    "hidden": false,
+    "hidden_get": false,
+    "hide_viewport": false,
+    "vertices": 3009,
+    "bbox": [
+      [
+        -0.10636007785797119,
+        0.18863238394260406
+      ],
+      [
+        -0.42080655694007874,
+        -0.19389353692531586
+      ],
+      [
+        3.4476847648620605,
+        3.6159827709198
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": [
+      [
+        "Espessura discreta",
+        "SOLIDIFY",
+        true
+      ],
+      [
+        "Acabamento suave",
+        "SUBSURF",
+        true
+      ]
+    ]
+  },
+  {
+    "name": "TESTE 34 \u2014 conex\u00e3o de superf\u00edcies avaliadas",
+    "type": "MESH",
+    "hidden": false,
+    "hidden_get": false,
+    "hide_viewport": false,
+    "vertices": 185956,
+    "bbox": [
+      [
+        -0.3468720316886902,
+        0.3468720614910126
+      ],
+      [
+        -0.41918668150901794,
+        0.29061785340309143
+      ],
+      [
+        0.6219785213470459,
+        3.7157223224639893
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": []
+  },
+  {
+    "name": "Ch\u00e3o",
+    "type": "MESH",
+    "hidden": false,
+    "hidden_get": false,
+    "hide_viewport": false,
+    "vertices": 8,
+    "bbox": [
+      [
+        -100.0,
+        100.0
+      ],
+      [
+        -100.0,
+        100.0
+      ],
+      [
+        -0.0625,
+        -0.027500001713633537
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Est\u00fadio azul cinza",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ]
+        ]
+      }
+    ],
+    "modifiers": [
+      [
+        "Arestas suavizadas",
+        "BEVEL",
+        true
+      ],
+      [
+        "Normais",
+        "WEIGHTED_NORMAL",
+        true
+      ]
+    ]
+  },
+  {
+    "name": "Menino \u2014 pesco\u00e7o",
+    "type": "MESH",
+    "hidden": true,
+    "hidden_get": true,
+    "hide_viewport": false,
+    "vertices": 762,
+    "bbox": [
+      [
+        -0.02300002984702587,
+        0.07300001382827759
+      ],
+      [
+        -0.31700000166893005,
+        -0.21299998462200165
+      ],
+      [
+        1.5199999809265137,
+        1.7599999904632568
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": []
+  },
+  {
+    "name": "Menino \u2014 cabelo cont\u00ednuo V50 revers\u00edvel",
+    "type": "MESH",
+    "hidden": false,
+    "hidden_get": false,
+    "hide_viewport": false,
+    "vertices": 6145,
+    "bbox": [
+      [
+        -0.07006258517503738,
+        0.12006265670061111
+      ],
+      [
+        -0.3545476198196411,
+        -0.10526993870735168
+      ],
+      [
+        1.7686173915863037,
+        1.940291404724121
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": []
+  },
+  {
+    "name": "Menino \u2014 cabe\u00e7a colo retopologia V55 revers\u00edvel",
+    "type": "MESH",
+    "hidden": false,
+    "hidden_get": false,
+    "hide_viewport": false,
+    "vertices": 21038,
+    "bbox": [
+      [
+        -0.08285065740346909,
+        0.13285066187381744
+      ],
+      [
+        -0.3780459761619568,
+        -0.10822145640850067
+      ],
+      [
+        1.5199999809265137,
+        1.937292456626892
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": []
+  },
+  {
+    "name": "Menino \u2014 tornozelo afilado V61 revers\u00edvel",
+    "type": "CURVE",
+    "hidden": false,
+    "hidden_get": false,
+    "hide_viewport": false,
+    "vertices": null,
+    "bbox": [
+      [
+        -0.08070001006126404,
+        0.0007000081241130829
+      ],
+      [
+        -0.30464959144592285,
+        -0.22535037994384766
+      ],
+      [
+        0.5238472819328308,
+        0.8615419268608093
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": []
+  },
+  {
+    "name": "Menino \u2014 tornozelo oposto V63 revers\u00edvel",
+    "type": "CURVE",
+    "hidden": false,
+    "hidden_get": false,
+    "hide_viewport": false,
+    "vertices": null,
+    "bbox": [
+      [
+        0.049299996346235275,
+        0.1307000070810318
+      ],
+      [
+        -0.30464959144592285,
+        -0.22535037994384766
+      ],
+      [
+        0.5238472819328308,
+        0.8615419268608093
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": []
+  },
+  {
+    "name": "Base inferior",
+    "type": "MESH",
+    "hidden": false,
+    "hidden_get": false,
+    "hide_viewport": false,
+    "vertices": 8,
+    "bbox": [
+      [
+        -0.48500001430511475,
+        0.48500001430511475
+      ],
+      [
+        -0.35499998927116394,
+        0.39500001072883606
+      ],
+      [
+        0.0,
+        0.17000000178813934
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Base calc\u00e1ria",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ]
+        ]
+      }
+    ],
+    "modifiers": [
+      [
+        "Arestas suavizadas",
+        "BEVEL",
+        true
+      ],
+      [
+        "Normais",
+        "WEIGHTED_NORMAL",
+        true
+      ]
+    ]
+  },
+  {
+    "name": "Pedestal",
+    "type": "MESH",
+    "hidden": false,
+    "hidden_get": false,
+    "hide_viewport": false,
+    "vertices": 8,
+    "bbox": [
+      [
+        -0.4300000071525574,
+        0.4300000071525574
+      ],
+      [
+        -0.304999977350235,
+        0.3449999988079071
+      ],
+      [
+        0.16499999165534973,
+        0.41499999165534973
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Base calc\u00e1ria",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ]
+        ]
+      }
+    ],
+    "modifiers": [
+      [
+        "Arestas suavizadas",
+        "BEVEL",
+        true
+      ],
+      [
+        "Normais",
+        "WEIGHTED_NORMAL",
+        true
+      ]
+    ]
+  },
+  {
+    "name": "Laje",
+    "type": "MESH",
+    "hidden": false,
+    "hidden_get": false,
+    "hide_viewport": false,
+    "vertices": 8,
+    "bbox": [
+      [
+        -0.4749999940395355,
+        0.4749999940395355
+      ],
+      [
+        -0.44999998807907104,
+        0.39500001072883606
+      ],
+      [
+        0.41750001907348633,
+        0.4925000071525574
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": [
+      [
+        "Arestas suavizadas",
+        "BEVEL",
+        true
+      ],
+      [
+        "Normais",
+        "WEIGHTED_NORMAL",
+        true
+      ]
+    ]
+  },
+  {
+    "name": "Maria \u2014 t\u00fanica e mangas integradas",
+    "type": "MESH",
+    "hidden": false,
+    "hidden_get": false,
+    "hide_viewport": false,
+    "vertices": 130642,
+    "bbox": [
+      [
+        -0.4217168688774109,
+        0.4129079282283783
+      ],
+      [
+        -0.24628838896751404,
+        0.21326234936714172
+      ],
+      [
+        0.4934999942779541,
+        3.178738832473755
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": []
+  },
+  {
+    "name": "Maria \u2014 plano cont\u00ednuo do manto",
+    "type": "MESH",
+    "hidden": true,
+    "hidden_get": false,
+    "hide_viewport": true,
+    "vertices": 800,
+    "bbox": [
+      [
+        -0.34782248735427856,
+        0.34782248735427856
+      ],
+      [
+        0.02075057663023472,
+        0.2926883399486542
+      ],
+      [
+        0.5099999904632568,
+        3.687999963760376
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": [
+      [
+        "Borda de pedra",
+        "SOLIDIFY",
+        true
+      ],
+      [
+        "Continuidade do manto",
+        "SUBSURF",
+        true
+      ]
+    ]
+  },
+  {
+    "name": "Maria \u2014 aur\u00e9ola lisa",
+    "type": "MESH",
+    "hidden": false,
+    "hidden_get": false,
+    "hide_viewport": false,
+    "vertices": 256,
+    "bbox": [
+      [
+        -0.18233411014080048,
+        0.2863665819168091
+      ],
+      [
+        -0.14599750936031342,
+        0.034872930496931076
+      ],
+      [
+        3.331871271133423,
+        3.7876102924346924
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": []
+  },
+  {
+    "name": "Menino \u2014 t\u00fanica e mangas cont\u00ednuas",
+    "type": "MESH",
+    "hidden": false,
+    "hidden_get": false,
+    "hide_viewport": false,
+    "vertices": 40866,
+    "bbox": [
+      [
+        -0.17692464590072632,
+        0.24775120615959167
+      ],
+      [
+        -0.39701446890830994,
+        -0.15592162311077118
+      ],
+      [
+        0.7300000190734863,
+        1.5891526937484741
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": []
+  },
+  {
+    "name": "Menino \u2014 perna",
+    "type": "CURVE",
+    "hidden": true,
+    "hidden_get": true,
+    "hide_viewport": false,
+    "vertices": null,
+    "bbox": [
+      [
+        -0.08070001006126404,
+        0.0007000081241130829
+      ],
+      [
+        -0.30881085991859436,
+        -0.22535037994384766
+      ],
+      [
+        0.538353681564331,
+        0.8615419268608093
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": []
+  },
+  {
+    "name": "Menino \u2014 p\u00e9",
+    "type": "MESH",
+    "hidden": false,
+    "hidden_get": false,
+    "hide_viewport": false,
+    "vertices": 1106,
+    "bbox": [
+      [
+        -0.08275210857391357,
+        0.0027520842850208282
+      ],
+      [
+        -0.42500007152557373,
+        -0.21499985456466675
+      ],
+      [
+        0.4925000071525574,
+        0.5613656044006348
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": []
+  },
+  {
+    "name": "Menino \u2014 perna.001",
+    "type": "CURVE",
+    "hidden": true,
+    "hidden_get": true,
+    "hide_viewport": false,
+    "vertices": null,
+    "bbox": [
+      [
+        0.049299996346235275,
+        0.1307000070810318
+      ],
+      [
+        -0.30881085991859436,
+        -0.22535037994384766
+      ],
+      [
+        0.538353681564331,
+        0.8615419268608093
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": []
+  },
+  {
+    "name": "Menino \u2014 p\u00e9.001",
+    "type": "MESH",
+    "hidden": false,
+    "hidden_get": false,
+    "hide_viewport": false,
+    "vertices": 1106,
+    "bbox": [
+      [
+        0.04783966764807701,
+        0.13216030597686768
+      ],
+      [
+        -0.42500007152557373,
+        -0.21499985456466675
+      ],
+      [
+        0.492499977350235,
+        0.5606503486633301
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": []
+  },
+  {
+    "name": "Menino \u2014 aur\u00e9ola lisa",
+    "type": "MESH",
+    "hidden": false,
+    "hidden_get": false,
+    "hide_viewport": false,
+    "vertices": 192,
+    "bbox": [
+      [
+        -0.125,
+        0.17500001192092896
+      ],
+      [
+        -0.1850000023841858,
+        -0.16499999165534973
+      ],
+      [
+        1.790000081062317,
+        2.0900001525878906
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": []
+  },
+  {
+    "name": "Maria \u2014 anatomia feminina adaptada CC0",
+    "type": "MESH",
+    "hidden": false,
+    "hidden_get": false,
+    "hide_viewport": false,
+    "vertices": 102088,
+    "bbox": [
+      [
+        -0.11387058347463608,
+        0.19228342175483704
+      ],
+      [
+        -0.43646442890167236,
+        0.06282223761081696
+      ],
+      [
+        3.06917405128479,
+        3.715189218521118
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": []
+  },
+  {
+    "name": "Maria \u2014 v\u00e9u sobre couro cabeludo anat\u00f4mico",
+    "type": "MESH",
+    "hidden": true,
+    "hidden_get": false,
+    "hide_viewport": true,
+    "vertices": 13826,
+    "bbox": [
+      [
+        -0.11417341232299805,
+        0.19309209287166595
+      ],
+      [
+        -0.4350005090236664,
+        -0.05567600205540657
+      ],
+      [
+        3.3715391159057617,
+        3.738213062286377
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": [
+      [
+        "Espessura do v\u00e9u",
+        "SOLIDIFY",
+        true
+      ],
+      [
+        "Borda cont\u00ednua",
+        "SMOOTH",
+        true
+      ]
+    ]
+  },
+  {
+    "name": "Maria \u2014 m\u00e3o protetora anat\u00f4mica",
+    "type": "MESH",
+    "hidden": false,
+    "hidden_get": false,
+    "hide_viewport": false,
+    "vertices": 3300,
+    "bbox": [
+      [
+        -0.2739396095275879,
+        -0.15601250529289246
+      ],
+      [
+        -0.3608185350894928,
+        -0.1839940845966339
+      ],
+      [
+        1.8470277786254883,
+        2.0060179233551025
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": []
+  },
+  {
+    "name": "Maria \u2014 m\u00e3o ao peito anat\u00f4mica",
+    "type": "MESH",
+    "hidden": false,
+    "hidden_get": false,
+    "hide_viewport": false,
+    "vertices": 3300,
+    "bbox": [
+      [
+        0.05943267419934273,
+        0.1540014147758484
+      ],
+      [
+        -0.21088849008083344,
+        -0.15317057073116302
+      ],
+      [
+        2.9144458770751953,
+        3.141146183013916
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": []
+  },
+  {
+    "name": "Menino \u2014 m\u00e3o anat\u00f4mica",
+    "type": "MESH",
+    "hidden": false,
+    "hidden_get": false,
+    "hide_viewport": false,
+    "vertices": 3300,
+    "bbox": [
+      [
+        -0.14725808799266815,
+        -0.0918850302696228
+      ],
+      [
+        -0.46759581565856934,
+        -0.3684902489185333
+      ],
+      [
+        1.1817057132720947,
+        1.220059871673584
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": []
+  },
+  {
+    "name": "Menino \u2014 m\u00e3o anat\u00f4mica.001",
+    "type": "MESH",
+    "hidden": false,
+    "hidden_get": false,
+    "hide_viewport": false,
+    "vertices": 3300,
+    "bbox": [
+      [
+        0.17697349190711975,
+        0.22535383701324463
+      ],
+      [
+        -0.38886967301368713,
+        -0.31279486417770386
+      ],
+      [
+        1.126217246055603,
+        1.1870417594909668
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": []
+  },
+  {
+    "name": "Menino \u2014 base infantil anat\u00f4mica CC0",
+    "type": "MESH",
+    "hidden": true,
+    "hidden_get": true,
+    "hide_viewport": false,
+    "vertices": 20226,
+    "bbox": [
+      [
+        -0.08285065740346909,
+        0.13285066187381744
+      ],
+      [
+        -0.3780459761619568,
+        -0.10822145640850067
+      ],
+      [
+        1.6570539474487305,
+        1.937292456626892
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": []
+  },
+  {
+    "name": "Menino \u2014 cabelo rente",
+    "type": "MESH",
+    "hidden": true,
+    "hidden_get": true,
+    "hide_viewport": false,
+    "vertices": 1612,
+    "bbox": [
+      [
+        -0.07176776975393295,
+        0.12176776677370071
+      ],
+      [
+        -0.3457780182361603,
+        -0.112241230905056
+      ],
+      [
+        1.8653192520141602,
+        1.9432909488677979
+      ]
+    ],
+    "materials": [
+      {
+        "name": "Carrara \u2014 pedra clara neutra",
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "nodes": [
+          [
+            "BSDF_PRINCIPLED",
+            "Principled BSDF"
+          ],
+          [
+            "OUTPUT_MATERIAL",
+            "Material Output"
+          ],
+          [
+            "TEX_NOISE",
+            "Noise Texture"
+          ],
+          [
+            "BUMP",
+            "Bump"
+          ]
+        ]
+      }
+    ],
+    "modifiers": [
+      [
+        "Volume m\u00ednimo do cabelo",
+        "SOLIDIFY",
+        true
+      ]
+    ]
+  }
+]

@@ -1,0 +1,62 @@
+from pathlib import Path
+import numpy as np,json,os
+from scipy.optimize import minimize,LinearConstraint
+R=Path(__file__).resolve().parents[2];E=R/'lateral_v7/evidence';O=Path(__file__).resolve().parent
+field=np.load(E/'offset-reach-field.npz');mid=np.load(E/'director-cone-midfield.npz');a=np.load(E/'director-cone-assembly.npz');base=np.load(R/'integration_v6/evidence/seam-hermite-physical-7p5-assembly.npz')
+c0=field['center'];c=c0.copy(); active=np.zeros((7,57),bool);active[1:6,:12]=True;active[1:6,45:]=True;idx=np.flatnonzero(active.ravel());fixed=np.flatnonzero(~active.ravel());rows=[]
+def row(vals):
+ r=np.zeros(399)
+ for s,t,w in vals:r[s*57+t]+=w
+ rows.append(r)
+# Physically scaled thin-plate energy: along-s step approximately three along-t steps.
+for s in range(1,6):
+ for t in range(57):row([(s-1,t,1/9),(s,t,-2/9),(s+1,t,1/9)])
+for s in range(7):
+ for t in range(1,56):row([(s,t-1,1),(s,t,-2),(s,t+1,1)])
+for s in range(6):
+ for t in range(56):row([(s,t,2**.5/3),(s+1,t,-2**.5/3),(s,t+1,-2**.5/3),(s+1,t+1,2**.5/3)])
+A=np.array(rows);B=A[:,idx];rhs=-A[:,fixed]@c0.reshape(-1,3)[fixed]
+# Fidelity term is 1% of one longitudinal second-difference stencil.
+fidelity=float(os.environ.get("FIDELITY","0.1"));prefix=os.environ.get("PREFIX","minimum-change")
+sol=np.linalg.lstsq(np.vstack([B,np.eye(len(idx))*fidelity]),np.vstack([rhs,c0.reshape(-1,3)[idx]*fidelity]),rcond=None)[0];c.reshape(-1,3)[idx]=sol
+# Enforce source-director transversality for the endpoint zipper triangles that have one free center.
+gen=mid['generated_pair_indices']; cc=mid['center'].copy();cc[gen]=c[1:6].reshape(-1,3); tt=mid['triangles']; dd=mid['original_director']; gi={int(gen[(q//57-1)*57+q%57]):i for i,q in enumerate(idx)}
+cr=np.cross(cc[tt[:,1]]-cc[tt[:,0]],cc[tt[:,2]]-cc[tt[:,0]]); orient=np.sign(np.median(np.einsum('fi,fvi->fv',cr,dd[tt]))); C=[];lo=[]
+for tri in tt:
+ movable=[int(v) for v in tri if int(v) in gi]; fixed_source=[int(v) for v in tri if v not in set(gen)]
+ if len(movable)!=1 or not fixed_source:continue
+ v=movable[0];loc=list(tri).index(v);pts=cc[tri];raw=np.cross(pts[1]-pts[0],pts[2]-pts[0])*orient;scale=np.linalg.norm(raw)
+ for vi in fixed_source:
+  d=dd[vi];row=np.zeros(len(idx)*3)
+  for axis in range(3):
+   test=pts.copy();test[loc,axis]+=.001;n=np.cross(test[1]-test[0],test[2]-test[0])*orient;row[gi[v]*3+axis]=(n-raw)@d/scale
+  C.append(row);lo.append(.2-raw@d/scale)
+# Geometric obstacle support constraints from the three exact remaining mantle-contact faces.
+prior=np.load(O/'constrained-midfield.npz');source_points=a['points'];source_faces=a['triangles'];outer_map={int(s):i for i,s in enumerate(mid['outer_source_ids'])}
+for face in [10958,10959,10976]:
+ q=source_points[source_faces[face]];n=np.cross(q[1]-q[0],q[2]-q[0]);n/=np.linalg.norm(n)
+ for sid in [186439,186440]:
+  v=outer_map[sid];offset=prior['director'][v]*mid['half_thickness'][v];row=np.zeros(len(idx)*3);row[gi[v]*3:gi[v]*3+3]=n*.001
+  C.append(row);lo.append(.0002-(cc[v]-offset-q[0])@n)
+K=np.kron(B.T@B+fidelity**2*np.eye(len(idx)),np.eye(3));C=np.array(C);lo=np.array(lo)
+opt=minimize(lambda x:.5*x@K@x,np.zeros(len(idx)*3),jac=lambda x:K@x,constraints=[LinearConstraint(C,lo,np.inf)],method='SLSQP',options={'ftol':1e-10,'maxiter':500}); print('endpoint constrained solve',opt.success,opt.message, 'min residual',np.min(C@opt.x-lo));c.reshape(-1,3)[idx]+=opt.x.reshape(-1,3)/1000
+center=mid['center'].copy();gen=mid['generated_pair_indices'];uv=mid['uv'];center[gen[np.flatnonzero(active[1:6].ravel())]]=c[1:6].reshape(-1,3)[np.flatnonzero(active[1:6].ravel())];tris=mid['triangles'];original=mid['original_director'];newd=mid['new_director'].copy();p=center[tris];raw=np.cross(p[:,1]-p[:,0],p[:,2]-p[:,0]);fn=raw/np.linalg.norm(raw,axis=1)[:,None];sign=1 if np.median(np.einsum('fi,fvi->fv',fn,original[tris]))>0 else -1;fn*=sign;incident=[[] for _ in center]
+for j,tr in enumerate(tris):
+ for i in tr:incident[i].append(j)
+fails=[];margins=[]
+for i in gen:
+ if .2<=uv[i,1]<=.8:continue
+ normals=fn[incident[i]];d=np.sum(raw[incident[i]],axis=0)*sign;d/=np.linalg.norm(d)
+ res=minimize(lambda x:.5*np.sum((x-d)**2),d,jac=lambda x:x-d,constraints=[LinearConstraint(normals,.1,np.inf)],method='SLSQP',options={'ftol':1e-12,'maxiter':300})
+ if not res.success:fails.append({'index':int(i),'message':res.message})
+ x=res.x/np.linalg.norm(res.x);newd[i]=x;margins.append(float(np.min(normals@x)))
+points=a['points'].copy();ids=a['source_indices'];where={int(s):i for i,s in enumerate(ids)};outer=mid['outer_source_ids'];inner=mid['inner_source_ids'];half=mid['half_thickness'];norm=a['normals'].copy()
+for i in gen:
+ if .2<=uv[i,1]<=.8:continue
+ oi=where[int(outer[i])];ii=where[int(inner[i])];points[oi]=center[i]-newd[i]*half[i];points[ii]=center[i]+newd[i]*half[i];norm[oi]=-newd[i];norm[ii]=newd[i]
+for sid,si,ti,side,fraction in field['generated_vertex_map']:
+ if int(side)!=2:continue
+ i=gen[(int(si)-1)*57+int(ti)];points[where[int(sid)]]=center[i]+newd[i]*half[i]*(2*fraction-1)
+res={k:a[k] for k in a.files};res.update(points=points,normals=norm);np.savez_compressed(O/(prefix+'-assembly.npz'),**res);np.savez_compressed(O/(prefix+'-midfield.npz'),points=center,triangles=tris,center=center,director=newd,uv=uv,outer_source_ids=outer,inner_source_ids=inner,generated_pair_indices=gen)
+cos=np.einsum('fi,fvi->fv',fn,newd[tris]);disp=np.linalg.norm(points-base['points'],axis=1);cd=np.linalg.norm(center-mid['center'],axis=1);rep={'hypothesis':'Constrained thin-plate minimization removes near-antiparallel lateral center folds before offsetting. Fixed source interfaces and unaffected central strip; preserve original paired wall thickness.','method':f'Constrained anisotropic thin-plate, physical step ratio3, displacement regularizer{fidelity}; fixed endpoint director half-spaces margin0.2; obstacle plane supports faces10958/10959/10976 at0.2mm; area-weighted directors projected into incident normal cone margin0.1.','center_moved_vertices':int((cd>1e-12).sum()),'center_displacement_max_mm':float(cd.max()*1000),'center_displacement_p95_mm':float(np.percentile(cd[gen],95)*1000),'shell_displacement_max_mm':float(disp.max()*1000),'mixed_director_faces':int(((cos.min(1)<0)&(cos.max(1)>0)).sum()),'nonpositive_director_products':int((cos<=0).sum()),'cone_failures':fails,'cone_margin_min':min(margins),'source_vertices_exact':bool(np.array_equal(points[~a['generated_vertices']],base['points'][~a['generated_vertices']])),'central_center_exact':bool(np.array_equal(c[1:6,12:45],c0[1:6,12:45])),'thickness_min_mm':float(half[gen].min()*2000),'thickness_max_mm':float(half[gen].max()*2000),'triangles':len(a['triangles']),'provenance':{'input':'lateral_v7/evidence/director-cone-assembly.npz','source_geometry':'integration_v6/evidence/seam-hermite-physical-7p5-assembly.npz','only_generated_vertices_moved':True,'connectivity_preserved':True,'source_orientation_preserved':True,'face_parts':'0 cap;1 bridge;2 restored mantle','source_indices_preserved':True}}
+(O/(prefix+'-build.json')).write_text(json.dumps(rep,indent=2));print(json.dumps(rep,indent=2))

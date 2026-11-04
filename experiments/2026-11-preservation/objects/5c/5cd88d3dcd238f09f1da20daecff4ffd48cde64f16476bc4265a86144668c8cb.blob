@@ -1,0 +1,20 @@
+from pathlib import Path
+O=Path(__file__).resolve().parent
+exec(compile((O/'ray_diagnosis.py').read_text().split("views={'left-ear'")[0],str(O/'ray_diagnosis.py'),'exec'))
+z=np.load(B/'shell_band_v3/evidence/band-source.npz');bvh['render_source_band']=BVHTree.FromPolygons(z['points'].tolist(),z['triangles'].tolist(),all_triangles=True)
+b=meshes['band'];nsub=20;bc=np.array([[i/nsub,j/nsub,1-(i+j)/nsub] for i in range(nsub+1) for j in range(nsub+1-i)]);allrows=[]
+for fi in np.where(b['face_parts']==0)[0]:
+ t=b['points'][b['triangles'][fi]];uv=bc@b['source_uv'][b['triangles'][fi]];pts=bc@t;n=np.cross(t[1]-t[0],t[2]-t[0]);n/=np.linalg.norm(n);sel=(uv[:,1]>=5-1e-10)&(uv[:,1]<=11+1e-10)&(pts[:,1]<-.28)
+ for bary,p,v in zip(bc[sel],pts[sel],uv[sel]):
+  r=[fi,*v,*p,*n];ori=p+n*.015
+  for ob in ['shell','render_source_band','source_shell','anatomy']:
+   hit=bvh[ob].ray_cast(Vector(ori),Vector(-n),.04)
+   if hit[0] is None or np.dot(hit[1],-n)>=0:r.extend([np.nan,-1])
+   else:r.extend([np.dot(np.array(hit[0])-p,n)*1000,hit[2]])
+  allrows.append(r)
+a=np.array(allrows);columns=['band_face','u','v','x','y','z','nx','ny','nz','current_shell_position_mm','current_shell_face','render_band_position_mm','render_band_face','source_shell_position_mm','source_shell_face','anatomy_position_mm','anatomy_face'];inv=(a[:,9]>.01)&(a[:,11]-a[:,13]>.01);marginal=(a[:,9]>-.01)&(a[:,11]-a[:,13]>.01)
+np.savez_compressed(O/'valley-dense-map.npz',samples=a,inversion=inv,near_inversion=marginal,columns=np.array(columns))
+summary={'samples':len(a),'sample_rule':'20 uniform barycentric subdivisions per exterior face; edge duplicates intentionally retained. v in [5,11], y<-0.28m. Not area-uniform and percentages are not visible/physical area.','inversions':int(inv.sum()),'inversion_band_faces':np.unique(a[inv,0]).astype(int).tolist(),'inversion_shell_faces':np.unique(a[inv,10]).astype(int).tolist(),'near_inversion_band_faces':np.unique(a[marginal,0]).astype(int).tolist(),'inversion_uv_min':a[inv,1:3].min(0).tolist(),'inversion_uv_max':a[inv,1:3].max(0).tolist(),'shell_ahead_mm_quantiles':np.percentile(a[inv,9],[0,50,95,100]).tolist(),'source_band_ahead_mm_quantiles':np.percentile(a[inv,11]-a[inv,13],[0,50,95,100]).tolist(),'u_bins':[]}
+for u in range(24,161,8):
+ sel=(a[:,1]>=u)&(a[:,1]<u+8);v=a[sel&inv];summary['u_bins'].append({'u_range':[u,u+8],'samples':int(sel.sum()),'inverted_samples':len(v),'max_shell_ahead_mm':float(v[:,9].max()) if len(v) else None,'v_range_with_inversion':[float(v[:,2].min()),float(v[:,2].max())] if len(v) else None})
+(O/'valley-dense-summary.json').write_text(json.dumps(summary,indent=2));print(json.dumps(summary,indent=2))

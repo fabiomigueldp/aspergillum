@@ -1,0 +1,7 @@
+# Colar no recorte estrutural de 820 faces — rejeitado
+
+Prova com o mesmo método e parâmetros, sem preenchimento central e sem salvar .blend. Cada camada tem 302 vértices de borda e 604 triângulos. Anéis externos preservados exatamente; espessura pareada herdada 4,238–5,987 mm (o novo contorno não tem mínimo 4,842 mm do recorte anterior). Largura do colar 0,172–2 mm.
+
+Resultado: zero pares com pele nas duas camadas, zero pares não adjacentes internos, zero triângulos degenerados, delta após avaliação zero. Persistem **2 pares não adjacentes com tecido preservado**, ambos na camada interna. A face original atingida está registrada em `colliding_outside_source_faces` no JSON.
+
+Portanto rejeitado antes do centro. O contorno estruturalmente limitado não basta para garantir um colar separado. Não foi ampliado novamente, não foi salvo candidato e V75 permanece intacta. Próximo método teria de controlar direção/tangente local da conexão contra a superfície preservada, não simplesmente aumentar a máscara ou ignorar os dois pares.

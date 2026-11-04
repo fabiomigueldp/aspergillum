@@ -17,7 +17,7 @@ O título anterior congelava largura/profundidade na abertura. Agora acompanha a
 
 O campo `frontal` representa Guadalupe no Clássico, mas tem outra semântica nos modelos arquitetônicos. Abrir uma receita arquitetônica e voltar ao Clássico não pode ativar Guadalupe por interpretar um papel de centro como imagem. A apresentação agora consulta a estrutura do desenho antes de inferir essa escolha. O codec não muda.
 
-O fechamento agora invalida os callbacks antes de chamar `close()`. Escolhas e ações exigem tela aberta e sessão válida. Isso impede fechamento duplicado, Aplicar após Cancelar e aplicação tardia após o fechamento nativo. O resultado ainda passa pela revalidação e pelo commit existentes.
+O fechamento agora invalida os callbacks antes de chamar `close()`. Escolhas e ações exigem tela aberta e sessão válida. Isso impede fechamento duplicado, Aplicar após Cancelar e aplicação tardia após o fechamento nativo. Se o fechamento falha deixando a tela aberta, é possível tentar novamente; uma falha em Aplicar não deixa um acabamento pendente para Cancelar ou fechar nativamente depois. O resultado ainda passa pela revalidação e pelo commit existentes.
 
 ## API e verificação
 
@@ -25,9 +25,11 @@ Somente controles e observables dos tipos estáveis instalados de `@minecraft/se
 
 Fonte primária: [CustomForm](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server-ui/customform?view=minecraft-bedrock-stable), consultada em 04/11/2026, conferida contra os tipos locais. A página também apresenta funções em pré-lançamento; elas não são usadas.
 
-`tests/helpers/native-ui.ts` executa o menu real com um adaptador de controles. Os testes cobrem cancelamento, cliques repetidos, fechamento nativo, expiração, escolhas ocultas, dimensões nas quatro frentes, round-trip de Guadalupe nas receitas existentes e material/seções nos sete modelos e dez toalhas. As regressões foram reproduzidas contra a main anterior antes de portar a correção.
+`tests/helpers/native-ui.ts` executa o menu real com um adaptador de controles. Os testes cobrem cancelamento, cliques repetidos, fechamento nativo, erros síncronos antes e depois de ocultar a tela, expiração, escolhas ocultas, dimensões nas quatro frentes, round-trip de Guadalupe nas receitas existentes e material/seções nos sete modelos e dez toalhas. As regressões foram reproduzidas contra a main anterior antes de portar a correção.
 
-Validação desta revisão: check completo do Altare e da raiz aprovados; 116 testes finais do Altare (19 de apresentação), 107 testes da raiz e 83 do viewer, sem falhas. A mídia regenerada pelo pipeline raiz foi excluída da mudança e restaurada ao HEAD.
+Validação do porte inicial: check completo do Altare e da raiz aprovados; 116 testes do Altare (19 de apresentação), 107 testes da raiz e 83 do viewer, sem falhas. A mídia regenerada pelo pipeline raiz foi excluída da mudança e restaurada ao HEAD. A recuperação de falhas de fechamento acrescenta quatro testes de apresentação, reproduzidos com falha antes da correção.
+
+Validação do fechamento revisado: check completo do Altare aprovado, com 120 testes (23 de apresentação); raiz com 123 testes, typecheck, bundle, validações estruturais e documentação aprovados. Os 83 testes do viewer passaram no check completo anterior desta rodada. Nenhum asset de áudio regenerado foi mantido no diff.
 
 O adaptador não prova aparência, foco, toque, controle ou o comportamento exato do host Bedrock. O teste no Minecraft continua reservado ao usuário. Não foi gerado nem publicado um pacote novo; o próximo empacotamento deve usar uma versão inédita, sem reutilizar uma versão já importada.
 

@@ -1,0 +1,9 @@
+# V67 — seções regulares e menor afastamento lateral
+
+Cópia reversível de V63. Translação rígida da mão(-30,+80,-100)mm, metade do deslocamento lateral deV66, sem alteração de dedos. Cap inferior escala radial75%. Ponte regular128 amostras×23 anéis internos, coordenadas de seções filtradas em harmônicos baixos sem alterar contornos compartilhados. Controle intermediário lateral até35mm e restrição da parede interna por raycast contra torso imóvel:137 vértices deslocados até16,174mm para folga-alvo4mm. Não se trata de medida real da referência.
+
+Auditoria: zero auto-interseções e zero arestas não-manifold; torso/manga superior delta0; outros objetos idênticos aV63, incluindo Menino. Mão/Menino zero pares. Contatos preexistentes túnica/Menino têm mesmas contagens. Punho: contatos só raiz face-set24,62 vértices internos, profundidade máxima6,995mm, nenhum distal interno e nenhuma ambiguidade de classificação por três direções.
+
+VISUAL AINDA NÃO APROVADO: estrias longitudinais no miolo foram bastante reduzidas e mão se aproxima da posição lateral anterior, mas restam serrilhas nas bordas compartilhadas, abaulamento e afunilamento abrupto/S da manga. A ponte curta precisa inverter direção para alcançar o punho posterior preservando a manga superior; topologia correta e seções regulares não resolvem sozinhas essa incoerência de silhueta. Submeter à revisão, não substituir V63 nem declarar final. Não repetir microajustes de tangentes.
+
+Rollback: ocultar Maria — túnica manga distal V67 reversível; reexibir Maria — túnica e mangas integradas; TESTE67 da mão=0. Comparativos contra V63 eV66b mantêm câmera/luz/resolução. Scripts e métricas locais preservados.

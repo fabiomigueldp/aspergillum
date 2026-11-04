@@ -1,0 +1,28 @@
+import bpy,json
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+from mathutils.geometry import intersect_ray_tri
+from pathlib import Path
+r=str(Path(__file__).resolve().parent)+'/'
+bpy.ops.wm.open_mainfile(filepath=r+'V49-child-hand-trial.blend',use_scripts=False)
+h=bpy.data.objects['Menino — mão anatômica'];t=bpy.data.objects['Menino — túnica e mangas contínuas'];k=h.data.shape_keys.key_blocks[-1];allpairs=[];states=[]
+for val in [0,1]:
+ k.value=val;bpy.context.view_layer.update();dg=bpy.context.evaluated_depsgraph_get();hm=h.evaluated_get(dg).to_mesh();tm=t.evaluated_get(dg).to_mesh();hm.calc_loop_triangles();tm.calc_loop_triangles()
+ hp=[h.matrix_world@v.co for v in hm.vertices];tp=[t.matrix_world@v.co for v in tm.vertices];hf=[tuple(f.vertices) for f in hm.polygons];tf=[tuple(f.vertices) for f in tm.polygons];hb=BVHTree.FromPolygons(hp,hf);tb=BVHTree.FromPolygons(tp,tf);pairs=set(hb.overlap(tb));allpairs.append(pairs)
+ states.append((hp,tp,hf,tf,tb))
+ h.evaluated_get(dg).to_mesh_clear();t.evaluated_get(dg).to_mesh_clear()
+report={}
+for label,pairs,idx in [('added',allpairs[1]-allpairs[0],1),('removed',allpairs[0]-allpairs[1],0),('all_after',allpairs[1],1)]:
+ hp,tp,hf,tf,tb=states[idx];data=[]
+ for a,b in sorted(pairs):
+  ids=hf[a];base=[h.data.vertices[i].co for i in ids];p=sum((hp[i] for i in ids),Vector())/len(ids)
+  data.append({'hand_face':a,'tunic_face':b,'hand_faceset':h.data.attributes['.sculpt_face_set'].data[a].value,'original_z_range':[min(v.z for v in base),max(v.z for v in base)],'world_center':list(p)})
+ report[label]=data
+hp,tp,hf,tf,tb=states[1]; nonroot={i for i,v in enumerate(h.data.vertices) if v.co.z<1.17};neg=[];dist=[]
+for i in nonroot:
+ loc,n,face,d=tb.find_nearest(hp[i]);signed=(hp[i]-loc).dot(n);dist.append(d)
+ if signed<0:neg.append([i,signed])
+report['nonroot_vertices_original_z_lt_1_17']={'count':len(nonroot),'negative_nearest_normal_count':len(neg),'min_unsigned_distance':min(dist),'negative_entries':neg}
+report['original_hand_z_range']=[min(v.co.z for v in h.data.vertices),max(v.co.z for v in h.data.vertices)]
+json.dump(report,open(r+'V49-root-contact-detail.json','w'),indent=2)
+print({x:{'pairs':len(report[x]),'zrange':[min(v['original_z_range'][0] for v in report[x]),max(v['original_z_range'][1] for v in report[x])]} for x in ['added','removed','all_after']});print(report['nonroot_vertices_original_z_lt_1_17'])

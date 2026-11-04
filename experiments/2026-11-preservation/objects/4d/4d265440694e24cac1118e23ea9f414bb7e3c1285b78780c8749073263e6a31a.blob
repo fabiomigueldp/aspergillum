@@ -1,0 +1,52 @@
+{
+  "method": "2048px orthographic binary union of native shell, V5 band and part15 triangles; no halo or other pieces, no alpha expansion, lighting or normals. Red=removed coverage, blue=added. Horizontal scanline shift can overstate near-horizontal contour movement; bidirectional nearest boundary distance is also reported. Both are view-limited and raster-quantized, not a 3D silhouette guarantee.",
+  "inputs": [
+    {
+      "path": "paz-bedrock-v75-prototype-20261103/body_interface_v8/anatomy_fit/baseline-welded.npz",
+      "sha256": "495ccfd3beb46a61e1f0846471f8f8be61c511606dcf20c2c72d0d6d5a36be15"
+    },
+    {
+      "path": "paz-bedrock-v75-prototype-20261103/body_interface_v8/anatomy_fit/inward-0p5mm-iteration00.npz",
+      "sha256": "c1971f80ca5bd99a8d51461823a42e03ed6400282e31a18586602cd0216b4519"
+    }
+  ],
+  "views": {
+    "front": {
+      "boundary_bidirectional_nearest_max_pixels": 1.0,
+      "boundary_bidirectional_nearest_p95_pixels": 0.0,
+      "boundary_bidirectional_nearest_max_mm": 0.4150390625,
+      "xor_coverage_pixels": 5,
+      "coverage_pixels_before": 1266762,
+      "coverage_pixels_after": 1266757,
+      "changed_scanline_presence": 0,
+      "max_outer_edge_shift_pixels": 4.0,
+      "pixel_world_size_mm": 0.4150390625,
+      "max_outer_edge_shift_mm": 1.66015625
+    },
+    "profile": {
+      "boundary_bidirectional_nearest_max_pixels": 5.0,
+      "boundary_bidirectional_nearest_p95_pixels": 0.0,
+      "boundary_bidirectional_nearest_max_mm": 1.953125,
+      "xor_coverage_pixels": 377,
+      "coverage_pixels_before": 1433853,
+      "coverage_pixels_after": 1433476,
+      "changed_scanline_presence": 0,
+      "max_outer_edge_shift_pixels": 27.0,
+      "pixel_world_size_mm": 0.390625,
+      "max_outer_edge_shift_mm": 10.546875
+    },
+    "back": {
+      "boundary_bidirectional_nearest_max_pixels": 4.47213595499958,
+      "boundary_bidirectional_nearest_p95_pixels": 0.0,
+      "boundary_bidirectional_nearest_max_mm": 2.0744771275632816,
+      "xor_coverage_pixels": 248,
+      "coverage_pixels_before": 1382424,
+      "coverage_pixels_after": 1382176,
+      "changed_scanline_presence": 0,
+      "max_outer_edge_shift_pixels": 19.0,
+      "pixel_world_size_mm": 0.4638671875,
+      "max_outer_edge_shift_mm": 8.8134765625
+    }
+  },
+  "minecraft_test": false
+}

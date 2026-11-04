@@ -1,0 +1,124 @@
+{
+  "recommendation": "5600 is the only strict aggregate pass and the recommended candidate for visual examination, not publication certification. It is not pointwise lossless: 32 newly negative samples versus 36 recovered; maximum paired error increase is 0.0004819058 units.",
+  "ranking_policy": "Strict aggregate pass first. Among provisional-only candidates, 6000 has less contact degradation and 5200 saves more triangles; ordering is quality-first, not universal utility. Rejected candidates shown by decreasing budget.",
+  "all_candidates": "All six pass exact source positions/normals, pairing, protected row>=40 faces and vertices, rim112 vertices/edges, and existing independent topology/strict-crossing screen.",
+  "scope": "Same 20,000 V4 fixed source samples. Unchanged-band assembly count is arithmetic using supplied 1,912 triangle band; band bytes not independently compared in this review. No visual, game, SDF, tangency, clearance or general coplanar certificate.",
+  "rows": [
+    {
+      "name": "5600",
+      "triangles": 5600,
+      "assembled_triangles_with_fixed_band": 7512,
+      "assembled_saving_fraction": 0.07624200688637484,
+      "strict_aggregate_pass": true,
+      "provisional_pass": true,
+      "p95": 0.0004631315561709925,
+      "p99": 0.0009474661940475906,
+      "contact_fraction": 0.0636,
+      "newly_negative_samples": 32,
+      "recovered_samples": 36,
+      "strict_failures": [],
+      "provisional_failures": []
+    },
+    {
+      "name": "6000",
+      "triangles": 6000,
+      "assembled_triangles_with_fixed_band": 7912,
+      "assembled_saving_fraction": 0.027053615346778193,
+      "strict_aggregate_pass": false,
+      "provisional_pass": true,
+      "p95": 0.00046447982022073113,
+      "p99": 0.0009474661940475906,
+      "contact_fraction": 0.0642,
+      "newly_negative_samples": 8,
+      "recovered_samples": 0,
+      "strict_failures": [
+        "error_p95",
+        "new_negative_area_fraction"
+      ],
+      "provisional_failures": []
+    },
+    {
+      "name": "5200",
+      "triangles": 5200,
+      "assembled_triangles_with_fixed_band": 7112,
+      "assembled_saving_fraction": 0.12543039842597148,
+      "strict_aggregate_pass": false,
+      "provisional_pass": true,
+      "p95": 0.000465632502164226,
+      "p99": 0.0009474661940475906,
+      "contact_fraction": 0.0645,
+      "newly_negative_samples": 58,
+      "recovered_samples": 44,
+      "strict_failures": [
+        "error_p95",
+        "new_negative_area_fraction"
+      ],
+      "provisional_failures": []
+    },
+    {
+      "name": "4800",
+      "triangles": 4800,
+      "assembled_triangles_with_fixed_band": 6712,
+      "assembled_saving_fraction": 0.17461878996556812,
+      "strict_aggregate_pass": false,
+      "provisional_pass": false,
+      "p95": 0.0004771490595885552,
+      "p99": 0.0009474661940475906,
+      "contact_fraction": 0.0732,
+      "newly_negative_samples": 231,
+      "recovered_samples": 43,
+      "strict_failures": [
+        "error_p95",
+        "new_negative_area_fraction"
+      ],
+      "provisional_failures": [
+        "contact_within_limit"
+      ]
+    },
+    {
+      "name": "4400",
+      "triangles": 4400,
+      "assembled_triangles_with_fixed_band": 6312,
+      "assembled_saving_fraction": 0.22380718150516477,
+      "strict_aggregate_pass": false,
+      "provisional_pass": false,
+      "p95": 0.0004972576542058957,
+      "p99": 0.0010537356359418466,
+      "contact_fraction": 0.089,
+      "newly_negative_samples": 559,
+      "recovered_samples": 55,
+      "strict_failures": [
+        "error_p95",
+        "error_p99",
+        "new_negative_area_fraction"
+      ],
+      "provisional_failures": [
+        "p95_within_limit",
+        "p99_within_limit",
+        "contact_within_limit"
+      ]
+    },
+    {
+      "name": "4000",
+      "triangles": 4000,
+      "assembled_triangles_with_fixed_band": 5912,
+      "assembled_saving_fraction": 0.2729955730447614,
+      "strict_aggregate_pass": false,
+      "provisional_pass": false,
+      "p95": 0.000555966407409869,
+      "p99": 0.001032334553310647,
+      "contact_fraction": 0.123,
+      "newly_negative_samples": 1297,
+      "recovered_samples": 113,
+      "strict_failures": [
+        "error_p95",
+        "error_p99",
+        "new_negative_area_fraction"
+      ],
+      "provisional_failures": [
+        "p95_within_limit",
+        "contact_within_limit"
+      ]
+    }
+  ]
+}

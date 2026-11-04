@@ -1,0 +1,665 @@
+{
+  "version": "0.12.2",
+  "diagnostic": true,
+  "artSources": [
+    {
+      "path": "assets-src/guadalupe/reference-plates-v1.png",
+      "sha256": "0a6ccc3abd78d2cbe28492eaf4906dadb55f0536f3b44a42c4ecea6a7c69a286"
+    },
+    {
+      "path": "assets-src/atelier/embroidery-plates-v2.png",
+      "sha256": "0e8ecc51228d03e4153452d95f00a60336b649a5825b6654f3ac98208b21654b"
+    }
+  ],
+  "textureHashes": {
+    "packs/resource/textures/blocks/stone_0.png": "e6bbc5b253619244043bb4be80d3e92f9c13a1a81c4eb02938227af358b633de",
+    "packs/resource/textures/blocks/stone_0_normal.png": "129245260e8eff23b874653b29b600dd2797a40a071e18dbe806423366f69258",
+    "packs/resource/textures/blocks/stone_0_mer.png": "d6726afabf9ea8d662307cdf4584bc80d8078245287fdda4ec00c11b1c8cbf68",
+    "packs/resource/textures/blocks/stone_1.png": "8b6cd38d1a79f99ee5471f30ec75ca6881a1fc7645a97369bb72f4e21007e096",
+    "packs/resource/textures/blocks/stone_1_normal.png": "4b90671d31cef1ad4cd77c99a19acdc6b4567d0d9b3d8cbe89498610f93e7578",
+    "packs/resource/textures/blocks/stone_1_mer.png": "f7e2d0bb6d903642c628f4f4fa8417c936648fce60332180965194ee85c55058",
+    "packs/resource/textures/blocks/stone_2.png": "8c45055033ea07a38300564297eb4dfdd448454f5177285145f076ed37930420",
+    "packs/resource/textures/blocks/stone_2_normal.png": "fd621b91d5e487d5efa7d79433e14dda496f351533c28a60935ce862fa7e9ffd",
+    "packs/resource/textures/blocks/stone_2_mer.png": "66e9388224779488df4a023e5e2769678211cc1a33bbfbaf6bc76503f75489d8",
+    "packs/resource/textures/blocks/linen.png": "2929ae99d2625dda41bd77eac7f631bf2d03eea3a58988d6b426ce5832d77174",
+    "packs/resource/textures/blocks/linen_normal.png": "e9880f2cbfca8b706664803b44ead6e0a684354b70b7c3215e9d4297cae88aad",
+    "packs/resource/textures/blocks/linen_mer.png": "20e450b97d2d0f167abd2284538e9ee912e2a2e518be7bd3b7fdff19620bf265",
+    "packs/resource/textures/blocks/hem_short_plain.png": "fe42684f352c33f5d71ad98602fcd0d5056a5f9c79ec85594a22ee6e044dc7b4",
+    "packs/resource/textures/blocks/hem_short_plain_normal.png": "c79991f171e8be78ca7130c13b3ef97ee425c536480d9eac3dca92d588814519",
+    "packs/resource/textures/blocks/hem_short_plain_mer.png": "8719eb702dc1f03cc2a6f4e9eba4be9e21485d8122e5ee5ecc4204b9f930339d",
+    "packs/resource/textures/blocks/hem_short_gold.png": "2a563e5dc8dd7459b02e6f0745999c9cdb8f6d601b8e9657a4d02b40831de0f2",
+    "packs/resource/textures/blocks/hem_short_gold_normal.png": "bfe9a2868af60c255fe09c4e9f36742feea660d3b3b569ec7c3016a0f9a63235",
+    "packs/resource/textures/blocks/hem_short_gold_mer.png": "4ec64ebfb576c607908a4b05fa6e4b16860148ccc74a5c53092a6920d7ed0fc0",
+    "packs/resource/textures/blocks/hem_long_plain.png": "df5613b842d7c45cddaba6987aeb1e347826b363c712ea785ab16ea4fd85ba47",
+    "packs/resource/textures/blocks/hem_long_plain_normal.png": "6cc58e5ddb2ce40ba00f6a05920d6ce89920d22f05a9e5d9643c53e7ab8bc8d2",
+    "packs/resource/textures/blocks/hem_long_plain_mer.png": "8689f3816ff9789a09ea7310138413b4190d52e8aa5ae0bd840232fcfb66886a",
+    "packs/resource/textures/blocks/hem_long_gold.png": "09c08c4af6226494b0d45675fdc7fd114c5fa7e805ec86d74dddc7dde5b13cc8",
+    "packs/resource/textures/blocks/hem_long_gold_normal.png": "df35e00a4e67a0da919f938dac1e0db877b1990f474fdd4a22602bf2b3d274ed",
+    "packs/resource/textures/blocks/hem_long_gold_mer.png": "65cf4fc2ac2255ff8e57542628eb183f4841486e51a11081f6d6e0ab9888b9d1",
+    "packs/resource/textures/blocks/frontal_1.png": "6e06bcc509672c5b323afc442bd05bcb0c2eb4cdb527267028b23abbfa8713aa",
+    "packs/resource/textures/blocks/frontal_1_normal.png": "7e286fb55e8d9ea16142c25291c00ea0e03e5233433d90538752f570792e94ed",
+    "packs/resource/textures/blocks/frontal_1_mer.png": "a0e71345e9c7432c6c2fd30ac1b474c1894bd13755427bff6eee883b71b1a506",
+    "packs/resource/textures/blocks/frontal_2.png": "5ab8aaea0f715affe12dea816afb5ec9be71cadc0fc1685075069f5182bfe3c8",
+    "packs/resource/textures/blocks/frontal_2_normal.png": "101026af695abd9260a3b4ebc65f28308887e96e25e0bd940eff0a8184c1c639",
+    "packs/resource/textures/blocks/frontal_2_mer.png": "ba75343dc05287bc81d66505ad20abc8c960b761ba0c60ec27b3be5558feb096",
+    "packs/resource/textures/blocks/frontal_3.png": "8377b3e9d2908e986b7eb0cc37f035ec6f3f4ca1a87a0e62016db115793cbd6f",
+    "packs/resource/textures/blocks/frontal_3_normal.png": "de32c97d87e91d16923e4ffff2b9db8e54a407a2331d0b4e84307723f0fb7bae",
+    "packs/resource/textures/blocks/frontal_3_mer.png": "671ce3df229b332da05ac5cb735501bc4a562683a3fafa26c778bada7d94dd08",
+    "packs/resource/textures/blocks/frontal_4.png": "799b28273d8111ae2d1ef79ec9f2c4092fe6fe55c08b4ea2f9240cb63e0f6619",
+    "packs/resource/textures/blocks/frontal_4_normal.png": "5762f566789a4507be8057b77713eab1bd8ed9c707afff314f0be5e3a05a53f6",
+    "packs/resource/textures/blocks/frontal_4_mer.png": "b54ba39f2bf6a3f8f96a41ea880b84684dc81205e643898358c533b95de38eed",
+    "packs/resource/textures/blocks/frontal_5.png": "95d6e7eedd8830277d618ba4be2f500f8215cd331c8eab7b6c6929428c784a23",
+    "packs/resource/textures/blocks/frontal_5_normal.png": "cc9e26bcaaae75587c93fcd9b9bd9518c74d40c8f702c8cfaf9916cb8de670e6",
+    "packs/resource/textures/blocks/frontal_5_mer.png": "f45e4eaf557436b10b9982268eaeb4e2ba299f689b37af490d2c23540b14154c",
+    "packs/resource/textures/blocks/frontal_6.png": "f858305f25cd85a6cf41604eb28fad99ba82adc9b1cf90b437ef3a3790ac137e",
+    "packs/resource/textures/blocks/frontal_6_normal.png": "41c429008d4f2093b09872e0f66f499405ee165c67caf7937fdbc8ebdfcae0ad",
+    "packs/resource/textures/blocks/frontal_6_mer.png": "2320e1ba4bf28579c2f70525d72984be9cac9a196c739b7293835d846113a1c9",
+    "packs/resource/textures/blocks/frontal_7.png": "9defb087be9211b20e62358ed9541f5817601bd4eaa2c18d55bc8157daf8948a",
+    "packs/resource/textures/blocks/frontal_7_normal.png": "36fe138d8da190cc94dfc378f34a4efd00a122de0d40fa07ad91c6ee3cd4454a",
+    "packs/resource/textures/blocks/frontal_7_mer.png": "4ae6933ffb650ffe6286f8272438667f57c855617ac956d514399522e596b00c",
+    "packs/resource/textures/blocks/frontal_8.png": "e66a58af9f26ff536373ca14653ae50c2a5367654feb2a360e3c50a4f070068c",
+    "packs/resource/textures/blocks/frontal_8_normal.png": "843ebd624873c068e1a42c81b377fd3a0e7861191b4ce73f056fd23c4a2d446b",
+    "packs/resource/textures/blocks/frontal_8_mer.png": "eecae3098a107cf078fb87939305cf72913117fe00e090c730e5cf450b6d7704",
+    "packs/resource/textures/blocks/frontal_9.png": "d1eb66516626fbc8e4d1e30fdfa76f80227c1a65d774ee296b71c2fcf74cd96a",
+    "packs/resource/textures/blocks/frontal_9_normal.png": "9199f38d63c03b54e5701ff894547da8a29b7ab47db9d6cd0734165224e9e04d",
+    "packs/resource/textures/blocks/frontal_9_mer.png": "a3f81022044dedca3b53ae5f7aadc92931335d18d69f57bdd39d18938b12dcf9",
+    "packs/resource/textures/blocks/frontal_10.png": "138da1e444c37ea25d77023d4627232c7e4d07868b53e083023b9ebb08c5dd59",
+    "packs/resource/textures/blocks/frontal_10_normal.png": "80e86b750337b3c78acc2cd00f06023fecf4f2598439df838290796cc1769376",
+    "packs/resource/textures/blocks/frontal_10_mer.png": "a7b29407b8f02a4ac53c5714cad1a931987d0356ad8d1d992457ce800e084a9e",
+    "packs/resource/textures/blocks/frontal_11.png": "ebbbaa65e1b085be165e1d6b37684a52da605061dbfa1d44128ceff3d1ecfabe",
+    "packs/resource/textures/blocks/frontal_11_normal.png": "fd6eb05ddf8dc8638787018bb431ffe6ae65b1b77b2a87f7fc66d333dff1a80d",
+    "packs/resource/textures/blocks/frontal_11_mer.png": "b8b38bf7cfe7e31741718a18696a3f3e1abdf46b54cd7c4020243555956e20a2",
+    "packs/resource/textures/blocks/frontal_frame.png": "340eb819bc68a8872c5bd5d8ccc9b1c689777463b3d032081ea5a2de3f6f1e88",
+    "packs/resource/textures/blocks/frontal_frame_normal.png": "bf3b66999e46c0d59e3ef781e401595d923bdd31f236bb7aa099e80be33698a0",
+    "packs/resource/textures/blocks/frontal_frame_mer.png": "977bdef03b03b5517ca063cccd36ebdfc7f54ebe4d72a8e995ba7d225cc92d59",
+    "packs/resource/textures/blocks/atelier_walnut.png": "f780cb89fd0cbd6353534bc9a5df465242e65330243386d69d747e00167968f8",
+    "packs/resource/textures/blocks/atelier_walnut_normal.png": "20610915e93676d5440e582f8526eed1ccf581064e1c736ec78e59a7a77f6be0",
+    "packs/resource/textures/blocks/atelier_walnut_mer.png": "fbca3c542d270d05b7ac4aaa7f4c7228e987dfdd48b218fd5b1bc040cfb37c9c",
+    "packs/resource/textures/blocks/joinery_walnut_horizontal.png": "66624c3cd5ae70a32865104e6d188276a406905a9ad7c6b3743fa2d8cbb25e32",
+    "packs/resource/textures/blocks/joinery_walnut_horizontal_normal.png": "d27ea738d7dbe9d1b4e4fa9b2c96fd3fb6ad7f936669fdd025240555c22f2a43",
+    "packs/resource/textures/blocks/joinery_walnut_horizontal_mer.png": "fbca3c542d270d05b7ac4aaa7f4c7228e987dfdd48b218fd5b1bc040cfb37c9c",
+    "packs/resource/textures/blocks/textile_agnus_0.png": "7266dba3b442459f3549d775f16606a244ce896f6029a692992c02282c35a679",
+    "packs/resource/textures/blocks/textile_agnus_0_normal.png": "0ebb022e85c231c151b5c2366cc27c5cfe19d924c9d3d8c993068f062aaa9799",
+    "packs/resource/textures/blocks/textile_agnus_0_mer.png": "ead5ed2389ee58b623bbdcec388e3c3c9dd49cbdf255e892718e4d45f9477359",
+    "packs/resource/textures/blocks/textile_agnus_1.png": "65e07d4f0ccd0a9fcfa11ff854db06cdd6894cc792f51bd53d951c1bc2bf3722",
+    "packs/resource/textures/blocks/textile_agnus_1_normal.png": "5f8db0b382a8a3396f5ecd7a6faa067ecc1deab06d999d891f42280ac12419af",
+    "packs/resource/textures/blocks/textile_agnus_1_mer.png": "30ceb46c211ea3fcaef5435cee68e0ad006c0113dd40f8883ea736cce582845b",
+    "packs/resource/textures/blocks/textile_agnus_2.png": "f051616e8968f30d7db4a8e149a5561213e2ae107bf4577bde29cf4960ab5196",
+    "packs/resource/textures/blocks/textile_agnus_2_normal.png": "1ad1188b05e85487e69d7109a0e56ed92b911e1cd9cbee8eedb0c33202281dbb",
+    "packs/resource/textures/blocks/textile_agnus_2_mer.png": "73664479e70eff2c1ef91027e68c286e21278f5cf183132208d2531c78dc5cd6",
+    "packs/resource/textures/blocks/textile_agnus_3.png": "b938dd8127a144013cb25df1f74ca27e25f0209cb28b45361b33f2ee432e87d1",
+    "packs/resource/textures/blocks/textile_agnus_3_normal.png": "7fe05059502ce1c7c488320be0917274450cfa0e3e86cd0d9a38f3dd0beb143d",
+    "packs/resource/textures/blocks/textile_agnus_3_mer.png": "78154f6a2f16ee233d38f872276a1ccec3057c1c16c417d21dd4cee8c54f4c7e",
+    "packs/resource/textures/blocks/textile_ruby_0.png": "8acb0409e4c61646f64a1d669a1539f2071108dc8707fcf98f9c52dd220d3d7d",
+    "packs/resource/textures/blocks/textile_ruby_0_normal.png": "f19518197ac4b6e37097803fb23b3f2e98fc034a98ab0041925dd8f7e41a7b5e",
+    "packs/resource/textures/blocks/textile_ruby_0_mer.png": "c09ae10cca2e0706df732f2fa5155bcf353f5f364ed4a4de1ef461f4a5fcbeec",
+    "packs/resource/textures/blocks/textile_ruby_1.png": "9909e8652468e1e332f101feddafc84d4ba9aac44bbc5eb5887bd122faac6cca",
+    "packs/resource/textures/blocks/textile_ruby_1_normal.png": "4f574a6bf7c475aa4f3e0ff831518cc7cd82abffed6f81b8368faeb946a15988",
+    "packs/resource/textures/blocks/textile_ruby_1_mer.png": "f3681aac0355ac7c9fbd12cc649c782681f1e464d42172eb1048cbf35ce4c458",
+    "packs/resource/textures/blocks/textile_ruby_2.png": "3b26371c8aa1da0ee642e03c7f486e93071cac4199963bbce9ad792efdb940e3",
+    "packs/resource/textures/blocks/textile_ruby_2_normal.png": "28ff629e44ad047f3ab50c80b87fe89298a0ef2074128610e4e7d2c367c4338a",
+    "packs/resource/textures/blocks/textile_ruby_2_mer.png": "f8fd65c01d2cd254ed3d1681b7feb717fb23f6aeed3aeaf9f2493cccdb50c027",
+    "packs/resource/textures/blocks/textile_ruby_3.png": "c39890dfc1cdc7427c310ebeaa72dd04245a1bb608261bc9bc0c049ae81d1d54",
+    "packs/resource/textures/blocks/textile_ruby_3_normal.png": "a3e2a01a6d26ca4acd271957e95353934108f9bc8693de6ace35c85bdafa8a8f",
+    "packs/resource/textures/blocks/textile_ruby_3_mer.png": "479b0ab281f0532c76cba84c4f4ed40ecd7f7c28a91e7e6fa3451f59af1ea826",
+    "packs/resource/textures/blocks/textile_verdant_0.png": "311fea294dcc9a8b733969be14e72a48330880f1a59787f7c1f0ac0d12cb7b1f",
+    "packs/resource/textures/blocks/textile_verdant_0_normal.png": "a6212d12d276ea6f813106d6c4dfd0037568ea7fa68d10974fd7d7bd6bc8f970",
+    "packs/resource/textures/blocks/textile_verdant_0_mer.png": "89d6b64e62bc029f27241c1a4ddaa2e34746b0917dc34a8eb1578497a076f49c",
+    "packs/resource/textures/blocks/textile_verdant_1.png": "9f2900cf8ab0e3fb72874832e953a35d4f360d3d508e4cde0ef46da24185ec4b",
+    "packs/resource/textures/blocks/textile_verdant_1_normal.png": "698a96afb03fc1371415fdd4b1dfdd631e5b66e5326aaa91c96b00e917cade92",
+    "packs/resource/textures/blocks/textile_verdant_1_mer.png": "822e11f7c9cc24715f6910a07b9c587ab611aa155a72776361d537c715d4297e",
+    "packs/resource/textures/blocks/textile_verdant_2.png": "44876b258ee51c70f0a945302368432790007ac13339840d545e5355b8600f14",
+    "packs/resource/textures/blocks/textile_verdant_2_normal.png": "ca730ff5fbea55304bd350e555017d430b824de7522e4f0fd9b334ee14544c5a",
+    "packs/resource/textures/blocks/textile_verdant_2_mer.png": "7d57701c54c3daff0118981e1ab2c0a428649849f6a0a04f4ca176f681dca0e3",
+    "packs/resource/textures/blocks/textile_verdant_3.png": "1b9d6375835758815a34ba05570cfce4a40fc77fe9efcab9e5609d5e385fa2b4",
+    "packs/resource/textures/blocks/textile_verdant_3_normal.png": "d5243ebb7cba3402df161d068440f1b3ebfdb6685de0fb3db3233f4a6fbd13be",
+    "packs/resource/textures/blocks/textile_verdant_3_mer.png": "ad61d93d013faf11251702a16f71dfb1da34fffbaf1904495207d39d02bf63b5",
+    "packs/resource/textures/blocks/textile_requiem_0.png": "c45c41da24efccd8cf0333a68c6413e0d1d2e8457f2da5176751ecb03d536b41",
+    "packs/resource/textures/blocks/textile_requiem_0_normal.png": "eebed90c55d3d0a677c321d93304b4dd2036d26f19a11a73a6d07f027789ab3b",
+    "packs/resource/textures/blocks/textile_requiem_0_mer.png": "1b28c578b692ea1572540c0e5681ed40adb4282450fc5fe217cdcddddcddba45",
+    "packs/resource/textures/blocks/textile_requiem_1.png": "7d1c36d2b36215d9b26bac13cf5976c069d43dcb86a34b97910d229358c46003",
+    "packs/resource/textures/blocks/textile_requiem_1_normal.png": "6ba3daa54dcb814131ef36975f589535d32e7c1bd2ad7492ad40d03c8ada4b8a",
+    "packs/resource/textures/blocks/textile_requiem_1_mer.png": "3fb762ca7d5f62164e489e4417d7f4e48a45d9927a50047acc6c4e31b45c2939",
+    "packs/resource/textures/blocks/textile_requiem_2.png": "bea33e33e7428b6d3e0178eb754ba7b0bfa8324e2103d4f515feb9d7889d4779",
+    "packs/resource/textures/blocks/textile_requiem_2_normal.png": "95899d767b7b68efe120ee0b2e7a5d8a60a601db734ae37aa1b6877da03af928",
+    "packs/resource/textures/blocks/textile_requiem_2_mer.png": "c2f75d5194acab08928b1d694fd38f88e5843487f21cfc8a05747931d248414f",
+    "packs/resource/textures/blocks/textile_requiem_3.png": "e49bba842361004ab71be300fe5ba8335d375f0c042310a2e816a3a7fa85808e",
+    "packs/resource/textures/blocks/textile_requiem_3_normal.png": "f24b75205f440b54e02bb6d5a0d6b7a219ff0ee66874dcfb92fd3b5a4bb55940",
+    "packs/resource/textures/blocks/textile_requiem_3_mer.png": "73db514e235f0f54da68059b882bc08b6f2181882313700bd1d939aacfd8b3fe",
+    "packs/resource/textures/blocks/textile_ruby_0_white.png": "46b3ac9754677d4289dd0ff9b69856006c1bd9e913cf8549ea25b59e7fdd54e5",
+    "packs/resource/textures/blocks/textile_ruby_1_white.png": "db0b0aa045f46e26c52b21a69f52846e4b684242bce9766c420fabf3d2f2692f",
+    "packs/resource/textures/blocks/textile_ruby_2_white.png": "6ec4e8c73c6c1b6f6b52972aea1acf42e637c90318a177bede644dc31d8637ef",
+    "packs/resource/textures/blocks/textile_ruby_3_white.png": "62e438e83a07b7ff432ee1c1033727f219d32eaf0c7ad255129fc0223f80e5f0",
+    "packs/resource/textures/blocks/textile_ruby_0_green.png": "555027fb3237865bd99b47c9e227a9b6c6cc387a04102716ddedc5eaeb829e93",
+    "packs/resource/textures/blocks/textile_ruby_1_green.png": "9794561422e4abf674c54a319cb3b4da0840f5f8801677ea91b5f211cbe40e52",
+    "packs/resource/textures/blocks/textile_ruby_2_green.png": "1b816fe5ea0b59dd637cc8e0eb2c8d4360786bcecfa42d3ad6f54b4d0802a936",
+    "packs/resource/textures/blocks/textile_ruby_3_green.png": "4e6916e17e5dc97ddd599bbe54988ac7775e6b71daa737051a343524a07dc38c",
+    "packs/resource/textures/blocks/textile_ruby_0_purple.png": "957e7b7f946ebe7156c4efa7b12f0667208f769e575d77021510e9775902bda8",
+    "packs/resource/textures/blocks/textile_ruby_1_purple.png": "4608e646a39341ad3561275b75ac216dbae17dde61061ea5dff5f12faac1fb9a",
+    "packs/resource/textures/blocks/textile_ruby_2_purple.png": "986c79af6f8c8b9d26ea8ecf8bd490afe56ed9b37b5c823032f988072f58ab9b",
+    "packs/resource/textures/blocks/textile_ruby_3_purple.png": "6723b96c2ef1c0869261e6eb4f09d55811c24e45d36a229f756df602b1e781e3",
+    "packs/resource/textures/blocks/textile_ruby_0_rose.png": "10d340499b7993fc89389a8a11fce6ab8cbdd51ae01ecd05782db15f85410648",
+    "packs/resource/textures/blocks/textile_ruby_1_rose.png": "5dcff8e14b297888bf3cb3335d6b0daea249a5bdd95b65ad87bbd391d74c06de",
+    "packs/resource/textures/blocks/textile_ruby_2_rose.png": "2a4885eebd5319b08baf83af93d075c64c2c9bd6c7731af6f289bc7b8d82ab52",
+    "packs/resource/textures/blocks/textile_ruby_3_rose.png": "4124420afeaf59ff62b679105eb08f8eda832ae484976d3391e18f369bd51fe4",
+    "packs/resource/textures/blocks/textile_ruby_0_black.png": "8918bef2eca6524b766512788c9fc83caf33db635d87458d50aa50ebef144684",
+    "packs/resource/textures/blocks/textile_ruby_1_black.png": "8acf8d0888943faeee3e90354b25a936da70ef0d80d9a6ab8d287bab0ef425ad",
+    "packs/resource/textures/blocks/textile_ruby_2_black.png": "c53ba28dc0518c55a099ed1f78ca8ab5dbc39dba50dca1697332444842bd5446",
+    "packs/resource/textures/blocks/textile_ruby_3_black.png": "b8118736898f0962dc203584fe4bd0e57300ada0578e0a21db5e7cf2be120f24",
+    "packs/resource/textures/blocks/textile_ruby_0_gold.png": "5b9acbb2dec96b41ecc5d15992eea0a308cf2df93c634c4b3444572c36280df3",
+    "packs/resource/textures/blocks/textile_ruby_1_gold.png": "4d09a883e4556cc1a215792f8dc573957f61a46a594f900bf9aa24ab7f580233",
+    "packs/resource/textures/blocks/textile_ruby_2_gold.png": "f779e1ec3c9dbb680fb308633f1473a7166a63071e6b81dd07fa059765855e24",
+    "packs/resource/textures/blocks/textile_ruby_3_gold.png": "b065e6aceb5f24f8ba1b6a5f08ec578fb5d5bad04a666c27ba9b4199187255b4",
+    "packs/resource/textures/blocks/textile_ruby_0_silver.png": "87d7375bf74e8f73a4464e0655edcbee2ebcadb547f5220f10198609fe2660a0",
+    "packs/resource/textures/blocks/textile_ruby_1_silver.png": "632036ab161da0d5e74a6038a4c2db4d8095af3cd51ad26ab3aff2428316c8b6",
+    "packs/resource/textures/blocks/textile_ruby_2_silver.png": "cec99d1b53700f4fe2b8ce58cbc4df5d8ddd534c9446cf41558b77a4644c526a",
+    "packs/resource/textures/blocks/textile_ruby_3_silver.png": "d2f31f603767510ede869c217046a11f96c6e297e4e65e80e5b52d2ecc1019e0",
+    "packs/resource/textures/blocks/atelier_agnus.png": "a8bfc9531cd32581786af9f928db79d35c1016b336d8ada7d478577035410b4d",
+    "packs/resource/textures/blocks/atelier_agnus_normal.png": "2a1ebfcc9ce60f87de616a941addffb5b8a24a03b179822c33ea72f6573c7d3e",
+    "packs/resource/textures/blocks/atelier_agnus_mer.png": "b8d3fbd161e9bf0c909edc8d826ce107310db57391b375c9d3445acebcd1b0e7",
+    "packs/resource/textures/blocks/crossbrace_inlay.png": "956784eb27b97ba8676cdf6908b231bd134b711fe0cc8eb91e12e5a001b41e37",
+    "packs/resource/textures/blocks/crossbrace_inlay_normal.png": "904a38a665026df5a6719bf1f94b54e1fbc82588c3ba023916d88b28e1d838f6",
+    "packs/resource/textures/blocks/crossbrace_inlay_mer.png": "e0a5836462f0824832ac70be09b389f197e7ec183712bb5bfa20b9ac25f63b9f",
+    "packs/resource/textures/blocks/seam_white_gold.png": "abeef1ad08079a0eed9e186e5e78948e41d80a1cbecb1730a98fa177834585b9",
+    "packs/resource/textures/blocks/seam_white_gold_normal.png": "8a37dc594ed6e20a0cb4a1365a1bae1489b17c23c1fcd2acf6a80622b97fae6e",
+    "packs/resource/textures/blocks/seam_white_gold_mer.png": "385e14c109a418d6f3957d3c9461385f1e7e2301c6bf9719a7d8271d29b845b1",
+    "packs/resource/textures/blocks/seam_red_gold.png": "e721f1dd53a15c736f8674c94100c84f25e0871283a3ac5aead1da4afa17cb11",
+    "packs/resource/textures/blocks/seam_green_gold.png": "9521d1ea44bf991138b29b5076168fb83de40b69402289c1bbe6681e385a9a86",
+    "packs/resource/textures/blocks/seam_purple_gold.png": "a34f0d6357c316f5f87cf5ef03b679ddde38b1ce41d910306eadaea5c6f11ea7",
+    "packs/resource/textures/blocks/seam_rose_gold.png": "4dd572515a9f9a63e994a06c8d09cd1ee8dcbd5aa906a8d72feb39b35a33d267",
+    "packs/resource/textures/blocks/seam_black_gold.png": "b029321e4a2308a9e18f29688b70717dfa423371e9935b9f80452c240f69e6ac",
+    "packs/resource/textures/blocks/seam_gold_gold.png": "d779837e7b876d297990c8c9505bea1e65519f75d71eadf64d2c8a0af1bbf197",
+    "packs/resource/textures/blocks/seam_silver_gold.png": "9e42ce336e81c4f4004c1382ceac72c2ea991ca7526e092384ed41fe8a522777",
+    "packs/resource/textures/blocks/seam_black_silver.png": "33b0bee5e6a0ab12cca7a48026f8c22d3b007173e8edcd71af626fed8ba1a6ba",
+    "packs/resource/textures/blocks/ornate_panel.png": "6424f75bb63c3575d31fc317bf877866bf414d9b0be7d0d465a85d3d4da7f1e0",
+    "packs/resource/textures/blocks/ornate_panel_normal.png": "cdda2d8af422dec98fa2768043e0134af63467a66818bfbe71f50bae7d8b2c83",
+    "packs/resource/textures/blocks/ornate_panel_mer.png": "3ae7ca91612f12fbebc3634ad41b1bbcb2ad65869c34dc148c827ee99e41bd4f",
+    "packs/resource/textures/blocks/ornate_gilt.png": "a4a5cb3c0e0c14d399dec6792669ca1defa6889d9d65cb4b3658c1ab79911e6b",
+    "packs/resource/textures/blocks/ornate_gilt_normal.png": "37414c4e59d196bac7099ed926dc5a6e642dbc08287c15d579c5ee2fbcd2fdf8",
+    "packs/resource/textures/blocks/ornate_gilt_mer.png": "5f812a9031e2caad8a62ecff6b9dd3c4f5e7f050e331ea0760e6bfd05bc19e42",
+    "packs/resource/textures/blocks/ornate_lace.png": "86a9ccf417d9f1d90ee20b3821e931c8e1f581dd65eae52a2b3560cd235976f2",
+    "packs/resource/textures/blocks/ornate_lace_normal.png": "e620091ac5c82d1b2b75be0e1989a18aeb257f30333da77765e62de3fba4ac5b",
+    "packs/resource/textures/blocks/ornate_lace_mer.png": "2c7c820566ac6bedb5c7b581522d7daeb89e0d23c326169deefd4dd627def3e8",
+    "packs/resource/textures/blocks/ornate_column.png": "7c3ac48e3e399611ceb7e359b519eb320078731a1ee0feb90553c5895b66247b",
+    "packs/resource/textures/blocks/ornate_column_normal.png": "590e161421de5c996a750db5e06c2afb9753a1209958aa2736b2927c0de4773c",
+    "packs/resource/textures/blocks/ornate_column_mer.png": "dbeafcea11961dfa990083ee4fe02418ff0d470757b805d326e14ed43517c951",
+    "packs/resource/textures/blocks/ornate_moulding.png": "11bc6dc0b5de771e87fa37b9823b8b420713413c58d82c21a4ccad2d6ef34116",
+    "packs/resource/textures/blocks/ornate_moulding_normal.png": "1e4a6933cd23b66288433a397ee3262de33c9419d64030c510188a105e5cf91b",
+    "packs/resource/textures/blocks/ornate_moulding_mer.png": "0ec0c581be4a71b46585a25d24d41537828efeec265e1a9495fce245bf55be92",
+    "packs/resource/textures/blocks/ogive_stone_0.png": "49ad674b7f41709639a2f9efd6f134a8f24f4c8e8d1954c1a616757bc94dda6b",
+    "packs/resource/textures/blocks/ogive_stone_1.png": "6ac5df0a6afd4057ca16154af319992d6ca6316ffd908216dbc2d1bf0e91e384",
+    "packs/resource/textures/blocks/ogive_atelier_walnut.png": "ff2fda6b0b530e685f94e5cf97fba4a66245b98db1b2941bdf3f8f63e622df3d"
+  },
+  "materials": [
+    {
+      "id": "stone_0",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "stone_1",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "stone_2",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "linen",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "hem_short_plain",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "hem_short_gold",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "hem_long_plain",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "hem_long_gold",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "frontal_1",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "frontal_2",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "frontal_3",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "frontal_4",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "frontal_5",
+      "width": 256,
+      "height": 128
+    },
+    {
+      "id": "frontal_6",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "frontal_7",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "frontal_8",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "frontal_9",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "frontal_10",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "frontal_11",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "frontal_frame",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "atelier_walnut",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "joinery_walnut_horizontal",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "textile_agnus_0",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "textile_agnus_1",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "textile_agnus_2",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "textile_agnus_3",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "textile_ruby_0",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "textile_ruby_1",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "textile_ruby_2",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "textile_ruby_3",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "textile_verdant_0",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "textile_verdant_1",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "textile_verdant_2",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "textile_verdant_3",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "textile_requiem_0",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "textile_requiem_1",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "textile_requiem_2",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "textile_requiem_3",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "textile_ruby_0_white",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_0"
+    },
+    {
+      "id": "textile_ruby_1_white",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_1"
+    },
+    {
+      "id": "textile_ruby_2_white",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_2"
+    },
+    {
+      "id": "textile_ruby_3_white",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_3"
+    },
+    {
+      "id": "textile_ruby_0_green",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_0"
+    },
+    {
+      "id": "textile_ruby_1_green",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_1"
+    },
+    {
+      "id": "textile_ruby_2_green",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_2"
+    },
+    {
+      "id": "textile_ruby_3_green",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_3"
+    },
+    {
+      "id": "textile_ruby_0_purple",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_0"
+    },
+    {
+      "id": "textile_ruby_1_purple",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_1"
+    },
+    {
+      "id": "textile_ruby_2_purple",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_2"
+    },
+    {
+      "id": "textile_ruby_3_purple",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_3"
+    },
+    {
+      "id": "textile_ruby_0_rose",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_0"
+    },
+    {
+      "id": "textile_ruby_1_rose",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_1"
+    },
+    {
+      "id": "textile_ruby_2_rose",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_2"
+    },
+    {
+      "id": "textile_ruby_3_rose",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_3"
+    },
+    {
+      "id": "textile_ruby_0_black",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_0"
+    },
+    {
+      "id": "textile_ruby_1_black",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_1"
+    },
+    {
+      "id": "textile_ruby_2_black",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_2"
+    },
+    {
+      "id": "textile_ruby_3_black",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_3"
+    },
+    {
+      "id": "textile_ruby_0_gold",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_0"
+    },
+    {
+      "id": "textile_ruby_1_gold",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_1"
+    },
+    {
+      "id": "textile_ruby_2_gold",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_2"
+    },
+    {
+      "id": "textile_ruby_3_gold",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_3"
+    },
+    {
+      "id": "textile_ruby_0_silver",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_0"
+    },
+    {
+      "id": "textile_ruby_1_silver",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_1"
+    },
+    {
+      "id": "textile_ruby_2_silver",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_2"
+    },
+    {
+      "id": "textile_ruby_3_silver",
+      "width": 256,
+      "height": 256,
+      "mapSource": "textile_ruby_3"
+    },
+    {
+      "id": "atelier_agnus",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "crossbrace_inlay",
+      "width": 64,
+      "height": 64
+    },
+    {
+      "id": "seam_white_gold",
+      "width": 4,
+      "height": 64
+    },
+    {
+      "id": "seam_red_gold",
+      "width": 4,
+      "height": 64,
+      "mapSource": "seam_white_gold"
+    },
+    {
+      "id": "seam_green_gold",
+      "width": 4,
+      "height": 64,
+      "mapSource": "seam_white_gold"
+    },
+    {
+      "id": "seam_purple_gold",
+      "width": 4,
+      "height": 64,
+      "mapSource": "seam_white_gold"
+    },
+    {
+      "id": "seam_rose_gold",
+      "width": 4,
+      "height": 64,
+      "mapSource": "seam_white_gold"
+    },
+    {
+      "id": "seam_black_gold",
+      "width": 4,
+      "height": 64,
+      "mapSource": "seam_white_gold"
+    },
+    {
+      "id": "seam_gold_gold",
+      "width": 4,
+      "height": 64,
+      "mapSource": "seam_white_gold"
+    },
+    {
+      "id": "seam_silver_gold",
+      "width": 4,
+      "height": 64,
+      "mapSource": "seam_white_gold"
+    },
+    {
+      "id": "seam_black_silver",
+      "width": 4,
+      "height": 64,
+      "mapSource": "seam_white_gold"
+    },
+    {
+      "id": "ornate_panel",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "ornate_gilt",
+      "width": 32,
+      "height": 32
+    },
+    {
+      "id": "ornate_lace",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "ornate_column",
+      "width": 64,
+      "height": 64
+    },
+    {
+      "id": "ornate_moulding",
+      "width": 64,
+      "height": 64
+    },
+    {
+      "id": "ogive_stone_0",
+      "width": 128,
+      "height": 128,
+      "mapSource": "stone_0"
+    },
+    {
+      "id": "ogive_stone_1",
+      "width": 128,
+      "height": 128,
+      "mapSource": "stone_1"
+    },
+    {
+      "id": "ogive_atelier_walnut",
+      "width": 128,
+      "height": 128,
+      "mapSource": "atelier_walnut"
+    }
+  ],
+  "decodedTextureBytes": 34839552,
+  "permutationBudget": 80000,
+  "designs": 413,
+  "geometryCubesMax": 110,
+  "maxSurfaceCells": 128,
+  "topModelY": 16
+}

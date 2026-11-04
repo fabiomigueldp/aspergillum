@@ -1,0 +1,235 @@
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -1,4 +1,8 @@
+ # Changelog
++
++## 2026-11-03 · Altare 0.12.2
++
++Corrige as dimensões no título do editor quando a frente do altar é alterada. Geometrias, mapas, estados e saves preservados. [Semântica e reteste](addons/altare/docs/EDITOR_DIMENSIONS_0.12.2.md). Aspergillum 1.2.5 e Estúdio 2.3.0 mantidos.
+ 
+ ## 2026-11-03 · Altare 0.12.1
+ 
+--- a/addons/altare/CHANGELOG.md
++++ b/addons/altare/CHANGELOG.md
+@@ -1,4 +1,10 @@
+ # Changelog
++
++## 0.12.2 · Dimensões do editor — 2026-11-03
++
++- O título do editor acompanha a frente do rascunho: norte/sul mostram 7 × 2; leste/oeste mostram 2 × 7, por exemplo. Restaurar também atualiza as dimensões.
++- Título reativo somente do servidor, com tradução preservada; nenhuma escrita no mundo ou mudança de state é introduzida.
++- Geometria e texturas da Cruzeta 0.12.1 preservadas. [Correção e reteste](docs/EDITOR_DIMENSIONS_0.12.2.md).
+ 
+ ## 0.12.1 · Polimento da Cruzeta — 2026-11-03
+ 
+--- a/addons/altare/README.md
++++ b/addons/altare/README.md
+@@ -1,6 +1,6 @@
+ # Altare
+ 
+-**0.12.1 — Cruzeta em nogueira.** Oitavo modelo: marcenaria aberta, quadros apoiados, X duplo cavilhado e marchetaria proporcional. Dez toalhas compartilhadas, com oito cores do Floral IHS. [Construção, compatibilidade e reteste](docs/CROSSBRACE_0.12.1.md).
++**0.12.2 — Cruzeta e dimensões do editor.** Oitavo modelo: marcenaria aberta, quadros apoiados, X duplo cavilhado e marchetaria proporcional. Dez toalhas compartilhadas, com oito cores do Floral IHS. [Construção e compatibilidade](docs/CROSSBRACE_0.12.1.md) · [Correção das dimensões do editor](docs/EDITOR_DIMENSIONS_0.12.2.md).
+ 
+ A [marcenaria 0.6.1](docs/JOINERY_0.6.1.md) acrescenta Arca e Balaústres ao [contrato de personalização](docs/CUSTOMIZATION_0.5.0.md). Os dois modelos usam nogueira, todos os tecidos e as oito cores do Floral IHS, sem aplique adicional.
+ 
+@@ -30,15 +30,15 @@
+ 
+ O Content Log da 0.4.1 confirmou a rejeição das caixas de colisão dos 66 blocos de cavaletes: os IDs não eram registrados e a aplicação terminava em rollback. A 0.4.2 usa caixas estáveis `origin/size`, resolve todas as permutações antes da primeira escrita e registra a cadeia de causas. Refina também a estrutura dos cavaletes, pilastras e ogivas, preservando integralmente as texturas. [Diagnóstico](docs/STRUCTURES_0.4.2.md) · [comparação antes/depois](out/structure-comparison-0.4.2/index.html).
+ 
+-## Testar a 0.12.1
++## Testar a 0.12.2
+ 
+-[Baixar Altare-0.12.1.mcaddon](dist/releases/Altare-0.12.1.mcaddon) · [Relatório oficial](dist/validation/0.12.1/release-summary.json) · [Correção do editor](docs/EDITOR_FIX_0.11.1.md) · [Reteste visual](docs/OGIVE_DETAIL_0.11.2.md).
++[Baixar Altare-0.12.2.mcaddon](dist/releases/Altare-0.12.2.mcaddon) · [Relatório oficial](dist/validation/0.12.2/release-summary.json) · [Correção do editor](docs/EDITOR_FIX_0.11.1.md) · [Reteste visual](docs/OGIVE_DETAIL_0.11.2.md).
+ 
+ [Ogivas: comparar antes e depois](out/ogive-comparison-0.11.2/index.html).
+ 
+-Antes da matriz histórica abaixo, escolher **Cruzeta** no editor e testar 1 × 1, 7 × 2 e 8 × 2, sem toalha, com linho curto, renda e Floral IHS. O tampo e objetos superiores não podem se mover. [Matriz completa](docs/CROSSBRACE_0.12.1.md).
++Antes da matriz histórica abaixo, escolher **Cruzeta** no editor e testar 1 × 1, 7 × 2 e 8 × 2, sem toalha, com linho curto, renda e Floral IHS. O tampo e objetos superiores não podem se mover. [Matriz visual preservada](docs/CROSSBRACE_0.12.1.md) · [Reteste das dimensões](docs/EDITOR_DIMENSIONS_0.12.2.md).
+ 
+-1. Importar em uma cópia do mundo e ativar BP/RP **`[0,12,1]`**, sem outra revisão Altare concorrente. Alvo mínimo 1.26.40; Script API 2.9.0/UI 2.1.0 estáveis; sem experimentos. A ferramenta deve abrir a tela sem `InvalidObservableError`, inclusive ao alternar materiais fixos e aplique indisponível.
++1. Importar em uma cópia do mundo e ativar BP/RP **`[0,12,2]`**, sem outra revisão Altare concorrente. Alvo mínimo 1.26.40; Script API 2.9.0/UI 2.1.0 estáveis; sem experimentos. A ferramenta deve abrir a tela sem `InvalidObservableError`, inclusive ao alternar materiais fixos e aplique indisponível.
+ 2. Executar `/function altare/dev_kit`; montar 7 × 2 módulos, com um bloco de altura. Usar **Acabamento do altar**, escolher Ogivas e Sem toalha; conferir pontas, recessos, impostas, apoios e retorno dos cantos em movimento. Alternar tecidos, materiais e relevo; repetir em 8 × 2 e conferir o centro dividido.
+ 3. Usar **Acabamento do altar** na lateral frontal. Na mesma tela, escolher Cavaletes, Nogueira e Sem toalha; usar Aplicar. Reabrir, escolher Cordeiro e aplicar. Cancelar não altera blocos; Restaurar escolhas recupera a configuração aberta. Conferir dois cavaletes nas extremidades, escoras conectadas e vão central aberto.
+ 4. Colocar pedra vanilla e caldeirinha sobre o tampo; alternar cavaletes, pilastras e ogivas. Testar também **Floral IHS**, branco/roxo/róseo; salvar e reabrir. Objetos superiores devem permanecer na mesma posição.
+--- /dev/null
++++ b/addons/altare/docs/EDITOR_DIMENSIONS_0.12.2.md
+@@ -0,0 +1,50 @@
++# Dimensões orientadas do editor — 0.12.2
++
++## Defeito reproduzido
++
++Ao abrir o editor de um retângulo 7 × 2 pela frente norte, o título mostrava `7 × 2`. Trocar a frente para leste atualizava o rascunho e o futuro centro do tecido, mas o título continuava `7 × 2`, pois era construído uma única vez com a orientação inicial. O teste novo falha antes da correção exatamente nessa transição.
++
++A semântica permanece a existente: largura e profundidade são relativas à frente escolhida no rascunho. Norte/sul usam o eixo X como largura; leste/oeste usam Z, como o cálculo de `planFinish`. Não se muda a posição ou o tamanho do altar.
++
++## Correção restrita à apresentação
++
++`menu.ts` usa `ObservableUIRawMessage`, suportado pelos tipos estáveis instalados de `@minecraft/server-ui` 2.1.0. A assinatura de dois argumentos de [CustomForm](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server-ui/customform?view=minecraft-bedrock-stable) aceita essa observável, que oferece [setData](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server-ui/observableuirawmessage?view=minecraft-bedrock-stable). O título mantém sua tradução e só recebe novo valor quando a frente do rascunho muda. A observável não é gravável pelo cliente, não possui assinatura nova e não participa do commit.
++
++Restaurar também restaura o título. Valores inválidos são rejeitados pelo fluxo existente. Se a direção fica temporariamente oculta, por exemplo na Cruzeta sem toalha, o título conserva a orientação do rascunho, assim como o próprio valor guardado para uma toalha direcional futura. A aplicação do modelo simétrico continua normalizando o state para zero; nenhuma regra do codec é alterada.
++
++## Preservação
++
++Esta revisão não muda geometria, UV, textura, blocos, colisões, IDs, estados, sessão, rollback ou aplicação do acabamento. A estrutura permanece [Cruzeta 0.12.1](CROSSBRACE_0.12.1.md). Não se produziu outra mudança ornamental sem evidência de melhoria. Aspergillum permanece 1.2.5 e Estúdio 2.3.0.
++
++A comparação do runtime deve mostrar somente a apresentação do título e sua nova importação estável. Não requer novas permissões, APIs beta ou experimentos.
++
++## Testes reproduzíveis
++
++```
++node --experimental-strip-types --test addons/altare/tests/menu.node.ts
++npm --prefix addons/altare run check
++HOME=/tmp/altare-creator-home MCT_TEST_PINNED_MC_VERSION=1.26.40 node addons/altare/tools/package.mjs
++```
++
++Os testes do adaptador de UI verificam quatro frentes, Aplicar, Restaurar, Cancelar, preservação das entradas do mundo, valor inválido, título traduzido, observável somente do servidor, modelo simétrico e retorno ao tecido direcional. São testes de contrato de apresentação, não execução do cliente Bedrock.
++
++### Resultados desta revisão
++
++- Altare: 113 testes aprovados, incluindo 8 do menu; tipos e validação estrutural aprovados.
++- Aspergillum: 107 testes aprovados. Estúdio: 84 testes aprovados. Tipos, documentação e build da raiz aprovados.
++- Creator Tools oficial: zero erros, 2.084 avisos de complexidade já delimitados pela política existente e zero avisos inesperados. Validação offline com alvo 1.26.40 fixado; as consultas de registry devolveram 502, registradas no log, sem impedir a validação. O [relatório completo](../dist/validation/0.12.2/release-summary.json) preserva esses avisos.
++- Comparação dos arquivos distribuídos 0.12.1/0.12.2: 5.386 entradas idênticas, incluindo todos os 414 blocos, 4.700 arquivos de geometria e 265 arquivos de textura. Nenhum arquivo acrescentado ou removido.
++- As únicas sete entradas diferentes são o script com a correção de título, dois manifests e quatro arquivos de texto com a versão do pacote. O delta do runtime contém somente a nova observável e a atualização do título.
++- O arquivo final possui 5.393 entradas, CRC íntegro e conteúdo idêntico aos packs gerados. SHA-256: `2b7576872c69fa94f72130c3ae260ebdceafc906c2428985219782a6da4940a9`.
++
++As evidências locais ficam em `out/editor-dimensions/`: regressão antes/depois, logs das suítes, comparação de preservação e delta de runtime. Uma revisão independente de código confirmou a semântica e executou os testes direcionados.
++
++## Menor reteste nativo
++
++1. Importar BP/RP **[0,12,2]** em uma cópia do mundo, sem outra revisão Altare concorrente, no Minecraft mínimo 1.26.40 e sem experimentos.
++2. Abrir o acabamento de um altar 7 × 2 pela face norte. Confirmar título `7 × 2`.
++3. Trocar a frente para leste/oeste: título `2 × 7`. Norte/sul: `7 × 2`. Nenhuma alteração física deve acontecer antes de Aplicar.
++4. Clicar Restaurar, testar Cruzeta nua e depois Agnus/Floral; a direção do rascunho deve ser preservada quando ocultada. Cancelar não deve modificar blocos; Aplicar deve orientar o tecido como antes.
++5. Reabrir, salvar/recarregar e verificar Content Log sem novo erro de observável. Registrar o hash do `.mcaddon` testado.
++
++O ambiente de nuvem não possui cliente Bedrock. Não se declara que esse reteste foi executado. Os renders CPU 0.12.1 documentam a geometria preservada, mas não representam teste da UI nem substituem o jogo.
+--- a/addons/altare/docs/TESTING.md
++++ b/addons/altare/docs/TESTING.md
+@@ -1,4 +1,8 @@
+-# QA do Altare 0.12.1
++# QA do Altare 0.12.2
++
++## Dimensões do editor — 0.12.2
++
++Título reativo acompanha as quatro frentes, Restaurar, valores inválidos, direção temporariamente oculta na Cruzeta nua e retorno ao tecido direcional. Cancelar limpa eventos; o título não concede autoridade de escrita no mundo. [Semântica e reteste](EDITOR_DIMENSIONS_0.12.2.md).
+ 
+ ## Polimento da Cruzeta — 0.12.1
+ 
+--- a/addons/altare/package.json
++++ b/addons/altare/package.json
+@@ -1,9 +1,9 @@
+ {
+   "name": "altare-bedrock-addon",
+-  "version": "0.12.1",
++  "version": "0.12.2",
+   "private": true,
+   "type": "module",
+-  "description": "Altares modulares para o Criativo. Cruzeta em nogueira, X duplo cavilhado, apoios simétricos e marchetaria proporcional. Diagnóstico 0.12.1.",
++  "description": "Altares modulares para o Criativo. Cruzeta em nogueira e dimensões do editor atualizadas ao trocar a frente. Diagnóstico 0.12.2.",
+   "engines": {
+     "node": ">=24"
+   },
+--- a/addons/altare/src/presentation/menu.ts
++++ b/addons/altare/src/presentation/menu.ts
+@@ -1,4 +1,4 @@
+-import {CustomForm, ObservableBoolean, ObservableNumber, type UIRawMessage} from '@minecraft/server-ui';
++import {CustomForm, ObservableBoolean, ObservableNumber, ObservableUIRawMessage, type UIRawMessage} from '@minecraft/server-ui';
+ import type {Player, RawMessage} from '@minecraft/server';
+ import {bounds, type Finish, type Tile} from '../domain/surface.ts';
+ import {SURFACES, FRONTALS, LITURGICAL_COLORS} from '../domain/catalog.ts';
+@@ -20,12 +20,17 @@
+   // Dropdown values must be client writable even when the control is disabled or hidden.
+   // This display-only selection has no subscription and never enters the finish draft.
+   const none=new ObservableNumber(0,{clientWritable:true}),cleanups:(()=>void)[]=[];
+-  const title:RawMessage={rawtext:[tr('menu.title'),{text:` · ${facing%2?b.maxZ-b.minZ+1:b.maxX-b.minX+1} × ${facing%2?b.maxX-b.minX+1:b.maxZ-b.minZ+1}`}]};
++  const titleFor=(front:number):UIRawMessage=>({rawtext:[tr('menu.title'),{text:` · ${front%2?b.maxZ-b.minZ+1:b.maxX-b.minX+1} × ${front%2?b.maxX-b.minX+1:b.maxZ-b.minZ+1}`}]});
++  // Dimensions follow the draft front; a temporarily hidden front stays in
++  // the draft for the next directional cloth, just like its control value.
++  // Server-owned presentation only: changing the title never edits the world.
++  const title=new ObservableUIRawMessage(titleFor(draft.facing));let titleFacing=draft.facing;
+   const form=new CustomForm(player,title);
+   function refresh(){
+     updating=true;
+     try{
+       const c=customizationCapabilities(draft);
++      if(draft.facing!==titleFacing){title.setData(titleFor(draft.facing));titleFacing=draft.facing;}
+       classic.setData(!c.architectural);architectural.setData(c.architectural&&!c.ornate);color.setData(c.color);relief.setData(c.relief);unavailable.setData(c.architectural&&!c.relief&&!c.joinery&&!c.ornate);material.setData(c.material);joinery.setData(c.joinery);ornate.setData(c.ornate);directional.setData(c.directional);
+       for(const key of Object.keys(fields) as (keyof typeof fields)[])values[key].setData((fields[key] as readonly (string|number)[]).indexOf(draft[key]));
+       ornamental.setData(draft.ornamental);
+--- a/addons/altare/tests/menu.node.ts
++++ b/addons/altare/tests/menu.node.ts
+@@ -24,7 +24,8 @@
+ }
+ class Form {
+   controls:any[]=[]; showing=false; resolve:(value:unknown)=>void=()=>{};
+-  constructor(){current=this;}
++  title:any;
++  constructor(_player?:unknown,title?:any){this.title=title;current=this;}
+   header(){return this;} spacer(){return this;} divider(){return this;}
+   dropdown(label:any,value:any,items:any,options:any={}){requireClientWritable(value,'dropdown value');this.controls.push({kind:'dropdown',label:label.translate,value,items,options});return this;}
+   toggle(label:any,value:any,options:any={}){requireClientWritable(value,'toggle value');this.controls.push({kind:'toggle',label:label.translate,value,options});return this;}
+@@ -33,9 +34,9 @@
+   show(){this.showing=true;return new Promise(resolve=>{this.resolve=resolve;});}
+   close(){this.showing=false;this.resolve(undefined);}
+ }
+-(globalThis as any).__altareTestUI={CustomForm:Form,ObservableBoolean:Observable,ObservableNumber:Observable};
++(globalThis as any).__altareTestUI={CustomForm:Form,ObservableBoolean:Observable,ObservableNumber:Observable,ObservableUIRawMessage:Observable};
+ const bundled=await build({entryPoints:[new URL('../src/presentation/menu.ts',import.meta.url).pathname.replace(/^\/(.:)/,'$1')],bundle:true,format:'esm',platform:'node',write:false,plugins:[{
+- name:'native-ui-double',setup(b){b.onResolve({filter:/^@minecraft\/server-ui$/},()=>({path:'ui',namespace:'test'}));b.onLoad({filter:/.*/,namespace:'test'},()=>({contents:'export const {CustomForm,ObservableBoolean,ObservableNumber}=globalThis.__altareTestUI;'}));},
++ name:'native-ui-double',setup(b){b.onResolve({filter:/^@minecraft\/server-ui$/},()=>({path:'ui',namespace:'test'}));b.onLoad({filter:/.*/,namespace:'test'},()=>({contents:'export const {CustomForm,ObservableBoolean,ObservableNumber,ObservableUIRawMessage}=globalThis.__altareTestUI;'}));},
+ }]});
+ const {chooseFinish}=await import('data:text/javascript;base64,'+Buffer.from(bundled.outputFiles[0]!.text+'\n//# sourceURL=altare-menu-test.mjs').toString('base64'));
+ const tiles=[{position:{x:0,y:0,z:0},stone:0,cloth:1,frontal:0,facing:0,edges:15,design:'altare:a_ogive_marble_ruby_cross'}];
+@@ -97,3 +98,39 @@
+  assert.equal(field('menu.front'),undefined);assert.equal(field('menu.lace'),undefined);
+  click('menu.apply');assert.deepEqual(await result,{stone:0,cloth:0,ornamental:false,facing:0,design:'altare:s_colonnade_lace'});
+ });
++
++
++test('native editor dimensions follow the draft front and restore without changing world tiles',async()=>{
++ const rectangle=Array.from({length:14},(_,i)=>({...tiles[0],position:{x:i%7,y:0,z:Math.floor(i/7)}}));
++ const snapshot=structuredClone(rectangle);
++ const dimensions=()=>{const title=current.title?.getData?.()??current.title;return title.rawtext[1].text;};
++ const result=chooseFinish({},rectangle,0);
++ assert.equal(dimensions(),' · 7 × 2');
++ assert.equal(current.title.clientWritable,false);
++ for(const [facing,expected] of [[1,' · 2 × 7'],[2,' · 7 × 2'],[3,' · 2 × 7'],[0,' · 7 × 2']] as const){
++  field('menu.front').value.setData(facing);assert.equal(dimensions(),expected);
++ }
++ field('menu.front').value.setData(3);
++ field('menu.front').value.setData(999);assert.equal(dimensions(),' · 2 × 7');
++ click('menu.restore');assert.equal(dimensions(),' · 7 × 2');
++ assert.deepEqual(rectangle,snapshot);
++ field('menu.front').value.setData(1);click('menu.apply');
++ assert.equal((await result).facing,1);assert.deepEqual(rectangle,snapshot);
++});
++
++
++test('native title preserves the editing orientation through a symmetric model and closes without stale updates',async()=>{
++ const rectangle=Array.from({length:14},(_,i)=>({...tiles[0],position:{x:i%7,y:0,z:Math.floor(i/7)}}));
++ const result=chooseFinish({},rectangle,3),form=current;
++ const dimensions=()=>form.title.getData().rawtext[1].text;
++ const select=(name:string,key:string)=>{const c=field(name);c.value.setData(c.items.find((i:any)=>i.label.translate===`altare.${key}`).value);};
++ assert.equal(dimensions(),' · 2 × 7');
++ assert.equal(form.title.getData().rawtext[0].translate,'altare.menu.title');
++ select('menu.model','structure.crossbrace');select('menu.pattern','textile.none');
++ assert.equal(field('menu.front'),undefined);assert.equal(dimensions(),' · 2 × 7');
++ select('menu.pattern','textile.agnus');assert.equal(field('menu.front').value.getData(),3);
++ field('menu.front').value.setData(0);assert.equal(dimensions(),' · 7 × 2');
++ click('menu.restore');assert.equal(dimensions(),' · 2 × 7');
++ const control=field('menu.front').value;click('menu.cancel');assert.equal(await result,undefined);
++ control.setData(0);assert.equal(dimensions(),' · 2 × 7');assert.equal(control.callbacks.size,0);
++});
+--- a/docs/PROJECT_STATUS.md
++++ b/docs/PROJECT_STATUS.md
+@@ -1,4 +1,8 @@
+ # Estado do projeto
++
++## Dimensões do editor Altare — 03/11/2026
++
++Altare 0.12.2 atualiza a largura/profundidade exibida quando muda a frente do rascunho. Corrige título obsoleto em altares retangulares, preservando modelos/mapas 0.12.1 e os contratos de estado/commit. [Correção e reteste](../addons/altare/docs/EDITOR_DIMENSIONS_0.12.2.md). Sem validação nativa declarada.
+ 
+ ## Polimento da Cruzeta — 03/11/2026
+ 

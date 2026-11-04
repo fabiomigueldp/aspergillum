@@ -1,0 +1,25 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-cloth-obstacle-surface-trial.py').read().split('counts=collections.Counter')[0])
+base=set(json.load(open(r+'neck-whole-fold-mask-audit.json'))['patch_faces']);em=o.evaluated_get(dg).to_mesh();em.calc_loop_triangles();TT=np.array([t.vertices[:] for t in em.loop_triangles]);FM=np.array([t.polygon_index for t in em.loop_triangles]);o.evaluated_get(dg).to_mesh_clear();P=p[TT];lo=P.min(1);hi=P.max(1);e1=P[:,1]-P[:,0];e2=P[:,2]-P[:,0]
+pairlist=np.load(r+'neck-source-layer-pairs.npz')['pairs']+160386;pairmap={int(a):int(b) for a,b in pairlist for a,b in [(a,b),(b,a)]};lookup={tuple(sorted(f)):fi for fi,f in enumerate(fs)};incident=collections.defaultdict(set)
+for fi,f in enumerate(fs):
+ for a,b in zip(f,f[1:]+f[:1]):incident[tuple(sorted((a,b)))].add(fi)
+def audit(patch):
+ counts=collections.Counter(tuple(sorted((a,b))) for fi in patch for a,b in zip(fs[fi],fs[fi][1:]+fs[fi][:1]));edges=[e for e,n in counts.items() if n==1];out=~np.isin(FM,list(patch));hits=[]
+ for a,b in edges:
+  A=p[a];D=p[b]-A;ids=np.where(out & (hi>=np.minimum(p[a],p[b])-1e-10).all(1)&(lo<=np.maximum(p[a],p[b])+1e-10).all(1)&~np.isin(TT,[a,b]).any(1))[0]
+  if not len(ids):continue
+  H=np.cross(np.broadcast_to(D,(len(ids),3)),e2[ids]);det=np.sum(e1[ids]*H,axis=1);valid=abs(det)>1e-15;ids=ids[valid];H=H[valid];det=det[valid]
+  S=A-P[ids,0];u=np.sum(S*H,axis=1)/det;Q=np.cross(S,e1[ids]);v=Q@D/det;t=np.sum(e2[ids]*Q,axis=1)/det
+  for j in np.where((u>1e-9)&(v>1e-9)&(u+v<1-1e-9)&(t>1e-9)&(t<1-1e-9))[0]:hits.append({'edge':[a,b],'triangle':TT[ids[j]].tolist(),'source_face':int(FM[ids[j]]),'t':float(t[j])})
+ badj=collections.defaultdict(set)
+ for a,b in edges:badj[a].add(b);badj[b].add(a)
+ return hits,edges,sum(len(x)!=2 for x in badj.values())
+hits,edges,deg=audit(base);support=set()
+for h in hits:support|=incident[tuple(h['edge'])];support.add(h['source_face'])
+missing=[]
+for fi in list(support):
+ if not all(v in pairmap for v in fs[fi]):missing.append(fi);continue
+ other=lookup.get(tuple(sorted(pairmap[v] for v in fs[fi])))
+ if other is None:missing.append(fi)
+ else:support.add(other)
+new=base|support;newhits,ne,de=audit(new);pts=p[list({v for fi in support for v in fs[fi]})];rp={'baseline_boundary_crossings':hits,'minimal_crossing_incident_support':sorted(support),'added_faces':len(new-base),'total_faces':len(new),'unpaired':missing,'support_bounds':[pts.min(0).tolist(),pts.max(0).tolist()],'new_boundary_crossings':newhits,'boundary_bad_degrees':de,'new_boundary_edges':len(ne),'patch_faces':sorted(new),'geometry_changed':False};json.dump(rp,open(r+'neck-boundary-surgery-audit.json','w'),indent=2);print({k:v for k,v in rp.items() if k not in ['patch_faces','minimal_crossing_incident_support']})

@@ -1,0 +1,13 @@
+# Superfície média única — primeira prova rejeitada
+
+Construção em memória, sem alterar V75: fontes médias5840v, ponte orientada de135triângulos entre arco posterior da calota e topo do manto, recálculo coerente de normais, uma única espessura por grupo de vértices (0,6mm calota→6mm manto), seguida da subdivisão original2. A fórmulaV74 reaplicada downstream conserva bainha; distância máxima ao alvo inferior5,939e−8m.
+
+Topologia de fonte: zero arestas com mais de duas faces,155arestas físicas de borda antes de espessar. Avaliação187066v/374128triângulos. Isso não garante superfície livre de interseções.
+
+**Rejeição geométrica:**201pares não adjacentes de auto-interseção, concentrados em X[-0,10471,0,18027],Y[-0,22945,-0,03732],Z[3,28076,3,52729]. Contatos com pele7886 contra6145na baseline triangulada explicitamente. Contatos com túnica2290em ambos, mas igualdade de contagem não prova identidade. Não usar redução1808→201como aprovação: o critério é separação e preservação, não redução de saldo.
+
+A ponte pré-espessura evita a antiga conexão de duas cascas mas mantém contornos/planos superiores com irregularidades e cruzamentos espaciais. Um loft coerente topologicamente não conserta automaticamente esses planos. Necessário redesenhar trajetórias e tangentes de superfície antes de espessar, respeitando obstáculos; não continuar adicionando colares estreitos.
+
+Comparações diagnósticas pareadas frontal/perfil com mesmas câmeras, luz e450×600/16samples são registradas separadamente. Não foi salvo .blend candidato, não houve promoção. Dados completos em `cap-mantle-unified-midsurface-proof.json/.npz`.
+
+Revisão visual dos renders concluída: no perfil a mancha azul de pele atravessando o pano continua; silhueta e tira lateral praticamente iguais à baseline. A frente não mostra ganho estrutural convincente. A redução de pares da costura é portanto apenas resultado técnico parcial, não avanço visual adotável. Arquivos `unified-midsurface-{baseline,rejected}-{profile,front}.png`.

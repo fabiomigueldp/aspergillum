@@ -1,0 +1,42 @@
+# Audio reconstruction audit
+
+Read-only audit of imported baseline versus current state-compaction build and same-toolchain reference. No packs, sources, worlds or publication changed.
+
+## Reproduce
+
+From project root:
+
+```sh
+ASPERGILLUM_AUDIO_AUDIT_ROOT=out/state-compaction/audio-audit/reencoded-snapshot ASPERGILLUM_AUDIO_AUDIT_OUTPUT=out/state-compaction/audio-audit/reproduced python3 out/state-compaction/audio-audit/audit.py
+ASPERGILLUM_AUDIO_AUDIT_ROOT=out/state-compaction/audio-audit/reencoded-snapshot ASPERGILLUM_AUDIO_AUDIT_OUTPUT=out/state-compaction/audio-audit/reproduced python3 out/state-compaction/audio-audit/audit-inputs.py
+```
+
+Decoder: FFmpeg 7.1.5-0+deb13u1, native Vorbis and Xiph.Org libVorbis 1.3.7. Complete FFmpeg build/library versions, input paths and per-file SHA-256 are in report.json. PCM command uses f32le without resampling or channel conversion.
+
+## Findings
+
+- 48 OGGs inventoried. 14 baseline-identical; 34 byte-different. All 48 match the reconstructed reference byte-for-byte.
+- All 34 changed OGGs retain identical identification/comment/setup headers, but differ in Vorbis audio packets. This is not solely container or metadata drift.
+- Both decoders find changed PCM in 33/34 files. commit_2_03.ogg has identical PCM in both decoders despite changed audio packets.
+- 582,336 samples compared per decoder. Native decoder: 70,828 different samples; maximum absolute delta 0.06194029375910759 full scale; SNR range 20.784144400126504 to 100.55304568957744 dB for nonidentical files.
+- libvorbis decoder: 52,814 different samples; maximum absolute delta 0.06195068359375; SNR range 20.783912239923996 to 92.40384419386372 dB.
+- Largest peak delta is dock/mechanical_02.ogg. All changed files retain sample count under each decoder; stream metadata is recorded per file.
+- 48/48 raw MP3 source pairs are byte-identical. 48/48 WAV master pairs differ in bytes but have exactly identical PCM data (and recorded format parameters). Authoring recipes, catalog and build script hashes are in report.json.
+
+## Decision and limits
+
+To preserve baseline audio exactly, use the original baseline OGG bytes rather than regenerated OGGs. No files were restored by this audit. Regeneration from identical PCM has changed compressed audio payload and decoded output; a changed encoder/toolchain is consistent with this result but historical encoder provenance is not established here.
+
+No listening test, subjective audibility conclusion or Bedrock playback parity claim. Two decoders establish exact numerical differences only. The all-headers-equal observation rules out metadata-only explanations for the changed OGG packets, not every possible historical cause.
+
+## Report hashes
+
+- report.json: 5f68fe67189b430cb7656d581dc6b1d2ac77d10a71726c15d83c125f4d2c37bf
+- authoring-inputs.json: 8d8594ac50de83806a582f69436abdffe6b50c8815178f0df075c4ef7a2ae5ad
+- audit.py.original: 23442dd3f9c1e17bbff2821b3c58f089bec4be5bee310d674277e4ee64d59ba7
+- audit-inputs.py.original: 2fe867d286c65024fdf19bacae5fe1facafa7bf8fac83df91df1e2bec8a2425c
+- libvorbis-version.txt: b3ce780e1f85ded37103eb9b5a5bdfeeb02904410469b464f98d9eb02d036512
+
+## Subsequent restoration
+
+After this audit, the parent engineering task archived the reconstructed inputs/outputs in `reencoded-snapshot/`, then restored 34 OGG files and 48 WAV containers from the imported baseline. Raw MP3 sources and recipes were not changed. `restoration.json` and `reencoded-snapshot-manifest.json` record every hash. The original pre-restoration reports above remain unchanged; their historical scripts are retained as `.original`. The current scripts accept explicit root/output overrides so the commands above reproduce against archived evidence without overwriting original reports. The diagnostic build now verifies 147 pinned audio/input/tool files instead of implicitly re-encoding them.

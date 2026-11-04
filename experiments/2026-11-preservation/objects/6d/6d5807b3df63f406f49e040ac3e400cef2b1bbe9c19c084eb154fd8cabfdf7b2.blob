@@ -1,0 +1,9 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-shoulder-surface-attribution.py').read().split('s.cycles.samples=')[0])
+import numpy as np
+d=np.load(r+'cap-mantle-unified-midsurface-proof.npz');me=bpy.data.meshes.new('Rejected coherent shell diagnostic');me.from_pydata(d['points'].tolist(),[],d['triangles'].tolist());me.update();obj=bpy.data.objects.new('Rejected coherent shell diagnostic',me);bpy.context.collection.objects.link(obj);old=bpy.data.objects['TESTE 34 — conexão de superfícies avaliadas'];me.materials.append(old.data.materials[0]);
+for f in me.polygons:f.use_smooth=True
+s.cycles.samples=16;s.render.resolution_x=450;s.render.resolution_y=600;s.render.resolution_percentage=100;c=s.camera;c.data.type='ORTHO'
+for tag in ['baseline','rejected']:
+ old.hide_render=tag=='rejected';obj.hide_render=tag=='baseline'
+ for view,loc in [('profile',(-5,-.05,3.25)),('front',(0,-5,3.25))]:
+  c.location=loc;c.rotation_euler=(Vector((0,-.05,3.2))-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=.95;s.render.filepath=r+'unified-midsurface-'+tag+'-'+view+'.png';bpy.ops.render.render(write_still=True)

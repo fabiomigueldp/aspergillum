@@ -1,0 +1,383 @@
+--- /dev/null
++++ b/addons/altare/tools/lib/block-state-budget.mjs
+@@ -0,0 +1,82 @@
++import fs from 'node:fs';
++import path from 'node:path';
++
++export const COMBINED_STATE_REFERENCE = 65_536;
++const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
++function requireValue(condition, message) {
++  if (!condition) throw new Error(`Block-state budget: ${message}`);
++}
++function readJson(file) {
++  try { return JSON.parse(fs.readFileSync(file, 'utf8')); }
++  catch (error) { throw new Error(`Block-state budget: cannot read JSON ${file}: ${error.message}`, {cause: error}); }
++}
++function jsonFiles(folder) {
++  let entries;
++  try { entries = fs.readdirSync(folder, {withFileTypes: true}); }
++  catch (error) { throw new Error(`Block-state budget: cannot read block directory ${folder}: ${error.message}`, {cause: error}); }
++  return entries.sort((a, b) => a.name.localeCompare(b.name)).flatMap(entry => {
++    const file = path.join(folder, entry.name);
++    requireValue(!entry.isSymbolicLink(), `symbolic link is not a verified emitted file: ${file}`);
++    return entry.isDirectory() ? jsonFiles(file) : entry.isFile() && /\.json$/i.test(entry.name) ? [file] : [];
++  });
++}
++function cardinality(values, context) {
++  if (Array.isArray(values)) {
++    requireValue(values.length > 0 && values.length <= 16, `${context}: expected 1..16 state values`);
++    const kind = typeof values[0];
++    requireValue(['boolean', 'number', 'string'].includes(kind) && values.every(value => typeof value === kind && (kind !== 'number' || Number.isSafeInteger(value))), `${context}: invalid or mixed state values`);
++    requireValue(new Set(values).size === values.length, `${context}: duplicate state values`);
++    return values.length;
++  }
++  requireValue(object(values) && Object.keys(values).length === 1 && object(values.values), `${context}: unsupported state domain`);
++  const range = values.values;
++  requireValue(Object.keys(range).length === 2 && Number.isSafeInteger(range.min) && Number.isSafeInteger(range.max) && range.max >= range.min, `${context}: invalid integer range`);
++  const count = range.max - range.min + 1;
++  requireValue(Number.isSafeInteger(count) && count > 0 && count <= 16, `${context}: expected 1..16 integer range values`);
++  return count;
++}
++
++/** Count the emitted pack, not a source catalog, assumed release or fallback. */
++export function readEmittedBlockStateBudget(addonRoot, namespace) {
++  const root = path.resolve(addonRoot), manifestFile = path.join(root, 'packs/behavior/manifest.json');
++  const manifest = readJson(manifestFile);
++  requireValue(object(manifest) && object(manifest.header) && typeof manifest.header.uuid === 'string' && manifest.header.uuid.length > 0 && Array.isArray(manifest.header.version) && manifest.header.version.length === 3 && manifest.header.version.every(Number.isSafeInteger) && Array.isArray(manifest.modules) && manifest.modules.some(module => module?.type === 'data'), `invalid behavior manifest: ${manifestFile}`);
++  const files = jsonFiles(path.join(root, 'packs/behavior/blocks'));
++  requireValue(files.length > 0, `no emitted block JSON files in ${root}`);
++  const ids = new Set();
++  let states = 0;
++  for (const file of files) {
++    const document = readJson(file), description = document?.['minecraft:block']?.description;
++    requireValue(object(description) && typeof description.identifier === 'string' && description.identifier.startsWith(`${namespace}:`) && description.identifier.length > namespace.length + 1, `invalid ${namespace} block description: ${file}`);
++    requireValue(!ids.has(description.identifier), `duplicate block identifier ${description.identifier}: ${file}`);
++    ids.add(description.identifier);
++    const domains = Object.hasOwn(description, 'states') ? description.states : {};
++    requireValue(object(domains), `${file}: states must be an object when present`);
++    let combinations = 1;
++    for (const [name, values] of Object.entries(domains)) {
++      combinations *= cardinality(values, `${file} state ${name}`);
++      requireValue(Number.isSafeInteger(combinations), `${file}: state count exceeds safe integer precision`);
++    }
++    states += combinations;
++    requireValue(Number.isSafeInteger(states), `${root}: total exceeds safe integer precision`);
++  }
++  return {states, blocks: ids.size, root, manifest: manifestFile, version: manifest.header.version};
++}
++
++/** The sibling is always resolved from this Altare copy, never the baseline. */
++export function readLocalCombinedStateBudget(altareRoot) {
++  const altare = readEmittedBlockStateBudget(altareRoot, 'altare');
++  const aspergillum = readEmittedBlockStateBudget(path.resolve(altareRoot, '../..'), 'aspergillum');
++  const combined = altare.states + aspergillum.states;
++  requireValue(Number.isSafeInteger(combined), 'combined count exceeds safe integer precision');
++  return {
++    altare: altare.states, aspergillum: aspergillum.states, combined,
++    reference: COMBINED_STATE_REFERENCE, combinedHeadroom: COMBINED_STATE_REFERENCE - combined,
++    sources: {altare, aspergillum},
++  };
++}
++
++export function assertCombinedStateBudget(budget) {
++  requireValue(budget.reference === COMBINED_STATE_REFERENCE && Number.isSafeInteger(budget.altare) && budget.altare > 0 && Number.isSafeInteger(budget.aspergillum) && budget.aspergillum > 0 && budget.combined === budget.altare + budget.aspergillum && Number.isSafeInteger(budget.combined), 'invalid combined budget');
++  requireValue(budget.combined <= COMBINED_STATE_REFERENCE, `known packs exceed ${COMBINED_STATE_REFERENCE}: Altare ${budget.altare} + Aspergillum ${budget.aspergillum} = ${budget.combined} (${budget.combined - COMBINED_STATE_REFERENCE} over)`);
++}
+--- a/addons/altare/tools/verify-native-integration.mjs
++++ b/addons/altare/tools/verify-native-integration.mjs
+@@ -9,9 +9,11 @@
+ import {decodeTile} from '../src/domain/block-codec.ts';
+ import {migrateLegacyAtelierSnapshot} from '../src/domain/catalog-migration.ts';
+ import {migrateLegacyClassicSnapshot} from '../src/domain/classic-layout.ts';
++import {readLocalCombinedStateBudget,assertCombinedStateBudget} from './lib/block-state-budget.mjs';
+ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+ const baseline=process.argv[2]&&path.resolve(process.argv[2]);
+-assert(baseline&&baseline!==root,'Usage: node tools/verify-catalog-compaction.mjs /path/to/precompact/addons/altare');
++assert(baseline&&baseline!==root,'Usage: node tools/verify-native-integration.mjs /path/to/precompact/addons/altare');
++const localBudget=readLocalCombinedStateBudget(root);assertCombinedStateBudget(localBudget);
+ const read=(dir,name)=>JSON.parse(fs.readFileSync(path.join(dir,name),'utf8'));
+ const sha=buffer=>crypto.createHash('sha256').update(buffer).digest('hex');
+ const files=(dir,relative='')=>fs.readdirSync(path.join(dir,relative),{withFileTypes:true}).flatMap(e=>e.isDirectory()?files(dir,path.join(relative,e.name)):[path.join(relative,e.name)]).sort();
+@@ -88,13 +90,15 @@
+ }
+ const countStates=map=>[...map.values()].reduce((sum,{block})=>sum+stateRows(block.description.states??{}).length,0);
+ const oldTotal=countStates(old),newTotal=countStates(current);
++assert.equal(newTotal,localBudget.altare,'Emitted Altare budget disagrees with semantic enumeration');
+ assert.equal(oldTotal,80000,'Unexpected baseline budget');assert.equal(newTotal,CATALOG_PERMUTATIONS);assert.equal(newTotal,59840);assert.equal(countStates(new Map([...current].filter(([id])=>old.has(id)))),51608);
+ assert.equal(atelierCompared,14688);assert.equal(classicCompared,3000);
+ assert.deepEqual(migration,{atelier:{accepted:16416,rejected:18144,normalizedUnusedRole:1728},classic:{accepted:3000,rejected:8520}});
+ const report={schemaVersion:1,baselineVersion:read(baseline,'package.json').version,candidateVersion:read(root,'package.json').version,
+  blocks:{idsPreserved:old.size,newIds:NATIVE_DESIGNS.length,schemasChanged:affected.size,unaffectedByteIdentical:unchangedBlocks},
+- states:{before:oldTotal,after:newTotal,oldSubsetAfter:51608,newFamily:8232,netReduction:oldTotal-newTotal,aspergillum:9744,combined:newTotal+9744,combinedHeadroom:65536-newTotal-9744},
++ states:{before:oldTotal,after:newTotal,oldSubsetAfter:51608,newFamily:8232,netReduction:oldTotal-newTotal,aspergillum:localBudget.aspergillum,combined:localBudget.combined,combinedHeadroom:localBudget.combinedHeadroom},
++ stateBudgetSources:localBudget.sources,
+  semantics:{atelierCompared,classicCompared,allEffectiveComponentsEqual:true,migration},
+  resources:await compareTree('packs/resource'),authoredAssets:await compareTree('assets-src'),
+- limitations:['Comparison is offline and does not validate native Bedrock loading, persistence, rendering, or performance.','Same block IDs with changed state schemas are not safe to install over existing worlds. Migration accepts exported snapshots only; no world is read or modified.','Rejected old combinations are not silently repaired or stripped of iconography.','Known combined budget includes only Altare and the 9,744-state Aspergillum pack.']};
++ limitations:['Comparison is offline and does not validate native Bedrock loading, persistence, rendering, or performance.','Same block IDs with changed state schemas are not safe to install over existing worlds. Migration accepts exported snapshots only; no world is read or modified.','Rejected old combinations are not silently repaired or stripped of iconography.','Known combined budget counts only the emitted Altare and sibling Aspergillum packs in this copy, including nested block directories; other add-ons are not counted.']};
+ console.log(JSON.stringify(report,null,2));
+--- a/addons/altare/tools/verify-catalog-compaction.mjs
++++ b/addons/altare/tools/verify-catalog-compaction.mjs
+@@ -9,9 +9,11 @@
+ import {decodeTile} from '../src/domain/block-codec.ts';
+ import {migrateLegacyAtelierSnapshot} from '../src/domain/catalog-migration.ts';
+ import {migrateLegacyClassicSnapshot} from '../src/domain/classic-layout.ts';
++import {readLocalCombinedStateBudget,assertCombinedStateBudget} from './lib/block-state-budget.mjs';
+ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+ const baseline=process.argv[2]&&path.resolve(process.argv[2]);
+ assert(baseline&&baseline!==root,'Usage: node tools/verify-catalog-compaction.mjs /path/to/precompact/addons/altare');
++const localBudget=readLocalCombinedStateBudget(root);assertCombinedStateBudget(localBudget);
+ const read=(dir,name)=>JSON.parse(fs.readFileSync(path.join(dir,name),'utf8'));
+ const sha=buffer=>crypto.createHash('sha256').update(buffer).digest('hex');
+ const files=(dir,relative='')=>fs.readdirSync(path.join(dir,relative),{withFileTypes:true}).flatMap(e=>e.isDirectory()?files(dir,path.join(relative,e.name)):[path.join(relative,e.name)]).sort();
+@@ -69,13 +71,15 @@
+ }
+ const countStates=map=>[...map.values()].reduce((sum,{block})=>sum+stateRows(block.description.states??{}).length,0);
+ const oldTotal=countStates(old),newTotal=countStates(current);
++assert.equal(newTotal,localBudget.altare,'Emitted Altare budget disagrees with semantic enumeration');
+ assert.equal(oldTotal,80000,'Unexpected baseline budget');assert.equal(newTotal,CATALOG_PERMUTATIONS);assert.equal(newTotal,51608);
+ assert.equal(atelierCompared,14688);assert.equal(classicCompared,3000);
+ assert.deepEqual(migration,{atelier:{accepted:16416,rejected:18144,normalizedUnusedRole:1728},classic:{accepted:3000,rejected:8520}});
+ const report={schemaVersion:1,baselineVersion:read(baseline,'package.json').version,candidateVersion:read(root,'package.json').version,
+  blocks:{idsPreserved:current.size,schemasChanged:affected.size,unaffectedByteIdentical:unchangedBlocks},
+- states:{before:oldTotal,after:newTotal,saved:oldTotal-newTotal,aspergillum:9744,combined:newTotal+9744,combinedHeadroom:65536-newTotal-9744},
++ states:{before:oldTotal,after:newTotal,saved:oldTotal-newTotal,aspergillum:localBudget.aspergillum,combined:localBudget.combined,combinedHeadroom:localBudget.combinedHeadroom},
++ stateBudgetSources:localBudget.sources,
+  semantics:{atelierCompared,classicCompared,allEffectiveComponentsEqual:true,migration},
+  resources:compareTree('packs/resource'),authoredAssets:compareTree('assets-src'),
+- limitations:['Comparison is offline and does not validate native Bedrock loading, persistence, rendering, or performance.','Same block IDs with changed state schemas are not safe to install over existing worlds. Migration accepts exported snapshots only; no world is read or modified.','Rejected old combinations are not silently repaired or stripped of iconography.','Known combined budget includes only Altare and the 9,744-state Aspergillum pack.']};
++ limitations:['Comparison is offline and does not validate native Bedrock loading, persistence, rendering, or performance.','Same block IDs with changed state schemas are not safe to install over existing worlds. Migration accepts exported snapshots only; no world is read or modified.','Rejected old combinations are not silently repaired or stripped of iconography.','Known combined budget counts only the emitted Altare and sibling Aspergillum packs in this copy, including nested block directories; other add-ons are not counted.']};
+ console.log(JSON.stringify(report,null,2));
+--- /dev/null
++++ b/addons/altare/tests/block-state-budget.node.ts
+@@ -0,0 +1,159 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import fs from 'node:fs';
++import os from 'node:os';
++import path from 'node:path';
++import {spawnSync} from 'node:child_process';
++import {fileURLToPath} from 'node:url';
++import {assertCombinedStateBudget,readEmittedBlockStateBudget,readLocalCombinedStateBudget} from '../tools/lib/block-state-budget.mjs';
++
++const addonRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
++const write = (file: string, value: any) => { fs.mkdirSync(path.dirname(file), {recursive: true}); fs.writeFileSync(file, JSON.stringify(value)); };
++const manifest = () => ({format_version: 2, header: {uuid: 'fixture-behavior-pack', version: [1, 0, 0]}, modules: [{type: 'data'}]});
++const block = (identifier: string, states: any = {}) => ({'minecraft:block': {description: {identifier, states}}});
++function domains(namespace: string, sizes: number[]) { return Object.fromEntries(sizes.map((size, i) => [`${namespace}:state_${i}`, Array.from({length: size}, (_, n) => n)])); }
++function fixture(t: any) {
++  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'altare-budget-'));
++  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
++  write(path.join(root, 'packs/behavior/manifest.json'), manifest());
++  write(path.join(root, 'packs/behavior/blocks/one.json'), block('aspergillum:one'));
++  return root;
++}
++function pairedFixture(t: any, legacy = false) {
++  const root = fixture(t), altare = path.join(root, 'addons/altare');
++  fs.rmSync(path.join(root, 'packs/behavior/blocks/one.json'));
++  write(path.join(root, 'packs/behavior/blocks/aspersorium.json'), block('aspergillum:aspersorium', domains('aspergillum', legacy ? [16, 16, 9, 4] : [16, 2, 3, 7, 7])));
++  write(path.join(root, 'packs/behavior/blocks/table.json'), block('aspergillum:table', domains('aspergillum', legacy ? [16, 16, 2] : [16, 2, 9])));
++  for (let i = 0; i < 16; i++) write(path.join(root, `packs/behavior/blocks/proxies/${i}.json`), block(`aspergillum:proxy_${i}`));
++  write(path.join(altare, 'packs/behavior/manifest.json'), manifest());
++  write(path.join(altare, 'packs/behavior/blocks/a.json'), block('altare:a', domains('altare', [16, 16, 16, 14])));
++  write(path.join(altare, 'packs/behavior/blocks/b.json'), block('altare:b', domains('altare', [16, 13, 12])));
++  return {root, altare};
++}
++
++test('counts compact emitted blocks recursively, including all state-free proxies', t => {
++  const {altare} = pairedFixture(t);
++  const result = readLocalCombinedStateBudget(altare);
++  assert.equal(result.altare, 59_840); assert.equal(result.aspergillum, 5_008);
++  assert.equal(result.combined, 64_848); assert.equal(result.combinedHeadroom, 688);
++  assert.equal(result.sources.aspergillum.blocks, 18); assert.equal(result.reference, 65_536);
++  assert.doesNotThrow(() => assertCombinedStateBudget(result));
++});
++test('measures the legacy sibling and rejects its actual over-budget native combination', t => {
++  const {altare} = pairedFixture(t, true);
++  const result = readLocalCombinedStateBudget(altare);
++  assert.equal(result.aspergillum, 9_744); assert.equal(result.combined, 69_584);
++  assert.equal(result.combinedHeadroom, -4_048);
++  assert.throws(() => assertCombinedStateBudget(result), /Altare 59840 \+ Aspergillum 9744 = 69584 \(4048 over\)/);
++});
++test('the historical 51608-state catalog fits both measured sibling variants', t => {
++  for (const legacy of [true, false]) {
++    const {altare} = pairedFixture(t, legacy);
++    for (const [name, sizes] of [['a', [16, 16, 16, 12]], ['b', [16, 16, 8]], ['c', [16, 8, 3]], ['d', [8, 3]]] as const) {
++      write(path.join(altare, `packs/behavior/blocks/${name}.json`), block(`altare:${name}`, domains('altare', [...sizes])));
++    }
++    const result = readLocalCombinedStateBudget(altare);
++    assert.equal(result.altare, 51_608); assert.equal(result.combined, legacy ? 61_352 : 56_616);
++    assert.doesNotThrow(() => assertCombinedStateBudget(result));
++  }
++});
++test('supports array and integer-range domains and an omitted states field', t => {
++  const root = fixture(t);
++  write(path.join(root, 'packs/behavior/blocks/ranges.json'), block('aspergillum:ranges', {'aspergillum:a': {values: {min: -2, max: 2}}, 'aspergillum:b': [false, true]}));
++  write(path.join(root, 'packs/behavior/blocks/absent.json'), {'minecraft:block': {description: {identifier: 'aspergillum:absent'}}});
++  assert.equal(readEmittedBlockStateBudget(root, 'aspergillum').states, 12);
++});
++test('reads current files again rather than caching a previous sibling version', t => {
++  const {root, altare} = pairedFixture(t);
++  assert.equal(readLocalCombinedStateBudget(altare).aspergillum, 5_008);
++  write(path.join(root, 'packs/behavior/blocks/new.json'), block('aspergillum:new'));
++  assert.equal(readLocalCombinedStateBudget(altare).aspergillum, 5_009);
++});
++for (const [name, edit, expected] of [
++  ['missing manifest', (r: string) => fs.rmSync(path.join(r, 'packs/behavior/manifest.json')), /cannot read JSON.*manifest.json/],
++  ['invalid manifest', (r: string) => write(path.join(r, 'packs/behavior/manifest.json'), {}), /invalid behavior manifest/],
++  ['missing block directory', (r: string) => fs.rmSync(path.join(r, 'packs/behavior/blocks'), {recursive: true}), /cannot read block directory/],
++  ['empty block directory', (r: string) => fs.rmSync(path.join(r, 'packs/behavior/blocks/one.json')), /no emitted block JSON/],
++  ['invalid JSON', (r: string) => fs.writeFileSync(path.join(r, 'packs/behavior/blocks/one.json'), '{'), /cannot read JSON.*one.json/],
++  ['invalid definition', (r: string) => write(path.join(r, 'packs/behavior/blocks/one.json'), {}), /invalid aspergillum block description/],
++  ['wrong namespace', (r: string) => write(path.join(r, 'packs/behavior/blocks/one.json'), block('other:one')), /invalid aspergillum block description/],
++  ['duplicate identifier', (r: string) => write(path.join(r, 'packs/behavior/blocks/nested/two.json'), block('aspergillum:one')), /duplicate block identifier/],
++  ['symbolic file', (r: string) => fs.symlinkSync(path.join(r, 'packs/behavior/blocks/one.json'), path.join(r, 'packs/behavior/blocks/copy.json')), /symbolic link/],
++] as const) {
++  test(`refuses ${name} rather than returning zero or a historical fallback`, t => {
++    const root = fixture(t); edit(root);
++    assert.throws(() => readEmittedBlockStateBudget(root, 'aspergillum'), expected);
++  });
++}
++for (const [name, states] of [
++  ['null states', null], ['array states', []], ['empty domain', {a: []}], ['duplicate values', {a: [1, 1]}],
++  ['mixed values', {a: [1, '2']}], ['unknown domain', {a: {minimum: 0, maximum: 2}}],
++  ['missing range bound', {a: {values: {min: 0}}}], ['descending range', {a: {values: {min: 1, max: 0}}}],
++  ['fractional range', {a: {values: {min: 0.5, max: 1}}}], ['oversized range', {a: {values: {min: 0, max: 16}}}],
++  ['unsafe product', domains('aspergillum', Array(14).fill(16))],
++] as const) {
++  test(`refuses ${name} without silently undercounting`, t => {
++    const root = fixture(t); write(path.join(root, 'packs/behavior/blocks/one.json'), block('aspergillum:one', states));
++    assert.throws(() => readEmittedBlockStateBudget(root, 'aspergillum'), /Block-state budget:/);
++  });
++}
++test('the threshold remains exactly 65536, not an adjustable diagnostic exception', () => {
++  assert.doesNotThrow(() => assertCombinedStateBudget({altare: 65_535, aspergillum: 1, combined: 65_536, reference: 65_536}));
++  assert.throws(() => assertCombinedStateBudget({altare: 65_536, aspergillum: 1, combined: 65_537, reference: 65_536}), /exceed 65536/);
++  assert.throws(() => assertCombinedStateBudget({altare: 70_000, aspergillum: 1, combined: 70_001, reference: 90_000}), /invalid combined budget/);
++  assert.throws(() => assertCombinedStateBudget({altare: 59_840, aspergillum: 5_008, combined: 1, reference: 65_536}), /invalid combined budget/);
++});
++
++// CLI fixtures use real already-emitted packs and source domains read-only.
++// Only the small verifier entry point and helper are copied into a temp tree.
++function cliFixture(t: any, candidate: string, sibling: string | undefined) {
++  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'altare-budget-cli-'));
++  t.after(() => fs.rmSync(dir, {recursive: true, force: true}));
++  const altare = path.join(dir, 'addons/altare');
++  fs.mkdirSync(path.join(altare, 'tools/lib'), {recursive: true});
++  for (const folder of ['packs', 'src', 'assets-src']) fs.symlinkSync(path.join(candidate, folder), path.join(altare, folder), 'dir');
++  if (sibling) fs.symlinkSync(path.join(sibling, 'packs'), path.join(dir, 'packs'), 'dir');
++  fs.copyFileSync(path.join(candidate, 'package.json'), path.join(altare, 'package.json'));
++  for (const script of ['verify-native-integration.mjs', 'verify-catalog-compaction.mjs', 'lib/block-state-budget.mjs']) fs.copyFileSync(path.join(addonRoot, 'tools', script), path.join(altare, 'tools', script));
++  return altare;
++}
++// Optional, explicit read-only artifacts for the expensive full semantic CLI
++// comparisons. Unit tests and failure-path CLI tests need no external copies.
++const baseline = process.env.ALTARE_PRECOMPACT_BASELINE;
++const historical = process.env.ALTARE_COMPACT_CATALOG_BASELINE;
++const compactSibling = path.resolve(addonRoot, '../..');
++const runCli = (dir: string, script: string) => spawnSync(process.execPath, [path.join(dir, 'tools', script), baseline ?? '/baseline-not-read-for-failure-tests'], {cwd: os.tmpdir(), encoding: 'utf8', maxBuffer: 4 * 1024 * 1024});
++
++test('native verifier reports the actual compact sibling even with unrelated cwd and legacy baseline', {skip: !baseline && 'Set ALTARE_PRECOMPACT_BASELINE for full semantic comparison'}, t => {
++  const dir = cliFixture(t, addonRoot, compactSibling), result = runCli(dir, 'verify-native-integration.mjs');
++  assert.equal(result.status, 0, result.stderr);
++  const report = JSON.parse(result.stdout);
++  assert.equal(report.states.aspergillum, 5_008); assert.equal(report.states.combined, 64_848); assert.equal(report.states.combinedHeadroom, 688);
++  assert.equal(report.stateBudgetSources.aspergillum.blocks, 18);
++});
++for (const script of ['verify-native-integration.mjs', 'verify-catalog-compaction.mjs']) {
++  test(`${script} rejects an over-budget legacy sibling before approving comparison`, t => {
++    const {root: legacySibling} = pairedFixture(t, true);
++    const result = runCli(cliFixture(t, addonRoot, legacySibling), script);
++    assert.equal(result.status, 1); assert.match(result.stderr, /Altare 59840 \+ Aspergillum 9744 = 69584/);
++    assert.equal(result.stdout, '');
++  });
++  test(`${script} fails clearly if the actual sibling is absent`, t => {
++    const result = runCli(cliFixture(t, addonRoot, undefined), script);
++    assert.equal(result.status, 1); assert.match(result.stderr, /Block-state budget: cannot read JSON.*packs\/behavior\/manifest.json/);
++    assert.equal(result.stdout, '');
++  });
++}
++for (const [name, expected, combined] of [['legacy', 9_744, 61_352], ['compact', 5_008, 56_616]] as const) {
++  test(`historical catalog verifier measures a ${name} sibling while retaining its 51608-state scope`, {skip: !(baseline && historical) && 'Set both ALTARE_PRECOMPACT_BASELINE and ALTARE_COMPACT_CATALOG_BASELINE for full historical comparison'}, t => {
++    const sibling = name === 'legacy' ? pairedFixture(t, true).root : compactSibling;
++    const result = runCli(cliFixture(t, historical!, sibling), 'verify-catalog-compaction.mjs');
++    assert.equal(result.status, 0, result.stderr);
++    const report = JSON.parse(result.stdout);
++    assert.equal(report.states.after, 51_608); assert.equal(report.states.aspergillum, expected); assert.equal(report.states.combined, combined);
++  });
++}
++test('historical verifier still rejects native-family scope rather than relaxing its identity gate', {skip: !baseline && 'Set ALTARE_PRECOMPACT_BASELINE to verify the historical identity gate'}, t => {
++  const result = runCli(cliFixture(t, addonRoot, compactSibling), 'verify-catalog-compaction.mjs');
++  assert.equal(result.status, 1); assert.match(result.stderr, /Block IDs changed/); assert.equal(result.stdout, '');
++});
+--- /dev/null
++++ b/addons/altare/docs/LOCAL_STATE_BUDGET.md
+@@ -0,0 +1,44 @@
++# Orçamento local dos verificadores auxiliares
++
++Revisão de ferramentas em cópia isolada, 03/11/2026. Não altera packs, schemas, mundos ou decisão NO-GO.
++
++`verify-native-integration.mjs` e `verify-catalog-compaction.mjs` não presumem mais que o Aspergillum contém 9.744 estados. Ambos usam `tools/lib/block-state-budget.mjs` para ler os dois Behavior Packs emitidos na árvore candidata:
++
++- Altare: o `packs/behavior` deste add-on;
++- Aspergillum: `../../packs/behavior` a partir deste add-on, nunca a árvore passada como baseline;
++- manifest de comportamento obrigatório e blocos JSON percorridos recursivamente, incluindo proxies sem states (um estado cada);
++- produto das cardinalidades por bloco e soma por pack; arrays e intervalos inteiros inclusivos são reconhecidos;
++- recusa explícita de pasta/manifest ausentes, pasta vazia, JSON/definição inválidos, IDs duplicados, domínio desconhecido/vazio/misto ou contagem que exceda precisão inteira segura. Não existe fallback para zero ou uma contagem histórica.
++
++Os dois verificadores exigem soma **≤65.536**, sem parâmetro para elevar o teto, antes das comparações semânticas caras. O total Altare lido dos arquivos também precisa coincidir com a enumeração semântica do próprio verificador. O relatório fornece o pack, manifest, versão e número de blocos lidos. Os arquivos devem formar uma cópia completa dos packs: contar o diretório não prova que um terceiro nunca removeu um arquivo que não está mais lá.
++
++## Variantes verificadas
++
++| Altare emitido | Aspergillum emitido | Soma | Resultado do orçamento |
++| --- | ---: | ---: | --- |
++| Catálogo histórico, 51.608 | Legado, 9.744 | 61.352 | Dentro do teto |
++| Catálogo histórico, 51.608 | Compacto, 5.008 | 56.616 | Dentro do teto |
++| Integração nativa, 59.840 | Legado, 9.744 | 69.584 | Recusado, excesso de 4.048 |
++| Integração nativa, 59.840 | Compacto, 5.008 | 64.848 | Dentro do teto, margem 688 |
++
++Passar o orçamento não aprova outras invariantes ou a release. O verificador histórico continua exigindo os mesmos 414 IDs, 51.608 estados e arte/RP preservados. Ele **continua recusando** a integração 0.13.0 por mudança de IDs; não deve ser flexibilizado para aceitar os 17 blocos novos. O verificador nativo é a comparação apropriada para essa integração.
++
++## Reprodução sem build
++
++Testes portáteis de contagem, erros e CLIs com sibling ausente/legado:
++
++```sh
++node --experimental-strip-types --test tests/block-state-budget.node.ts
++```
++
++Quatro comparações completas adicionais usam baselines explícitas, já emitidas, somente para leitura. Sem essas variáveis, elas ficam marcadas como skipped, não como aprovadas:
++
++```sh
++ALTARE_PRECOMPACT_BASELINE=/copia/precompact/addons/altare \
++ALTARE_COMPACT_CATALOG_BASELINE=/copia/catalogo-compacto/addons/altare \
++node --experimental-strip-types --test tests/block-state-budget.node.ts
++```
++
++A suíte constrói árvores temporárias, copia somente os verificadores/helper e usa fontes/packs de referência read-only. Verifica os dois CLIs, o sibling correto apesar de outro `cwd`, os casos 65.536/65.537 e a recusa histórica por escopo. Nenhum build, instalação ou chamada Creator Tools faz parte desses testes.
++
++O gate principal `validate-collection.mjs` permanece inalterado; esta revisão corrige somente os auxiliares. Não oferece teste nativo, migração, estimativa de memória ou garantia de desempenho. Outros add-ons do mundo precisam ser contados separadamente.
+--- a/addons/altare/docs/CATALOG_COMPACTION.md
++++ b/addons/altare/docs/CATALOG_COMPACTION.md
+@@ -3,6 +3,8 @@
+ Revisão isolada sobre a 0.12.3, anterior à integração de novas famílias. Não foi instalada, publicada nem aplicada a mundos. O número da versão da cópia foi preservado somente para a comparação byte a byte; antes de qualquer distribuição, a integração precisa receber uma nova versão e aviso de quebra do esquema persistido.
+ 
+ ## Registro e semântica
++
++Os totais abaixo são a medição histórica desta fase, com Aspergillum legado. Os [verificadores auxiliares atuais](LOCAL_STATE_BUDGET.md) leem o sibling emitido na cópia candidata, recusam dados ausentes e exigem o mesmo teto agregado de 65.536. O contrato histórico de 414 IDs/51.608 estados não foi flexibilizado para a integração de novas famílias.
+ 
+ - Permanecem 414 IDs, incluindo os 135 Atelier e `altare:mensa`. Nenhuma opção de material, toalha, cor ou aplique é removida.
+ - Nove Atelier sem toalha e sem aplique usam `edges` × `facing`: 16 × 4 = 64 estados por receita. A frente lógica permanece mesmo quando duas vistas forem visualmente equivalentes.
+--- a/addons/altare/CHANGELOG.md
++++ b/addons/altare/CHANGELOG.md
+@@ -1,4 +1,10 @@
+ # Changelog
++
++## 0.13.0 · Verificadores locais, diagnóstico não publicado — 2026-11-03
++
++- Os dois verificadores auxiliares medem os Behavior Packs emitidos de Altare e Aspergillum na cópia candidata, com leitura recursiva e recusa explícita de dados ausentes/inválidos; removido o valor fixo de 9.744.
++- Exigem soma ≤65.536 e preservam os gates semânticos/históricos: a integração compacta mede 64.848; a mesma integração com sibling legado mede 69.584 e é recusada.
++- Testes cobrem variantes histórica/nativa e legado/compacto, falhas de entrada, limites e CLIs reais sem build. Packs, runtime, mundos e NO-GO preservados. [Contrato e reprodução](docs/LOCAL_STATE_BUDGET.md).
+ 
+ ## 0.12.3 · Escolhas e prazo do editor — 2026-11-03
+ 

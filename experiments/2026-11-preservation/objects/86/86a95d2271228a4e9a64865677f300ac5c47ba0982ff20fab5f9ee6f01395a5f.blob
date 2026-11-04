@@ -1,0 +1,10 @@
+"""Projection of actual maximum-slope candidate triangles; no image editing."""
+from pathlib import Path
+import numpy as np,json
+O=Path(__file__).resolve().parent;d=np.load(O/'valley-source-mask-n8.npz');p=d['points'];f=d['triangles'];views=[('band-front',(.035,-3.5,3.58),(.035,-.30,3.58),.52,(1000,1000)),('left-ear',(-3,-.16,3.50),(-.085,-.205,3.485),.50,(1000,1000)),('right-ear',(3,-.16,3.48),(.17,-.205,3.46),.50,(1000,1000))];rows=[]
+for name,ids in [('right_max_transition',[1537,1538]),('left_max_transition',[604])]:
+ q=p[np.unique(f[ids])];r={'label':name,'faces':ids,'coordinates':q.tolist(),'views':{}}
+ for view,pos,target,scale,res in views:
+  pos=np.array(pos);forward=np.array(target)-pos;forward/=np.linalg.norm(forward);right=np.cross(forward,[0,0,1]);right/=np.linalg.norm(right);up=np.cross(right,forward);width,height=res;h=scale*height/width;xy=np.c_[((q-pos)@right/scale+.5)*width,(.5-(q-pos)@up/h)*height];r['views'][view]={'pixel_bbox_min':xy.min(0).tolist(),'pixel_bbox_max':xy.max(0).tolist(),'pixel_centroid':xy.mean(0).tolist(),'occlusion_not_tested':True}
+ rows.append(r)
+(O/'transition-pixel-witnesses.json').write_text(json.dumps(rows,indent=2));print(json.dumps(rows,indent=2))

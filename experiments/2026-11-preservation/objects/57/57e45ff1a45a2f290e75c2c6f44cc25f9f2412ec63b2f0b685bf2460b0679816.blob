@@ -1,0 +1,28 @@
+import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';
+import * as THREE from '../../../viewer-3d/node_modules/three/build/three.module.js';
+import {buildBedrockGeometry} from '../../../viewer-3d/src/shared/bedrock-geometry.js';
+import {blockPreviewGeometry} from './block-preview-basis.mjs';
+import {twinPedestalRecipe} from '../assets-src/atelier/twin-pedestal-recipe-study.mjs';
+import {SHARED_TEXTILES,LITURGICAL_COLORS} from '../src/domain/catalog.ts';
+const root=path.resolve(import.meta.dirname,'..'),out=path.join(root,'out/two-pedestal-integration/recipes');fs.mkdirSync(out,{recursive:true});
+const cases=SHARED_TEXTILES.flatMap(textile=>(textile==='floral'?LITURGICAL_COLORS:['red']).map(color=>({w:3,d:2,f:0,textile,color})));
+for(const f of [1,2,3])cases.push({w:3,d:2,f,textile:'floral',color:'purple'});
+for(const [w,d] of [[1,1],[2,1],[1,3],[2,3],[7,2],[8,2],[8,16],[1,16]])cases.push({w,d,f:0,textile:'lace',color:'red'});
+const manifest=[],textures=new Set();
+for(const {w,d,f,textile,color} of cases){
+ const plan=twinPedestalRecipe(w,d,f,{textile,color}),triangles=[];
+ for(const cell of plan.cells){
+  const palette={named:{}};for(const [slot,texture] of Object.entries(cell.materials)){const m=new THREE.MeshBasicMaterial();m.userData.texture=path.join(root,'packs/resource/textures/blocks',texture+'.png');textures.add(m.userData.texture);palette.named[slot]=m;palette.default??=m;}
+  const g=blockPreviewGeometry(cell.doc['minecraft:geometry'][0]),built=buildBedrockGeometry(g,{identifier:g.description.identifier,textureWidth:128,textureHeight:128,formatVersion:cell.doc.format_version},palette,{includePivots:false,includeLocators:false});built.root.position.set(cell.center[0]/16,0,cell.center[2]/16);built.root.updateMatrixWorld(true);
+  built.root.traverseVisible(o=>{if(!o.isMesh)return;const p=o.geometry.attributes.position,uv=o.geometry.attributes.uv,idx=o.geometry.index;
+   for(const group of o.geometry.groups){const m=Array.isArray(o.material)?o.material[group.materialIndex]:o.material;
+    for(let i=group.start;i<group.start+group.count;i+=3){const points=[],coords=[];for(let j=0;j<3;j++){const k=idx?idx.getX(i+j):i+j;points.push(new THREE.Vector3().fromBufferAttribute(p,k).applyMatrix4(o.matrixWorld).toArray());coords.push([uv.getX(k),uv.getY(k)]);}triangles.push({points,uv:coords,texture:m.userData.texture});}
+   }o.geometry.dispose();
+  });for(const m of Object.values(palette.named))m.dispose();
+ }
+ let direction=[-.8,.32,-1];for(let i=0;i<f;i++)direction=[-direction[2],direction[1],direction[0]];
+ const id=`${w}x${d}-${plan.recipe}-f${f}`,scene={id,w,d,textile:plan.textile,color,version:'estudo de integração',title:'ALTARE / DOIS PEDESTAIS E TECIDOS REAIS',subtitle:`${w} × ${d} módulos · ${plan.recipe} · frente ${f} · composição nativa em estudo`,footer:'PRÉVIA TÉCNICA CPU · variante de arquitetura não instalada · não é captura do Minecraft',center:[0,.5,0],direction,triangles};
+ fs.writeFileSync(path.join(out,id+'.scene.json'),JSON.stringify(scene));manifest.push({id,w,d,f,textile,color,triangles:triangles.length,planHash:crypto.createHash('sha256').update(JSON.stringify(plan)).digest('hex')});
+}
+const sources=['assets-src/atelier/twin-pedestal-recipe-study.mjs','assets-src/atelier/twin-pedestal-family-study.mjs','assets-src/atelier/twin-pedestal-cell-study.mjs','assets-src/atelier/garment.mjs'];
+fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify({registered:false,baseVersion:'0.12.3',scenes:manifest,sources:sources.map(p=>({path:p,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex')})),textures:[...textures].sort().map(p=>({path:path.relative(root,p),sha256:crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex')}))},null,2));console.log(out,manifest.length);

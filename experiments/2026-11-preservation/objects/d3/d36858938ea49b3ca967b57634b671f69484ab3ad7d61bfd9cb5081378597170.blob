@@ -1,0 +1,741 @@
+{
+  "included_files": [
+    {
+      "path": "README.md",
+      "bytes": 9371,
+      "sha256": "6cf5b18226aa34b6bfae152b5a4ee28611a57372c9698189c1826bdcd7fbb2fb"
+    },
+    {
+      "path": "STATUS.json",
+      "bytes": 1217,
+      "sha256": "d0fb235bae815c5060effc09e40853203660f674ad857f5abeaf37a02bb6b391"
+    },
+    {
+      "path": "anatomy_fit/README.md",
+      "bytes": 11856,
+      "sha256": "6a8cfec4528f9e336aece3efeee32fd3103201e00d7be8f445cdb40acf0f4e02"
+    },
+    {
+      "path": "anatomy_fit/audit-summary.json",
+      "bytes": 13826,
+      "sha256": "4c3f56518721c4afe40cdad8a21e234fd42e40ad9d6fe53e9dfc16ef20633ed3"
+    },
+    {
+      "path": "anatomy_fit/baseline-coverage.png",
+      "bytes": 737534,
+      "sha256": "5709eb8a0b35eedb79fdb20b1b7828d7401fdc68e76d2178d04897690e776ea7"
+    },
+    {
+      "path": "anatomy_fit/baseline-welded.npz",
+      "bytes": 36666,
+      "sha256": "495ccfd3beb46a61e1f0846471f8f8be61c511606dcf20c2c72d0d6d5a36be15"
+    },
+    {
+      "path": "anatomy_fit/document_results.py",
+      "bytes": 5948,
+      "sha256": "45cdb68df51521daa4be7ab2231b97f450fd821ee007d6ad5537d94ad32db402"
+    },
+    {
+      "path": "anatomy_fit/explicit-protected-mask.npy",
+      "bytes": 820,
+      "sha256": "c0c070c06d5bcdfb1089af6fbfe3cb7c2f9c1a313023299a6d656506bf5ee298"
+    },
+    {
+      "path": "anatomy_fit/fit_inward.py",
+      "bytes": 7646,
+      "sha256": "406f9b0da7a71a7d09a232a48bef64d1c94645e53101878a542afd017605031b"
+    },
+    {
+      "path": "anatomy_fit/initial-candidate-residual-map.json",
+      "bytes": 329032,
+      "sha256": "b3e299b6b4d707c5194862f8c87183b473f7411791f1d7aad92e4f3c4f864f5a"
+    },
+    {
+      "path": "anatomy_fit/inner-shell-and-baseline-inspection.npz",
+      "bytes": 41292,
+      "sha256": "1a0b485ed0a6666085dfa624e5c84e31fc55afb950361cddb822e1f021372b75"
+    },
+    {
+      "path": "anatomy_fit/inspect.log",
+      "bytes": 426,
+      "sha256": "03d2db313a653aea34ce00eefd988a6548b7bc3f62dee0d79fc710889c2b574c"
+    },
+    {
+      "path": "anatomy_fit/inspect_geometry.py",
+      "bytes": 3119,
+      "sha256": "5f228b0c262a2c4ae8249d9bcfa2634fca4ccc3889adf62c68a63959341faca3"
+    },
+    {
+      "path": "anatomy_fit/inward-0p3mm-max5-iteration00-contacts.npz",
+      "bytes": 2672,
+      "sha256": "073258e74bb625132bcf1933a8738c954d6cc22bcaa6d5239b588b1267f37387"
+    },
+    {
+      "path": "anatomy_fit/inward-0p3mm-max5-iteration00.npz",
+      "bytes": 46662,
+      "sha256": "a738d176bdee7860a5bb58eeabe15031441187637ec6c7e5146573027856cedc"
+    },
+    {
+      "path": "anatomy_fit/inward-0p3mm-max5-iteration01-contacts.npz",
+      "bytes": 2294,
+      "sha256": "ba1690e105c079efeec03d41e4ef429a2b8fa237eb0854225a48de28f7a30e8d"
+    },
+    {
+      "path": "anatomy_fit/inward-0p3mm-max5-iteration01.npz",
+      "bytes": 46686,
+      "sha256": "4c2508440da46009f9f0b8295f7a3535cc592cd40f40a83850a4873eed7c0d48"
+    },
+    {
+      "path": "anatomy_fit/inward-0p3mm-max5-iteration02-contacts.npz",
+      "bytes": 2289,
+      "sha256": "17fb2e0bd9e29524e059769352902f591dad14d8d92364c671a3d7990dfc1d51"
+    },
+    {
+      "path": "anatomy_fit/inward-0p3mm-max5-iteration02.npz",
+      "bytes": 46693,
+      "sha256": "c52b4e12fc65c6b1bea54c35501884fd74eefbbaad1230e6eb5451aae7d18838"
+    },
+    {
+      "path": "anatomy_fit/inward-0p3mm-max5-iteration03-contacts.npz",
+      "bytes": 2288,
+      "sha256": "d3534a169bed1b0df4d3c163446fe7f12ec819a9edebac5ff9604ec534c03528"
+    },
+    {
+      "path": "anatomy_fit/inward-0p3mm-max5-iteration03.npz",
+      "bytes": 46681,
+      "sha256": "37dd2a0652d052115e7e4e5bcb55e398547c45088603932d5d68cc2345a32eb3"
+    },
+    {
+      "path": "anatomy_fit/inward-0p3mm-max5-report.json",
+      "bytes": 5091,
+      "sha256": "bce2a5ec5abfacecd442ac026d5df2df46d25d825f3addde56cd49142dff6e6d"
+    },
+    {
+      "path": "anatomy_fit/inward-0p3mm-max5.log",
+      "bytes": 2510,
+      "sha256": "6c743a77ec0b51d1c11cba1ce911fe44f0f71ca4fcf6db145d63ecc4e118d75c"
+    },
+    {
+      "path": "anatomy_fit/inward-0p5mm-iteration00-contacts.npz",
+      "bytes": 2084,
+      "sha256": "22e5c1257f1c835a30db248c5619b6cf2c9ba854b827cabf37176c148c0030fc"
+    },
+    {
+      "path": "anatomy_fit/inward-0p5mm-iteration00.npz",
+      "bytes": 46671,
+      "sha256": "c1971f80ca5bd99a8d51461823a42e03ed6400282e31a18586602cd0216b4519"
+    },
+    {
+      "path": "anatomy_fit/inward-0p5mm-iteration01-contacts.npz",
+      "bytes": 1772,
+      "sha256": "cddb3356709efe64e9b76cc9e1f2bbbca44251674ce1db8585023b2cf8d81cbb"
+    },
+    {
+      "path": "anatomy_fit/inward-0p5mm-iteration01.npz",
+      "bytes": 46713,
+      "sha256": "65e1edfa6c8161fbf6a5c7a5a7fc1e0bd0e80fdd81bbc80b0051983b00fdf816"
+    },
+    {
+      "path": "anatomy_fit/inward-0p5mm-max10-iteration00-contacts.npz",
+      "bytes": 2084,
+      "sha256": "22e5c1257f1c835a30db248c5619b6cf2c9ba854b827cabf37176c148c0030fc"
+    },
+    {
+      "path": "anatomy_fit/inward-0p5mm-max10-iteration00.npz",
+      "bytes": 46671,
+      "sha256": "c1971f80ca5bd99a8d51461823a42e03ed6400282e31a18586602cd0216b4519"
+    },
+    {
+      "path": "anatomy_fit/inward-0p5mm-max10-iteration01-contacts.npz",
+      "bytes": 1774,
+      "sha256": "a17948f3264bd2ee39a206bacd76db76e99dbf6aa6bc3e699a9aedee270c2326"
+    },
+    {
+      "path": "anatomy_fit/inward-0p5mm-max10-iteration01.npz",
+      "bytes": 46707,
+      "sha256": "f150618dd2db6c31ca8160a8a9bda4c185b65e8c0e1b1e081759a10b4c4dee3a"
+    },
+    {
+      "path": "anatomy_fit/inward-0p5mm-max10-report.json",
+      "bytes": 3540,
+      "sha256": "bac7de265a5028a6c26b587e6f663341cff9e7045c3987dee24810c8b7bb5888"
+    },
+    {
+      "path": "anatomy_fit/inward-0p5mm-max10.log",
+      "bytes": 1483,
+      "sha256": "7da1b0805e8eceebbdddd71426966c8fcc9716f7c98e2df62ae7880e6303ba0a"
+    },
+    {
+      "path": "anatomy_fit/inward-0p5mm-report.json",
+      "bytes": 3539,
+      "sha256": "a93ac7aed54ab7ddcd270e548be6dfdc2c7d810056658d9a42fa0f7ac79a91c6"
+    },
+    {
+      "path": "anatomy_fit/inward-0p5mm.log",
+      "bytes": 1489,
+      "sha256": "7036a1d1abd52ddcb2c4907c5bfa6bbf38a15ddd270a3e709a73fad20f506111"
+    },
+    {
+      "path": "anatomy_fit/plot_results.py",
+      "bytes": 1904,
+      "sha256": "8b5db02b452cdccf546528675d8158b687a76f0849e555f3796bba4094ac8b80"
+    },
+    {
+      "path": "anatomy_fit/ray-coverage-mask.npy",
+      "bytes": 820,
+      "sha256": "e6656020dabb4e14fed10f16c2a3180a1d8ebdcddb2ec1c4d5eda60bda35c1fb"
+    },
+    {
+      "path": "anatomy_fit/retained-anatomy.npz",
+      "bytes": 46671,
+      "sha256": "c1971f80ca5bd99a8d51461823a42e03ed6400282e31a18586602cd0216b4519"
+    },
+    {
+      "path": "anatomy_fit/retained-displacement-and-protection.png",
+      "bytes": 1375918,
+      "sha256": "ad7cd4bc314799d63210461c687305fbde2ae9d49b3663784d61bd9dc2acec95"
+    },
+    {
+      "path": "anatomy_fit/retained-manifest.json",
+      "bytes": 591,
+      "sha256": "9451cbf6bf980f207d274fd60cfdb1c55d4b9b181976ca7cc2f55e5264fd97bf"
+    },
+    {
+      "path": "diagnostic_transport/control-report.json",
+      "bytes": 591,
+      "sha256": "de49d8135fde352e54f0fa9a1fb4ddb347313502e1dc649e09dba71243a001e8"
+    },
+    {
+      "path": "diagnostic_transport/control-triangles.json",
+      "bytes": 310503,
+      "sha256": "9d1ca4b5f1e75b8dd851f455dfd37ca0a69c3172fa82813665e74386cb9fd328"
+    },
+    {
+      "path": "diagnostic_transport/control.geo.json",
+      "bytes": 1763192,
+      "sha256": "d7b6f3fc1610ad077564f6550d826cc5ec551ea95ecd443e505ff3ebf5e02c7f"
+    },
+    {
+      "path": "diagnostic_transport/control.png",
+      "bytes": 1030946,
+      "sha256": "11a0ea6c1d1cb9e78af6b9e2c7210611dde796cf2de20186bce776e280634f85"
+    },
+    {
+      "path": "diagnostic_transport/fit-first-report.json",
+      "bytes": 592,
+      "sha256": "fbc0855e40a179f536d6c5a8036b06b3076d42df16048fb0116a81843342ef26"
+    },
+    {
+      "path": "diagnostic_transport/fit-first-triangles.json",
+      "bytes": 310792,
+      "sha256": "bd0c34dcaeedf93b5494cd2fb2993c1bec3818dfd628885dcf9ca7bd20d676ca"
+    },
+    {
+      "path": "diagnostic_transport/fit-first.geo.json",
+      "bytes": 1763180,
+      "sha256": "9efa9b21250d6f40d8ee0f0103d201425e127ebfd35f7635a4e3830974c73f58"
+    },
+    {
+      "path": "diagnostic_transport/fit-first.png",
+      "bytes": 1031008,
+      "sha256": "7521124212ad51acf8ca966987041df9c9e538b50bdaa81c0f2f1ed09b37112c"
+    },
+    {
+      "path": "evidence/V7_V8_NATIVE_AND_JSON_NOT_MINECRAFT.png",
+      "bytes": 1392735,
+      "sha256": "d91110ef5eb9b29437d69d894809bf37f154221e1f44f40f7764b52ac2abc139"
+    },
+    {
+      "path": "evidence/V7_V8_NO_HALO_DIAGNOSTIC.png",
+      "bytes": 546576,
+      "sha256": "32c74349d585db80b309d9ed162c8e33960ff23d5b6921ad8a7f4d77818e074d"
+    },
+    {
+      "path": "evidence/all-legacy-contact-map.json",
+      "bytes": 1912720,
+      "sha256": "777db58a4440ecb518e05824e62bcdf67a00d3e3957654b7b23de6d4ba4f5235"
+    },
+    {
+      "path": "evidence/contact-witnesses.npz",
+      "bytes": 122119,
+      "sha256": "f7eb79aaa07aa4258b83445e1639241a06232d7ec32f21266d54c74d96f52820"
+    },
+    {
+      "path": "evidence/control-transport-validation.json",
+      "bytes": 554,
+      "sha256": "8abbacfa49e4f61ea895fa77966ce84fa21ad528f921702fe30f764893bb4af0"
+    },
+    {
+      "path": "evidence/diagnostic-export-control-test.json",
+      "bytes": 268,
+      "sha256": "273407d9043469d657c0299b73cb674ea2d2d1e3b53d0415d4b56bff5e4b87f1"
+    },
+    {
+      "path": "evidence/final-validation.json",
+      "bytes": 2641,
+      "sha256": "a7f0b606f1ef468ddf896edf42822296bc8daf1646709846c2700e3330aa2fa2"
+    },
+    {
+      "path": "evidence/fit-first-full-front.png",
+      "bytes": 1194240,
+      "sha256": "f64b0b7b847208a208f31790f385b4e7cc452bb70a1a9a61c879835f01262cfe"
+    },
+    {
+      "path": "evidence/fit-first-head-front.png",
+      "bytes": 982555,
+      "sha256": "0b89f01d45e017d062135a5a46721ddfbd2d83695a7c36f739086b3db78fa137"
+    },
+    {
+      "path": "evidence/fit-first-junction-back.png",
+      "bytes": 1073166,
+      "sha256": "eed04fa4bd55cb19f4b4c1f461c8751d5fcd791f499d702e61b8276dddb1d99b"
+    },
+    {
+      "path": "evidence/fit-first-junction-profile.png",
+      "bytes": 1190330,
+      "sha256": "0493d16dbabb769d0a265b30aeaf53c84d7296d414752deee6a669a1031310e9"
+    },
+    {
+      "path": "evidence/fit-first-nohalo-junction-back.png",
+      "bytes": 1079481,
+      "sha256": "47bd76ec653c137b5fed9f6f53189a9b84ef35cf89902c12c3f3aba8a1efb6aa"
+    },
+    {
+      "path": "evidence/fit-first-nohalo-render.json",
+      "bytes": 1697,
+      "sha256": "d19a6ebebd26040d324985adb3c6ca5c58de1dcf867afe49aa978d49d15710a4"
+    },
+    {
+      "path": "evidence/fit-first-outline-back.png",
+      "bytes": 23030,
+      "sha256": "2df9160710f30f3abfede0095e68ad1e40bb4a8457d610e4cdac04d5db7f42d7"
+    },
+    {
+      "path": "evidence/fit-first-outline-front.png",
+      "bytes": 22177,
+      "sha256": "2e5713e1c6642e30a11195e15aa3c442019434b3fc5f37fad6d25360ac76e05c"
+    },
+    {
+      "path": "evidence/fit-first-outline-profile.png",
+      "bytes": 24498,
+      "sha256": "1326c9644f964d2eb526127d183a90a746558aa8b8e88cdcea91f1e73250fd4f"
+    },
+    {
+      "path": "evidence/fit-first-outline.json",
+      "bytes": 2315,
+      "sha256": "4d265440694e24cac1118e23ea9f414bb7e3c1285b78780c8749073263e6a31a"
+    },
+    {
+      "path": "evidence/fit-first-render.json",
+      "bytes": 1724,
+      "sha256": "182e54ce5c0f253b413a5026a25ab00fff629415274ff9f289bf0f533b4d628c"
+    },
+    {
+      "path": "evidence/fit-first-transport-validation.json",
+      "bytes": 554,
+      "sha256": "29b3fc4f45175452cd2599c0c77ea6ff544edbf5603a9fb70330d5c51e88b35f"
+    },
+    {
+      "path": "evidence/fit-json-full-front.png",
+      "bytes": 1196743,
+      "sha256": "87cf55d69d546226fa38dfa4fe8abe21c4dfef24fd48c471d1892801a7effa72"
+    },
+    {
+      "path": "evidence/fit-json-head-front.png",
+      "bytes": 1007606,
+      "sha256": "fc584ceab0f81c49c52946d71f507a225d727334f0fc377daf16f6a04d989c1e"
+    },
+    {
+      "path": "evidence/fit-json-junction-back.png",
+      "bytes": 1076892,
+      "sha256": "dbf8f29434504256682dc86a7fd132ef36a4e39af4bf69bc187e0fefa473998a"
+    },
+    {
+      "path": "evidence/fit-json-junction-profile.png",
+      "bytes": 1211855,
+      "sha256": "592fd5ec0570244df2f4e840e68392af35d3eb7f108775aa222bc2438df10977"
+    },
+    {
+      "path": "evidence/fit-json-render.json",
+      "bytes": 1547,
+      "sha256": "d9b95cd12088308d01ae8397b5088bf8836ee0a0fe9ba658dec238acd40cdd68"
+    },
+    {
+      "path": "evidence/input-locks.json",
+      "bytes": 1088,
+      "sha256": "d1c455ef615aa51317f8564640c0b70ace79e102f22151573dcdc90fe359608e"
+    },
+    {
+      "path": "evidence/map-all.log",
+      "bytes": 749,
+      "sha256": "8add71c55e4005eed6ca9939ae0e5e0d7ec28a4d4aa8c70a6607a681b3ff314a"
+    },
+    {
+      "path": "evidence/native-control-full-front.png",
+      "bytes": 1194793,
+      "sha256": "fd652dd03a7776f7858bfe54bdd36b86c8899bd06c5bc85b1065dee4d12efe2c"
+    },
+    {
+      "path": "evidence/native-control-head-front.png",
+      "bytes": 983872,
+      "sha256": "05651536dfe97c3d8a7a50ce28472652883823a6fe442133cc8829c5adc22193"
+    },
+    {
+      "path": "evidence/native-control-junction-back.png",
+      "bytes": 1073206,
+      "sha256": "6f94e026572f292ac1ba9478480232301d05cb2dc544a6d98865882e777e5459"
+    },
+    {
+      "path": "evidence/native-control-junction-profile.png",
+      "bytes": 1192613,
+      "sha256": "de2b26b021650bf2728d277f0e8303ace5da8710808a78bb0586536b34edd30f"
+    },
+    {
+      "path": "evidence/native-control-nohalo-junction-back.png",
+      "bytes": 1082917,
+      "sha256": "4f6a27c46312b77012df4782646dfad631c29e4ef2841f29e3ebdb963a7e1d84"
+    },
+    {
+      "path": "evidence/native-control-nohalo-render.json",
+      "bytes": 1704,
+      "sha256": "540236b100b02639c860f6229a9fb27c88b021676dc47f5e8498b5f2713fbf80"
+    },
+    {
+      "path": "evidence/native-control-render.json",
+      "bytes": 1184,
+      "sha256": "b5e7614efdbb3f38166c7c85684042f7004c4b097fef85d1ae34d27c7fb85dfc"
+    },
+    {
+      "path": "evidence/render-fit-first-nohalo.log",
+      "bytes": 5733,
+      "sha256": "683a384e2dede44e701282295bfdac40b66c2150a3c475c36a80d14ee2666ae3"
+    },
+    {
+      "path": "evidence/render-fit-first-rest.log",
+      "bytes": 11046,
+      "sha256": "56cdb9a8d128dbae10654efbb310bb6a84b84c7fa879a09fa3861f6ee057c2f4"
+    },
+    {
+      "path": "evidence/render-fit-first.log",
+      "bytes": 10803,
+      "sha256": "4a203456b622ff9bcef20b675f32de6d8fd4074d13236f436fdd2f6038293e10"
+    },
+    {
+      "path": "evidence/render-fit-json.log",
+      "bytes": 22107,
+      "sha256": "acb14714f7b6a62a1d64d59961d4b0aeb75ffc94e2f7806073d0905ddc4a290c"
+    },
+    {
+      "path": "evidence/render-native-control-nohalo.log",
+      "bytes": 5461,
+      "sha256": "777a5b5814e496397f05bf992fd2f60143fd89ca2f4bc3ee5b3fce97d7fb3d86"
+    },
+    {
+      "path": "evidence/render-native-control.log",
+      "bytes": 21833,
+      "sha256": "757c0f27b79a9cf53a336366839d0912494169eb9880fad6796112491c097b10"
+    },
+    {
+      "path": "evidence/retained-structural-diagnostic.blend",
+      "bytes": 3285960,
+      "sha256": "9ea267e648f8e72eba2475b34d02688fff8c80731a96d8b1345b4bfb75dd5b62"
+    },
+    {
+      "path": "evidence/review-visual-v8.md",
+      "bytes": 15777,
+      "sha256": "15831fa336b2f37cf785c42297cfb16bf43d8ec7c5094a7a949ddf4339bec5bd"
+    },
+    {
+      "path": "independent_diagnosis/.mpl-cache/fontlist-v390.json",
+      "bytes": 173564,
+      "sha256": "6790f7eaef613130d7f6224184c9893bbbdd42013af72cfa77ad104319023fe3"
+    },
+    {
+      "path": "independent_diagnosis/CONTACT_LOCATION_SOURCE_VS_REDUCED.png",
+      "bytes": 1547751,
+      "sha256": "cc588805f69f6bdfe5c7e961cc06a342881d8adb7e740fc7d9861de2fa66b2a0"
+    },
+    {
+      "path": "independent_diagnosis/HEAD_CROSS_SECTIONS.png",
+      "bytes": 250635,
+      "sha256": "c7cc8ef883e0fbee9a75ca1593dd0519e7761e2185d45e9085c61d71d97b7c74"
+    },
+    {
+      "path": "independent_diagnosis/README.md",
+      "bytes": 7762,
+      "sha256": "3762061c43170152e46f5b866c809d1a76697755579ed56626849c8bf32e74b6"
+    },
+    {
+      "path": "independent_diagnosis/REVIEW_RETAINED_ANATOMY.md",
+      "bytes": 6822,
+      "sha256": "eee0d662c33a2ff234ea0c8064d4ac96ef508564eb3318cd5420806f8a1193bc"
+    },
+    {
+      "path": "independent_diagnosis/band-contact-detail.log",
+      "bytes": 430,
+      "sha256": "df976c50b6f7ebf93eaba30204a5fc8c95256693fccfc60a2d09662c7428c5af"
+    },
+    {
+      "path": "independent_diagnosis/band-retained-localization.json",
+      "bytes": 40069,
+      "sha256": "ca61ded391b53cb30dbc04779c21f99c7a7bda39f4671f70c29d0a23d3159767"
+    },
+    {
+      "path": "independent_diagnosis/baseline-review.json",
+      "bytes": 1702146,
+      "sha256": "50750cdc5bbaa1369e3a12e47b878eded5eb52136d715b6565ac9e6a2174099b"
+    },
+    {
+      "path": "independent_diagnosis/baseline-review.log",
+      "bytes": 1418,
+      "sha256": "d9169fefe0211dbb55a7fb91c3fe482e79f93b9ce03d4480a8133de3b15f3961"
+    },
+    {
+      "path": "independent_diagnosis/check_original_band_vectorized.py",
+      "bytes": 2174,
+      "sha256": "27e631b4d28583857b072f7354e5d4afd97232f491405246f43ee423051e2e74"
+    },
+    {
+      "path": "independent_diagnosis/classify_residuals.py",
+      "bytes": 3646,
+      "sha256": "d2c866a3232fca736e107f1409634571925a5ed0e28ebb2013b4506742582a8b"
+    },
+    {
+      "path": "independent_diagnosis/compare-contacts.log",
+      "bytes": 711,
+      "sha256": "86565670832b3ef8a8863017c4367e12927526e819ad861b043837f121e475e5"
+    },
+    {
+      "path": "independent_diagnosis/compare_contacts.py",
+      "bytes": 5531,
+      "sha256": "788328541001ce6383107a327ce618caabd43a759c9962cb7784055027d3abfd"
+    },
+    {
+      "path": "independent_diagnosis/comparison-summary.json",
+      "bytes": 50549,
+      "sha256": "dfaa2a352c5c103d822887ad87f9d26afeaef0b0b7a7f65825f5a90eca95c57c"
+    },
+    {
+      "path": "independent_diagnosis/coordinate-verification.json",
+      "bytes": 20053,
+      "sha256": "97a48ad22f39b89cb8a08deefc36fda9d5deae17ae7b47833f6553e94d9b971c"
+    },
+    {
+      "path": "independent_diagnosis/extract-verify.log",
+      "bytes": 800,
+      "sha256": "9c34c6571d4c75346d92cfeee50e1bc12d7e34ae2be2becc44132d8328bc738f"
+    },
+    {
+      "path": "independent_diagnosis/extract_verify.py",
+      "bytes": 2956,
+      "sha256": "fcd4e6df5401bdb7f38a33d63af5fda1d4aa13fe46063c9d990d1247c9afda6d"
+    },
+    {
+      "path": "independent_diagnosis/input-hashes-final-check.json",
+      "bytes": 451,
+      "sha256": "911798d4b81b2d676e428e6a6f8b4932f09de1b0f6a4eae79bb339c55e4ff3dd"
+    },
+    {
+      "path": "independent_diagnosis/input-hashes.json",
+      "bytes": 761,
+      "sha256": "5ef93164d22382400db517c40b23b33bae5f2ae37178e40651e1d23b1f6016a4"
+    },
+    {
+      "path": "independent_diagnosis/inward-0p5mm-iteration00-RESIDUAL_LOCATIONS.png",
+      "bytes": 256397,
+      "sha256": "93026a051854027265fb41a10015d389b1cf4dd53d12f480e81f10797f4d5bf8"
+    },
+    {
+      "path": "independent_diagnosis/inward-0p5mm-iteration00-residuals.json",
+      "bytes": 38638,
+      "sha256": "6bbf9adfa65731b6401460c8883b77f8ad106212949f621683af20991f549657"
+    },
+    {
+      "path": "independent_diagnosis/inward-0p5mm-iteration00-review.json",
+      "bytes": 275857,
+      "sha256": "697517415ae69bfc86a45f745afeb274aa870dea1a0a4e653740c3692c05dd85"
+    },
+    {
+      "path": "independent_diagnosis/inward-0p5mm-iteration00-review.log",
+      "bytes": 1981,
+      "sha256": "5868e6441e1f2d07ab2218c05ee71a658c0e3a5e6991b01ccfc9d46d516bec0a"
+    },
+    {
+      "path": "independent_diagnosis/legacy-part15.npz",
+      "bytes": 33365,
+      "sha256": "95f0d669cc71f2479c834ce3adfa0c80dbddb40bbe2ccd1c7101a51dfc2523d5"
+    },
+    {
+      "path": "independent_diagnosis/legacy-witness-source-distance.npz",
+      "bytes": 301577,
+      "sha256": "036def5078fe8214d7c2e9e9b8a5ac05909d77c5bf9a6c6f15e16c64e10cf089"
+    },
+    {
+      "path": "independent_diagnosis/local-attribution.json",
+      "bytes": 35469,
+      "sha256": "edfa90e127e499838dd733e7f528ba72b72cba8e4236af7ced3c70baaed89410"
+    },
+    {
+      "path": "independent_diagnosis/localize_band_delta.py",
+      "bytes": 1428,
+      "sha256": "9b144310ac9174cbf64d7319f44da992fc3d50404ac4de6bee3bf305f5b09f5a"
+    },
+    {
+      "path": "independent_diagnosis/measure-local.log",
+      "bytes": 3160,
+      "sha256": "ef58f7bc7cce487c15864d83c0a8216c2c8128721b25729533529ec6d98848b0"
+    },
+    {
+      "path": "independent_diagnosis/measure_local_attribution.py",
+      "bytes": 2242,
+      "sha256": "54b2fe87c6a32ed3605abc9f3e3522fad72974db066d592e33e8148567015bd5"
+    },
+    {
+      "path": "independent_diagnosis/original-band-source-contact.json",
+      "bytes": 663,
+      "sha256": "8b805a231f49f7e646061141074b4107127b42416b704b3ad9e68d3903546061"
+    },
+    {
+      "path": "independent_diagnosis/original-band-source-contact.log",
+      "bytes": 678,
+      "sha256": "8bfe526eee74d84bbe42d0b992ea0bd600595ae93f664361131baf56ac45917a"
+    },
+    {
+      "path": "independent_diagnosis/original-band-source-contact.npz",
+      "bytes": 311299,
+      "sha256": "691d219f2723ecae2da4b383a029471dcda125a0a472fefb2573b8b3fd270f01"
+    },
+    {
+      "path": "independent_diagnosis/plot_diagnosis.py",
+      "bytes": 4583,
+      "sha256": "64745dd89d66412ddb506a9837b2888761e63e1ffb32d38ecf501f85c3278935"
+    },
+    {
+      "path": "independent_diagnosis/retained-anatomy-other-contacts.json",
+      "bytes": 20443,
+      "sha256": "cceb84fc44597c6aa1688d0c99158ce626c63c36d9c490f957b1ade11deb9bf5"
+    },
+    {
+      "path": "independent_diagnosis/retained-anatomy-other-contacts.log",
+      "bytes": 794,
+      "sha256": "0c1256c7a015bf5b8dbf87bd62e00e27eff49d15cf1aa1521e9b4bf5a564bd39"
+    },
+    {
+      "path": "independent_diagnosis/retained-anatomy-review.json",
+      "bytes": 275840,
+      "sha256": "9928b8db09eff5ceddc153d1a0f14cbfcc27d238941d1835cc94ed06efee62cb"
+    },
+    {
+      "path": "independent_diagnosis/retained-anatomy-review.log",
+      "bytes": 2031,
+      "sha256": "6c726810a0d6d13f50979d522f7452ce4ec758f9b8e933fe21c1bd33ce5d0cfd"
+    },
+    {
+      "path": "independent_diagnosis/review-status.json",
+      "bytes": 768,
+      "sha256": "a216bb4518a6050946b21240ba9d8c2592135900bd8d3d06f54a2a450870cc93"
+    },
+    {
+      "path": "independent_diagnosis/review_anatomy_candidate.py",
+      "bytes": 4316,
+      "sha256": "13fef1c63c6b9cecd9771efbfe071eba68ecddb1686aa2f814c7088804086af2"
+    },
+    {
+      "path": "independent_diagnosis/review_band_detail.py",
+      "bytes": 2496,
+      "sha256": "254a98489b543c0f6d6df2aec8e67b3c4b763c47bc59d1be582713bc2a4b1932"
+    },
+    {
+      "path": "independent_diagnosis/review_other_contacts.py",
+      "bytes": 2457,
+      "sha256": "fa81d9a0790e46bd2e27cbeb703df13b96422e5f5aa78ff6c1655df226731d23"
+    },
+    {
+      "path": "independent_diagnosis/source-contact-components.json",
+      "bytes": 34874,
+      "sha256": "1de5fc254b4d0e9b04a6258ac170f42f14c20fb324000d9720abee1792b09cf7"
+    },
+    {
+      "path": "independent_diagnosis/source_shell__source_body__contacts.npz",
+      "bytes": 293876,
+      "sha256": "a783a843ef9e4a9babaca31e32b9cbcb1c0e54e91766df8ce739d5a57dc828f2"
+    },
+    {
+      "path": "independent_diagnosis/v7-source-witness-attribution.npz",
+      "bytes": 1516134,
+      "sha256": "81a6302f49b00c6d2be30e71f3732941087602aab9d7b2cbbce264e7e9420206"
+    },
+    {
+      "path": "independent_diagnosis/v7__legacy_body__contacts.npz",
+      "bytes": 184166,
+      "sha256": "36e26ba872a2b655e466c266d1607c086edee6dcd8215f981cf7767e2793697e"
+    },
+    {
+      "path": "independent_diagnosis/v7__source_body__contacts.npz",
+      "bytes": 755895,
+      "sha256": "30d439c52df21cb964401d51a95e8eeb4c36e67833b1dbb49348f03589d8532e"
+    },
+    {
+      "path": "tools/check_diagnostic_transport.py",
+      "bytes": 2103,
+      "sha256": "84cdb7636ba8b821574c25f7328caebbff3d86315c4b639347c07b27a4732c42"
+    },
+    {
+      "path": "tools/compare_projected_outline.py",
+      "bytes": 3190,
+      "sha256": "0f83b00a9787bc66ae1dfcdfa4c77f76e6a446fdfef8fafa69bfcd24ae0688c4"
+    },
+    {
+      "path": "tools/export_body_diagnostic.py",
+      "bytes": 3385,
+      "sha256": "b90fc62e8ade99393bafb36d852cf0778b015e1f5f00f6250c4a3b724c4ee931"
+    },
+    {
+      "path": "tools/freeze_diagnostic_scene.py",
+      "bytes": 853,
+      "sha256": "7acb4c4166026be1b7bf24b1bd477fc8e6d986bfb573295f1cdbabf73b839b58"
+    },
+    {
+      "path": "tools/make_comparison.py",
+      "bytes": 1889,
+      "sha256": "cbf7484a1754cf75ea1013059c1b6f5e6d4d29aa9c15d72941a7f7a35e1429a9"
+    },
+    {
+      "path": "tools/map_all_contacts.py",
+      "bytes": 2564,
+      "sha256": "767946b30ed63b04b005d06cb925bb98fd51a001c7fe432338b1f560ae969645"
+    },
+    {
+      "path": "tools/render_body_interface.py",
+      "bytes": 7412,
+      "sha256": "e18be390aa3737f1153f241e88dfc7cf6f38a010d0e0674cd86927eb335f447b"
+    }
+  ],
+  "excluded_workspace_files": [
+    "anatomy_fit/__pycache__/document_results.cpython-312.pyc",
+    "anatomy_fit/__pycache__/fit_inward.cpython-312.pyc",
+    "anatomy_fit/__pycache__/inspect_geometry.cpython-312.pyc",
+    "anatomy_fit/__pycache__/plot_results.cpython-312.pyc",
+    "evidence/fit-first-diagnostic.blend",
+    "evidence/fit-first-diagnostic.blend1",
+    "evidence/fit-first-nohalo-diagnostic.blend",
+    "evidence/fit-json-diagnostic.blend",
+    "evidence/native-control-diagnostic.blend",
+    "evidence/native-control-nohalo-diagnostic.blend",
+    "independent_diagnosis/source-part1.npz",
+    "independent_diagnosis/source-part15.npz",
+    "tools/__pycache__/export_body_diagnostic.cpython-312.pyc"
+  ],
+  "research_only": true,
+  "not_addon": true,
+  "native_shell_not_full_bedrock_export": true,
+  "dependencies_not_duplicated": [
+    "../shell_band_v3",
+    "../shell_band_v5",
+    "../integration_v6",
+    "../lateral_v7",
+    "../pbr_normals_v2",
+    "../evidence/source_meshes.npz",
+    "../../paz-refinement/gui-test/checkpoint-V75-20261102/"
+  ]
+}

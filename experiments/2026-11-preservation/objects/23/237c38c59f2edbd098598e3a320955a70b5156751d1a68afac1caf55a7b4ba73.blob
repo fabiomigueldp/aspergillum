@@ -1,0 +1,31 @@
+"""Remove a solid cuboid face only with four-corner strict containment certificate.
+One other convex opaque cuboid must contain all four corners at >=1 micrometre.
+Whole-face containment follows from convexity. No camera/shell/partial-cover inference.
+"""
+from pathlib import Path
+import json,copy,hashlib
+import numpy as np
+W=Path(__file__).resolve().parent
+NAMES=['north','south','east','west','up','down'];EPS=1e-6
+for D in sorted(W.glob('budget-*')):
+ z=np.load(D/'band.npz');C=z['cube_centers'];M=z['cube_bases'];H=z['cube_sizes']/2;corners=z['points'].reshape(len(C),6,4,3);wh=np.einsum('cij,cj->ci',np.abs(M),H);witness=[];removed=set()
+ for i in range(len(C)):
+  for f,q in enumerate(corners[i]):
+   qlo=q.min(0);qhi=q.max(0);near=np.flatnonzero(np.all(C-wh<qlo,axis=1)&np.all(C+wh>qhi,axis=1)&(np.arange(len(C))!=i))
+   if not len(near):continue
+   loc=np.einsum('qci,cij->qcj',q[:,None,:]-C[None,near,:],M[near]);margin=(H[None,near,:]-np.abs(loc)).min((0,2));k=int(np.argmax(margin))
+   if margin[k]>=EPS:
+    j=int(near[k]);removed.add((i,f));witness.append({'cube':i,'face':NAMES[f],'occluding_cube':j,'minimum_corner_to_occluder_plane_clearance_mm':float(margin[k]*1000),'face_corners_native':q.tolist(),'corners_in_occluder_frame':loc[:,k,:].tolist(),'occluder_half_extents':H[j].tolist()})
+ d=D/'pruned';d.mkdir(exist_ok=True)
+ for source,name in [('band.geo.json','band.geo.json'),('combined-v14.geo.json','combined-v14.geo.json')]:
+  g=json.loads((D/source).read_text());bones=g['minecraft:geometry'][0]['bones'];part=next(b for b in bones if b['name']=='part_00')
+  for i,f in removed:del part['cubes'][i]['uv'][NAMES[f]]
+  (d/name).write_text(json.dumps(g,separators=(',',':'))+'\n')
+ vv=[];ff=[];cubeid=[]
+ for i in range(len(C)):
+  for f,q in enumerate(corners[i]):
+   if (i,f)in removed:continue
+   st=len(vv);vv.extend(q);ff.extend([[st,st+1,st+2],[st,st+2,st+3]]);cubeid.extend([i,i])
+ np.savez_compressed(d/'band.npz',points=np.asarray(vv),triangles=np.asarray(ff),cube_centers=C,cube_bases=M,cube_sizes=H*2,triangle_cube_index=np.asarray(cubeid))
+ rep={'method':'All four face corners strictly inside one other convex opaque cuboid, all six containment-plane clearances >=1 micrometre. Convexity certifies whole face inside occluder. No union of multiple occluders, partial-face clipping, camera visibility, shell occlusion or bone deletion. Original unpruned files remain unchanged.','requested_minimum_clearance_mm':EPS*1000,'source_json_sha256':hashlib.sha256((D/'band.geo.json').read_bytes()).hexdigest(),'cube_count':len(C),'original_quads':len(C)*6,'pruned_quads':len(removed),'retained_quads':len(C)*6-len(removed),'retained_triangles':len(ff),'witnesses':witness,'texture':'../../combined-v14-opaque.png for combined geometry; ../../opaque-white.png for standalone','caveat':'Certificate assumes these same fixed cuboid transforms and fully opaque material; not runtime verification. Other V14 parts remain unchanged.'}
+ (d/'containment-certificate.json').write_text(json.dumps(rep,indent=2)+'\n');print(D.name,'pruned',len(removed),'of',len(C)*6,'triangles',len(ff),flush=True)

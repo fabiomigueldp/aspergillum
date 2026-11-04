@@ -1,0 +1,34 @@
+# Native pedestal budget follow-up
+
+Read-only exploration completed; no production source, manifest, world, release or publication was changed. All five new candidates enumerate the same complete domain: 768 configurations and 33,984 cell instances, preserving four facings, edge masks, bare and covered geometry, native collision and centered textile roles. Recipe weighting stays six base-pose recipes and eleven centered-pose recipes, including every cloth/color choice.
+
+## Result
+
+All five candidates have **272 exact base poses and 320 centered poses**. Three property cardinalities at most 16 pack these into 273 base slots (3×7×13) and 320 centered slots (2×10×16): **5,158 declared states**. With existing Altare 51,608 plus Aspergillum 9,744, the combined count is **66,510**, still **974 above 65,536**.
+
+- depth2: end-cell support centers, regular width family 7, support depth limited to 16, depth family capped at 2.
+- narrow3: same, but regular width family 3.
+- depth12: same as depth2, support depth limited to 12.
+- depth1: depth12 plus fixed depth-1 proportions for both supports and bearer; tabletop alone extends to the requested depth.
+- narrow_depth1: depth1 plus regular width family 3.
+
+These match the previously measured end-cell alternative's count. None gives additional state savings. The approved production native family is still 448/504 and 8,232 states; changing to these shapes would save 3,074 states, short of the required 4,048. This is not a zero-change optimization of the approved geometry.
+
+## Interpretation and visual cost
+
+Making a support thinner does not necessarily merge cell identities. The same discrete distinctions remain here: left/right and compact supports, cells that contain different support sections, odd/even depth placement, front/interior/back and other edge masks, facing, collision, and center textile roles. Thin supports still lie inside one middle row at odd depths and straddle two at even depths. The measured counts establish no further merging for these particular variants; they are not a proof of an absolute lower bound for all possible designs.
+
+At 16×8, the approved profile has shaft width/depth 7/10, base width/depth 12/24, capital width/depth 12.55/28 and support centers ±117.5 (all units are sixteenths of a block). Every candidate moves centers to ±120. depth2 reduces shaft depth to 7 and base/capital depth to 16; depth12 reduces base/capital depth to 12. depth1 makes shaft depth 4 with base/capital depth 12. narrow_depth1 additionally reduces shaft width to 5, base width to 8 and capital width to 9.95; base depth becomes 10.5. Thus deep/wide altars have substantially smaller, thinner supports while retaining the same full tabletop. Both supports remain. This is a visible proportional change and must not be adopted automatically.
+
+## forceDepth1 audit
+
+An independent rotate-after-extension comparison passed all 768 configurations. Tabletop dimensions match the requested full-size geometry in every facing, non-tabletop bones remain identical to their depth-1 source, and both shafts remain present. Audit found stale source metadata: depth1 identifier is retained and visible_bounds_width is undersized in 368 configurations. These fields do not affect measured hashes or collision, because cell geometry regenerates its own identifiers/bounds. A real generator would need to correct them before use. No false facing-loss reduction is claimed.
+
+## Evidence
+
+- `results-depth2.json`, `results-narrow3.json`, `results-depth 12.json`, `results-depth1.json`, `results-narrow_depth1.json`: full results and cardinalities.
+- `audit-depth1.json` and `audit-depth1.mjs`: invariant checks.
+- `shape-profiles.jsonl`: numerical examples of proportional changes. Its depth1 entries describe the source before tabletop extension, so their D=16 is not the final tabletop depth.
+- `measure.mjs` and `run.log`: measurement implementation and output.
+
+Stop here: none of the tested shape changes resolves the combined budget. The separate old-catalog and Aspergillum analyses are independent and are not claimed as findings of this sweep.

@@ -1,0 +1,26 @@
+# Expansão causal limitada do contorno e prova independente
+
+V75 preservado. Nenhum blend novo; centro não preenchido.
+
+## Localização das falhas anteriores
+24pares com pele e4com pregas envolveram22triângulos de colar e34vértices de origem. Bounds dos vértices causais: X[-.09793,-.04630], Y[-.06595,.02899], Z[3.27328,3.35400]. Pregas preservadas atingidas: faces180876 e180885.
+
+## Máscara comprovada
+Expandi apenas faces incidentes nos vértices causais e faces das pregas atingidas, com fechamento pela correspondência exata da camada oposta.44faces adicionadas:756→800. O recorte continua dentro X<=.025,Z3.22..3.42, sem capuz ou borda física não pareada. Dois loops294+294, todos grau2, zero segmentos inválidos, zero pares pele–faces totalmente congeladas. Nenhuma posição original mudou.
+
+## Prova independente, mesma regra de colar
+Não varie largura/escala/espessura. ParesXYZ internos usam exatamente o mesmo método anterior, até2mm para o interior conectado. Anéis externos fixos; espessura herdada4,842–5,987mm.588triângulos por camada.
+
+Resultado após avaliação:
+- Pele:0pares em ambas camadas (anterior24).
+- Auto-interseções internas ao colar:0.
+- Pregas preservadas não adjacentes:3pares, nas faces de origem180881 e180886.
+- Degenerescências:0; área mínima3,05e-9m², ainda pequena.
+- Delta do anel externo e da avaliação:0.
+
+## Decisão
+A expansão é limitada e removeu as colisões com pele, mas a nova construção ainda NÃO passa devido aos3pares com pregas vizinhas. O problema migrou para faces adjacentes da mesma região, não desapareceu. Parei antes de preencher o centro ou promover a forma. Não apresento saldo menor de colisões como aprovação.
+
+A próxima decisão precisa tratar a continuidade local dessa prega e a direção do parXYZ interno, ou justificar um contorno que abarque a região estrutural inteira; não ficar apenas perseguindo face a face ou reduzindo arbitrariamente a largura. Este teste demonstra viabilidade da máscara e separação da pele para o colar, não uma casca final livre de colisões.
+
+Evidências: neck-collar-targeted-expansion-audit.json; neck-expanded-collar-proof.json/.npz; scripts correspondentes. Nenhuma nova escultura publicada/salva como blend.

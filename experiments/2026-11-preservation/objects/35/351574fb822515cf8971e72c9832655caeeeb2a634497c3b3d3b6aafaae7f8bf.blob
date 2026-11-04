@@ -1,0 +1,90 @@
+"""V15 isolated shared right-triangle mask transport. No source mutation, no dilation.
+Run from any directory. Writes only alongside this script.
+"""
+from pathlib import Path
+import copy,gzip,hashlib,json,time,warnings
+import numpy as np
+from PIL import Image
+from scipy.spatial.transform import Rotation
+W=Path(__file__).resolve().parent;B=W.parent.parent;START=time.perf_counter()
+LEG=B/'pbr_normals_v2/resource_pack';OLD=2048;AW=4096;AH=2048;TIERS=[128,512,2048]
+SRC=[('band',0,'band_shell_v13/constrained_fit/retained-band.npz'),('shell',1,'ear_rim_v11/structural_rebuild/retained-shell.npz'),('anatomy',15,'body_interface_v9/constrained_fit/retained-anatomy.npz')]
+A=np.array([[1,0,0],[0,0,1],[0,-1,0]],float)
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def savej(p,x):p.write_text(json.dumps(x,indent=2,allow_nan=False)+'\n')
+def canon(x):return hashlib.sha256(json.dumps(x,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+def area(p):return np.linalg.norm(np.cross(p[1]-p[0],p[2]-p[0]))/2
+orig_geo=LEG/'models/entity/paz_v75_pbr_sculpture.geo.json';orig_color=LEG/'textures/entity/paz_v75_pbr_sculpture.png'
+g0=json.loads(orig_geo.read_text());g=copy.deepcopy(g0);old=g0['minecraft:geometry'][0];geo=g['minecraft:geometry'][0]
+legacy=np.array(Image.open(orig_color).convert('RGBA'));assert legacy.shape==(OLD,OLD,4)
+meta=json.loads((B/'evidence/source-export.json').read_text());rgb=np.array(meta['parts'][0]['color'][:3]);base=np.rint(np.where(rgb<=.0031308,12.92*rgb,1.055*rgb**(1/2.4)-.055)*255).astype(np.uint8)
+arr={k:[]for k in ['part','native_face','half','cube_index','native_vertices','triangle_source','triangle_bb','basis_bb','quad_size','right_vertex_native_bary','leg_u_native_bary','leg_v_native_bary','face_parts','native_area_blocks2','child_area_blocks2','foot_fraction','foot_bb','roundtrip_residual_blocks','source_normal']}
+records=[];stats=[];skipped=[];warning_rows=[];maxres=0.;maxareaerr=0.;maxorth=0.;maxbaryerr=0.;maxout=0.;footrange=[1.,0.];seen=0
+for label,pi,rel in SRC:
+ d=np.load(B/rel);v=d['points'];f=d['triangles'];bb=v@A.T*16;bone=geo['bones'][pi];bone['cubes']=[];s={'label':label,'part':pi,'source':rel,'sha256':sha(B/rel),'native_vertices':len(v),'native_faces':len(f),'new_cubes':0,'native_area_blocks2':0.,'children_area_blocks2':0.,'min_leg_blocks':None,'max_roundtrip_blocks':0.,'max_relative_face_area_error':0.}
+ np.savez_compressed(W/f'source-{label}-frozen.npz',**dict(d))
+ for fi,idx0 in enumerate(f):
+  p0=bb[idx0];edges=np.linalg.norm(np.roll(p0,-1,axis=0)-p0,axis=1);roll=int(np.argmax(edges));idx=np.roll(idx0,-roll);p=bb[idx];a,b,c=p;ab=b-a;w=np.linalg.norm(ab)
+  if w==0:raise RuntimeError(f'Degenerate native triangle {label}:{fi}')
+  t=float((c-a)@ab/(w*w));foot=a+t*ab;cv=c-foot;h=float(np.linalg.norm(cv));nativearea=area(p0)/256
+  if h==0 or nativearea==0:raise RuntimeError(f'Zero-area native triangle {label}:{fi}')
+  if not -1e-12<=t<=1+1e-12:raise RuntimeError(f'Longest-edge foot outside segment {label}:{fi}: {t}')
+  footrange=[min(footrange[0],t),max(footrange[1],t)];maxout=max(maxout,max(-t,t-1,0))
+  # Native-order barycentric rows. The right vertex is the altitude foot.
+  ea=np.eye(3)[roll];eb=np.eye(3)[(roll+1)%3];ec=np.eye(3)[(roll+2)%3];fh=(1-t)*ea+t*eb
+  # Both right triangles have exactly the native outward winding: [H,C,A], [H,B,C].
+  children=[(0,c,a,ec,ea),(1,b,c,eb,ec)];childsum=0.
+  native_n=np.cross(p0[1]-p0[0],p0[2]-p0[0]);native_n/=np.linalg.norm(native_n)
+  for half,pu,pv,bu,bv in children:
+   u=pu-foot;vv=pv-foot;wl=float(np.linalg.norm(u));hl=float(np.linalg.norm(vv))
+   if wl==0 or hl==0:
+    skipped.append({'part':pi,'face':fi,'half':half,'reason':'exact zero-length right-triangle leg','foot_fraction':t,'native_area_blocks2':nativearea});continue
+   u/=wl;vv/=hl;nn=np.cross(u,vv);nn/=np.linalg.norm(nn);M=np.column_stack((u,vv,nn));orth=float(abs(u@vv));maxorth=max(maxorth,orth)
+   if orth>1e-8 or nn@native_n<.999999999:raise RuntimeError(f'Invalid right-triangle frame {label}:{fi}:{half} {orth}')
+   with warnings.catch_warnings(record=True) as wr:
+    e=Rotation.from_matrix(M).as_euler('xyz',degrees=True)
+    if wr:warning_rows.append({'part':pi,'face':fi,'half':half,'warning':str(wr[0].message)})
+   cube={'origin':[-float(foot[0]+wl),float(foot[1]),float(foot[2])],'size':[wl,hl,0.0],'pivot':[-float(foot[0]),float(foot[1]),float(foot[2])],'rotation':[-float(e[0]),-float(e[1]),float(e[2])],'uv':{'south':{'uv':[2048,0],'uv_size':[2048,2048]}}};ci=len(bone['cubes']);bone['cubes'].append(cube)
+   # Verify source corners and source vertex weights through emitted JSON only.
+   jr=Rotation.from_euler('xyz',np.array(cube['rotation'])*[-1,-1,1],degrees=True).as_matrix();jp=np.array(cube['pivot'])*[-1,1,1];jo=np.array(cube['origin']);js=np.array(cube['size']);org=np.array([-(jo[0]+js[0]),jo[1],jo[2]]);local=np.array([[0,0,0],[wl,0,0],[0,hl,0]]);recon=(local+org-jp)@jr.T+jp;child=np.array([foot,pu,pv]);res=float(np.max(np.linalg.norm(recon-child,axis=1))/16);maxres=max(maxres,res);s['max_roundtrip_blocks']=max(s['max_roundtrip_blocks'],res)
+   bary=np.stack([fh,bu,bv]);br=float(np.max(np.linalg.norm(bary@p0-child,axis=1))/16);maxbaryerr=max(maxbaryerr,br);ca=area(child)/256;childsum+=ca
+   role=int(d['face_parts'][fi]) if 'face_parts' in d else -1
+   rec={'transport_id':seen,'part':pi,'bone':bone['name'],'cube_index':ci,'native_source':rel,'native_triangle_index':fi,'native_triangle':idx0.tolist(),'half':half,'longest_edge_roll':roll,'foot_fraction':t,'right_triangle_bb':child.tolist(),'right_triangle_native_barycentric':bary.tolist(),'basis_bb':M.tolist(),'quad_size':[wl,hl],'uv_origin':[2048,0],'uv_size_by_tier':{str(n):[n,n]for n in TIERS},'canonical_right_triangle':[[0,0],[1,0],[0,1]],'face_parts':role,'native_area_blocks2':nativearea,'child_area_blocks2':ca,'roundtrip_residual_blocks':res}
+   for key in ['face_roles','baseline_face_indices','v13_face_roles','v13_parent_face_indices','source_face_indices']:
+    if key in d:rec[key]=int(d[key][fi])
+   records.append(rec)
+   values={'part':pi,'native_face':fi,'half':half,'cube_index':ci,'native_vertices':idx0,'triangle_source':child[:,[0,2,1]]*[1,-1,1]/16,'triangle_bb':child,'basis_bb':M,'quad_size':[wl,hl],'right_vertex_native_bary':fh,'leg_u_native_bary':bu,'leg_v_native_bary':bv,'face_parts':role,'native_area_blocks2':nativearea,'child_area_blocks2':ca,'foot_fraction':t,'foot_bb':foot,'roundtrip_residual_blocks':res,'source_normal':native_n[[0,2,1]]*[1,-1,1]}
+   for key,val in values.items():arr[key].append(val)
+   s['new_cubes']+=1;s['min_leg_blocks']=min(s['min_leg_blocks'] or min(wl,hl)/16,min(wl,hl)/16);seen+=1
+  aerr=abs(childsum-nativearea);maxareaerr=max(maxareaerr,aerr);s['native_area_blocks2']+=nativearea;s['children_area_blocks2']+=childsum;s['max_relative_face_area_error']=max(s['max_relative_face_area_error'],aerr/nativearea)
+  if fi%3000==0:print(label,fi,'cubes',seen,flush=True)
+ stats.append(s)
+np.savez_compressed(W/'transport_arrays.npz',**{k:np.array(v)for k,v in arr.items()})
+with gzip.open(W/'transport_faces.jsonl.gz','wt')as fh:
+ for rec in records:fh.write(json.dumps(rec,separators=(',',':'),allow_nan=False)+'\n')
+unchanged=[i for i in range(len(old['bones']))if i not in [0,1,15]]
+assert all(geo['bones'][i]==old['bones'][i]for i in unchanged)
+outputs=[];tiers=[]
+for n in TIERS:
+ tick=time.perf_counter();name=f'shared_mask_{n}';geo['description']['identifier']=f'geometry.paz_v75_v15_shared_{n}.sculpture';geo['description']['texture_width']=AW;geo['description']['texture_height']=AH
+ for _,p,_ in SRC:
+  for c in geo['bones'][p]['cubes']:c['uv']['south']['uv_size']=[n,n]
+ gp=W/f'{name}.geo.json';gp.write_text(json.dumps(g,separators=(',',':'),allow_nan=False));outputs.append(gp)
+ # Pixel-center analytic triangle: x/n + y/n <= 1. In image rows this is column <= row.
+ # Tie centers on the hypotenuse are included explicitly, never dilated.
+ mask=np.arange(n)[None,:]<=np.arange(n)[:,None];patch=np.empty((n,n,4),np.uint8);patch[:,:,:3]=base;patch[:,:,3]=mask*255
+ atlas=np.zeros((AH,AW,4),np.uint8);atlas[:OLD,:OLD]=legacy;atlas[:n,2048:2048+n]=patch;tp=W/f'{name}.png';Image.fromarray(atlas).save(tp);outputs.append(tp);mp=W/f'right_triangle_{n}.png';Image.fromarray(patch).save(mp);outputs.append(mp)
+ assert np.array_equal(np.array(Image.open(tp))[:OLD,:OLD],legacy)
+ # Standalone new-parts geometry for engines/renderers wanting only N-square texture.
+ standalone={'format_version':g['format_version'],'minecraft:geometry':[{'description':copy.deepcopy(geo['description']),'bones':copy.deepcopy([geo['bones'][p]for _,p,_ in SRC])}]};sg=standalone['minecraft:geometry'][0];sg['description']['identifier']+= '_new_parts';sg['description']['texture_width']=n;sg['description']['texture_height']=n
+ for bone in sg['bones']:
+  for c in bone['cubes']:c['uv']['south']['uv']=[0,0]
+ sp=W/f'{name}_new_parts.geo.json';sp.write_text(json.dumps(standalone,separators=(',',':'),allow_nan=False));outputs.append(sp)
+ tiers.append({'resolution':n,'combined_geometry':gp.name,'combined_texture':tp.name,'new_parts_geometry':sp.name,'standalone_mask_texture':mp.name,'mask_pixels':n*n,'opaque_texels':int(mask.sum()),'new_unique_texture_tiles':1,'decoded_combined_texture_bytes':AH*AW*4,'decoded_standalone_mask_bytes':n*n*4,'compact_legacy_plus_standalone_mask_allocation_estimate_bytes':OLD*OLD*4+n*n*4,'added_area_relative_native_exact_mip0':1/n,'missing_area_relative_native_exact_mip0':0.0,'generation_seconds':time.perf_counter()-tick,'bytes':{p.name:p.stat().st_size for p in [gp,tp,mp,sp]}})
+ print('READY',n,gp.name,tp.name,flush=True)
+contract={'status':'V15 LAB ONLY. Shared-mask geometry experiment, no Minecraft engine/performance/visual success claim.','source_parts':SRC,'source_to_bb':{'matrix_rows':A.tolist(),'scale':16},'geometry':'Split each native triangle at altitude foot on its longest edge. [H,C,A] and [H,B,C] give same winding. Each child maps (right vertex, leg U, leg V) to canonical (0,0),(1,0),(0,1), placed on zero-depth south cube. Exact zero legs skipped and listed; no positive area is deliberately dropped.','official_uv_convention':'Local +X is increasing U. Local +Y is decreasing PNG row V. South local corners [0,0],[width,0],[0,height] map [0,N],[N,N],[0,0]. Not the horizontally mirrored Aspergillum convention.','mask':{'rule':'column<=row for pixel centers; inclusive centers on hypotenuse. No morphological, halfplane-distance, or filter dilation.','uv_origin_combined':[2048,0],'uv_size_by_tier':{str(n):[n,n]for n in TIERS},'canonical_to_native_barycentric':'b=(1-x-y)*right_vertex_native_bary + x*leg_u_native_bary + y*leg_v_native_bary. x=(pixel_column+0.5)/N, y=1-(pixel_row+0.5)/N.','binary_alpha':True,'uniform_stone_srgb':base.tolist(),'no_color_or_highpoly_detail_claim':True,'quantization':'Inclusive hypotenuse-center cells add exactly child_area/N, missing0 in ideal nearest mip0 math. This is not exact triangle geometry and not a promise of crack-free rendering.','filters':'Mipmaps, bilinear filtering, alpha cutoff, backface handling, zero-depth support and float32 engine arithmetic untested.'},'legacy':{'unchanged_bones':unchanged,'all_unchanged_bone_json_values_and_pixel_uvs_identical':True,'original_rgba_square_bit_exact':True,'atlas_dimensions':[AW,AH],'old_region':[0,0,OLD,OLD]},'normal_maps':'No normal map is generated, sampled or bound. New faces are uniform base stone, not PBR/highpoly baking.','mapping_files':['transport_arrays.npz','transport_faces.jsonl.gz'],'ray_validation':'Pending separate audit against final geometry and sampled mask; this build report is analytic self-check only.'}
+savej(W/'transport_contract.json',contract)
+report={'status':'built_math_self_checked_pending_independent_render_and_rays','engine_tested':False,'published':False,'new_native_faces':sum(s['native_faces']for s in stats),'new_cubes':seen,'total_cubes':sum(len(b['cubes'])for b in geo['bones']),'legacy_context_cubes':sum(len(old['bones'][i]['cubes'])for i in unchanged),'unchanged_bones':unchanged,'unchanged_bone_hashes':{old['bones'][i]['name']:canon(old['bones'][i])for i in unchanged},'exact_legacy_rgba_preserved':True,'tiers':tiers,'part_stats':stats,'skipped_exactzero_halves':skipped,'foot_fraction_range':footrange,'max_foot_outside_segment':maxout,'max_absolute_face_split_area_error_blocks2':maxareaerr,'max_float64_json_roundtrip_residual_blocks':maxres,'max_native_barycentric_reconstruction_residual_blocks':maxbaryerr,'max_right_angle_dot':maxorth,'warnings':warning_rows,'source_hashes':{str(p.relative_to(B)):sha(p)for p in [orig_geo,orig_color,*[B/s[2]for s in SRC]]},'outputs':{p.name:{'sha256':sha(p),'bytes':p.stat().st_size}for p in outputs},'total_build_seconds':time.perf_counter()-START}
+savej(W/'build-report.json',report)
+(W/'README.md').write_text('''# V15 shared right-triangle mask LAB\n\nIsolated alternative to V14: two right triangles per native source triangle, all sharing a single uniform-stone binary alpha mask. No dilation. No normal-map or inherited highpoly detail claim. Not a released add-on, no Minecraft test or performance claim.\n\nUse `shared_mask_2048.geo.json` + `shared_mask_2048.png` for the complete assembly. Equivalent 512 and 128 tiers have identical shape transforms and different shared alpha sampling. The original 2048-square RGBA region is preserved in the left half of the 4096x2048 atlas; 17 legacy bones and their pixel UVs are byte-value equivalent. `_new_parts.geo.json` + `right_triangle_N.png` isolates only band, shell and anatomy.\n\nAll emitted south faces use the official Blockbench convention, not Aspergillum's reversed UV/normal association. Cubes remain south-only and zero-depth. Native source triangles are split at the altitude to the longest edge, with exact area and float64 position self-audits in `build-report.json`; source corner barycentrics and provenance are in NPZ/JSONL mappings.\n\nThe canonical triangle is sampled at texel centers, with diagonal boundary centers explicitly included. At ideal nearest mip0 this adds exactly 1/N of surface area, and removes none, separately per right triangle. No dilation step is performed, but quantization still creates extra support. This guarantee does not include float precision, filtering or runtime handling.\n\nDo not call this exact triangle rendering, lossless texture transport, or verified practical runtime cost. Geometry cost nearly doubles while unique new texture content is one tile. Independent ray/visual evaluation is separate.\n''')
+print(json.dumps({k:v for k,v in report.items()if k not in ['outputs','source_hashes','unchanged_bone_hashes','warnings']},indent=2),flush=True)

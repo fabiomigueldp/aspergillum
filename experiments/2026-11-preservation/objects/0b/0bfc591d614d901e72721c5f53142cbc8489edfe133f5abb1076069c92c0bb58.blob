@@ -1,0 +1,42 @@
+import bpy,json,heapq
+from mathutils import Vector
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';name='Maria — túnica e mangas integradas'
+bpy.ops.wm.open_mainfile(filepath=r+'cuff-manual-mask-clean.blend',use_scripts=False);o=bpy.data.objects[name];old=[v.value for v in o.data.attributes['.sculpt_mask'].data];support={i for i,w in enumerate(old) if w>0}
+bpy.ops.wm.open_mainfile(filepath=r+'cuff-manual-mask-filled-trial.blend',use_scripts=False);o=bpy.data.objects[name];m=o.data;a=m.attributes['.sculpt_mask'];raw=[v.value for v in a.data];dg=bpy.context.evaluated_depsgraph_get();sc=bpy.context.scene
+v=next(a.spaces.active.region_3d for a in bpy.data.screens['Sculpting'].areas if a.type=='VIEW_3D');origin=v.view_matrix.inverted().translation
+changed={i for i in range(len(old)) if raw[i]>old[i]+1e-6};visible=set();deltas={}
+for i in changed:
+ p=o.matrix_world@m.vertices[i].co;ray=p-origin;dist=ray.length;hit,loc,normal,idx,obj,mat=sc.ray_cast(dg,origin,ray.normalized(),distance=dist+.001)
+ if hit and obj.original==o and abs((loc-origin).length-dist)<.0002 and normal.dot(-ray)>0:visible.add(i)
+# Constrain to previous anterior cuff envelope; connectivity can only traverse original support plus visible new vertices.
+mins=[min(m.vertices[i].co[j] for i in support) for j in range(3)];maxs=[max(m.vertices[i].co[j] for i in support) for j in range(3)]
+visible={i for i in visible if all(mins[j]-.002<=m.vertices[i].co[j]<=maxs[j]+.002 for j in range(3))}
+allowed=support|visible;adj=[[] for _ in m.vertices]
+for e in m.edges:
+ i,j=e.vertices
+ if i in allowed and j in allowed:adj[i].append(j);adj[j].append(i)
+distances={i:0. for i in support};q=[(0.,i) for i in support];heapq.heapify(q)
+while q:
+ d,i=heapq.heappop(q)
+ if d!=distances[i]:continue
+ for j in adj[i]:
+  nd=d+(m.vertices[i].co-m.vertices[j].co).length
+  if nd<=.04 and nd<distances.get(j,1e9):distances[j]=nd;heapq.heappush(q,(nd,j))
+accepted=visible&distances.keys()
+for i,v in enumerate(a.data):v.value=raw[i] if i in accepted else old[i]
+new=accepted-support
+report={'camera_origin':list(origin),'raw_changed_count':len(changed),'visible_envelope_count':len(visible),'accepted_count':len(accepted),'new_support_count':len(new),'rejected_increment_count':len(changed-accepted),'posterior_support':sum(m.vertices[i].co.y>=0 and v.value>0 for i,v in enumerate(a.data)),'new_max_geodesic':max([distances[i] for i in new],default=0),'criteria':'Scene first-hit raycast within 0.2 mm; front-facing; original cuff bbox + 2mm; connected geodesic <=40mm from original support; no deformation'}
+json.dump(report,open(r+'cuff-manual-mask-visible.json','w'),indent=2);print(report)
+bpy.ops.wm.save_as_mainfile(filepath=r+'cuff-manual-mask-visible.blend')
+start=len(m.materials)
+for k in range(11):
+ mat=bpy.data.materials.new('AUDIT influence '+str(k));t=k/10;mat.diffuse_color=(.8,.8*(1-t)+.015*t,.8*(1-t)+.01*t,1);m.materials.append(mat)
+for p in m.polygons:
+ weight=sum(a.data[i].value for i in p.vertices)/len(p.vertices)
+ if weight>0:p.material_index=start+round(10*weight)
+h=bpy.data.objects['Maria — mão ao peito anatômica'];center=sum((v.co for v in h.data.vertices),Vector())/len(h.data.vertices);s=bpy.context.scene;s.cycles.samples=24;s.render.resolution_x=600;s.render.resolution_y=800;s.render.resolution_percentage=100;c=s.camera
+for view,off in [('front',(0,-5,0)),('threequarter',(-3,-5,.2)),('profile',(5,0,0)),('reverse',(-5,0,0)),('isolatedback',(0,5,0))]:
+ if view=='isolatedback':
+  for obj in s.objects:
+   if obj.type=='MESH' and obj!=o:obj.hide_render=True
+ c.location=center+Vector(off);c.rotation_euler=(center-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=.6;s.render.filepath=r+'cuff-manual-mask-visible-'+view+'.png';bpy.ops.render.render(write_still=True)

@@ -1,0 +1,140 @@
+"""Remove only certified alpha-zero rectangles; keep original atlas and transforms.
+Outputs stay beside this script. This is a bounded LAB geometry experiment.
+"""
+from pathlib import Path
+import argparse, copy, gzip, hashlib, json, shutil
+import numpy as np
+from PIL import Image
+from scipy.spatial.transform import Rotation
+
+W=Path(__file__).resolve().parent
+B=W.parent.parent
+S=B/'opaque_transport_v15/shared_mask'
+N=2048
+
+def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def savej(p,o): p.write_text(json.dumps(o,indent=2,allow_nan=False)+'\n')
+def canon(o): return hashlib.sha256(json.dumps(o,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()
+
+def split_template(alpha,max_depth):
+    leaves=[]
+    def visit(box,depth,path):
+        x0,y0,x1,y1=box
+        aa=alpha[y0:y1,x0:x1]
+        opaque=int(np.count_nonzero(aa)); total=int(aa.size)
+        cls='transparent' if opaque==0 else 'opaque' if opaque==total else 'mixed'
+        if cls=='mixed' and depth<max_depth:
+            xm=(x0+x1)//2;ym=(y0+y1)//2
+            for k,rect in enumerate([(x0,y0,xm,ym),(xm,y0,x1,ym),(x0,ym,xm,y1),(xm,ym,x1,y1)]):
+                visit(rect,depth+1,path+str(k))
+        else: leaves.append({'rect_texels':list(box),'depth':depth,'quadtree_path':path,'classification':cls,'retained':bool(opaque),'opaque_texels':opaque,'total_texels':total})
+    visit((0,0,N,N),0,'')
+    cover=np.zeros_like(alpha,dtype=np.uint8)
+    kept=np.zeros_like(alpha,dtype=bool)
+    for r in leaves:
+        x0,y0,x1,y1=r['rect_texels'];cover[y0:y1,x0:x1]+=1
+        if r['retained']: kept[y0:y1,x0:x1]=True
+        else: assert np.all(alpha[y0:y1,x0:x1]==0)
+    assert np.all(cover==1), 'Leaf partition is incomplete or overlapping'
+    assert np.array_equal(kept & (alpha!=0),alpha!=0), 'Opaque support changed'
+    # The exact analytic triangle u<=v is contained by the original raster mask.
+    # Every discarded half-open rectangle satisfies x0>=y1, so it is outside
+    # the open triangle; its possible diagonal corner remains on retained leaves.
+    assert all(r['rect_texels'][0]>=r['rect_texels'][3] for r in leaves if not r['retained'])
+    return leaves,{'leaf_partition_exact':True,'all_4194304_texels_checked':True,'opaque_texel_union_exact':True,'opaque_texels_before':int(np.count_nonzero(alpha)),'opaque_texels_after':int(np.count_nonzero(kept & (alpha!=0))),'removed_texels':int(np.count_nonzero(~kept)),'removed_opaque_texels':0,'source_analytic_triangle_interior_removed':False,'retained_children_per_parent':sum(r['retained'] for r in leaves),'retained_opaque_children':sum(r['classification']=='opaque' for r in leaves),'retained_mixed_children':sum(r['classification']=='mixed' for r in leaves),'removed_rectangles':sum(not r['retained'] for r in leaves)}
+
+def child_cube(parent,rect):
+    x0,y0,x1,y1=rect
+    c=copy.deepcopy(parent);o=parent['origin'];s=parent['size']
+    # south UV runs opposite local Bedrock X and Y: (xmax,ymax)=(u0,v0).
+    c['origin']=[o[0]+s[0]*((N-x1)/N),o[1]+s[1]*((N-y1)/N),o[2]]
+    c['size']=[s[0]*((x1-x0)/N),s[1]*((y1-y0)/N),s[2]]
+    c['uv']['south']['uv']=[2048+x0,y0]
+    c['uv']['south']['uv_size']=[x1-x0,y1-y0]
+    return c
+
+def quad(c):
+    o=np.array(c['origin']);s=np.array(c['size']);p=np.array(c['pivot'])*[-1,1,1]
+    q=o+np.array([[1,1,1],[1,0,1],[0,0,1],[0,1,1]])*s
+    q=q*[-1,1,1]
+    r=Rotation.from_euler('xyz',np.array(c['rotation'])*[-1,-1,1],degrees=True).as_matrix()
+    q=(q-p)@r.T+p
+    return q[:,[0,2,1]]*[1,-1,1]/16
+
+def counts(g):
+    cubes=[c for b in g['minecraft:geometry'][0]['bones'] for c in b.get('cubes',[])]
+    faces=sum(len(c['uv']) for c in cubes)
+    return {'cubes':len(cubes),'quads':faces,'triangles_if_each_quad_split_in_two':faces*2}
+
+def build(tag,depth,selected,selection_meta):
+    source=S/'shared_mask_2048.geo.json';tex=S/'shared_mask_2048.png'
+    initial={str(source.relative_to(B)):sha(source),str(tex.relative_to(B)):sha(tex),str((S/'transport_arrays.npz').relative_to(B)):sha(S/'transport_arrays.npz')}
+    j=json.loads(source.read_text());g=j['minecraft:geometry'][0];orig=copy.deepcopy(j)
+    atlas=np.asarray(Image.open(tex).convert('RGBA'));alpha=atlas[:,2048:,3]
+    assert alpha.shape==(N,N) and np.array_equal(alpha,np.where(np.arange(N)[None,:]<=np.arange(N)[:,None],255,0).astype(np.uint8))
+    leaves,proof=split_template(alpha,depth);retained=[r for r in leaves if r['retained']]
+    arrays=np.load(S/'transport_arrays.npz')
+    transport={(int(p),int(ci)):i for i,(p,ci) in enumerate(zip(arrays['part'],arrays['cube_index']))}
+    assert selected and selected<=set(transport)
+    records=[];index_part=[];index_old=[];index_new=[];index_rect=[];index_sel=[]
+    unchanged_hashes={};max_position_error=0.;max_normal_angle=0.;float32_zero_children=[];affected_source_faces=set();selected_area=0.
+    float32_diagnostic_error=[];leaf_opaque=sum(r['opaque_texels'] for r in retained)
+    assert leaf_opaque==int(np.count_nonzero(alpha))
+    for pi,b in enumerate(g['bones']):
+        oldc=b['cubes'];out=[];changed=False
+        for ci,c in enumerate(oldc):
+            if (pi,ci) not in selected:
+                ni=len(out);out.append(c);index_part.append(pi);index_old.append(ci);index_new.append(ni);index_rect.append([0,0,N,N]);index_sel.append(False)
+                continue
+            changed=True
+            assert c['uv']=={'south':{'uv':[2048,0],'uv_size':[N,N]}} and c['size'][2]==0
+            ti=transport[pi,ci];affected_source_faces.add((pi,int(arrays['native_face'][ti])));selected_area+=float(arrays['child_area_blocks2'][ti])
+            parentq=quad(c);U=parentq[3]-parentq[0];V=parentq[1]-parentq[0]
+            for r in leaves:
+                rec={'part':pi,'bone':b['name'],'original_cube_index':ci,'transport_id':ti,'native_face':int(arrays['native_face'][ti]),'half':int(arrays['half'][ti]),**r}
+                if r['retained']:
+                    nc=child_cube(c,r['rect_texels']);ni=len(out);rec['new_cube_index']=ni;out.append(nc)
+                    index_part.append(pi);index_old.append(ci);index_new.append(ni);index_rect.append(r['rect_texels']);index_sel.append(True)
+                    assert nc['pivot']==c['pivot'] and nc['rotation']==c['rotation']
+                    assert {k:v for k,v in nc.items() if k not in ('origin','size','uv')}=={k:v for k,v in c.items() if k not in ('origin','size','uv')}
+                    x0,y0,x1,y1=np.array(r['rect_texels'])/N
+                    expected=parentq[0]+np.array([x0,x0,x1,x1])[:,None]*U+np.array([y0,y1,y1,y0])[:,None]*V
+                    actual=quad(nc);err=float(np.max(np.linalg.norm(actual-expected,axis=1)));max_position_error=max(max_position_error,err)
+                    aa=np.cross(actual[1]-actual[0],actual[2]-actual[0]);nn=np.cross(parentq[1]-parentq[0],parentq[2]-parentq[0]);den=np.linalg.norm(aa)*np.linalg.norm(nn)
+                    if den: max_normal_angle=max(max_normal_angle,float(np.degrees(np.arccos(np.clip(np.dot(aa,nn)/den,-1,1)))))
+                    aq=actual.astype(np.float32);ar=np.linalg.norm(np.cross(aq[1]-aq[0],aq[2]-aq[0]));float32_diagnostic_error.append(float(np.max(np.linalg.norm(aq.astype(float)-expected,axis=1))))
+                    if ar==0:float32_zero_children.append({'part':pi,'original_cube_index':ci,'new_cube_index':ni,'native_face':rec['native_face'],'half':rec['half'],'rect_texels':r['rect_texels']})
+                    rec['atlas_uv_rect']=[int(2048+r['rect_texels'][0]),r['rect_texels'][1],int(2048+r['rect_texels'][2]),r['rect_texels'][3]]
+                    rec['float64_parent_affine_max_error_blocks']=err
+                else:rec['new_cube_index']=None
+                records.append(rec)
+        b['cubes']=out
+        assert {k:v for k,v in b.items() if k!='cubes'}=={k:v for k,v in orig['minecraft:geometry'][0]['bones'][pi].items() if k!='cubes'}
+        if not changed:
+            assert b==orig['minecraft:geometry'][0]['bones'][pi];unchanged_hashes[b['name']]=canon(b)
+    assert g['description']==orig['minecraft:geometry'][0]['description']
+    # Prove unchanged cubes by mapping rather than shifted output indices.
+    for p,oldi,newi,changed in zip(index_part,index_old,index_new,index_sel):
+        if not changed: assert g['bones'][p]['cubes'][newi]==orig['minecraft:geometry'][0]['bones'][p]['cubes'][oldi]
+    gp=W/f'{tag}.geo.json';gp.write_text(json.dumps(j,separators=(',',':'),allow_nan=False))
+    tp=W/'shared_mask_2048.png'
+    if not tp.exists():shutil.copyfile(tex,tp)
+    assert sha(tp)==sha(tex)
+    rp=W/f'{tag}-rectangles.jsonl.gz'
+    with gzip.open(rp,'wt') as f:
+        for r in records:f.write(json.dumps(r,separators=(',',':'),allow_nan=False)+'\n')
+    np.savez_compressed(W/f'{tag}-cube-map.npz',part=np.array(index_part),original_cube_index=np.array(index_old),new_cube_index=np.array(index_new),parent_rect_texels=np.array(index_rect),is_subdivided_child=np.array(index_sel))
+    report={'status':'LAB ONLY; exact ideal nearest/mip0 support trimming, no renderer or runtime success claim','tag':tag,'depth':depth,'selection':selection_meta,'selected_parent_cubes':len(selected),'selected_source_faces':len(affected_source_faces),'selected_parent_native_area_blocks2':selected_area,'template':leaves,'support_proof':proof,'source_surface_support':'No original analytic triangle interior removed. All original alpha texels retained exactly on the same intended parent affine plane. Original raster mask excess is also retained.','geometry_precision':'Dyadic real-arithmetic affine equivalence; serialized Float64 origin additions may round. Maximum measured position difference is reported, not claimed bit-exact. Float32 import may change errors and is not certified.','source_native_triangles_modified':False,'texture_modified':False,'source_geometry_sha256':initial[str(source.relative_to(B))],'texture_sha256':sha(tp),'output_geometry_sha256':sha(gp),'counts_before':counts(orig),'counts_after':counts(j),'geometry_bytes':gp.stat().st_size,'mapping_bytes':rp.stat().st_size,'unchanged_bone_hashes':unchanged_hashes,'unaffected_cube_values_exact':True,'description_exact':True,'bone_values_except_cube_lists_exact':True,'selected_pivot_rotation_and_non_geometric_values_exact':True,'cropped_atlas_uvs_integer_exact':True,'max_float64_child_corner_error_from_parent_affine_blocks':max_position_error,'max_float64_child_normal_angle_deg':max_normal_angle,'float32_world_vertex_diagnostic':{'method':'Cast independently computed Float64 world child corners to Float32, not Blender-import emulation','collapsed_child_quads_count':len(float32_zero_children),'collapsed_child_quads':float32_zero_children,'max_vertex_position_error_blocks':max(float32_diagnostic_error,default=0)},'inputs':initial,'outputs':{'geometry':str(gp.relative_to(B)),'texture':str(tp.relative_to(B)),'rectangles':str(rp.relative_to(B)),'cube_map':str((W/f'{tag}-cube-map.npz').relative_to(B))},'limitations':['No PBR claim.','No Minecraft/runtime/mobile-performance test.','Nearest mip0 alpha support only; filtered alpha and mipmaps are outside this proof.','No camera-based deletion: camera witnesses may select parent cubes, but every removed rectangle independently has alpha zero.','Float32 transforms/interpolation and triangle ordering can differ after subdivision.']}
+    for p,h in initial.items():assert sha(B/p)==h
+    savej(W/f'{tag}-report.json',report)
+    print(json.dumps({'tag':tag,'path':str(gp),'selected':len(selected),'before':report['counts_before'],'after':report['counts_after'],'geometry_bytes':report['geometry_bytes'],'max_affine_error_blocks':max_position_error,'float32_collapsed':len(float32_zero_children)}),flush=True)
+    return report
+
+if __name__=='__main__':
+    ap=argparse.ArgumentParser();ap.add_argument('--selection',type=Path);ap.add_argument('--depths',default='1');ap.add_argument('--prefix',default='all-band');args=ap.parse_args()
+    if args.selection:
+        meta=json.loads(args.selection.read_text());selected={(int(r['part']),int(r['cube_index'])) for r in meta['selected_cubes']}
+        meta={**meta,'selection_file':str(args.selection),'selection_sha256':sha(args.selection)}
+    else:
+        a=np.load(S/'transport_arrays.npz');selected={(int(p),int(ci)) for p,ci in zip(a['part'],a['cube_index']) if p==0};meta={'method':'Every original band cube; no visibility selection.','selected_part':0}
+    for d in map(int,args.depths.split(',')): build(f'{args.prefix}-depth{d}',d,selected,meta)

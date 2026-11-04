@@ -46,25 +46,33 @@ export function showCustomizationMenu(
   const gripSelection = new ObservableNumber(GRIP_FINISH_IDS.indexOf(initialCosmetic.grip), {
     clientWritable: true,
   });
+  const form = new CustomForm(player, translated("ui.aspergillum.table.title"));
   let suppressReactiveWrites = false;
+  let alive = true;
+  let retrieved = false;
+  // Native dismissal can precede the continuation of show().
+  const editable = (): boolean => alive && !retrieved && form.isShowing();
+  const close = (): void => {
+    if (!alive) return;
+    alive = false;
+    try {
+      if (form.isShowing()) form.close();
+    } catch (error) {
+      // A failed close may leave the screen open and able to retry dismissal.
+      alive = form.isShowing();
+      throw error;
+    }
+  };
 
   const updateCosmetic = (): void => {
-    if (suppressReactiveWrites) return;
+    if (suppressReactiveWrites || !editable()) return;
     const cosmetic = resolveCosmeticSelection(
       METAL_FINISH_IDS[metalSelection.getData()],
       GRIP_FINISH_IDS[gripSelection.getData()],
     );
     actions.applyCosmetic(cosmetic.id);
   };
-  profileSelection.subscribe((index) => {
-    if (suppressReactiveWrites) return;
-    const profile = SPRAY_PROFILES[index] ?? SPRAY_PROFILES[0];
-    actions.applySprayProfile(profile.id);
-  });
-  metalSelection.subscribe(updateCosmetic);
-  gripSelection.subscribe(updateCosmetic);
 
-  const form = new CustomForm(player, translated("ui.aspergillum.table.title"));
   form
     .spacer()
     .header(translated("ui.aspergillum.table.spray.header"))
@@ -101,6 +109,7 @@ export function showCustomizationMenu(
     )
     .spacer()
     .button(translated("ui.aspergillum.table.restore"), () => {
+      if (!editable()) return;
       if (!actions.restoreClassic()) return;
       suppressReactiveWrites = true;
       try {
@@ -113,13 +122,39 @@ export function showCustomizationMenu(
     })
     .divider()
     .button(translated("ui.aspergillum.table.finish"), () => {
-      if (actions.finishAndRetrieve()) form.close();
+      if (retrieved) { close(); return; }
+      if (!editable()) return;
+      if (actions.finishAndRetrieve()) {
+        retrieved = true;
+        close();
+      }
     })
-    .button(translated("ui.aspergillum.table.close"), () => form.close());
+    .button(translated("ui.aspergillum.table.close"), close);
 
-  form.show()
-    .catch((error: unknown) => {
-      console.warn(`[Aspergillum] Unable to show customization menu for ${player.id}: ${String(error)}`);
-    })
-    .finally(actions.close);
+  // Subscribe only after construction succeeds, then clean every terminal path.
+  const onProfile = profileSelection.subscribe((index) => {
+    if (suppressReactiveWrites || !editable()) return;
+    const profile = SPRAY_PROFILES[index] ?? SPRAY_PROFILES[0];
+    actions.applySprayProfile(profile.id);
+  });
+  const onMetal = metalSelection.subscribe(updateCosmetic);
+  const onGrip = gripSelection.subscribe(updateCosmetic);
+  const cleanup = (): void => {
+    alive = false;
+    profileSelection.unsubscribe(onProfile);
+    metalSelection.unsubscribe(onMetal);
+    gripSelection.unsubscribe(onGrip);
+    actions.close();
+  };
+
+  try {
+    void form.show()
+      .catch((error: unknown) => {
+        console.warn(`[Aspergillum] Unable to show customization menu for ${player.id}: ${String(error)}`);
+      })
+      .finally(cleanup);
+  } catch (error) {
+    cleanup();
+    throw error;
+  }
 }

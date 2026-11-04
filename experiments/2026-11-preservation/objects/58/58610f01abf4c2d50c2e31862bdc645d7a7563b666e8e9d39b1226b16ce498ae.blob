@@ -1,0 +1,74 @@
+{
+  "scope": "V12 isolated local band reconstruction; no export or publication",
+  "executed_cutter_margins_mm": [
+    0.5,
+    0.6
+  ],
+  "number_of_geometrically_distinct_band_trials": 2,
+  "checkpoints": [
+    {
+      "tag": "polygonal-pinna-0.5mm",
+      "file": "polygonal-pinna-0.5mm.npz",
+      "sha256": "defde6c2bbadd8ad82b0a01d498b05d055c3506aa9034ccc4b06474146957593",
+      "vertices": 586,
+      "triangles": 1168,
+      "new_vertices": 149,
+      "new_termination_faces": 145,
+      "role": "experiment, not Bedrock/export",
+      "decision": "Rejected: overlapping coplanar band/shell termination surfaces on identical cutter."
+    },
+    {
+      "tag": "polygonal-pinna-0.5mm-clean",
+      "file": "polygonal-pinna-0.5mm-clean.npz",
+      "sha256": "cca18e7a7beacd736cba2527984f5234d7de65439b56e3a9291ab568b762624e",
+      "vertices": 586,
+      "triangles": 1168,
+      "new_vertices": 149,
+      "new_termination_faces": 145,
+      "role": "experiment, not Bedrock/export",
+      "decision": "Rejected: overlapping coplanar band/shell termination surfaces on identical cutter.",
+      "same_geometry_as_raw": true
+    },
+    {
+      "tag": "polygonal-pinna-0.6mm",
+      "file": "polygonal-pinna-0.6mm.npz",
+      "sha256": "0f405cc5afe4475161ded89a98ba3843e216fe6db74e80048bd82c84a03748bf",
+      "vertices": 584,
+      "triangles": 1164,
+      "new_vertices": 148,
+      "new_termination_faces": 144,
+      "role": "experiment, not Bedrock/export",
+      "decision": "Retained technically and locally after independent geometry plus nine-view visual review; exact selected checkpoint is the clean candidate."
+    },
+    {
+      "tag": "polygonal-pinna-0.6mm-clean",
+      "file": "polygonal-pinna-0.6mm-clean.npz",
+      "sha256": "1c293d8c5b35cca07cfc0e73d2b2e360cbbc3bea27688bb6e6373537ecf54c76",
+      "vertices": 584,
+      "triangles": 1164,
+      "new_vertices": 148,
+      "new_termination_faces": 144,
+      "role": "experiment, not Bedrock/export",
+      "decision": "Retained technically and locally after independent geometry plus nine-view visual review; exact selected checkpoint is the clean candidate.",
+      "same_geometry_as_raw": true
+    },
+    {
+      "file": "retained-band.npz",
+      "sha256": "1c293d8c5b35cca07cfc0e73d2b2e360cbbc3bea27688bb6e6373537ecf54c76",
+      "role": "local retained copy; identity in retained-identity.json",
+      "matches": [
+        "polygonal-pinna-0.6mm-clean.npz"
+      ]
+    }
+  ],
+  "inputs": {
+    "shell_band_v5/retained_candidate/evidence/band-paired.npz": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647",
+    "ear_rim_v11/structural_rebuild/retained-shell.npz": "c79f296415d566db5f9c109389375e0d3ae112fbccbbc89c8628200939fbf81f",
+    "body_interface_v9/constrained_fit/retained-anatomy.npz": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db"
+  },
+  "auxiliary_source_parameter_file": {
+    "file": "shell_band_v3/evidence/band-source-parameters.npz",
+    "sha256": "0a22c357678b8370f4c338d42cf3059133480ae19bc9e5d784102404bb6c2128"
+  },
+  "frozen_source_policy": "Hash-only validation; prior complete gates were not rerun."
+}

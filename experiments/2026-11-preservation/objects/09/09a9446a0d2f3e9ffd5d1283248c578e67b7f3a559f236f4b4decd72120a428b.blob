@@ -1,0 +1,59 @@
+# V10 · Tentativas estruturais locais da ponte/orelhas
+
+**Pesquisa nativa isolada concluída: 97 tentativas preservadas, nenhuma nova casca V10 retida.** Anatomia V9, faixa V5, baseline V7 e todos os inputs permanecem intactos. Não houve alpha, remoção de faces, exportação Bedrock, addon ou publicação.
+
+## Invariantes de construção
+
+Todas as tentativas usam a mesma conectividade V7 (6.244 vértices / 12.484 triângulos, partes 0 calota, 1 ponte, 2 manto). Os NPZ preservam os campos necessários para render no formato V7. As paredes já pareadas são transladadas juntas, conservando seus vetores de separação e a espessura pareada; essa medida não é distância mínima global. Os arcos laterais acompanham os respectivos pares. A anatomia e faixa nem entram nos arquivos candidatos, sendo somente obstáculos congelados. **`body_pairs` mede casca × anatomia; `band_pairs` mede casca × faixa**, cujo baseline é 2.004. Isso não deve ser confundido com os 797 pares anatomia × faixa V9, imutáveis nesta etapa.
+
+A extensão cap-ponte é explícita: as tentativas `boundary`, `support`, `posterolateral` e `relax` movem vértices fonte de uma região lateral da calota. Elas **não** preservam os vértices fonte dessa região no candidato. Os arquivos fonte originais ficam intactos. O manto é fixo. Não é correto chamar esses ensaios de alteração somente da ponte gerada.
+
+## Hipóteses examinadas
+
+1. **Gerados-only:** 25 campos suaves em direções posterior, inferior, posteroinferior, medial e lateral, amplitudes 2–30 mm. A costura de fonte permanece fixa. Mudanças pequenas não limpam a orelha, e ganhos de contagem maiores geralmente introduzem cruzamentos próprios. O diagnóstico independente prova 16 pares ponte/pele por arestas fixas, além dos 207 da calota: o alvo zero não é alcançável mantendo esses segmentos.
+2. **Extensão local da costura:** 24 campos C2 pareados na calota e ponte. `boundary-posterior-30mm` deixa 177 pares na calota + 35 na ponte, zero cruzamentos próprios, mas introduz 185 pares novos e causa regressões visuais e de silhueta. **Rejeitada como candidata.** A auditoria independente mede stretch 0,3007–6,7919, área mínima 0,3194 e normal superior a 90° em uma face. Limpar a cavidade, isoladamente, não compensa novos furos, facetas e ombro posterior.
+3. **Suporte reduzido:** 16 ablações deixam 568–1.102 vértices fonte móveis. Transições mais curtas geram compressão/dobras maiores. Nenhuma promoção baseada só na menor quantidade de vértices ou contatos.
+4. **Compensação posterolateral:** 18 campos com componente lateral 0,05–0,4 vezes a posterior. Reduzir a invasão da pele na calota melhora contatos, mas não corrige o stretch extremo da transição inferior da ponte.
+5. **Relaxamento guiado:** `relax_paired.py` otimiza translações 3D dos pares, energia de segunda diferença em grafo, stretches intrínsecos, área, rotação e amostras finitas de pele. O primeiro ensaio reduz para 137 pares, sem cruzamentos próprios, mas conserva 6 faces centrais com diretores mistos. Não é aprovação.
+6. **Contorno e cones:** `relax_paired_v2.py` congela todos os pares tocando a máscara conservadora de contorno em sete vistas e impõe cones de diretores. Partir da geometria já deslocada e congelar parte dela causa dobras. Isso é falha de inicialização e não prova de impossibilidade.
+7. **Continuação a partir da V7:** `relax_paired_v3.py` parte do baseline exato e aumenta o alvo posterior 5→30 mm, com penalidades métricas 100 vezes mais fortes, cones e contorno congelado. Todos os seis checkpoints falham: 20–42 cruzamentos próprios. O último conserva os 1.027 vértices da máscara de contorno bit a bit e não tem cones mistos, mas tem 513 pares de corpo (181 calota + 332 ponte), 316 novos, 42 cruzamentos próprios, área mínima 0,6478 e stretch da ponte 0,6538–1,4994. O alvo de forma não foi alcançado. Nenhum checkpoint foi retido.
+
+## Como conferir
+
+- `*-metrics.json`: contatos, auto-interseções estritas rápidas, deslocamentos e área.
+- `*-contacts.npz`: pares exatos, com colunas **casca → corpo**, **casca → faixa**, e pares próprios.
+- `*-quality.json`: auditoria algébrica separada do gerador, stretches por parte, rotação, conservação de espessura e cones de diretores.
+- `all-trials-quality.json`: inventário completo.
+- `input-hashes.json`: hashes dos três inputs geométricos congelados. `input-preservation-final.json` compara também os seis inputs do manifesto inicial do parent e confirma todos intactos.
+- `../independent_diagnosis`: revisão externa ao gerador, inclusive visibilidade amostrada. Nenhum contato foi classificado como oculto por estar simplesmente atrás da cabeça.
+
+Os testes de cruzamento são estritos. Não certificam tangências, sobreposição coplanar geral, clearance mínimo ou comportamento Minecraft. O solver usa restrições suaves; valores-alvo não devem ser apresentados como valores alcançados. Atingir 900 iterações não é convergência.
+
+## Reexecução preservando as tentativas
+
+Use Blender 4.3.2 com NumPy/SciPy e `OPENBLAS_NUM_THREADS=1`. Os scripts recusam sobrescrever candidatos existentes. Os quatro scripts de varredura aceitam `RUN_ID=repeat` para novos nomes. Exemplo: `RUN_ID=repeat OPENBLAS_NUM_THREADS=1 blender -b -t 3 --python bridge_ear_v10/structural_fit/scan_boundary.py`.
+
+Os relaxamentos recebem um novo prefixo depois de `--`, seguido de piso de stretch, peso do alvo e semente. Exemplo: `OPENBLAS_NUM_THREADS=1 blender -b -t 3 --python bridge_ear_v10/structural_fit/relax_paired_v3.py -- repeat075 .75 2 baseline`. Reexecute `python bridge_ear_v10/structural_fit/audit_trials.py` para métricas algébricas.
+
+**Nota de metadados:** os 16 `support-*` originais herdaram no campo textual `provenance` a descrição genérica do suporte amplo do primeiro gerador. Seus pontos foram calculados com os suportes corretos de `scan_support.py`; os parâmetros exatos estão nos respectivos `*-metrics.json`. O código foi corrigido para gravar esses parâmetros também no NPZ de novas reexecuções. Nenhum ponto original foi regravado silenciosamente.
+
+
+## Parâmetros e checkpoints finais
+
+- `relax065-t2-iteration03.npz`: representante final sem cruzamentos próprios do primeiro relaxamento; 137 pares corpo (102 calota + 35 ponte), 110 novos, 842 pares faixa. Stretches ponte 0,64830–1,53512, área mínima 0,60349, rotação máxima 75,136°, 6 faces centrais com diretores mistos. 1.452 vértices movidos, máximo 31,339 mm. **Rejeitado.** O iteration00 teve 133 pares, porém área mínima menor e a mesma falha de cones; nenhum foi classificado como ótimo ou artisticamente superior.
+- `relax075-continuation-iteration05.npz`: último ensaio, com contorno amostrado congelado. 513 pares corpo / 1.430 pares faixa / 42 cruzamentos próprios. 1.182 vértices movidos, máximo 16,327 mm. **Rejeitado.**
+- `trials-manifest.json`: inventário de todas as 97 tentativas com hashes, métricas, invariantes e status `research_not_promoted`.
+
+O primeiro relaxamento usou piso de stretch 0,65, teto 1,5, área mínima-alvo 0,6, normal 75°, peso de contato de pele 50 e alvo de afastamento 0,3 mm. V2 e V3 usaram piso 0,75, teto 1,3, normal 60°, cone de diretores 0,08, contato 300 e alvo de 0,3 mm. V3 multiplicou por 100 as penalidades principais de forma e por 10 a penalidade de cones. As penalidades são suaves, não restrições duras: as métricas reais acima prevalecem. O congelamento dos pares de contorno, manto e demais vértices fora do domínio é exato.
+
+Cada passo usa L-BFGS-B, máximo 900 iterações, tolerância relativa de objetivo 1e-9 e gradiente 1e-5. **Todos os 14 checkpoints dos três relaxamentos atingiram o limite de 900 iterações.** Não se alega convergência, ótimo, inviabilidade global ou folga global. Os três gradientes analíticos foram checados por diferenças finitas antes da execução; maiores erros relativos amostrados: 2,534e-6 (V1), 2,826e-4 (V2) e 2,598e-6 (V3).
+
+A máscara de contorno é uma restrição conservadora nas sete vistas, não prova global de silhueta: pontos interiores podem projetar-se fora do contorno e novas vistas não são cobertas. O relatório independente da tentativa boundary30 já demonstrou por que perfil lateral sozinho não basta.
+
+## Conclusão e hipótese futura
+
+A tentativa confirma que retirar a costura da cavidade da orelha é a direção estrutural certa para remover as lâminas observadas, mas o movimento ingênuo da calota/ponte troca esse defeito por furos de pele, facetas e mudança de contorno. Os relaxamentos desta família não obtiveram simultaneamente geometria válida, cones, aparência e silhueta.
+
+Permanece como hipótese futura uma reconstrução local da borda e da ponte com **nova conectividade**, guiada pelo envelope da orelha e pelo fechamento volumétrico, preservando espessura, fontes, anatomia e candidatos. Isso não foi implementado nesta etapa. Não há componente solta invisível da casca que possa ser simplesmente apagada: a revisão independente confirma uma componente fechada única, com 456 vértices comuns calota–ponte e 640 ponte–manto. Uma alteração topológica exigirá fechamento explícito e nova revisão.
+
+Nota adicional de metadados: nos quatro NPZ/relatórios históricos `relax075-contour-*`, o campo textual genérico `method` herdou `non-ear`, mas o campo específico `skin_faces`, o código executado e os contatos de fato incluem toda a anatomia congelada. A descrição do script foi corrigida para futuras reexecuções; os dados históricos permanecem preservados.

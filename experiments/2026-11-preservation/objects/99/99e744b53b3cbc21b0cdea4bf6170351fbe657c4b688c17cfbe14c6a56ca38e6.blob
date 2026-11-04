@@ -1,0 +1,18 @@
+"""Disambiguate long normal rays that hit another native patch before starting sample."""
+from pathlib import Path
+import json
+import numpy as np
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+W=Path(__file__).resolve().parent;B=W.parents[1]
+z=np.load(B/'band_shell_v13/constrained_fit/retained-band.npz');T=z['points'][z['triangles']];N=np.cross(T[:,1]-T[:,0],T[:,2]-T[:,0]);N/=np.linalg.norm(N,axis=1)[:,None];bvh=BVHTree.FromPolygons(z['points'].tolist(),z['triangles'].tolist(),all_triangles=True)
+q=np.load(W/'budget-0300/metrics-samples.npz');S=q['native_sample_points'];FI=q['native_face'];SN=N[FI];base=[];faces=[]
+for p,n in zip(S,SN):
+ x=bvh.ray_cast(Vector(p+n*.02),Vector(-n),.04);base.append(.02-x[3]if x[3]is not None else np.nan);faces.append(x[2]if x[2]is not None else -1)
+base=np.array(base);faces=np.array(faces);np.savez_compressed(W/'native-normal-ray-baseline.npz',native_sample_points=S,origin_native_face=FI,hit_native_face=faces,native_ray_offset=base)
+def stats(x):
+ return {'count':len(x),'min':float(x.min())if len(x)else None,'median':float(np.median(x))if len(x)else None,'p95':float(np.percentile(x,95))if len(x)else None,'p99':float(np.percentile(x,99))if len(x)else None,'max':float(x.max())if len(x)else None}
+for D in sorted(W.glob('budget-*')):
+ q=np.load(D/'metrics-samples.npz');delta=q['native_normal_union_offset'];valid=np.isfinite(base)&np.isfinite(delta);err=(delta-base)*1000;local=valid&(np.abs(base)<.00001)
+ r=json.loads((D/'metrics.json').read_text());r['native_normal_ray_baseline_correction']={'method':'Each exact same outward normal ray is cast against native V13 triangles first. Candidate-minus-native first-entry depth removes self-occlusion already present in native. Raw offsets relative to the originating point include large inherited offsets and MUST NOT be interpreted as local surface error.','native_ray_misses':int((~np.isfinite(base)).sum()),'native_first_hit_not_local_0_01mm':int(np.sum(np.isfinite(base)&(np.abs(base)>.00001))),'candidate_vs_native_first_entry_mm':stats(err[valid]),'candidate_vs_native_first_entry_local_origin_mm':stats(err[local]),'outer_local_origin_error_mm':stats(err[local&(z['face_parts'][FI]==0)]),'inner_local_origin_error_mm':stats(err[local&(z['face_parts'][FI]==1)]),'caveat':'Near-tangent rays amplify small geometric gaps; actual closest-surface metric is the separate exposed_cube_to_native_actual_triangle_distance_mm. Native BVH float precision vs double-precision analytical OBB slabs introduces small numerical residuals.'}
+ (D/'metrics.json').write_text(json.dumps(r,indent=2)+'\n');print(D.name,json.dumps(r['native_normal_ray_baseline_correction']),flush=True)

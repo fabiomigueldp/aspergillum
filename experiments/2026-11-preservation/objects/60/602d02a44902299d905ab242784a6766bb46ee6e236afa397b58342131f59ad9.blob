@@ -1,0 +1,31 @@
+# Classificação prudente dos contatos externos residuais
+
+Este complemento refere-se à **primeira candidata valley-source-mask-n8**, posteriormente rejeitada visualmente pelas transições. A classificação não promove essa candidata nem se transfere automaticamente a outra geometria.
+
+Analisei todos os **358 segmentos de contato externos** residuais, com amostras em 25%, 50% e 75% do segmento e deslocamentos transversais de ±0,05 mm sobre o plano da face, apenas quando a amostra continua dentro da face. Essas perturbações separam os dois lados de uma linha de interseção, em que a profundidade de faixa/casca exatamente na linha empata.
+
+Usei dez câmeras fixas, incluindo as nove câmeras V12 e o fechamento `band-front`. Foram consideradas candidata, casca V11 e anatomia V9 como possíveis oclusores. O contexto legado com alfa/halo não foi incluído no teste de BVH. Logo, não encontrar um oclusor nativo prova apenas **visibilidade potencial**; encontrar um objeto nativo claramente à frente prova ocultação do ponto amostrado nessa câmera, mesmo que o contexto omitido possa acrescentar ocultação.
+
+## Resultados das amostras, não certificados globais
+
+- **159 segmentos:** todos os pontos efetivamente amostrados ficam ocultos por algum dos três meshes em todas as câmeras testadas em que entram no enquadramento. Isso não certifica o segmento inteiro entre amostras, outras câmeras ou invisibilidade global.
+- **64 segmentos:** têm testemunhos potencialmente visíveis em que a fonte também mostra casca dominante. São **compatíveis com a sobreposição herdada nos testemunhos**, sem afirmar intenção artística de cada contato ou ausência de outro defeito.
+- **48 segmentos:** têm testemunhos potencialmente visíveis de inversão local de ordem fonte→atual. A maior parte está próxima das margens/terminações, não no vale corrigido. Não foram classificados automaticamente como novos alvos: a fonte high não contém os recortes V11/V12, o contexto pode acrescentar oclusão e a diferença de material diagnóstico exagera o contraste.
+- **87 segmentos:** há borda potencialmente exposta ou ordem fonte sem distinção suficiente para as categorias anteriores; permanecem indeterminados.
+
+As categorias seguem prioridade inversão→compatível→oculto→indeterminado. Um segmento pode conter mais de um tipo de testemunho; as linhas completas preservam todos os dados em vez de esconder essa mistura.
+
+Somas de comprimento, sem união/deduplicação espacial: 556,788 mm nos classificados ocultos nas amostras; 198,319 mm nos compatíveis com shell dominante fonte; 127,965 mm nos potenciais invertidos; 249,232 mm nos indeterminados. Esses comprimentos não são área visível nem profundidade.
+
+## Os 37 componentes do baseline
+
+Amostrei o ponto médio do segmento mais longo de **cada um dos 37 componentes** de curvas do baseline, usando a faixa V12 original. **17 representantes** não têm oclusor dos três meshes em pelo menos uma câmera; os outros 20 ficam ocultos nas observações em enquadramento. Uma amostra representativa não classifica o componente inteiro. Os componentes internos continuam distintos das curvas externas e não são chamados de invisíveis globalmente.
+
+## Arquivos
+
+- `remaining-exterior-contact-visibility-summary.json`: resumo e limites.
+- `remaining-exterior-contact-visibility.json`: todos os pontos, raios, profundidades, identificadores de faces e testemunhos de cada segmento.
+- `baseline-37-components-visibility-samples.json`: um representante por componente original e resultados por câmera.
+- `classify_contact_visibility.py`: método reproduzível.
+
+**As cores azul/ouro são diagnósticas, não materiais fonte.** A fonte usa a mesma cor de pedra e a percepção de uma diferença depende de luz e material. Inversão geométrica não equivale a um furo colorido na arte final. A classificação não autoriza ampliação automática do patch e não constitui teste de Minecraft.

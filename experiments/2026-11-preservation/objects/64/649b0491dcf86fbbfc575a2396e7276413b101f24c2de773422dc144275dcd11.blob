@@ -1,0 +1,35 @@
+"""Projected polygon overlap on near-coplanar float64 candidate triangles."""
+from pathlib import Path
+import numpy as np,json,sys
+O=Path(__file__).resolve().parent;B=O.parents[1];tag=sys.argv[1];d=np.load(B/f'band_ear_v12/structural_rebuild/{tag}.npz');p=d['points'];f=d['triangles'];tr=p[f]
+def raw(tr):return np.cross(tr[1]-tr[0],tr[2]-tr[0])
+def ar(poly):return np.linalg.norm(sum((np.cross(poly[i]-poly[0],poly[i+1]-poly[0]) for i in range(1,len(poly)-1)),start=np.zeros(3)))/2 if len(poly)>2 else 0.
+def clip(poly,planes):
+ poly=list(poly)
+ for pl in planes:
+  out=[]
+  if not poly:return []
+  for x,y in zip(poly,poly[1:]+poly[:1]):
+   dx=x@pl[:3]+pl[3];dy=y@pl[:3]+pl[3];ix=dx<=0;iy=dy<=0
+   if ix:out.append(x)
+   if ix!=iy:out.append(x+(y-x)*dx/(dx-dy))
+  poly=out
+ return poly
+def overlap(a,b):
+ n=raw(b);n/=np.linalg.norm(n);planes=[]
+ for k in range(3):
+  nn=np.cross(b[(k+1)%3]-b[k],n);nn/=np.linalg.norm(nn);planes.append(np.r_[nn,-nn@b[k]])
+ poly=clip(a,planes);return ar(poly),np.asarray(poly).reshape(-1,3)
+out={'method':'All float64 AABB overlapping triangle pairs. Treat as near-coplanar if maximum plane distance <=1e-12 m and normal alignment |dot|>=1-1e-10. Convex polygon clipping in 3D projected planes. Positive area threshold1e-17m². Adjacent pairs included; external shell/anatomy checked independently of strict intersection predicate.','results':{}}
+for label,path in [('self',None),('shell',B/'ear_rim_v11/structural_rebuild/retained-shell.npz'),('anatomy',B/'body_interface_v9/constrained_fit/retained-anatomy.npz')]:
+ ob=d if path is None else np.load(path);otr=ob['points'][ob['triangles']];lo=otr.min(1);hi=otr.max(1);nn=np.cross(otr[:,1]-otr[:,0],otr[:,2]-otr[:,0]);nn/=np.maximum(np.linalg.norm(nn,axis=1)[:,None],1e-300);rows=[];near=0;tested=0
+ for i,t in enumerate(tr):
+  ids=np.flatnonzero(np.all(t.max(0)+1e-12>=lo,1)&np.all(hi+1e-12>=t.min(0),1));ids=ids[ids>i] if path is None else ids;tested+=len(ids);n=raw(t);n/=np.linalg.norm(n)
+  for j in ids:
+   tb=otr[j];dot=n@nn[j]
+   if abs(dot)<1-1e-10 or np.max(abs((tb-t[0])@n))>1e-12:continue
+   near+=1;v,poly=overlap(t,tb if dot>=0 else tb[::-1])
+   if v>1e-17:rows.append({'band_face':i,'other_face':int(j),'band_part':int(d['face_parts'][i]),'other_part':int(ob['face_parts'][j]) if 'face_parts' in ob else None,'shared_vertices':sorted(set(map(int,f[i]))&set(map(int,f[j]))) if path is None else None,'area_mm2':v*1e6,'polygon':poly.tolist(),'max_plane_distance_mm':float(np.max(abs((tb-t[0])@n))*1000),'normal_dot':float(dot)})
+ out['results'][label]={'aabb_pairs':tested,'near_coplanar_pairs':near,'positive_overlap_pairs':len(rows),'overlap_area_mm2_sum_not_union':sum(r['area_mm2'] for r in rows),'rows':rows}
+ print(label,tested,near,len(rows),out['results'][label]['overlap_area_mm2_sum_not_union'],flush=True)
+(O/(tag+'-coplanar-contacts.json')).write_text(json.dumps(out,indent=2))

@@ -1,0 +1,30 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-paired-midsurface-obstacle-proof.py').read().rsplit('counts=collections.Counter',1)[0])
+vf=collections.defaultdict(set)
+for fi,f in enumerate(fs):
+ for v in f:vf[v].add(fi)
+lookup={tuple(sorted(f)):fi for fi,f in enumerate(fs)};bc=set(hb.overlap(BVHTree.FromPolygons(p.tolist(),fs)));steps=[]
+for it in range(60):
+ counts=collections.Counter(tuple(sorted((a,b))) for fi in patch for a,b in zip(fs[fi],fs[fi][1:]+fs[fi][:1]));edges=[e for e,n in counts.items() if n==1];boundary={v for e in edges for v in e};bad=set();hits=0
+ for a,b in edges:
+  u=Vector(p[a]);v=Vector(p[b]);e=v-u;h,_,_,_=hb.ray_cast(u,e.normalized(),e.length);invalid=h is not None
+  for t in [0,.25,.5,.75,1]:
+   pt=u.lerp(v,t);near,nor,_,_=hb.find_nearest(pt)
+   if (pt-near).dot(nor)<.0001:invalid=True
+  if invalid:bad.update((a,b));hits+=1
+ frozen={fi for fi in patch if all(v in boundary for v in fs[fi])};fixedhits={(a,b) for a,b in bc if b in frozen}
+ for a,b in fixedhits:bad.update(fs[b])
+ row={'step':it,'patch_faces':len(patch),'boundary_vertices':len(boundary),'bad_boundary_edges':hits,'frozen_skin_pairs':len(fixedhits)};steps.append(row)
+ if not bad:row['status']='boundary and fixed-face checks pass';break
+ extra=set().union(*(vf[v] for v in bad))-patch
+ for fi in list(extra):
+  f=fs[fi]
+  if not all(v in pairmap for v in f):row['blocked']='Required expansion touches unpaired rim or cap';break
+  match=lookup.get(tuple(sorted(pairmap[v] for v in f)))
+  if match is None:row['blocked']='No source-face counterpart';break
+  extra.add(match)
+ if 'blocked' in row:break
+ pp=p[list({v for fi in extra for v in fs[fi]})]
+ if pp[:,2].min()<3.22 or pp[:,2].max()>3.42 or pp[:,0].max()>.025:row['blocked']='Required expansion exits bounded posterior neck';row['extra_bounds']=[pp.min(0).tolist(),pp.max(0).tolist()];break
+ if not extra:row['blocked']='No growable neighboring faces';break
+ patch|=extra
+json.dump({'steps':steps,'patch_faces':sorted(patch)},open(r+'neck-paired-boundary-feasibility-growth.json','w'),indent=2);print(steps)

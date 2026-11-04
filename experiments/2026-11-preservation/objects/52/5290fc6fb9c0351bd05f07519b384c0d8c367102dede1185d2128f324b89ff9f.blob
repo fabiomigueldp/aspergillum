@@ -1,0 +1,463 @@
+#!/usr/bin/env python3
+"""Focused audit/build tool for the existing Paz 0.1.3 addon.
+
+This is not a Bedrock schema validator or an in-game test. Only the current
+single-root, per-face-UV, single-axis cube-rotation export profile is supported.
+Unknown geometry features fail instead of being silently ignored.
+"""
+from __future__ import annotations
+import argparse
+import hashlib
+import itertools
+import json
+import math
+import re
+import struct
+import sys
+import uuid
+import zlib
+from pathlib import Path, PurePosixPath
+from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED, BadZipFile
+
+ROOT = Path(__file__).resolve().parents[1]
+BP = 'Paz_BP'
+RP = 'Paz_RP'
+GEO = RP + '/models/blocks/imagem.geo.json'
+BLOCK = BP + '/blocks/imagem.json'
+PNG = RP + '/textures/blocks/imagem.png'
+RUNTIME_CASES = ('import', 'both_packs_enabled', 'give_and_inventory', 'four_directions',
+                 'selection_and_collision', 'survival_break_and_recover', 'save_reopen',
+                 'chunk_reload', 'content_log', 'visual_review_in_game')
+EPS = 1e-7
+
+class AuditError(ValueError):
+    pass
+
+def require(condition, message):
+    if not condition:
+        raise AuditError(message)
+
+def keys(value, expected, name):
+    require(isinstance(value, dict) and set(value) == set(expected), name + ': unsupported/missing fields')
+
+def number(value, name, minimum=0):
+    require(type(value) in (int, float) and math.isfinite(value) and value >= minimum,
+            name + ': expected finite numeric value >= ' + str(minimum))
+    return value
+
+def digest(data):
+    return hashlib.sha256(data).hexdigest()
+
+def strict_json(data):
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            require(key not in result, 'duplicate JSON key: ' + key)
+            result[key] = value
+        return result
+    def constant(value):
+        raise AuditError('nonfinite JSON number: ' + value)
+    def finite_float(value):
+        parsed = float(value)
+        require(math.isfinite(parsed), 'nonfinite JSON number: ' + value)
+        return parsed
+    return json.loads(data, object_pairs_hook=pairs, parse_constant=constant, parse_float=finite_float)
+
+def safe_name(name):
+    p = PurePosixPath(name)
+    require(name and not p.is_absolute() and '\\' not in name and
+            all(part not in ('', '.', '..') for part in name.split('/')),
+            'unsafe archive/file path: ' + name)
+
+def read_files(path):
+    files = {}
+    if path.is_dir():
+        for file in sorted(path.rglob('*')):
+            require(not file.is_symlink(), 'symlinks are not supported: ' + str(file))
+            if file.is_file():
+                name = file.relative_to(path).as_posix()
+                safe_name(name)
+                files[name] = file.read_bytes()
+    else:
+        with ZipFile(path) as archive:
+            total = 0
+            for item in archive.infolist():
+                if item.is_dir():
+                    continue
+                safe_name(item.filename)
+                require(item.filename not in files, 'duplicate archive entry: ' + item.filename)
+                require(not item.flag_bits & 1, 'encrypted archive entry')
+                require((item.external_attr >> 16) & 0o170000 != 0o120000, 'archive symlink')
+                total += item.file_size
+                require(total <= 20_000_000, 'archive expands beyond the 20 MB project limit')
+                files[item.filename] = archive.read(item)
+    require(files, 'empty package')
+    require(sum(map(len, files.values())) <= 20_000_000, 'source exceeds the 20 MB project limit')
+    require(len({n.casefold() for n in files}) == len(files), 'case-insensitive filename collision')
+    return files
+
+def vector(value, length, name):
+    require(isinstance(value, list) and len(value) == length and
+            all(type(v) in (int, float) and math.isfinite(v) for v in value),
+            name + ': expected finite numeric vector')
+    return value
+
+def version(value, name):
+    require(isinstance(value, list) and len(value) == 3 and
+            all(type(v) is int and v >= 0 for v in value), name + ': invalid version')
+    return tuple(value)
+
+def png_dimensions(data):
+    require(data[:8] == b'\x89PNG\r\n\x1a\n', 'invalid PNG signature')
+    offset, dimensions, ended, saw_data = 8, None, False, False
+    compressed = bytearray()
+    while offset < len(data):
+        require(offset + 12 <= len(data), 'truncated PNG chunk')
+        length = struct.unpack('>I', data[offset:offset+4])[0]
+        kind = data[offset+4:offset+8]
+        require(kind in (b'IHDR', b'IDAT', b'IEND'), 'unsupported PNG chunk: '+repr(kind))
+        end = offset + length + 12
+        require(end <= len(data), 'truncated PNG data')
+        chunk = data[offset+8:offset+8+length]
+        crc = struct.unpack('>I', data[offset+8+length:end])[0]
+        require(zlib.crc32(kind + chunk) & 0xffffffff == crc, 'PNG CRC mismatch')
+        if offset == 8:
+            require(kind == b'IHDR' and length == 13, 'PNG must begin with IHDR')
+            dimensions = struct.unpack('>II', chunk[:8])
+            require(min(dimensions) > 0 and max(dimensions) <= 4096, 'empty/oversized PNG')
+            require(tuple(chunk[8:]) == (8, 6, 0, 0, 0),
+                    'PNG export profile must be noninterlaced 8-bit RGBA')
+        elif kind == b'IHDR':
+            raise AuditError('duplicate PNG IHDR')
+        if kind == b'IDAT':
+            saw_data = True
+            compressed.extend(chunk)
+        if kind == b'IEND':
+            require(length == 0 and end == len(data), 'bad PNG IEND/trailing data')
+            ended = True
+        offset = end
+    require(ended and saw_data, 'PNG missing image data or IEND')
+    expected = dimensions[1] * (1 + dimensions[0] * 4)
+    decoder = zlib.decompressobj()
+    try:
+        raw = decoder.decompress(bytes(compressed), expected + 1)
+    except zlib.error as error:
+        raise AuditError('invalid PNG compressed image data') from error
+    require(len(raw) == expected and decoder.eof and not decoder.unused_data, 'invalid PNG decoded length/stream')
+    stride = 1 + dimensions[0] * 4
+    require(all(raw[i] <= 4 for i in range(0, len(raw), stride)), 'invalid PNG scanline filter')
+    return dimensions
+
+def rotate(point, pivot, rotation):
+    """Single-axis cube rotations; deliberately reject uncertain Euler order."""
+    vector(rotation, 3, 'rotation')
+    require(sum(abs(v) > EPS for v in rotation) <= 1,
+            'multi-axis rotations need a verified exporter before use')
+    x, y, z = [point[i] - pivot[i] for i in range(3)]
+    for axis, angle in enumerate(rotation):
+        c, s = math.cos(math.radians(angle)), math.sin(math.radians(angle))
+        if axis == 0:
+            y, z = c*y - s*z, s*y + c*z
+        elif axis == 1:
+            x, z = c*x + s*z, -s*x + c*z
+        else:
+            x, y = c*x - s*y, s*x + c*y
+    return [x + pivot[0], y + pivot[1], z + pivot[2]]
+
+def extent(points):
+    low = [min(p[a] for p in points) for a in range(3)]
+    high = [max(p[a] for p in points) for a in range(3)]
+    return {'min': low, 'max': high, 'size': [high[a]-low[a] for a in range(3)]}
+
+def geometry_audit(document, texture_size):
+    require(document.get('format_version') == '1.16.0', 'unsupported geometry format')
+    require(set(document) == {'format_version', 'minecraft:geometry'}, 'unsupported geometry document fields')
+    geometries = document['minecraft:geometry']
+    require(len(geometries) == 1, 'expected one geometry')
+    geo = geometries[0]
+    require(set(geo) == {'description', 'bones'}, 'unsupported geometry fields')
+    desc = geo['description']
+    keys(desc, {'identifier', 'texture_width', 'texture_height', 'visible_bounds_width',
+                'visible_bounds_height', 'visible_bounds_offset'}, 'geometry description')
+    require(type(desc['texture_width']) is int and type(desc['texture_height']) is int, 'texture dimensions must be integers')
+    number(desc['visible_bounds_width'], 'visible bounds width')
+    number(desc['visible_bounds_height'], 'visible bounds height')
+    require((desc['texture_width'], desc['texture_height']) == texture_size, 'texture dimensions mismatch')
+    bones = geo['bones']
+    require(len(bones) == 1, 'only the audited single-root export profile is supported')
+    bone = bones[0]
+    require(isinstance(bone.get('name'), str) and re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*', bone['name']), 'invalid bone name')
+    require(set(bone) <= {'name', 'pivot', 'cubes'}, 'bone hierarchy/transform requires exporter verification')
+    vector(bone.get('pivot', [0, 0, 0]), 3, 'bone pivot')
+    points, cube_bounds, base_overlap = [], [], False
+    cubes = bone['cubes']
+    require(cubes, 'geometry has no cubes')
+    for index, cube in enumerate(cubes):
+        label = f'cube {index}'
+        require(set(cube) <= {'origin', 'size', 'pivot', 'rotation', 'uv'}, label + ': unsupported cube fields')
+        origin = vector(cube['origin'], 3, label + ' origin')
+        size = vector(cube['size'], 3, label + ' size')
+        require(all(s > 0 for s in size), label + ': zero/negative size')
+        pivot = vector(cube.get('pivot', [0, 0, 0]), 3, label + ' pivot')
+        rotation = cube.get('rotation', [0, 0, 0])
+        corners = [rotate([origin[a]+choice[a]*size[a] for a in range(3)], pivot, rotation)
+                   for choice in itertools.product((0, 1), repeat=3)]
+        bounds = extent(corners)
+        points.extend(corners)
+        cube_bounds.append(bounds)
+        # A fully contained unrotated cube proves the one-pixel/base-block rule.
+        if not any(rotation) and all(bounds['min'][a] >= (-8, 0, -8)[a] and
+                                     bounds['max'][a] <= (8, 16, 8)[a] and size[a] >= 1
+                                     for a in range(3)):
+            base_overlap = True
+        uv = cube['uv']
+        require(isinstance(uv, dict) and set(uv) == {'north', 'south', 'east', 'west', 'up', 'down'},
+                label + ': explicit UVs required for every face')
+        for face, mapping in uv.items():
+            require(set(mapping) <= {'uv', 'uv_size'}, label + ': unsupported UV mapping')
+            start = vector(mapping['uv'], 2, label + ' UV')
+            span = vector(mapping['uv_size'], 2, label + ' UV size')
+            require(all(abs(s) > EPS for s in span), label + ': zero-area UV face')
+            for axis in range(2):
+                end = start[axis] + span[axis]
+                require(min(start[axis], end) >= 0 and max(start[axis], end) <= texture_size[axis],
+                        label + ': UV outside atlas')
+    bounds = extent(points)
+    require(all(v <= 30 + EPS for v in bounds['size']), 'geometry exceeds the 30-unit size limit')
+    require(all(-30-EPS <= v <= 30+EPS for side in ('min', 'max') for v in bounds[side]),
+            'geometry exceeds absolute +/-30 bounds')
+    require(base_overlap, 'base-block overlap not proven by this conservative audit')
+    if all(k in desc for k in ('visible_bounds_width', 'visible_bounds_height', 'visible_bounds_offset')):
+        center = vector(desc['visible_bounds_offset'], 3, 'visible bounds offset')
+        half = [desc['visible_bounds_width']/2, desc['visible_bounds_height']/2, desc['visible_bounds_width']/2]
+        require(all(half[a] > 0 and bounds['min'][a]/16 >= center[a]-half[a]-EPS and
+                    bounds['max'][a]/16 <= center[a]+half[a]+EPS for a in range(3)),
+                'visible bounds would clip/cull the geometry')
+    return {'identifier': desc['identifier'], 'cube_count': len(cubes), 'rotated_bounds_pixels': bounds,
+            'base_overlap_proven': base_overlap, 'points': points}
+
+def box_audit(box, name):
+    require(isinstance(box, dict) and set(box) == {'origin', 'size'}, name + ': profile needs explicit box')
+    origin, size = vector(box['origin'], 3, name), vector(box['size'], 3, name)
+    require(all(s > 0 for s in size), name + ': nonpositive box')
+    # Keep the original 1.21.80 profile, not newer 24-unit collision behavior.
+    require(all(origin[a] >= (-8, 0, -8)[a] and origin[a]+size[a] <= (8, 16, 8)[a]
+                for a in range(3)), name + ': outside original 16-unit bounds')
+    return {'min': origin, 'max': [origin[a]+size[a] for a in range(3)]}
+
+def audit(files, lock):
+    require(set(files) == set(lock['files_sha256']), 'package file set changed; review/update export profile')
+    docs = {name: strict_json(data) for name, data in files.items() if name.endswith('.json')}
+    all_uuids, manifests = [], {}
+    for pack, kind in ((BP, 'data'), (RP, 'resources')):
+        manifest = docs[pack + '/manifest.json']
+        fields = {'format_version', 'header', 'modules', 'metadata'}
+        if pack == BP:
+            fields.add('dependencies')
+        keys(manifest, fields, pack+' manifest')
+        manifests[pack] = manifest
+        require(type(manifest['format_version']) is int and manifest['format_version'] == 2, 'manifest format must remain integer 2')
+        header = manifest['header']
+        keys(header, {'name','description','uuid','version','min_engine_version'}, pack+' header')
+        require(header['name'] == 'pack.name' and header['description'] == 'pack.description', 'localization references changed')
+        require(manifest['metadata'] == {'authors':['Nossa Senhora da Paz project'], 'product_type':'addon'}, 'manifest metadata profile changed')
+        require(header['uuid'] == lock['pack_uuids'][pack], 'pack UUID changed: ' + pack)
+        v = version(header['version'], 'pack version')
+        require(v >= tuple(lock['pack_version']), 'pack version downgrade')
+        require(version(header['min_engine_version'], 'min_engine_version') == tuple(lock['min_engine_version']),
+                'engine target changed; compatibility review needed')
+        require(len(manifest['modules']) == 1, 'unexpected module added')
+        module = manifest['modules'][0]
+        keys(module, {'type','uuid','version'}, pack+' module')
+        require(module['type'] == kind and module['uuid'] == lock['module_uuids'][pack], 'module identity/type changed')
+        require(version(module['version'], 'module version') == v, 'module/header versions differ')
+        all_uuids.extend((header['uuid'], module['uuid']))
+        for locale in ('pt_BR', 'en_US'):
+            strings = {}
+            for line in files[f'{pack}/texts/{locale}.lang'].decode('utf-8').splitlines():
+                if line.strip() and not line.startswith('##'):
+                    key, value = line.split('=', 1)
+                    require(key not in strings, 'duplicate translation key')
+                    strings[key] = value
+            require(all(strings.get(key, '').strip() for key in
+                        ('pack.name', 'pack.description', 'tile.'+lock['block_identifier']+'.name')),
+                    'missing localized names')
+        require(docs[pack+'/texts/languages.json'] == ['pt_BR', 'en_US'], 'locale set changed')
+    require(len(set(all_uuids)) == 4 and all(str(uuid.UUID(u)) == u for u in all_uuids), 'invalid/duplicate UUIDs')
+    rp_header = manifests[RP]['header']
+    require(manifests[BP]['dependencies'] == [{'uuid': rp_header['uuid'], 'version': rp_header['version']}],
+            'resource-pack dependency mismatch')
+    require(manifests[BP]['header']['version'] == rp_header['version'], 'pack versions differ')
+    block_doc = docs[BLOCK]
+    keys(block_doc, {'format_version','minecraft:block'}, 'block document')
+    require(block_doc['format_version'] == '1.21.80', 'block format changed; compatibility review needed')
+    block = block_doc['minecraft:block']
+    require(set(block) == {'description', 'components', 'permutations'}, 'unsupported block sections')
+    description = block['description']
+    keys(description, {'identifier','menu_category','traits'}, 'block description; custom states require review')
+    require(description['menu_category'] == {'category':'construction'}, 'menu category profile changed')
+    keys(description['traits'], {'minecraft:placement_direction'}, 'block traits')
+    require(block['description']['identifier'] == lock['block_identifier'], 'block ID changed; existing worlds at risk')
+    components = block['components']
+    require(set(components) == {'minecraft:geometry', 'minecraft:material_instances',
+            'minecraft:collision_box', 'minecraft:selection_box', 'minecraft:destructible_by_mining',
+            'minecraft:destructible_by_explosion'}, 'component set changed; extend audit before using it')
+    keys(components['minecraft:geometry'], {'identifier'}, 'geometry component')
+    for component, field in (('minecraft:destructible_by_mining','seconds_to_destroy'),
+                             ('minecraft:destructible_by_explosion','explosion_resistance')):
+        keys(components[component], {field}, component)
+        number(components[component][field], component+'.'+field)
+    geometry = geometry_audit(docs[GEO], png_dimensions(files[PNG]))
+    require(geometry['identifier'] == lock['geometry_identifier'] == components['minecraft:geometry']['identifier'],
+            'geometry identifier/reference mismatch')
+    terrain = docs[RP+'/textures/terrain_texture.json']
+    keys(terrain, {'resource_pack_name','texture_name','padding','num_mip_levels','texture_data'}, 'terrain texture')
+    require(terrain['resource_pack_name'] == 'paz_glicerio' and terrain['texture_name'] == 'atlas.terrain' and
+            type(terrain['padding']) is int and terrain['padding'] == 8 and
+            type(terrain['num_mip_levels']) is int and terrain['num_mip_levels'] == 4, 'atlas settings profile changed')
+    require(docs[RP+'/blocks.json'] == {'format_version':'1.1.0', lock['block_identifier']:{'sound':'stone'}},
+            'resource block mapping profile changed')
+    materials = components['minecraft:material_instances']
+    require(set(materials) == {'*'}, 'material export profile changed')
+    keys(materials['*'], {'texture','render_method','ambient_occlusion','face_dimming'}, 'material instance')
+    require(type(materials['*']['ambient_occlusion']) is bool and type(materials['*']['face_dimming']) is bool,
+            'material shading flags must be boolean')
+    texture = materials['*']['texture']
+    require(texture == 'paz_glicerio_imagem', 'material texture key changed')
+    keys(terrain['texture_data'], {texture}, 'texture data')
+    keys(terrain['texture_data'][texture], {'textures'}, 'texture mapping')
+    require(terrain['texture_data'][texture]['textures'] == ['textures/blocks/imagem'], 'texture reference mismatch')
+    require(materials['*']['render_method'] == 'opaque', 'material rendering profile changed')
+    for icon in (BP+'/pack_icon.png', RP+'/pack_icon.png'):
+        png_dimensions(files[icon])
+    boxes = {key: box_audit(components[key], key) for key in ('minecraft:collision_box', 'minecraft:selection_box')}
+    require('minecraft:loot' not in components, 'loot behavior changed; survival test required')
+    expected = {'north': 0, 'south': 180, 'east': 270, 'west': 90}
+    trait = block['description']['traits']['minecraft:placement_direction']
+    require(trait == {'enabled_states': ['minecraft:cardinal_direction'], 'y_rotation_offset': 180},
+            'placement trait changed')
+    seen, orientations = set(), {}
+    require(len(block['permutations']) == 4, 'four placement directions required')
+    for permutation in block['permutations']:
+        keys(permutation, {'condition','components'}, 'permutation')
+        keys(permutation['components'], {'minecraft:transformation'}, 'permutation components')
+        match = re.fullmatch(r"q\.block_state\('minecraft:cardinal_direction'\) == '(north|south|east|west)'", permutation['condition'])
+        require(match is not None, 'unrecognized orientation condition')
+        direction = match.group(1)
+        require(direction not in seen, 'duplicate orientation condition')
+        seen.add(direction)
+        transform = permutation['components']['minecraft:transformation']
+        keys(transform, {'rotation'}, 'permutation transformation')
+        vector(transform['rotation'], 3, 'permutation rotation')
+        require(transform == {'rotation': [0, expected[direction], 0]}, 'unexpected orientation transform')
+        orientations[direction] = extent([rotate(p, [0, 0, 0], transform['rotation']) for p in geometry['points']])
+    del geometry['points']
+    hashes = {name: digest(data) for name, data in sorted(files.items())}
+    fingerprint = digest(json.dumps(hashes, sort_keys=True, separators=(',', ':')).encode())
+    changed = [name for name in hashes if hashes[name] != lock['files_sha256'][name]]
+    top = geometry['rotated_bounds_pixels']['max'][1]
+    warnings = [
+        'Static audit only: Minecraft import/render/physics/save compatibility have NOT been tested.',
+        'The existing 0.1.3 artwork is an unapproved legacy prototype, not the current sculpt.',
+        'Changing pack UUIDs or block IDs is blocked; this is NOT proof of save compatibility.',
+    ]
+    if top > boxes['minecraft:selection_box']['max'][1]:
+        warnings.append(f'Visual geometry reaches {top:.4f} px but selection/collision stop at 16 px; upper part is not interactive.')
+    return {'report_type': 'paz-addon-audit', 'report_format': 1, 'status': 'static_checks_passed', 'engine_target': lock['min_engine_version'],
+            'block_format': block_doc['format_version'], 'geometry': geometry, 'orientations': orientations,
+            'boxes': boxes, 'changed_files': changed, 'source_fingerprint_sha256': fingerprint,
+            'files_sha256': hashes, 'warnings': warnings, 'release_eligible': False,
+            'runtime_status': 'not_run', 'art_approval_status': 'not_approved'}
+
+def package_bytes(files):
+    import io
+    buffer = io.BytesIO()
+    with ZipFile(buffer, 'w', compression=ZIP_DEFLATED, compresslevel=9) as archive:
+        for name, data in sorted(files.items()):
+            info = ZipInfo(name, (2000, 1, 1, 0, 0, 0))
+            info.compress_type = ZIP_DEFLATED
+            info.create_system = 3
+            info.external_attr = 0o100644 << 16
+            archive.writestr(info, data, compress_type=ZIP_DEFLATED, compresslevel=9)
+    return buffer.getvalue()
+
+def release_gate(report, package, evidence, evidence_root):
+    require(evidence['source_fingerprint_sha256'] == report['source_fingerprint_sha256'], 'stale source evidence')
+    require(evidence['package_sha256'] == digest(package), 'stale package evidence')
+    visual = evidence['visual_approval']
+    require(visual['status'] == 'approved' and visual['reviewer'].strip(), 'visual approval missing')
+    require(visual['geometry_sha256'] == report['files_sha256'][GEO], 'stale visual approval')
+    runtime = evidence['minecraft_test']
+    require(runtime['status'] == 'passed' and runtime['tester'].strip() and runtime['tested_at_utc'].strip(), 'Minecraft test not passed')
+    require(runtime['engine_version'][:3] == report['engine_target'], 'minimum target engine not tested')
+    require(runtime['disposable_world'] is True, 'runtime test must use a disposable world')
+    require(all(runtime['cases'].get(name) == 'passed' for name in RUNTIME_CASES), 'Minecraft acceptance cases incomplete')
+    proof = runtime['content_log']
+    safe_name(proof['path'])
+    path = evidence_root / proof['path']
+    require(path.resolve().is_relative_to(evidence_root.resolve()) and not path.is_symlink(), 'unsafe evidence path')
+    require(path.is_file() and path.stat().st_size > 0, 'content-log evidence absent/empty')
+    require(digest(path.read_bytes()) == proof['sha256'], 'content-log evidence checksum mismatch')
+    require(proof['reviewed_no_addon_errors'] is True, 'content log not reviewed')
+
+def validate_destinations(source, lock, evidence, report, output, command):
+    resolved = {name: path.resolve() for name, path in (
+        ('source', source), ('lock', lock), ('evidence', evidence), ('report', report), ('output', output))}
+    require(resolved['report'] != resolved['output'], 'report and output must be different paths')
+    for name in ('report', 'output'):
+        destination = resolved[name]
+        require(destination not in {resolved['source'], resolved['lock'], resolved['evidence']},
+                name + ' cannot overwrite source, lock or evidence')
+        if source.is_dir():
+            require(not destination.is_relative_to(resolved['source']), name + ' must be outside source directory')
+    require(not report.is_symlink(), 'report cannot be a symlink')
+    if report.exists():
+        require(report.is_file(), 'report path must be a file')
+        try:
+            previous = strict_json(report.read_bytes())
+        except (ValueError, UnicodeError):
+            raise AuditError('refusing to overwrite a non-audit file with a report')
+        require(isinstance(previous, dict) and previous.get('report_type') == 'paz-addon-audit' and
+                type(previous.get('report_format')) is int and previous['report_format'] == 1,
+                'refusing to overwrite a non-audit file with a report')
+    if command in ('build', 'release'):
+        require(not output.exists() and not output.is_symlink(), 'refusing to overwrite existing artifact: '+str(output))
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('command', choices=('audit', 'build', 'release'))
+    parser.add_argument('--source', type=Path, default=ROOT/'source')
+    parser.add_argument('--lock', type=Path, default=ROOT/'baseline-lock.json')
+    parser.add_argument('--report', type=Path, default=ROOT/'artifacts/audit.json')
+    parser.add_argument('--output', type=Path, default=ROOT/'artifacts/Nossa-Senhora-da-Paz-0.1.3-audited-baseline-NOT-APPROVED.mcaddon')
+    parser.add_argument('--evidence', type=Path, default=ROOT/'evidence/release-evidence.json')
+    args = parser.parse_args(argv)
+    try:
+        validate_destinations(args.source, args.lock, args.evidence, args.report, args.output, args.command)
+        files = read_files(args.source)
+        report = audit(files, strict_json(args.lock.read_bytes()))
+        package = package_bytes(files)
+        report['package_sha256'] = digest(package)
+        if args.command == 'release':
+            release_gate(report, package, strict_json(args.evidence.read_bytes()), args.evidence.parent)
+            report.update(release_eligible=True, runtime_status='recorded_pass', art_approval_status='recorded_approval')
+        if args.command in ('build', 'release'):
+            require(not args.output.exists(), 'refusing to overwrite existing artifact: '+str(args.output))
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            with args.output.open('xb') as stream:
+                stream.write(package)
+            report['output'] = str(args.output)
+        args.report.parent.mkdir(parents=True, exist_ok=True)
+        import os, tempfile
+        with tempfile.NamedTemporaryFile('w', encoding='utf-8', dir=args.report.parent, delete=False) as stream:
+            temporary = Path(stream.name)
+            stream.write(json.dumps(report, indent=2, ensure_ascii=False)+'\n')
+        os.replace(temporary, args.report)
+        print(json.dumps({key: report[key] for key in ('status', 'package_sha256', 'release_eligible', 'runtime_status')}))
+        return 0
+    except (AuditError, KeyError, ValueError, TypeError, OSError, IndexError, BadZipFile) as error:
+        print('BLOCKED: '+str(error), file=sys.stderr)
+        return 2
+
+if __name__ == '__main__':
+    sys.exit(main())

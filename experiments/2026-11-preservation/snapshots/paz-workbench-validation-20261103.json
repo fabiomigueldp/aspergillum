@@ -1,0 +1,456 @@
+{
+  "schema_version": 1,
+  "status": "experimental-no-go",
+  "snapshot": "paz-workbench-validation-20261103",
+  "base_commit": "0c4645d1e67ffa0af1d014cd47722cedf02d26b2",
+  "source_workspace": "paz-workbench-validation-20261103",
+  "captured_utc": "2026-11-04",
+  "notes": [
+    "Historical workbench viewer/cube diagnostics; not a release or active runtime patch.",
+    "Generated packs/synchronized viewer libraries, caches, dependencies and duplicate ZIPs excluded; authored source, original patches and own evidence retained."
+  ],
+  "files": [
+    {
+      "path": "REPORT.md",
+      "sha256": "2cd09dc7b7a8dc2fde17ac5493b5ef731a6e9b3b05d4f8c65770a129cc3ed5fa",
+      "bytes": 4328,
+      "executable": false,
+      "storage": "archive",
+      "reason": "Workbench verification input, own render evidence, patch or report"
+    },
+    {
+      "path": "browser-install.log",
+      "sha256": "cf6c59afc18514ffb663fad26d3f0ff4d846c66ab151fe412cd232e28bf120b3",
+      "bytes": 5718,
+      "executable": false,
+      "storage": "archive",
+      "reason": "Workbench verification input, own render evidence, patch or report"
+    },
+    {
+      "path": "classic.log",
+      "sha256": "61f7ce6b3bbf692fa15cf3053451c2b06d5e79912cb8ffecc097579dce8a96d3",
+      "bytes": 10586,
+      "executable": false,
+      "storage": "archive",
+      "reason": "Workbench verification input, own render evidence, patch or report"
+    },
+    {
+      "path": "compare-cube-transforms.py",
+      "sha256": "ae83afac17d66f0ebe65e53646126d253644466eeaa6dac5f8485853067f90b4",
+      "bytes": 2176,
+      "executable": false,
+      "storage": "archive",
+      "reason": "Workbench verification input, own render evidence, patch or report"
+    },
+    {
+      "path": "focused-tests.log",
+      "sha256": "def832bdb286a760782ead8e35df3a337ce82303c325c3586779d51757c499a5",
+      "bytes": 1541,
+      "executable": false,
+      "storage": "archive",
+      "reason": "Workbench verification input, own render evidence, patch or report"
+    },
+    {
+      "path": "input-provenance.json",
+      "sha256": "d850d49bcce41ac1b3ef0c88dd2c6b842af310cf31271cf36d83da1e72f23dba",
+      "bytes": 2119,
+      "executable": false,
+      "storage": "archive",
+      "reason": "Workbench verification input, own render evidence, patch or report"
+    },
+    {
+      "path": "npm-install.log",
+      "sha256": "020a7329772f14c72727bb5a983c14e1464dd43e628fe7bf5e05076b5808e888",
+      "bytes": 332,
+      "executable": false,
+      "storage": "archive",
+      "reason": "Workbench verification input, own render evidence, patch or report"
+    },
+    {
+      "path": "prepare-paz-catalog.py",
+      "sha256": "295a9fbee14df80f81eed61ac712c119d169507684f80f717c926bf035a95e25",
+      "bytes": 3846,
+      "executable": false,
+      "storage": "archive",
+      "reason": "Workbench verification input, own render evidence, patch or report"
+    },
+    {
+      "path": "source-git-hashes.json",
+      "sha256": "54b3ae1f4c83df8428d481098eb50c46ae4d43e9fbf7c5dc90ed324743d8252e",
+      "bytes": 10868,
+      "executable": false,
+      "storage": "archive",
+      "reason": "Workbench verification input, own render evidence, patch or report"
+    },
+    {
+      "path": "source-integrity.json",
+      "sha256": "8ff20e5295d3e8bb1d640b189837283d7a1694a701f5e37af310a7499ebbde97",
+      "bytes": 6757,
+      "executable": false,
+      "storage": "archive",
+      "reason": "Workbench verification input, own render evidence, patch or report"
+    },
+    {
+      "path": "source-provenance.json",
+      "sha256": "f905ae2690c01acd3e753bf3aaf6e9f4600765b8ccbea3a3e5269fad3f703a23",
+      "bytes": 3017,
+      "executable": false,
+      "storage": "archive",
+      "reason": "Workbench verification input, own render evidence, patch or report"
+    },
+    {
+      "path": "source/docs/MODEL_CAPTURE_TOOL.md",
+      "sha256": "9ecf7b5c552fad567d11a4365b61d3dd35c99aaeb698553a935d22c93b664089",
+      "bytes": 7938,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "e1923ba26825597874533a873d584873b7163e89",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/bedrock-renderer.html",
+      "sha256": "43219af8dabb991541042f377da8f526d40aab85af5933d11ef4cdf86c0fec95",
+      "bytes": 10186,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "0aefda90b19c24e2ad0543cda61e35d9e35b8f08",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/model-lab.html",
+      "sha256": "c1d5fd5952a7183e185404efdb14d87dd93e6a76b02d61b06583a23bd66e760d",
+      "bytes": 6698,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "cddd5be9b85f1f5ffe3adece9d4778756e89e7d7",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/package-lock.json",
+      "sha256": "52f6841079ffab639328c67da0862041437220a6b79ea3506557f2acd9c4169b",
+      "bytes": 26623,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "6192a1e0f7a1e3a29d4430a5a2cca9be15b616c6",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/package.json",
+      "sha256": "5ad5055e0197bfb30500966b1b1d8c1e2cd4006026425375a9eacac8f0c2d906",
+      "bytes": 1603,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "bb182298dff1a660671fd7646a83607bf4a2ff67",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/run-canonical-capture.mjs",
+      "sha256": "7122b936fd0066416566c2aaaff4d027cf55e2b243e6d6b9945be4012d501194",
+      "bytes": 1835,
+      "executable": false,
+      "storage": "archive",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/scripts/capture-assets.mjs",
+      "sha256": "6fdf987687003beb789973682f5de5028dd7c00e8c79f026544b71f06fd410e4",
+      "bytes": 13902,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "2476f571183900993453070128e41332bfc6177b",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/scripts/capture-models.mjs",
+      "sha256": "741b5fa8e4b25c8dfca16074b2f6a1f49066e1e09c5cb39ffdf75731e537963b",
+      "bytes": 15852,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "e28ed63476e144830360b516450b6b2f5bf702f5",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/scripts/lib/render-browser.mjs",
+      "sha256": "71e47f0f5c27554b8a1c1323cadf52c81902e55e15d965b9f8566c1147b49b15",
+      "bytes": 6234,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "dd4b6335c18152a109bd0333c77fae7095f6339d",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/scripts/probe-renderer.mjs",
+      "sha256": "c8c505b3d573a8df50875b442e8ddaa02f4ccba52e828ca16cd7108fa296bdd4",
+      "bytes": 273,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "cdd3470dcbffbeef243a8ae4b6debe87718b366d",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/scripts/sync-assets.mjs",
+      "sha256": "0540b1e78258e8f82095795689ebadf9e6366bc2ce0c172ecd2751db745e6982",
+      "bytes": 19554,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "39dea1f1f21944a7f0ec4a1da3fac909162f813c",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/src/bedrock-renderer/main.js",
+      "sha256": "a50066e5ef8d359fb82d7f93569ed26bb7145c42c329dfac57da10426e26a1df",
+      "bytes": 61133,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "7314119a4b97437f88b5599f854be7f64cecd283",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/src/bedrock-renderer/styles.css",
+      "sha256": "1c0cf5f5763a91533177a8724a3ca021f1dba08c930a702b80a5eb8533a990f3",
+      "bytes": 18782,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "676b0ea30a1924d0bdd4f7ba8320c2691963c8e7",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/src/main.js",
+      "sha256": "abf1ad99c211786edcefe2d1a2014fe8d9457506075afadee9ff8ef53dd213f8",
+      "bytes": 33619,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "5b3960975d1617fe4a7345d5dba2ff33ad617a3f",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/src/shared/altar-customization.js",
+      "sha256": "b8f22b898d614f9c6e374720802a216d91b986da7722fdc220f7df1591941bc4",
+      "bytes": 1650,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "5b7943a6211279cf97cf53e64bbbf47033d1e3dd",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/src/shared/avatar-contract.js",
+      "sha256": "3f85ce2288c5c0e127d1e3aff2cd3275f870417329bac091fe7181d8415d2bed",
+      "bytes": 12543,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "e6c4449d723999ef571b3355bdd3d05c899f50e6",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/src/shared/avatar-equipment.js",
+      "sha256": "ab20d29c0681754095766ab6dcb1c38b63841f9576ceced9896ca94ddfa35717",
+      "bytes": 3814,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "9c518b1d374bc4fea259d5379df1ed99b8b396ab",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/src/shared/avatar-motion.js",
+      "sha256": "fb1ce9872cd9968d394e2e13c4fa953874ea509ec863e189c960eea21fa30839",
+      "bytes": 6805,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "dca2e26c17f74b4c7b4bfcb49cf8efe11a4c46e0",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/src/shared/bedrock-document.js",
+      "sha256": "b2338094c0a768e77bb05977341eb527a9afde06099a32352e0d14b35b20dad5",
+      "bytes": 2769,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "cda26f99bc4d73ddab83019f31dd642bef206548",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/src/shared/bedrock-geometry.js",
+      "sha256": "24dbd8979e54bb33be799e578109d6a5444a9254d1ad0f4c25160241c3e17e11",
+      "bytes": 11786,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "0c1512f77cdeb5436dc78b1870e2064708425ba0",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/src/shared/bedrock-uv.js",
+      "sha256": "e6701522cba86fa1449c5969387907870bf9b8169aed1a216fb211ad5c7a63b1",
+      "bytes": 2181,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "d6c03dbbfab7b6d82d7b57e1186738cf9c73fe03",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/src/shared/capture-contract.js",
+      "sha256": "5f44d64b04a96bf62323be275b56ba83756fdd068eb320d8cedc1018d2735010",
+      "bytes": 2477,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "b9cee5bc29e7649520dbb5fe1299d6fe584fa316",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/src/shared/cosmetic-contract.js",
+      "sha256": "0297fe2e1b9e0d186efd1f184c790ecf0878e3b1b00d856482ea6693e16b5740",
+      "bytes": 2021,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "5bcee59821863a56371dd6eb0927cf376b58ef0f",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/src/shared/cover-contract.js",
+      "sha256": "8a6eb0759b0195f3caf4a520e13ed55ac1be60b58d4fc1eea781f847f0c8db4c",
+      "bytes": 3274,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "571b95643086c6ee7cbb1e0e9f5524cc6cdf501c",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/src/shared/inventory-icon-contract.js",
+      "sha256": "7e53e5cb9108ac147aea95b7ec9e8274345e2a3fb48aec709ab7ff51d287fe10",
+      "bytes": 811,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "2e941dbeda4413f25754d5ef0cffd465c531de97",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/src/shared/mesh-batch.js",
+      "sha256": "3080e45f1f86fb53a6d7f07728f03e027acfbb36204cb762b9f7399429783815",
+      "bytes": 1412,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "2e1967d446da0f45789f38ab83bb1e8fe74783b7",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/src/shared/project-context.js",
+      "sha256": "ffa7236fb4784a2cc3997b4726b110aa3fee59435184916b03e3e6f93e3743f8",
+      "bytes": 3265,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "080b59a8891b5799bdf94ba1b0af884cd621515e",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/src/shared/studio-contract.js",
+      "sha256": "2a6693b1989031939babeba098821ed932ef948ea4a6fe9e974d8b68f138fd92",
+      "bytes": 7637,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "3d729575eb8659c99687e19c46dd1f978055e5b3",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/src/shared/studio-prop-geometry.js",
+      "sha256": "30e6d48ef7cac5de608cf6201c85e36bbb44180a0491ebb07d21e3bab8cca332",
+      "bytes": 1644,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "ccb350f2b4d64ab26f7ad223008cc0dbb2da2d5b",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/src/shared/workbench-contract.js",
+      "sha256": "d548d52e7932fe552737d841acb22e87019a9c103bff36bced2d1ad57efc0bea",
+      "bytes": 1465,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "7c7661486951dbadef473aaaedf4ef52e0bb8da2",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/src/styles.css",
+      "sha256": "39c503d3f58cfe4bd07b8bb78e196f9e7f1915cd213d666d114b1fc3d28b8c8e",
+      "bytes": 20530,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "b1ecaf1c9f6c6094061bddb6b3a912725436d10e",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/tests/bedrock-document.node.mjs",
+      "sha256": "8cc36828dcccd5c0e8d99920402fda25e7ba4c39d0c61328534dda57f76b2a73",
+      "bytes": 1433,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "f00198e89988c7c7838f37da1a2ab172581e075f",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/tests/bedrock-geometry.node.mjs",
+      "sha256": "e3088edb4a683b5877308f1706314f4eaf9eb7d83190a36b79cb5c79e84542fe",
+      "bytes": 5960,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "3071e90c1618ea7da0d5cdc9ed407738390e631e",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/tests/bedrock-uv.node.mjs",
+      "sha256": "9ad618aa77f340348e1cf029157aaf1af5b269ebb39eaf10ff402ec0f5e1c0cc",
+      "bytes": 2234,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "a2054b31853ce8e69c47373ec0e307c4e113d60b",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/validate-paz-geometry.mjs",
+      "sha256": "3f32de8678b606d72ccdf7ccc92755d9a550140fabd2a2f25de588221e2a7846",
+      "bytes": 2349,
+      "executable": false,
+      "storage": "archive",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "source/viewer-3d/vite.config.js",
+      "sha256": "25cc1fbe6bdb573b812ddbf2c5f16dbf6e9ea7d3f1acc739ab3679229a7fdb05",
+      "bytes": 537,
+      "executable": false,
+      "storage": "git",
+      "git_blob": "4668451bb680631d2145f27d098d1c2cfc3eb48f",
+      "reason": "Preserved workbench source checkpoint; not integrated into active viewer"
+    },
+    {
+      "path": "threejs-geometry-validation.json",
+      "sha256": "b0c32cbb4c12d409105fd1d126ccdaa88cccfa9743e9f26443dcabed5e78f117",
+      "bytes": 55330,
+      "executable": false,
+      "storage": "archive",
+      "reason": "Workbench verification input, own render evidence, patch or report"
+    },
+    {
+      "path": "threejs-geometry-validation.log",
+      "sha256": "82e580286b348dab7492280b4f98e8f86f2d03c8ee7e37f97315f6763e4f5e31",
+      "bytes": 798,
+      "executable": false,
+      "storage": "archive",
+      "reason": "Workbench verification input, own render evidence, patch or report"
+    },
+    {
+      "path": "threejs-surface-corners.f64",
+      "sha256": "375b0ad72958297e40c1f3aad727554533f7f6ccaaa5564fcc59f3582286a5be",
+      "bytes": 749760,
+      "executable": false,
+      "storage": "archive",
+      "reason": "Workbench verification input, own render evidence, patch or report"
+    },
+    {
+      "path": "transform-comparison.json",
+      "sha256": "8962ade84ee38f3b2d3c2fe89bfb6dd3447ae5a861193e0f484d6067e511ee41",
+      "bytes": 562,
+      "executable": false,
+      "storage": "archive",
+      "reason": "Workbench verification input, own render evidence, patch or report"
+    }
+  ]
+}

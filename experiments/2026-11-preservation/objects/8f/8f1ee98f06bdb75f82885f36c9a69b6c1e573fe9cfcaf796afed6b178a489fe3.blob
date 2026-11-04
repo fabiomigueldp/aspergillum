@@ -1,0 +1,19 @@
+from audit_primary_rays import *
+import sys
+O=Path(__file__).resolve().parent;g=np.load(O/'primary-ray-grid.npz');p=g['pixels'];sel=(p[:,0]>=490)&(p[:,0]<=570)&(p[:,1]>=440)&(p[:,1]<=480);p=p[sel];diff=g['clip_minus_quad_mean_rgb'][sel];baseline=scene('quads');br={k:g[f'quads_{k}'][sel]for k in ['hit','distance','bary']};clip=json.load(open(O/'camera-clip.json'))['quads']['clip_start'];tags=sys.argv[1:]or['roi68-depth1','roi68-depth2','roi68-depth3'];out=[]
+for tag in tags:
+ d=scene(tag);r=trace(d,p,stacks=True);first=r['distance'];n=len(p);near=np.zeros(n,bool);same=np.zeros(n,bool);preceding=np.zeros(n,bool);counts=np.zeros(n,int);witnessstack={str(pt):[]for pt in [[493,471],[559,449],[510,468],[500,471],[559,440]]}
+ for ti,ix,depth,bc,uv,opaque,front in r['intersections']:
+  transparent=~(opaque&front);dist=depth-clip;fp=first[ix]-clip;ulp=np.spacing(fp.astype(np.float32)).astype(float);close=transparent&(np.abs(dist-fp)<ulp);equal=transparent&(dist.astype(np.float32)==fp.astype(np.float32));pre=close&(dist<=fp);near[ix[close]]=True;same[ix[equal]]=True;preceding[ix[pre]]=True;np.add.at(counts,ix[close],1)
+  for j,k in enumerate(ix):
+   key=str(p[k].tolist())
+   if key in witnessstack and abs(depth[j]-first[k])<1e-5:
+    witnessstack[key].append({'triangle':int(ti),'native_face':int(d['native_face'][ti]),'half':int(d['half'][ti]),'part':int(d['part'][ti]),'original_cube_index':int(d['original_cube_index'][ti]),'new_polygon':int(d['polygon'][ti]),'distance_camera_mm':float(depth[j]*1000),'signed_gap_to_ideal_um':float((depth[j]-first[k])*1e6),'alpha_opaque':bool(opaque[j]),'front':bool(front),'uv':uv[j].tolist()})
+ summaries={}
+ for name,mask in [('all',np.ones(n,bool)),('original_dark_10',diff>=10),('original_clean_abs3',np.abs(diff)<=3)]:summaries[name]={'n':int(mask.sum()),'transparent_within_one_ulp':int(np.sum(near&mask)),'same_float32_t_transparent':int(np.sum(same&mask)),'preceding_transparent_within_one_ulp':int(np.sum(preceding&mask)),'first_opaque_vs_baseline':compare(d,r,baseline,br,mask)}
+ wi=[]
+ for key,stack in witnessstack.items():
+  pt=json.loads(key);i=int(np.flatnonzero((p==pt).all(1))[0]);wi.append({'pixel':pt,'first_opaque':witness(d,r,i),'transparent_near_ulp_count':int(counts[i]),'stack_within_10_um':sorted(stack,key=lambda a:a['distance_camera_mm'])})
+ np.savez_compressed(O/(tag+'-primary-ray-grid.npz'),pixels=p,hit=r['hit'],distance=r['distance'],bary=r['bary'],transparent_within_ulp=near,same_float32_t_transparent=same,preceding_transparent_within_ulp=preceding)
+ report={'tag':tag,'scope':'Actual saved candidate Blender float32 input; independent ideal barycentric/nearest-alpha oracle. t ULP coincidence remains a sensitivity measure, not actual Cycles traversal.','summary':summaries,'witnesses':wi};out.append(report);print(tag,json.dumps({k:{kk:vv for kk,vv in v.items()if kk!='first_opaque_vs_baseline'}for k,v in summaries.items()}),flush=True)
+(O/('trim-primary-stacks-'+tags[0]+'.json')).write_text(json.dumps(out,indent=2))

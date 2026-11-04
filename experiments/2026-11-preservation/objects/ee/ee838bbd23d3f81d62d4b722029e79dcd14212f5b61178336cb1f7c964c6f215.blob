@@ -1,0 +1,44 @@
+# Projeto estrutural pele–manto (V75 preservado)
+
+## Escopo e estado
+Nenhuma geometria modificada, nenhum novo blend/candidato visual. Diagnóstico para substituir o método falho de dois patches independentes. V75 segue checkpoint persistido. O objetivo é remover penetração local mantendo anatomia/pose, faces externas ao recorte, demais serviços e rollback. Não é autorização para declarar fidelidade ou conclusão.
+
+## Descoberta que muda o método
+O manto original oculto ainda conserva pilha Solidify(6mm) → Subsurf2. Reavaliá-la, com scripts desativados ao abrir, recupera exatamente os25.570 vértices baked: delta máximo0 em relação à geometria-base. A chave inferior V74 não atua neste pescoço.
+
+Atributos de linha/coluna foram propagados pela pilha em cena temporária. Marcação de camada após Solidify e antes de Subsurf recupera11.729 vértices de cada face da casca, mais2.112 da borda. Correspondência por parâmetros DE ORIGEM é bijetiva11.729↔11.729, erro máximo de parâmetro8,43e-8. Não é nearest-neighbor no espaço3D. Reavaliação com marcação mantém delta geométrico0.
+
+Assim não é necessário adivinhar quais superfícies são interna/externa. Os20 vértices antes ambíguos eram problema de agrupamento/precisão dos atributos, não uma licença para emparelhar espacialmente.
+
+## Recorte comum validado
+Unir o recorte anterior com as faces verdadeiramente correspondentes da camada oposta produz746 faces, sem falha de correspondência. Não inclui vértices da borda física da casca. Os contornos têm288+288 vértices, grau2 em todos; todos os576 vértices têm parceiro no outro contorno.
+
+Espessura por pares no contorno:4,952–5,987mm. Zero segmentos de contorno cruzando pele no raycast; amostras de vértices têm folga>=.1mm. Bounds3D: X[-.09963,.01054], Y[-.08801,.05470], Z[3.25154,3.36880]. Isso permanece na região delimitada e não modifica costas/peito.
+
+Este é um resultado de VIABILIDADE TOPOLÓGICA, não uma nova superfície livre de colisões. A prova de clearance entre segmentos e pele não certifica automaticamente o interior ou a espessura normal.
+
+## Métodos descartados
+Contornos em YZ não são estrelados: núcleo vazio;720raios encontram múltiplas interseções em71/179direções, até3/5cruzamentos. Faixa radial com centro único é inadequada. Recortes circulares espaciais de50–80mm também não dão duas camadas consistentes em todas as direções. Não repetir ponte radial, nearest-match espacial, projeçãoX independente, engrossamento ou suavização indiscriminada.
+
+## Construção proposta
+1. Usar o par de faces/arestas original para criar um único domínio parametrizado e superfície média. Cada ponto interno tem DOIS vértices de casca derivados da mesma amostra; nunca resolver camadas separadamente.
+2. Preservar os576 vértices de contorno e todas as posições fora dele. Se subdividir uma aresta de contorno, subdividir também a face adjacente preservando seu plano e provar equivalência geométrica; não deixar T-junctions.
+3. Gerar tesselação regular no domínio de origem, não em YZ. A transformação para3D deve preservar a ordem e orientação do domínio. Conservar vetores/espessura do contorno; transição para espessura interna positiva explícita.
+4. Resolver superfície média com restrições de colisão contra pele e contra a vizinhança preservada. Clearance precisa considerar triângulos/arestas, não apenas vértices. Usar variação suave de normal e espessura; não deslocar anatomia.
+5. Avaliar continuidade das tangentes e silhueta com identificação colorida antes/depois. Só salvar candidato após critérios técnicos, e só reter após revisão visual independente.
+
+## Critérios de aceitação ANTES da implementação
+- Fora do recorte: delta de posições0; anatomia/pose/objetos alheios0.
+- Casca com arestas manifold, sem T-junctions, orientação coerente e nenhuma face degenerada/invertida.
+- Correspondência interna/externa bijetiva e espessura positiva contínua; medir distâncias reais, não só comprimento dos vetores geradores.
+- Zero pares novos de auto-interseção, analisados separadamente dos pares removidos; zero interseção pele–novo patch.
+- Colisões preexistentes fora do patch devem permanecer exatamente identificadas; não esconder por mudança de índices ou usar saldo líquido.
+- Clearance por segmento e teste triângulo–triângulo em todas as camadas, inclusive transição do contorno; se a tesselação muda, auditar cobertura espacial da região preservada.
+- Qualidade: registrar área/ângulos e Jacobianos da parametrização; não aceitar triângulos degenerados mesmo quando número de colisões cai.
+- Frente/perfil/colorido com mesma câmera/luz e revisão independente; sem ganho visual substancial, manter V75.
+
+## Bloqueio atual exato
+A correspondência topológica deixou de ser bloqueio: está recuperada e validada. Ainda NÃO há solver/tesselação de superfície média que tenha passado simultaneamente clearance triângulo–pele, espessura positiva e continuidade com as pregas preservadas. Implementar agora apenas interpolação/offset sem esses testes repetiria a falha V82 sob outro nome. A próxima unidade de trabalho é protótipo dessa superfície média no domínio original com validação de colisões completa; nenhum novo ajuste artístico foi fabricado neste diagnóstico.
+
+## Evidências locais
+neck-source-shell-correspondence-audit.json; neck-layer-provenance-audit.json; neck-layer-correspondence-nearest-audit.json; neck-common-shell-patch-audit.json; neck-common-shell-patch-indices.json; neck-source-layer-pairs.npz; scripts homônimos. Os NPZ são dados técnicos próprios, não fotografias de terceiros.

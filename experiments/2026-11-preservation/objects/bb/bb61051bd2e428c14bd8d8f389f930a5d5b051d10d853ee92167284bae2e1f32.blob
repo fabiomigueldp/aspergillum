@@ -1,0 +1,31 @@
+"""Geometry repair: project lateral offset directors into each discrete vertex normal cone.
+Not a normal-map change. Source interfaces, center surface, thickness and connectivity stay fixed.
+"""
+from pathlib import Path
+import numpy as np,json
+from scipy.optimize import minimize,LinearConstraint
+R=Path(__file__).resolve().parents[1];V6=R.parent/'integration_v6';E=R/'evidence';field=np.load(E/'offset-reach-field.npz');a=np.load(V6/'evidence/seam-hermite-physical-7p5-assembly.npz');bridge=np.load(V6/'evidence/bridge-hermite-physical-7p5.npz');ids=a['source_indices'];where={int(s):i for i,s in enumerate(ids)};points=a['points'].copy();normals=a['normals'].copy();vmap=field['generated_vertex_map'];outer=[*field['cap_source_side0'].tolist()];inner=[*field['cap_source_side1'].tolist()];uv=[(0,float(t)) for t in field['cap_source_t']];generated=[]
+for si in range(1,6):
+ for ti in range(57):
+  x=vmap[(vmap[:,1]==si)&(vmap[:,2]==ti)&(vmap[:,3]==0)][0];y=vmap[(vmap[:,1]==si)&(vmap[:,2]==ti)&(vmap[:,3]==1)][0];generated.append(len(outer));outer.append(int(x[0]));inner.append(int(y[0]));uv.append((float(field['s'][si]),float(field['t'][ti])))
+outer.extend(field['mantle_source_side0'].tolist());inner.extend(field['mantle_source_side1'].tolist());uv.extend((1,float(t)) for t in field['mantle_source_t']);outer=np.array(outer);inner=np.array(inner);uv=np.array(uv);po=points[[where[int(i)] for i in outer]];pi=points[[where[int(i)] for i in inner]];center=(po+pi)/2;vectors=pi-po;half=np.linalg.norm(vectors,axis=1)/2;director=vectors/(2*half[:,None]);midmap={int(s):i for i,s in enumerate(outer)};tr_global=bridge['source_indices'][bridge['triangles']];tris=np.array([[midmap[int(s)] for s in t] for t in tr_global if all(int(s) in midmap for s in t)]);p=center[tris];fn=np.cross(p[:,1]-p[:,0],p[:,2]-p[:,0]);fn/=np.linalg.norm(fn,axis=1)[:,None];sign=1 if np.median(np.einsum('fi,fvi->fv',fn,director[tris]))>0 else -1;fn*=sign
+incident=[[] for _ in center]
+for j,t in enumerate(tris):
+ for i in t:incident[i].append(j)
+before=np.einsum('fi,fvi->fv',fn,director[tris]);changed=[];fail=[];newd=director.copy();angles=[];MARGIN=.02
+for i in generated:
+ A=fn[incident[i]];d=director[i]
+ if np.min(A@d)>=MARGIN:continue
+ if .2<=uv[i,1]<=.8:raise RuntimeError('Unexpected central affected vertex; do not modify central region')
+ res=minimize(lambda x:.5*np.sum((x-d)**2),d,jac=lambda x:x-d,constraints=[LinearConstraint(A,MARGIN,np.inf)],method='SLSQP',options={'ftol':1e-12,'maxiter':200})
+ x=res.x;length=np.linalg.norm(x)
+ if not res.success or length<1e-9 or np.min(A@x)<MARGIN-1e-6:fail.append({'index':int(i),'message':res.message,'min_dot':float(np.min(A@x))});continue
+ x/=length;newd[i]=x;changed.append(int(i));angles.append(float(np.degrees(np.arccos(np.clip(x@d,-1,1)))))
+for i in generated:
+ oi=where[int(outer[i])];ii=where[int(inner[i])];points[oi]=center[i]-newd[i]*half[i];points[ii]=center[i]+newd[i]*half[i];normals[oi]=-newd[i];normals[ii]=newd[i]
+# Only generated lateral rim-interior points move with their paired offset endpoints.
+for sid,si,ti,side,fraction in vmap:
+ if int(side)!=2:continue
+ matching=np.where((np.isclose(uv[:,0],field['s'][int(si)]))&(np.isclose(uv[:,1],field['t'][int(ti)])))[0];assert len(matching)==1;i=int(matching[0]);points[where[int(sid)]]=center[i]+newd[i]*half[i]*(2*fraction-1)
+after=np.einsum('fi,fvi->fv',fn,newd[tris]);fixed=np.ones(len(center),bool);fixed[generated]=False;rep={'hypothesis':'Analytic derivative normals fail transversality against coarse lateral triangles. Project only affected generated directors into the positive half-space cone of their incident center-face normals.','method':'Independent convex quadratic projection with dot margin0.02; normalize afterward.','center_triangles':len(tris),'center_vertices':len(center),'changed_generated_wall_pairs':len(changed),'failures':fail,'before_mixed_sign_faces':int(np.sum((before.min(1)<0)&(before.max(1)>0))),'after_mixed_sign_faces':int(np.sum((after.min(1)<0)&(after.max(1)>0))),'after_nonpositive_face_vertex_products':int((after<=0).sum()),'fixed_endpoint_nonpositive_products':sum(int(np.sum(fn[incident[i]]@newd[i]<=0)) for i in np.where(fixed)[0]),'director_change_angle_max':max(angles,default=0),'director_change_angle_median':float(np.median(angles)) if angles else 0,'center_surface_unchanged':True,'thickness_unchanged':True,'source_endpoints_unchanged':bool(np.array_equal(points[~a['generated_vertices']],a['points'][~a['generated_vertices']])),'connectivity_unchanged':True,'normalmap_changed':False,'gate_pending':True}
+new={k:a[k] for k in a.files};new.update(points=points,normals=normals);np.savez_compressed(E/'director-cone-assembly.npz',**new);bi=[where[int(i)] for i in bridge['source_indices']];br={k:bridge[k] for k in bridge.files};br.update(points=points[bi],normals=normals[bi]);np.savez_compressed(E/'director-cone-bridge.npz',**br);np.savez_compressed(E/'director-cone-midfield.npz',center=center,triangles=tris,outer_source_ids=outer,inner_source_ids=inner,uv=uv,half_thickness=half,original_director=director,new_director=newd,before_cosines=before,after_cosines=after,changed_pair_indices=np.array(changed),generated_pair_indices=np.array(generated));(E/'director-cone-build.json').write_text(json.dumps(rep,indent=2));print(json.dumps(rep,indent=2))

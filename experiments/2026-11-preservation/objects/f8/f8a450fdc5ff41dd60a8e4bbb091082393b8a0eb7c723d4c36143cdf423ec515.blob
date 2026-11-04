@@ -1,0 +1,19 @@
+Validated: 41 cubes per geometry, 3000 block permutations, y=16 support, opaque materials, stable API, locale parity.
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: known packs must fit the documented aggregate permutation budget
+    at file:///workspace/scratch/212c580ada5b/altare-two-pillars-integration-20261103/addons/altare/tools/validate-collection.mjs:86:8
+    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+    at async node:internal/modules/esm/loader:647:26
+    at async file:///workspace/scratch/212c580ada5b/altare-two-pillars-integration-20261103/addons/altare/tools/validate.mjs:91:1 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.22.1

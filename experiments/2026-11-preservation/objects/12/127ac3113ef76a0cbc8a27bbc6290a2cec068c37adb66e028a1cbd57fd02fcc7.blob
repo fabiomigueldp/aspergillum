@@ -1,0 +1,19 @@
+import bpy,json,math
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V56-child-neck-trial.blend',use_scripts=False);o=bpy.data.objects['Menino — cabeça colo retopologia V55 reversível'];key=o.data.shape_keys.key_blocks[-1];base=[v.co.copy() for v in o.data.vertices];raw=[v.co.copy() for v in key.data];faces=[tuple(f.vertices) for f in o.data.polygons]
+def av(p,f):return sum(((p[f[j]]-p[f[0]]).cross(p[f[j+1]]-p[f[0]])*.5 for j in range(1,len(f)-1)),Vector())
+a0=[av(base,f) for f in faces];trials=[]
+for alpha in [1,.85,.7,.55,.4,.25,0]:
+ p=[a.lerp(b,alpha) for a,b in zip(base,raw)];aa=[av(p,f) for f in faces];rat=[b.length/a.length for a,b in zip(a0,aa) if a.length>1e-12];flip=sum(a.dot(b)<0 for a,b in zip(a0,aa));item={'alpha':alpha,'flips':flip,'area_min':min(rat),'area_max':max(rat)};trials.append(item)
+ if flip==0 and min(rat)>=.5 and max(rat)<=1.6:break
+key.value=alpha;key.name='TESTE57 — curvatura cervical limitada';bv=BVHTree.FromPolygons(p,faces);pairs=[(i,j) for i,j in bv.overlap(bv) if i<j and not set(faces[i])&set(faces[j])]
+rad=lambda q:math.hypot(q.x-.025,q.y+.265)
+changed=[i for i,(a,b) in enumerate(zip(base,p)) if (a-b).length>1e-9];report={'source':'V55 via unbounded V56 test','selected_alpha':alpha,'trials':trials,'max_delta_m':max((a-b).length for a,b in zip(base,p)),'nonadjacent_self_intersections':len(pairs),'changed_vertices':len(changed),'max_radial_increase_m':max(rad(p[i])-rad(base[i]) for i in changed),'max_radial_decrease_m':min(rad(p[i])-rad(base[i]) for i in changed),'rollback':'TESTE57=0 restores V55; alpha1 is rejected unbounded result, do not use'};json.dump(report,open(r+'V57-child-neck-verification.json','w'),indent=2);bpy.ops.wm.save_as_mainfile(filepath=r+'V57-child-neck-trial.blend')
+s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=700;s.render.resolution_y=700;s.render.resolution_percentage=100;c=s.camera;ct=Vector((.025,-.265,1.82));c.data.ortho_scale=.43
+for label,off in [('profile',(-3,0,0)),('front',(0,-3,0))]:
+ c.location=ct+Vector(off);c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler();s.render.filepath=r+'V57-child-neck-'+label+'.png';bpy.ops.render.render(write_still=True)
+light=bpy.data.lights.new('Diagnostic lateral light','AREA');light.energy=150;light.shape='DISK';light.size=.5;ob=bpy.data.objects.new('Diagnostic lateral light',light);bpy.context.collection.objects.link(ob);ob.location=(-1.5,-1.5,2.3);ob.rotation_euler=(ct-ob.location).to_track_quat('-Z','Y').to_euler();c.location=ct+Vector((-2,-3,0));c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler()
+for v,label in [(0,'V55'),(alpha,'V57')]:
+ key.value=v;s.render.filepath=r+label+'-neck-lateral-threequarter-bounded.png';bpy.ops.render.render(write_still=True)
+print(report)

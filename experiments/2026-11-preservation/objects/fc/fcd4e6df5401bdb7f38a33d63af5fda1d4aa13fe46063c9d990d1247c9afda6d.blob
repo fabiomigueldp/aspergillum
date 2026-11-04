@@ -1,0 +1,15 @@
+import bpy,numpy as np,json,hashlib
+from pathlib import Path
+B=Path('/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103');O=B/'body_interface_v8/independent_diagnosis';S=B.parent/'paz-refinement/gui-test/checkpoint-V75-20261102/V75-tunic-lower-trial.blend'
+bpy.ops.wm.open_mainfile(filepath=str(S),use_scripts=False)
+meta=json.loads((B/'evidence/source-export.json').read_text());d=np.load(B/'evidence/source_meshes.npz');rep={'source_sha256':hashlib.sha256(S.read_bytes()).hexdigest(),'expected_sha256':meta['sha256'],'parts':{},'axes':'Evaluated Blender world XYZ; Z up; no normalization; one source unit equals one block; mm = source unit * 1000.'}
+bpy.context.view_layer.update();dg=bpy.context.evaluated_depsgraph_get()
+for part in [1,15]:
+ name=meta['parts'][part]['name'];o=bpy.data.objects[name];m=bpy.data.meshes.new_from_object(o.evaluated_get(dg),depsgraph=dg);m.transform(o.matrix_world);m.calc_loop_triangles();v=np.array([x.co[:] for x in m.vertices]);f=np.array([x.vertices[:] for x in m.loop_triangles]);start=sum(x['high_triangles'] for x in meta['parts'][:part]);hf=d['high_f'][start:start+len(f)];off=hf.min();hv=d['high_v'][off:off+len(v)];hf=hf-off
+ rep['parts'][part]={'name':name,'vertex_count':len(v),'face_count':len(f),'matrix_world':[list(r) for r in o.matrix_world],'source_vertex_offset':int(off),'vertices_exact_match_export':bool(np.array_equal(v,hv)),'triangles_exact_match_export':bool(np.array_equal(f,hf)),'bounds':[v.min(0).tolist(),v.max(0).tolist()],'shape_keys':[{ 'name':k.name,'value':k.value} for k in o.data.shape_keys.key_blocks] if o.data.shape_keys else [],'modifiers':[{'name':k.name,'type':k.type,'show_viewport':k.show_viewport,'show_render':k.show_render} for k in o.modifiers]}
+ np.savez_compressed(O/f'source-part{part}.npz',points=v,triangles=f)
+ print(name,len(v),len(f),'match',np.array_equal(v,hv),np.array_equal(f,hf),flush=True)
+maps=json.loads((B/'pbr_normals_v2/evidence/alpha-triangle-map.json').read_text());r=np.load(B/'pbr_normals_v2/evidence/repaired_meshes.npz');m15=[m for m in maps if m['part']==15];t=np.array([[m[k] for k in ['a','b','c']] for m in m15]);t=t[:,:,[0,2,1]]/16;t[:,:,1]*=-1;original=r['low_v'][r['low_f'][[m['cube'] for m in m15]]];errs=np.min(np.array([np.max(np.abs(t-np.roll(original,k,axis=1)),axis=(1,2)) for k in range(3)]),axis=0)
+rep['legacy_map']={'part15_name':meta['parts'][15]['name'],'triangles':len(t),'map_to_repaired_low_max_cyclic_vertex_error':float(errs.max()),'all_exact_under_cyclic_relabel':bool((errs==0).all()),'inverse_transform':'(BBx, BBy, BBz) -> (BBx/16, -BBz/16, BBy/16)','source_low_triangles':int((r['low_m']==15).sum()),'triangle_global_ids':[m['cube'] for m in m15]}
+np.savez_compressed(O/'legacy-part15.npz',points=t.reshape(-1,3),triangles=np.arange(len(t)*3).reshape(-1,3))
+(O/'coordinate-verification.json').write_text(json.dumps(rep,ensure_ascii=False,indent=2));print(json.dumps(rep['legacy_map'])[:500],flush=True)

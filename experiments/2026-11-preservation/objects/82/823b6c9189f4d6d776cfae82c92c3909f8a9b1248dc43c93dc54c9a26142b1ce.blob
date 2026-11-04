@@ -1,0 +1,22 @@
+"""Read-only extraction: no source save, no edits to sources or source materials."""
+import bpy,numpy as np,json,hashlib
+from pathlib import Path
+from mathutils import Vector
+O=Path(__file__).resolve().parent;B=O.parents[1];rows=[]
+scenes={'quads':B/'opaque_transport_v15/evidence/shared-2048-diagnostic.blend','clipped':B/'opaque_transport_v15/evidence/shared-2048-analytic-clip-control-diagnostic.blend','native':B/'assembly_transport_v14/evidence/native-flat-focus-diagnostic.blend'}
+for tag,path in scenes.items():
+ before=hashlib.sha256(path.read_bytes()).hexdigest();bpy.ops.wm.open_mainfile(filepath=str(path));s=bpy.context.scene
+ # Reproduce the recorded band-front camera, because saved scenes retain their last rendered view.
+ cam=s.camera;cam.location=(.035,-3.5,3.58);cam.rotation_euler=(Vector((.035,-.30,3.58))-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.ortho_scale=.52;s.render.resolution_x=s.render.resolution_y=1000;s.render.resolution_percentage=100;bpy.context.view_layer.update()
+ R=np.array(cam.matrix_world.to_3x3(),dtype=np.float64);C=np.array(cam.location,dtype=np.float64);arr={};objects=[];parts=[];polys=[];tris=[];uvs=[];normals=[];corners=[];tri_normals=[];masks=[];localids=[];offset=0
+ for ob in sorted((o for o in s.objects if o.type=='MESH'),key=lambda o:o.name):
+  me=ob.data;me.calc_loop_triangles();part=int(ob.name.split()[0].split('_')[1]);M=np.array(ob.matrix_world);co=np.array([v.co[:]for v in me.vertices],dtype=np.float64);world=co@M[:3,:3].T+M[:3,3];loops=np.array([l.uv[:]for l in me.uv_layers.active.data],dtype=np.float64);pnormal=np.array([p.normal[:]for p in me.polygons],dtype=np.float64);cns=np.array([n.vector[:]for n in me.corner_normals],dtype=np.float64);idx=np.array([t.vertices[:]for t in me.loop_triangles]);li=np.array([t.loops[:]for t in me.loop_triangles]);pi=np.array([t.polygon_index for t in me.loop_triangles]);nt=len(idx)
+  tri=world[idx];normal=pnormal[pi]@M[:3,:3].T;cn=cns[li]@M[:3,:3].T;tn=np.array([t.normal[:]for t in me.loop_triangles])@M[:3,:3].T
+  mat=me.materials[0];masked=any(l.from_socket.name=='Alpha' for l in mat.node_tree.links)
+  tex=next(n.image for n in mat.node_tree.nodes if n.type=='TEX_IMAGE');a=np.empty(len(tex.pixels),dtype=np.float32);tex.pixels.foreach_get(a);alpha=a.reshape(tex.size[1],tex.size[0],4)[:,:,3];aname='alpha-'+tag+'.npy'
+  if not (O/aname).exists():np.save(O/aname,alpha)
+  parts.extend([part]*nt);polys.extend(pi.tolist());localids.extend(range(nt));tris.extend(tri);uvs.extend(loops[li]);normals.extend(normal);corners.extend(cn);tri_normals.extend(tn);masks.extend([masked]*nt)
+  objects.append({'name':ob.name,'part':part,'polygons':len(me.polygons),'triangles':nt,'vertices':len(co),'all_flat':not any(p.use_smooth for p in me.polygons),'masked':masked,'matrix':M.tolist(),'texture':tex.name,'texture_size':list(tex.size),'material':mat.name})
+ np.savez_compressed(O/f'{tag}-renderer-inputs.npz',triangles=np.array(tris),uv=np.array(uvs),part=np.array(parts),polygon=np.array(polys),local_triangle=np.array(localids),polygon_normal=np.array(normals),corner_normal=np.array(corners),loop_triangle_normal=np.array(tri_normals),masked=np.array(masks),camera_origin=C,camera_rotation=R,camera_scale=np.array(cam.data.ortho_scale))
+ row={'tag':tag,'path':str(path),'sha256_before':before,'sha256_after':hashlib.sha256(path.read_bytes()).hexdigest(),'blender_version':bpy.app.version_string,'objects':objects,'camera_origin':C.tolist(),'camera_rotation':R.tolist(),'camera_scale':cam.data.ortho_scale,'camera_record':'Explicit band-front pose from preserved render script; original save retained last view. No save performed.','alpha_shape':list(alpha.shape),'alpha_values':np.unique(alpha).tolist(),'triangle_count':len(tris)};rows.append(row);print(tag,len(tris),flush=True)
+(O/'renderer-inputs.json').write_text(json.dumps(rows,indent=2));print('EXTRACTION COMPLETE',flush=True)

@@ -1,0 +1,12 @@
+import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';
+import {collectNativePoses,manifestPath,digest} from './native-pedestal-poses.mjs';
+import {twinPedestalFamilyGeometry} from '../assets-src/atelier/twin-pedestal-family-study.mjs';
+import {NATIVE_BASE_POSES,NATIVE_CENTER_POSES,NATIVE_PLANS} from '../src/domain/native-pedestal-data.ts';
+const bytes=fs.readFileSync(manifestPath),result=collectNativePoses({modelFactory:(w,d,f)=>{
+ const model=twinPedestalFamilyGeometry(w,d,f);
+ for(const b of model.doc['minecraft:geometry'][0].bones)for(const c of b.cubes)for(const uv of Object.values(c.uv))if(uv.material_instance==='wood_vertical'){uv.uv[0]*=.95;uv.uv_size[0]*=.95;}
+ return model;
+}});
+assert.deepEqual(fs.readFileSync(manifestPath),bytes);assert.deepEqual(result.manifest.base.map(({facing,edges})=>({facing,edges})),NATIVE_BASE_POSES);assert.deepEqual(result.manifest.center,NATIVE_CENTER_POSES);assert.deepEqual(result.plans,NATIVE_PLANS);
+const report={...result.stats,refinement:'Shaft U coordinates and spans scaled by0.95 in memory only',manifestUnchanged:true,baseIndicesUnchanged:true,centerIndicesUnchanged:true,allContextMappingsUnchanged:true,emittedPackUnchanged:true,scope:'Actual geometry UV refinement checked across all persistent pose-group contexts; no resource or world was overwritten.'};
+const out=path.resolve(import.meta.dirname,'../out/two-pedestal-integration/native-art-stability.json');fs.writeFileSync(out,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));

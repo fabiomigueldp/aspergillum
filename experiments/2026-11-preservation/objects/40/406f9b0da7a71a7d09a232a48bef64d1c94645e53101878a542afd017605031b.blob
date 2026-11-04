@@ -1,0 +1,63 @@
+"""Local inward normal-displacement fit. Only writes anatomy_fit; no source mutation.
+Conservative protected masks intentionally take precedence over collision removal.
+Run with Blender (its BVH); NumPy/SciPy optimization uses doubles.
+"""
+from pathlib import Path
+import sys,json,hashlib,time
+import numpy as np
+from scipy.optimize import minimize
+from scipy.sparse import coo_matrix,diags
+from mathutils.bvhtree import BVHTree
+O=Path(__file__).resolve().parent;B=O.parent.parent
+args=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
+tag=args[0] if args else 'inward-0p5mm';clear=float(args[1])*.001 if len(args)>1 else .0005;strength=float(args[2]) if len(args)>2 else .25;maximum=float(args[3])*.001 if len(args)>3 else .02
+base=np.load(O/'baseline-welded.npz');ins=np.load(O/'inner-shell-and-baseline-inspection.npz');shell=np.load(B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz');p0=base['points'];f=base['triangles'];direction=-base['normals'];v=shell['points'];sf=shell['triangles'];it=ins['inner_shell_face_indices'];inner_mask=np.isin(np.arange(len(sf)),it);q=v[sf];sn=np.cross(q[:,1]-q[:,0],q[:,2]-q[:,0]);sn/=np.linalg.norm(sn,axis=1)[:,None]
+tree=BVHTree.FromPolygons(v.tolist(),sf.tolist(),all_triangles=True,epsilon=0);inner=BVHTree.FromPolygons(v.tolist(),sf[it].tolist(),all_triangles=True,epsilon=0)
+x,y,z=p0.T;face=(y<-.270)&(z<3.50);ear=((x<-.080)|(x>.160))&(y<-.145)&(y>-.260)&(z>3.405)&(z<3.55);lowneck=z<3.20;protected=face|ear|lowneck
+r=ins['rays'];covered=((r[:,:,1]>=0)&(r[:,:,2]<-.15)).any(1);near=(ins['nearest_distance']<.025)&(ins['normal_alignment']<-.2);active=(covered|near)&~protected
+edges=np.unique(np.sort(np.concatenate([f[:,[0,1]],f[:,[1,2]],f[:,[2,0]]]),axis=1),axis=0);rows=np.r_[edges[:,0],edges[:,1]];cols=np.r_[edges[:,1],edges[:,0]];A=coo_matrix((np.ones(len(rows)),(rows,cols)),shape=(len(p0),len(p0))).tocsr();L=diags(np.asarray(A.sum(1)).ravel())-A;H=diags(np.ones(len(p0)))+strength*L
+ids=np.flatnonzero(active);d=np.zeros(len(p0));lb=np.zeros(len(p0));ub=np.where(active,maximum,0);logs=[]
+
+def contacts(p,f1,v2,f2,tree2,selftest=False):
+ t=BVHTree.FromPolygons(p.tolist(),f1.tolist(),all_triangles=True,epsilon=0);pairs=np.array(t.overlap(tree2),int).reshape(-1,2)
+ if selftest:
+  pairs=pairs[pairs[:,0]<pairs[:,1]];pairs=pairs[~np.any(f1[pairs[:,0],:,None]==f2[pairs[:,1],None,:],axis=(1,2))]
+ if not len(pairs):return pairs
+ a=p[f1[pairs[:,0]]];b=v2[f2[pairs[:,1]]];hit=np.zeros(len(pairs),bool)
+ for orig,tar in [(a,b),(b,a)]:
+  e1,e2=tar[:,1]-tar[:,0],tar[:,2]-tar[:,0]
+  for k in range(3):
+   pp=orig[:,k];dr=orig[:,(k+1)%3]-pp;h=np.cross(dr,e2);det=np.einsum('ij,ij->i',e1,h);valid=abs(det)>1e-20;den=np.where(valid,det,1);s=pp-tar[:,0];u=np.einsum('ij,ij->i',s,h)/den;qq=np.cross(s,e1);vv=np.einsum('ij,ij->i',dr,qq)/den;tt=np.einsum('ij,ij->i',e2,qq)/den;hit|=valid&(tt>1e-8)&(tt<1-1e-8)&(u>1e-8)&(vv>1e-8)&(u+vv<1-1e-8)
+ return pairs[hit]
+
+def metrics(p,c):
+ tt=p[f];raw=np.cross(tt[:,1]-tt[:,0],tt[:,2]-tt[:,0]);a0=p0[f];r0=np.cross(a0[:,1]-a0[:,0],a0[:,2]-a0[:,0]);cos=np.sum(raw*r0,axis=1)/np.maximum(np.linalg.norm(raw,axis=1)*np.linalg.norm(r0,axis=1),1e-40);tr=BVHTree.FromPolygons(p.tolist(),f.tolist(),all_triangles=True,epsilon=0);selfc=contacts(p,f,p,f,tr,True);mm=np.linalg.norm(p-p0,axis=1)*1000;moving=mm>1e-8
+ return {'crossings':len(c),'by_shell_part':{str(k):int(sum(shell['face_parts'][c[:,1]]==k)) for k in [0,1,2]},'body_crossed_faces':int(len(np.unique(c[:,0]))),'fixed_only_crossings':int(sum(np.all(~active[f[c[:,0]]],axis=1))),'protected_only_crossings':int(sum(np.all(protected[f[c[:,0]]],axis=1))),'self_crossings':len(selfc),'face_normal_dot_min':float(cos.min()),'face_flips':int(sum(cos<=0)),'min_double_area':float(np.linalg.norm(raw,axis=1).min()),'changed_vertices':int(sum(moving)),'displacement_mm':{'max':float(mm.max()),'p95_changed':float(np.percentile(mm[moving],95)) if sum(moving) else 0,'median_changed':float(np.median(mm[moving])) if sum(moving) else 0},'protected_exact':bool(np.array_equal(p[protected],p0[protected]))}
+
+# Initial nearest inner constraints, later strengthened only around actual crossings.
+for i in ids:
+ si=ins['nearest_face_indices'][i];align=np.dot(direction[i],sn[si]);dist=ins['nearest_distance'][i]
+ if align>.2 and dist<.025:
+  lb[i]=max(lb[i],(clear-ins['signed_cavity_distance'][i])/align)
+lb=np.maximum(lb,0);lb=np.minimum(lb,ub)
+baselinepairs=contacts(p0,f,v,sf,tree);base_metrics=metrics(p0,baselinepairs);print('BASE',base_metrics,flush=True)
+for itn in range(16):
+ old=d.copy();rr=minimize(lambda xx:(float(xx@H[ids][:,ids]@xx),2*(H[ids][:,ids]@xx)),np.maximum(d[ids],lb[ids]),jac=True,bounds=list(zip(lb[ids],ub[ids])),method='L-BFGS-B',options={'gtol':1e-11,'ftol':1e-14,'maxiter':1000});d[ids]=rr.x;p=p0+direction*d[:,None];c=contacts(p,f,v,sf,tree);row=metrics(p,c);row.update(iteration=itn,solver_success=bool(rr.success),lower_bounds_at_max=int(sum(lb>=maximum-1e-10)));logs.append(row);print(json.dumps(row),flush=True)
+ # Preserve each iteration so failures or over-conservative steps are inspectable.
+ normals=np.zeros_like(p);raw=np.cross(p[f[:,1]]-p[f[:,0]],p[f[:,2]]-p[f[:,0]])
+ for k in range(3):np.add.at(normals,f[:,k],raw)
+ normals/=np.maximum(np.linalg.norm(normals,axis=1)[:,None],1e-24)
+ np.savez_compressed(O/f'{tag}-iteration{itn:02d}.npz',points=p,triangles=f,normals=normals,source_indices=base['source_indices'],source_face_indices=base['source_face_indices'],protected_vertices=protected,active_vertices=active,changed_vertices=np.linalg.norm(p-p0,axis=1)>1e-11,displacement=p-p0,protected_face=face,protected_ears=ear,protected_lowneck=lowneck)
+ np.savez_compressed(O/f'{tag}-iteration{itn:02d}-contacts.npz',body_shell_pairs=c)
+ before=lb.copy();constraints=[]
+ for bi,si in c:
+  if not inner_mask[si]:continue
+  for vi in f[bi]:
+   if not active[vi]:continue
+   align=np.dot(direction[vi],sn[si]);sd=np.dot(p0[vi]-q[si,0],sn[si])
+   if align>.20:
+    bound=(clear-sd)/align
+    if bound>lb[vi]:lb[vi]=min(maximum,bound)
+ if np.max(abs(lb-before))<1e-8:break
+summary={'hypothesis':'Cavity constrained local inward normal offset, graph-Laplacian displacement smoothing, hard feature masks. No shell edits, no deleted faces or alpha masking.','shell_sha256':hashlib.sha256((B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz').read_bytes()).hexdigest(),'scope':{'units':'world XYZ; one unit1000mm','intended_export_triangles':len(f),'welded_vertices':len(p0),'active_vertices':int(active.sum()),'protected_vertices':int(protected.sum()),'protected_face':int(face.sum()),'protected_ears':int(ear.sum()),'protected_lowneck':int(lowneck.sum()),'protection_definition':{'face':'y < -0.270 and z < 3.50','ears':'(x < -0.080 or x > 0.160) and -0.260 < y < -0.145 and 3.405 < z < 3.55','lowneck':'z < 3.20'},'active_definition':'Outward/inward normal ray has facing interior surface within80mm OR nearest interior within25mm and opposite normal; minus protected.','inner_surfaces':'Cap source_side0, bridge outer_source_ids (pairing name, physically inward), restored mantle class1.','world_frame_source_indices_connectivity_preserved':True},'parameters':{'cavity_clearance_mm':clear*1000,'maximum_inward_displacement_mm':maximum*1000,'smoothing':strength},'baseline':base_metrics,'iterations':logs,'limits':'Strict noncoplanar crossings only; projection support-plane bounds are local, not a certified global clearance. Protected face/ear residuals are not approval. Normals recomputed from geometry. Native research candidate, not Bedrock/game validation.'}
+(O/f'{tag}-report.json').write_text(json.dumps(summary,indent=2));print('DONE',tag,flush=True)

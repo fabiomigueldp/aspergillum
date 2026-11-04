@@ -1,0 +1,25 @@
+# Prova de dois colares independentes — recusada antes de preencher o centro
+
+V75 intacto; nenhum blend novo salvo. Dois domínios anulares independentes, um por camada. Não uni os loops externo/interno como se fossem um único disco.
+
+## Contorno usado e espessura
+Usei o contorno pareado CORRIGIDO de756faces, que eliminou as faces inteiramente congeladas cruzando pele. São290v por camada. Os anéis externos ficaram exatamente nas posições de V75 e os vetores herdados entre pares foram preservados.
+
+Importante: a faixa4,952–5,987mm pertence ao contorno anterior de746faces. No contorno corrigido756faces a medição real é4,842–5,987mm. Não forcei6mm e não alterei espessura para esconder a diferença. Esta distinção deve acompanhar qualquer uso do relatório.
+
+## Construção da prova
+Pontos médios internos caminham no máximo2mm emXYZ rumo ao interior conectado do domínio de origem; largura real .172–2mm. Cada par interno conserva o vetor herdado da camada.45v exigiram busca além do primeiro vizinho interior por causa das ramificações estreitas do contorno. A direção não foi inferida de um centro radial (método já descartado).
+
+Cada camada recebeu290quads triangulados,580triângulos. O centro permaneceu vazio. Avaliação pelo Blender sem modificadores adicionais: delta de coordenadas0; nenhuma degenerescência, áreas1,95e-8–2,79e-5m²; nenhuma auto-interseção entre triângulos não adjacentes do colar.
+
+## Teste completo e decisão
+- Camada0:0pares de colisão com pele.
+- Camada1:24pares de colisão com pele.
+- Colar versus pregas preservadas não adjacentes:4pares.
+- Anéis externos:delta0.
+
+Logo o colar NÃO passou. Parei sem preencher centro, aproximar superfície ou gerar variante de espessura/largura. Um colar externo aparentemente livre não prova que a camada interna possui corredor livre. A direção inicial baseada no interior original não conseguiu manter ambas camadas separadas da pele/pregas.
+
+Isso rejeita esta construção específica, não demonstra impossibilidade universal de um colar3D. O bloqueio concreto é a camada interna e sua conexão com pregas preservadas; é necessário controlar a trajetória dos pares internos em3D sob restrições de superfícies completas antes de existir um anel admissível para preencher. Não há candidato artístico novo a apresentar.
+
+Evidências: neck-paired-collar-proof.py, neck-paired-collar-proof.json/.npz. NPZ é diagnóstico, não substituto do blendV75.

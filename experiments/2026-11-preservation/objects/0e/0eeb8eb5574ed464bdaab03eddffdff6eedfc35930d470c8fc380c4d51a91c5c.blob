@@ -1,0 +1,860 @@
+--- a/addons/altare/README.md
++++ b/addons/altare/README.md
+@@ -1,4 +1,8 @@
+ # Altare
++
++**Cópia de desenvolvimento: compactação pré-lançamento, ainda sem versão de distribuição.** 414 IDs preservados, 51.608 estados antes de novas famílias. O esquema de estados dos 135 Atelier e do Clássico mudou: não instalar esta cópia sobre mundos existentes nem empacotá-la como 0.12.3. A integração deve receber uma nova versão e um teste em mundo novo descartável. [Contrato, evidências e migração explícita de snapshots](docs/CATALOG_COMPACTION.md).
++
++As instruções de download e compatibilidade da 0.12.3 abaixo são históricas e não descrevem esta cópia compactada.
+ 
+ **0.12.3 — Cruzeta e escolhas do editor.** Oitavo modelo: marcenaria aberta, quadros apoiados, X duplo cavilhado e marchetaria proporcional. Dez toalhas compartilhadas, com oito cores do Floral IHS. [Construção e compatibilidade](docs/CROSSBRACE_0.12.1.md) · [Dimensões do editor](docs/EDITOR_DIMENSIONS_0.12.2.md) · [Guadalupe e prazo de edição](docs/EDITOR_CHOICES_0.12.3.md).
+ 
+@@ -52,7 +56,7 @@
+ 
+ Ainda é uma revisão diagnóstica, sem receitas/economia de Sobrevivência, edição em Aventura, formas em L/curvas, altura fracionária, vários itens por célula ou física dinâmica do tecido. A mesa aberta usa dois cavaletes de extremidade, com um montante por célula de profundidade em cada um; não acrescenta apoios intermediários conforme o comprimento. O recorte ornamental não é uma malha de renda fio a fio. Seleção mantém o cubo completo; colisão da mesa segue tampo/apoios/travessas, com caixas conservadoras nas escoras diagonais e sem corpo sólido central.
+ 
+-Quebrar um módulo descarta seus estados locais de contorno e papel central. Nas receitas novas, o ID do item conserva a família/aparência; no bloco clássico, o acabamento volta aos defaults. Reaplicar a ferramenta após reconstruir. O catálogo usa 80.000 combinações de estados e 89.744 com Aspergillum local. Excede a referência de desempenho 65.536; a exceção é diagnóstica e exige profiling, não limita crafts. Custos, avisos e condições de promoção estão no [contrato 0.9.0](docs/UNIVERSAL_TEXTILES_0.9.0.md).
++Quebrar um módulo descarta seus estados locais de contorno e papel central. Nas receitas novas, o ID do item conserva a família/aparência; no bloco clássico, o acabamento volta aos defaults. Reaplicar a ferramenta após reconstruir. A 0.12.3 usava 80.000 combinações de estados e 89.744 com Aspergillum local. A compactação isolada passa a 51.608 e 61.352, respectivamente, abaixo da referência de desempenho 65.536. Isso não é validação de desempenho nativo nem garantia de compatibilidade de saves. Custos, avisos e condições de promoção estão no [contrato 0.9.0](docs/UNIVERSAL_TEXTILES_0.9.0.md).
+ 
+ ## Desenvolvimento
+ 
+--- a/addons/altare/docs/ARCHITECTURE.md
++++ b/addons/altare/docs/ARCHITECTURE.md
+@@ -1,4 +1,8 @@
+ # Arquitetura e pesquisa
++
++## Compactação pré-lançamento do catálogo
++
++Esta cópia revisa intencionalmente o esquema de 136 IDs: 135 Atelier passam a codecs de 64/112 estados e o Clássico a 50 poses locais, preservando a roseta. Total: 51.608 estados antes de novas famílias. As geometrias, materiais, visibilidade e colisões efetivas permanecem iguais nas configurações representáveis, mas a identidade de estado persistido é incompatível. Os contratos históricos abaixo descrevem suas versões, não uma garantia de atualização de mundos para este esquema. [Especificação e migração explícita](CATALOG_COMPACTION.md).
+ 
+ ## Perfis biselados — 0.10.1
+ 
+--- /dev/null
++++ b/addons/altare/docs/CATALOG_COMPACTION.md
+@@ -0,0 +1,63 @@
++# Compactação pré-lançamento do catálogo antigo
++
++Revisão isolada sobre a 0.12.3, anterior à integração de novas famílias. Não foi instalada, publicada nem aplicada a mundos. O número da versão da cópia foi preservado somente para a comparação byte a byte; antes de qualquer distribuição, a integração precisa receber uma nova versão e aviso de quebra do esquema persistido.
++
++## Registro e semântica
++
++- Permanecem 414 IDs, incluindo os 135 Atelier e `altare:mensa`. Nenhuma opção de material, toalha, cor ou aplique é removida.
++- Nove Atelier sem toalha e sem aplique usam `edges` × `facing`: 16 × 4 = 64 estados por receita. A frente lógica permanece mesmo quando duas vistas forem visualmente equivalentes.
++- Os demais 126 Atelier usam o codebook já existente de 28 poses locais × quatro frentes: 112 estados por receita. `shape` tem sete valores, `detail` quatro; as poses preservam contorno e papel central inteiro ou dividido.
++- O Clássico passa de 11.520 a 3.000 estados: 50 poses × quatro frentes × três pedras × cinco tecidos. Inclui as 42 poses produzidas pelo planejador retangular e oito poses da roseta legada. `shape` tem dez valores, `detail` cinco. A tabela independente de 54 poses de tecido clássico não muda. [Detalhes do Clássico](CLASSIC_COMPACTION.md).
++- Os defaults conservam a aparência anterior: módulo isolado, frente 0, sem papel central; no Clássico, pedra 0 e tecido 1. O codebook começa na pose de contorno 15.
++- Nenhuma fonte artística, textura, modelo, colisão ou regra de aparência mudou. O gerador resolve as consultas a estados removidos para a pose correspondente. A introdução de um codec não altera a interpretação dos materiais Atelier.
++
++### Orçamento medido
++
++| Parcela | Antes | Depois |
++| --- | ---: | ---: |
++| 135 Atelier | 34.560 | 14.688 |
++| Clássico | 11.520 | 3.000 |
++| Demais 278 IDs | 33.920 | 33.920 |
++| Altare | 80.000 | 51.608 |
++| Altare + Aspergillum local | 89.744 | 61.352 |
++
++Economia: 28.392 estados. Reserva conhecida: 4.184 em relação a 65.536, antes de novas famílias. Cada propriedade continua abaixo de 16 valores. Outros packs precisam ser somados. Os validadores voltam a exigir orçamento conhecido ≤65.536, sem a antiga exceção diagnóstica de 80.000/90.000. Isso não prova tempo de carregamento, memória, FPS, estabilidade nativa ou aprovação de Marketplace; tampouco transforma 65.537 em um limiar comprovado de falha de carregamento.
++
++## Quebra de compatibilidade e conversão explícita
++
++**Mesmo ID não significa mesmo esquema. Não é atualização segura de um mundo existente.** Remover `edges`/`frontal`/`role` e introduzir índices compactos pode fazer o Bedrock perder ou normalizar dados durante o carregamento, antes de o script lê-los. Backup é necessário, mas não converte os estados. Não abrir um save antigo com esta revisão contando com migração automática.
++
++`migrateLegacyAtelierSnapshot` e `migrateLegacyClassicSnapshot` convertem exclusivamente snapshots explicitamente exportados **antes** da troca de pack. São funções puras, sem escrita nem acesso ao Minecraft. Exigem todas e somente as chaves do esquema legado, números inteiros finitos e valores válidos; entradas mistas, incompletas ou de outro ID são recusadas.
++
++- Atelier: 16.416 dos 34.560 snapshots cartesianos antigos são aceitos. Em 1.728 deles, a receita nua continha um papel sem efeito visual; sua remoção é reportada como `unused-role-cleared`. Frente e contorno permanecem. Os 18.144 estados decorados sem pose equivalente são recusados, sem apagar motivos para tentar fazê-los caber.
++- Clássico: 3.000 dos 11.520 snapshots são aceitos; 8.520 combinações sem pose equivalente são recusadas. As oito poses de roseta permanecem. O conversor nunca chama o reparo de contorno com perda de frontal.
++- O codec normal não interpreta snapshots antigos como novos. IDs compactados recusam misturas de chaves; o codec `edges` recusa números fora de intervalo, strings, nulos e não finitos.
++- O reparo explícito após quebra/edição conserva a pose quando representável. Se o contorno deixa de comportar o papel, passa a papel 0; reaplicar acabamento a um retângulo válido recentraliza o programa iconográfico. Isso não é estratégia de migração de saves.
++
++Antes de uma migração real, seria necessário exportar e validar o snapshot de cada célula com o pack antigo ainda ativo, rejeitar conjuntos incompatíveis, testar importação controlada em uma cópia e manter backup externo para rollback. Esse fluxo operacional não foi implementado nem executado nesta revisão. Downgrade também exige snapshot/conversão compatível ou restauração do backup, nunca mera troca de pack.
++
++## Evidência reproduzível
++
++A partir de `addons/altare`:
++
++```sh
++npm run check
++node tools/audit-variations.mjs
++node tools/verify-catalog-compaction.mjs /caminho/da/baseline-0.12.3/addons/altare > out/catalog-compaction/semantic-report.json
++```
++
++O verificador exige uma baseline separada já compilada de 80.000 estados e a revisão isolada de 51.608. Compara todos os componentes efetivos dos 14.688 estados Atelier e 3.000 clássicos: geometria selecionada, visibilidade avaliada, materiais inclusive vínculos não visíveis, colisão e demais componentes. Também testa todas as conversões legadas aceitas contra o componente antigo, incluindo a normalização sem efeito visual dos nus.
++
++Resultado desta revisão: 17.688 comparações novas e 19.416 conversões aceitas idênticas semanticamente. Todos os 278 blocos não alterados, os 4.971 arquivos do Resource Pack e os 27 arquivos artísticos de autoria permanecem byte-idênticos. O relatório contém hashes agregados dos arquivos preservados. Os testes enumeram os retângulos 1–16 × 1–8 nas quatro frentes, round-trip, reparo dos 16 contornos, preservação da roseta, entradas inválidas e rejeição explícita de estados mistos. A ordem do codebook clássico está fixada por hash em teste.
++
++Esse verificador é deliberadamente estrito para esta revisão isolada. Uma integração que adicione família, geometria ou versão deve separar suas diferenças autorizadas; não tratar uma falha por essas mudanças como prova de regressão visual nem desativar a comparação sem revisar o delta.
++
++## Gates ainda nativos
++
++Em mundo novo descartável e com a versão final exata: abrir cada família no editor; aplicar/cancelar/reabrir; salvar e recarregar; conferir 1×1, 2×2, 7×2, 8×2 e 16×8 nas quatro frentes; inspecionar Guadalupe, roseta e metades centrais; quebrar/repor/reaplicar; conferir colisões, objetos apoiados e Content Log. Depois medir desempenho e multiplayer. Nenhum teste offline substitui esses gates.
++
++## Resultado do validador oficial nesta cópia
++
++Creator Tools 0.17.7 foi executado diretamente sobre a pasta dos packs, com `--offline`, sem instalar nem publicar um arquivo de release. **Terminou com código 4; esse gate não está aprovado.** As consultas que ainda fez a metadados públicos de versão e Script API receberam HTTP 502. O relatório esperou `format_version` 1.26.0 e apontou 416 erros relativos ao valor 1.26.30, que já existia sem alteração na baseline: 414 blocos, um item e a segunda checagem do mesmo item. Não houve outra categoria de erro.
++
++Os 2.084 avisos GEOMETRY 501 foram conferidos contra os mesmos modelos preservados e a política diagnóstica existente; nenhum aviso geométrico inesperado. Não se reduziu a versão-alvo, não se suprimiu erro e não se ampliou a exceção de complexidade. Esse resultado, registrado em `out/catalog-compaction/creator-tools-summary.json`, não substitui uma validação oficial final com metadados corretos nem o teste nativo. Os checks locais de Altare (129 testes), Aspergillum (107) e viewer (84) passaram integralmente.
+--- /dev/null
++++ b/addons/altare/docs/CLASSIC_COMPACTION.md
+@@ -0,0 +1,21 @@
++# Clássico: compactação pré-lançamento
++
++O bloco `altare:mensa` passa de 11.520 a 3.000 estados: 50 poses locais × 4 frentes × 3 pedras × 5 tecidos. O domínio cartesiano usa `altare:shape` (10 valores) e `altare:detail` (5 valores), ambos abaixo do limite de 16 valores por propriedade. `altare:facing`, `altare:stone` e `altare:cloth` conservam seus valores. A pose inicial é contorno 15, frontal 0, frente 0, pedra 0 e tecido 1.
++
++As primeiras 42 poses são exatamente as produzidas pelo planejador retangular, incluindo todos os contornos sem frontal. As oito últimas conservam a roseta, papel 5, em cada contorno local com frente exposta. A tabela independente `classic-textile-layout.ts` de 54 poses não muda. Após uma publicação deste novo esquema, os índices devem permanecer estáveis.
++
++O compilador conserva os oito identificadores de geometria, todos os vínculos de materiais (inclusive não visíveis), as mesmas expressões de visibilidade com os estados retirados substituídos por constantes, colisão, seleção, resistência, tick e componente de superfície. Malhas e mapas não são editados. Cada estado recebe exatamente uma permutação de materiais e uma de geometria.
++
++## Migração e limites
++
++`migrateLegacyClassicSnapshot({id,states})` é uma função pura para snapshots **exportados antes da atualização**, contendo os cinco estados legados completos. Preserva a configuração representável e retorna incompatibilidade explícita para os 8.520 estados retirados. Estados inválidos e IDs alheios também são rejeitados. Não escreve no mundo, não altera a entrada e nunca usa o reparo com perda de frontal. `repairClassic` é somente um reparo explícito do contorno durante edição: quando o frontal deixa de caber no contorno, retorna frontal 0.
++
++**Não é migração automática segura de mundos Bedrock.** Retirar propriedades do mesmo ID pode fazer o motor resetar ou normalizar estados ao carregar, antes que scripts consigam lê-los. Uma função lógica de conversão não previne isso. Usar somente em mundo novo ou realizar exportação anterior, validar representabilidade e testar uma importação controlada com backup/rollback antes de qualquer atualização de mundo existente. Esta cópia diagnóstica não foi instalada.
++
++## Evidência reproduzível
++
++`node --experimental-strip-types --test tests/classic-compaction.node.ts`
++
++Os testes enumeram os 3.000 estados compactos, comparam materiais e visibilidade efetiva com as expressões/modelos legados, verificam geometria e componentes comuns, enumeram as 42 poses do planejador e as oito rosetas, e testam a conversão pura de todos os 11.520 snapshots anteriores. Isso não prova renderização nativa, carregamento seguro de saves nem importação no Minecraft.
++
++A migração exige um objeto de estados com exatamente as cinco chaves legadas próprias: campos extras, mistura do esquema antigo/novo, arrays, nulos, strings, valores não finitos ou fora dos limites retornam `invalid-states`. Um teste fixa a ordem dos 50 pares por SHA-256 de `JSON.stringify(CLASSIC_POSES)`: `f66361d205f1805def0943dbb0a510e0b1808bafb53fa4cb99bb2c0764dccfbd`.
+--- a/addons/altare/docs/TESTING.md
++++ b/addons/altare/docs/TESTING.md
+@@ -1,4 +1,8 @@
+-# QA do Altare 0.12.2
++# QA do Altare
++
++## Compactação pré-lançamento do catálogo
++
++129 testes, enumeração de 51.608 estados e comparação de todos os 17.688 estados compactados com a 0.12.3. Os 278 blocos não afetados e todos os 4.971 arquivos do Resource Pack devem permanecer byte-idênticos nesta revisão isolada. A conversão de snapshots recusa estados incompatíveis; não equivale a migração de mundos. [Evidência, comandos e reteste nativo](CATALOG_COMPACTION.md).
+ 
+ ## Revisão 0.12.3: Guadalupe e encerramento por prazo
+ 
+--- a/addons/altare/docs/VARIATIONS.md
++++ b/addons/altare/docs/VARIATIONS.md
+@@ -1,4 +1,10 @@
+ # Modelos, acabamentos e combinações de estados
++
++## Revisão pré-lançamento do catálogo
++
++O catálogo compactado conserva os 414 IDs e reduz o registro de 80.000 para 51.608 estados: 9 Atelier nus × 64, 126 Atelier vestidos ou com aplique × 112 e Clássico com 50 poses × 4 frentes × 3 pedras × 5 tecidos. As demais famílias somam 33.920. Com Aspergillum local, 61.352; margem de 4.184 para a referência de 65.536. Esse total ainda não inclui novos pedestais nem outros add-ons. [Semântica, risco de saves e auditoria](CATALOG_COMPACTION.md).
++
++As tabelas seguintes registram as versões históricas indicadas.
+ 
+ O Altare prioriza construção e ornamentação no Criativo. “Acabamento” é uma combinação visual; não é receita de craft, ingrediente ou custo. Os comandos e a ferramenta continuam criando/configurando o altar diretamente.
+ 
+--- a/addons/altare/src/domain/block-codec.ts
++++ b/addons/altare/src/domain/block-codec.ts
+@@ -1,20 +1,32 @@
+-import {LEGACY_ID,designById,SURFACES,TEXTILE_VALUES,compactLayout} from './catalog.ts';
++import {LEGACY_ID,ATELIER_DESIGNS,designById,SURFACES,TEXTILE_VALUES,compactLayout} from './catalog.ts';
+ import {decodeClassicTextile,encodeClassicTextile} from './classic-textile-layout.ts';
+ import type {Position,Tile} from './surface.ts';
+ import {decodePalette,encodePalette} from './palette-layout.ts';
+-const fields=['stone','cloth','frontal','facing','edges'] as const;
++import {decodeClassic,encodeClassic} from './classic-layout.ts';
++const atelierIds=new Set(ATELIER_DESIGNS.map(d=>d.id));
++const bounded=(value:unknown,max:number):value is number=>typeof value==='number'&&Number.isInteger(value)&&value>=0&&value<=max;
++// Reject old or mixed snapshots explicitly. Do not silently turn a legacy role
++// into a default pose; callers must use the pure, opt-in migration utilities.
++function requireSchema(states:Record<string,unknown>,fields:Record<string,number>):void {
++ if(!states||typeof states!=='object'||Array.isArray(states)||Object.keys(states).length!==Object.keys(fields).length||!Object.entries(fields).every(([key,max])=>Object.hasOwn(states,key)&&bounded(states[key],max)))throw Error('configuration');
++}
+ export function decodeTile(id:string,position:Position,states:Record<string,unknown>):Tile|null {
+  const design=designById(id);
++ if(atelierIds.has(id))requireSchema(states,design?.codec==='edges'?{'altare:edges':15,'altare:facing':3}:{'altare:shape':6,'altare:detail':3,'altare:facing':3});
++ if(id===LEGACY_ID)requireSchema(states,{'altare:shape':9,'altare:detail':4,'altare:facing':3,'altare:stone':2,'altare:cloth':4});
+  if(design?.codec==='classic_textile')return {position:{...position},design:id,cloth:TEXTILE_VALUES.indexOf(design.textile),...decodeClassicTextile(states)};
+  if(design?.codec==='symmetric'){
+   const edges=Number(states['altare:edges']);if(!Number.isInteger(edges)||edges<0||edges>15)throw Error('configuration');
+   return {position:{...position},design:id,stone:SURFACES.indexOf(design.surface),cloth:TEXTILE_VALUES.indexOf(design.textile),frontal:0,facing:0,edges};
+  }
+  if(design&&compactLayout(design))return {position:{...position},design:id,stone:SURFACES.indexOf(design.surface),cloth:TEXTILE_VALUES.indexOf(design.textile),...decodePalette(states)};
+- if(design?.codec==='edges')return {position:{...position},design:id,stone:SURFACES.indexOf(design.surface),cloth:TEXTILE_VALUES.indexOf(design.textile),frontal:0,facing:Number(states['altare:facing']),edges:Number(states['altare:edges'])};
++ if(design?.codec==='edges'){
++  const edges=states['altare:edges'],facing=states['altare:facing'];if(!bounded(edges,15)||!bounded(facing,3))throw Error('configuration');
++  return {position:{...position},design:id,stone:SURFACES.indexOf(design.surface),cloth:TEXTILE_VALUES.indexOf(design.textile),frontal:0,facing,edges};
++ }
+  if(design)return {position:{...position},design:id,stone:SURFACES.indexOf(design.surface),cloth:TEXTILE_VALUES.indexOf(design.textile),frontal:Number(states['altare:role']),facing:Number(states['altare:facing']),edges:Number(states['altare:edges'])};
+  if(id!==LEGACY_ID)return null;
+- return {position:{...position},...Object.fromEntries(fields.map(k=>[k,Number(states[`altare:${k}`])]))} as Tile;
++ return {position:{...position},...decodeClassic(states)};
+ }
+ export function encodeTile(tile:Tile):{id:string;states:Record<string,number>} {
+  if(tile.design){
+@@ -26,10 +38,10 @@
+   }
+   if(compactLayout(design))return {id:tile.design,states:encodePalette(tile)};
+   if(design.codec==='edges'){
+-   if(tile.frontal!==0)throw Error('configuration');
++   if(tile.frontal!==0||!bounded(tile.edges,15)||!bounded(tile.facing,3))throw Error('configuration');
+    return {id:tile.design,states:{'altare:edges':tile.edges,'altare:facing':tile.facing}};
+   }
+   return {id:tile.design,states:{'altare:edges':tile.edges,'altare:facing':tile.facing,'altare:role':tile.frontal}};
+  }
+- return {id:LEGACY_ID,states:Object.fromEntries(fields.map(k=>[`altare:${k}`,tile[k]]))};
++ return {id:LEGACY_ID,states:encodeClassic(tile)};
+ }
+--- /dev/null
++++ b/addons/altare/src/domain/catalog-migration.ts
+@@ -0,0 +1,24 @@
++import {ATELIER_DESIGNS,designById} from './catalog.ts';
++import {encodePalette} from './palette-layout.ts';
++
++export interface PrecompactSnapshot {id:string;states:Record<string,unknown>}
++export type AtelierSnapshotMigration=
++ | {ok:true;snapshot:{id:string;states:Record<string,number>};normalizations:readonly string[]}
++ | {ok:false;reason:'unsupported-id'|'invalid-states'|'unrepresentable-pose';snapshot:PrecompactSnapshot};
++const oldKeys=['altare:edges','altare:facing','altare:role'];
++const integer=(value:unknown,max:number):value is number=>typeof value==='number'&&Number.isInteger(value)&&value>=0&&value<=max;
++
++/** Pure conversion of an explicitly exported precompact snapshot. Not a world
++ * upgrader: Bedrock may discard removed states before a script can read them.
++ * Unsupported decorated poses are rejected, never silently stripped of art. */
++export function migrateLegacyAtelierSnapshot(snapshot:PrecompactSnapshot):AtelierSnapshotMigration {
++ const d=designById(snapshot.id);
++ if(!d||!ATELIER_DESIGNS.some(value=>value.id===d.id))return {ok:false,reason:'unsupported-id',snapshot};
++ const s=snapshot.states;
++ if(!s||typeof s!=='object'||Array.isArray(s)||Object.keys(s).length!==oldKeys.length||!oldKeys.every(k=>Object.hasOwn(s,k)))return {ok:false,reason:'invalid-states',snapshot};
++ const edges=s['altare:edges'],facing=s['altare:facing'],frontal=s['altare:role'];
++ if(!integer(edges,15)||!integer(facing,3)||!integer(frontal,3))return {ok:false,reason:'invalid-states',snapshot};
++ if(d.codec==='edges')return {ok:true,snapshot:{id:d.id,states:{'altare:edges':edges,'altare:facing':facing}},normalizations:frontal?['unused-role-cleared']:[]};
++ try{return {ok:true,snapshot:{id:d.id,states:encodePalette({edges,facing,frontal})},normalizations:[]};}
++ catch{return {ok:false,reason:'unrepresentable-pose',snapshot};}
++}
+--- a/addons/altare/src/domain/catalog.ts
++++ b/addons/altare/src/domain/catalog.ts
+@@ -1,5 +1,6 @@
+ import {PALETTE_STATES} from './palette-layout.ts';
+ import {CLASSIC_TEXTILE_STATES} from './classic-textile-layout.ts';
++import {CLASSIC_STATES} from './classic-layout.ts';
+ // Public recipe keys are persistent world identity. Append; never reorder meanings.
+ export const STRUCTURES=['pilaster','ogive','trestle'] as const;
+ export const JOINERY_STRUCTURES=['coffer','baluster','crossbrace'] as const;
+@@ -12,7 +13,9 @@
+ export const LITURGICAL_COLORS=['white','red','green','purple','rose','black','gold','silver'] as const;
+ export type LiturgicalColor=typeof LITURGICAL_COLORS[number];
+ export interface Design {id:string;structure:typeof STRUCTURES[number]|typeof JOINERY_STRUCTURES[number]|'colonnade'|'classic';surface:typeof SURFACES[number];textile:typeof TEXTILE_VALUES[number];frontal:typeof FRONTALS[number];palette?:LiturgicalColor;codec?:'compact'|'edges'|'symmetric'|'classic_textile';universal?:boolean}
+-export const ATELIER_DESIGNS:readonly Design[]=Object.freeze(STRUCTURES.flatMap(structure=>SURFACES.flatMap(surface=>TEXTILES.flatMap(textile=>FRONTALS.map(frontal=>Object.freeze({id:`altare:a_${structure}_${surface}_${textile}_${frontal}`,structure,surface,textile,frontal}))))));
++// Pre-release schema revision: preserve logical facing even for bare furniture.
++// The other finishes retain the 28 reachable local poses and four facings.
++export const ATELIER_DESIGNS:readonly Design[]=Object.freeze(STRUCTURES.flatMap(structure=>SURFACES.flatMap(surface=>TEXTILES.flatMap(textile=>FRONTALS.map(frontal=>Object.freeze({id:`altare:a_${structure}_${surface}_${textile}_${frontal}`,structure,surface,textile,frontal,codec:textile==='none'&&frontal==='none'?'edges' as const:'compact' as const}))))));
+ export const PALETTE_DESIGNS:readonly Design[]=Object.freeze(STRUCTURES.flatMap(structure=>SURFACES.flatMap(surface=>LITURGICAL_COLORS.filter(c=>c!=='red').map(palette=>Object.freeze({id:`altare:l_${structure}_${surface}_${palette}`,structure,surface,textile:'ruby' as const,frontal:'none' as const,palette})))));
+ export const JOINERY_DESIGNS:readonly Design[]=Object.freeze(JOINERY_STRUCTURES.flatMap(structure=>[
+  ...TEXTILES.map(textile=>Object.freeze({id:`altare:j_${structure}_${textile}`,structure,surface:'walnut' as const,textile,frontal:'none' as const,codec:textile==='none'?(structure==='crossbrace'?'symmetric' as const:'edges' as const):'compact' as const})),
+@@ -62,7 +65,7 @@
+ export const LEGACY_ID='altare:mensa';
+ export const isAltarId=(id:string):boolean=>id===LEGACY_ID||byId.has(id);
+ export const ROLE_STATES=[0,1,2,3] as const;
+-export const CATALOG_PERMUTATIONS=11520+ATELIER_DESIGNS.length*256+PALETTE_DESIGNS.length*PALETTE_STATES+JOINERY_DESIGNS.reduce((n,d)=>n+(d.codec==='symmetric'?16:d.codec==='edges'?64:PALETTE_STATES),0)+ORNATE_DESIGNS.length*16+UNIVERSAL_DESIGNS.reduce((n,d)=>n+(d.codec==='classic_textile'?CLASSIC_TEXTILE_STATES:d.codec==='symmetric'?16:d.codec==='edges'?64:PALETTE_STATES),0);
++export const CATALOG_PERMUTATIONS=CLASSIC_STATES+ATELIER_DESIGNS.reduce((n,d)=>n+(d.codec==='edges'?64:PALETTE_STATES),0)+PALETTE_DESIGNS.length*PALETTE_STATES+JOINERY_DESIGNS.reduce((n,d)=>n+(d.codec==='symmetric'?16:d.codec==='edges'?64:PALETTE_STATES),0)+ORNATE_DESIGNS.length*16+UNIVERSAL_DESIGNS.reduce((n,d)=>n+(d.codec==='classic_textile'?CLASSIC_TEXTILE_STATES:d.codec==='symmetric'?16:d.codec==='edges'?64:PALETTE_STATES),0);
+ export function centerRole(width:number,index:number):number {
+  if(!Number.isInteger(width)||width<1||width>16||!Number.isInteger(index)||index<0||index>=width)throw Error('configuration');
+  if(width%2)return index===Math.floor(width/2)?1:0;
+--- /dev/null
++++ b/addons/altare/src/domain/classic-layout.ts
+@@ -0,0 +1,44 @@
++import {rotateEdges} from './palette-layout.ts';
++
++/** Pre-release compact identity. Local front is N; preserve indices after publication. */
++export const CLASSIC_POSES=Object.freeze([
++ [15,0],[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],
++ [7,0],[8,0],[9,0],[10,0],[11,0],[12,0],[13,0],[14,0],
++ [1,1],[1,2],[1,3],[1,4],[1,8],[1,9],[11,2],
++ [13,11],[13,3],[13,7],[15,2],[3,10],[3,4],[3,6],
++ [5,1],[5,2],[5,3],[5,4],[5,8],[5,9],[7,10],[7,4],[7,6],[9,11],[9,3],[9,7],
++ [1,5],[3,5],[5,5],[7,5],[9,5],[11,5],[13,5],[15,5],
++].map(([edges,frontal])=>Object.freeze({edges:edges!,frontal:frontal!})));
++export const CLASSIC_STATES=50*4*3*5;
++export interface ClassicPose {edges:number;frontal:number;facing:number;stone:number;cloth:number}
++const integer=(n:unknown,max:number):n is number=>typeof n==='number'&&Number.isInteger(n)&&n>=0&&n<=max;
++function valid(t:ClassicPose){return integer(t.edges,15)&&integer(t.frontal,11)&&integer(t.facing,3)&&integer(t.stone,2)&&integer(t.cloth,4);}
++function indexFor(t:ClassicPose){return CLASSIC_POSES.findIndex(p=>p.edges===rotateEdges(t.edges,-t.facing)&&p.frontal===t.frontal);}
++export function encodeClassic(t:ClassicPose):Record<string,number>{
++ if(!valid(t))throw Error('configuration');
++ const i=indexFor(t);if(i<0)throw Error('configuration');
++ return {'altare:shape':Math.floor(i/5),'altare:detail':i%5,'altare:facing':t.facing,'altare:stone':t.stone,'altare:cloth':t.cloth};
++}
++export function decodeClassic(s:Record<string,unknown>):ClassicPose{
++ const shape=s['altare:shape'],detail=s['altare:detail'],facing=s['altare:facing'],stone=s['altare:stone'],cloth=s['altare:cloth'];
++ if(!integer(shape,9)||!integer(detail,4)||!integer(facing,3)||!integer(stone,2)||!integer(cloth,4))throw Error('configuration');
++ const p=CLASSIC_POSES[shape*5+detail]!;
++ return {edges:rotateEdges(p.edges,facing),frontal:p.frontal,facing,stone,cloth};
++}
++/** Explicit contour repair for editing only. Migration never calls this lossy operation. */
++export function repairClassic<T extends ClassicPose>(t:T):T{
++ if(!valid(t))throw Error('configuration');
++ return indexFor(t)>=0?t:{...t,frontal:0};
++}
++export interface ClassicSnapshot {id:string;states:Record<string,unknown>}
++export type ClassicMigrationResult={ok:true;snapshot:{id:string;states:Record<string,number>}}|{ok:false;reason:'unsupported-id'|'invalid-states'|'unrepresentable-pose';snapshot:ClassicSnapshot};
++/** Only exported old snapshots are supported: Bedrock may discard old states before scripts run. */
++export function migrateLegacyClassicSnapshot(snapshot:ClassicSnapshot):ClassicMigrationResult{
++ if(snapshot.id!=='altare:mensa')return {ok:false,reason:'unsupported-id',snapshot};
++ const keys=['altare:edges','altare:frontal','altare:facing','altare:stone','altare:cloth'];
++ if(!snapshot.states||typeof snapshot.states!=='object'||Array.isArray(snapshot.states)||Object.keys(snapshot.states).length!==keys.length||!keys.every(k=>Object.hasOwn(snapshot.states,k)))return {ok:false,reason:'invalid-states',snapshot};
++ const t=Object.fromEntries(['edges','frontal','facing','stone','cloth'].map(k=>[k,snapshot.states[`altare:${k}`]])) as unknown as ClassicPose;
++ if(!valid(t))return {ok:false,reason:'invalid-states',snapshot};
++ if(indexFor(t)<0)return {ok:false,reason:'unrepresentable-pose',snapshot};
++ return {ok:true,snapshot:{id:snapshot.id,states:encodeClassic(t)}};
++}
+--- a/addons/altare/src/domain/surface.ts
++++ b/addons/altare/src/domain/surface.ts
+@@ -2,6 +2,7 @@
+ import {designById,centerRole,SURFACES,TEXTILE_VALUES,compactLayout} from './catalog.ts';
+ import {repairClassicTextile} from './classic-textile-layout.ts';
+ import {paletteRoleAfterContour} from './palette-layout.ts';
++import {repairClassic} from './classic-layout.ts';
+ export interface Position { x:number; y:number; z:number }
+ export interface Tile { position:Position; stone:number; cloth:number; frontal:number; facing:number; edges:number; design?:string; textileRole?:number }
+ export interface Finish { stone:number; cloth:number; ornamental:boolean; facing:number; design?:string }
+@@ -12,7 +13,7 @@
+ export const sameTile = (a:Tile|null|undefined,b:Tile):boolean => !!a && positionKey(a.position)===positionKey(b.position)
+   && a.stone===b.stone && a.cloth===b.cloth && a.frontal===b.frontal && a.facing===b.facing && a.edges===b.edges && a.design===b.design&&(a.textileRole??0)===(b.textileRole??0);
+ export function withEdges(tile:Tile,edges:number):Tile {
+- const next={...tile,edges},d=designById(tile.design);if(d?.codec==='classic_textile')return {...next,...repairClassicTextile(next)};return compactLayout(d)?{...next,frontal:paletteRoleAfterContour(next)}:next;
++ const next={...tile,edges},d=designById(tile.design);if(!tile.design)return repairClassic(next);if(d?.codec==='classic_textile')return {...next,...repairClassicTextile(next)};return compactLayout(d)?{...next,frontal:paletteRoleAfterContour(next)}:next;
+ }
+ 
+ /** A placed extension inherits the finish, never a neighbour's centre role. */
+--- /dev/null
++++ b/addons/altare/tests/atelier-compaction.node.ts
+@@ -0,0 +1,77 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import {ATELIER_DESIGNS,CATALOG_PERMUTATIONS,designFor} from '../src/domain/catalog.ts';
++import {PALETTE_SHAPES,rotateEdges} from '../src/domain/palette-layout.ts';
++import {encodeTile,decodeTile} from '../src/domain/block-codec.ts';
++import {planFinish,withEdges,type Tile} from '../src/domain/surface.ts';
++import {migrateLegacyAtelierSnapshot} from '../src/domain/catalog-migration.ts';
++
++const grid=(w:number,d:number):Tile[]=>Array.from({length:w*d},(_,i)=>({position:{x:i%w,y:0,z:Math.floor(i/w)},stone:0,cloth:0,frontal:0,facing:0,edges:15}));
++test('Atelier packing retains every recipe and orientation with 9×64 + 126×112 states',()=>{
++ assert.equal(ATELIER_DESIGNS.length,135);
++ assert.equal(ATELIER_DESIGNS.filter(d=>d.codec==='edges').length,9);
++ assert.equal(ATELIER_DESIGNS.filter(d=>d.codec==='compact').length,126);
++ assert.equal(CATALOG_PERMUTATIONS,51608);
++ for(const d of ATELIER_DESIGNS){
++  const shapes=d.codec==='edges'?Array.from({length:16},(_,edges)=>({edges,frontal:0})):PALETTE_SHAPES;
++  let count=0;
++  for(const shape of shapes)for(let facing=0;facing<4;facing++){
++   const t={...planFinish(grid(1,1),{stone:0,cloth:0,ornamental:false,facing,design:d.id})[0]!,edges:rotateEdges(shape.edges,facing),frontal:shape.frontal};
++   const e=encodeTile(t);assert.deepEqual(decodeTile(e.id,t.position,e.states),t);count++;
++   assert.equal(Object.keys(e.states).length,d.codec==='edges'?2:3);
++   for(let edges=0;edges<16;edges++){const next=withEdges(t,edges),encoded=encodeTile(next);assert.deepEqual(decodeTile(encoded.id,next.position,encoded.states),next);}
++  }
++  assert.equal(count,d.codec==='edges'?64:112);
++ }
++});
++
++test('all rectangular Atelier planners fit the compact state domain in all four directions',()=>{
++ // Cosmetic axes do not affect topology. Exercise each semantic combination.
++ for(const structure of ['pilaster','ogive','trestle'])for(const textile of ['none','agnus','ruby','verdant','requiem'])for(const frontal of ['none','cross','agnus']){
++  const design=designFor(structure,'walnut',textile,frontal);
++  for(let w=1;w<=16;w++)for(let d=1;d<=8;d++)for(let facing=0;facing<4;facing++){
++   const tiles=planFinish(grid(w,d),{stone:0,cloth:0,ornamental:false,facing,design:design.id});
++   for(const t of tiles){const e=encodeTile(t);assert.deepEqual(decodeTile(e.id,t.position,e.states),t);}
++  }
++ }
++});
++
++test('precompact Atelier snapshot conversion is explicit, pure, and rejects unsupported roles',()=>{
++ const bare=designFor('trestle','walnut','none','none');
++ const source={id:bare.id,states:{'altare:edges':15,'altare:facing':3,'altare:role':2}};
++ const before=structuredClone(source),result=migrateLegacyAtelierSnapshot(source);
++ assert.equal(result.ok,true);if(result.ok){assert.deepEqual(result.normalizations,['unused-role-cleared']);assert.deepEqual(result.snapshot.states,{'altare:edges':15,'altare:facing':3});}
++ assert.deepEqual(source,before);
++ const decorated=designFor('ogive','marble','agnus','cross');
++ for(let facing=0;facing<4;facing++)for(const p of PALETTE_SHAPES){
++  const old={id:decorated.id,states:{'altare:edges':rotateEdges(p.edges,facing),'altare:facing':facing,'altare:role':p.frontal}};
++  const r=migrateLegacyAtelierSnapshot(old);assert.equal(r.ok,true);if(r.ok){const tile=decodeTile(r.snapshot.id,{x:0,y:0,z:0},r.snapshot.states)!;assert.equal(tile.edges,old.states['altare:edges']);assert.equal(tile.facing,facing);assert.equal(tile.frontal,p.frontal);assert.deepEqual(r.normalizations,[]);}
++ }
++ const rejected=migrateLegacyAtelierSnapshot({id:decorated.id,states:{'altare:edges':0,'altare:facing':0,'altare:role':1}});
++ assert.equal(rejected.ok,false);if(!rejected.ok)assert.equal(rejected.reason,'unrepresentable-pose');
++ for(const invalid of [NaN,Infinity,-1,16,1.5,'1',null,undefined]){
++  const r=migrateLegacyAtelierSnapshot({id:decorated.id,states:{'altare:edges':invalid,'altare:facing':0,'altare:role':0}});assert.equal(r.ok,false);
++ }
++ assert.equal(migrateLegacyAtelierSnapshot({id:'minecraft:stone',states:{}}).ok,false);
++});
++
++
++test('new Atelier and classic schemas reject malformed or mixed legacy snapshots',()=>{
++ const bare=designFor('trestle','walnut','none','none');
++ const decorated=designFor('ogive','marble','agnus','cross');
++ const position={x:0,y:0,z:0};
++ const bareTile=planFinish(grid(1,1),{stone:0,cloth:0,ornamental:false,facing:0,design:bare.id})[0]!;
++ for(const invalid of [NaN,Infinity,-1,16,1.5,'1',null,undefined]){
++  assert.throws(()=>decodeTile(bare.id,position,{'altare:edges':invalid,'altare:facing':0}));
++  assert.throws(()=>encodeTile({...bareTile,edges:invalid as number}));
++ }
++ for(const invalid of [NaN,Infinity,-1,4,1.5,'1',null,undefined]){
++  assert.throws(()=>decodeTile(bare.id,position,{'altare:edges':15,'altare:facing':invalid}));
++  assert.throws(()=>encodeTile({...bareTile,facing:invalid as number}));
++ }
++ for(const legacyRole of [0,1,2,3])assert.throws(()=>decodeTile(bare.id,position,{'altare:edges':15,'altare:facing':0,'altare:role':legacyRole}));
++ assert.throws(()=>decodeTile(bare.id,position,{'altare:edges':15,'altare:facing':0,'altare:shape':0,'altare:detail':0}));
++ const compact={'altare:shape':0,'altare:detail':0,'altare:facing':0};
++ for(const extra of [{'altare:edges':15},{'altare:role':0},{'altare:shape':null},{'altare:detail':'0'}])assert.throws(()=>decodeTile(decorated.id,position,{...compact,...extra}));
++ assert.throws(()=>decodeTile('altare:mensa',position,{'altare:shape':0,'altare:detail':0,'altare:facing':0,'altare:stone':0,'altare:cloth':1,'altare:frontal':0}));
++});
+--- a/addons/altare/tests/catalog.node.ts
++++ b/addons/altare/tests/catalog.node.ts
+@@ -4,17 +4,18 @@
+ import {planFinish,sameTile,positionKey,type Tile,type Position} from '../src/domain/surface.ts';
+ import {commitFinish} from '../src/application/finish.ts';
+ import {encodeTile,decodeTile} from '../src/domain/block-codec.ts';
++import {PALETTE_SHAPES,rotateEdges} from '../src/domain/palette-layout.ts';
+ const grid=(w:number,d:number):Tile[]=>Array.from({length:w*d},(_,i)=>({position:{x:i%w,y:4,z:Math.floor(i/w)},stone:0,cloth:3,frontal:0,facing:0,edges:15}));
+ test('catalog has stable unique identities and a bounded total state budget',()=>{
+  assert.equal(ATELIER_DESIGNS.length,135);assert.equal(DESIGNS.length,413);assert.equal(new Set(DESIGNS.map(d=>d.id)).size,413);
+- assert.equal(CATALOG_PERMUTATIONS,80000);assert.ok(CATALOG_PERMUTATIONS<=80000);
++ assert.equal(CATALOG_PERMUTATIONS,51608);assert.ok(CATALOG_PERMUTATIONS+9744<=65536);
+  assert.equal(designFor('trestle','walnut','agnus','none').id,'altare:a_trestle_walnut_agnus_none');
+  assert.equal(designById('altare:a_future'),undefined);assert.throws(()=>designFor('future','marble','agnus','none'));
+ });
+ test('collection centers remain unique at widths 1..16 and in four directions',()=>{
+  for(let width=1;width<=16;width++)for(let facing=0;facing<4;facing++){
+   const before=grid(facing%2?2:width,facing%2?width:2);
+-  const after=planFinish(before,{stone:0,cloth:0,ornamental:false,facing,design:DESIGNS[0]!.id});
++  const after=planFinish(before,{stone:0,cloth:0,ornamental:false,facing,design:designFor('pilaster','marble','agnus','cross').id});
+   assert.equal(after.filter(t=>t.frontal===1).length,width%2);
+   assert.equal(after.filter(t=>t.frontal===2).length,width%2?0:1);
+   assert.equal(after.filter(t=>t.frontal===3).length,width%2?0:1);
+@@ -33,11 +34,11 @@
+  const old=planFinish(after,{stone:0,cloth:3,ornamental:true,facing:0});
+  assert.ok(old.every(t=>!t.design));assert.equal(old.filter(t=>t.frontal===2).length,1);
+ });
+-test('persistent codec round-trips every recipe, central role and edge mask without writing cosmetic axes',()=>{
+- for(const design of ATELIER_DESIGNS)for(const frontal of [0,1,2,3])for(let edges=0;edges<16;edges++){
++test('persistent codec round-trips every reachable recipe pose without writing cosmetic axes',()=>{
++ for(const design of ATELIER_DESIGNS)for(const pose of design.codec==='edges'?Array.from({length:16},(_,edges)=>({edges,frontal:0})):PALETTE_SHAPES){
+   const t=planFinish(grid(1,1),{stone:0,cloth:0,ornamental:false,facing:2,design:design.id})[0]!;
+-  const tile={...t,frontal,edges},encoded=encodeTile(tile);
+-  assert.equal(Object.keys(encoded.states).length,3);
++  const tile={...t,frontal:pose.frontal,edges:rotateEdges(pose.edges,t.facing)},encoded=encodeTile(tile);
++  assert.equal(Object.keys(encoded.states).length,design.codec==='edges'?2:3);
+   assert.deepEqual(decodeTile(encoded.id,tile.position,encoded.states),tile);
+  }
+  const old=grid(1,1)[0]!,e=encodeTile(old);assert.deepEqual(decodeTile(e.id,old.position,e.states),old);
+--- /dev/null
++++ b/addons/altare/tests/classic-compaction.node.ts
+@@ -0,0 +1,86 @@
++import test from 'node:test';
++import {createHash} from 'node:crypto';
++import assert from 'node:assert/strict';
++import {CLASSIC_POSES,CLASSIC_STATES,encodeClassic,decodeClassic,repairClassic,migrateLegacyClassicSnapshot} from '../src/domain/classic-layout.ts';
++import {rotateEdges} from '../src/domain/palette-layout.ts';
++import {planFinish} from '../src/domain/surface.ts';
++// @ts-ignore asset compiler is JavaScript by design
++import {compileClassic} from '../tools/classic-pack.mjs';
++// @ts-ignore authoritative unchanged model expressions
++import {visibility,geometryName} from '../assets-src/model.mjs';
++const math={floor:Math.floor,mod:(a:number,b:number)=>a%b};
++const functions=new Map<string,Function>();
++function evaluate(s:unknown,states:Record<string,number>):unknown{
++ if(typeof s!=='string')return s;
++ let fn=functions.get(s);if(!fn){fn=Function('q','math',`return (${s});`);functions.set(s,fn);}
++ return fn({block_state:(k:string)=>states[k]},math);
++}
++const material=(id:string)=>({texture:`altare_${id}`,render_method:'opaque',ambient_occlusion:1,face_dimming:true});
++function oldMaterials(stone:number,cloth:number,frontal:number){return {'*':material(`stone_${stone}`),stone:material(`stone_${stone}`),linen:material('linen'),top:material('linen'),seam:material(cloth>=3?'seam_white_gold':'linen'),hem:material(`hem_${[2,4].includes(cloth)?'long':'short'}_${cloth>=3?'gold':'plain'}`),frontal:material(`frontal_${Math.max(1,frontal)}`),frame:material('frontal_frame')};}
++test('classic codebook is exactly 50 poses and 3000 reachable states; all effective outputs preserve the old block',()=>{
++ const b=compileClassic()['minecraft:block'];
++ assert.equal(CLASSIC_STATES,3000);assert.equal(CLASSIC_POSES.length,50);
++ assert.equal(createHash('sha256').update(JSON.stringify(CLASSIC_POSES)).digest('hex'),'f66361d205f1805def0943dbb0a510e0b1808bafb53fa4cb99bb2c0764dccfbd','Published pose indices must not be reordered');
++ assert.equal(new Set(CLASSIC_POSES.map(p=>`${p.edges},${p.frontal}`)).size,50);
++ assert.equal(Object.values(b.description.states).reduce((n:number,s:any)=>n*s.length,1),3000);
++ for(const domain of Object.values(b.description.states) as any[])assert.ok(domain.length<=16);
++ assert.doesNotMatch(JSON.stringify(b),/altare:(edges|frontal)/);
++ const expectedCommon={'minecraft:collision_box':true,'minecraft:selection_box':true,'minecraft:destructible_by_mining':{seconds_to_destroy:1.5},'minecraft:destructible_by_explosion':{explosion_resistance:6},'minecraft:movable':{movement_type:'immovable'},'minecraft:map_color':'#d1c9b5','minecraft:light_dampening':15,'minecraft:tick':{interval_range:[80,120],looping:true},'altare:surface':{}};
++ for(const [k,v] of Object.entries(expectedCommon))assert.deepEqual(b.components[k],v);
++ const encoded=new Set<string>();
++ for(const p of CLASSIC_POSES)for(let facing=0;facing<4;facing++)for(let stone=0;stone<3;stone++)for(let cloth=0;cloth<5;cloth++){
++  const t={...p,edges:rotateEdges(p.edges,facing),facing,stone,cloth},states=encodeClassic(t);
++  encoded.add(JSON.stringify(states));assert.deepEqual(decodeClassic(states),t);
++  const c={...b.components};let matches=0;
++  for(const perm of b.permutations)if(evaluate(perm.condition,states)){Object.assign(c,perm.components);matches++;}
++  assert.equal(matches,2);
++  const oldStates=Object.fromEntries(Object.entries(t).map(([k,v])=>[`altare:${k}`,v]));
++  const expectedVisibility=Object.fromEntries(Object.entries(visibility(facing)).map(([k,v])=>[k,!!evaluate(v,oldStates)]));
++  const actual=c['minecraft:geometry'];
++  assert.equal(actual.identifier,`geometry.altare.${geometryName([2,4].includes(cloth),facing)}`);
++  assert.deepEqual(Object.fromEntries(Object.entries(actual.bone_visibility).map(([k,v])=>[k,!!evaluate(v,states)])),expectedVisibility);
++  assert.deepEqual(c['minecraft:material_instances'],oldMaterials(stone,cloth,p.frontal));
++ }
++ assert.equal(encoded.size,3000);
++});
++test('all rectangular planner poses and eight rosette contours are preserved',()=>{
++ const poses=new Set<string>();
++ for(let w=1;w<=16;w++)for(let d=1;d<=8;d++)for(let facing=0;facing<4;facing++)for(const ornamental of [false,true]){
++  const width=facing%2?d:w,depth=facing%2?w:d;
++  const tiles=Array.from({length:width*depth},(_,i)=>({position:{x:i%width,y:0,z:Math.floor(i/width)},stone:0,cloth:0,frontal:0,facing:0,edges:15}));
++  for(const t of planFinish(tiles,{stone:0,cloth:0,facing,ornamental})){poses.add(`${rotateEdges(t.edges,-facing)},${t.frontal}`);assert.deepEqual(decodeClassic(encodeClassic(t)),{edges:t.edges,frontal:t.frontal,facing:t.facing,stone:t.stone,cloth:t.cloth});}
++ }
++ assert.equal(poses.size,42);
++ assert.deepEqual(CLASSIC_POSES.filter(p=>p.frontal===5).map(p=>p.edges),[1,3,5,7,9,11,13,15]);
++});
++test('migration is pure and rejects every removed pose without silent repair',()=>{
++ let accepted=0,rejected=0;
++ for(let edges=0;edges<16;edges++)for(let frontal=0;frontal<12;frontal++)for(let facing=0;facing<4;facing++)for(let stone=0;stone<3;stone++)for(let cloth=0;cloth<5;cloth++){
++  const t={edges,frontal,facing,stone,cloth};
++  const snapshot={id:'altare:mensa',states:Object.fromEntries(Object.entries(t).map(([k,v])=>[`altare:${k}`,v]))};
++  const before=JSON.stringify(snapshot),r=migrateLegacyClassicSnapshot(snapshot);
++  assert.equal(JSON.stringify(snapshot),before);
++  if(r.ok){accepted++;assert.deepEqual(decodeClassic(r.snapshot.states),t);}else{rejected++;assert.equal(r.reason,'unrepresentable-pose');assert.equal(r.snapshot,snapshot);assert.throws(()=>encodeClassic(t));}
++ }
++ assert.equal(accepted,3000);assert.equal(rejected,8520);
++ assert.equal(migrateLegacyClassicSnapshot({id:'other',states:{}}).ok,false);
++ assert.equal(migrateLegacyClassicSnapshot({id:'altare:mensa',states:{}}).ok,false);
++ const t={edges:0,frontal:5,facing:0,stone:0,cloth:0};assert.equal(repairClassic(t).frontal,0);assert.equal(t.frontal,5);
++ for(const bad of [-1,16,1.5,NaN])assert.throws(()=>encodeClassic({...t,edges:bad}));
++ for(const bad of [-1,10,1.5,'0',null])assert.throws(()=>decodeClassic({'altare:shape':bad,'altare:detail':0,'altare:facing':0,'altare:stone':0,'altare:cloth':0}));
++});
++
++test('migration rejects malformed or ambiguous old states without throwing',()=>{
++ const valid={'altare:edges':15,'altare:frontal':0,'altare:facing':0,'altare:stone':0,'altare:cloth':1};
++ const invalid:unknown[]=[null,[],Object.entries(valid),'states',false,NaN,{}, {...valid,extra:1},{...valid,'altare:shape':0,'altare:detail':0}];
++ for(const [key,max] of Object.entries({'altare:edges':15,'altare:frontal':11,'altare:facing':3,'altare:stone':2,'altare:cloth':4})){
++  for(const value of ['0',NaN,Infinity,-1,max+1,.5,null,undefined,true])invalid.push({...valid,[key]:value});
++  const missing={...valid} as Record<string,unknown>;delete missing[key];invalid.push(missing);
++ }
++ for(const states of invalid){
++  const snapshot={id:'altare:mensa',states:states as Record<string,unknown>};
++  const result=migrateLegacyClassicSnapshot(snapshot);
++  assert.equal(result.ok,false);if(!result.ok){assert.equal(result.reason,'invalid-states');assert.equal(result.snapshot,snapshot);}
++ }
++ assert.equal(migrateLegacyClassicSnapshot({id:'altare:mensa',states:valid}).ok,true);
++});
+--- a/addons/altare/tests/crossbrace.node.ts
++++ b/addons/altare/tests/crossbrace.node.ts
+@@ -19,7 +19,7 @@
+ }
+ test('Cruzeta adds seventeen finishes without relaxing either state ceiling',()=>{
+  assert.equal(DESIGNS.filter(d=>d.structure==='crossbrace').length,17);
+- assert.equal(CATALOG_PERMUTATIONS,80000);assert.ok(CATALOG_PERMUTATIONS+9744<=90000);
++ assert.equal(CATALOG_PERMUTATIONS,51608);assert.ok(CATALOG_PERMUTATIONS+9744<=65536);
+  const bare=JOINERY_DESIGNS.find(d=>d.id==='altare:j_crossbrace_none')!;assert.equal(bare.codec,'symmetric');
+  for(let facing=0;facing<4;facing++)for(const [w,d] of [[1,1],[7,2],[8,2],[16,8]]){
+   for(const t of planFinish(grid(w!,d!),{stone:0,cloth:0,ornamental:false,facing,design:bare.id})){
+--- a/addons/altare/tests/palette.node.ts
++++ b/addons/altare/tests/palette.node.ts
+@@ -40,7 +40,7 @@
+    const p=encodeTile(next);assert.deepEqual(decodeTile(p.id,next.position,p.states),next);
+   }
+  }
+- const old=grid(1,1)[0]!;assert.deepEqual(withEdges({...old,frontal:9},0),{...old,frontal:9,edges:0});
++ const old=grid(1,1)[0]!;assert.deepEqual(withEdges({...old,frontal:9},0),{...old,frontal:0,edges:0});
+ });
+ test('palette changes participate in late identity checks and rollback without writing above the altar',()=>{
+  const before=planFinish(grid(8,2),{stone:0,cloth:0,ornamental:false,facing:1,design:liturgicalDesign('pilaster','marble','rose').id});
+--- a/addons/altare/tools/audit-variations.mjs
++++ b/addons/altare/tools/audit-variations.mjs
+@@ -10,6 +10,6 @@
+  group.blocks++;group.permutations+=combinations;groups.set(family,group);
+ }
+ const families=[...groups.values()].sort((a,b)=>b.permutations-a.permutations),total=families.reduce((n,g)=>n+g.permutations,0);
+-const report={version:JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8')).version,unit:'Declared block-state combinations, not crafting recipes or placed altar count',families,total,reference:65536,policy:'0.9.0 diagnostic exception: Altare <=80000 and known combined packs <=90000. The Microsoft reference 65536 is exceeded; native profiling and non-Marketplace status remain explicit.',otherAddons:'Not included in this family breakdown'};
++const report={version:JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8')).version,unit:'Declared block-state combinations, not crafting recipes or placed altar count',families,total,reference:65536,policy:'Pre-release compaction: Altare and the known combined packs must each remain within 65536. This offline registration budget does not validate native rendering, persistence, performance, or Marketplace approval.',otherAddons:'Not included in this family breakdown'};
+ fs.writeFileSync(path.join(root,'out/variation-audit.json'),JSON.stringify(report,null,2)+'\n');
+ console.table(families);console.log(`Altare: ${total} declared combinations. Creative mode does not change this count.`);
+--- a/addons/altare/tools/build.mjs
++++ b/addons/altare/tools/build.mjs
+@@ -3,10 +3,11 @@
+ import crypto from 'node:crypto';
+ import {PNG} from 'pngjs';
+ import {build} from 'esbuild';
+-import {authorGeometry,visibility,geometryName} from '../assets-src/model.mjs';
++import {authorGeometry,geometryName} from '../assets-src/model.mjs';
+ import {definitions} from '../assets-src/textures.mjs';
+ import {locales} from '../assets-src/locales.mjs';
+-import {FRONTAL_STATES} from '../src/domain/frontal-layout.ts';
++import {compileClassic} from './classic-pack.mjs';
++export {materials} from './classic-pack.mjs';
+ import {DESIGNS,CATALOG_PERMUTATIONS} from '../src/domain/catalog.ts';
+ import {atelierDefinitions} from '../assets-src/atelier/materials.mjs';
+ import {ogiveDefinitions} from '../assets-src/atelier/ogive-art.mjs';
+@@ -50,29 +51,7 @@
+ for(const long of [false,true])for(let facing=0;facing<4;facing++)json(`packs/resource/models/blocks/${geometryName(long,facing)}.geo.json`,authorGeometry(long,facing));
+ for(const [name,{doc}] of Object.entries(collection.models))json(`packs/resource/models/blocks/${name}.geo.json`,doc);
+ for(const [id,block] of Object.entries(collection.blocks))json(`packs/behavior/blocks/${id.split(':')[1]}.block.json`,block);
+-const material=id=>({texture:`altare_${id}`,render_method:'opaque',ambient_occlusion:1,face_dimming:true});
+-export function materials(stone=0,cloth=1,frontal=0){
+- return {'*':material(`stone_${stone}`),stone:material(`stone_${stone}`),linen:material('linen'),top:material('linen'),seam:material(cloth>=3?'seam_white_gold':'linen'),
+-  hem:material(`hem_${[2,4].includes(cloth)?'long':'short'}_${cloth>=3?'gold':'plain'}`),frontal:material(`frontal_${Math.max(1,frontal)}`),frame:material('frontal_frame')};
+-}
+-const geom=(long,facing=0)=>({identifier:`geometry.altare.${geometryName(long,facing)}`,bone_visibility:visibility(facing)});
+-const permutations=[];
+-// One complete material mapping per style combination avoids component overwrite ambiguity.
+-for(let stone=0;stone<3;stone++)for(let cloth=0;cloth<5;cloth++)for(const frontal of FRONTAL_STATES){
+- permutations.push({condition:`q.block_state('altare:stone') == ${stone} && q.block_state('altare:cloth') == ${cloth} && q.block_state('altare:frontal') == ${frontal}`,
+-  components:{'minecraft:material_instances':materials(stone,cloth,frontal)}});
+-}
+-for(const long of [false,true])for(let facing=0;facing<4;facing++){
+- const cloth=long?"q.block_state('altare:cloth') == 2 || q.block_state('altare:cloth') == 4":"q.block_state('altare:cloth') != 2 && q.block_state('altare:cloth') != 4";
+- permutations.push({condition:`q.block_state('altare:facing') == ${facing} && (${cloth})`,components:{'minecraft:geometry':geom(long,facing)}});
+-}
+-json('packs/behavior/blocks/mensa.block.json',{format_version:'1.26.30','minecraft:block':{
+- description:{identifier:'altare:mensa',menu_category:{category:'construction'},states:{'altare:edges':[15,...Array.from({length:15},(_,i)=>i)],'altare:stone':[0,1,2],'altare:cloth':[1,0,2,3,4],'altare:frontal':FRONTAL_STATES,'altare:facing':[0,1,2,3]}},
+- components:{'minecraft:geometry':geom(false),'minecraft:material_instances':materials(),'minecraft:collision_box':true,'minecraft:selection_box':true,
+-  'minecraft:destructible_by_mining':{seconds_to_destroy:1.5},'minecraft:destructible_by_explosion':{explosion_resistance:6},
+-  'minecraft:movable':{movement_type:'immovable'},'minecraft:map_color':'#d1c9b5','minecraft:light_dampening':15,
+-  'minecraft:tick':{interval_range:[80,120],looping:true},'altare:surface':{}},permutations,
+-}});
++json('packs/behavior/blocks/mensa.block.json',compileClassic());
+ json('packs/behavior/items/finish_tool.item.json',{format_version:'1.26.30','minecraft:item':{description:{identifier:'altare:finish_tool',menu_category:{category:'equipment'}},components:{'minecraft:display_name':{value:'item.altare:finish_tool.name'},'minecraft:icon':{textures:{default:'altare_finish_tool'}},'minecraft:max_stack_size':1}}});
+ write('packs/behavior/functions/altare/dev_kit.mcfunction','give @s altare:mensa 64\ngive @s altare:finish_tool 1\n');
+ json('packs/resource/blocks.json',{format_version:'1.1.0','altare:mensa':{sound:'stone'},...collection.sounds});
+--- a/addons/altare/tools/catalog-pack.mjs
++++ b/addons/altare/tools/catalog-pack.mjs
+@@ -1,16 +1,18 @@
+ import {compileUniversal,clothTexture,seamTexture} from './universal-pack.mjs';
+-import {ATELIER_DESIGNS,PALETTE_DESIGNS,JOINERY_DESIGNS,JOINERY_STRUCTURES,ORNATE_DESIGNS,ROLE_STATES,STRUCTURES,TEXTILES,FRONTALS,designFor} from '../src/domain/catalog.ts';
++import {ATELIER_DESIGNS,PALETTE_DESIGNS,JOINERY_DESIGNS,JOINERY_STRUCTURES,ORNATE_DESIGNS,STRUCTURES,TEXTILES,FRONTALS,designFor} from '../src/domain/catalog.ts';
+ import {decodePalette} from '../src/domain/palette-layout.ts';
+ import {atelierGeometry,atelierGeometryName,structureCollision} from '../assets-src/atelier/geometry.mjs';
+ import {ornateGeometry,ornateGeometryName} from '../assets-src/atelier/ornate.mjs';
+ const material=texture=>({texture:`altare_${texture}`,render_method:'alpha_test',ambient_occlusion:1,face_dimming:true});
+ const detailed=structure=>['pilaster','ogive'].includes(structure);
+ export function collectionMaterials(d,role=0,facing=0){
++ // The new Atelier codec is storage-only; do not reinterpret its material axes.
++ const materialCodec=d.id?.startsWith('altare:a_')?undefined:d.codec;
+  const body={marble:'stone_0',limestone:'stone_1',walnut:'atelier_walnut'}[d.surface];
+  const cloth=clothTexture(d,role);
+  const carved=detailed(d.structure),rail=material(d.surface==='walnut'?'joinery_walnut_horizontal':body);
+  const cards=carved?Object.fromEntries(Array.from({length:4},(_,i)=>[`cloth_${i}`,material(clothTexture(d,i===facing?role:0))])):{};
+- return {'*':material(body),stone:material(body),top:material(d.textile==='none'?((d.codec||carved&&d.surface==='walnut')?'joinery_walnut_horizontal':body):'linen'),linen:material('linen'),seam:material(seamTexture(d)),drape:material(cloth),repeat:material(clothTexture(d,0)),metal:material('frontal_frame'),plaque:material('atelier_agnus'),...(d.codec?{wood_cross:material('joinery_walnut_horizontal')}:{}),...(carved?{rail,...cards}:{}),...(d.structure==='crossbrace'?{joinery_inlay:material('crossbrace_inlay')}:{}),...(d.structure==='ogive'?{arcade:material(`ogive_${body}`)}:{})};
++ return {'*':material(body),stone:material(body),top:material(d.textile==='none'?((materialCodec||carved&&d.surface==='walnut')?'joinery_walnut_horizontal':body):'linen'),linen:material('linen'),seam:material(seamTexture(d)),drape:material(cloth),repeat:material(clothTexture(d,0)),metal:material('frontal_frame'),plaque:material('atelier_agnus'),...(materialCodec?{wood_cross:material('joinery_walnut_horizontal')}:{}),...(carved?{rail,...cards}:{}),...(d.structure==='crossbrace'?{joinery_inlay:material('crossbrace_inlay')}:{}),...(d.structure==='ogive'?{arcade:material(`ogive_${body}`)}:{})};
+ }
+ export function compileCollection(){
+  const models={},blocks={},sounds={};
+@@ -20,13 +22,21 @@
+  }
+  for(const d of ATELIER_DESIGNS){
+   const geom=(facing,edges)=>{const name=atelierGeometryName(d.structure,d.textile,d.frontal,detailed(d.structure)&&d.frontal==='none'&&edges!==undefined?0:facing,edges);return {identifier:`geometry.altare.${name}`,bone_visibility:models[name].visibility};};
+-  const permutations=[];
+-  for(let facing=0;facing<4;facing++)for(const role of ROLE_STATES)permutations.push({condition:`q.block_state('altare:facing') == ${facing} && q.block_state('altare:role') == ${role}`,components:{...(detailed(d.structure)?{}:{'minecraft:geometry':geom(facing)}),'minecraft:material_instances':collectionMaterials(d,role,facing)}});
+-  if(detailed(d.structure))for(let facing=0;facing<4;facing++)for(let edges=0;edges<16;edges++)permutations.push({condition:`q.block_state('altare:facing') == ${facing} && q.block_state('altare:edges') == ${edges}`,components:{'minecraft:geometry':geom(facing,edges)}});
+-  if(d.structure==='trestle')for(let facing=0;facing<4;facing++)for(let edges=0;edges<16;edges++)permutations.push({condition:`q.block_state('altare:facing') == ${facing} && q.block_state('altare:edges') == ${edges}`,components:{'minecraft:collision_box':structureCollision(d.structure,edges,facing)}});
++  const states=d.codec==='edges'?{'altare:edges':[15,...Array.from({length:15},(_,i)=>i)],'altare:facing':[0,1,2,3]}:{'altare:shape':[0,1,2,3,4,5,6],'altare:detail':[0,1,2,3],'altare:facing':[0,1,2,3]};
++  // Packing is a logical schema change, not a new furniture material. The
++  // historic Atelier material contract had no codec flag; preserve it exactly.
++  const visualDesign={...d,codec:undefined};
++  const rows=Object.entries(states).reduce((rows,[key,values])=>rows.flatMap(row=>values.map(value=>({...row,[key]:value}))),[{}]);
++  const permutations=rows.map(state=>{
++   const pose=d.codec==='edges'?{edges:state['altare:edges'],facing:state['altare:facing'],frontal:0}:decodePalette(state);
++   const geometry=geom(pose.facing,detailed(d.structure)?pose.edges:undefined);
++   const q={block_state:key=>({'altare:edges':pose.edges,'altare:role':pose.frontal,'altare:facing':pose.facing})[key]},math={floor:Math.floor,mod:(a,b)=>a%b};
++   const bone_visibility=Object.fromEntries(Object.entries(geometry.bone_visibility).map(([name,expression])=>[name,typeof expression==='boolean'?expression:Boolean(Function('q','math',`return ${expression}`)(q,math))]));
++   return {condition:Object.entries(state).map(([key,value])=>`q.block_state('${key}') == ${value}`).join(' && '),components:{'minecraft:geometry':{...geometry,bone_visibility},'minecraft:material_instances':collectionMaterials(visualDesign,pose.frontal,pose.facing),'minecraft:collision_box':structureCollision(d.structure,pose.edges,pose.facing)}};
++  });
+   blocks[d.id]={format_version:'1.26.30','minecraft:block':{
+-   description:{identifier:d.id,states:{'altare:edges':[15,...Array.from({length:15},(_,i)=>i)],'altare:facing':[0,1,2,3],'altare:role':ROLE_STATES}},
+-   components:{'minecraft:geometry':geom(0,detailed(d.structure)?15:undefined),'minecraft:material_instances':collectionMaterials(d),'minecraft:collision_box':structureCollision(d.structure,15,0),'minecraft:selection_box':true,
++   description:{identifier:d.id,states},
++   components:{...permutations[0].components,'minecraft:selection_box':true,
+     'minecraft:destructible_by_mining':{seconds_to_destroy:1.5},'minecraft:destructible_by_explosion':{explosion_resistance:6},'minecraft:movable':{movement_type:'immovable'},'minecraft:map_color':'#c6b59b','minecraft:light_dampening':d.structure==='trestle'?0:15,'minecraft:tick':{interval_range:[80,120],looping:true},'altare:surface':{}},permutations}};
+   sounds[d.id]={sound:d.surface==='walnut'?'wood':'stone'};
+  }
+--- /dev/null
++++ b/addons/altare/tools/classic-pack.mjs
+@@ -0,0 +1,32 @@
++import {CLASSIC_POSES} from '../src/domain/classic-layout.ts';
++import {rotateEdges} from '../src/domain/palette-layout.ts';
++import {visibility,geometryName} from '../assets-src/model.mjs';
++const material=id=>({texture:`altare_${id}`,render_method:'opaque',ambient_occlusion:1,face_dimming:true});
++export function materials(stone=0,cloth=1,frontal=0){
++ return {'*':material(`stone_${stone}`),stone:material(`stone_${stone}`),linen:material('linen'),top:material('linen'),seam:material(cloth>=3?'seam_white_gold':'linen'),
++  hem:material(`hem_${[2,4].includes(cloth)?'long':'short'}_${cloth>=3?'gold':'plain'}`),frontal:material(`frontal_${Math.max(1,frontal)}`),frame:material('frontal_frame')};
++}
++const poseCondition=i=>`q.block_state('altare:shape') == ${Math.floor(i/5)} && q.block_state('altare:detail') == ${i%5}`;
++// Substitute only removed states, retaining all original bone keys/cloth semantics.
++function geom(long,facing,pose){
++ const values={edges:rotateEdges(pose.edges,facing),frontal:pose.frontal};
++ return {identifier:`geometry.altare.${geometryName(long,facing)}`,bone_visibility:Object.fromEntries(Object.entries(visibility(facing)).map(([k,v])=>[k,v.replace(/q\.block_state\('altare:(edges|frontal)'\)/g,(_,name)=>String(values[name]))]))};
++}
++export function compileClassic(){
++ const permutations=[];
++ for(let stone=0;stone<3;stone++)for(let cloth=0;cloth<5;cloth++)for(let frontal=0;frontal<12;frontal++){
++  const poses=CLASSIC_POSES.flatMap((p,i)=>p.frontal===frontal?[`(${poseCondition(i)})`]:[]);
++  permutations.push({condition:`q.block_state('altare:stone') == ${stone} && q.block_state('altare:cloth') == ${cloth} && (${poses.join(' || ')})`,components:{'minecraft:material_instances':materials(stone,cloth,frontal)}});
++ }
++ for(const [i,pose] of CLASSIC_POSES.entries())for(const long of [false,true])for(let facing=0;facing<4;facing++){
++  const cloth=long?"q.block_state('altare:cloth') == 2 || q.block_state('altare:cloth') == 4":"q.block_state('altare:cloth') != 2 && q.block_state('altare:cloth') != 4";
++  permutations.push({condition:`(${poseCondition(i)}) && q.block_state('altare:facing') == ${facing} && (${cloth})`,components:{'minecraft:geometry':geom(long,facing,pose)}});
++ }
++ return {format_version:'1.26.30','minecraft:block':{
++  description:{identifier:'altare:mensa',menu_category:{category:'construction'},states:{'altare:shape':Array.from({length:10},(_,i)=>i),'altare:detail':[0,1,2,3,4],'altare:stone':[0,1,2],'altare:cloth':[1,0,2,3,4],'altare:facing':[0,1,2,3]}},
++  components:{'minecraft:geometry':geom(false,0,CLASSIC_POSES[0]),'minecraft:material_instances':materials(),'minecraft:collision_box':true,'minecraft:selection_box':true,
++   'minecraft:destructible_by_mining':{seconds_to_destroy:1.5},'minecraft:destructible_by_explosion':{explosion_resistance:6},
++   'minecraft:movable':{movement_type:'immovable'},'minecraft:map_color':'#d1c9b5','minecraft:light_dampening':15,
++   'minecraft:tick':{interval_range:[80,120],looping:true},'altare:surface':{}},permutations,
++ }};
++}
+--- a/addons/altare/tools/validate-collection.mjs
++++ b/addons/altare/tools/validate-collection.mjs
+@@ -3,13 +3,16 @@
+ import assert from 'node:assert/strict';
+ import {DESIGNS,CATALOG_PERMUTATIONS} from '../src/domain/catalog.ts';
+ import {decodeTile} from '../src/domain/block-codec.ts';
++import {CLASSIC_STATES} from '../src/domain/classic-layout.ts';
+ import {colonnadeBudget} from '../assets-src/atelier/colonnade-model.mjs';
+ import {pilasterBudget} from '../assets-src/atelier/pilaster-model.mjs';
+ import {ogiveBudget} from '../assets-src/atelier/ogive-model.mjs';
+ const root=path.resolve(import.meta.dirname,'..');
+ const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
+ const geometries=new Map(fs.readdirSync(path.join(root,'packs/resource/models/blocks')).filter(f=>f.startsWith('atelier_')||f.startsWith('ornate_')||f.startsWith('universal_')).map(f=>{const doc=read('packs/resource/models/blocks/'+f);assert.equal(doc.format_version,'1.16.0');const g=doc['minecraft:geometry'][0];return [g.description.identifier,g];}));
+-let total=11520,maxCubes=0;
++let total=CLASSIC_STATES,maxCubes=0;
++const expressionCache=new Map();
++const evaluate=(expression,q,math)=>{let fn=expressionCache.get(expression);if(!fn){fn=Function('q','math',`return ${expression}`);expressionCache.set(expression,fn);}return fn(q,math);};
+ const atlas=read('packs/resource/textures/terrain_texture.json').texture_data;
+ function combinations(states){
+  return Object.entries(states).reduce((rows,[key,values])=>rows.flatMap(row=>values.map(value=>({...row,[key]:value}))),[{}]);
+@@ -45,7 +48,7 @@
+  for(const states of combinations(block.description.states)){
+   const decoded=decodeTile(design.id,{x:0,y:0,z:0},states);const {edges}=decoded,role=design.structure==='classic'?decoded.textileRole:decoded.frontal;
+   const q={block_state:k=>states[k]},math={floor:Math.floor,mod:(a,b)=>a%b};
+-  const matching=block.permutations.filter(p=>Function('q',`return ${p.condition}`)(q));
++  const matching=block.permutations.filter(p=>evaluate(p.condition,q,math));
+   assert.equal(matching.filter(p=>p.components['minecraft:geometry']).length,1);
+   const components=Object.assign({},block.components,...matching.map(p=>p.components));
+   const component=components['minecraft:geometry'],geometry=geometries.get(component.identifier);assert.ok(geometry);
+@@ -70,12 +73,12 @@
+   }
+  }
+ }
+-assert.equal(total,CATALOG_PERMUTATIONS);assert.ok(total<=80000);
++assert.equal(total,CATALOG_PERMUTATIONS);assert.ok(total<=65536);
+ const siblingFolder=path.resolve(root,'../../packs/behavior/blocks');let aspergillumStates=0;
+ for(const file of fs.readdirSync(siblingFolder).filter(f=>f.endsWith('.json'))){
+  const b=JSON.parse(fs.readFileSync(path.join(siblingFolder,file),'utf8'))['minecraft:block'];
+  if(b)aspergillumStates+=Object.values(b.description.states??{}).reduce((n,v)=>n*(Array.isArray(v)?v.length:v.values.max-v.values.min+1),1);
+ }
+-assert.ok(total+aspergillumStates<=90000,'bounded diagnostic scope for Altare/Aspergillum');
+-fs.writeFileSync(path.join(root,'out/permutation-budget.json'),JSON.stringify({altare:total,aspergillum:aspergillumStates,combined:total+aspergillumStates,reference:65536,exceedsReference:total+aspergillumStates>65536,remaining:65536-total-aspergillumStates,diagnosticLimits:{altare:80000,combined:90000},scope:'Only these two local packs; other add-ons must be counted separately'},null,2)+'\n');
++assert.ok(total+aspergillumStates<=65536,'known packs must fit the documented aggregate permutation budget');
++fs.writeFileSync(path.join(root,'out/permutation-budget.json'),JSON.stringify({altare:total,aspergillum:aspergillumStates,combined:total+aspergillumStates,reference:65536,exceedsReference:total+aspergillumStates>65536,remaining:65536-total-aspergillumStates,diagnosticLimits:{altare:65536,combined:65536},scope:'Only these two local packs; other add-ons must be counted separately. Offline budget compliance is not native performance validation.'},null,2)+'\n');
+ console.log(`Collection validated: ${DESIGNS.length} designs, ${geometries.size} geometries, max ${maxCubes} cubes; ${total} total state combinations; multipart support and binary cutout contract.`);
+--- a/addons/altare/tools/validate.mjs
++++ b/addons/altare/tools/validate.mjs
+@@ -6,6 +6,8 @@
+ import {definitions} from '../assets-src/textures.mjs';
+ import {atelierDefinitions} from '../assets-src/atelier/materials.mjs';
+ import {ogiveDefinitions} from '../assets-src/atelier/ogive-art.mjs';
++import {CLASSIC_STATES,CLASSIC_POSES,encodeClassic} from '../src/domain/classic-layout.ts';
++import {rotateEdges} from '../src/domain/palette-layout.ts';
+ const root=path.resolve(import.meta.dirname,'..');
+ const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
+ const metadata=read('package.json'),bp=read('packs/behavior/manifest.json'),rp=read('packs/resource/manifest.json');
+@@ -18,8 +20,10 @@
+ const block=read('packs/behavior/blocks/mensa.block.json')['minecraft:block'];
+ const states=block.description.states;
+ assert.ok(Object.values(states).every(v=>v.length<=16));
+-assert.deepEqual(states['altare:frontal'],[0,1,2,3,4,5,6,7,8,9,10,11]);
+-const budget=Object.values(states).reduce((n,v)=>n*v.length,1);assert.equal(budget,11520);
++assert.deepEqual(states['altare:shape'],Array.from({length:10},(_,i)=>i));
++assert.deepEqual(states['altare:detail'],[0,1,2,3,4]);
++assert.ok(!('altare:frontal' in states)&&!('altare:edges' in states));
++const budget=Object.values(states).reduce((n,v)=>n*v.length,1);assert.equal(budget,CLASSIC_STATES);
+ assert.equal(block.components['minecraft:collision_box'],true);assert.equal(block.components['minecraft:selection_box'],true);
+ assert.equal(block.components['minecraft:movable'].movement_type,'immovable');
+ assert.ok(!block.description.traits);assert.ok(!block.components['minecraft:replaceable']);
+@@ -51,8 +55,11 @@
+ }
+ // Check the actual emitted conditions, including long and bare styles, against
+ // all persistent directions. No permanently absent bone may be referenced.
+-for(let cloth=0;cloth<5;cloth++)for(let facing=0;facing<4;facing++){
+- const rules=block.permutations.filter(p=>p.components['minecraft:geometry']&&Function('q',`return ${p.condition}`)({block_state:k=>k==='altare:cloth'?cloth:facing}));
++const expressions=new Map();
++const testCondition=(condition,q)=>{let fn=expressions.get(condition);if(!fn){fn=Function('q',`return ${condition}`);expressions.set(condition,fn);}return fn(q);};
++for(const pose of CLASSIC_POSES)for(let cloth=0;cloth<5;cloth++)for(let facing=0;facing<4;facing++){
++ const encoded=encodeClassic({...pose,edges:rotateEdges(pose.edges,facing),stone:0,cloth,facing});
++ const rules=block.permutations.filter(p=>p.components['minecraft:geometry']&&testCondition(p.condition,{block_state:k=>encoded[k]}));
+  assert.equal(rules.length,1);
+  const component=rules[0].components['minecraft:geometry'];
+  const file=component.identifier.replace('geometry.altare.','');
+--- /dev/null
++++ b/addons/altare/tools/verify-catalog-compaction.mjs
+@@ -0,0 +1,81 @@
++/** Compare an explicitly supplied, already built precompact addon with this build.
++ * Read-only with respect to both packs and all game worlds. Report is stdout. */
++import assert from 'node:assert/strict';
++import fs from 'node:fs';
++import path from 'node:path';
++import crypto from 'node:crypto';
++import {fileURLToPath} from 'node:url';
++import {ATELIER_DESIGNS,CATALOG_PERMUTATIONS,LEGACY_ID} from '../src/domain/catalog.ts';
++import {decodeTile} from '../src/domain/block-codec.ts';
++import {migrateLegacyAtelierSnapshot} from '../src/domain/catalog-migration.ts';
++import {migrateLegacyClassicSnapshot} from '../src/domain/classic-layout.ts';
++const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
++const baseline=process.argv[2]&&path.resolve(process.argv[2]);
++assert(baseline&&baseline!==root,'Usage: node tools/verify-catalog-compaction.mjs /path/to/precompact/addons/altare');
++const read=(dir,name)=>JSON.parse(fs.readFileSync(path.join(dir,name),'utf8'));
++const sha=buffer=>crypto.createHash('sha256').update(buffer).digest('hex');
++const files=(dir,relative='')=>fs.readdirSync(path.join(dir,relative),{withFileTypes:true}).flatMap(e=>e.isDirectory()?files(dir,path.join(relative,e.name)):[path.join(relative,e.name)]).sort();
++function blocks(dir){return new Map(files(path.join(dir,'packs/behavior/blocks')).map(name=>{const doc=read(dir,`packs/behavior/blocks/${name}`);return [doc['minecraft:block'].description.identifier,{name,block:doc['minecraft:block']}];}));}
++const old=blocks(baseline),current=blocks(root),cache=new Map();
++const stateRows=states=>Object.entries(states).reduce((rows,[key,values])=>rows.flatMap(row=>values.map(value=>({...row,[key]:value}))),[{}]);
++function evaluate(expression,states){
++ if(typeof expression!=='string')return expression;
++ let fn=cache.get(expression);if(!fn){fn=Function('q','math',`return (${expression})`);cache.set(expression,fn);}
++ return fn({block_state:key=>states[key]},{floor:Math.floor,mod:(a,b)=>a%b});
++}
++function effective(block,states){
++ const components={...block.components};
++ for(const p of block.permutations??[])if(evaluate(p.condition,states))Object.assign(components,p.components);
++ const geometry=components['minecraft:geometry'];
++ if(geometry?.bone_visibility)components['minecraft:geometry']={...geometry,bone_visibility:Object.fromEntries(Object.entries(geometry.bone_visibility).map(([name,value])=>[name,Boolean(evaluate(value,states))]))};
++ return components;
++}
++const digestMap=map=>sha(JSON.stringify([...map].sort()));
++function compareTree(relative){
++ const previous=files(path.join(baseline,relative)),next=files(path.join(root,relative));
++ assert.deepEqual(next,previous,`${relative}: file inventory differs`);
++ const hashes=[];
++ for(const file of previous){const before=fs.readFileSync(path.join(baseline,relative,file)),after=fs.readFileSync(path.join(root,relative,file));assert(before.equals(after),`${relative}/${file}: file differs`);hashes.push([file,sha(after)]);}
++ return {files:previous.length,manifestSha256:digestMap(hashes),byteIdentical:true};
++}
++assert.deepEqual([...current.keys()].sort(),[...old.keys()].sort(),'Block IDs changed');
++const affected=new Set([...ATELIER_DESIGNS.map(d=>d.id),LEGACY_ID]);
++let unchangedBlocks=0;
++for(const [id,{name}] of current)if(!affected.has(id)){
++ assert(fs.readFileSync(path.join(root,'packs/behavior/blocks',name)).equals(fs.readFileSync(path.join(baseline,'packs/behavior/blocks',old.get(id).name))),`${id}: unrelated block changed`);unchangedBlocks++;
++}
++let atelierCompared=0,classicCompared=0;
++for(const id of affected){
++ const before=old.get(id).block,after=current.get(id).block;
++ for(const states of stateRows(after.description.states)){
++  const t=decodeTile(id,{x:0,y:0,z:0},states);
++  const oldStates=id===LEGACY_ID?{'altare:edges':t.edges,'altare:frontal':t.frontal,'altare:facing':t.facing,'altare:stone':t.stone,'altare:cloth':t.cloth}:{'altare:edges':t.edges,'altare:facing':t.facing,'altare:role':t.frontal};
++  assert.deepEqual(effective(after,states),effective(before,oldStates),`${id}: semantic component mismatch for ${JSON.stringify(states)}`);
++  if(id===LEGACY_ID)classicCompared++;else atelierCompared++;
++ }
++}
++const migration={atelier:{accepted:0,rejected:0,normalizedUnusedRole:0},classic:{accepted:0,rejected:0}};
++for(const id of affected){
++ const before=old.get(id).block,after=current.get(id).block;
++ for(const states of stateRows(before.description.states)){
++  const snapshot={id,states},copy=structuredClone(snapshot),isClassic=id===LEGACY_ID;
++  const result=isClassic?migrateLegacyClassicSnapshot(snapshot):migrateLegacyAtelierSnapshot(snapshot),counts=isClassic?migration.classic:migration.atelier;
++  assert.deepEqual(snapshot,copy,'Snapshot migration mutated its input');
++  if(!result.ok){counts.rejected++;assert.equal(result.reason,'unrepresentable-pose');assert.strictEqual(result.snapshot,snapshot);continue;}
++  counts.accepted++;
++  if(!isClassic&&result.normalizations.length)counts.normalizedUnusedRole++;
++  assert.deepEqual(effective(after,result.snapshot.states),effective(before,states),`${id}: migration changed components for ${JSON.stringify(states)}`);
++ }
++}
++const countStates=map=>[...map.values()].reduce((sum,{block})=>sum+stateRows(block.description.states??{}).length,0);
++const oldTotal=countStates(old),newTotal=countStates(current);
++assert.equal(oldTotal,80000,'Unexpected baseline budget');assert.equal(newTotal,CATALOG_PERMUTATIONS);assert.equal(newTotal,51608);
++assert.equal(atelierCompared,14688);assert.equal(classicCompared,3000);
++assert.deepEqual(migration,{atelier:{accepted:16416,rejected:18144,normalizedUnusedRole:1728},classic:{accepted:3000,rejected:8520}});
++const report={schemaVersion:1,baselineVersion:read(baseline,'package.json').version,candidateVersion:read(root,'package.json').version,
++ blocks:{idsPreserved:current.size,schemasChanged:affected.size,unaffectedByteIdentical:unchangedBlocks},
++ states:{before:oldTotal,after:newTotal,saved:oldTotal-newTotal,aspergillum:9744,combined:newTotal+9744,combinedHeadroom:65536-newTotal-9744},
++ semantics:{atelierCompared,classicCompared,allEffectiveComponentsEqual:true,migration},
++ resources:compareTree('packs/resource'),authoredAssets:compareTree('assets-src'),
++ limitations:['Comparison is offline and does not validate native Bedrock loading, persistence, rendering, or performance.','Same block IDs with changed state schemas are not safe to install over existing worlds. Migration accepts exported snapshots only; no world is read or modified.','Rejected old combinations are not silently repaired or stripped of iconography.','Known combined budget includes only Altare and the 9,744-state Aspergillum pack.']};
++console.log(JSON.stringify(report,null,2));

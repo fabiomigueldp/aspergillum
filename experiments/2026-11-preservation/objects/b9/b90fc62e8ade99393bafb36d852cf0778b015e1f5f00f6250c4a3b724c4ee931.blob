@@ -1,0 +1,26 @@
+"""Research transport for a native part15 candidate. No addon/material/normalmap or game approval.
+Reuses existing part15 atlas cells, changes only that part's cubes and its RGBA cells.
+"""
+from pathlib import Path
+import json,sys,hashlib,copy
+import numpy as np
+from PIL import Image
+from scipy.spatial.transform import Rotation
+R=Path(__file__).resolve().parents[1];B=R.parent
+path=Path(sys.argv[1]);tag=sys.argv[2];d=np.load(path);v=d['points'];f=d['triangles']
+oldg=B/'pbr_normals_v2/resource_pack/models/entity/paz_v75_pbr_sculpture.geo.json';oldt=B/'pbr_normals_v2/resource_pack/textures/entity/paz_v75_pbr_sculpture.png'
+g=json.loads(oldg.read_text());geo=g['minecraft:geometry'][0];atlas=np.array(Image.open(oldt));oldbones=copy.deepcopy(geo['bones']);oldatlas=atlas.copy();body=next(b for b in geo['bones'] if b['name']=='part_15');oldc=body['cubes'];assert len(f)==len(oldc)
+# Same one-sided south-face alpha transport as legacy, diagnostic neutral color only.
+bb=np.column_stack((v[:,0],v[:,2],-v[:,1]))*16;maps=[];new=[];maskchange=np.zeros(atlas.shape[:2],bool)
+for ti,idx in enumerate(f):
+ pts=bb[idx];k=int(np.argmax([np.linalg.norm(pts[(i+1)%3]-pts[i]) for i in range(3)]));idx=np.roll(idx,-k);a,b,c=bb[idx];U=b-a;w=np.linalg.norm(U);U/=w;t=np.dot(c-a,U);V=c-a-t*U;h=np.linalg.norm(V);assert h>1e-8;V/=h;N=np.cross(U,V);M=np.column_stack((U,V,N));e=Rotation.from_matrix(M).as_euler('xyz',degrees=True)
+ uv=oldc[ti]['uv']['south'];tx,ty=uv['uv'];T=int(uv['uv_size'][0]);assert uv['uv_size']==[T,T];pad=1;mu=w*pad/(T-2*pad);mv=h*pad/(T-2*pad);ww=w+2*mu;hh=h+2*mv;origin=a+[-mu,-mv,0]
+ new.append({'origin':[round(float(-(origin[0]+ww)),7),round(float(origin[1]),7),round(float(origin[2]),7)],'size':[round(float(ww),7),round(float(hh),7),0],'pivot':[-float(a[0]),float(a[1]),float(a[2])],'rotation':[-float(e[0]),-float(e[1]),float(e[2])],'uv':{'south':uv}})
+ yy,xx=np.mgrid[:T,:T];px=(xx+.5)/T*ww-mu;py=(1-(yy+.5)/T)*hh-mv;covered=np.ones((T,T),bool);p2=np.array([[0,0],[w,0],[t,h]])
+ for j in range(3):
+  q=p2[j];edge=p2[(j+1)%3]-q;dist=(edge[0]*(py-q[1])-edge[1]*(px-q[0]))/np.linalg.norm(edge);covered &= dist >= -.75*min(ww/T,hh/T)
+ atlas[ty:ty+T,tx:tx+T,:3]=[208,206,202];atlas[ty:ty+T,tx:tx+T,3]=covered*255;maskchange[ty:ty+T,tx:tx+T]=True
+ maps.append({'triangle':ti,'a':a.tolist(),'b':b.tolist(),'c':c.tolist(),'uv':[tx,ty,T,T]})
+body['cubes']=new;geo['description']['identifier']='geometry.paz_v75_body_fit_diagnostic';out=R/'diagnostic_transport';out.mkdir(exist_ok=True)
+(out/f'{tag}.geo.json').write_text(json.dumps(g,separators=(',',':')));Image.fromarray(atlas).save(out/f'{tag}.png');(out/f'{tag}-triangles.json').write_text(json.dumps(maps,separators=(',',':')))
+assert all(a==b for a,b in zip(oldbones,geo['bones']) if a['name']!='part_15');assert np.array_equal(atlas[~maskchange],oldatlas[~maskchange]);report={'input':str(path),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'triangle_count':len(f),'all_other_bones_unchanged':True,'all_other_atlas_pixels_unchanged':True,'alpha_values':np.unique(atlas[:,:,3]).tolist(),'not_addon':True,'normalmap_exported':False,'minecraft_tested':False,'limitation':'Diagnostic part15 neutral RGB and updated alpha only. Existing normalmap cannot be presumed correct for changed basis; no client binding or runtime claim.'};(out/f'{tag}-report.json').write_text(json.dumps(report,indent=2));print(report)

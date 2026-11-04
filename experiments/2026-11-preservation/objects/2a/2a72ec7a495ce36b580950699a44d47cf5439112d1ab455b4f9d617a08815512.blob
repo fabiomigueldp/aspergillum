@@ -1,0 +1,53 @@
+"""Independent clipped-face area budgets and local coplanar overlap checks."""
+from pathlib import Path
+import numpy as np,json,sys,itertools
+O=Path(__file__).resolve().parent;B=O.parents[1];tag=sys.argv[1];path=B/f'band_ear_v12/structural_rebuild/{tag}.npz';d=np.load(path);base=np.load(B/'shell_band_v5/retained_candidate/evidence/band-paired.npz');meta=json.loads(str(d['provenance']));cu=np.load(path.parent/meta['cutter']);p=d['points'];f=d['triangles'];par=d['baseline_face_indices'];role=d['face_roles'];cpar=d['cutter_face_indices'];bp=base['points'];bf=base['triangles'];cp=cu['points'];cf=cu['triangles']
+def raw(tr):return np.cross(tr[1]-tr[0],tr[2]-tr[0])
+def ar(poly):
+ return np.linalg.norm(sum((np.cross(poly[i]-poly[0],poly[i+1]-poly[0]) for i in range(1,len(poly)-1)),start=np.zeros(3)))/2 if len(poly)>2 else 0.
+def clip(poly,planes):
+ poly=list(poly)
+ for pl in planes:
+  out=[]
+  if not poly:return []
+  for x,y in zip(poly,poly[1:]+poly[:1]):
+   dx=x@pl[:3]+pl[3];dy=y@pl[:3]+pl[3];ix=dx<=0;iy=dy<=0
+   if ix:out.append(x)
+   if ix!=iy:out.append(x+(y-x)*dx/(dx-dy))
+  poly=out
+ return poly
+def overlap(a,b):
+ n=raw(b);n/=np.linalg.norm(n);planes=[]
+ for k in range(3):
+  nn=np.cross(b[(k+1)%3]-b[k],n);nn/=np.linalg.norm(nn);planes.append(np.r_[nn,-nn@b[k]])
+ return ar(clip(a,planes))
+area=np.linalg.norm(np.cross(p[f[:,1]]-p[f[:,0]],p[f[:,2]]-p[f[:,0]]),axis=1)/2;rows=[];overlaps=[]
+for parent in range(len(bf)):
+ ids=np.flatnonzero(par==parent);tri=bp[bf[parent]];original=ar(tri);removed=sum(ar(clip(tri,cu['planes'][cu['face_sides']==side])) for side in [-1,1]);keep=area[ids].sum();intrusion=sum(ar(clip(p[f[i]],cu['planes'][cu['face_sides']==side])) for i in ids for side in [-1,1]);row={'baseline_face':int(parent),'candidate_faces':ids.tolist(),'original_area_m2':original,'cut_area_m2':removed,'remaining_expected_m2':original-removed,'candidate_child_area_m2':float(keep),'absolute_budget_error_m2':float(abs(keep-(original-removed))),'child_area_inside_cutter_m2':float(intrusion)}
+ rows.append(row)
+ for i,j in itertools.combinations(ids,2):
+  v=overlap(p[f[i]],p[f[j]])
+  if v>1e-17:overlaps.append({'faces':[int(i),int(j)],'kind':'inherited_same_parent','area_m2':v})
+# Pairwise overlap inside each cutter-face group and separate coplanar adjacent cutter triangles.
+rim=np.flatnonzero(role==2);rim_plane_errors=[];rim_barymins=[];rim_reverse=[]
+for i in rim:
+ tri=cp[cf[cpar[i]]];nn=raw(tri);nn/=np.linalg.norm(nn);rim_plane_errors.extend(abs((p[f[i]]-tri[0])@nn));uv=np.linalg.lstsq(np.stack([tri[1]-tri[0],tri[2]-tri[0]],axis=1),(p[f[i]]-tri[0]).T,rcond=None)[0].T;rim_barymins.append(np.c_[1-uv.sum(1),uv].min())
+ if raw(p[f[i]])@nn>=0:rim_reverse.append(int(i))
+for ix,i in enumerate(rim):
+ ta=p[f[i]];n=raw(ta);n/=np.linalg.norm(n)
+ for j in rim[ix+1:]:
+  tb=p[f[j]]
+  if np.any(ta.max(0)<tb.min(0)-1e-10) or np.any(tb.max(0)<ta.min(0)-1e-10):continue
+  if np.max(abs((tb-ta[0])@n))>1e-12:continue
+  nb=raw(tb);nb/=np.linalg.norm(nb)
+  if abs(n@nb)<1-1e-10:continue
+  if n@nb<0:tb=tb[::-1]
+  v=overlap(ta,tb)
+  if v>1e-17:overlaps.append({'faces':[int(i),int(j)],'kind':'rim_coplanar','area_m2':v})
+report={'candidate':str(path),'method':'Independent source-triangle intersection with both convex cutter volumes gives retained area budget. Check every trimmed child against cutter volumes and sibling coplanar overlap. Rim faces tested against their exact cutter-triangle parent and all spatially near coplanar rim pairs.','all_source_parent_groups':len(rows),'trimmed_parent_groups':len(np.unique(par[role==1])),'max_clipped_source_area_budget_error_m2':max(r['absolute_budget_error_m2'] for r in rows),'sum_clipped_source_area_budget_error_m2':sum(r['absolute_budget_error_m2'] for r in rows),'sum_inherited_child_area_inside_cutter_m2':sum(r['child_area_inside_cutter_m2'] for r in rows),'overlap_candidates_above_1e_17_m2':overlaps,'rim_vertex_cutter_plane_max_mm':float(max(rim_plane_errors)*1000),'rim_vertex_parent_cutter_triangle_barycentric_min':float(min(rim_barymins)),'rim_faces_not_oppositely_oriented_to_cutter':rim_reverse,'source_area_budgets':rows,'limits':['Double precision area budget and coplanar projected clipping, tolerance1e-17m²; not a symbolic global certificate.','Source faces outside the affected region are checked separately for exact preservation.','Cutter-defined domain can be geometrically valid yet visually inappropriate; image review remains separate.']}
+vals=[]
+for i in rim:
+ ss=int(cu['face_sides'][cpar[i]]);pl=cu['planes'][cu['face_sides']==ss];vals.extend((p[f[i]]@pl[:,:3].T+pl[:,3]).ravel())
+report['rim_vertex_all_cutter_halfspaces_max_mm']=float(max(vals)*1000)
+report['rim_parent_triangle_caution']='Small negative barycentric coordinates against the selected cutter triangle may cross internal coplanar cutter diagonals; full convex halfspaces, parent plane and opposite orientation are checked separately.'
+(O/(tag+'-patch-domain-check.json')).write_text(json.dumps(report,indent=2));print(json.dumps({k:v for k,v in report.items() if k!='source_area_budgets'},indent=2))

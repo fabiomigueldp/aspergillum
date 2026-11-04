@@ -1,0 +1,86 @@
+{
+  "name": "aspergillum-bedrock-addon",
+  "version": "2.0.0",
+  "aspergillum": {
+    "releaseLabel": "2.0.0",
+    "releaseChannel": "diagnostic"
+  },
+  "addonManager": {
+    "schemaVersion": 1,
+    "id": "aspergillum",
+    "displayName": "Aspergillum",
+    "artifactPrefix": "Aspergillum",
+    "sharedDirectory": "pack.asper",
+    "worldDirectory": "aspergillum.managed",
+    "aliases": [
+      "aspergillum"
+    ],
+    "publicIdentity": {
+      "behaviorUuid": "bac9f8bc-71f5-4db7-a0ff-3c5a365749b4",
+      "resourceUuid": "fdb8a79c-8f77-4831-9a5c-8e2b8ecca29e"
+    }
+  },
+  "private": true,
+  "description": "Diagnostic compact block-schema revision. Not a drop-in update for existing worlds.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "clean": "node tools/clean.mjs --work",
+    "clean:artifacts": "node tools/clean.mjs --artifacts",
+    "clean:all": "node tools/clean.mjs --all",
+    "generate:assets": "node tools/generate-assets.mjs",
+    "build:audio": "node tools/build-audio.mjs",
+    "verify:audio-baseline": "node tools/verify-preserved-audio.mjs",
+    "build:script": "esbuild src/bootstrap/main.ts --bundle --format=esm --platform=neutral --external:@minecraft/server --external:@minecraft/server-ui --target=es2022 --outfile=packs/behavior/scripts/main.js",
+    "build": "npm run generate:assets && npm run verify:audio-baseline && npm run build:script && npm run validate",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "validate": "node tools/validate.mjs && node tools/validate-animation-choreography.mjs && node tools/validate-vfx.mjs && node tools/validate-audio.mjs && node tools/validate-cosmetic-icons.mjs && node tools/validate-release-readiness.mjs",
+    "validate:animation": "node tools/validate-animation-choreography.mjs",
+    "validate:vfx": "node tools/validate-vfx.mjs",
+    "validate:audio": "node tools/validate-audio.mjs",
+    "validate:icons": "node tools/validate-cosmetic-icons.mjs",
+    "validate:release": "node tools/validate-release-readiness.mjs",
+    "validate:docs": "node tools/validate-docs.mjs",
+    "validate:mcaddon": "node tools/validate-minecraft.mjs",
+    "addon": "node tools/addon-manager.mjs",
+    "sync:game": "node tools/sync-installed-addon.mjs",
+    "sync:diagnostic": "node tools/sync-diagnostic-addon.mjs",
+    "capture:models": "npm --prefix viewer-3d run capture --",
+    "capture:assets": "npm --prefix viewer-3d run capture:assets --",
+    "capture:avatars": "npm --prefix viewer-3d run capture:avatars --",
+    "capture:equipment": "npm --prefix viewer-3d run capture:equipment --",
+    "render:cover": "npm --prefix viewer-3d run render:cover --",
+    "studio:altare": "npm --prefix viewer-3d run studio",
+    "render:altars": "npm --prefix viewer-3d run render:altars --",
+    "render:invitation": "npm --prefix viewer-3d run render:invitation --",
+    "render:inventory-icons": "npm --prefix viewer-3d run render:inventory-icons --",
+    "package:artifact": "node tools/package.mjs",
+    "verify:artifact": "npm run validate:mcaddon",
+    "release": "npm run check && npm run package:artifact && npm run verify:artifact",
+    "package": "npm run release",
+    "package:render-diagnostics": "node tools/package-render-diagnostics.mjs",
+    "package:water-diagnostics": "node tools/package-water-dither-diagnostics.mjs",
+    "package:entity-water-diagnostic": "node tools/package-entity-water-diagnostic.mjs",
+    "release:render-diagnostics": "npm run build && npm run package:render-diagnostics",
+    "release:water-diagnostics": "npm run build && npm run package:water-diagnostics",
+    "release:entity-water-diagnostic": "npm run build && npm run package:entity-water-diagnostic",
+    "check": "npm run typecheck && npm test && npm run verify:recovery-model && npm --prefix viewer-3d test && npm run validate:docs && npm run build",
+    "verify:recovery-model": "node --test tools/recovery-analysis.node-test.mjs && node tools/recovery-analysis.mjs",
+    "verify:quarantine-proposal": "node --test tools/recovery-quarantine.node-test.mjs && node tools/recovery-quarantine-scenarios.mjs"
+  },
+  "devDependencies": {
+    "@minecraft/common": "1.3.0",
+    "@minecraft/creator-tools": "0.17.7",
+    "@minecraft/server": "2.9.0",
+    "@minecraft/server-ui": "2.1.0",
+    "@types/node": "^22.15.0",
+    "archiver": "^7.0.1",
+    "esbuild": "^0.28.1",
+    "pngjs": "^7.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

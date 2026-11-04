@@ -1,0 +1,452 @@
+{
+  "baseline": "lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz",
+  "notes": [
+    "7 shell NPZ checkpoints from 4 executed cutter domains; polygonal raw/clean have identical geometry.",
+    "14 cutter files include unused prepared envelopes; an unused cutter is NOT a tested shell candidate.",
+    "All files are research, no Bedrock export, no publication.",
+    "Independent review and parent image decisions take precedence over construction-side metrics."
+  ],
+  "trials": [
+    {
+      "tag": "convex-protected-1.5mm",
+      "file": "convex-protected-1.5mm.npz",
+      "sha256": "47208180c70e9f24c9ae4675f1d48cf8d8dd82e62eebb6b277b8705c1861414d",
+      "status": "Rejected: two degenerate triangles after proximity-based plane restoration; right temporal overcut visually confirmed; grazing local hull.",
+      "vertices": 6442,
+      "triangles": 12880,
+      "euler": 2,
+      "boundary_edges": 0,
+      "edges_not_two_faces": 0,
+      "new_vertices": 397,
+      "surviving_baseline_vertices": 6045,
+      "unchanged_baseline_faces": 11967,
+      "new_rim_faces": 401,
+      "minimum_area_m2": 7.057096715761062e-20,
+      "construction_gate_passes": false,
+      "construction_gate_strict_crossings": 0,
+      "degenerate_triangles": [
+        12298,
+        12385
+      ],
+      "contacts": {
+        "anatomy": {
+          "pairs": 153,
+          "by_face_part": {
+            "0": 36,
+            "1": 72,
+            "2": 0,
+            "3": 45
+          },
+          "by_face_role": {
+            "0": 39,
+            "1": 69,
+            "2": 45
+          },
+          "ear_incident_pairs": 118,
+          "ear_only_pairs": 0
+        },
+        "band": {
+          "pairs": 1279,
+          "by_face_part": {
+            "0": 1133,
+            "1": 117,
+            "2": 0,
+            "3": 29
+          },
+          "by_face_role": {
+            "0": 1119,
+            "1": 131,
+            "2": 29
+          }
+        }
+      },
+      "preservation": {
+        "unchanged_original_faces": 11967,
+        "original_face_fraction": 0.9585869913489267,
+        "surviving_original_points_bit_identical": true,
+        "mantle_faces_unchanged": true,
+        "anatomy_sha256": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+        "band_sha256": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647"
+      }
+    },
+    {
+      "tag": "convex-protected-1.5mm-precise",
+      "file": "convex-protected-1.5mm-precise.npz",
+      "sha256": "d6bb5c23aab547bf49697964cfb656470f0305a6dd770092fdf7392cef13f172",
+      "status": "Rejected: exact cutter-plane ancestry fixes coordinate restoration, but one degenerate source triangle remains and the same temporal cutter scope remains.",
+      "vertices": 6442,
+      "triangles": 12880,
+      "euler": 2,
+      "boundary_edges": 0,
+      "edges_not_two_faces": 0,
+      "new_vertices": 397,
+      "surviving_baseline_vertices": 6045,
+      "unchanged_baseline_faces": 11967,
+      "new_rim_faces": 401,
+      "minimum_area_m2": 4.0786273559416713e-19,
+      "construction_gate_passes": false,
+      "construction_gate_strict_crossings": 0,
+      "degenerate_triangles": [
+        12335
+      ],
+      "contacts": {
+        "anatomy": {
+          "pairs": 153,
+          "by_face_part": {
+            "0": 36,
+            "1": 72,
+            "2": 0,
+            "3": 45
+          },
+          "by_face_role": {
+            "0": 39,
+            "1": 69,
+            "2": 45
+          },
+          "ear_incident_pairs": 118,
+          "ear_only_pairs": 0
+        },
+        "band": {
+          "pairs": 1279,
+          "by_face_part": {
+            "0": 1133,
+            "1": 117,
+            "2": 0,
+            "3": 29
+          },
+          "by_face_role": {
+            "0": 1119,
+            "1": 131,
+            "2": 29
+          }
+        }
+      },
+      "preservation": {
+        "unchanged_original_faces": 11967,
+        "original_face_fraction": 0.9585869913489267,
+        "surviving_original_points_bit_identical": true,
+        "mantle_faces_unchanged": true,
+        "anatomy_sha256": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+        "band_sha256": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647"
+      }
+    },
+    {
+      "tag": "extruded-protected-1.5mm",
+      "file": "extruded-protected-1.5mm.npz",
+      "sha256": "387712c40ea14483668d4360f90183361a0326cf40c0b39bbae1bf0a31a53873",
+      "status": "Rejected: two degenerate source triangles; deliberately preserved broad protected-ear scope remains unsuitable for the right temple.",
+      "vertices": 6448,
+      "triangles": 12892,
+      "euler": 2,
+      "boundary_edges": 0,
+      "edges_not_two_faces": 0,
+      "new_vertices": 433,
+      "surviving_baseline_vertices": 6015,
+      "unchanged_baseline_faces": 11903,
+      "new_rim_faces": 429,
+      "minimum_area_m2": 1.2380097755076372e-20,
+      "construction_gate_passes": false,
+      "construction_gate_strict_crossings": 0,
+      "degenerate_triangles": [
+        12298,
+        12501
+      ],
+      "contacts": {
+        "anatomy": {
+          "pairs": 150,
+          "by_face_part": {
+            "0": 44,
+            "1": 35,
+            "2": 0,
+            "3": 71
+          },
+          "by_face_role": {
+            "0": 35,
+            "1": 44,
+            "2": 71
+          },
+          "ear_incident_pairs": 115,
+          "ear_only_pairs": 0
+        },
+        "band": {
+          "pairs": 1249,
+          "by_face_part": {
+            "0": 1130,
+            "1": 106,
+            "2": 0,
+            "3": 13
+          },
+          "by_face_role": {
+            "0": 1119,
+            "1": 117,
+            "2": 13
+          }
+        }
+      },
+      "preservation": {
+        "unchanged_original_faces": 11903,
+        "original_face_fraction": 0.9534604293495674,
+        "surviving_original_points_bit_identical": true,
+        "mantle_faces_unchanged": true,
+        "anatomy_sha256": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+        "band_sha256": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647"
+      }
+    },
+    {
+      "tag": "extruded-pinna-0.5mm",
+      "file": "extruded-pinna-0.5mm.npz",
+      "sha256": "f775fd1d47d55299ca4f98c79223fc821a0c421bc3cda1f8d2a37d640f7821f0",
+      "status": "Rejected raw triangulation: nine degenerate triangles; same geometric surface subsequently re-triangulated without moving/removing vertices or oriented boundaries.",
+      "vertices": 6458,
+      "triangles": 12912,
+      "euler": 2,
+      "boundary_edges": 0,
+      "edges_not_two_faces": 0,
+      "new_vertices": 374,
+      "surviving_baseline_vertices": 6084,
+      "unchanged_baseline_faces": 12060,
+      "new_rim_faces": 370,
+      "minimum_area_m2": 1.117430753462301e-21,
+      "construction_gate_passes": false,
+      "construction_gate_strict_crossings": 0,
+      "degenerate_triangles": [
+        12410,
+        12442,
+        12468,
+        12469,
+        12492,
+        12525,
+        12566,
+        12569,
+        12597
+      ],
+      "contacts": {
+        "anatomy": {
+          "pairs": 122,
+          "by_face_part": {
+            "0": 63,
+            "1": 35,
+            "2": 0,
+            "3": 24
+          },
+          "by_face_role": {
+            "0": 84,
+            "1": 14,
+            "2": 24
+          },
+          "ear_incident_pairs": 87,
+          "ear_only_pairs": 39
+        },
+        "band": {
+          "pairs": 1354,
+          "by_face_part": {
+            "0": 1132,
+            "1": 182,
+            "2": 0,
+            "3": 40
+          },
+          "by_face_role": {
+            "0": 1130,
+            "1": 184,
+            "2": 40
+          }
+        }
+      },
+      "preservation": {
+        "unchanged_original_faces": 12060,
+        "original_face_fraction": 0.9660365267542455,
+        "surviving_original_points_bit_identical": true,
+        "mantle_faces_unchanged": true,
+        "anatomy_sha256": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+        "band_sha256": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647"
+      }
+    },
+    {
+      "tag": "extruded-pinna-0.5mm-clean",
+      "file": "extruded-pinna-0.5mm-clean.npz",
+      "sha256": "df44e067629bde61567e0d8cd9ba495086ab2ca51deba073e4ccd3ea75a8688d",
+      "status": "Valid research candidate reviewed independently; clean ear rendering reported by parent. Float32 does not collapse/invert faces but slivers amplify normal errors. Not an addon or overall assembly approval.",
+      "vertices": 6458,
+      "triangles": 12912,
+      "euler": 2,
+      "boundary_edges": 0,
+      "edges_not_two_faces": 0,
+      "new_vertices": 374,
+      "surviving_baseline_vertices": 6084,
+      "unchanged_baseline_faces": 12060,
+      "new_rim_faces": 370,
+      "minimum_area_m2": 6.179308647824065e-12,
+      "construction_gate_passes": true,
+      "construction_gate_strict_crossings": 0,
+      "degenerate_triangles": [],
+      "contacts": {
+        "anatomy": {
+          "pairs": 122,
+          "by_face_part": {
+            "0": 63,
+            "1": 35,
+            "2": 0,
+            "3": 24
+          },
+          "by_face_role": {
+            "0": 84,
+            "1": 14,
+            "2": 24
+          },
+          "ear_incident_pairs": 87,
+          "ear_only_pairs": 39
+        },
+        "band": {
+          "pairs": 1356,
+          "by_face_part": {
+            "0": 1132,
+            "1": 184,
+            "2": 0,
+            "3": 40
+          },
+          "by_face_role": {
+            "0": 1130,
+            "1": 186,
+            "2": 40
+          }
+        }
+      },
+      "preservation": {
+        "unchanged_original_faces": 12060,
+        "original_face_fraction": 0.9660365267542455,
+        "surviving_original_points_bit_identical": true,
+        "mantle_faces_unchanged": true,
+        "anatomy_sha256": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+        "band_sha256": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647"
+      },
+      "triangle_quality": {
+        "candidate": "extruded-pinna-0.5mm-clean",
+        "vertices": 6458,
+        "faces": 12912,
+        "new_rim_faces": 370,
+        "minimum_angle_deg": 0.003444893929685762,
+        "faces_angle_below_0_1": 54,
+        "minimum_altitude_mm": 0.00017114865876314468,
+        "float32_degenerate_faces": 0,
+        "float32_max_face_rotation_deg": 4.067875730681076,
+        "float32_area_ratio_min_max": [
+          0.9346907931935593,
+          1.13160100150913
+        ]
+      }
+    },
+    {
+      "tag": "polygonal-pinna-0.5mm",
+      "file": "polygonal-pinna-0.5mm.npz",
+      "sha256": "ab9ec4ce204f30b92079e59bce6c33adda5d4e5c4fdb7d7cfe34b04048554a2e",
+      "status": "Raw polygonal candidate, geometry-identical to clean copy; no degenerate source polygons needed replacement. Included as reproducibility checkpoint.",
+      "vertices": 6334,
+      "triangles": 12664,
+      "euler": 2,
+      "boundary_edges": 0,
+      "edges_not_two_faces": 0,
+      "new_vertices": 250,
+      "surviving_baseline_vertices": 6084,
+      "unchanged_baseline_faces": 12060,
+      "new_rim_faces": 246,
+      "minimum_area_m2": 5.654691772020929e-10
+    },
+    {
+      "tag": "polygonal-pinna-0.5mm-clean",
+      "file": "polygonal-pinna-0.5mm-clean.npz",
+      "sha256": "c79f296415d566db5f9c109389375e0d3ae112fbccbbc89c8628200939fbf81f",
+      "status": "Retained local research: independent geometry review passes and parent matched nine-view comparison is favorable. retained-shell.npz is byte-identical. Not global approval or Bedrock export.",
+      "vertices": 6334,
+      "triangles": 12664,
+      "euler": 2,
+      "boundary_edges": 0,
+      "edges_not_two_faces": 0,
+      "new_vertices": 250,
+      "surviving_baseline_vertices": 6084,
+      "unchanged_baseline_faces": 12060,
+      "new_rim_faces": 246,
+      "minimum_area_m2": 5.654691772020929e-10,
+      "construction_gate_passes": true,
+      "construction_gate_strict_crossings": 0,
+      "degenerate_triangles": [],
+      "contacts": {
+        "anatomy": {
+          "pairs": 98,
+          "by_face_part": {
+            "0": 55,
+            "1": 35,
+            "2": 0,
+            "3": 8
+          },
+          "by_face_role": {
+            "0": 84,
+            "1": 6,
+            "2": 8
+          },
+          "ear_incident_pairs": 63,
+          "ear_only_pairs": 19
+        },
+        "band": {
+          "pairs": 1339,
+          "by_face_part": {
+            "0": 1132,
+            "1": 167,
+            "2": 0,
+            "3": 40
+          },
+          "by_face_role": {
+            "0": 1130,
+            "1": 169,
+            "2": 40
+          }
+        }
+      },
+      "preservation": {
+        "unchanged_original_faces": 12060,
+        "original_face_fraction": 0.9660365267542455,
+        "surviving_original_points_bit_identical": true,
+        "mantle_faces_unchanged": true,
+        "anatomy_sha256": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+        "band_sha256": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647"
+      },
+      "triangle_quality": {
+        "candidate": "polygonal-pinna-0.5mm-clean",
+        "vertices": 6334,
+        "faces": 12664,
+        "new_rim_faces": 246,
+        "minimum_angle_deg": 0.08220286043829701,
+        "faces_angle_below_0_1": 5,
+        "minimum_altitude_mm": 0.005023518400011945,
+        "float32_degenerate_faces": 0,
+        "float32_max_face_rotation_deg": 0.3284152795345762,
+        "float32_area_ratio_min_max": [
+          0.9956072387857396,
+          1.0114062131797195
+        ]
+      }
+    }
+  ],
+  "retained": {
+    "status": "retained_local_research",
+    "candidate": "polygonal-pinna-0.5mm-clean.npz",
+    "retained_file": "retained-shell.npz",
+    "sha256": "c79f296415d566db5f9c109389375e0d3ae112fbccbbc89c8628200939fbf81f",
+    "source_candidate_sha256": "c79f296415d566db5f9c109389375e0d3ae112fbccbbc89c8628200939fbf81f",
+    "byte_identical_to_reviewed_candidate": true,
+    "vertices": 6334,
+    "triangles": 12664,
+    "surviving_baseline_vertices": 6084,
+    "surviving_baseline_vertices_bit_identical": true,
+    "unchanged_original_faces": 12060,
+    "new_rim_faces": 246,
+    "review_basis": "Independent geometric review plus parent matched visual review in nine views; local technical retention only.",
+    "limitations": [
+      "Not global assembly approval and not a complete contact-free surface.",
+      "Gold band fragments, temporal/posterior red regions, small dark edge segments and residual contacts remain.",
+      "Frontal contour is not exactly identical; view-limited comparison, not universal silhouette proof.",
+      "No Bedrock conversion, Minecraft test, alpha/PBR/culling/mipmap certification or publication.",
+      "New rim thickness checked by paired wall traces and sampled chords, not global minimum certification."
+    ],
+    "decision_date_utc": "2026-11-03"
+  }
+}

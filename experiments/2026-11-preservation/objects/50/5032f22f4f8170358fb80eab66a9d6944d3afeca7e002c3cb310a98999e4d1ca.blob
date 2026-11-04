@@ -1,0 +1,124 @@
+{
+  "existing_v9_evidence": "Reuses retained-anatomy-review-arrays.npz; only fixed-edge witnesses recomputed. No general gate rerun.",
+  "pairs_total": 607,
+  "by_part": {
+    "1": 400,
+    "0": 207
+  },
+  "bridge_generated_vertices_per_pair": {
+    "3": 172,
+    "2": 70,
+    "1": 158
+  },
+  "bridge_pair_counts_by_uv_t_decile": {
+    "4": 10,
+    "3": 1,
+    "5": 4,
+    "7": 20,
+    "9": 215,
+    "0": 150
+  },
+  "bridge_pair_counts_by_uv_s_sixth": {
+    "1": 102,
+    "0": 206,
+    "5": 12,
+    "2": 80
+  },
+  "bridge_incident_ear_pairs": 365,
+  "bridge_all_ear_pairs": 296,
+  "bridge_fixed_edge_barrier_pairs": 16,
+  "bridge_unique_fixed_edge_body_crossings": 16,
+  "bridge_fixed_edge_barrier_shell_faces": [
+    5873,
+    5876,
+    5882,
+    5887,
+    6123,
+    6128,
+    6134,
+    6138,
+    6153,
+    6156,
+    6162,
+    6167,
+    6403,
+    6408,
+    6414,
+    6418
+  ],
+  "bridge_fixed_edge_barrier_source_ids": [
+    4958,
+    5010,
+    9998,
+    10050,
+    13893,
+    13894,
+    13930,
+    13931,
+    17672,
+    21409,
+    21410,
+    32581,
+    32582,
+    36318,
+    39924,
+    39925,
+    39961,
+    39962,
+    43797,
+    43798,
+    43834,
+    43835,
+    47576,
+    51313,
+    51314,
+    62485,
+    62486,
+    66222,
+    69828,
+    69829,
+    69865,
+    69866
+  ],
+  "fixed_cap_pairs": 207,
+  "ear_boxes": {
+    "negative_x": {
+      "vertices": 52,
+      "min": [
+        -0.1138310581445694,
+        -0.2576391100883484,
+        3.405843734741211
+      ],
+      "max": [
+        -0.08094360679388046,
+        -0.1641734093427658,
+        3.532771110534668
+      ]
+    },
+    "positive_x": {
+      "vertices": 36,
+      "min": [
+        0.16146090626716614,
+        -0.2524113655090332,
+        3.4058678150177
+      ],
+      "max": [
+        0.19225619733333588,
+        -0.14966359734535217,
+        3.5496408939361572
+      ]
+    }
+  },
+  "limits": [
+    "A fixed shell edge crossing the interior of a frozen anatomical triangle cannot be removed by moving only a triangle third vertex while retaining that edge as part of the shell.",
+    "Counts are strict pair contacts, not number of holes, visible pixels or severity.",
+    "Neither t-coordinate nor left/right component names establishes invisibility.",
+    "NaN UV means not a bridge boundary/field vertex.",
+    "Cap and band constraints are separate from bridge-only feasibility."
+  ],
+  "hashes": {
+    "lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz": "712a550fbbb56090ae700e30e4e21153d04c16139062ebcd2a72e818f3e34f7b",
+    "body_interface_v9/constrained_fit/retained-anatomy.npz": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+    "shell_band_v5/retained_candidate/evidence/band-paired.npz": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647"
+  }
+}

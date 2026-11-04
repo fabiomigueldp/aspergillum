@@ -1,0 +1,25 @@
+"""Spatial traces on cached source contact pairs and independently recomputed candidate pairs."""
+from pathlib import Path
+from collections import defaultdict
+import numpy as np,json,sys,ast
+O=Path(__file__).resolve().parent;B=O.parents[1];tag=sys.argv[1]
+source=ast.parse((O/'review_candidate.py').read_text());fn=next(n for n in source.body if isinstance(n,ast.FunctionDef) and n.name=='hits');exec(compile(ast.Module(body=[fn],type_ignores=[]),'hits','exec'))
+ba=np.load(B/'shell_band_v5/retained_candidate/evidence/band-paired.npz');d=np.load(B/f'band_ear_v12/structural_rebuild/{tag}.npz');arr=np.load(O/(tag+'-review-arrays.npz'));basearr=np.load(O/'baseline-map.npz');out={}
+for label,obpath in [('anatomy',B/'body_interface_v9/constrained_fit/retained-anatomy.npz'),('shell',B/'ear_rim_v11/structural_rebuild/retained-shell.npz')]:
+ ob=np.load(obpath);comp={}
+ for version,mesh in [('baseline',ba),('candidate',d)]:
+  groups=defaultdict(list)
+  if version=='baseline':
+   pairs=basearr['band_anatomy_pairs' if label=='anatomy' else 'shell_band_pairs'][:,::-1];cc,pts,ids=hits(mesh['points'],mesh['triangles'],ob['points'],ob['triangles'],pairs);pidx=pairs[ids]
+  else:pts=arr[label+'_witness_points'];pidx=arr[label+'_witness_pair_indices'];cc=arr[label+'_pairs']
+  for pair,pt in zip(pidx,pts):groups[tuple(pair)].append(pt)
+  rows=[];side=defaultdict(float);partsum=defaultdict(float);earsum=0.
+  for (i,j),pts in groups.items():
+   pts=np.asarray(pts);dist=np.linalg.norm(pts[:,None]-pts[None,:],axis=2);ix=np.unravel_index(dist.argmax(),dist.shape);ll=float(dist[ix]*1000);s=-1 if pts.mean(0)[0]<.04 else 1;part=int(basearr['wall_side'][i] if version=='baseline' else mesh['face_parts'][i]);side[s]+=ll;partsum[part]+=ll;ear=bool(np.any(ob['protected_ears'][ob['triangles'][j]])) if label=='anatomy' else None
+   if ear:earsum+=ll
+   rows.append({'band_face':int(i),'obstacle_face':int(j),'band_part':part,'segment':pts[list(ix)].tolist(),'length_mm':ll,'spatial_side':s,'incident_to_ear_mask':ear})
+  comp[version]={'pair_count':len(cc),'segment_count':len(rows),'length_mm_sum':sum(r['length_mm'] for r in rows),'by_side_length_mm':dict(side),'by_band_part_length_mm':dict(partsum),'ear_incident_length_mm':earsum if label=='anatomy' else None,'zero_length_pairs':sum(r['length_mm']<1e-9 for r in rows)}
+  (O/f'{tag}-{version}-{label}-segments.json').write_text(json.dumps(rows,indent=2))
+ out[label]=comp
+out['method']='Uses previously validated source-pair lists for exactly hashed inputs. Recompute witness segment lengths on those pairs; candidate witness points come from new geometry test. Sum all triangle-triangle segment lengths without spatial union/deduplication. Counts are never subtracted by pair IDs after retessellation.'
+(O/f'{tag}-contact-trace-lengths.json').write_text(json.dumps(out,indent=2));print(json.dumps(out,indent=2))

@@ -1,0 +1,291 @@
+{
+  "status": {
+    "status": "RETAINED_LOCAL_TECHNICAL_RESEARCH",
+    "retained_band": "structural_rebuild/retained-band.npz",
+    "sha256": "1c293d8c5b35cca07cfc0e73d2b2e360cbbc3bea27688bb6e6373537ecf54c76",
+    "source_files_unchanged": true,
+    "complete_anatomy_frozen": true,
+    "v11_shell_frozen": true,
+    "native_closed_band_screen_passed": true,
+    "independent_visual_retention": "local_only_nine_views",
+    "two_crest_curves_continuous": true,
+    "guarded_front_faces_exact": 488,
+    "terminations_shortened": true,
+    "global_interface_clean": false,
+    "final_art_approved": false,
+    "bedrock_exported": false,
+    "minecraft_runtime_tested": false,
+    "published": false,
+    "vertices": 584,
+    "triangles": 1164,
+    "source_surviving_vertices_exact": 436,
+    "native_self_crossings_confirmed": 0,
+    "coplanar_overlap_detected_above_test_threshold": 0,
+    "remaining_band_anatomy_pairs": 189,
+    "remaining_band_shell_pairs": 1360,
+    "silhouette_exact_in_every_tested_view": false,
+    "limits": [
+      "Terminations intentionally shortened, especially right.",
+      "Residual band/anatomy and band/shell crossings.",
+      "Inherited blue frontal interruptions, temporal red and small dark ear edges.",
+      "Small frontal raster silhouette difference.",
+      "No global clearance/thickness, final art or engine certificate.",
+      "New band still needs Bedrock transport and bake validation."
+    ]
+  },
+  "inputs": [
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/ear_rim_v11/structural_rebuild/retained-shell.npz",
+      "sha256": "c79f296415d566db5f9c109389375e0d3ae112fbccbbc89c8628200939fbf81f",
+      "bytes": 348223,
+      "current_sha256": "c79f296415d566db5f9c109389375e0d3ae112fbccbbc89c8628200939fbf81f",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/body_interface_v9/constrained_fit/retained-anatomy.npz",
+      "sha256": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+      "bytes": 47106,
+      "current_sha256": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/shell_band_v5/retained_candidate/evidence/band-paired.npz",
+      "sha256": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647",
+      "bytes": 34942,
+      "current_sha256": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/pbr_normals_v2/resource_pack/models/entity/paz_v75_pbr_sculpture.geo.json",
+      "sha256": "160d00c5489e618bdb093eb48a388b17f606ca9970f00de88b164758fa1c46cf",
+      "bytes": 6242831,
+      "current_sha256": "160d00c5489e618bdb093eb48a388b17f606ca9970f00de88b164758fa1c46cf",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/pbr_normals_v2/resource_pack/textures/entity/paz_v75_pbr_sculpture.png",
+      "sha256": "9547dffd84fdc399535c97f88cf8694ade2af98e82de0ec71ec7117473eb7856",
+      "bytes": 1050958,
+      "current_sha256": "9547dffd84fdc399535c97f88cf8694ade2af98e82de0ec71ec7117473eb7856",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-refinement/gui-test/checkpoint-V75-20261102/V75-tunic-lower-trial.blend",
+      "sha256": "2c14fbc7566217ad350ef926abc1dc4a1bc41f457eaab8f10351e90b1f4777d9",
+      "bytes": 59672216,
+      "current_sha256": "2c14fbc7566217ad350ef926abc1dc4a1bc41f457eaab8f10351e90b1f4777d9",
+      "unchanged": true
+    }
+  ],
+  "retained_identical_to_reviewed": true,
+  "source_area_check": {
+    "original_surface_area_mm2": 37749.93174814297,
+    "original_area_removed_fraction": 0.11265837217450825,
+    "original_area_in_affected_parent_faces_fraction": 0.138535945905756,
+    "new_closure_area_mm2": 22.378115235543287
+  },
+  "frozen_scene": {
+    "V12 retained band NATIVE local research": {
+      "points_equal_expected_float32": true,
+      "triangles_exact": true,
+      "hash_metadata_matches": true,
+      "vertices": 584,
+      "triangles": 1164
+    },
+    "Frozen V11 shell NATIVE research": {
+      "points_equal_expected_float32": true,
+      "triangles_exact": true,
+      "hash_metadata_matches": true,
+      "vertices": 6334,
+      "triangles": 12664
+    },
+    "Frozen V9 anatomy NATIVE research": {
+      "points_equal_expected_float32": true,
+      "triangles_exact": true,
+      "hash_metadata_matches": true,
+      "vertices": 692,
+      "triangles": 1376
+    },
+    "minecraft_tested": false,
+    "bedrock_exported": false,
+    "published": false
+  },
+  "syntax_check": {
+    "passed": true,
+    "files": [
+      "tools/render_band_fit.py",
+      "tools/inspect_frozen_scene.py",
+      "tools/finalize_package.py",
+      "tools/freeze_diagnostic_scene.py",
+      "tools/compare_band_outline.py",
+      "independent_diagnosis/check_ridge_domains.py",
+      "independent_diagnosis/check_coplanar_contacts.py",
+      "independent_diagnosis/measure_contact_traces.py",
+      "independent_diagnosis/check_patch_domains.py",
+      "independent_diagnosis/prepare_review_tools.py",
+      "independent_diagnosis/resolve_predicates.py",
+      "independent_diagnosis/measure_exact_rim_chords.py",
+      "independent_diagnosis/check_float32_transport.py",
+      "independent_diagnosis/measure_rim_lips.py",
+      "independent_diagnosis/strict_longdouble.py",
+      "independent_diagnosis/map_baseline.py",
+      "independent_diagnosis/review_candidate.py",
+      "structural_rebuild/build_band_cutter.py",
+      "structural_rebuild/audit_preservation.py",
+      "structural_rebuild/prepare_reference_cutter.py",
+      "structural_rebuild/retain_selected_band.py",
+      "structural_rebuild/retriangulate_inherited_patches.py",
+      "structural_rebuild/update_manifest.py",
+      "structural_rebuild/build_band_termination.py"
+    ]
+  },
+  "final_images": [
+    {
+      "path": "evidence/band06-full-front.png",
+      "sha256": "e2d8137771cb126900308082be546ea2041a9d61f3093639f1d7c32ed5c2ba96",
+      "bytes": 1194077
+    },
+    {
+      "path": "evidence/band06-head-front.png",
+      "sha256": "f1ab3a1b524fa92bec7cf41922e1b62de1598186a109ac37f24dc87ac01f86ec",
+      "bytes": 982494
+    },
+    {
+      "path": "evidence/band06-junction-profile.png",
+      "sha256": "f4ceeded8477345b7a8b3fe5e5db300cd162a01e889424962aad8f72e95169aa",
+      "bytes": 1189635
+    },
+    {
+      "path": "evidence/band06-junction-back.png",
+      "sha256": "890aa3bd2ea73a4ccd1b560c660cc0cf5c2b9c7af513aafb283f47e29fcc7e0f",
+      "bytes": 1072519
+    },
+    {
+      "path": "evidence/band06-left-ear.png",
+      "sha256": "44e7fa1332f5c86020f94e061b947219545db2b625aa4b523514f868fc51d785",
+      "bytes": 1379791
+    },
+    {
+      "path": "evidence/band06-right-ear.png",
+      "sha256": "00be9d040f8e70b0feca327c0f17e1f70de7590107e450bd67ac99b0c6495fe2",
+      "bytes": 1337528
+    },
+    {
+      "path": "evidence/band06-nohalo-left-ear-oblique.png",
+      "sha256": "a7987b1541c63e8914e7717000a023ba88d2a57bd3c5eb07803348cde4c0db79",
+      "bytes": 1198341
+    },
+    {
+      "path": "evidence/band06-nohalo-right-ear-oblique.png",
+      "sha256": "b107897ba87d26486034985c885bd0e8df7e1c3850fe726a21918c11af975079",
+      "bytes": 1182707
+    },
+    {
+      "path": "evidence/band06-nohalo-rear-open.png",
+      "sha256": "91069ce3be43028d2c87df11dc5bbff51cdd1710ce7361d5f1aa3649e5f6ee25",
+      "bytes": 1100620
+    }
+  ],
+  "independent_geometry_review": "independent_diagnosis/REVIEW_FINAL_V12.md",
+  "independent_visual_review": "evidence/review-visual-v12.md",
+  "outline": {
+    "method": "2048px orthographic binary union of candidate native band, frozen V11 shell and frozen V9 part15 triangles; no halo or other pieces, no alpha expansion, lighting or normals. Red=removed coverage, blue=added. Horizontal scanline shift can overstate near-horizontal contour movement; bidirectional nearest boundary distance is also reported. Both are view-limited and raster-quantized, not a 3D silhouette guarantee.",
+    "inputs": [
+      {
+        "path": "paz-bedrock-v75-prototype-20261103/shell_band_v5/retained_candidate/evidence/band-paired.npz",
+        "sha256": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647"
+      },
+      {
+        "path": "paz-bedrock-v75-prototype-20261103/band_ear_v12/structural_rebuild/polygonal-pinna-0.6mm-clean.npz",
+        "sha256": "1c293d8c5b35cca07cfc0e73d2b2e360cbbc3bea27688bb6e6373537ecf54c76"
+      }
+    ],
+    "views": {
+      "front": {
+        "boundary_bidirectional_nearest_max_pixels": 7.211102550927978,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 2.9928892423285065,
+        "xor_coverage_pixels": 89,
+        "coverage_pixels_before": 1266751,
+        "coverage_pixels_after": 1266662,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 17.0,
+        "pixel_world_size_mm": 0.4150390625,
+        "max_outer_edge_shift_mm": 7.0556640625
+      },
+      "profile": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 1433373,
+        "coverage_pixels_after": 1433373,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.390625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "back": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 1382130,
+        "coverage_pixels_after": 1382130,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.4638671875,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "left-ear": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 2761990,
+        "coverage_pixels_after": 2761990,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "right-ear": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 2842914,
+        "coverage_pixels_after": 2842914,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "left-oblique": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 2585138,
+        "coverage_pixels_after": 2585138,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "right-oblique": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 2601673,
+        "coverage_pixels_after": 2601673,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 0.0
+      }
+    },
+    "minecraft_test": false
+  }
+}

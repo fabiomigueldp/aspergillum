@@ -1,0 +1,26 @@
+from pathlib import Path
+import numpy as np,json,sys,mpmath as mp
+O=Path(__file__).resolve().parent;B=O.parents[1];tag=sys.argv[1];d=np.load(B/f'ear_rim_v11/structural_rebuild/{tag}.npz');r=json.loads((O/(tag+'-review.json')).read_text());p=d['points'];f=d['triangles'];mp.mp.dps=80
+def vec(x):return list(map(lambda y:mp.mpf(float(y)),x))
+def sub(a,b):return [x-y for x,y in zip(a,b)]
+def add(a,b):return [x+y for x,y in zip(a,b)]
+def mul(a,s):return [x*s for x in a]
+def dot(a,b):return sum(x*y for x,y in zip(a,b))
+def cross(a,b):return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]
+rows=[]
+for i,j in r['self_intersection'].get('double_precision_candidate_pairs',r['self_intersection']['crossing_pairs']):
+ hits=[]
+ for oi,tj in [(i,j),(j,i)]:
+  orig=[vec(q) for q in p[f[oi]]];tar=[vec(q) for q in p[f[tj]]];e1=sub(tar[1],tar[0]);e2=sub(tar[2],tar[0])
+  for k in range(3):
+   dr=sub(orig[(k+1)%3],orig[k]);h=cross(dr,e2);det=dot(e1,h)
+   if not det:continue
+   ss=sub(orig[k],tar[0]);u=dot(ss,h)/det;q=cross(ss,e1);v=dot(dr,q)/det;t=dot(e2,q)/det
+   if mp.mpf('1e-8')<t<1-mp.mpf('1e-8') and u>mp.mpf('1e-8') and v>mp.mpf('1e-8') and u+v<1-mp.mpf('1e-8'):
+    pt=add(orig[k],mul(dr,t));hits.append({'origin_face':oi,'target_face':tj,'edge':k,'t':str(t),'barycentric':[str(1-u-v),str(u),str(v)],'point':[float(x) for x in pt]})
+ row={'pair':[i,j],'shared_vertices':list(set(f[i])&set(f[j])),'high_precision_strict_hits':hits,'roles':d['face_roles'][[i,j]].tolist(),'parts':d['face_parts'][[i,j]].tolist()}
+ rows.append(row)
+summary={'precision_decimal_digits':80,'candidate':str(B/f'ear_rim_v11/structural_rebuild/{tag}.npz'),'checked_double_precision_candidates':len(rows),'pairs_with_confirmed_strict_hits':sum(bool(r['high_precision_strict_hits']) for r in rows),'rows':rows,'method':'mpmath 80 decimal arithmetic on exact binary float64 coordinates, 1e-8 strict barycentric thresholds. A higher precision recheck of flagged adjacent pairs, not new broadphase or coplanar scan.'}
+(O/(tag+'-predicate-check.json')).write_text(json.dumps(summary,indent=2,default=lambda x:int(x)));print(json.dumps(summary,indent=2,default=lambda x:int(x)))
+# Publish a reconciled final count without losing the raw floating-point screen.
+x=r['self_intersection'];rawpairs=x.get('double_precision_candidate_pairs',x['crossing_pairs']);x['double_precision_candidate_pairs']=rawpairs;x['double_precision_strict_candidates']=len(rawpairs);x['strict_crossings']=summary['pairs_with_confirmed_strict_hits'];x['crossing_pairs']=[z['pair'] for z in rows if z['high_precision_strict_hits']];x['predicate_refinement']=tag+'-predicate-check.json';x['array_file_caution']='self_pairs/self_witness_points in review-arrays.npz are raw double-precision candidates, not confirmed crossings; final counts use80decimal refinement.';(O/(tag+'-review.json')).write_text(json.dumps(r,indent=2))

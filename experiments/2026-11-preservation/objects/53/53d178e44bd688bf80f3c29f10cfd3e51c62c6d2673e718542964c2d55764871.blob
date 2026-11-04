@@ -1,0 +1,24 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-cloth-obstacle-surface-trial.py').read().split('counts=collections.Counter')[0])
+bv=BVHTree.FromPolygons(p.tolist(),fs);records=[]
+for rad in [.05,.06,.07,.08]:
+ pairs=[];bad=[];inside=0;faceids=set();segments=0;bounds=[]
+ for j,th in enumerate(np.linspace(0,2*np.pi,360,endpoint=False)):
+  y=-.01556+rad*np.cos(th);z=3.31112+rad*np.sin(th);origin=Vector((-1,y,z));hits=[]
+  for k in range(20):
+   h,n,fi,dist=bv.ray_cast(origin,Vector((1,0,0)),2)
+   if h is None:break
+   if h.x<.025:hits.append((h.copy(),fi,n.copy()))
+   origin=h+Vector((.000001,0,0))
+  if len(hits)!=2:bad.append({'angle_index':j,'left_hits':len(hits)});pairs.append(None);continue
+  pair=[]
+  for h,fi,n in hits:
+   near,nor,_,_=hb.find_nearest(h);sd=(h-near).dot(nor);inside+=sd<.0001;faceids.add(fi);bounds.append(h[:]);pair.append(h)
+  pairs.append(pair)
+ for i in range(len(pairs)):
+  a,b=pairs[i],pairs[(i+1)%len(pairs)]
+  if a is None or b is None:continue
+  for layer in range(2):
+   e=b[layer]-a[layer];h,_,_,_=hb.ray_cast(a[layer],e.normalized(),e.length)
+   if h is not None:segments+=1
+ thickness=[(a[1]-a[0]).length for a in pairs if a];records.append({'radius':rad,'angles_not_exactly_two_left_hits':len(bad),'bad_angles':bad,'boundary_samples_insufficient_clearance':int(inside),'skin_crossing_segments':segments,'thickness_range':list(map(float,[min(thickness),max(thickness)])) if thickness else None,'sample_bounds':[np.min(bounds,axis=0).tolist(),np.max(bounds,axis=0).tolist()] if bounds else None,'source_faces_touched':len(faceids)})
+json.dump(records,open(r+'neck-shared-circle-cut-feasibility.json','w'),indent=2);print([{k:v for k,v in row.items() if k!='bad_angles'} for row in records])

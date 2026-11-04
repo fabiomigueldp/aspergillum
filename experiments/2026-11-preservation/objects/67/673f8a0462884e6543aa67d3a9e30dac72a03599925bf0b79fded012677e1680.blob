@@ -1,0 +1,16 @@
+# V78–81 — correção pele/tecido rejeitada antes de salvar
+
+BaseV75 intacta; nenhuma modificação da anatomia foi aplicada ou salva.
+
+- V78 deslocamento comum das camadas de manto14mm, derivado de3,394mm de penetração+8,51mm espessura projetada+margem:1flip,7pares novos,área0,344–6,194. Rejeitado.
+- V79 hipótese de ampliar campo para calota foi inconsequente: nenhum vértice da calota estava no suporte, teste idêntico. Hipótese corrigida, não tratar como método diferente bem-sucedido.
+- V80 faixa afim abrangendo grupo dobrado e transição mais larga:0flips,31pares novos e35removidos,área0,460–1,830. Saldo negativo não valida; rejeitado.
+- V81 duas regiões locais, fronteiras fixas e superfícieX regularizada com obstáculo da pele:6flips,10pares novos de auto-interseção,498pares novos pele/tecido; área0,458–8,607. Rejeitado. A malha grosseira/alongada não preserva afastamento entre vértices sob essa regularização.
+
+## Correção importante do diagnóstico de contorno
+
+O crescimento por conectividade encontrou dois loops simples (262/216v) cujos **vértices** não penetravam pele mais que0,01mm. Isso não provava contorno integral livre. Auditoria posterior dos segmentos encontrou4arestas que cruzam a pele; um ponto amostrado penetra0,387mm. Portanto é impossível eliminar toda colisão preservando essas fronteiras exatamente. Relatório neck-boundary-segment-audit.json.
+
+Próximo método, se retomado: construir contorno validado também por segmentos/triângulos, não apenas vértices, e retopologizar interior com espaçamento regular e espessura explícita. Isso exige alterar contorno atual; não deve ser disfarçado por reduzir deslocamento até ocultar mancha enquanto face interna permanece dentro da pele. Não ampliar suporte às cegas nem elevar ombro/anatomia.
+
+Sem arquivoV78–81.blend promovido, pois asserções interromperam salvamento. Comparações coloridas da causa permanecem V75-neck-surface-attribution-*.png. Não renderizar variantes inválidas como progresso visual. Esta frente continua bloqueada por controle de superfície/topologia, não por autorização ou ausência de ferramentas.

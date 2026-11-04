@@ -1,0 +1,105 @@
+# Auditoria e conversão offline de snapshots
+
+A ferramenta fecha uma lacuna da compactação: os conversores por célula já existiam, mas não havia validação de arquivo inteiro, relatório de recusas e um pacote verificável de backup/conversão. Ela **não lê nem escreve mundos, chunks, entidades, inventários ou packs instalados**. Não exporta blocos do jogo e não importa o resultado no Minecraft.
+
+O alvo é o contrato `altare-compact-v1`: os 135 Atelier em 64/112 estados, o Clássico em 50 poses com roseta e os demais 278 IDs sem mudanças de esquema. Novas famílias não são fontes válidas da 0.12.3. Hashes dos codebooks, IDs e codecs são conferidos antes de processar: uma mudança de contrato provoca `contract-changed`, em vez de adaptar ou reinterpretar dados silenciosamente.
+
+## Formato de entrada
+
+É preciso ter um snapshot exportado **antes** da troca do pack. Esta ferramenta não recupera propriedades que o Bedrock já tenha descartado. O envelope exige exatamente estes campos:
+
+```json
+{
+  "format": "altare-block-snapshot",
+  "schemaVersion": 1,
+  "stateSchema": "altare-0.12.3",
+  "source": {
+    "addonVersion": "0.12.3",
+    "exportedAt": "2026-11-03T19:00:00.000Z",
+    "coverage": "selected-cells"
+  },
+  "cells": [
+    {
+      "dimension": "minecraft:overworld",
+      "position": { "x": 10, "y": 64, "z": 20 },
+      "id": "altare:mensa",
+      "states": {
+        "altare:edges": 15,
+        "altare:frontal": 5,
+        "altare:facing": 0,
+        "altare:stone": 0,
+        "altare:cloth": 1
+      }
+    }
+  ]
+}
+```
+
+O exemplo é sintético, não foi extraído de um mundo. `source` continua sendo a procedência declarada da entrada mesmo no arquivo convertido; `stateSchema` identifica o formato dos estados de destino. Versão e timestamp declarados não autenticam a origem.
+
+## Comandos
+
+Executar com Node 24 em host POSIX que suporte `O_NOFOLLOW` e `O_NONBLOCK`, a partir de `addons/altare`. Usar caminhos canônicos reais e diretórios confiáveis sem outros processos escrevendo neles. O programa não testa suporte em Windows e recusa plataformas sem esses recursos em vez de enfraquecer as proteções.
+
+```sh
+# Somente auditoria; nenhuma saída em disco por padrão.
+node tools/snapshot.mjs --input /caminho/real/exportado.json
+
+# Relatório opcional, sempre em arquivo novo.
+node tools/snapshot.mjs audit --input /caminho/real/exportado.json --report /caminho/real/auditoria-nova.json
+
+# Diretório novo, pai já existente; nunca sobrescreve uma tentativa anterior.
+node tools/snapshot.mjs convert --input /caminho/real/exportado.json --out-dir /caminho/real/conversao-nova
+
+# Apenas para os papéis sem efeito visual das nove receitas nuas, depois de revisar o relatório.
+node tools/snapshot.mjs convert --input /caminho/real/exportado.json --out-dir /caminho/real/conversao-revisada --allow-unused-role-normalization
+
+node tools/snapshot.mjs verify --bundle /caminho/real/conversao-nova
+node tools/snapshot.mjs verify --bundle /caminho/real/conversao-nova --expect-source-sha256 HASH_GUARDADO_FORA_DO_BUNDLE
+node tools/snapshot.mjs verify --bundle /caminho/real/conversao-nova --expect-manifest-sha256 HASH_GUARDADO_FORA_DO_BUNDLE
+
+# Exporta o backup original para outro arquivo novo. Não restaura um mundo.
+node tools/snapshot.mjs rollback --bundle /caminho/real/conversao-nova --output /caminho/real/original-recuperado.json --expect-source-sha256 HASH_GUARDADO_FORA_DO_BUNDLE
+```
+
+Os placeholders de hash devem ser substituídos por SHA-256 hexadecimal minúsculo, 64 caracteres. Guardar o hash confiável separadamente: no próprio diretório ele pode ser alterado junto com os dados. A saída de `convert` inclui os hashes da fonte e do manifest.
+
+Códigos de saída: `0` concluído; `2` auditoria válida, mas conversão bloqueada por recusas ou normalizações não autorizadas; `1` erro de entrada/opção/arquivo na auditoria ou conversão; `3` falha de verificação ou exportação de rollback. Todas as mensagens são JSON. Opções desconhecidas ou duplicadas são recusadas.
+
+## Garantias de arquivo e de semântica
+
+- Auditoria é o padrão. Sem `--report`, não cria arquivo. Conversão nunca substitui a entrada, relatórios, bundle ou rollback existentes.
+- Cada célula precisa de dimensão, posição, ID e states exatos. IDs alheios, propriedades extras/ausentes, mistura de formatos e estados fora do intervalo são recusados.
+- Endereços repetidos na mesma dimensão são erro, mesmo com conteúdo idêntico. As mesmas coordenadas em dimensões diferentes são distintas. Coordenadas são inteiros assinados de 32 bits; isso não verifica os limites reais de altura/fronteira de um mundo.
+- O parser detecta chaves JSON repetidas, incluindo equivalentes escapadas. Aceita UTF-8 válido, com BOM opcional preservado no backup. Recusa frações, expoentes, `-0` e números fora da precisão inteira segura antes de o parser poder arredondá-los silenciosamente.
+- Qualquer célula recusada impede **toda** a conversão, mesmo que seja a última de milhares. Não há opção de ignorar recusas nem reparo automático para apagar iconografia. O relatório inclui índice, motivo, ID/localização quando válidos e os states das poses não representáveis.
+- `unused-role-cleared` é a única normalização permitida, registrada por célula com o valor anterior. Sem a opção explícita, ela bloqueia a conversão. Não remove a frente lógica nem a arte das receitas decoradas.
+- Limites: entrada de 16 MiB, 1–65.536 células, profundidade JSON máxima 16, ID até 160 caracteres e dimensão até 128. Os números devem estar em notação inteira decimal canônica. Arquivos gerados são limitados a 64 MiB por componente; manifest a 64 KiB.
+- Links simbólicos finais ou ancestrais são recusados, assim como diretórios, FIFOs e dispositivos usados como arquivos. Leituras limitadas conferem identidade, tamanho e timestamps antes/depois. Escritas usam criação exclusiva, sem uma janela de `exists` seguido de sobrescrita.
+
+## Bundle, interrupção e rollback
+
+O diretório novo contém somente:
+
+- `backup.json`: **os bytes exatos que foram auditados**, inclusive BOM, espaços e finais de linha.
+- `converted.json`: todas as células, na mesma ordem, com dimensão/posição/ID preservados e estados compactados.
+- `audit.json`: relatório completo e tamanho/hash da entrada.
+- `manifest.json`: contrato fixado, opção de normalização e tamanho/SHA-256 dos três arquivos. É escrito **por último**, depois de sincronizar os componentes.
+
+`verify` exige os quatro nomes fixos, nenhum arquivo extra e nenhum symlink. Confere os hashes e tamanhos, reaudita o backup e reconverte tudo; a saída e o relatório devem coincidir byte a byte com essa reconstrução determinística. Mudar um arquivo e recalcular somente seu hash não basta para passar. Alterar todos os arquivos de forma coordenada ainda exige um hash externo confiável para ser detectado.
+
+Se houver falha de disco, permissão ou interrupção, a entrada fica intacta e pode restar um diretório parcial. Ausência de manifest impede considerá-lo completo; qualquer bundle, inclusive um com manifest, precisa passar em `verify`. Não reusar a mesma saída numa tentativa seguinte, escolher um diretório novo. Não remover arquivos da única cópia de segurança para tentar fazer uma verificação passar.
+
+`rollback` verifica antes e exporta `backup.json` byte a byte para arquivo novo fora do bundle, com nova leitura para conferir igualdade. Não tenta reconstruir papéis perdidos a partir dos índices compactos e não aplica estados ao jogo.
+
+## Limites importantes
+
+Isso é backup e conversão de **células selecionadas**, não backup de mundo. Não comprova seleção completa, relacionamento entre altares, ausência de células omitidas, validade do mundo, origem do exportador, objetos apoiados, multiplayer ou comportamento do Bedrock. A ferramenta não contém exportador/importador nativo. Manter um backup completo externo do mundo e uma cópia descartável continua necessário antes de qualquer fluxo real de atualização.
+
+Os caminhos devem permanecer em diretórios confiáveis, sem substituição concorrente por outro escritor. As verificações não são uma proteção contra um processo hostil com o mesmo acesso trocando diretórios entre syscalls. Hashes sem âncora externa detectam corrupção e incoerência, não autenticidade contra adulteração coordenada.
+
+## Testes
+
+`node --experimental-strip-types --test tests/snapshot-audit.node.ts` cobre parser adverso, envelope, campos inválidos, posições duplicadas, 80.000 combinações legadas, preservação de 33.920 estados não alterados, normalização recusada/aceita, incompatibilidade na última célula, corrupção/re-hash, manifest com traversal, FIFOs/links/aliases, diretório parcial por falha simulada de disco e rollback byte-idêntico. `npm run check` mantém a regressão completa do addon.
+
+Contagem esperada sobre o domínio antigo: 19.416 células convertíveis, 33.920 preservadas e 26.664 poses incompatíveis. Das convertíveis, 1.728 exigem a opção explícita para papel sem efeito visual. Esses números descrevem o catálogo cartesiano de teste, não um save real.

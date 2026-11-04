@@ -1,0 +1,24 @@
+import numpy as np,json,sys
+from pathlib import Path
+from mathutils.bvhtree import BVHTree
+from mathutils import Vector
+R=Path(__file__).resolve().parents[1];B=R.parent/'shell_band_v3';sys.path.insert(0,str(B/'tools'));from independent_gate import review
+P=Path(sys.argv[sys.argv.index('--')+1]);O=Path(sys.argv[sys.argv.index('--')+2]);d=np.load(P);v=d['points'];f=d['triangles'];ids=d['source_indices'];n=len(v)//2;src=np.load(B/'evidence/cap-source.npz');hv=src['points'];hf=src['triangles'];wc=np.load(B/'evidence/cap-source-wall-classes.npz')['wall_class'];hfo=hf[wc==0];tree=BVHTree.FromPolygons(hv.tolist(),hfo.tolist(),all_triangles=True);H=np.load(R/'evidence/head-source.npz');head=BVHTree.FromPolygons(H['points'].tolist(),H['triangles'].tolist(),all_triangles=True);params=np.load(R/'evidence/cap-source-parameters.npz')['params'];weights=[np.ones(3)/3,np.array([.5,.5,0]),np.array([0,.5,.5]),np.array([.5,0,.5])];records=[];sample_error=[];regressed=[];crown_errors=[];crown_regressed=[]
+def sign(p):
+ q,n,_,_=head.find_nearest(Vector(p));return float((Vector(p)-q).dot(n))
+for ti,t in enumerate(f):
+ if np.any(t>=n):continue
+ row=params[ids[t],0];is_crown=bool(row.max()<40);severity=0;insert=[];maxerr=0;maxdepth=0
+ for w in weights:
+  p=w@v[t];q,normal,fi,error=tree.find_nearest(Vector(p));sl=sign(p);sh=sign(q);bad=sl<-.0001 and sh>=0;depth=max(0,-sl) if bad else 0.;sample_error.append(error);regressed.append(bad)
+  if is_crown:crown_errors.append(error);crown_regressed.append(depth)
+  priority=max(error/.0005, depth/.0003) if is_crown else 0
+  if priority>severity:severity=priority;insert=hfo[fi].tolist()
+  maxerr=max(maxerr,error);maxdepth=max(maxdepth,depth)
+ if severity>1:records.append({'triangle':ti,'severity':severity,'insert_source_ids':insert,'max_error':maxerr,'max_regression_depth':maxdepth})
+gate=review(P)
+# Add local refinement requests for any new wall intersection, including outside crown.
+for x in gate['crossings']:
+ for ti in x['triangles']:
+  t=f[ti]%n;p=v[t].mean(0);q,normal,fi,error=tree.find_nearest(Vector(p));records.append({'triangle':ti,'severity':100+error/.0005,'insert_source_ids':hfo[fi].tolist(),'reason':'strict wall crossing'})
+records.sort(key=lambda x:-x['severity']);ce=np.array(crown_errors);cr=np.array(crown_regressed);report={'input':str(P),'triangles':len(f),'outer_samples':len(sample_error),'all_outer_sample_error_max':float(max(sample_error)),'crown_samples':len(ce),'crown_error_max':float(ce.max()),'crown_error_p95':float(np.percentile(ce,95)),'crown_error_mean':float(ce.mean()),'crown_regression_gt_0_1mm':int((cr>0).sum()),'crown_regression_gt_0_3mm':int((cr>.0003).sum()),'crown_regression_gt_0_5mm':int((cr>.0005).sum()),'crown_max_regression_depth':float(cr.max()),'all_outer_regression_samples':sum(regressed),'refinement_requests':records,'gate':gate,'goals':{'crown_sample_error_max':.0005,'crown_new_penetration_max':.0003,'strict_crossings':0},'limits':'Nearest source point on matching outer wall; head signed nearest-plane proxy. Samples not Hausdorff or certified SDF. Source inherited contacts are not counted as new when high proxy is negative.'};O.write_text(json.dumps(report,indent=2));print({k:v for k,v in report.items() if k not in ['gate','refinement_requests']},flush=True)

@@ -1,0 +1,24 @@
+import bpy,json,math
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V55-child-neck-trial.blend',use_scripts=False);o=bpy.data.objects['Menino — túnica e mangas contínuas'];dg=bpy.context.evaluated_depsgraph_get();old=[o.matrix_world@v.co for v in o.evaluated_get(dg).data.vertices];zmin=min(p.z for p in old);cut=.85;end=1.13;target=.73;lowSlope=.35;atcut=target+(cut-zmin)*lowSlope;span=end-cut
+new=[]
+for p in old:
+ q=p.copy()
+ if p.z<=cut:q.z=target+(p.z-zmin)*lowSlope
+ elif p.z<end:
+  t=(p.z-cut)/span;q.z=(2*t**3-3*t*t+1)*atcut+(t**3-2*t*t+t)*span*lowSlope+(-2*t**3+3*t*t)*end+(t**3-t*t)*span
+ new.append(q)
+k=o.shape_key_add(name='TESTE59 — comprimento e terminação da barra');k.value=1;inv=o.matrix_world.inverted()
+for i,q in enumerate(new):k.data[i].co=o.data.vertices[i].co+(inv@q)-(inv@old[i])
+fs=[tuple(f.vertices) for f in o.data.polygons];bv=BVHTree.FromPolygons(new,fs);pairs=[(i,j) for i,j in bv.overlap(bv) if i<j and not set(fs[i])&set(fs[j])]
+def av(p,f):return sum(((p[f[j]]-p[f[0]]).cross(p[f[j+1]]-p[f[0]])*.5 for j in range(1,len(f)-1)),Vector())
+rat=[];flip=0
+for f in fs:
+ a,b=av(old,f),av(new,f)
+ if a.length>1e-12:rat.append(b.length/a.length);flip+=a.dot(b)<0
+report={'source':'V55','scope':'Only lower tunic, z<1.13; arms/hands unchanged','hem_z_before':zmin,'hem_z_after':min(p.z for p in new),'max_delta_m':max((a-b).length for a,b in zip(old,new)),'upper_protected_max_delta_m':max((a-b).length for a,b in zip(old,new) if a.z>=1.13),'xy_max_delta_m':max(math.hypot(a.x-b.x,a.y-b.y) for a,b in zip(old,new)),'self_intersections':len(pairs),'flipped_faces':flip,'face_area_ratio_min':min(rat),'face_area_ratio_max':max(rat),'reference_ratio_estimate':'Photo profile hem-to-ground approximately16% of child height; perspective estimate not measured physical dimension','rollback':'TESTE59=0 restores V55'};json.dump(report,open(r+'V59-child-tunic-verification.json','w'),indent=2);bpy.ops.wm.save_as_mainfile(filepath=r+'V59-child-tunic-trial.blend')
+s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=600;s.render.resolution_y=900;s.render.resolution_percentage=100;c=s.camera;ct=Vector((.025,-.265,1.25));c.data.ortho_scale=1.65
+for label,off in [('profile',(-5,0,0)),('front',(0,-5,0)),('threequarter',(-3,-5,0))]:
+ c.location=ct+Vector(off);c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler();s.render.filepath=r+'V59-child-tunic-'+label+'.png';bpy.ops.render.render(write_still=True)
+print(report)

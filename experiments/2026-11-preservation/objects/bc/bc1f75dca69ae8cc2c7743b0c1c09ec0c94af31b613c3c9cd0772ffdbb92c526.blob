@@ -1,0 +1,31 @@
+from pathlib import Path
+import json,hashlib,zipfile,py_compile
+R=Path(__file__).resolve().parents[1]
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+assert (R/'independent_diagnosis/REVIEW_FINAL_V10.md').exists()
+assert 'constrained-final' in (R/'evidence/review-visual-v10.md').read_text()
+compiled=[]
+for p in R.rglob('*.py'):
+ py_compile.compile(str(p),doraise=True);compiled.append(str(p.relative_to(R)))
+(R/'evidence/syntax-check.json').write_text(json.dumps({'passed':True,'python_files':compiled},indent=2))
+reps=['grid-posterior-05mm','boundary-posterior-30mm','relax065-t2-iteration03','relax075-continuation-iteration05']
+files=[p for p in sorted(R.rglob('*')) if p.is_file() and '__pycache__' not in p.parts and p.suffix not in ['.zip','.blend1'] and p.name not in ['file-manifest.json','package-validation.json']]
+manifest=[{'path':str(p.relative_to(R)),'bytes':p.stat().st_size,'sha256':sha(p)} for p in files]
+(R/'file-manifest.json').write_text(json.dumps(manifest,indent=2));files.append(R/'file-manifest.json')
+main=[];full=[]
+for p in files:
+ rel=p.relative_to(R)
+ if rel.parts[0]=='structural_fit':
+  full.append(p)
+  if p.suffix=='.npz' and not any(p.stem==s or p.stem==s+'-contacts' for s in reps):continue
+ main.append(p)
+rows=[]
+for name,items in [('V75-V10-BRIDGE-EAR-REJECTED-RESEARCH-NOT-ADDON.zip',main),('V75-V10-ALL-97-TRIALS.zip',full)]:
+ out=R/name;assert not out.exists(),f'Will not overwrite {out}'
+ with zipfile.ZipFile(out,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+  for p in items:z.write(p,'bridge_ear_v10/'+str(p.relative_to(R)))
+ with zipfile.ZipFile(out) as z:
+  assert z.testzip() is None
+  for p in items:assert z.read('bridge_ear_v10/'+str(p.relative_to(R)))==p.read_bytes()
+ rows.append({'file':name,'bytes':out.stat().st_size,'sha256':sha(out),'member_count':len(items),'crc_valid':True,'all_archived_bytes_match_workspace':True})
+(R/'package-validation.json').write_text(json.dumps({'archives':rows,'main_npz_representatives':reps,'all_97_candidates_preserved_in_workspace_and_full_trials_archive':True},indent=2));print(json.dumps(rows,indent=2))

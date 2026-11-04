@@ -1,0 +1,15 @@
+from pathlib import Path
+O=Path(__file__).resolve().parent
+exec(compile((O/'ray_diagnosis.py').read_text().split("views={'left-ear'")[0],str(O/'ray_diagnosis.py'),'exec'))
+z=np.load(B/'shell_band_v3/evidence/band-source.npz');bvh['render_source_band']=BVHTree.FromPolygons(z['points'].tolist(),z['triangles'].tolist(),all_triangles=True)
+rr=json.loads((O/'band-normal-ray-samples.json').read_text());out=[]
+for r in rr:
+ if r['point'][1]>=-.28:continue
+ p=np.array(r['point']);n=np.array(r['outward_normal']);ori=p+n*.015;vals=[]
+ for ob in ['shell','render_source_band','source_shell']:
+  h=bvh[ob].ray_cast(Vector(ori),Vector(-n),.04);vals.append(float((np.array(h[0])-p)@n)*1000 if h[0] is not None and np.dot(h[1],-n)<0 else None)
+ out.append({'band_face':r['band_face'],'uv':r['uv'],'point':r['point'],'current_shell_ahead_mm':vals[0],'render_source_band_position_mm':vals[1],'source_shell_position_mm':vals[2],'source_shell_ahead_mm':None if None in vals[1:] else vals[2]-vals[1]})
+report=[]
+for lo,hi in [(0,3),(3,5),(5,11),(11,13),(13,16.0000001)]:
+ rs=[r for r in out if lo<=r['uv'][1]<hi];report.append({'v_range':[lo,hi],'samples':len(rs),'source_shell_ahead_by_gt_001mm':sum(r['source_shell_ahead_mm'] is not None and r['source_shell_ahead_mm']>.01 for r in rs),'current_shell_ahead_by_gt_001mm':sum(r['current_shell_ahead_mm'] is not None and r['current_shell_ahead_mm']>.01 for r in rs),'new_surface_order_inversion':sum(r['source_shell_ahead_mm'] is not None and r['current_shell_ahead_mm'] is not None and r['source_shell_ahead_mm']<-.01 and r['current_shell_ahead_mm']>.01 for r in rs)})
+(O/'front-embedding-comparison.json').write_text(json.dumps({'warning':'Only front samples from seven barycentrics per outer band face. Source shell ahead supports existing layering/embedding but cannot prove artistic intent or classify visibility in a particular camera.','groups':report,'samples':out},indent=2));print(json.dumps(report,indent=2))

@@ -1,0 +1,24 @@
+import {ATELIER_DESIGNS,designById} from './catalog.ts';
+import {encodePalette} from './palette-layout.ts';
+
+export interface PrecompactSnapshot {id:string;states:Record<string,unknown>}
+export type AtelierSnapshotMigration=
+ | {ok:true;snapshot:{id:string;states:Record<string,number>};normalizations:readonly string[]}
+ | {ok:false;reason:'unsupported-id'|'invalid-states'|'unrepresentable-pose';snapshot:PrecompactSnapshot};
+const oldKeys=['altare:edges','altare:facing','altare:role'];
+const integer=(value:unknown,max:number):value is number=>typeof value==='number'&&Number.isInteger(value)&&value>=0&&value<=max;
+
+/** Pure conversion of an explicitly exported precompact snapshot. Not a world
+ * upgrader: Bedrock may discard removed states before a script can read them.
+ * Unsupported decorated poses are rejected, never silently stripped of art. */
+export function migrateLegacyAtelierSnapshot(snapshot:PrecompactSnapshot):AtelierSnapshotMigration {
+ const d=designById(snapshot.id);
+ if(!d||!ATELIER_DESIGNS.some(value=>value.id===d.id))return {ok:false,reason:'unsupported-id',snapshot};
+ const s=snapshot.states;
+ if(!s||typeof s!=='object'||Array.isArray(s)||Object.keys(s).length!==oldKeys.length||!oldKeys.every(k=>Object.hasOwn(s,k)))return {ok:false,reason:'invalid-states',snapshot};
+ const edges=s['altare:edges'],facing=s['altare:facing'],frontal=s['altare:role'];
+ if(!integer(edges,15)||!integer(facing,3)||!integer(frontal,3))return {ok:false,reason:'invalid-states',snapshot};
+ if(d.codec==='edges')return {ok:true,snapshot:{id:d.id,states:{'altare:edges':edges,'altare:facing':facing}},normalizations:frontal?['unused-role-cleared']:[]};
+ try{return {ok:true,snapshot:{id:d.id,states:encodePalette({edges,facing,frontal})},normalizations:[]};}
+ catch{return {ok:false,reason:'unrepresentable-pose',snapshot};}
+}

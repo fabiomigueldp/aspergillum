@@ -1,0 +1,10 @@
+from pathlib import Path
+import numpy as np,json,collections
+O=Path(__file__).resolve().parent
+exec((O/'diagnose_lateral.py').read_text().split("h=analyze(")[0])
+a=np.load(O/'director-cone-assembly.npz');old=np.load(R/'evidence/seam-hermite-physical-7p5-assembly.npz');mid=np.load(O/'director-cone-midfield.npz');gate=json.loads((O/'director-cone-gate.json').read_text());details=[];cnt=collections.Counter();stage=collections.Counter()
+for x in gate['crossings']:
+ fs=[classify(ids,p) for ids,p in zip(x['source_indices'],a['face_parts'][x['triangles']])];key=' x '.join(f['part']+':'+f['wall'] for f in fs);cnt[key]+=1;sk=' x '.join(str(f.get('s_range',f.get('row_range'))) for f in fs);stage[sk]+=1;details.append(dict(**x,classification=fs))
+source=a['source_indices']<len(P);lookup={int(s):i for i,s in enumerate(a['source_indices'])};ou=a['points'][[lookup[int(s)] for s in mid['outer_source_ids']]];inn=a['points'][[lookup[int(s)] for s in mid['inner_source_ids']]];center=(ou+inn)/2;dv=(inn-ou)/2;f=mid['triangles'];norm=np.cross(center[f[:,1]]-center[f[:,0]],center[f[:,2]]-center[f[:,0]]);norm/=np.linalg.norm(norm,axis=1)[:,None];dd=np.einsum('ij,ikj->ik',norm,dv[f]/np.linalg.norm(dv[f],axis=2)[:,:,None]);sgn=1 if np.median(dd)>0 else -1;dd*=sgn
+report={'crossings':len(details),'classes':dict(cnt),'section_pairs':dict(stage),'source_indices_identical':np.array_equal(a['source_indices'],old['source_indices']),'source_points_bitwise_identical':np.array_equal(a['points'][source],old['points'][source]),'triangles_identical':np.array_equal(a['triangles'],old['triangles']),'center_max_error':float(np.abs(center-mid['center']).max()),'half_thickness_max_error':float(np.abs(np.linalg.norm(dv,axis=1)-mid['half_thickness']).max()),'mixed_sign_center_faces':int(((dd.min(1)<0)&(dd.max(1)>0)).sum()),'minimum_director_face_cosine':float(dd.min()),'details':details}
+(O/'director-cone-independent-classification.json').write_text(json.dumps(report,indent=2));print(json.dumps({k:v for k,v in report.items() if k!='details'},indent=2))

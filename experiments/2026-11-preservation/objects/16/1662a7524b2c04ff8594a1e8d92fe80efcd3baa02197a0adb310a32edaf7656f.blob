@@ -1,0 +1,47 @@
+# Prevenção limitada da quebra por jogador
+
+Revisão diagnóstica 2.0.0, 03/11/2026. Implementada somente na cópia de desenvolvimento, sem instalar/testar no Minecraft ou abrir mundos. **Não é recuperação durável nem entrega exatamente uma vez.**
+
+## Evidência oficial e decisão
+
+`PlayerBreakBlockBeforeEvent.cancel = true` cancela a quebra feita por jogador. Já `BlockCustomComponent.onBreak` é notificado quando o bloco é destruído, não oferece cancelamento e possui exceções documentadas de disparo. Por isso a proteção atua no evento anterior global, sincronamente, sem tentar transformar `onBreak` em uma transação. Fontes: [evento anterior cancelável](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/playerbreakblockbeforeevent?view=minecraft-bedrock-stable) e [BlockCustomComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/blockcustomcomponent?view=minecraft-bedrock-stable).
+
+A documentação informa que propriedades dinâmicas são conservadas entre reinícios. Isso sustenta armazenamento persistente, mas não estabelece persistência conjunta/ordenada entre journal, bloco e ItemStack diante de falha abrupta. Não se adicionou um journal ao runtime com base apenas nessa propriedade. Fonte: [scripts multiplayer e persistência](https://learn.microsoft.com/en-us/minecraft/creator/documents/scripting/multiplayer-scripts?view=minecraft-bedrock-stable).
+
+## Comportamento implementado
+
+`src/application/player-break-prevention.ts`, chamado pela inscrição real em `src/bootstrap/main.ts`, analisa somente `aspergillum:aspersorium` e `aspergillum:sacristan_table`:
+
+- Ocupado: cancela e oferece a instrução existente de retirada com mão vazia.
+- Visualmente vazio, mas com snapshot: cancela, preservando o registro órfão.
+- States ausentes, legados, mistos ou reservados, bloco inválido, ou erro de leitura após identificar nosso ID: cancela conservadoramente.
+- Registry ilegível/futuro ou vizinho não suportado no mesmo shard: cancela sem sanitizar/apagar nada.
+- Vazio válido e sem snapshot: não altera o evento. Nunca atribui `cancel = false`.
+- Bloco de outro projeto: não lê seu registry nem aplica essa proteção. Se nem o tipo puder ser lido, não presume que o bloco pertence a este add-on.
+
+A decisão de cancelamento acontece antes de retornar do callback. Somente a mensagem é agendada. Falha do scheduler, HUD ou saída do jogador não desfaz o cancelamento. O feedback tem cooldown de 20 ticks por jogador e memória limitada a 256 IDs; esse estado é apenas apresentação, nunca autoridade de item/bloco.
+
+A prevenção não grava propriedades, não altera blocos/equipamento, não entrega itens, não exclui snapshots e não encerra sessões como se houvesse ocorrido destruição. Não cria schema, UUID, state ou marca persistente. O comportamento de não minerar usando o aspersório permanece.
+
+## Mudança de uso e limites
+
+Nesta cópia, a tentativa de quebrar um dos dois blocos enquanto ocupado é recusada. A instrução de retirar primeiro **não torna undocking atômico**: os riscos já caracterizados de entrega seguida de erro e rollback continuam abertos. Um bloco vazio com vizinho inválido também pode ficar indisponível; isso preserva dados desconhecidos, não diagnostica corrupção no bloco específico.
+
+Não há proteção estabelecida contra explosões, comandos, substituição sem evento, downgrade, interrupção do script, callback de recuperação já agendado, ou outro subscriber que posteriormente reverta o cancelamento. A fonte consultada não garante ordem/prioridade entre subscribers. Nenhum desses limites foi ocultado removendo as caracterizações antigas.
+
+O gate nativo continua necessário para confirmar cancelamento, ausência de destruição/loot e comportamento sob repetição em Survival/Creative na versão exata. O host simulado prova que nosso callback define a flag e não emite efeitos, não que o engine obedeceu em uma sessão real.
+
+## Marcas de item não são recibos exclusivos
+
+A API limita `ItemStack.setDynamicProperty` a itens não empilháveis e documenta que `clone()` copia dados/propriedades. As 16 variantes atuais declaram `minecraft:max_stack_size: 1`, mas essa elegibilidade não transforma uma marca em identidade física única: uma cópia pode carregar a mesma marca. Fonte: [ItemStack](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemstack?view=minecraft-bedrock-stable).
+
+Não se acrescentou marca a itens nem se usou a existência de uma marca como confirmação de entrega. O protótipo offline compara duas observações sintéticas com a mesma marca e fingerprint, conserva a possibilidade de múltiplas ocorrências e recusa proposta de restauração enquanto os itens são observados. É um contraexemplo de unicidade, não teste de clonagem nativa.
+
+## Evidência
+
+- 12 regressões falharam antes da mudança: `out/state-compaction/prevention-before.log`.
+- 22 novos testes passam pelo callback registrado no bootstrap, incluindo ambos os blocos, bytes desconhecidos preservados, erros de leitura, cancelamento prévio, blocos alheios, feedback repetido/falho, substituição durante callback e sessão preservada. A suíte de rotas tem 47 testes no total: `out/state-compaction/prevention-after.log`.
+- Tipos: `out/state-compaction/prevention-typecheck.log`.
+- O protótipo offline passa a ter 54 testes, incluindo o contraexemplo de marca clonada; ele continua separado do runtime.
+
+**NO-GO mantido.** Trata-se de prevenção demonstrável de um caminho específico, não de solução para todos os riscos de recuperação. O journal e o classificador continuam offline, e nenhum mundo foi tocado.

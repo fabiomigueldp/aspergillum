@@ -1,0 +1,89 @@
+# V16: conferência de identidade após reduzir área transparente
+
+## Conclusão
+
+**Reduzir cartões transparentes melhora o centro observado, mas nenhum dos três níveis elimina os riscos nem evita novos erros de primeiro hit.** O nível 3 é o melhor na janela central; fora dela, seu total de erros na faixa é praticamente o mesmo do nível 2, com mais pixels que antes estavam corretos passando a falhar. Não aprovar um nível como substituição final apenas pelo recorte central.
+
+Recolocar somente os 476 retângulos alfa zero removidos, preservando todos os filhos retidos, piora fortemente o resultado. Isso demonstra que a geometria transparente sem cobertura opaca participa da falha do diagnóstico. O benefício não é explicável somente pela subdivisão ou pelo arredondamento dos filhos retidos. Adicionar primitivos também pode alterar a estrutura/desempate do BVH; não foi registrado o percurso exato de cada raio.
+
+## Método e linhagem
+
+- Cenas reconstruídas pelo importador V15, salvas pelo ensaio principal. Não houve mudança nas posições, UVs ou máscara nesta conferência.
+- Para as partes 0, 1 e 15, foi verificado um único quad por cube, ordem de polígonos igual a new_cube_index e índices consecutivos de quatro vértices. O mapa de cada nível liga new_cube_index a original_cube_index; o contrato V15 liga este último a native_face e half. Não se inferiu a fonte pela nova ordem ou pelo tamanho da malha.
+- Para as outras partes, a identificação usa a ordem de polígonos inalterada. Não se confunde cube com polígono nos bones legados com múltiplas faces.
+- Todos os resultados de identidade abaixo são emissão do ID no primeiro trecho opaco, mantendo máscara e backface: 1 amostra, BOX 0,01, vista frontal ortográfica de 1000 × 1000, mesma câmera para todas as variantes.
+- Cobertura é outro ensaio: 48 amostras fixas, BLACKMAN_HARRIS 1,5, emissão RGB binária para faixa/casca/outro e mundo preto. Não é replay exato das 48 amostras adaptativas do render iluminado original.
+
+## Resultado central e custo
+
+Janela inclusiva x490–570, y440–480, 3.321 pixels. “Identidade” conta troca de componente ou face-fonte; mudanças apenas da metade foram separadas.
+
+| Variante | Cubes totais | Triângulos raster | Pixels com identidade diferente do recorte analítico | Perda média da fração visível da faixa, 48 amostras |
+|---|---:|---:|---:|---:|
+| V15 compartilhada | 41.565 | 83.164 | 142 | 4,640% |
+| 68 cartões, nível 1 | 41.701 | 83.436 | 107 | 3,418% |
+| 68 cartões, nível 2 | 41.973 | 83.980 | 72 | 1,937% |
+| 68 cartões, nível 3 | 42.517 | 85.068 | 39 | 0,980% |
+| Nível 3 + alfa zero restaurado | 42.993 | 86.020 | 242 | 7,005% |
+
+Os custos são contagens do JSON, não tempo de jogo, FPS ou VRAM. O atlas é o mesmo. A média de perda é a média assinada da fração analítica menos a fração da variante; alguns pixels de fronteira têm pequeno ganho, portanto não é uma medida universal de perda de área.
+
+O nível 3 não é equivalente aos menores no centro: sua melhora adicional é mensurável. Isso não o torna aprovado, pois permanecem trocas e aparecem novas. Exemplos de cobertura da faixa:
+
+- Pixel (493,471): baseline 22,9%; níveis 1/2/3: 70,8% / 79,2% / 89,6%; recorte analítico 100%.
+- Pixel (559,449): baseline 25%; níveis 1/2/3: 91,7% / 100% / 100%; recorte 100%.
+- Pixel (510,468): baseline 45,8%; níveis 1/2/3: 60,4% / 97,9% / 100%; recorte 100%.
+- Controle antes limpo (500,471): baseline 100%; níveis 1/2/3: 95,8% / 95,8% / 87,5%; recorte 100%. Portanto, a melhora não é ponto a ponto.
+
+## Vista inteira: erros resolvidos e erros novos
+
+Comparação com o mesmo recorte analítico congelado. Um erro “novo” é um pixel em que o baseline tinha a identidade de referência e a variante deixou de ter. Não é apenas uma redução líquida de contagem.
+
+| Variante | Erros totais na vista | Erros do baseline resolvidos | Erros novos |
+|---|---:|---:|---:|
+| Baseline | 691 | — | — |
+| Nível 1 | 647 | 120 | 76 |
+| Nível 2 | 600 | 165 | 74 |
+| Nível 3 | 568 | 192 | 69 |
+| Nível 3 + alfa zero restaurado | 824 | 146 | 279 |
+
+A referência recorta também a casca e a anatomia. Por isso, o total da vista contém diferenças fora da faixa que já existiam e não eram alvo desta alteração. Os arquivos registram também o retângulo x200–800/y400–700, a união dos pixels identificados como faixa e o exterior da janela central.
+
+Na faixa visível fora da janela central, os erros de identidade são:
+
+| Variante | Total | Erros do baseline resolvidos | Erros novos |
+|---|---:|---:|---:|
+| Baseline | 375 | — | — |
+| Nível 1 | 366 | 13 | 4 |
+| Nível 2 | 356 | 44 | 25 |
+| Nível 3 | 357 | 55 | 37 |
+| Nível 3 + alfa zero restaurado | 401 | 48 | 74 |
+
+Níveis 2 e 3 têm totais quase iguais fora da janela, mas conjuntos diferentes de erros. Não afirmar que o nível 3 domina o nível 2 em toda a faixa. Nenhum atende um critério de zero novas trocas.
+
+## Controle causal restaurado
+
+O arquivo restaurado conserva, na mesma ordem, todos os 42.517 cubes do nível 3 e acrescenta 476 quads cujos retângulos UV têm alfa zero. A conferência independente nesta pasta compara os prefixos de todos os bones e lê os texels reais desses retângulos. Não se trata de remover sombra ou de mudar material do render iluminado.
+
+Recolocar esses quads leva:
+
+- 39 → 242 erros de identidade na janela central;
+- 568 → 824 na vista completa;
+- 0,980% → 7,005% de perda média da fração visível da faixa no controle de 48 amostras.
+
+A revisão visual da vista iluminada inteira concorda: o nível 3 limpa bastante o centro superior da faixa; o controle restaurado volta a exibir riscos centrais fortes. Marcas laterais e na borda inferior da faixa permanecem no nível 3. Não houve inspeção de Minecraft nesta pesquisa.
+
+## Arquivos
+
+- `fullframe-identity-comparison.json`: componente, face-fonte e metade, por região, com regressões e exemplos de coordenadas.
+- `fullframe-regression-masks.npz`: máscaras de erros resolvidos e novos.
+- `trim-identity-comparison.json`: identidade local e cobertura binária de 48 amostras, com pixels testemunha.
+- `restored-alpha0-verification.json`: igualdade dos cubes retidos e contagem de alfa nos retângulos restaurados.
+- `fullframe-*-ids.npz`, `fullframe-*-ids.exr`: resultados de identidade da vista inteira.
+- `roi68-*-identity-coverage.npz`: IDs locais e cobertura de 48 amostras.
+- `*-identity-provenance.json` e `fullframe-*-ids.json`: origem, hashes, mapeamento e hashes de posição/UV sem mudança durante o diagnóstico.
+- `render_trim_ids.py`, `render_fullframe_ids.py`, `measure_trim_ids.py`, `measure_fullframe_ids.py`: reprodução dos controles e medições.
+
+## Recomendação
+
+Conservar os três níveis e o restaurado como prova causal e pesquisa de transporte, sem promover nenhum a versão final. O nível 3 é o melhor resultado local medido, mas custa mais geometria e ainda troca superfícies, inclusive em pixels antes corretos. Um próximo candidato precisaria vencer uma verificação de identidade e aparência em toda a faixa e em outras vistas, além da auditoria ideal de suporte e do teste no runtime. O diagnóstico Cycles e a validade do shader Bedrock continuam questões distintas.

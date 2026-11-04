@@ -1,0 +1,55 @@
+"""Read-only V12 map of V5 band against frozen V11 ear envelopes."""
+from pathlib import Path
+from collections import defaultdict,Counter
+import numpy as np,json,hashlib
+O=Path(__file__).resolve().parent;B=O.parents[1]
+paths={"band":B/'shell_band_v5/retained_candidate/evidence/band-paired.npz',"anatomy":B/'body_interface_v9/constrained_fit/retained-anatomy.npz',"shell":B/'ear_rim_v11/structural_rebuild/retained-shell.npz',"cutter":B/'ear_rim_v11/structural_rebuild/polygonal-pinna-0.5mm-cutter.npz'}
+d={k:np.load(p) for k,p in paths.items()};p=d['band']['points'];f=d['band']['triangles'];tr=p[f];ct=tr.mean(1);side=d['band']['source_side'];wall=np.array([x[0] if np.all(x==x[0]) else 2 for x in side[f]]);area=np.linalg.norm(np.cross(tr[:,1]-tr[:,0],tr[:,2]-tr[:,0]),axis=1)/2
+h=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+def clip(poly,planes):
+ poly=list(poly)
+ for pl in planes:
+  out=[]
+  if not poly:break
+  for x,y in zip(poly,poly[1:]+poly[:1]):
+   dx=x@pl[:3]+pl[3];dy=y@pl[:3]+pl[3];ix=dx<=0;iy=dy<=0
+   if ix:out.append(x)
+   if ix!=iy:out.append(x+(y-x)*dx/(dx-dy))
+  poly=out
+ return np.asarray(poly).reshape(-1,3)
+def ar(poly):
+ return np.linalg.norm(sum((np.cross(poly[i]-poly[0],poly[i+1]-poly[0]) for i in range(1,len(poly)-1)),start=np.zeros(3)))/2 if len(poly)>2 else 0
+cut=np.zeros((len(f),2));polys={}
+for si,ss in enumerate([-1,1]):
+ planes=d['cutter']['planes'][d['cutter']['face_sides']==ss]
+ for i in range(len(f)):
+  poly=clip(tr[i],planes);cut[i,si]=ar(poly)
+  if cut[i,si]>1e-14:polys[f'{ss}:{i}']=poly.tolist()
+edges=defaultdict(list)
+for i,t in enumerate(f):
+ for k in range(3):edges[tuple(sorted([int(t[k]),int(t[(k+1)%3])]))].append(i)
+adj=defaultdict(set)
+for ids in edges.values():
+ for i in ids:adj[i].update(set(ids)-{i})
+def comps(ids):
+ left=set(map(int,ids));out=[]
+ while left:
+  todo=[min(left)];comp=set()
+  while todo:
+   i=todo.pop()
+   if i in left:comp.add(i);left.remove(i);todo.extend(adj[i]&left)
+  vi=np.unique(f[list(comp)]);out.append({'faces':sorted(comp),'face_count':len(comp),'wall_side_histogram':dict(Counter(map(int,wall[list(comp)]))),'vertices':vi.tolist(),'source_indices':d['band']['source_indices'][vi].tolist(),'bounds_min':p[vi].min(0).tolist(),'bounds_max':p[vi].max(0).tolist()})
+ return out
+ba=np.load(B/'body_interface_v9/independent_diagnosis/retained-anatomy-review-arrays.npz')['band_pairs'];sb=np.load(B/'ear_rim_v11/independent_diagnosis/polygonal-pinna-0.5mm-clean-review-arrays.npz')['band_pairs']
+# Previous reviews store candidate first: anatomy first for V9, shell first for V11.
+assert ba[:,0].max()<len(d['anatomy']['triangles']) and ba[:,1].max()<len(f)
+assert sb[:,0].max()<len(d['shell']['triangles']) and sb[:,1].max()<len(f)
+rows=[]
+for si,ss in enumerate([-1,1]):
+ ids=np.flatnonzero(cut[:,si]>1e-14);full=np.flatnonzero(cut[:,si]>=area-1e-14);partial=np.setdiff1d(ids,full)
+ rows.append({'spatial_side':ss,'cut_area_mm2':float(cut[:,si].sum()*1e6),'affected_faces':ids.tolist(),'fully_removed_faces':full.tolist(),'partially_cut_faces':partial.tolist(),'affected_source_walls':{str(w):{'faces':int(np.sum(wall[ids]==w)),'cut_area_mm2':float(cut[wall==w,si].sum()*1e6)} for w in [0,1,2]},'edge_connected_affected_components':comps(ids),'anatomy_pairs_incident_to_affected_band_faces':int(np.isin(ba[:,1],ids).sum()),'shell_pairs_incident_to_affected_band_faces':int(np.isin(sb[:,1],ids).sum())})
+rep={'frozen_hashes':{k:{'file':str(paths[k].relative_to(B)),'sha256':h(paths[k])} for k in paths},'input':{'vertices':len(p),'faces':len(f),'wall_faces':dict(Counter(map(int,wall))),'connected_components':comps(range(len(f))),'paired_source_indices_equal':bool(np.array_equal(d['band']['source_indices'][side==0],d['band']['source_indices'][side==1]))},'cut_by_v11_envelope':rows,'front_protection':{'definition':'Every face with any vertex y < -0.28 m is called front for this geometric guard, not an anatomical segmentation.','faces':int(np.any(tr[:,:,1]<-.28,1).sum()),'front_faces_affected_by_cutter':np.flatnonzero(np.any(tr[:,:,1]<-.28,1)&(cut.sum(1)>1e-14)).tolist()},'cached_contacts':{'band_anatomy':len(ba),'shell_band':len(sb),'by_band_wall':{str(w):{'band_anatomy_pairs':int((wall[ba[:,1]]==w).sum()),'shell_band_pairs':int((wall[sb[:,1]]==w).sum())} for w in [0,1,2]}},'notes':['source_side=1 physically inward, established by prior frozen source diagnosis; side=0 outward; mixed=2 closes the rim.','Envelope intersection is NOT classification as visually unwanted; art review must inspect both ridges and new terminal shape.','Reported contact numbers are cached on exactly matching frozen source files, not recomputed frozen validations.','Face lineage remains meaningful only against unchanged V5 input; no subtraction of raw pair IDs when new tessellation changes.']}
+np.savez_compressed(O/'baseline-map.npz',wall_side=wall,face_area=area,cutter_removed_area=cut,band_anatomy_pairs=ba,shell_band_pairs=sb)
+(O/'baseline-map.json').write_text(json.dumps(rep,indent=2));(O/'baseline-cut-polygons.json').write_text(json.dumps(polys,indent=2))
+print(json.dumps({k:v for k,v in rep.items() if k!='input' and k!='cut_by_v11_envelope'},indent=2))
+for r in rows:print('SIDE',r['spatial_side'],'affected/full/partial',len(r['affected_faces']),len(r['fully_removed_faces']),len(r['partially_cut_faces']),'area',r['cut_area_mm2'],'walls',r['affected_source_walls'],'components',[(c['face_count'],c['bounds_min'],c['bounds_max']) for c in r['edge_connected_affected_components']])

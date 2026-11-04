@@ -1,0 +1,67 @@
+"""Source-sample deletion with protected seam region and silhouette support points.
+No source coordinates move. Candidate selection is provisional until independent gates.
+"""
+from pathlib import Path
+import numpy as np,json,time
+from scipy.spatial import Delaunay,QhullError
+R=Path(__file__).resolve().parents[1];V4=R.parent/'shell_band_v4';V3=R.parent/'shell_band_v3';src=np.load(V3/'evidence/cap-source.npz');hv=src['points'];hn=src['normals'];base=np.load(V4/'curvature_candidate/evidence/cap-paired.npz');par=np.load(V4/'evidence/cap-source-parameters.npz')['params'];disk=np.column_stack([(par[:,0]+1)*par[:,2],(par[:,0]+1)*par[:,1]]);P=np.load(V4/'evidence/cap-source-pairing.npz');pairmap=dict(zip(P['outer'].tolist(),P['inner'].tolist()));base_n=len(base['points'])//2;selected=set(base['source_indices'][:base_n].tolist());source_ids=base['source_indices'][:base_n];bf=base['triangles'];bf=bf[np.all(bf<base_n,axis=1)];protected=set(int(i) for i in source_ids if par[i,0]>=40-1e-7)
+fixed_tri_source=source_ids[bf[np.all(par[source_ids[bf],0]>=40-1e-7,axis=1)]];fixed_edges={tuple(sorted([int(a),int(b)])) for t in fixed_tri_source for a,b in zip(t,np.roll(t,-1))}
+# Finite angular support set, plus exact XYZ extrema. Not an all-directions silhouette proof.
+for z in [-.7,-.3,0,.3,.7,1]:
+ for a in np.linspace(0,2*np.pi,48,endpoint=False):
+  direction=np.array([np.cos(a),np.sin(a),z]);protected.add(int(source_ids[np.argmax(hv[source_ids]@direction)]))
+for j in range(3):
+ protected.add(int(source_ids[np.argmin(hv[source_ids,j])]));protected.add(int(source_ids[np.argmax(hv[source_ids,j])]))
+ct=np.load(R/'evidence/baseline-vertex-contact.npz');contact={int(i):(float(s),n) for i,s,n in zip(ct['source_indices'],ct['signed'],ct['head_normals'])}
+def cross(a,b,c):
+ u=b-a;v=c-a;return u[0]*v[1]-u[1]*v[0]
+def proper(a,b,c,d):return cross(a,b,c)*cross(a,b,d)<-1e-12 and cross(c,d,a)*cross(c,d,b)<-1e-12
+def cw(t,p):return t if cross(p[t[0]],p[t[1]],p[t[2]])<0 else [t[0],t[2],t[1]]
+def constrained_tri(ids):
+ p=disk[ids];fs=Delaunay(p).simplices[:,::-1].tolist();where={int(si):k for k,si in enumerate(ids)};targets=[tuple(sorted([where[a],where[b]])) for a,b in fixed_edges];edges={}
+ def add(ti,t):
+  for a,b in zip(t,np.roll(t,-1)):edges.setdefault(tuple(sorted([int(a),int(b)])),set()).add(ti)
+ def remove(ti,t):
+  for a,b in zip(t,np.roll(t,-1)):
+   key=tuple(sorted([int(a),int(b)]));edges[key].remove(ti)
+   if not edges[key]:del edges[key]
+ for ti,t in enumerate(fs):add(ti,t)
+ for a,b in targets:
+  for _ in range(500):
+   if tuple(sorted([a,b])) in edges:break
+   done=False
+   for (c,d),ts in list(edges.items()):
+    if len(ts)!=2 or len({a,b,c,d})<4 or not proper(p[a],p[b],p[c],p[d]):continue
+    x,y=sorted(ts);u=next(k for k in fs[x] if k not in (c,d));v=next(k for k in fs[y] if k not in (c,d))
+    if not proper(p[c],p[d],p[u],p[v]):continue
+    remove(x,fs[x]);remove(y,fs[y]);fs[x]=cw([u,v,c],p);fs[y]=cw([v,u,d],p);add(x,fs[x]);add(y,fs[y]);done=True;break
+   if not done:raise RuntimeError('Protected edge recovery failed')
+  else:raise RuntimeError('Protected edge loop exceeded')
+ tri=np.array(fs);raw=np.cross(hv[ids[tri[:,1]]]-hv[ids[tri[:,0]]],hv[ids[tri[:,2]]]-hv[ids[tri[:,0]]]);expected=hn[ids[tri]].mean(1)
+ if np.median(np.einsum('ij,ij->i',raw,expected))<0:tri=tri[:,::-1]
+ return tri
+
+def build(ids,tri):
+ n=len(ids);ii=np.array([pairmap[int(i)] for i in ids]);v=np.concatenate([hv[ids],hv[ii]]);norm=np.concatenate([hn[ids],hn[ii]]);edge={}
+ for t in tri:
+  for a,b in zip(t,np.roll(t,-1)):edge.setdefault(tuple(sorted([int(a),int(b)])),[]).append((int(a),int(b)))
+ boundary=[e[0] for e in edge.values() if len(e)==1];f=tri.tolist()+(tri[:,::-1]+n).tolist()
+ for a,b in boundary:f.extend([[b,a,a+n],[b,a+n,b+n]])
+ return {'points':v,'triangles':np.array(f),'normals':norm,'source_indices':np.concatenate([ids,ii]),'source_side':np.array([0]*n+[1]*n)}
+
+def costs(ids,tri):
+ neighbors=[set() for _ in ids]
+ for a,b,c in tri:neighbors[a].update([b,c]);neighbors[b].update([a,c]);neighbors[c].update([a,b])
+ scored=[]
+ for k,si in enumerate(ids):
+  if int(si) in protected:continue
+  nb=np.array(sorted(neighbors[k]),int)
+  if len(nb)<3:continue
+  try:dt=Delaunay(disk[ids[nb]]);simplex=int(dt.find_simplex(disk[si]))
+  except QhullError:continue
+  if simplex<0:continue
+  T=dt.transform[simplex];w=T[:2]@(disk[si]-T[2]);weights=np.array([w[0],w[1],1-w.sum()]);local=ids[nb[dt.simplices[simplex]]];pred=weights@hv[local];inner=np.array([pairmap[int(i)] for i in local]);predinner=weights@hv[inner];delta=pred-hv[si];err=max(np.linalg.norm(delta),np.linalg.norm(predinner-hv[pairmap[int(si)]]));signed,normal=contact[int(si)];predsign=signed+float(delta@normal);penalty=max(0,-predsign-.0001) if signed>=0 else 0
+  score=err+4*penalty
+  scored.append((float(score),float(err),float(predsign),int(k),int(si)))
+ return sorted(scored),neighbors
+

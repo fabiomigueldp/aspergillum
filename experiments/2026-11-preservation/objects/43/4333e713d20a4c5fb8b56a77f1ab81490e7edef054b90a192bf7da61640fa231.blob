@@ -1,0 +1,94 @@
+# Aspergillum 2.0.0: revisão diagnóstica de estados
+
+Esta cópia compacta a codificação de água e ocupação da caldeirinha e da Mesa do Sacristão, com as proteções de lifecycle e preservação descritas abaixo. Não é uma atualização direta sobre mundos 1.2.5. Não foi instalada nem publicada, e nenhum mundo foi convertido.
+
+## Contrato
+
+A caldeirinha combina 17 quantidades de água (0–16) e 17 estados de ocupação (vazio ou um dos 16 acabamentos). Os 289 casos semânticos usam quatro dígitos de bases 2 × 3 × 7 × 7 = 294. A rotação continua separada, com 16 valores. São 4.704 estados declarados, antes 9.216.
+
+A mesa usa 17 casos de ocupação em 18 slots (2 × 9), com as mesmas 16 rotações: 288 estados, antes 512. Os 16 proxies de inventário permanecem iguais. Total do Aspergillum: 5.008, antes 9.744.
+
+Com Altare 0.13.0 em 59.840, o total esperado é 64.848, margem de 688 para a referência agregada de 65.536. A contagem deve ser conferida no pack emitido. Isso não garante desempenho ou compatibilidade no jogo, e outros addons consomem a mesma referência por mundo.
+
+A fonte autoritativa é `src/domain/block-state-layout.ts`. Runtime e gerador usam a mesma definição. Os códigos excedentes renderizam vazios, mas o runtime recusa operações sobre eles. Não são uma política de recuperação de corrupção.
+
+## Aparência e comportamento preservados
+
+Exceção comportamental deliberada nesta cópia: além de impedir quebra por jogador em blocos ocupados/ambíguos, a [prevenção de explosão](EXPLOSION_PREVENTION.md) exclui esses blocos da lista impactada. Essa medida preserva o estado existente sem acionar recuperação; não altera o codec nem fecha os gates de persistência e validação nativa.
+
+Geometrias, UVs, mapas de cor/normal/MER, attachables, poses de primeira/terceira pessoa, VFX, água visual e áudio não são redesenhados. Todos os acabamentos, rotações e quantidades continuam disponíveis. IDs de itens, UUIDs dos packs, identidade das instâncias e schema 3 dos itens permanecem.
+
+O snapshot do registro continua sendo a autoridade do item acomodado. O novo state apenas representa sua aparência e ocupação. Atualizar água precisa preservar ocupação/cosmético da permutação corrente; retirar ou recolorir precisa preservar água e rotação. Todas as escritas mantêm a revalidação e os mecanismos defensivos de rollback.
+
+## Compatibilidade e migração
+
+Os IDs dos blocos permanecem, mas seus schemas mudam. Abrir um mundo antigo diretamente pode perder states antes que scripts possam lê-los. Por isso não há migração implícita no runtime.
+
+O conversor de snapshots é offline e opera somente sobre um arquivo fornecido. Ele não abre LevelDB, não varre o mundo e não instala packs. Preserva os bytes brutos do arquivo e das propriedades dinâmicas, registra normalizações e permite exportar o backup original. Exportação parcial não significa cobertura completa de mundo.
+
+Normalizações explícitas: um vazio com cosmético não zero passa a vazio canônico; o par de água (9,8), que já decodifica como 16, passa ao código canônico de 16. A reversão exata exige o backup original.
+
+O parser de snapshots do runtime não serve como backup bruto: ele sanitiza propriedades e promove versões. Preservar os valores originais e hashes sem passar por esse parser. Registrar blocos ocupados sem snapshot e vazios com snapshot como inconsistências, sem consertar ou apagar automaticamente.
+
+Rollback de mundo exige restaurar em conjunto mundo, inventários, propriedades dinâmicas, estruturas e packs da mesma origem. Reinstalar somente o pack antigo não reverte dados convertidos.
+
+## Gates
+
+- Prova exaustiva dos estados emitidos, permissões de materiais, visibilidade, loot, colisão e 16 rotações.
+- Recursos visuais byte a byte iguais à baseline de arte.
+- Testes dos adaptadores e handlers, não apenas do codec: carregar, acomodar, retirar, recolorir, preencher, quebrar, expirar, concorrência e falhas de escrita.
+- Auditoria/conversão offline, verificação de hashes, recusas sem saída parcial e rollback byte a byte.
+- Gate agregado abaixo de 65.536, sem elevá-lo.
+- Creator Tools e teste nativo da versão exata pelo usuário continuam separados. Não presumir aprovação do jogo a partir dos testes Node.
+
+A revisão permanece diagnóstica até que os resultados reais desses gates sejam anexados. Não executar instalação ou abertura de um save antigo para descobrir se a migração funciona.
+
+## Evidência concluída em 03/11/2026
+
+- `npm run check` passou após a correção final do runtime com tipos, 309 testes em 33 arquivos do add-on, 87 testes do viewer, documentação, geração, build e validadores. O resultado final e os hashes estão em `out/state-compaction/final-verification.json`; o log é `out/state-compaction/final-check.log`. Oito dos 309 testes caracterizam limites conhecidos, não critérios de aceitação. Há também 12 verificações Node separadas do modelo offline, sem integração nativa.
+- `out/state-compaction/generated-asset-proof.json` enumera 9.728 combinações legadas e 4.992 novas dos dois blocos, incluindo 96 combinações reservadas. Com os 16 proxies, o total emitido é 5.008; Altare em 59.840 resulta em 64.848, margem de 688. O teto não foi alterado.
+- A prova atual verifica 285 arquivos do Resource Pack, exceto o manifest: 237 recursos contra a referência reconstruída de arte e 48 OGGs contra os bytes importados originais. Os OGGs e masters foram restaurados após a auditoria abaixo; fontes MP3 e receitas não foram alteradas.
+- Os 30 testes do conversor passam e percorrem todos os 9.728 estados legados. O rollback é do JSON fornecido, byte a byte, não de um mundo.
+- Os testes de handlers usam as implementações de produção com host/scheduler Minecraft simulados. `tests/application/compact-event-routing.test.ts` também passa pelas inscrições reais do bootstrap: input via item e bloco, quebra cujo bloco vivo já é ar e cancelamentos por slot, dimensão, modo, morte, respawn, inventário e saída. Apresentação, formulários e engine são simulados; não houve eventos reais de Minecraft.
+- O teste de geração e os validadores estruturais permanecem independentes dos testes de runtime. Uma suíte verde inclui caracterizações de limites conhecidos abaixo e não significa ausência de defeitos.
+
+## Correções de lifecycle e preservação de áudio
+
+Cinco casos de regressão da mesa falhavam antes da correção: fechamento antigo terminando sessão nova e edição, perfil, restauração ou retirada sobre um snapshot substituto. Agora cada formulário captura o `instanceId` inicial, revalida-o antes de escrever/retirar e só encerra a própria sessão. Os testes também verificam que o lock da nova sessão continua recusando outro jogador, que callbacks antigos não a retiram e que reabrir sobre o item substituto permite edição/retirada legítimas. Logs: `lifecycle-before-fix.log` e `lifecycle-after-fix.log` em `out/state-compaction/`.
+
+A auditoria não confirmou equivalência da reencodificação: dos 34 OGGs byte-diferentes, todos tinham pacotes Vorbis alterados e 33 tinham PCM diferente em dois decoders. FFmpeg nativo mediu pico de diferença de 0,0619403 FS e SNR mínimo de 20,784 dB; isso não determina audibilidade. Os 48 masters tinham PCM igual, apesar de cabeçalhos/bytes distintos. As 48 fontes MP3 eram byte-idênticas.
+
+Por isso foram restaurados os OGGs originais e os containers WAV originais, sem mudar fontes ou receitas. O build diagnóstico chama `verify:audio-baseline` no lugar de reencodar automaticamente: são conferidos hashes de 147 arquivos, incluindo 48 OGGs, 48 masters, 48 fontes e três arquivos de autoria. O comando explícito `build:audio` continua disponível para trabalho futuro de áudio, mas não é parte de `build`/`check` e sua saída precisa de revisão separada.
+
+As entradas reencodificadas, relatórios, comandos, versões dos decoders, métricas e hashes foram preservados em `out/state-compaction/audio-audit/`. `restoration.json` registra a reposição e `reencoded-snapshot/` permite reproduzir a auditoria anterior. Não houve escuta comparativa nem reprodução Bedrock.
+
+## Preservação do registro e avaliação de recuperação
+
+A nova fronteira de infraestrutura impede que o parser permissivo apague vizinhos ou metadados desconhecidos ao regravar um shard. São 22 testes de preservação/compatibilidade e quatro testes dos handlers de produção para recusa antes de qualquer escrita. Dezesseis regressões foram demonstradas antes/depois. V1/V2 canônicos do writer permanecem suportados, com a promoção documentada de V1 para zero cargas; JSON externo não canônico, extras, vetores desconhecidos e colisões de IDs centrais são recusados sem modificar os bytes originais. A recusa de um vizinho bloqueia o shard inteiro, um custo explícito de disponibilidade.
+
+O modelo offline avalia 54 caminhos, com 51 falhas injetadas. Sob escritas individuais atômicas e persistência ordenada, um journal conservador pode preservar evidência e evitar reentrega automática. Isso não prova durabilidade no Bedrock, progresso, reuso de endereços ou entrega única. O protocolo não foi integrado. Quatro novas caracterizações mostram duplicação quando spawn/equipamento modifica e depois lança erro. [Modelo, fontes, matriz de falhas e compatibilidade](RECOVERY_PROTOCOL_DIAGNOSTIC.md).
+
+## Proposta concreta de quarentena, somente offline
+
+O protótipo `tools/recovery-quarantine.mjs` correlaciona operação, snapshot e observações fornecidas. Não coleta dados do mundo. Detecta conflitos de identidade/conteúdo/contexto, preserva a entrada bruta integral e produz propostas de inspeção humana, sempre com execução, retry e liberação bloqueados. Encontrar uma cópia não prova causalidade da entrega; não encontrar não prova ausência. Escolhas de revisão são vinculadas ao relatório, sem assinatura ou executor.
+
+Foram acrescentados 54 testes Node e 12 exemplos sintéticos reproduzíveis, com smoke da CLI que confirma entrada inalterada. A etapa do protótipo offline não modificou arquivos de `src/` ou `packs/`; a prevenção separada adicionada depois está descrita abaixo. O código e os testes são separados do runtime. A proposta não resolve garantias nativas de persistência, downgrade ou geração de eventos e não instala quarentena real. [Contrato, uso e limites](RECOVERY_QUARANTINE_REVIEW.md).
+
+## Prevenção de quebra por jogador
+
+Uma defesa separada cancela sincronamente a mineração dos dois blocos quando ocupados, com snapshot órfão, states inválidos ou dados persistentes ilegíveis. Ela não escreve dados nem entrega/remove itens; somente o feedback é agendado. Foram demonstradas 12 regressões antes/depois e 22 novos testes da inscrição real. Blocos vazios válidos continuam quebráveis, salvo cancelamento anterior. Esta proteção não cobre explosões/comandos, outro subscriber que reverta o cancelamento, downgrade ou falhas de retirada. [Contrato, fontes oficiais e limites](PLAYER_BREAK_PREVENTION.md).
+
+## Limites conhecidos e decisão de release
+
+**NO-GO para release, instalação ou migração de mundo.** A compactação e a conversão offline estão verificadas no escopo descrito; os seguintes limites continuam abertos:
+
+1. Creator Tools 0.17.7 reportou 54 erros de versão e 11 avisos de links. Após respostas HTTP 502 nas consultas de versões, a ferramenta comparou os formatos 1.26.30/1.26.40 contra 1.26.0. Os formatos de todos os arquivos apontados são iguais aos da baseline anterior, mas isso não transforma a execução em aprovação. Relatórios: `out/state-compaction/creator-tools.log`, `creator-tools/packs.csv` e `creator-tools-summary.json`. Não reduzir versões nem ignorar erros para obter um gate verde.
+2. A recuperação de quebra captura o snapshot no despacho e recusa consumir uma substituição diferente escrita antes do callback. Essa recusa preserva o substituto, mas não recupera automaticamente o original. A deduplicação cobre o mesmo tick/identidade, não um replay arbitrário posterior: um evento antigo pode gerar o fallback vazio ou consumir um novo snapshot já existente no momento desse segundo despacho. O teste injeta esse replay; sua ocorrência no engine não foi demonstrada.
+3. Spawn do item e exclusão do registro não são atômicos. Falha na exclusão pode deixar item entregue e snapshot coexistindo. Não repetir automaticamente. Uma exceção após spawn ou equipamento modificar não prova ausência do efeito; os novos testes reproduzem duplicação ao tentar de novo. Também há perda possível se a escrita de docking falhar após retirar a mão e a própria restauração da mão falhar; o rollback atual apaga o snapshot mesmo nessa condição.
+4. Os riscos identificados de `close` antigo e identidade de snapshot da mesa foram corrigidos e passaram nas regressões descritas acima. Isso não fornece uma identidade global para blocos destruídos nem atomicidade entre inventário, mundo e registros; os oito casos de caracterização de replay, rollback e entrega pós-erro continuam como limites conhecidos.
+5. O fallback histórico de bloco ocupado sem snapshot ainda cria um item vazio; isso não reconstitui identidade/metadados ausentes e não é mecanismo de migração. O conversor offline apenas sinaliza a inconsistência e nunca sintetiza esse item.
+6. Não existe nesta entrega exportador/importador integral de mundo, verificação de LevelDB, teste nativo, Content Log novo ou profiling. O empacotador oficial recusa o canal diagnóstico; nenhum `.mcaddon` novo foi distribuído ou instalado.
+
+## Próximo gate controlado
+
+Primeiro resolver/aceitar explicitamente os limites de lifecycle e obter um relatório válido de Creator Tools, mantendo a versão diagnóstica separada. Só depois preparar um artefato diagnóstico identificado por hash para mundo descartável autorizado. A matriz nativa deve cobrir 16 rotações/acabamentos, água 0–16, preencher/carregar/acomodar/retirar, substituição durante operação atrasada, quebra/explosão, reabertura de formulário, multiplayer e reload. Comparar os itens por identidade, cargas e propriedades, além de inspecionar Content Log. Um mundo persistente antigo continua proibido como primeiro experimento.

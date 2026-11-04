@@ -1,0 +1,30 @@
+# Nossa Senhora da Paz — checkpoint de recuperação 2026-11-02
+
+Estado: estudo em andamento, NÃO modelo final nem gêmeo fiel concluído.
+
+## Arquivos editáveis
+- V43-hand-contact-trial.blend: checkpoint artístico preservado. Junção mão/manga e polegar melhoradas; a mão ainda aparenta flutuar sobre o peito. Não confundir com perfeição.
+- cuff-bounded-diagnostic.blend: mesma base com campo de influência local e shape key diagnóstica de deslocamento da manga 5mm em +Y. É um controle técnico, não nova pose artística aprovada.
+
+Blender 4.3.2. Abrir com autoexec desabilitado. Nenhum script automático é necessário para visualizar/editar.
+A shape key diagnóstica da túnica começa por DIAGNÓSTICO. Valor0 restaura exatamente o checkpoint; valor1 mostra prova5mm. Demais chaves preservadas. Arquivos originais não devem ser sobrescritos.
+
+## Resultado técnico comprovado
+Campo geodésico com contorno zero e núcleo controlado, suporte somente anterior. Para5mm: zero arestas com alteração>20%, zero faces com rotação>15°, normal máxima7,43°, nenhuma alteração posterior/fora do suporte. Relatório e comparação close inclusos.
+A tentativa de mão inteira rígida acompanhada pela manga NÃO foi aceita: ainda flutuante, melhor caso reduz gap médio21,19→17,78mm, sem interseção superior, mas distorção local28,1%. Incluímos relatório e perfil rejeitado para evitar repetir esse caminho.
+
+## Reprodução
+Os scripts essenciais são fornecidos para auditoria/manual, sem instalação automática. Trabalhe em cópia.
+- rebuild-bounded-field.py: carrega V43, aplica cuff-mask-seed.json, constrói campo e diagnóstico, grava em reproduced/. Blender -b --disable-autoexec --python rebuild-bounded-field.py.
+- search-rigid-hand-cuff.py: busca diagnóstica já rejeitada; não é recomendação de nova execução. Incluída para rastreabilidade; saída em reproduced/.
+- inspect-checkpoint.py: inspeção simples de objetos/chaves.
+
+## Referências e direitos
+Referência real: Paróquia Nossa Senhora da Paz do Glicério, São Paulo. Fonte consultada: https://arquivo.arq.br/projetos/paroquia-nossa-senhora-da-paz
+Fotos locais anteriores denominadas reference-8.jpg (perfil/corpo) e reference-9.jpg (rosto). Fotografias de terceiros NÃO incluídas, nem screenshots de navegação. Os .blend conservam somente referência externa de imagem (não empacotada); o arquivo fotográfico ausente não afeta geometria. Reobter referências na fonte quando necessário, sem alegar licença de redistribuição.
+Renders no pacote são do modelo em desenvolvimento, não fotografias do original.
+
+## Pendências
+Apoio anatômico mão-peito, proporções e fidelidade global ainda exigem revisão. Próximo método a investigar: deformação elástica/ARAP da manga com contorno e handles verificados; contato de dedos/palma separado da rotação global. Não modificar torso/costas por seleção projetada.
+
+SHA256SUMS.json cobre arquivos do pacote. Este pacote não publica addon nem altera GitHub/serviços.

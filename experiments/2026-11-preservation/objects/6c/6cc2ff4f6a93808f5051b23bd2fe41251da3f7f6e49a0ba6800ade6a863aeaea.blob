@@ -1,0 +1,18 @@
+import bpy,numpy as np,json,collections
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False);out={}
+for label,name in [('cap','Maria — véu reconstruído de perfil'),('mantle','Maria — plano contínuo do manto')]:
+ o=bpy.data.objects[name];o.hide_viewport=False;o.hide_set(False)
+ for md in o.modifiers:md.show_viewport=False;md.show_render=False
+ bpy.context.view_layer.update();dg=bpy.context.evaluated_depsgraph_get();me=o.evaluated_get(dg).to_mesh();p=np.array([o.matrix_world@v.co for v in me.vertices]);o.evaluated_get(dg).to_mesh_clear();fs=[list(f.vertices) for f in o.data.polygons];C=collections.Counter(tuple(sorted((a,b))) for f in fs for a,b in zip(f,f[1:]+f[:1]));E=[e for e,n in C.items() if n==1];adj=collections.defaultdict(set)
+ for a,b in E:adj[a].add(b);adj[b].add(a)
+ seen=set();loops=[]
+ for v in adj:
+  if v in seen:continue
+  todo=[v];seen.add(v);c=[]
+  while todo:
+   a=todo.pop();c.append(a)
+   for b in adj[a]:
+    if b not in seen:seen.add(b);todo.append(b)
+  loops.append({'vertices':c,'bounds':[p[c].min(0).tolist(),p[c].max(0).tolist()]})
+ out[label]={'verts':len(p),'faces':len(fs),'boundary_edges':len(E),'bad_boundary_degree':sum(len(v)!=2 for v in adj.values()),'edges_more_than_two_faces':sum(n>2 for n in C.values()),'boundary_components':loops,'note':'Source middle-surface control cage with active source keys evaluated and thickness/subdivision disabled; lower V74 baked key not included; no replacement saved'};np.savez(r+'cap-mantle-source-'+label+'.npz',points=p,edges=np.array(E),face_flat=np.array([v for f in fs for v in f]),face_lengths=np.array([len(f) for f in fs]));print(label,{k:v for k,v in out[label].items() if k!='boundary_components'},'loops',[len(c['vertices']) for c in loops])
+json.dump(out,open(r+'cap-mantle-source-domain-audit.json','w'),indent=2)

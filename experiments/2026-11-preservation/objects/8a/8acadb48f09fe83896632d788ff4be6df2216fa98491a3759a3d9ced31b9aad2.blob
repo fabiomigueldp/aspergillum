@@ -1,0 +1,17 @@
+"""Finite-view conservative native-shell contour mask; not a global invisibility proof."""
+from pathlib import Path
+import json,numpy as np
+from PIL import Image
+from scipy.ndimage import binary_erosion,binary_fill_holes,distance_transform_edt
+R=Path(__file__).resolve().parents[1];B=R.parent
+p=B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz';d=np.load(p);v=d['points']
+views=[('front',(.25,-3.5,3.44),(.03,-.20,3.43),.85),('profile',(3,-.1,3.4),(.03,-.10,3.42),.8),('back',(2,3,3.5),(.03,-.1,3.34),.95),('left-ear',(-3,-.16,3.50),(-.085,-.205,3.485),.50),('right-ear',(3,-.16,3.48),(.17,-.205,3.46),.50),('left-oblique',(-2,-1.5,3.82),(-.085,-.205,3.485),.50),('right-oblique',(2,-1.5,3.82),(.17,-.205,3.46),.50)]
+rows={};masks=[]
+for name,pos,target,scale in views:
+ rgb=np.array(Image.open(R/f'evidence/baseline-identity-outline-{name}.png'));mask=binary_fill_holes(rgb[:,:,0]==100);edge=mask^binary_erosion(mask);distance=distance_transform_edt(~edge)
+ fwd=np.array(target)-pos;fwd/=np.linalg.norm(fwd);right=np.cross(fwd,[0,0,1]);right/=np.linalg.norm(right);up=np.cross(right,fwd);a=v-np.array(target);xy=np.stack((a@right,-a@up),-1)/scale*2048+1024;ij=np.rint(xy).astype(int);valid=((ij>=2)&(ij<2046)).all(1);near=np.zeros(len(v),bool);near[valid]=distance[ij[valid,1],ij[valid,0]]<=2
+ masks.append(near);rows[name]={'near_vertices':int(near.sum()),'tolerance_pixels':2,'tolerance_world_mm':2*scale/2048*1000}
+allmask=np.logical_or.reduce(masks)
+np.savez_compressed(R/'evidence/seven-view-contour-mask.npz',contour_vertices=allmask,source_indices=d['source_indices'],points=v,per_view=np.array(masks),view_names=np.array([v[0] for v in views]))
+report={'method':'Project baseline shell vertices to seven baseline native shell+V5band+V9anatomy union masks, fill holes, protect vertices within 2 pixels of exterior boundary. View/canvas-limited. Used for conservative sampled silhouette constraints, never proof of hidden surfaces or full 3D contour preservation.','union_near_vertices':int(allmask.sum()),'views':rows}
+(R/'evidence/seven-view-contour-mask.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))

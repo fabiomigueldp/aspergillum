@@ -1,0 +1,120 @@
+# V12: terminações da faixa reconstruídas, retenção técnica local
+
+## Estado
+
+**Retida técnica local:** `retained-band.npz`, cópia byte a byte de `polygonal-pinna-0.6mm-clean.npz`. SHA-256: `1c293d8c5b35cca07cfc0e73d2b2e360cbbc3bea27688bb6e6373537ecf54c76`.
+
+A faixa fonte V5, a casca V11 retida e a anatomia V9 estão congeladas. Este diretório contém somente cópias experimentais da faixa e seus cortadores. Nenhuma exportação Bedrock, publicação, edição de addon, troca de anatomia ou integração de arte foi feita.
+
+Primeiro protótipo: `polygonal-pinna-0.5mm-clean.npz`, 586 vértices / 1168 faces. A reconstrução remove o ouro do envelope das orelhas e passa o gate próprio, mas a revisão independente encontrou **60 pares de fechamento coplanar faixa×casca**, com soma de áreas de 1,467790 mm², sem união espacial. Portanto foi rejeitado como solução retida, mesmo que as primeiras imagens fossem promissoras. Ele permanece intacto, junto do checkpoint bruto.
+
+Alternativa fundamentada: `polygonal-pinna-0.6mm-clean.npz`, 584 vértices / 1164 faces. Os planos do envelope da faixa ficam 0,1 mm mais externos que os planos correspondentes do envelope da casca V11. A finalidade é separar os fechamentos coincidentes e eliminar um recorte quase tangente a um vértice fonte, não diminuir espessura, achatar a faixa nem melhorar uma contagem arbitrária. As revisões independentes geométrica e visual são favoráveis à retenção técnica local. `../independent_diagnosis/REVIEW_FINAL_V12.md` registra os testes afetados e `../evidence/review-visual-v12.md` registra nove vistas. O ouro invasor deixa de aparecer nas cavidades examinadas; a frente conserva largura/relevo e a terminação direita recua visivelmente, sem nova grande abertura ou achatamento observado. Isso não é aprovação global da montagem ou da arte. A cópia retida está identificada em `retained-identity.json`.
+
+## Diagnóstico e delimitação
+
+A faixa possui 856 faces na parede fonte `source_side=0`, 856 na parede `source_side=1` e 200 nos retornos mistos. **O lado 1 é a parede física voltada para dentro.** Não se usou o nome histórico outer/inner do autor como prova da orientação física.
+
+O envelope pinna V11 afeta ambas as paredes e os retornos, não somente uma casca descartável. No primeiro protótipo são 1100 faces fonte recortadas ou retiradas: o número é grande porque as terminações têm amostragem muito mais densa que a frente. O recorte é uma mudança explícita das terminações laterais, não um detalhe microscópico presumido invisível. O mapa independente está em `../independent_diagnosis/baseline-map.json`.
+
+O cutter vem da mesma seleção experimental de pinna da V11: hull no plano yz extrudido em x através das paredes, excluindo quatro pontos altos da proteção conservadora direita somente do envelope. A anatomia não muda. Margens nominais de 0,5 e 0,6 mm são offsets das retas de apoio; o offset poligonal tem maior deslocamento nos cantos. Em 0,6 mm os máximos são 0,83804 e 0,80235 mm. Esses valores não são folga anatômica universal nem offset esférico.
+
+## Construção
+
+`build_band_termination.py` adapta o Boolean EXACT e a restauração de coordenadas V11:
+
+1. Copia a faixa fonte V5 e subtrai os dois volumes locais.
+2. O Boolean cria fechamento entre paredes, incluindo interseções com retornos existentes. Nenhuma região é removida por simples exclusão de faces abertas.
+3. Todo vértice fonte sobrevivente é restaurado bit a bit à coordenada float64 original. Novos pontos são restaurados aos planos das faces ancestrais e do cortador, com ancestralidade exata das faces.
+4. Faces intactas preservam orientação e IDs ancestrais. Faces recortadas e paredes novas têm papéis explícitos.
+5. O algoritmo de weld numérico foi herdado, mas **não colapsou aresta nem removeu face em nenhuma destas duas variantes**.
+6. O checkpoint `-clean` executa a verificação de triangulação planar herdada. Nenhuma face degenerada foi encontrada, portanto bruto e clean têm pontos e triângulos idênticos em ambas as margens. Os arquivos diferem somente pela anotação de proveniência.
+
+Não foi feita tentativa de retriangular a mesma superfície para eliminar a sobreposição coplanar: trocar diagonais não separaria os sólidos. O aumento de 0,1 mm do cutter resolve a causa geométrica investigada e também evita a microtriangulação no ponto quase tangente. A nova alternativa deve ser reavaliada por causa dessa mudança, sem importar aprovação anterior.
+
+## Preservação demonstrada
+
+Na alternativa 0,6 mm:
+
+- 436 dos 958 vértices originais sobrevivem bit a bit. Há 148 novos e 522 removidos do domínio recortado.
+- 810 faces originais orientadas ficam exatas. São todas as faces inteiramente fora do cutter. Há 210 faces recortadas e 144 de fechamento novo.
+- Todas as **488 faces frontais com algum vértice y < −0,28 m** ficam exatas, incluindo a superfície da faixa dupla nessa região. Isto não prova silhueta global idêntica.
+- 218 pares fonte completos sobrevivem, com separação entre 0,323482 e 0,500005 mm e alteração máxima exatamente zero. Essa medida não é espessura mínima do novo fechamento.
+- O domínio de cada triângulo recortado é comparado com clipping analítico contra os dois volumes. A conservação de área é verificada por ancestral, sem usar apenas área total.
+
+### As duas cristas
+
+O arquivo original `shell_band_v3/evidence/band-source-parameters.npz` liga cada índice da faixa aos parâmetros fonte. `constrained_source/tools/adapt_band.py` preserva por restrições as linhas de perfil 0, 3, 5, 8, 11, 13 e 16. O construtor anterior documenta **3 e 13 como as duas cristas**, 8 como vale e 5/11 como apoios. Não são UVs de textura.
+
+Cada linha das duas cristas é conferida contra os segmentos fonte menos o cutter. A alternativa 0,6 mm mantém ambas como uma única linha conexa por parede, sem deslocamento:
+
+- Parede 0, crista 3: 585,840 mm restantes de 630,745 mm originais.
+- Parede 0, crista 13: 568,176 mm restantes de 664,741 mm originais.
+- Parede 1, crista 3: 584,292 mm restantes de 629,085 mm originais.
+- Parede 1, crista 13: 566,523 mm restantes de 663,010 mm originais.
+
+Portanto não alegamos comprimento original integral: as terminações são aparadas. Os trechos fora do cutter ficam exatos. O acréscimo de recorte da margem 0,6 contra 0,5 mm é 0,322 mm na crista 3 externa e 0,229 mm na crista 13 externa, somando ambas as pontas. A revisão visual final é favorável à preservação da leitura frontal, dentro das nove câmeras examinadas; as duas linhas completas são documentadas geometricamente, não inferidas só da projeção.
+
+## Condicionamento numérico
+
+A margem 0,5 mm passava a apenas 0,01169 mm de um vértice fonte esquerdo, criando pequenos triângulos com altitude mínima 0,002728 mm. A maior rotação de normal ao arredondar coordenadas para float32 era 4,2844°.
+
+Com 0,6 mm:
+
+- Altitude mínima: 0,010665 mm.
+- Maior rotação float32: 0,428935°.
+- Razão de áreas float32/float64: 0,988853–1,002479.
+- Zero colapso de vértices, zero degenerados abaixo de 10⁻¹⁶ m² e zero inversão de normais nesse teste.
+- Ainda há um triângulo com ângulo menor que 0,1°; não se alega malha perfeitamente condicionada.
+
+O controle não é validação de JSON, cubos, normalmap, mipmaps ou runtime Minecraft. A textura/decoração não foi rebakeada nem exportada; as regiões fonte remanescentes não foram reposicionadas.
+
+## Limites dos resultados
+
+As relações herdadas são distintas: faixa×anatomia tinha 797 pares e casca V11×faixa tinha 1339. Contagem depende da tesselação e não mede profundidade, visibilidade ou área de interferência. O primeiro protótipo quase não muda a relação estrutural faixa×casca, apesar de limpar localmente as cavidades. Contatos temporais e outras regiões permanecem fora deste conserto.
+
+O novo fechamento tem que ser revisado com suas curvas reais, não com antigos pares fonte como se a conectividade fosse igual. Na variante 0,6 mm, há duas componentes de fechamento (58 e 86 faces), cada uma ligando as duas paredes fonte e os retornos mistos. As curvas reais opostas têm distância mínima de 0,099875 mm à esquerda e 0,272772 mm à direita nos testes independentes. Essas separações positivas não são espessura mínima global. Raios que saem imediatamente pelo mesmo rim numa quina não devem ser apresentados como espessura global certificada. Resultados geométricos independentes ficam em `../independent_diagnosis`; imagens, comparações e decisão artística ficam sob responsabilidade da revisão no diretório V12.
+
+Para a candidata 0,6 mm, o teste independente incluiu 7507 pares adjacentes e refinou 200 flags de aritmética longdouble com 80 dígitos: zero cruzamentos próprios estritos confirmados. A checagem coplanar percorreu todos os pares AABB sobrepostos da faixa contra si mesma, contra casca e contra anatomia, não só os fechamentos novos. Com distância aos planos ≤10⁻¹² m, alinhamento de normais |dot| ≥1−10⁻¹⁰ e área positiva >10⁻¹⁷ m², encontrou zero sobreposição nas três relações. Isso remove o defeito coplanar específico da candidata 0,5, sem prometer folga positiva universal.
+
+Continuam 189 pares faixa×anatomia e 1360 pares faixa×casca. A soma de comprimentos dos segmentos triângulo–triângulo, sem união/deduplicação, passa de 883,256 a 318,149 mm na anatomia e de 3782,715 a 3778,693 mm na casca. Assim, o encaixe estrutural faixa/casca continua praticamente inalterado e pendente. O aumento de contagem 1339→1360 não é medida de piora física nem é omitido. Segmentos e polígonos testemunhos ficam preservados na revisão.
+
+## Formato NPZ
+
+- `points`, `triangles`, `normals`: malha triangular nativa.
+- `source_indices`: índice V75 de vértice sobrevivente; −1 para novo. Não identifica todos os pontos novos como um só.
+- `baseline_vertex_indices`, `v12_vertex_ids`: índice V5 exato ou −1; identidade única por linha da candidata.
+- `generated_vertices`: verdadeiro para todos e somente os pontos novos dessa reconstrução.
+- `source_side`: 0/1 quando a parede fonte é inequívoca, −1 para apoio misto/novo. `source_side_support` é bitmask do suporte 1/2/3.
+- `source_uv`: parâmetros geométricos fonte exatos nos sobreviventes e interpolados baricentricamente nos novos. Não é unwrap artístico.
+- `face_parts`: 0 parede fonte0; 1 parede fonte1; 2 retorno misto original; 3 fechamento novo.
+- `face_roles`: 0 triângulo original exato; 1 recortado; 2 fechamento novo.
+- `baseline_face_indices`, `cutter_face_indices`: ancestral da face na faixa ou no cutter, −1 quando não aplicável.
+- `source_face_for_new_vertex`, `source_face_barycentrics`: suporte e coordenadas no triângulo original, quando existente.
+- `removed_baseline_vertices`, `removed_or_trimmed_baseline_faces`: remoções explícitas da cópia.
+- `provenance`: método, semântica, cutter e limites.
+
+## Reprodução
+
+Dependências já existentes: Python, NumPy, SciPy e Blender 4.3.2. Scripts geradores recusam sobrescrever NPZ. Para repetir, use uma cópia limpa da pasta com a mesma posição relativa à bancada, preservando esta pasta como evidência.
+
+Primeiro protótipo:
+
+```
+python prepare_reference_cutter.py
+blender -b -t 4 --python build_band_termination.py -- polygonal-pinna-0.5mm
+python retriangulate_inherited_patches.py polygonal-pinna-0.5mm polygonal-pinna-0.5mm-clean
+python audit_preservation.py polygonal-pinna-0.5mm-clean
+```
+
+Alternativa separada:
+
+```
+python build_band_cutter.py 0.6
+blender -b -t 4 --python build_band_termination.py -- polygonal-pinna-0.6mm
+python retriangulate_inherited_patches.py polygonal-pinna-0.6mm polygonal-pinna-0.6mm-clean
+python audit_preservation.py polygonal-pinna-0.6mm-clean
+```
+
+Os auditores independentes pertencem ao diretório de revisão, não se apresentam aqui como autoaprovação. Os três inputs congelados são conferidos por hash; não se reexecutou toda a validação antiga para aparentar teste novo.
+
+Após as duas revisões e a escolha explícita da variante, `python retain_selected_band.py` cria a cópia retida sem sobrescrever uma existente. `python update_manifest.py` atualiza inventário, hashes, sintaxe e identidade, sem mudar geometria.

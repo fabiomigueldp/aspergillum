@@ -1,0 +1,38 @@
+{
+  "status": "CYCLES_PRIMARY_SKIP_CAUSE_DEMONSTRATED_LOCAL_TRIM_IMPROVES_BUT_NEW_REGRESSIONS",
+  "preservation": {
+    "opaque_transport_v15/shared_mask/shared_mask_2048.geo.json": true,
+    "opaque_transport_v15/shared_mask/shared_mask_2048.png": true,
+    "opaque_transport_v15/evidence/shared-2048-diagnostic.blend": true,
+    "opaque_transport_v15/evidence/shared-2048-analytic-clip-control-diagnostic.blend": true,
+    "band_shell_v13/constrained_fit/retained-band.npz": true,
+    "ear_rim_v11/structural_rebuild/retained-shell.npz": true,
+    "body_interface_v9/constrained_fit/retained-anatomy.npz": true
+  },
+  "original_V75_sha256": "2c14fbc7566217ad350ef926abc1dc4a1bc41f457eaab8f10351e90b1f4777d9",
+  "diagnostic_renderer": "Blender4.3.2 Cycles CPU/Embree",
+  "first_surface_substitution_rendered": true,
+  "exact_internal_per_ray_sequence_instrumented": false,
+  "source_normal_broad_fix_retested": false,
+  "targeted_depths": [
+    1,
+    2,
+    3
+  ],
+  "local_best_measured_depth": 3,
+  "global_candidate_approved": false,
+  "new_source_ID_errors_depth3_fullframe": 69,
+  "Minecraft_tested": false,
+  "Minecraft_performance_measured": false,
+  "published": false,
+  "source_atlas_changed": false,
+  "opaque_support_changed_under_ideal_nearest_mip0": false,
+  "optional_all_band_depth1": "generated only, not rendered or selected",
+  "independent_reviews": [
+    "lighting_research/RESEARCH_LIGHTING_V16.md",
+    "lighting_research/REVIEW_TARGETED_TRIM_V16.md",
+    "independent_rays/REVIEW_PRIMARY_RAYS_V16.md",
+    "independent_rays/final-independent-verification.json",
+    "evidence/review-visual-v16.md"
+  ]
+}

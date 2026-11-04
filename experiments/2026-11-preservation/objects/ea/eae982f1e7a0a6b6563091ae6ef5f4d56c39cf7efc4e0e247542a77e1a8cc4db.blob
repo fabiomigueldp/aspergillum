@@ -1,0 +1,58 @@
+import bpy,math,json,bmesh
+from mathutils import Matrix,Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/'
+bpy.ops.wm.open_mainfile(filepath=r+'V29-double-band-trial.blend',use_scripts=False)
+R=bpy.data.objects['Maria — auréola lisa'].rotation_euler.to_matrix()@Matrix.Rotation(-math.pi/2,3,'X')
+head=bpy.data.objects['Maria — anatomia feminina adaptada CC0'];bvh=BVHTree.FromObject(head,bpy.context.evaluated_depsgraph_get())
+mantle=bpy.data.objects['Maria — plano contínuo do manto'];ks=mantle.data.shape_keys.key_blocks
+pts=[]
+for v in mantle.data.vertices:
+ p=v.co.copy()
+ for k in list(ks)[1:]:p+=(k.data[v.index].co-k.relative_key.data[v.index].co)*k.value
+ pts.append(p)
+def interp(arr,t):
+ q=t*(len(arr)-1);i=min(len(arr)-2,int(q));f=q-i
+ p0=arr[max(0,i-1)];p1=arr[i];p2=arr[i+1];p3=arr[min(len(arr)-1,i+2)]
+ return .5*((2*p1)+(-p0+p2)*f+(2*p0-5*p1+4*p2-p3)*f*f+(-p0+3*p1-3*p2+p3)*f*f*f)
+verts=[];faces=[];miss=0
+for side in [1,-1]:
+ grid=[]
+ for row in range(5,10):
+  col=0 if side==1 else 79
+  front=pts[row*80+col].copy()
+  if row==9:
+   a=side*1.27;z=3.50-.14*math.sin(a)**2
+   hit,n,_,_=bvh.ray_cast(R@Vector((-.44,1.012,z)),R@Vector((math.sin(a),-math.cos(a),0)),1)
+   if hit:front=hit+n*.003
+   else:miss+=1
+  else:
+   shifts={5:(.008,-.018),6:(.018,-.055),7:(.014,-.070),8:(.010,-.055)}
+   dx,dy=shifts[row];front+=Vector((side*dx,dy,0))
+  # Posterior edge overlaps existing mantle; no replacement of source mesh.
+  backcol=14 if side==1 else 65
+  back=pts[row*80+backcol].copy();back.x+=side*.0015
+  grid.append((front,back))
+ N=40;W=24;off=len(verts)
+ for j in range(N+1):
+  t=j/N;front=interp([x[0] for x in grid],t);back=interp([x[1] for x in grid],t)
+  for i in range(W+1):
+   u=i/W;p=front.lerp(back,u)
+   # Very shallow convexity suggests cloth rather than a taut triangular plane.
+   p.x+=side*.006*math.sin(math.pi*u)*math.sin(math.pi*t)
+   verts.append(tuple(p))
+ for j in range(N):
+  for i in range(W):
+   a=off+j*(W+1)+i;faces.append((a,a+1,a+W+2,a+W+1))
+m=bpy.data.meshes.new('Panos laterais contínuos — estudo');m.from_pydata(verts,[],faces);m.update()
+bm=bmesh.new();bm.from_mesh(m);bmesh.ops.recalc_face_normals(bm,faces=bm.faces);bm.to_mesh(m);bm.free()
+o=bpy.data.objects.new('TESTE 30 — transição lateral do véu',m);bpy.context.scene.collection.objects.link(o);o.data.materials.append(bpy.data.objects['Maria — véu reconstruído de perfil'].data.materials[0])
+for p in m.polygons:p.use_smooth=True
+s=o.modifiers.new('Espessura delicada','SOLIDIFY');s.thickness=.001;s.offset=0
+s=o.modifiers.new('Continuidade','SUBSURF');s.levels=1
+o['status']='Unapproved lateral veil study; remove to return to V29; rear is interpretation.'
+json.dump({'vertices':len(verts),'faces':len(faces),'ray_misses':miss},open(r+'V30-change-report.json','w'),indent=2)
+bpy.ops.wm.save_as_mainfile(filepath=r+'V30-lateral-veil-trial.blend')
+s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=600;s.render.resolution_y=800;s.render.resolution_percentage=100;c=s.camera
+for view,loc,targ,scale in [('face',(-1.6,-5,3.7),(0,-.08,3.43),.88),('profile',(-5,-.05,3.6),(0,-.15,3.4),1.05)]:
+ c.location=loc;c.rotation_euler=(Vector(targ)-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=scale;s.render.filepath=r+'V30-compare-'+view+'.png';bpy.ops.render.render(write_still=True)

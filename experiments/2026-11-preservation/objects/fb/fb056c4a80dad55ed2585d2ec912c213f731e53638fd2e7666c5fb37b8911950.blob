@@ -1,0 +1,15 @@
+import bpy,json,collections
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V43-hand-contact-trial.blend',use_scripts=False);m=bpy.data.objects['Maria — túnica e mangas integradas'].data;seed=json.load(open(r+'checkpoint-20261102/cuff-mask-seed.json'));ids={i for i,w in seed['weights']};all_edges=collections.Counter();patch_edges=collections.Counter();n=0
+for f in m.polygons:
+ vs=list(f.vertices);es=[tuple(sorted((vs[i],vs[(i+1)%len(vs)]))) for i in range(len(vs))];all_edges.update(es)
+ if all(i in ids for i in vs):patch_edges.update(es);n+=1
+boundary=[e for e,count in patch_edges.items() if count==1];adj=collections.defaultdict(set)
+for i,j in boundary:adj[i].add(j);adj[j].add(i)
+rem=set(adj);loops=[]
+while rem:
+ a=rem.pop();seen={a};q=[a]
+ while q:
+  for j in adj[q.pop()]:
+   if j in rem:rem.remove(j);seen.add(j);q.append(j)
+ loops.append({'vertices':len(seen),'all_degree_two':all(len(adj[i])==2 for i in seen),'bbox':[(min(m.vertices[i].co[j] for i in seen),max(m.vertices[i].co[j] for i in seen)) for j in range(3)]})
+report={'mesh_boundary_edges':sum(v==1 for v in all_edges.values()),'mesh_nonmanifold_edges':sum(v!=2 for v in all_edges.values()),'selected_patch_faces':n,'patch_boundary_edges':len(boundary),'patch_boundary_components':loops};json.dump(report,open(r+'cuff-patch-boundary.json','w'),indent=2);print(report)

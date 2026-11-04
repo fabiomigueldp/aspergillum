@@ -1,0 +1,656 @@
+{
+  "candidate": "budget-0700",
+  "cube_count": 700,
+  "geometry_json_sha256": "ae88051aec7e9e28bc01c9fbbb611c7590ef7cae6485d84f3ee481d7d53294ea",
+  "native_surface_samples": 31108,
+  "source_triangle_sample_count_each": 7,
+  "native_normal_ray_method": "Origin 20 mm outward, direction inward normal, exact ray slab intervals over all positive-depth OBBs; first entry in 40 mm. Signed offset positive means candidate reaches outward of sampled native point. Finite face samples only; not exact Hausdorff or arbitrary-direction envelope.",
+  "native_normal_ray_misses": 0,
+  "native_normal_ray_outward_offset_mm": {
+    "count": 31108,
+    "min": -5.065392549852277e-13,
+    "median": 0.08229464278300576,
+    "p95": 0.38664155909251974,
+    "p99": 1.1296876530555109,
+    "max": 15.58844607020218
+  },
+  "native_outer_normal_ray_offset_mm": {
+    "count": 14651,
+    "min": -5.065392549852277e-13,
+    "median": 0.08097252481200842,
+    "p95": 0.29119495337438794,
+    "p99": 1.0887471713178098,
+    "max": 6.260086439172797
+  },
+  "native_inner_normal_ray_offset_mm": {
+    "count": 14651,
+    "min": 0.00014690908697531646,
+    "median": 0.08121342904961193,
+    "p95": 0.2643082285764004,
+    "p99": 0.8970015307500425,
+    "max": 15.58844607020218
+  },
+  "source_containment_negative_ray_offsets_gt_0_01mm": 0,
+  "all_cube_surface_samples": 205800,
+  "samples_strictly_inside_other_cube": 127913,
+  "exposed_cube_surface_samples": 77887,
+  "exposed_cube_to_native_actual_triangle_distance_mm": {
+    "count": 77887,
+    "min": 0.0,
+    "median": 0.08850957965478301,
+    "p95": 0.3635582717834038,
+    "p99": 0.8215377002488815,
+    "max": 1.6113183228299022
+  },
+  "exposed_cube_to_native_signed_closest_plane_mm": {
+    "count": 77887,
+    "min": -0.831194779874189,
+    "median": 0.08484499500768845,
+    "p95": 0.33435526713484254,
+    "p99": 0.754207873750355,
+    "max": 1.5077050197138275
+  },
+  "exposed_major_thickness_faces_distance_mm": {
+    "count": 49084,
+    "min": 0.0,
+    "median": 0.076938154961681,
+    "p95": 0.26979720423696557,
+    "p99": 0.6243466731393706,
+    "max": 1.6113183228299022
+  },
+  "exposed_tangent_side_faces_distance_mm": {
+    "count": 28803,
+    "min": 0.0,
+    "median": 0.11487376468721777,
+    "p95": 0.5446295894216742,
+    "p99": 0.9433834056835617,
+    "max": 1.6113183228299022
+  },
+  "crest_vertices": [
+    {
+      "v": 3.0,
+      "native_vertex_count": 66,
+      "outward_normal_first_union_offset_mm": {
+        "count": 66,
+        "min": -1.3530843112619095e-13,
+        "median": 0.016969026645429278,
+        "p95": 0.2747447907401838,
+        "p99": 0.3419352605695345,
+        "max": 0.3823363795915427
+      },
+      "misses": 0
+    },
+    {
+      "v": 13.0,
+      "native_vertex_count": 62,
+      "outward_normal_first_union_offset_mm": {
+        "count": 62,
+        "min": -1.3183898417423734e-13,
+        "median": 0.0322168204726133,
+        "p95": 0.17213068615826735,
+        "p99": 0.5444780293286606,
+        "max": 0.6337342943057156
+      },
+      "misses": 0
+    }
+  ],
+  "exposed_cube_to_anatomy_unsigned_distance_mm": {
+    "count": 77887,
+    "min": 0.00025506679435238766,
+    "median": 3.202623687684536,
+    "p95": 4.943536641076207,
+    "p99": 6.000099843367933,
+    "max": 7.346025202423334
+  },
+  "exposed_cube_to_anatomy_signed_nearest_plane_mm": {
+    "count": 77887,
+    "min": -2.097124314972616,
+    "median": 3.2012248006587383,
+    "p95": 4.941406844041402,
+    "p99": 6.000103128545475,
+    "max": 7.346027282497364
+  },
+  "exposed_cube_to_shell_unsigned_distance_mm": {
+    "count": 77887,
+    "min": 0.00012287812012345967,
+    "median": 1.0119006037712097,
+    "p95": 13.226086087524887,
+    "p99": 21.279717311263077,
+    "max": 26.489198207855225
+  },
+  "exposed_cube_to_shell_signed_nearest_plane_mm": {
+    "count": 77887,
+    "min": -9.292953191982452,
+    "median": 0.8518876797050587,
+    "p95": 10.574907550947641,
+    "p99": 20.226339639567648,
+    "max": 26.472443714777302
+  },
+  "signed_nearest_plane_caveat": "Negative plane sign near a triangle is not a robust signed distance or new-contact classification. Shared baseline contact needs independent ray/triangle comparison.",
+  "worst_exposed_samples": [
+    {
+      "point": [
+        -0.08579425987442678,
+        -0.23617259124871356,
+        3.5410449539760793
+      ],
+      "cube": 13,
+      "cube_face_axis": 0,
+      "nearest_native_face": 2062,
+      "nearest_native_point": [
+        -0.0874045193195343,
+        -0.23619087040424347,
+        3.54110050201416
+      ],
+      "distance_mm": 1.6113183228299022
+    },
+    {
+      "point": [
+        -0.08579425987442678,
+        -0.23617259124871356,
+        3.5410449539760793
+      ],
+      "cube": 13,
+      "cube_face_axis": 1,
+      "nearest_native_face": 2062,
+      "nearest_native_point": [
+        -0.0874045193195343,
+        -0.23619087040424347,
+        3.54110050201416
+      ],
+      "distance_mm": 1.6113183228299022
+    },
+    {
+      "point": [
+        -0.08579425987442678,
+        -0.23617259124871356,
+        3.5410449539760793
+      ],
+      "cube": 13,
+      "cube_face_axis": 2,
+      "nearest_native_face": 2062,
+      "nearest_native_point": [
+        -0.0874045193195343,
+        -0.23619087040424347,
+        3.54110050201416
+      ],
+      "distance_mm": 1.6113183228299022
+    },
+    {
+      "point": [
+        0.1722132826647069,
+        -0.22780655921607026,
+        3.4913350375540793
+      ],
+      "cube": 680,
+      "cube_face_axis": 1,
+      "nearest_native_face": 4406,
+      "nearest_native_point": [
+        0.1727694869041443,
+        -0.22894583642482758,
+        3.4922056198120117
+      ],
+      "distance_mm": 1.5378675889223814
+    },
+    {
+      "point": [
+        0.1722132826647069,
+        -0.22780655921607026,
+        3.4913350375540793
+      ],
+      "cube": 680,
+      "cube_face_axis": 2,
+      "nearest_native_face": 4406,
+      "nearest_native_point": [
+        0.1727694869041443,
+        -0.22894583642482758,
+        3.4922056198120117
+      ],
+      "distance_mm": 1.5378675889223814
+    },
+    {
+      "point": [
+        0.1722132826647069,
+        -0.22780655921607026,
+        3.4913350375540793
+      ],
+      "cube": 680,
+      "cube_face_axis": 0,
+      "nearest_native_face": 4406,
+      "nearest_native_point": [
+        0.1727694869041443,
+        -0.22894583642482758,
+        3.4922056198120117
+      ],
+      "distance_mm": 1.5378675889223814
+    },
+    {
+      "point": [
+        -0.08588326894464793,
+        -0.2360711433031417,
+        3.5412055121184562
+      ],
+      "cube": 13,
+      "cube_face_axis": 1,
+      "nearest_native_face": 2062,
+      "nearest_native_point": [
+        -0.08740050345659256,
+        -0.23623010516166687,
+        3.5412039756774902
+      ],
+      "distance_mm": 1.525541883893311
+    },
+    {
+      "point": [
+        -0.08588326894464793,
+        -0.2360711433031417,
+        3.5412055121184562
+      ],
+      "cube": 13,
+      "cube_face_axis": 0,
+      "nearest_native_face": 2062,
+      "nearest_native_point": [
+        -0.08740050345659256,
+        -0.23623010516166687,
+        3.5412039756774902
+      ],
+      "distance_mm": 1.525541883893311
+    },
+    {
+      "point": [
+        -0.08597227801486909,
+        -0.23596969535756981,
+        3.5413660702608336
+      ],
+      "cube": 13,
+      "cube_face_axis": 0,
+      "nearest_native_face": 2062,
+      "nearest_native_point": [
+        -0.08739647269248962,
+        -0.23626941442489624,
+        3.5413079261779785
+      ],
+      "distance_mm": 1.4565521851181984
+    },
+    {
+      "point": [
+        -0.08597227801486909,
+        -0.23596969535756981,
+        3.5413660702608336
+      ],
+      "cube": 13,
+      "cube_face_axis": 1,
+      "nearest_native_face": 2062,
+      "nearest_native_point": [
+        -0.08739647269248962,
+        -0.23626941442489624,
+        3.5413079261779785
+      ],
+      "distance_mm": 1.4565521851181984
+    },
+    {
+      "point": [
+        0.17210853282050084,
+        -0.22824662777153498,
+        3.490877609309612
+      ],
+      "cube": 680,
+      "cube_face_axis": 0,
+      "nearest_native_face": 4408,
+      "nearest_native_point": [
+        0.17291824519634247,
+        -0.2292037308216095,
+        3.491581916809082
+      ],
+      "distance_mm": 1.4379508793354034
+    },
+    {
+      "point": [
+        0.17210853282050084,
+        -0.22824662777153498,
+        3.490877609309612
+      ],
+      "cube": 680,
+      "cube_face_axis": 2,
+      "nearest_native_face": 4408,
+      "nearest_native_point": [
+        0.17291824519634247,
+        -0.2292037308216095,
+        3.491581916809082
+      ],
+      "distance_mm": 1.4379508793354034
+    },
+    {
+      "point": [
+        0.17251464611111014,
+        -0.22785028975629967,
+        3.4913080970698815
+      ],
+      "cube": 680,
+      "cube_face_axis": 1,
+      "nearest_native_face": 4406,
+      "nearest_native_point": [
+        0.17288076877593994,
+        -0.2290099412202835,
+        3.4920506477355957
+      ],
+      "distance_mm": 1.4247983926907182
+    },
+    {
+      "point": [
+        0.17251464611111014,
+        -0.22785028975629967,
+        3.4913080970698815
+      ],
+      "cube": 680,
+      "cube_face_axis": 0,
+      "nearest_native_face": 4406,
+      "nearest_native_point": [
+        0.17288076877593994,
+        -0.2290099412202835,
+        3.4920506477355957
+      ],
+      "distance_mm": 1.4247983926907182
+    },
+    {
+      "point": [
+        -0.08606128708509024,
+        -0.23586824741199794,
+        3.5415266284032105
+      ],
+      "cube": 13,
+      "cube_face_axis": 1,
+      "nearest_native_face": 2062,
+      "nearest_native_point": [
+        -0.08739245682954788,
+        -0.23630863428115845,
+        3.5414113998413086
+      ],
+      "distance_mm": 1.4068491291254759
+    },
+    {
+      "point": [
+        -0.08606128708509024,
+        -0.23586824741199794,
+        3.5415266284032105
+      ],
+      "cube": 13,
+      "cube_face_axis": 0,
+      "nearest_native_face": 2062,
+      "nearest_native_point": [
+        -0.08739245682954788,
+        -0.23630863428115845,
+        3.5414113998413086
+      ],
+      "distance_mm": 1.4068491291254759
+    },
+    {
+      "point": [
+        -0.08615029615531139,
+        -0.23576679946642604,
+        3.5416871865455875
+      ],
+      "cube": 13,
+      "cube_face_axis": 0,
+      "nearest_native_face": 2062,
+      "nearest_native_point": [
+        -0.08743429183959961,
+        -0.2362341582775116,
+        3.541560173034668
+      ],
+      "distance_mm": 1.3723043957725167
+    },
+    {
+      "point": [
+        -0.08615029615531139,
+        -0.23576679946642604,
+        3.5416871865455875
+      ],
+      "cube": 13,
+      "cube_face_axis": 1,
+      "nearest_native_face": 2062,
+      "nearest_native_point": [
+        -0.08743429183959961,
+        -0.2362341582775116,
+        3.541560173034668
+      ],
+      "distance_mm": 1.3723043957725167
+    },
+    {
+      "point": [
+        0.17281600955751342,
+        -0.22789402029652905,
+        3.491281156585684
+      ],
+      "cube": 680,
+      "cube_face_axis": 0,
+      "nearest_native_face": 4409,
+      "nearest_native_point": [
+        0.17298950254917145,
+        -0.22916144132614136,
+        3.4916841983795166
+      ],
+      "distance_mm": 1.3411934487521648
+    },
+    {
+      "point": [
+        0.17281600955751342,
+        -0.22789402029652905,
+        3.491281156585684
+      ],
+      "cube": 680,
+      "cube_face_axis": 1,
+      "nearest_native_face": 4409,
+      "nearest_native_point": [
+        0.17298950254917145,
+        -0.22916144132614136,
+        3.4916841983795166
+      ],
+      "distance_mm": 1.3411934487521648
+    },
+    {
+      "point": [
+        -0.08623930522553255,
+        -0.23566535152085416,
+        3.541847744687965
+      ],
+      "cube": 13,
+      "cube_face_axis": 1,
+      "nearest_native_face": 2062,
+      "nearest_native_point": [
+        -0.08749162405729294,
+        -0.23612117767333984,
+        3.5417237281799316
+      ],
+      "distance_mm": 1.338448142632842
+    },
+    {
+      "point": [
+        -0.08623930522553255,
+        -0.23566535152085416,
+        3.541847744687965
+      ],
+      "cube": 13,
+      "cube_face_axis": 0,
+      "nearest_native_face": 2062,
+      "nearest_native_point": [
+        -0.08749162405729294,
+        -0.23612117767333984,
+        3.5417237281799316
+      ],
+      "distance_mm": 1.338448142632842
+    },
+    {
+      "point": [
+        -0.086540017888489,
+        -0.23529001393991733,
+        3.534716130039281
+      ],
+      "cube": 15,
+      "cube_face_axis": 2,
+      "nearest_native_face": 3914,
+      "nearest_native_point": [
+        -0.0878634825348854,
+        -0.23530703783035278,
+        3.5348222255706787
+      ],
+      "distance_mm": 1.3278163969516754
+    },
+    {
+      "point": [
+        -0.086540017888489,
+        -0.23529001393991733,
+        3.534716130039281
+      ],
+      "cube": 15,
+      "cube_face_axis": 1,
+      "nearest_native_face": 3914,
+      "nearest_native_point": [
+        -0.0878634825348854,
+        -0.23530703783035278,
+        3.5348222255706787
+      ],
+      "distance_mm": 1.3278163969516754
+    },
+    {
+      "point": [
+        -0.086540017888489,
+        -0.23529001393991733,
+        3.534716130039281
+      ],
+      "cube": 15,
+      "cube_face_axis": 0,
+      "nearest_native_face": 3914,
+      "nearest_native_point": [
+        -0.0878634825348854,
+        -0.23530703783035278,
+        3.5348222255706787
+      ],
+      "distance_mm": 1.3278163969516754
+    },
+    {
+      "point": [
+        -0.09084354156334154,
+        -0.22132265283204902,
+        3.5363483465108576
+      ],
+      "cube": 25,
+      "cube_face_axis": 1,
+      "nearest_native_face": 4249,
+      "nearest_native_point": [
+        -0.08967913687229156,
+        -0.22073793411254883,
+        3.536451578140259
+      ],
+      "distance_mm": 1.3070575660094619
+    },
+    {
+      "point": [
+        -0.09084354156334154,
+        -0.22132265283204902,
+        3.5363483465108576
+      ],
+      "cube": 25,
+      "cube_face_axis": 2,
+      "nearest_native_face": 4249,
+      "nearest_native_point": [
+        -0.08967913687229156,
+        -0.22073793411254883,
+        3.536451578140259
+      ],
+      "distance_mm": 1.3070575660094619
+    },
+    {
+      "point": [
+        -0.09084354156334154,
+        -0.22132265283204902,
+        3.5363483465108576
+      ],
+      "cube": 25,
+      "cube_face_axis": 0,
+      "nearest_native_face": 4249,
+      "nearest_native_point": [
+        -0.08967913687229156,
+        -0.22073793411254883,
+        3.536451578140259
+      ],
+      "distance_mm": 1.3070575660094619
+    },
+    {
+      "point": [
+        -0.0863283142957537,
+        -0.23556390357528229,
+        3.5420083028303417
+      ],
+      "cube": 13,
+      "cube_face_axis": 1,
+      "nearest_native_face": 2062,
+      "nearest_native_point": [
+        -0.08754897117614746,
+        -0.2360081970691681,
+        3.5418875217437744
+      ],
+      "distance_mm": 1.3046128442510962
+    },
+    {
+      "point": [
+        -0.0863283142957537,
+        -0.23556390357528229,
+        3.5420083028303417
+      ],
+      "cube": 13,
+      "cube_face_axis": 0,
+      "nearest_native_face": 2062,
+      "nearest_native_point": [
+        -0.08754897117614746,
+        -0.2360081970691681,
+        3.5418875217437744
+      ],
+      "distance_mm": 1.3046128442510962
+    }
+  ],
+  "sampling_caveats": [
+    "Face-grid area weighting is not uniform: reported quantiles are deterministic sample quantiles, not area percentiles.",
+    "Strictly interior removal excludes hidden cube faces but does not form a Boolean union mesh. Coplanar shared faces may remain sampled.",
+    "Nearest-point operation uses actual native triangles in Blender BVH float precision; no vertex KD surrogate.",
+    "No game rendering, runtime performance, normalmap or artistic approval."
+  ],
+  "native_normal_ray_baseline_correction": {
+    "method": "Each exact same outward normal ray is cast against native V13 triangles first. Candidate-minus-native first-entry depth removes self-occlusion already present in native. Raw offsets relative to the originating point include large inherited offsets and MUST NOT be interpreted as local surface error.",
+    "native_ray_misses": 0,
+    "native_first_hit_not_local_0_01mm": 95,
+    "candidate_vs_native_first_entry_mm": {
+      "count": 31108,
+      "min": -0.0001569092277671491,
+      "median": 0.08216264793627776,
+      "p95": 0.36071421118362085,
+      "p99": 1.0061054939483907,
+      "max": 14.636890053817295
+    },
+    "candidate_vs_native_first_entry_local_origin_mm": {
+      "count": 31013,
+      "min": -0.0001569092277671491,
+      "median": 0.0820214126339841,
+      "p95": 0.3566665803696458,
+      "p99": 0.9991458488669109,
+      "max": 14.636890053817295
+    },
+    "outer_local_origin_error_mm": {
+      "count": 14600,
+      "min": -0.0001569092277671491,
+      "median": 0.08071083530031622,
+      "p95": 0.2699569433876865,
+      "p99": 0.9739152863450278,
+      "max": 6.260065503041319
+    },
+    "inner_local_origin_error_mm": {
+      "count": 14607,
+      "min": 0.00012597295549754417,
+      "median": 0.08102404756665099,
+      "p95": 0.25747108082436254,
+      "p99": 0.8093553328236284,
+      "max": 14.636890053817295
+    },
+    "caveat": "Near-tangent rays amplify small geometric gaps; actual closest-surface metric is the separate exposed_cube_to_native_actual_triangle_distance_mm. Native BVH float precision vs double-precision analytical OBB slabs introduces small numerical residuals."
+  }
+}

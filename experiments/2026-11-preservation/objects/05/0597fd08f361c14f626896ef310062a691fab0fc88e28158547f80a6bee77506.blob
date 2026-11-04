@@ -1,0 +1,41 @@
+{
+  "band_mesh_byte_identical": true,
+  "band_JSON_cube_packets_identical": true,
+  "band_texture_tiles": [
+    {
+      "texture": "albedo",
+      "identical_band_tiles": 1912,
+      "total_band_tiles": 1912
+    },
+    {
+      "texture": "normal",
+      "identical_band_tiles": 1912,
+      "total_band_tiles": 1912
+    }
+  ],
+  "canonical_normal_baker": {
+    "path": "shell_band_v3/tools/bake_wall_normals_bounded.py",
+    "sha256": "ef952775bb1f098b755a0ee6a77c0c588f4bd102699f0a239dbc0d619286bd5a",
+    "method_change": false
+  },
+  "atlas_before": [
+    2048,
+    2048
+  ],
+  "atlas_after": [
+    2048,
+    2048
+  ],
+  "uncompressed_color_plus_normal_before_mips_mib_before": 32,
+  "uncompressed_color_plus_normal_before_mips_mib_after": 32,
+  "cube_faces_before": 8132,
+  "cube_faces_after": 7548,
+  "face_saving_fraction": 0.07181505164781112,
+  "cap_triangles_before": 6220,
+  "cap_triangles_after": 5636,
+  "cap_saving_fraction": 0.09389067524115756,
+  "resource_files_before_bytes": 8285800,
+  "resource_files_after_bytes": 5851098,
+  "performance_tested": false,
+  "comment": "Disk bytes are not GPU memory or performance; V4 has an extra rejected diagnostic normalmap, so file totals are not equivalent workloads."
+}

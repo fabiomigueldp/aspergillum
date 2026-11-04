@@ -1,0 +1,111 @@
+# Parecer geométrico independente V13: C1 n4
+
+**Favorável à retenção técnica local de `constrained_fit/valley-source-c1-n4.npz`, com o parecer visual separado e os limites abaixo.** A candidata resolve o corredor de ilhas comprovadas no vale, mantém duas paredes e as duas cristas e preserva os inputs congelados. **Não considero a interface inteira limpa, os 414 contatos externos resolvidos ou a arte global aprovada.** Não recomendo novo ciclo de correção sem outro defeito visual específico.
+
+SHA-256: `aa27567ac125b12a298c283b0e9c99130fe222bf2ce3bdf9f22edf2908f4404b`.
+
+Nada exportado/publicado, nenhuma integração P85 ou substituição de fonte e nenhum teste Minecraft. A revisão visual principal foi comunicada como favorável; as vistas adicionais e o fechamento da cena são responsabilidades separadas. Este parecer avalia a geometria identificada pelo hash, não um resultado futuro.
+
+## 1. Diagnóstico que justifica o reparo local
+
+Os recortes azuis não eram furos da faixa nos testemunhos examinados. Em 14 de 17 pixels selecionados independentemente pelo revisor visual, a casca vinha à frente da parede externa da faixa por 0,046–0,479 mm ao longo da câmera, embora as paredes externa e interna da faixa estivessem presentes atrás.
+
+Nos mesmos 17 raios da fonte high original, a faixa vinha à frente da casca. A conferência com a faixa em resolução render de 192.512 faces mantém a ordem, com vantagem 0,379–0,991 mm. A fonte para casca é TESTE34, `high_f[48128:416808]` de `evidence/source_meshes.npz`; a confirmação de faixa é `shell_band_v3/evidence/band-source.npz`. Os fatoriais visuais feitos separadamente corroboraram que restaurar a faixa, mantendo a casca, remove o corredor.
+
+A amostragem densa de 15.818 pontos no vale identificou 1.376 inversões, em ilhas descontínuas entre u35,2–140 e v5,9–10,4. A faixa reduzida havia recuado 0,445–0,868 mm perante sua fonte render nesses pontos; a casca reduzida também recuara, mas menos. Logo, a inversão não é explicada por uma calota globalmente inflada. **Presença de contatos na fonte ou nome “faixa embutida” não provam intenção artística.**
+
+Centro u80–96 e extremos frontais amostrados não apresentaram esse defeito do vale. Eles foram protegidos; não se deslocou a anatomia para abrir espaço e não se tentou zerar a contagem global de contatos.
+
+## 2. Escolha e custo real da candidata
+
+A primeira máscara estrita n8 resolvia a ordem, mas foi rejeitada visualmente por diagonais/degraus de transição. As variantes posteriores sin² e C1 n8 passaram o alvo geométrico. C1 foi escolhida por restaurar mais fielmente o vale em direção à fonte, não por minimizar isoladamente a maior rotação de normal. A densidade n4 mantém o mesmo campo e passou os testemunhos com custo menor.
+
+- Faixa V12: **584 vértices / 1.164 triângulos**.
+- Primeira máscara n8 rejeitada: 3.122 / 6.240.
+- C1 n8 exploratória: 6.992 / 13.980.
+- **C1 n4 recomendada: 2.224 / 4.444**, redução de aproximadamente 68,2% de faces perante C1 n8, ainda 3,82 vezes a V12.
+
+O campo final tem platô no vale v5–11 e transições até as cristas v3/v13, nos dois corredores u32–80 e u96–144, com atenuação longitudinal. **192 faces ancestrais são afetadas geometricamente: 96 por parede, equivalentes a 31,88% da área da faixa V12.** A primeira máscara usava 70 ancestrais/13,87%. A ampliação inclui trechos sem inversão para melhorar as transições e precisa ser declarada; não é correto dizer que só as 35 faces externas inicialmente diagnosticadas mudaram.
+
+São 1.320 vértices novos projetados, com deslocamento máximo 1,10816 mm perante seus planos ancestrais. “C1” descreve o campo de pesos smoothstep, **não uma superfície triangulada globalmente C1 nem uma reconstrução exata de toda a fonte high**.
+
+## 3. Preservação independente de domínios, paredes e cristas
+
+Conferi a geometria real, e não apenas atributos candidatos:
+
+- **584/584 vértices V12 existentes bit a bit iguais**.
+- Os **972 ancestrais fora do campo projetado** mantêm seus planos e domínios. Erro máximo de plano 1,214×10⁻¹⁶ m; baricêntrico mínimo −8,37×10⁻¹⁴; erro máximo de área 2,72×10⁻²⁰ m². Alguns são subdivididos apenas para conformidade.
+- Os **192 ancestrais projetados** têm filhos com orientação UV correta, contenção no ancestral, área total exata e zero sobreposição positiva entre pares no domínio UV.
+- As **1.320 projeções** foram reconstruídas a partir das faces da fonte high, seus baricêntricos e seus UVs. Parede fonte coincide com a parede candidata; UV, ponto fonte, referência planar, peso C1 e mistura geométrica conferem exatamente na aritmética armazenada.
+- As **108 arestas de crista** v3/v13, em ambas as paredes, foram examinadas por intervalos colineares reais em 3D. Lacuna acumulada apenas numérica de 8,49×10⁻¹⁶ mm, sem duplicação de comprimento. Subdividir uma aresta não altera sua curva.
+- **Centro u80–96 sem projeção**, terminações V12 preservadas, sem deslocamento da anatomia ou casca. Os hashes finais dos inputs permanecem iguais.
+
+Arquivos principais: `valley-source-c1-n4-preservation.json`, `valley-source-c1-n4-source-domain-check.json`, `valley-source-c1-n4-ridge-intervals.json`, `frozen-inputs-final.json`.
+
+## 4. Ordem das superfícies e parede dupla
+
+- **17/17 raios das quatro câmeras** agora encontram a faixa antes da casca. Vantagem direcional aproximadamente 0,268–1,758 mm; não é uma distância mínima global.
+- **1.376/1.376 inversões densas resolvidas, zero nova inversão detectada** no vale. Há 13.490 raios localmente comparáveis com a casca; os outros 2.328 já não cruzavam a casca no baseline. Todos os testemunhos originais de inversão continuam comparáveis.
+- Menor separação entre exteriores nessa amostragem: **0,02218 mm**, não clearance global entre os sólidos.
+- A lista completa de pares do audit local, reclassificada nesta revisão, contém **zero cruzamento casca × parede externa do vale e zero na parte externa do patch**. Assim, a conclusão não depende só da cor diagnóstica ou da amostragem que definiu a máscara.
+
+Medi **10.752 cordas** segundo normais físicas das faces externas do patch, em sete posições interiores por triângulo. Todas atingem primeiro uma face da parede interna: zero falha, zero retorno à parede externa. Comprimentos **0,40611–0,53349 mm**, mediana **0,49637 mm**. Esses valores são direcionais e não certificam espessura mínima global. Eles são diferentes das distâncias de pares de mesmo UV porque cruzam a parede oposta ao longo da normal de cada triângulo.
+
+## 5. Topologia, cruzamentos e precisão
+
+Verificação independente direta da candidata:
+
+- **2.224 vértices, 4.444 faces, 6.666 arestas, uma componente, Euler 2**.
+- Zero arestas abertas/não-manifold, orientação de aresta inconsistente, vértices sem uso e faces duplicadas por índices.
+- Zero faces abaixo de 10⁻¹⁶ m²; menor área 4,2573×10⁻¹⁰ m².
+- Float64→float32→float64 sem colapso de vértice, degeneração ou inversão de face; rotação máxima de normal **0,42894°**.
+
+O audit do implementador, conferido para o mesmo hash, examinou 97.764 pares AABB próprios, incluindo 27.581 pares adjacentes. Suas 739 flags flutuantes foram refinadas com 80 dígitos e produziram **zero cruzamento estrito confirmado**. Também reporta zero sobreposição coplanar positiva nas relações faixa/faixa, faixa/casca e faixa/anatomia. Esses resultados são explicitamente atribuídos ao audit local, não apresentados como segunda execução independente de sua bateria exata. Esta revisão independente cobre raios, paredes, domínio, fonte, cristas, topologia e quantização.
+
+Não repetimos os gates invariáveis de V11/V12. A ausência de cruzamento estrito não certifica todas as tangências, coplanaridades arbitrariamente pequenas, espessuras ou folgas globais.
+
+## 6. Contatos residuais da C1 n4, recomputados
+
+**Não reutilizei os 358 contatos externos da primeira n8 como invariantes.** A final tem **1.672 pares faixa/casca**, contra 1.360 na V12. A soma de comprimentos dos segmentos, **sem união/deduplicação espacial global**, cai de 3.778,693 para **3.062,387 mm**. Contagem e soma não são profundidade, área de defeito ou aprovação visual.
+
+- **414 pares externos**, soma **1.129,067 mm**.
+- **1.214 pares internos**, soma **1.927,458 mm**.
+- **44 pares nos fechamentos V12**, soma **5,861 mm**, igual ao baseline.
+- Nenhum par nos retornos antigos nessa relação.
+
+No patch final restam **659 pares internos**, soma 641,630 mm, e nenhum externo. A relação faixa/anatomia continua com 189 pares, todos fora do patch e de seus vizinhos de conformidade segundo o audit, sem novo par ancestral.
+
+Dos 414 externos, 277 têm ponto médio em v<3, na margem superior; 137 ficam fora dessa região. A igualdade de área/comprimento em uma região não significa invisibilidade, e a simples correspondência com uma sobreposição fonte não prova intenção.
+
+### Classificação de visibilidade dos 414 segmentos
+
+Cada segmento foi amostrado em 25%, 50% e 75% do comprimento, mais deslocamentos transversais de ±0,05 mm sobre a face quando cabíveis. Isso evita interpretar o empate de profundidade exatamente sobre a interseção como uma ordem de superfície definida. Foram testadas dez câmeras fixas: nove V12 e `band-front`.
+
+- **171 segmentos:** todos os pontos efetivamente amostrados ficam ocultos por faixa/casca/anatomia nas câmeras em enquadramento. Não certifica cada ponto entre amostras nem invisibilidade global.
+- **68 segmentos:** testemunhos potencialmente expostos em que a fonte também mostra casca dominante; compatíveis com encaixe herdado nesses testemunhos, sem afirmar intenção.
+- **57 segmentos:** testemunhos potencialmente expostos de inversão fonte→atual, que continuam abertos à avaliação localizada.
+- **118 segmentos:** borda potencialmente exposta ou ordem fonte insuficiente; indeterminados.
+
+As categorias têm prioridade inversão→compatível→oculto→indeterminado. Um segmento pode ter diferentes tipos de observação; os dados completos preservam essa mistura. Somas de comprimento sem união: respectivamente 556,788 / 199,037 / 117,275 / 255,967 mm.
+
+A análise usa apenas os três meshes nativos, **não halo nem contexto legado com alfa**. Não encontrar oclusor nesses três mostra somente visibilidade potencial; encontrar um deles claramente à frente comprova ocultação do ponto amostrado, ainda que outros elementos acrescentem mais. Também não mede perceptibilidade de uma diferença subpixel.
+
+### Os 57 potenciais invertidos não formam um novo alvo automático
+
+Há **34 na margem superior frontal**, **5 na margem superior junto às terminações** e **18 nas demais áreas de terminação**. Portanto 39 tocam a margem v<3 e 23 as terminações, com sobreposição de 5. Os limites de “terminação” usam u<24 ou u>160, rótulos geométricos conservadores, não segmentação anatômica precisa.
+
+A fonte high não contém os recortes V11/V12. Diferenças perto dessas terminações previamente modificadas não podem ser chamadas automaticamente de defeitos novos só porque não repetem a fonte. Na margem superior, a revisão visual constatou pequenos degraus, mas não separou com segurança cada micro-oclusão da poligonalização normal. **Não proponho alisar toda a margem, reabrir terminações ou ampliar o patch.** Esses testemunhos ficam documentados como limites do resultado.
+
+Arquivos: `valley-source-c1-n4-exterior-contact-visibility*.json`, `valley-source-c1-n4-potential-inversions-by-region.json`, `valley-source-c1-n4-remaining-contacts.json`.
+
+### Sobreposições internas compatíveis com a fonte
+
+Nos mesmos **17/17 raios da fonte high/render**, a faixa externa aparece à frente da casca, mas a parede interna da faixa está **entre as paredes externa e interna da casca**. Ela entra 0,05282–0,14724 mm atrás da casca externa nesses raios. Isso demonstra um encaixe com exterior contínuo e sobreposição interna no modelo de referência.
+
+Não prova intenção de todos os 1.214 pares internos atuais nem invisibilidade global, mas explica por que zerá-los indiscriminadamente seria uma mudança de desenho sem suporte no defeito visível. Também foram amostrados representantes dos 37 componentes originais de cruzamento; seus resultados não são tratados como classificação integral de cada curva.
+
+## 7. Parecer e limites de retenção
+
+A final resolve o corredor comprovado sem deslocar anatomia/casca, sem apagar crista e sem substituir malha por material ou highpoly inteiro. O campo mais amplo de transição e o custo de 4.444 faces estão explicitados. A diferença geométrica de contorno comunicada pelo parent, seis vistas de sete idênticas e 69 pixels adicionados na traseira com máximo 0,928 mm, é evidência separada e não foi refeita nesta revisão; logo não afirmo silhueta global idêntica.
+
+**Recomendo retenção técnica local da C1 n4**, preservando as candidatas e os resultados rejeitados para comparação. Os 414 externos, 1.214 internos e 44 contatos de fechamento continuam no registro; não são vendidos como limpos, intencionais ou invisíveis globalmente. As cores azul/ouro são ferramentas de diagnóstico, não os materiais fonte. Não há alegação de exportação, normalmap/bake, JSON/cubos, shader, culling em engine, mipmaps, PBR, FPS ou execução Bedrock.

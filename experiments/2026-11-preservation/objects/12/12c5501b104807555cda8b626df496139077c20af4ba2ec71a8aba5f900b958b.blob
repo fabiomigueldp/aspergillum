@@ -1,0 +1,51 @@
+"""Independent exact geometric interval coverage of both original band ridges."""
+from pathlib import Path
+from collections import defaultdict
+import numpy as np,json,sys
+O=Path(__file__).resolve().parent;B=O.parents[1];tag=sys.argv[1];d=np.load(B/f'band_ear_v12/structural_rebuild/{tag}.npz');s=np.load(B/'shell_band_v5/retained_candidate/evidence/band-paired.npz');uv=np.load(B/'shell_band_v3/evidence/band-source-parameters.npz')['uv'][s['source_indices']];meta=json.loads(str(d['provenance']));cu=np.load(B/'band_ear_v12/structural_rebuild'/meta['cutter'])
+p=s['points'];q=d['points'];f=s['triangles'];g=d['triangles'];side=s['source_side']
+def edges(fs):return sorted(set(tuple(sorted((int(t[k]),int(t[(k+1)%3])))) for t in fs for k in range(3)))
+es=np.array(edges(f));et=np.array(edges(g));ends=q[et]
+def interval(x,y,pl):
+ lo=0.;hi=1.;dx=pl[:,:3]@x+pl[:,3];dv=pl[:,:3]@(y-x)
+ for a,b in zip(dx,dv):
+  if abs(b)<1e-20:
+   if a>0:return None
+  elif b>0:hi=min(hi,-a/b)
+  else:lo=max(lo,-a/b)
+ return [max(lo,0),min(hi,1)] if min(hi,1)>max(lo,0) else None
+def merge(rows):
+ out=[]
+ for a,b in sorted(rows):
+  if out and a<=out[-1][1]+1e-9:out[-1][1]=max(b,out[-1][1])
+  else:out.append([a,b])
+ return out
+report=[]
+for wall in [0,1]:
+ for crest in [3,13]:
+  ids=es[np.all(side[es]==wall,1)&np.all(abs(uv[es,1]-crest)<1e-7,1)];rows=[];used=set();expected_total=0.;actual_total=0.
+  for e in ids:
+   x,y=p[e];v=y-x;ll=np.linalg.norm(v);den=v@v;intervals=[]
+   for ss in [-1,1]:
+    a=interval(x,y,cu['planes'][cu['face_sides']==ss])
+    if a:intervals.append(a)
+   rem=merge(intervals);expect=[];start=0.
+   for a,b in rem:
+    if a>start:expect.append([start,a])
+    start=max(start,b)
+   if start<1:expect.append([start,1.])
+   ts=(ends-x)@v/den;proj=x+ts[:,:,None]*v;dist=np.linalg.norm(ends-proj,axis=2);match=np.flatnonzero(np.all(dist<1e-10,1)&np.all(ts>=-1e-9,1)&np.all(ts<=1+1e-9,1));actual=merge([sorted(ts[j]) for j in match]);used.update(map(int,match));expected_length=sum(b-a for a,b in expect)*ll;actual_length=sum(b-a for a,b in actual)*ll;expected_total+=expected_length;actual_total+=actual_length
+   shape_ok=len(actual)==len(expect) and all(np.max(abs(np.array(a)-b))<1e-8 for a,b in zip(actual,expect));rows.append({'source_edge':e.tolist(),'expected_intervals':expect,'candidate_intervals':actual,'candidate_edges':et[match].tolist(),'domains_match':shape_ok,'length_error_mm':abs(actual_length-expected_length)*1000})
+  adj=defaultdict(set)
+  for e in et[sorted(used)]:
+   a,b=map(int,e);adj[a].add(b);adj[b].add(a)
+  left=set(adj);comps=[]
+  while left:
+   seen=set();todo=[next(iter(left))]
+   while todo:
+    k=todo.pop()
+    if k in left:seen.add(k);left.remove(k);todo.extend(adj[k]&left)
+   comps.append({'vertices':len(seen),'degree_histogram':{str(k):sum(len(adj[i])==k for i in seen) for k in sorted(set(map(len,adj.values())))}})
+  report.append({'wall_side':wall,'ridge_v':crest,'source_edges':len(ids),'candidate_edges':len(used),'expected_remaining_length_mm':expected_total*1000,'actual_remaining_length_mm':actual_total*1000,'max_source_edge_interval_length_error_mm':max(r['length_error_mm'] for r in rows),'failed_source_edge_domains':[r for r in rows if not r['domains_match']],'connected_components':comps,'source_edge_domains':rows})
+out={'method':'Use only original source UV to identify both ridge polylines. Clip each original finite segment against both cutter volumes. Identify candidate edges geometrically on source segments in3D, without trusting candidate UV. Compare unions of scalar intervals, not just sums of length. Tolerance1e-10m to source segment and1e-8 in normalized interval endpoints.','ridges':report,'limits':['Two surviving connected original ridge curves do not prove the terminal shape is artistically acceptable or preserve full source length.','The portions inside the chosen envelope are deliberately removed; reports expose remaining lengths and no unchanged-global-shape claim.']}
+(O/f'{tag}-ridge-domains.json').write_text(json.dumps(out,indent=2));print(json.dumps({**out,'ridges':[{k:v for k,v in r.items() if k!='source_edge_domains'} for r in report]},indent=2))

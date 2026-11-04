@@ -1,0 +1,7 @@
+import bpy,json
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/'
+def snap(f):
+ bpy.ops.wm.open_mainfile(filepath=r+f,use_scripts=False);dg=bpy.context.evaluated_depsgraph_get();o=bpy.data.objects['TESTE 34 — conexão de superfícies avaliadas'];m=o.evaluated_get(dg).to_mesh();p=[o.matrix_world@v.co for v in m.vertices];fs=[tuple(f.vertices) for f in m.polygons];t=BVHTree.FromPolygons(p,fs);tu=bpy.data.objects['Maria — túnica e mangas integradas'];mm=tu.evaluated_get(dg).to_mesh();pp=[tu.matrix_world@v.co for v in mm.vertices];ff=[tuple(f.vertices) for f in mm.polygons];tt=BVHTree.FromPolygons(pp,ff);pairs=set(t.overlap(tt));lower=set((a,b) for a,b in pairs if max(p[i].z for i in fs[a])<1.5);return p,fs,pairs,lower
+p,fs,a,la=snap('V75-tunic-lower-trial.blend');q,gs,b,lb=snap('V77-mantle-fall-trial.blend');new=lb-la
+json.dump({'baseline_all_pairs':len(a),'trial_all_pairs':len(b),'baseline_lower_pairs':len(la),'trial_lower_pairs':len(lb),'new_lower_pairs':len(new),'removed_lower_pairs':len(la-lb),'new_centers':[[sum(q[i][k] for i in fs[f])/len(fs[f]) for k in range(3)] for f,g in sorted(new)[:50]]},open(r+'V77-contact-audit.json','w'),indent=2)

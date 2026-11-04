@@ -1,0 +1,43 @@
+"""Local cap-bridge seam extension, explicitly moving source vertices near ears.
+Pair-translates existing walls by a spatial compact C2 field; no faces removed.
+Cap pairing is the independent source parameter correspondence, not nearest pair.
+Anatomy/band/mantle remain frozen. This is a structural trial, not a fix certificate.
+"""
+from pathlib import Path
+import sys,json,hashlib,os,numpy as np
+sys.dont_write_bytecode=True
+O=Path(__file__).resolve().parent;sys.path.insert(0,str(O));import scan_local as lib
+B=lib.B;a=lib.a;p0=lib.p0;f=lib.f;sid=lib.sid
+paircap=np.load(B/'shell_band_v4/evidence/cap-source-pairing.npz');cap=np.load(B/'integration_v6/evidence/cap-open.npz');capids=set(cap['source_indices'].tolist());groups=[]
+for x,y in zip(paircap['outer'],paircap['inner']):
+ if x in capids and y in capids:groups.append([sid[int(x)],sid[int(y)]])
+for i in lib.gen:
+ groups.append([sid[int(lib.m['outer_source_ids'][i])],sid[int(lib.m['inner_source_ids'][i])]])
+# Generated lateral arc and original cap arc share their corresponding pair's translation.
+for ss,s,t,side,frac in lib.field['generated_vertex_map']:
+ if int(side)==2:
+  pair=1578+(int(s)-1)*57+int(t);groups[pair].append(sid[int(ss)])
+cap_unpaired=capids-set(paircap['outer'])-set(paircap['inner'])
+for s in cap_unpaired:
+ i=sid[s];d=np.linalg.norm(np.array([p0[g[:2]].mean(0) for g in groups[:1578]])-p0[i],axis=1);groups[int(d.argmin())].append(i)
+centers=np.array([p0[g[:2]].mean(0) for g in groups]);assert len(set(v for g in groups for v in g))==sum(map(len,groups))
+def smoothstep(x):
+ x=np.clip(x,0,1);return x*x*x*(10+x*(-15+6*x))
+def field_weight(c,width=1.):
+ # Local lateral domains only, smoothly taper into fixed crown/mantle/back.
+ x,y,z=c.T;wx=smoothstep((np.abs(x-.04)-.055)/.045);wy=smoothstep((y+.34)/.07)*(1-smoothstep((y+.12)/.14));wz=smoothstep((z-3.35)/.075)*(1-smoothstep((z-3.55)/.075));return wx*wy*wz
+baseline=lib.basepairs;summary=[]
+def build(tag,direction,amp,extra_metadata=None):
+ tag=(os.environ['RUN_ID']+'-'+tag) if os.environ.get('RUN_ID') else tag
+ out=O/(tag+'.npz')
+ if out.exists():raise RuntimeError('Refuse overwrite '+str(out))
+ w=field_weight(centers);d=w[:,None]*np.array(direction)[None,:]*amp/1000
+ if direction[0]:d[:,0]*=np.sign(centers[:,0]-.04)
+ p=p0.copy()
+ for g,x in zip(groups,d):p[g]+=x
+ vals={k:a[k] for k in a.files};raw=np.cross(p[f[:,1]]-p[f[:,0]],p[f[:,2]]-p[f[:,0]]);norm=np.zeros_like(p)
+ for j in range(3):np.add.at(norm,f[:,j],raw)
+ norm/=np.maximum(np.linalg.norm(norm,axis=1)[:,None],1e-30);params={'direction':direction,'amplitude_mm':amp,'cap_local_move':True,'mantle_fixed':True,'local_weight':'C2 compact lateral x>.055 from head center .04; y[-.34,.02]; z[3.35,3.625]','paired_original_thickness_preserved':True};params.update(extra_metadata or {});vals.update(points=p,normals=norm,provenance=np.array(json.dumps(params)));np.savez_compressed(out,**vals);rep,cs,bd,selfp=lib.metrics(p,baseline);rep.update(tag=tag,parameters=params,sha256=hashlib.sha256(out.read_bytes()).hexdigest(),moved_source_vertices=int(np.sum((np.linalg.norm(p-p0,axis=1)>1e-12)&~a['generated_vertices'])),mantle_exact=bool(np.array_equal(p[np.unique(f[lib.part==2])],p0[np.unique(f[lib.part==2])])));np.savez_compressed(O/(tag+'-contacts.npz'),shell_body_pairs=cs,shell_band_pairs=bd,self_pairs=selfp);(O/(tag+'-metrics.json')).write_text(json.dumps(rep,indent=2));summary.append(rep);(O/'boundary-summary.json').write_text(json.dumps(summary,indent=2));print(json.dumps(rep),flush=True)
+if __name__=='__main__':
+ for name,vec in [('posterior',[0,1,0]),('medial',[-1,0,0]),('postmedial',[-2**-.5,2**-.5,0]),('postinferior',[0,2**-.5,-2**-.5])]:
+  for amp in [5,10,15,20,30,40]:build(f'boundary-{name}-{amp:02d}mm',vec,amp)

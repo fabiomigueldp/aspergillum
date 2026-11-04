@@ -1,0 +1,47 @@
+# Revisão do editor nativo
+
+Revisão de trabalho sobre Altare 0.13.0, em cópia isolada. Nenhum pacote foi instalado ou publicado; versão de distribuição e validação física permanecem pendentes. Esta mudança não torna a base compactada compatível com saves 0.12.x.
+
+## Problemas e mudanças
+
+- O formulário não explicava o alcance da aplicação. Uma frase inicial agora informa que a edição cobre o altar inteiro e só muda o mundo ao aplicar.
+- Materiais fixos e relevo indisponível usavam dropdowns desabilitados com uma opção, aparentando escolhas. Material fixo agora é texto. A restrição de relevo indica a ação possível: selecionar vermelho nessa toalha. A escolha de relevo continua no rascunho e retorna ao restaurar uma combinação compatível.
+- A seção Frontal podia conter somente orientação. Agora se chama **Frente e detalhes**, e seu espaçador desaparece junto com os controles quando não há direção.
+- **Desfazer alterações** substitui **Restaurar escolhas**. Fica indisponível até haver uma mudança no rascunho, inclusive numa escolha temporariamente escondida. Restaura o rascunho de abertura, que pode incluir a frente escolhida pela lateral clicada e o acabamento usado como referência de um conjunto misto. Não promete retornar a um padrão global.
+- **Aplicar no altar** permanece habilitado sem mudanças: reaplicar também recompõe centros e módulos provisórios. Cancelar nunca retorna um acabamento.
+- **Sem relevo**, **Imagem de Guadalupe** e Norte/Leste/Sul/Oeste eliminam termos inconsistentes e rótulos repetidos. Os textos existem em pt_BR e en_US.
+- A descrição de Frente esclarece como ler a largura no título. As dimensões continuam seguindo o rascunho, sem escrever no mundo.
+
+## Correção de fechamento
+
+O adaptador passou a reproduzir `FormVisibilityError` ao fechar uma tela já fechada, conforme o contrato da API. Na versão anterior, callbacks rápidos de Aplicar/Cancelar podiam fechar duas vezes. Um callback de Aplicar recebido após fechar a tela, antes da continuação da Promise, também podia produzir um acabamento.
+
+O fechamento agora invalida imediatamente os callbacks. Cada escolha e ação exige tela ainda aberta e sessão válida. A primeira ação de fechamento prevalece. Os testes exercitam Aplicar repetido, Cancelar seguido de Aplicar, fechamento nativo seguido de Aplicar, callbacks atrasados e limpeza das inscrições. Nenhum contrato de commit, lock ou prazo foi alterado.
+
+## Limites nativos
+
+O formulário usa somente `label`, `header`, `dropdown`, `toggle`, `spacer`, `divider`, `button` e observables já disponíveis nos tipos estáveis instalados de `@minecraft/server-ui` 2.1.0. Valores editáveis continuam `clientWritable`; estado e visibilidade são controlados pelo servidor.
+
+Não há HTML, CSS, abas, miniaturas ou prévia 3D dentro do jogo. A documentação corrente também expõe APIs em pré-lançamento, como `multiButtonRow`; elas não foram usadas. Tamanho, cores, foco e rolagem reais pertencem ao Bedrock e exigem inspeção no jogo.
+
+Fontes primárias consultadas em 04/11/2026: [CustomForm](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server-ui/customform?view=minecraft-bedrock-stable), tipos locais `@minecraft/server-ui` 2.1.0.
+
+## Verificação
+
+- Os testes novos falharam antes da alteração, incluindo reprodução do fechamento duplicado.
+- `npm run check` terminou com exit 0: tipos, 210 testes aprovados, build e validação estrutural/localização. Quatro comparações históricas opcionais foram puladas, pois os caminhos de baseline não foram fornecidos. Uma matriz adicional de UI foi executada depois: 23/23 testes focados de menu/ciclo de vida aprovados.
+- Revisão independente sem bloqueios, incluindo três probes adicionais de expiração em Aplicar, liberação entre Aplicar e a continuação, e restauração de escolhas ocultas. Não foi executado Minecraft, instalação, publicação ou validação Creator Tools nesta revisão.
+- O adaptador de teste importa e executa o menu real. Não simula o commit de blocos nem demonstra paridade de layout ou input no Bedrock.
+- `node --experimental-strip-types tools/capture-native-ui.mjs` produz HTML e JSON dos controles reais em quatro estados: Clássico/Guadalupe, dois pedestais, relevo suspenso e Colunata simétrica. `--png` desenha uma prancha documental com Pillow a partir do mesmo JSON, sem navegador nem renderer do jogo.
+- A imagem leva a identificação **Simulação documental · sem Minecraft**. Textos, valores, ordem, visibilidade e estado dos botões vêm do código; fontes, cores, espaçamento e foco não são evidência nativa.
+
+## Reteste pelo usuário
+
+1. Numa cópia descartável compatível com a base 0.13.0, abrir 7×2 e 8×2 em pt_BR/en_US. Conferir títulos, quebra dos textos e rolagem na escala de UI usada.
+2. Em mouse, controle e toque, conferir a ordem de foco e que materiais fixos não entram na sequência como campos editáveis. Não pode haver seção/espaço vazio ao escolher Colunata/Renda ou Cruzeta/Sem toalha.
+3. Escolher relevo no Floral IHS vermelho, mudar para roxo e voltar. O aviso deve aparecer só na combinação indisponível, e o relevo escolhido deve retornar.
+4. Alternar Clássico/Guadalupe, madeira e dois pedestais, incluindo cor e frente. **Desfazer alterações** deve restaurar o rascunho de abertura; **Cancelar** ou fechar descarta tudo.
+5. Reaplicar sem editar após acrescentar um módulo provisório. Aplicar não pode estar bloqueado por ausência de mudanças.
+6. Repetir cliques rápidos em Aplicar/Cancelar e fechar pela interface nativa. Invalidar a sessão e exceder 1.200 ticks. Sem acabamento após Cancelar/fechar, sem `FormVisibilityError`, sem lock retido e sem novos erros do add-on no Content Log.
+
+Geometrias, materiais, modelos, colisões, IDs, estados, codecs e dados dos mundos não são alterados por esta revisão de UI.

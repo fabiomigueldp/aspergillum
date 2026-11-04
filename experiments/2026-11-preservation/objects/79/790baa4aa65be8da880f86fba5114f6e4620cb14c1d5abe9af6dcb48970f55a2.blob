@@ -1,0 +1,34 @@
+import fs from 'node:fs';
+import {twinPedestalFamilyGeometry} from '../../addons/altare/assets-src/atelier/twin-pedestal-family-study.mjs';
+import {twinPedestalCells} from '../../addons/altare/assets-src/atelier/twin-pedestal-cell-study.mjs';
+import {twinPedestalCollision} from '../../addons/altare/assets-src/atelier/twin-pedestal-collision-study.mjs';
+import {coveredPedestalModel} from '../../addons/altare/assets-src/atelier/twin-pedestal-recipe-study.mjs';
+import {centerRole} from '../../addons/altare/src/domain/catalog.ts';
+import {digest,cubesOf} from '../../addons/altare/tools/native-pedestal-poses.mjs';
+function padded(n){let b=Infinity,rad;for(let a=1;a<=16;a++)for(let c=a;c<=16;c++)for(let d=c;d<=16;d++)if(a*c*d>=n&&a*c*d<b){b=a*c*d;rad=[a,c,d];}return {n:b,rad};}
+const cases={baseline:{},standard:{alignToEndCell:true,regularWidth:7,maxSupportDepth:16},depth2:{alignToEndCell:true,regularWidth:7,maxSupportDepth:16,depthCap:2},narrow3:{alignToEndCell:true,regularWidth:3,maxSupportDepth:16,depthCap:2},depth12:{alignToEndCell:true,regularWidth:7,maxSupportDepth:12,depthCap:2},depth1:{alignToEndCell:true,regularWidth:7,maxSupportDepth:12,depthCap:2,forceDepth1:true},narrow_depth1:{alignToEndCell:true,regularWidth:3,maxSupportDepth:12,depthCap:2,forceDepth1:true}};
+const results=[];
+for(const name of process.argv.slice(2).length?process.argv.slice(2):Object.keys(cases)){
+ const options=cases[name],base=new Set(),center=new Set();let cells=0,configs=0;const start=Date.now();
+ for(let w=1;w<=16;w++)for(let d=1;d<=16;d++){if(Math.min(w,d)>8)continue;for(let f=0;f<4;f++){
+ let source=twinPedestalFamilyGeometry(w,options.forceDepth1?1:d,f,options);
+ if(options.forceDepth1&&d!==1){
+ // Stretch only tabletop in the facing-correct depth axis; both supports and bearer keep depth1 proportions.
+ const axis=f%2?0:2,delta=(d-1)*16;
+ for(const bone of source.doc['minecraft:geometry'][0].bones)if(bone.name==='mensa')for(const c of bone.cubes){c.origin[axis]-=delta/2;c.size[axis]+=delta;}
+ source.profile.D=d*16;
+ }
+ const plan=twinPedestalCells(w,d,f,{sourceModel:source,uvPolicy:'module-grain',capCuts:true});
+ const covered=twinPedestalCells(w,d,f,{sourceModel:coveredPedestalModel(source),uvPolicy:'module-grain',capCuts:true});
+ const physical=twinPedestalCollision(w,d,f,{sourceModel:source});
+ const nx=f%2?d:w,nz=f%2?w:d;configs++;
+ for(let i=0;i<plan.cells.length;i++){
+ const c=plan.cells[i],edges=(c.z===0?1:0)|(c.x===nx-1?2:0)|(c.z===nz-1?4:0)|(c.x===0?8:0);
+ const key=digest({bare:cubesOf(c),covered:cubesOf(covered.cells[i]),physical:physical.cells[i].nativeBoxes,facing:f,edges});
+ let col=f%2?c.z:c.x;if(f>=2)col=w-1-col;const role=edges&(1<<f)?centerRole(w,col):0;
+ base.add(key);center.add(key+'/'+role);cells++;
+ }
+ }}
+ const bp=padded(base.size),cp=padded(center.size),declared=6*bp.n+11*cp.n;
+ const row={name,options,base:base.size,center:center.size,basePacked:bp,centerPacked:cp,states:declared,combined:61352+declared,over:61352+declared-65536,configs,cells,ms:Date.now()-start};results.push(row);console.log(JSON.stringify(row));fs.writeFileSync(new URL('results-'+name+'.json',import.meta.url),JSON.stringify(row,null,2)+'\n');
+}

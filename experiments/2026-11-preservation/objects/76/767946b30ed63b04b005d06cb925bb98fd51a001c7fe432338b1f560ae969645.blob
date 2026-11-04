@@ -1,0 +1,22 @@
+import sys,json,hashlib,importlib.util
+from pathlib import Path
+from collections import Counter
+import numpy as np
+from mathutils.bvhtree import BVHTree
+R=Path(__file__).resolve().parents[1];B=R.parent
+spec=importlib.util.spec_from_file_location('gate',B/'shell_band_v3/tools/independent_gate.py');g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g)
+sp=B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz';d=np.load(sp);p=d['points'];f=d['triangles'];tree=BVHTree.FromPolygons(p.tolist(),f.tolist(),all_triangles=True,epsilon=0)
+meta=json.loads((B/'evidence/source-export.json').read_text());maps=json.loads((B/'pbr_normals_v2/evidence/alpha-triangle-map.json').read_text());out={'shell_sha256':hashlib.sha256(sp.read_bytes()).hexdigest(),'method':'Strict crossings between full V7 shell and triangle-map geometry. Parts 6,7,8,10,14 were later replaced by cuboid/ellipse geometry in the hybrid JSON and are diagnostic proxies only. Other parts, including 9 and 15, retain map geometry, before alpha pixel expansion.','parts':[]};all_w=[];all_a=[];all_b=[]
+for pi in range(2,20):
+ mm=[m for m in maps if m['part']==pi]
+ if not mm:continue
+ t=np.array([[m[k] for k in ['a','b','c']] for m in mm]);t=t[:,:,[0,2,1]]/16;t[:,:,1]*=-1;v=t.reshape(-1,3);ff=np.arange(len(v)).reshape(-1,3);bt=BVHTree.FromPolygons(v.tolist(),ff.tolist(),all_triangles=True,epsilon=0);hits=[]
+ for i,j in tree.overlap(bt):
+  w=g.strict_hits(p[f[i]],t[j])+g.strict_hits(t[j],p[f[i]])
+  if w:
+   hits.append({'shell_face':i,'shell_part':int(d['face_parts'][i]),'body_face':j,'witnesses':w});all_w.extend(w);all_a.extend([int(d['face_parts'][i])]*len(w));all_b.extend([pi]*len(w))
+ row={'map_matches_final_json_intended_geometry':pi not in [6,7,8,10,14],'part':pi,'name':meta['parts'][pi]['name'],'body_triangles':len(t),'pairs':len(hits),'by_shell_component':dict(Counter(x['shell_part'] for x in hits)),'crossings':hits}
+ if hits:
+  ws=np.array([w for x in hits for w in x['witnesses']]);row['crossing_bounds']=[ws.min(0).tolist(),ws.max(0).tolist()];row['unique_body_faces']=len(set(x['body_face'] for x in hits));row['unique_shell_faces']=len(set(x['shell_face'] for x in hits))
+ out['parts'].append(row);print(pi,row['name'],row['pairs'],row['by_shell_component'],flush=True)
+out['total_pairs']=sum(x['pairs'] for x in out['parts']);(R/'evidence/all-legacy-contact-map.json').write_text(json.dumps(out,indent=2,ensure_ascii=False));np.savez_compressed(R/'evidence/contact-witnesses.npz',points=np.array(all_w),shell_part=np.array(all_a),body_part=np.array(all_b))

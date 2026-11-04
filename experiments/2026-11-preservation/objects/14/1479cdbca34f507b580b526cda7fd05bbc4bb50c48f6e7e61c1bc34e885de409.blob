@@ -1,0 +1,22 @@
+import bpy,bmesh,numpy as np,json,shutil
+from pathlib import Path
+R=Path(__file__).resolve().parents[1];B=R.parent;P=B/'paired_refined';shutil.copyfile(P/'evidence/cap-paired.npz',R/'evidence/cap-paired.npz');d=np.load(P/'evidence/band-paired.npz');v=d['points'];n=d['normals'];ix=d['source_indices'];nv=len(v)//2;grid={}
+for k,si in enumerate(ix[:nv]):grid.setdefault(int(si//17),[]).append((int(si%17),k))
+for row in grid:grid[row].sort()
+rows=sorted(grid);faces=[]
+for ra,rb in zip(rows,rows[1:]):
+ a=grid[ra];b=grid[rb];i=j=0
+ while i<len(a)-1 or j<len(b)-1:
+  ai=a[i+1][0] if i+1<len(a) else float('inf');bj=b[j+1][0] if j+1<len(b) else float('inf')
+  if ai==bj:
+   faces.extend([[a[i][1],a[i+1][1],b[j+1][1]],[a[i][1],b[j+1][1],b[j][1]]]);i+=1;j+=1
+  elif ai<bj:faces.append([a[i][1],a[i+1][1],b[j][1]]);i+=1
+  else:faces.append([a[i][1],b[j+1][1],b[j][1]]);j+=1
+edge={}
+for f in faces:
+ for a,b in zip(f,f[1:]+f[:1]):edge.setdefault(tuple(sorted([a,b])),[]).append((a,b))
+boundary=[e[0] for e in edge.values() if len(e)==1];fs=faces+[[x+nv for x in reversed(f)] for f in faces]
+for a,b in boundary:fs.extend([[b,a,a+nv],[b,a+nv,b+nv]])
+me=bpy.data.meshes.new('V3c locally retriangulated band');me.from_pydata(v.tolist(),[],fs);me.update();bm=bmesh.new();bm.from_mesh(me);bmesh.ops.recalc_face_normals(bm,faces=bm.faces);boundary_count=sum(e.is_boundary for e in bm.edges);nonman=sum(len(e.link_faces)!=2 for e in bm.edges);bm.to_mesh(me);bm.free();me.calc_loop_triangles();f=np.array([t.vertices[:] for t in me.loop_triangles]);np.savez_compressed(R/'evidence/band-paired.npz',points=v,triangles=f,normals=n,source_indices=ix,source_side=d['source_side'])
+cap=np.load(R/'evidence/cap-paired.npz');np.savez_compressed(R/'evidence/paired-shells.npz',points=np.concatenate([cap['points'],v]),triangles=np.concatenate([cap['triangles'],f+len(cap['points'])]),normals=np.concatenate([cap['normals'],n]),parts=np.array([0]*len(cap['triangles'])+[1]*len(f)))
+report={'method':'Rebuild band connectivity by adjacent longitudinal stations and ordered transverse source indices. Remove stale long diagonals from sequential insertion. Identical outer/inner topology.','triangles':len(f),'vertices':len(v),'source_coordinate_changes':0,'source_normal_changes':0,'same_vertices_as_v3b':True,'boundary_edges':boundary_count,'edges_not_two_faces':nonman,'local_dense_stations':[r for r in rows if len(grid[r])==17],'retained_cap':'V3b1740 triangles, independently verified zero strict crossings'};(R/'evidence/retriangulation.json').write_text(json.dumps(report,indent=2));print(report)

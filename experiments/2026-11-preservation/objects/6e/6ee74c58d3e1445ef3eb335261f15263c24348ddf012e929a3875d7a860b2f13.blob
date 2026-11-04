@@ -1,0 +1,15 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/child-neck-union-trial.py').read().split('new=[q.copy() for q in p]')[0])
+from collections import defaultdict,Counter
+fs=[tuple(f.vertices) for f in u.data.polygons];remove={i for i,f in enumerate(fs) if sum(dist[v] for v in f)/len(f)<.014 and all(p[v].y>-.335 and p[v].z<1.72 for v in f)};remove|={i for i,f in enumerate(fs) if all(nbv.find_nearest(p[v])[3]<1e-5 for v in f) and sum(p[v].z for v in f)/len(f)>1.64};keep=[f for i,f in enumerate(fs) if i not in remove];ec=Counter(tuple(sorted((f[i],f[(i+1)%len(f)]))) for f in keep for i in range(len(f)));ba=defaultdict(list)
+for (a,b),c in ec.items():
+ if c==1:ba[a].append(b);ba[b].append(a)
+loops=[];seen=set()
+for start in ba:
+ if start in seen:continue
+ loop=[];cur=start;prev=None
+ while cur not in seen:
+  seen.add(cur);loop.append(cur);ns=[j for j in ba[cur] if j!=prev]
+  if not ns:break
+  prev,cur=cur,ns[0]
+ loops.append(loop)
+print('PATCH',len(remove),'boundarydegrees',dict(Counter(map(len,ba.values()))),'loops',[(len(l),sum(p[i].z for i in l)/len(l),min(p[i].y for i in l),max(p[i].y for i in l)) for l in loops]);json.dump({'p':[list(v) for v in p],'keep':keep,'loops':loops,'removed_count':len(remove)},open(r+'V55-ring-input.json','w'))

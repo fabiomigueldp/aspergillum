@@ -1,0 +1,13 @@
+import bpy,numpy as np,json
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False)
+u=bpy.data.objects['TESTE 34 — conexão de superfícies avaliadas'];dg=bpy.context.evaluated_depsgraph_get();em=u.evaluated_get(dg).to_mesh();target=np.array([v.co[:] for v in em.vertices]);u.evaluated_get(dg).to_mesh_clear();report={'unified_keys':[(k.name,k.value) for k in u.data.shape_keys.key_blocks]};pieces=[]
+for tag,name in [('cap','Maria — véu reconstruído de perfil'),('mantle','Maria — plano contínuo do manto')]:
+ o=bpy.data.objects[name];o.hide_viewport=False;o.hide_set(False)
+ for md in o.modifiers:
+  if md.type=='SUBSURF':md.levels=md.render_levels
+ bpy.context.view_layer.update();dg=bpy.context.evaluated_depsgraph_get();em=o.evaluated_get(dg).to_mesh();p=np.array([v.co[:] for v in em.vertices]);o.evaluated_get(dg).to_mesh_clear();q=p.copy()
+ if tag=='mantle':
+  t=np.clip((1.45-p[:,2])/.94,0,1);w=t*t*(3-2*t);a=np.clip((.29-p[:,1])/.27,0,1);a=a*a*(3-2*a);q[:,2]+=(.10+.19*a)*w
+ offset=0 if tag=='cap' else 160386;d=np.linalg.norm(q-target[offset:offset+len(q)],axis=1);report[tag]={'vertices':len(p),'evaluated_delta_max_m':float(d.max()),'rms_m':float(np.sqrt(np.mean(d*d))),'over_1micrometer':int((d>1e-6).sum())};pieces.append(q)
+report['method']='Evaluate original source with original modifiers and keys; apply retained V74 analytic deformation AFTER subdivision/thickness to preserve noncommutativity; V75 tunic remains untouched';report['geometry_saved']=False
+json.dump(report,open(r+'cap-mantle-transfer-gate.json','w'),indent=2);np.savez(r+'cap-mantle-transfer-gate.npz',reconstructed=np.concatenate(pieces),target=target);print(report)

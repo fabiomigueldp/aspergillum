@@ -1,0 +1,56 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-cloth-obstacle-surface-trial.py').read().split('counts=collections.Counter')[0])
+patch=set(json.load(open(r+'neck-paired-boundary-feasibility-growth.json'))['patch_faces']);pairlist=np.load(r+'neck-source-layer-pairs.npz')['pairs']+160386;pairmap={int(a):int(b) for a,b in pairlist for a,b in [(a,b),(b,a)]};primary={int(a):int(a) for a,b in pairlist};primary.update({int(b):int(a) for a,b in pairlist});counts=collections.Counter(tuple(sorted((a,b))) for fi in patch for a,b in zip(fs[fi],fs[fi][1:]+fs[fi][:1]));boundary={v for e,n in counts.items() if n==1 for v in e};ids={v for fi in patch for v in fs[fi]};free=sorted({primary[v] for v in ids}-{primary[v] for v in boundary});ix={v:i for i,v in enumerate(free)}
+temp=bpy.data.meshes.new('diagnostic source tessellation');temp.from_pydata(p.tolist(),[],fs);temp.calc_loop_triangles();T=np.array([t.vertices[:] for t in temp.loop_triangles]);F=np.array([t.polygon_index for t in temp.loop_triangles]);bpy.data.meshes.remove(temp);patchtri=np.where(np.isin(F,list(patch)))[0]
+head=bpy.data.objects['Maria — anatomia feminina adaptada CC0'];he=head.evaluated_get(dg);hm=he.to_mesh();hm.calc_loop_triangles();hp=np.array([v.co[:] for v in hm.vertices]);HT=np.array([t.vertices[:] for t in hm.loop_triangles]);he.to_mesh_clear();H=hp[HT];hmin=H[:,:,1:].min(1);hmax=H[:,:,1:].max(1)
+def cross(a,b):return a[0]*b[1]-a[1]*b[0]
+def bary2(pt,t):
+ den=cross(t[1]-t[0],t[2]-t[0])
+ if abs(den)<1e-15:return None
+ b=cross(pt-t[0],t[2]-t[0])/den;c=cross(t[1]-t[0],pt-t[0])/den
+ return np.array([1-b-c,b,c])
+def clip(poly,tri):
+ if cross(tri[1]-tri[0],tri[2]-tri[0])<0:tri=tri[::-1]
+ for a,b in zip(tri,np.roll(tri,-1,axis=0)):
+  if len(poly)==0:break
+  out=[];e=b-a
+  for u,v in zip(poly,np.roll(poly,-1,axis=0)):
+   du=cross(e,u-a);dv=cross(e,v-a)
+   if du>=-1e-13:out.append(u)
+   if (du<0)!=(dv<0):out.append(u+(v-u)*du/(du-dv))
+  poly=np.array(out)
+ return poly
+constraints=[];fixedbad=[];degcloth=0;degskin=set();margin=.0001;worst=None;required=0;overlapcells=0
+for ti in patchtri:
+ vs=T[ti];c=p[vs];cyz=c[:,1:]
+ if abs(cross(cyz[1]-cyz[0],cyz[2]-cyz[0]))<1e-15:degcloth+=1;continue
+ lo=cyz.min(0);hi=cyz.max(0);cand=np.where(np.all(hmax>=lo,axis=1)&np.all(hmin<=hi,axis=1))[0]
+ for hiidx in cand:
+  h=H[hiidx];hyz=h[:,1:]
+  if abs(cross(hyz[1]-hyz[0],hyz[2]-hyz[0]))<1e-15:
+   if np.linalg.norm(np.cross(h[1]-h[0],h[2]-h[0]))>1e-14:degskin.add(int(hiidx))
+   continue
+  poly=clip(cyz.copy(),hyz)
+  if len(poly)<3:continue
+  overlapcells+=1
+  for pt in poly:
+   cw=bary2(pt,cyz);hw=bary2(pt,hyz)
+   if cw is None or hw is None:continue
+   need=float(cw@c[:,0]-hw@h[:,0]+margin)
+   if need<=0:continue
+   coeff={}
+   for v,w in zip(vs,cw):
+    a=primary[int(v)]
+    if a in ix:coeff[ix[a]]=coeff.get(ix[a],0)+max(0,float(w))
+   total=sum(coeff.values())
+   if total<1e-10:fixedbad.append({'cloth_triangle':int(ti),'skin_triangle':int(hiidx),'required':need});continue
+   t=need/total
+   if t>required:required=t;worst={'cloth_triangle':int(ti),'skin_triangle':int(hiidx),'required_max_move':t,'weights':coeff,'need':need}
+   constraints.append((coeff,need))
+print({'cells':overlapcells,'constraints':len(constraints),'fixedbad':len(fixedbad),'required':required,'degcloth':degcloth,'degskin':len(degskin)},flush=True)
+# Uniform free-node retreat is a constructive minimax bound, not a smooth final patch.
+q=p.copy()
+for a in free:q[a,0]-=required+1e-7;q[pairmap[a],0]-=required+1e-7
+bt=BVHTree.FromPolygons(p.tolist(),T.tolist(),all_triangles=True);nt=BVHTree.FromPolygons(q.tolist(),T.tolist(),all_triangles=True);ht=BVHTree.FromPolygons(hp.tolist(),HT.tolist(),all_triangles=True);before=set(ht.overlap(bt));after=set(ht.overlap(nt));patchset=set(map(int,patchtri))
+def selfpairs(tree):return set((a,b) for a,b in tree.overlap(tree) if a<b and (a in patchset or b in patchset) and not set(T[a])&set(T[b]))
+sb=selfpairs(bt);sa=selfpairs(nt);P=p[T[patchtri]];Q=q[T[patchtri]];na=np.cross(P[:,1]-P[:,0],P[:,2]-P[:,0]);nb=np.cross(Q[:,1]-Q[:,0],Q[:,2]-Q[:,0]);area=np.linalg.norm(na,axis=1);rat=np.linalg.norm(nb,axis=1)[area>1e-12]/area[area>1e-12]
+report={'method':'Whole projected triangle-cell inequalities for separated left-envelope seed; common paired X retreat; frozen boundary. Not a final smooth patch.','projected_cells':overlapcells,'inequalities':len(constraints),'fixed_boundary_infeasible_constraints':len(fixedbad),'fixed_examples':fixedbad[:5],'nonzero_skin_degenerate_projections':len(degskin),'cloth_degenerate_projections':degcloth,'minimax_required_retreat_m':required,'worst_constraint':worst,'skin_pairs_patch_before':sum(b in patchset for a,b in before),'skin_pairs_patch_after':sum(b in patchset for a,b in after),'new_self_pairs_involving_patch':len(sa-sb),'removed_self_pairs_involving_patch':len(sb-sa),'area_range':list(map(float,[rat.min(),rat.max()])),'flips':int(((na*nb).sum(1)<-1e-15).sum()),'boundary_max_delta':float(np.linalg.norm(q[list(boundary)]-p[list(boundary)],axis=1).max()),'status':'Diagnostic only; no blend saved'};json.dump(report,open(r+'neck-separated-envelope-seed-proof.json','w'),indent=2);np.savez(r+'neck-separated-envelope-seed-proof.npz',points=q,original=p,triangles=T,patchtri=patchtri);print(report,flush=True)

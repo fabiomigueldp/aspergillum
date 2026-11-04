@@ -1,0 +1,29 @@
+import bpy,math
+from mathutils import Matrix,Vector
+from mathutils.bvhtree import BVHTree
+from math import sin,cos,pi
+ROOT='/workspace/scratch/212c580ada5b/paz-refinement/'
+bpy.ops.wm.open_mainfile(filepath=ROOT+'Nossa_Senhora_da_Paz_v17_estudo.blend')
+R=bpy.data.objects['Maria — auréola lisa'].rotation_euler.to_matrix()@Matrix.Rotation(-pi/2,3,'X')
+head=bpy.data.objects['Maria — anatomia feminina adaptada CC0'];bvh=BVHTree.FromObject(head,bpy.context.evaluated_depsgraph_get())
+o=bpy.data.objects['Maria — plano contínuo do manto'];o.shape_key_add(name='Manto V13 preservado');k=o.shape_key_add(name='Queda contínua ligada ao véu');k.value=1
+# Existing grid: 10 rows x 80 columns, last four are disconnected dorsal wall.
+for i,v in enumerate(o.data.vertices):
+ row=i//80;col=i%80
+ if row<6:continue
+ a=pi/2+pi*col/79
+ z=3.50-.14*sin(a)**2-.35*max(0,-cos(a))
+ origin=R@Vector((-.44,1.012,z));direction=R@Vector((sin(a),-cos(a),0))
+ hit,n,idx,dist=bvh.ray_cast(origin,direction,1)
+ if hit is None:continue
+ anchor=o.data.vertices[5*80+col].co.copy()
+ t=(row-5)/4
+ # smooth shoulder-to-skull trajectory, eliminating slab above the neck
+ p=anchor.lerp(hit+n*.004,t)
+ p.y+=.012*sin(pi*t)
+ k.data[i].co=p
+for m in o.modifiers:
+ if m.type=='SOLIDIFY':m.thickness=.006
+s=bpy.context.scene;s.render.filepath=ROOT+'v18-face.png';s.cycles.samples=48
+bpy.ops.wm.save_as_mainfile(filepath=ROOT+'Nossa_Senhora_da_Paz_v18_estudo.blend');bpy.ops.render.render(write_still=True)
+c=s.camera;c.location=(-5,-.05,3.6);c.rotation_euler=(Vector((0,-.15,3.4))-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=1.05;s.render.filepath=ROOT+'v18-profile.png';bpy.ops.render.render(write_still=True)

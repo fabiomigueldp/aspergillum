@@ -1,0 +1,96 @@
+# V75: calota e faixa dupla, laboratório V3
+
+**Não é lançamento, addon completo nem captura de Minecraft.** Trabalho isolado de conversão. O checkpoint V75, os LAB anteriores e o addon legado não foram substituídos ou publicados.
+
+## Resultado retido
+
+A candidata técnica é **`constrained_source/` (V3f)**. Somente calota e faixa frontal; não inclui integração com a costura/manto, corpo, comportamento ou instalação no jogo.
+
+- Calota: 1.740 triângulos, 872 vértices. Todas as coordenadas amostradas vêm literalmente da fonte avaliada. Mantém as 112 amostras da borda.
+- Faixa: 1.912 triângulos, 958 vértices. Mantém duas cristas, vale, suportes transversais e bordas como polilinhas obrigatórias no domínio original. Coordenadas e normais vêm da fonte, sem engrossamento ou deslocamento de vértices existentes.
+- Exportação: 3.652 cubos de profundidade zero, cada um com uma face sul e máscara alfa triangular. São 3.652 quads/7.304 triângulos de rasterização, **apenas para estas duas peças**. Ainda é custo alto; não há medição Bedrock/mobile.
+- Albedo constante da pedra, sem luz pintada, emissão ou AO. Normal map separado com correspondência por parede externa/interna/borda, e rejeição de projeções excessivamente distantes.
+- PNGs 2.048²: aproximadamente 32 MiB RGBA para cor+normal antes de mipmaps, sem contar geometria, demais partes ou overhead.
+
+## O que mudou de técnica
+
+A redução anterior decimava juntas duas paredes extremamente próximas. Seus planos interpolados atravessavam um ao outro, embora a topologia continuasse fechada. A casca nova usa correspondência entre parâmetros das duas paredes e **refinamento somente nas regiões que falham no teste de cruzamento**.
+
+A faixa dupla é o objeto separado `TESTE 29 — faixa embutida com terminação suave`, grade 177×17. Não são dois toros. Foram preservados j0/j16 (bordas), j3/j13 (cristas), j8 (vale) e j5/j11 (suportes). A origem é a geometria atual do V75, não a regeneração da antiga fórmula artística.
+
+A calota oculta avaliada corresponde exatamente aos primeiros 160.386 vértices do objeto visível unido do V75, inclusive com TESTE74=1. Isso foi verificado. A prova isolada fecha o aro posterior da calota; **não resolve a costura atual com o manto**, nem autoriza descartar o deslocamento inferior V74.
+
+## Controles e tentativas preservados
+
+- Raiz V3a: calota 1.708tri, faixa808tri. Controle da mesma quantidade de triângulos, decimando a casca inteira, produziu 898 cruzamentos na calota e105 na faixa. O método pareado caiu a2 e27. Comparação visual preserva a mesma cabeça/auréola de contexto.
+- `paired_refined/` V3b: a calota passou após8 novas amostras locais; a faixa piorou porque inserções sequenciais mantiveram diagonais longas. **Rejeitada.**
+- `paired_retriangulated/` V3c: conectividade por estações vizinhas reduziu a faixa a42 cruzamentos. **Rejeitada.**
+- `coherent_inner/` V3d: reconstruir só a parede interna, sem aumentar distâncias, não bastou (56 cruzamentos). **Rejeitada; não usar.**
+- `adaptive_source/` V3e: amostras adicionais da malha high e Delaunay no domínio de origem passaram de28→4→0 cruzamentos, porém duas arestas de curvas obrigatórias não foram mantidas. **Superada.**
+- `constrained_source/` V3f: recuperação das curvas por flips locais convexos, seguida de refinamento dos conflitos:12→7→0. Esta é a candidata retida para pesquisa, sujeita à revisão final registrada nos arquivos `review-final-*`.
+
+A melhora não vem apenas de elevar um orçamento geral: há controle de mesmo custo que separa a técnica, correspondência explícita de paredes, curvas protegidas e adaptação localizada determinada por falhas mensuráveis. Houve aumento localizado da contagem, que não deve ser omitido.
+
+## Evidência visual e limites
+
+`evidence/source-*`, `same-budget-control-*`, `paired-*` e `bedrock-perwall-*` são diagnósticos **externos no Blender**. A cabeça e a auréola highpoly são idênticas em todos e existem só para contexto. Nenhuma melhoria facial pode ser atribuída à conversão dessas duas peças. O manto não aparece.
+
+`constrained_source/evidence/bedrock-perwall-*` reimporta exclusivamente os arquivos JSON/PNG da candidata para a calota/faixa, com iluminação neutra e descarte de faces traseiras. O contexto highpoly está identificado acima. A comparação `bedrock-flat-*` usa a mesma geometria/cor/UV/câmera, sem normal map.
+
+A revisão independente da etapa V3a reconheceu a retenção das duas cristas e a forte redução de perfurações, mas apontou facetas/pontas e riscos/manchas na versão com normal map. O término temporal levantado e a linha posterior da casca já aparecem na fonte. **Não há aprovação artística de acabamento excelente.** Revisão da última variante deve ser lida separadamente, sem transferir conclusões de uma imagem antiga.
+
+## O que os testes demonstram e não demonstram
+
+- Gate: BVH de fase ampla e teste estrito segmento–triângulo em dupla precisão, incluindo pares com vértices compartilhados. Valida também incidências, winding, ciclos de vizinhança, Euler e degeneração.
+- Zero cruzamentos detectados não certifica tangências, sobreposições coplanares gerais, distância mínima, contato com pele, encontros calota–faixa ou costura com o manto.
+- Coordenadas/normais da candidata final são amostras reais da fonte. Não confundir com V3d, cuja parede interna foi alterada e rejeitada.
+- Roundtrip de serialização JSON testa conversão de coordenadas/rotação e UV, não fidelidade artística nem suporte do motor.
+- Alfa cutout e mapas normais em faces triangulares transportadas por cubos de profundidade zero continuam sujeitos a sombras, bordas, mips, tangentes e material no motor real.
+- Normal map precisa de um caminho PBR compatível (Vibrant Visuals); Classic ignora esse relevo. A convenção DirectX é hipótese inicial calibrada no render externo, não confirmação da tangente da entidade no Bedrock.
+- Nenhum Minecraft disponível/testado nesta tarefa. Não há captura, FPS, teste de importação, shader, runtime de entidade ou multiplayer.
+
+## Arquivos principais
+
+- `constrained_source/resource_pack/models/entity/paired_cap_band.geo.json`
+- `constrained_source/resource_pack/textures/entity/paired_cap_band.png`
+- `constrained_source/resource_pack/textures/entity/paired_cap_band_normal_per_wall_dx.png`
+- `constrained_source/evidence/adaptive-history.json`
+- `constrained_source/evidence/final-adaptive-gate.json`
+- `constrained_source/evidence/review-final-*.json`
+- `constrained_source/evidence/asset-validation.json`
+- `evidence/current-source-correspondence.json`
+
+## Reproduzir a última etapa
+
+1. Executar `constrained_source/tools/adapt_band.py` com Python + NumPy/SciPy. Depende das fontes extraídas e da V3e preservada; chama Blender para o gate independente.
+2. Executar `constrained_source/tools/export_bedrock.py`.
+3. Executar Blender com `tools/bake_wall_normals_bounded.py -- CAMINHO_ABSOLUTO/constrained_source`.
+4. Executar `constrained_source/tools/validate_assets.py`.
+5. Executar Blender com `constrained_source/tools/render_variants.py -- bedrock-perwall` e `-- bedrock-flat`.
+
+## Referências técnicas verificadas anteriormente
+
+- [Geometria Bedrock 1.14](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/schemasreference/schemas/minecraftschema_geometry_1.14.0?view=minecraft-bedrock-stable)
+- [Vibrant Visuals resource packs](https://learn.microsoft.com/en-us/minecraft/creator/documents/vibrantvisuals/vvresourcepacks?view=minecraft-bedrock-stable)
+- [PBR e entidades](https://learn.microsoft.com/en-us/minecraft/creator/documents/vibrantvisuals/pbroverview?view=minecraft-bedrock-stable)
+- [Texture sets e fallback Classic](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/texturesetsreference/texturesetsconcepts/texturesetsintroduction?view=minecraft-bedrock-stable)
+- [Desempenho e uso de recursos](https://learn.microsoft.com/en-us/minecraft/creator/documents/practices/improvingperformanceandresourceusage?view=minecraft-bedrock-stable)
+
+## Revisão independente final de geometria
+
+A V3f foi reavaliada em leitura independente: ambos os gates passaram; todos os pontos V3c/V3e foram mantidos, e cada uma das sete polilinhas da faixa é uma cadeia contínua de arestas. A faixa acrescentou 31 pares sobre V3e, sem mover amostras. As 112 arestas/amostras da borda da calota permanecem. Essa aprovação é estritamente geométrica dentro do escopo do teste, não artística ou de runtime.
+
+## Quantificação complementar da candidata final
+
+- Erro máximo do roundtrip JSON: 2,002×10⁻⁷ unidades de modelo, ou 1,251×10⁻⁸ blocos. Fonte V75 e arquivos dos LAB anteriores mantêm seus hashes.
+- Distâncias amostradas, **não Hausdorff**: na calota, 95% das 10.000 amostras de vértices high ficam até 0,003183 unidade da malha reduzida; máximo 0,005148. Na faixa, p95=0,000768 e máximo 0,005254. Centros de triângulos da faixa chegam a0,006503 da fonte. Exatidão dos vértices não implica exatidão de toda superfície.
+- Bake final: 1.628.070 texels; 0,6107% dos vetores permanecem com componente tangente Z negativa. Houve 67.648 projeções de raio rejeitadas por distância excessiva e 138.907 consultas ao vizinho mais próximo. Esses são avisos de correspondência/curvatura, não corrigidos por inverter normais ou escondidos no relatório.
+- PNG de comparação `FINAL_PROOF_NOT_MINECRAFT.png` declara os orçamentos diferentes do controle e da candidata final. A comparação de mesmo orçamento que identifica o efeito da técnica permanece na raiz V3a (`same-budget-control-*` versus `paired-*`).
+
+## Decisão visual final V3f
+
+Revisão independente das três vistas: reter como candidata técnica isolada. Não aparecem perfurações negras evidentes; a faixa dupla é contínua e não tem a franja da prova V2. Isso é avanço claro em relação ao controle.
+
+A malha nativa ainda mostra facetas e pequenas pontas na calota. O normal map atenua esses planos, mas permanecem riscos, irregularidades e uma borda temporal escura; a candidata está menos limpa que a fonte. Parte desses sinais já aparece na malha nativa, portanto não há evidência suficiente para culpar especificamente alfa, JSON ou normal map. A prova não atende ainda ao padrão de acabamento excelente e não libera integração/publicação automática.
+
+A cabeça e a auréola highpoly de contexto não contam como geometria convertida. Integração com manto/faixa/pele, conteúdo completo e teste Bedrock continuam pendentes.

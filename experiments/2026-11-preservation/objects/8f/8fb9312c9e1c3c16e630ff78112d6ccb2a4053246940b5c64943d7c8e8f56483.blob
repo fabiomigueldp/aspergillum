@@ -1,0 +1,26 @@
+# V13: hipóteses restritas para inversões visíveis faixa/casca
+
+Nenhuma geometria foi alterada nesta preparação. Evidência acionável recebida em `../independent_diagnosis/visible-blue-ray-witnesses.json`: em 14 de 17 raios escolhidos nas ilhas azuis, a casca aparece à frente da faixa íntegra; na fonte de alta resolução a faixa aparece primeiro. Os três raios em borda/ouro não são classificados como defeitos. Esse resultado não classifica todos os 1.360 contatos como erros e não prova intenção artística dos contatos internos.
+
+## Hipótese preferida após comparação fatorial
+
+Se a comparação confirmar perda da curvatura entre amostras da faixa reduzida, subdividir apenas patches do vale v entre 5 e 11, usando a superfície fonte no mesmo UV. Os testemunhos azuis iniciais estão em u 43,65–60,21 e 107,12–131,94. O suporte preliminar seria u 40–64 e 104–136, sujeito ao mapa denso independente.
+
+- Preservar todos os 584 vértices V12, duas linhas de crista v=3 e v=13, margens v=0/v=16 e terminações V12 exatamente.
+- Manter casca V11 e anatomia V9 bit a bit.
+- Refinamento conforme com arestas compartilhadas. Vizinhos só retriangulados em seus planos para não criar T-junctions.
+- Amostragem fonte por triângulos reais no grid UV 0,25. Não suavizar para uma forma inventada nem projetar retornos/fechamentos.
+- Transição limitada aos limites do patch; deslocar somente vértices novos, jamais extrapolar além da superfície fonte.
+- Nos 14 testemunhos iniciais, a diferença fonte menos plano reduzido é 0,631–1,035 mm em norma e 0,619–0,839 mm na normal externa. Isso é previsão de geometria, não resultado de uma candidata nem certificado de folga.
+
+Após a construção: conferir fechamento/orientação, degenerados/float32, cristas e largura, superfícies fora do patch, duas paredes, interseções novas próprias/anatomia e inversão nos raios. A revisão visual do parent é um gate separado. Os gates congelados não serão repetidos.
+
+## Alternativa somente se a primeira hipótese falhar
+
+Deslocar localmente pares externo/interno da casca por mesma translação, respeitando anatomia e espessura. Os 270 vértices nas 381 faces da calota que contêm os 1.001 contatos inteiramente frontais y<−0,28 possuem pares fonte conhecidos. Isso é capacidade de parametrização, não área autorizada para modificar.
+
+O diagnóstico independente estima recuo local de aproximadamente 0,63–0,92 mm para colocar a parede externa da casca 0,1 mm atrás da parede interna da faixa nos 14 raios; sobrariam cerca de 1,33–3,04 mm até anatomia nesses mesmos raios. Não certifica espaço em todo o patch e não autoriza criar contatos ocultos nas transições. Uma incompatibilidade real deverá ser reportada, não escondida.
+
+## Restrições
+
+Não remover todas as faces que colidem, não repetir deformação ampla V10, não recolorir as ilhas como solução e não classificar os recortes como decoração. Nenhum arquivo de fonte ou candidato anterior pode ser sobrescrito. Nada de exportação, integração, Minecraft ou publicação.

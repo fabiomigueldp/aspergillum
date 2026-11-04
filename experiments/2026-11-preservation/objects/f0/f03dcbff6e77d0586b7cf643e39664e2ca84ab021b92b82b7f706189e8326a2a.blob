@@ -1,0 +1,2988 @@
+{
+  "scope": "Actual first-source emission; 1 sample BOX0.01. Component, source-face, and half counted separately. Baseline/clip/candidates use source-contract IDs; maps verified. Full-view mismatch vs clip includes unchanged legacy masking failures. Resolved and new defined against the same frozen clip reference.",
+  "regions": {
+    "central_inclusive_xy": [
+      490,
+      440,
+      570,
+      480
+    ],
+    "band_bounding_inclusive_xy": [
+      200,
+      400,
+      800,
+      700
+    ],
+    "visible_band_union": "pixels where baseline,clip or current candidate reports part0"
+  },
+  "results": {
+    "roi68-depth1": {
+      "component": {
+        "whole_view": {
+          "pixels": 1000000,
+          "baseline_mismatches": 577,
+          "candidate_mismatches": 533,
+          "resolved_baseline": 120,
+          "still_mismatched": 457,
+          "new_regressions": 76
+        },
+        "central3321": {
+          "pixels": 3321,
+          "baseline_mismatches": 141,
+          "candidate_mismatches": 106,
+          "resolved_baseline": 107,
+          "still_mismatched": 34,
+          "new_regressions": 72
+        },
+        "band_bounding_rect": {
+          "pixels": 180901,
+          "baseline_mismatches": 536,
+          "candidate_mismatches": 492,
+          "resolved_baseline": 120,
+          "still_mismatched": 416,
+          "new_regressions": 76
+        },
+        "visible_band_union": {
+          "pixels": 23318,
+          "baseline_mismatches": 503,
+          "candidate_mismatches": 459,
+          "resolved_baseline": 120,
+          "still_mismatched": 383,
+          "new_regressions": 76
+        },
+        "visible_band_outside_central": {
+          "pixels": 20082,
+          "baseline_mismatches": 362,
+          "candidate_mismatches": 353,
+          "resolved_baseline": 13,
+          "still_mismatched": 349,
+          "new_regressions": 4
+        }
+      },
+      "source_face_or_component": {
+        "whole_view": {
+          "pixels": 1000000,
+          "baseline_mismatches": 691,
+          "candidate_mismatches": 647,
+          "resolved_baseline": 120,
+          "still_mismatched": 571,
+          "new_regressions": 76
+        },
+        "central3321": {
+          "pixels": 3321,
+          "baseline_mismatches": 142,
+          "candidate_mismatches": 107,
+          "resolved_baseline": 107,
+          "still_mismatched": 35,
+          "new_regressions": 72
+        },
+        "band_bounding_rect": {
+          "pixels": 180901,
+          "baseline_mismatches": 600,
+          "candidate_mismatches": 556,
+          "resolved_baseline": 120,
+          "still_mismatched": 480,
+          "new_regressions": 76
+        },
+        "visible_band_union": {
+          "pixels": 23318,
+          "baseline_mismatches": 517,
+          "candidate_mismatches": 473,
+          "resolved_baseline": 120,
+          "still_mismatched": 397,
+          "new_regressions": 76
+        },
+        "visible_band_outside_central": {
+          "pixels": 20082,
+          "baseline_mismatches": 375,
+          "candidate_mismatches": 366,
+          "resolved_baseline": 13,
+          "still_mismatched": 362,
+          "new_regressions": 4
+        }
+      },
+      "new_source_mismatch_witnesses": [
+        {
+          "x": 535,
+          "y": 441,
+          "baseline": [
+            111,
+            0,
+            1
+          ],
+          "candidate": [
+            4112,
+            1,
+            1
+          ],
+          "clip": [
+            111,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 494,
+          "y": 444,
+          "baseline": [
+            890,
+            0,
+            1
+          ],
+          "candidate": [
+            3353,
+            1,
+            1
+          ],
+          "clip": [
+            890,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 495,
+          "y": 444,
+          "baseline": [
+            890,
+            0,
+            1
+          ],
+          "candidate": [
+            3353,
+            1,
+            1
+          ],
+          "clip": [
+            890,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 497,
+          "y": 444,
+          "baseline": [
+            890,
+            0,
+            1
+          ],
+          "candidate": [
+            3353,
+            1,
+            1
+          ],
+          "clip": [
+            890,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 497,
+          "y": 445,
+          "baseline": [
+            891,
+            0,
+            1
+          ],
+          "candidate": [
+            3353,
+            1,
+            1
+          ],
+          "clip": [
+            891,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 546,
+          "y": 445,
+          "baseline": [
+            111,
+            0,
+            1
+          ],
+          "candidate": [
+            3717,
+            1,
+            0
+          ],
+          "clip": [
+            111,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 548,
+          "y": 446,
+          "baseline": [
+            111,
+            0,
+            1
+          ],
+          "candidate": [
+            3717,
+            1,
+            0
+          ],
+          "clip": [
+            111,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 491,
+          "y": 447,
+          "baseline": [
+            892,
+            0,
+            1
+          ],
+          "candidate": [
+            3353,
+            1,
+            1
+          ],
+          "clip": [
+            892,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 492,
+          "y": 447,
+          "baseline": [
+            892,
+            0,
+            1
+          ],
+          "candidate": [
+            3353,
+            1,
+            1
+          ],
+          "clip": [
+            892,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 516,
+          "y": 447,
+          "baseline": [
+            893,
+            0,
+            1
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            893,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 517,
+          "y": 447,
+          "baseline": [
+            893,
+            0,
+            1
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            893,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 526,
+          "y": 447,
+          "baseline": [
+            888,
+            0,
+            0
+          ],
+          "candidate": [
+            3717,
+            1,
+            1
+          ],
+          "clip": [
+            888,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 492,
+          "y": 448,
+          "baseline": [
+            902,
+            0,
+            1
+          ],
+          "candidate": [
+            4485,
+            1,
+            0
+          ],
+          "clip": [
+            902,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 494,
+          "y": 448,
+          "baseline": [
+            902,
+            0,
+            1
+          ],
+          "candidate": [
+            4485,
+            1,
+            0
+          ],
+          "clip": [
+            902,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 496,
+          "y": 448,
+          "baseline": [
+            902,
+            0,
+            1
+          ],
+          "candidate": [
+            3353,
+            1,
+            1
+          ],
+          "clip": [
+            902,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 516,
+          "y": 448,
+          "baseline": [
+            902,
+            0,
+            0
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            902,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 523,
+          "y": 448,
+          "baseline": [
+            902,
+            0,
+            0
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            902,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 496,
+          "y": 449,
+          "baseline": [
+            902,
+            0,
+            1
+          ],
+          "candidate": [
+            4485,
+            1,
+            0
+          ],
+          "clip": [
+            902,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 513,
+          "y": 449,
+          "baseline": [
+            902,
+            0,
+            0
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            902,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 514,
+          "y": 449,
+          "baseline": [
+            902,
+            0,
+            0
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            902,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 515,
+          "y": 449,
+          "baseline": [
+            902,
+            0,
+            0
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            902,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 491,
+          "y": 450,
+          "baseline": [
+            903,
+            0,
+            1
+          ],
+          "candidate": [
+            4485,
+            1,
+            0
+          ],
+          "clip": [
+            903,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 492,
+          "y": 450,
+          "baseline": [
+            903,
+            0,
+            1
+          ],
+          "candidate": [
+            4485,
+            1,
+            0
+          ],
+          "clip": [
+            903,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 493,
+          "y": 450,
+          "baseline": [
+            903,
+            0,
+            1
+          ],
+          "candidate": [
+            4485,
+            1,
+            0
+          ],
+          "clip": [
+            903,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 509,
+          "y": 450,
+          "baseline": [
+            902,
+            0,
+            0
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            902,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 510,
+          "y": 450,
+          "baseline": [
+            902,
+            0,
+            0
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            902,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 565,
+          "y": 450,
+          "baseline": [
+            111,
+            0,
+            0
+          ],
+          "candidate": [
+            3718,
+            1,
+            0
+          ],
+          "clip": [
+            111,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 566,
+          "y": 450,
+          "baseline": [
+            111,
+            0,
+            0
+          ],
+          "candidate": [
+            3718,
+            1,
+            0
+          ],
+          "clip": [
+            111,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 500,
+          "y": 451,
+          "baseline": [
+            903,
+            0,
+            1
+          ],
+          "candidate": [
+            4485,
+            1,
+            0
+          ],
+          "clip": [
+            903,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 501,
+          "y": 451,
+          "baseline": [
+            903,
+            0,
+            1
+          ],
+          "candidate": [
+            4485,
+            1,
+            0
+          ],
+          "clip": [
+            903,
+            0,
+            1
+          ]
+        }
+      ],
+      "half_only_with_same_source": {
+        "whole_view": {
+          "pixels": 1000000,
+          "baseline_mismatches": 0,
+          "candidate_mismatches": 0,
+          "resolved_baseline": 0,
+          "still_mismatched": 0,
+          "new_regressions": 0
+        },
+        "central3321": {
+          "pixels": 3321,
+          "baseline_mismatches": 0,
+          "candidate_mismatches": 0,
+          "resolved_baseline": 0,
+          "still_mismatched": 0,
+          "new_regressions": 0
+        },
+        "band_bounding_rect": {
+          "pixels": 180901,
+          "baseline_mismatches": 0,
+          "candidate_mismatches": 0,
+          "resolved_baseline": 0,
+          "still_mismatched": 0,
+          "new_regressions": 0
+        },
+        "visible_band_union": {
+          "pixels": 23318,
+          "baseline_mismatches": 0,
+          "candidate_mismatches": 0,
+          "resolved_baseline": 0,
+          "still_mismatched": 0,
+          "new_regressions": 0
+        },
+        "visible_band_outside_central": {
+          "pixels": 20082,
+          "baseline_mismatches": 0,
+          "candidate_mismatches": 0,
+          "resolved_baseline": 0,
+          "still_mismatched": 0,
+          "new_regressions": 0
+        }
+      },
+      "any_identity": {
+        "whole_view": {
+          "pixels": 1000000,
+          "baseline_mismatches": 691,
+          "candidate_mismatches": 647,
+          "resolved_baseline": 120,
+          "still_mismatched": 571,
+          "new_regressions": 76
+        },
+        "central3321": {
+          "pixels": 3321,
+          "baseline_mismatches": 142,
+          "candidate_mismatches": 107,
+          "resolved_baseline": 107,
+          "still_mismatched": 35,
+          "new_regressions": 72
+        },
+        "band_bounding_rect": {
+          "pixels": 180901,
+          "baseline_mismatches": 600,
+          "candidate_mismatches": 556,
+          "resolved_baseline": 120,
+          "still_mismatched": 480,
+          "new_regressions": 76
+        },
+        "visible_band_union": {
+          "pixels": 23318,
+          "baseline_mismatches": 517,
+          "candidate_mismatches": 473,
+          "resolved_baseline": 120,
+          "still_mismatched": 397,
+          "new_regressions": 76
+        },
+        "visible_band_outside_central": {
+          "pixels": 20082,
+          "baseline_mismatches": 375,
+          "candidate_mismatches": 366,
+          "resolved_baseline": 13,
+          "still_mismatched": 362,
+          "new_regressions": 4
+        }
+      }
+    },
+    "roi68-depth2": {
+      "component": {
+        "whole_view": {
+          "pixels": 1000000,
+          "baseline_mismatches": 577,
+          "candidate_mismatches": 487,
+          "resolved_baseline": 164,
+          "still_mismatched": 413,
+          "new_regressions": 74
+        },
+        "central3321": {
+          "pixels": 3321,
+          "baseline_mismatches": 141,
+          "candidate_mismatches": 72,
+          "resolved_baseline": 118,
+          "still_mismatched": 23,
+          "new_regressions": 49
+        },
+        "band_bounding_rect": {
+          "pixels": 180901,
+          "baseline_mismatches": 536,
+          "candidate_mismatches": 446,
+          "resolved_baseline": 164,
+          "still_mismatched": 372,
+          "new_regressions": 74
+        },
+        "visible_band_union": {
+          "pixels": 23318,
+          "baseline_mismatches": 503,
+          "candidate_mismatches": 415,
+          "resolved_baseline": 162,
+          "still_mismatched": 341,
+          "new_regressions": 74
+        },
+        "visible_band_outside_central": {
+          "pixels": 20082,
+          "baseline_mismatches": 362,
+          "candidate_mismatches": 343,
+          "resolved_baseline": 44,
+          "still_mismatched": 318,
+          "new_regressions": 25
+        }
+      },
+      "source_face_or_component": {
+        "whole_view": {
+          "pixels": 1000000,
+          "baseline_mismatches": 691,
+          "candidate_mismatches": 600,
+          "resolved_baseline": 165,
+          "still_mismatched": 526,
+          "new_regressions": 74
+        },
+        "central3321": {
+          "pixels": 3321,
+          "baseline_mismatches": 142,
+          "candidate_mismatches": 72,
+          "resolved_baseline": 119,
+          "still_mismatched": 23,
+          "new_regressions": 49
+        },
+        "band_bounding_rect": {
+          "pixels": 180901,
+          "baseline_mismatches": 600,
+          "candidate_mismatches": 509,
+          "resolved_baseline": 165,
+          "still_mismatched": 435,
+          "new_regressions": 74
+        },
+        "visible_band_union": {
+          "pixels": 23318,
+          "baseline_mismatches": 517,
+          "candidate_mismatches": 428,
+          "resolved_baseline": 163,
+          "still_mismatched": 354,
+          "new_regressions": 74
+        },
+        "visible_band_outside_central": {
+          "pixels": 20082,
+          "baseline_mismatches": 375,
+          "candidate_mismatches": 356,
+          "resolved_baseline": 44,
+          "still_mismatched": 331,
+          "new_regressions": 25
+        }
+      },
+      "new_source_mismatch_witnesses": [
+        {
+          "x": 535,
+          "y": 441,
+          "baseline": [
+            111,
+            0,
+            1
+          ],
+          "candidate": [
+            4112,
+            1,
+            1
+          ],
+          "clip": [
+            111,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 539,
+          "y": 443,
+          "baseline": [
+            112,
+            0,
+            0
+          ],
+          "candidate": [
+            3717,
+            1,
+            0
+          ],
+          "clip": [
+            112,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 517,
+          "y": 446,
+          "baseline": [
+            888,
+            0,
+            0
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            888,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 521,
+          "y": 447,
+          "baseline": [
+            893,
+            0,
+            1
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            893,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 522,
+          "y": 447,
+          "baseline": [
+            893,
+            0,
+            1
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            893,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 526,
+          "y": 447,
+          "baseline": [
+            888,
+            0,
+            0
+          ],
+          "candidate": [
+            3717,
+            1,
+            1
+          ],
+          "clip": [
+            888,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 552,
+          "y": 448,
+          "baseline": [
+            112,
+            0,
+            0
+          ],
+          "candidate": [
+            3717,
+            1,
+            0
+          ],
+          "clip": [
+            112,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 496,
+          "y": 449,
+          "baseline": [
+            902,
+            0,
+            1
+          ],
+          "candidate": [
+            4485,
+            1,
+            0
+          ],
+          "clip": [
+            902,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 515,
+          "y": 449,
+          "baseline": [
+            902,
+            0,
+            0
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            902,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 519,
+          "y": 449,
+          "baseline": [
+            902,
+            0,
+            0
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            902,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 555,
+          "y": 449,
+          "baseline": [
+            112,
+            0,
+            0
+          ],
+          "candidate": [
+            3717,
+            1,
+            0
+          ],
+          "clip": [
+            112,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 508,
+          "y": 450,
+          "baseline": [
+            902,
+            0,
+            0
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            902,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 509,
+          "y": 450,
+          "baseline": [
+            902,
+            0,
+            0
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            902,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 511,
+          "y": 450,
+          "baseline": [
+            902,
+            0,
+            0
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            902,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 502,
+          "y": 451,
+          "baseline": [
+            902,
+            0,
+            1
+          ],
+          "candidate": [
+            4485,
+            1,
+            0
+          ],
+          "clip": [
+            902,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 566,
+          "y": 451,
+          "baseline": [
+            116,
+            0,
+            0
+          ],
+          "candidate": [
+            3718,
+            1,
+            0
+          ],
+          "clip": [
+            116,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 493,
+          "y": 454,
+          "baseline": [
+            905,
+            0,
+            1
+          ],
+          "candidate": [
+            4488,
+            1,
+            0
+          ],
+          "clip": [
+            905,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 576,
+          "y": 454,
+          "baseline": [
+            43,
+            0,
+            1
+          ],
+          "candidate": [
+            3338,
+            1,
+            1
+          ],
+          "clip": [
+            43,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 578,
+          "y": 455,
+          "baseline": [
+            43,
+            0,
+            1
+          ],
+          "candidate": [
+            3338,
+            1,
+            1
+          ],
+          "clip": [
+            43,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 579,
+          "y": 455,
+          "baseline": [
+            43,
+            0,
+            1
+          ],
+          "candidate": [
+            3339,
+            1,
+            1
+          ],
+          "clip": [
+            43,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 569,
+          "y": 459,
+          "baseline": [
+            123,
+            0,
+            0
+          ],
+          "candidate": [
+            3338,
+            1,
+            0
+          ],
+          "clip": [
+            123,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 566,
+          "y": 460,
+          "baseline": [
+            123,
+            0,
+            1
+          ],
+          "candidate": [
+            3338,
+            1,
+            0
+          ],
+          "clip": [
+            123,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 589,
+          "y": 460,
+          "baseline": [
+            44,
+            0,
+            1
+          ],
+          "candidate": [
+            4093,
+            1,
+            0
+          ],
+          "clip": [
+            44,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 491,
+          "y": 461,
+          "baseline": [
+            896,
+            0,
+            0
+          ],
+          "candidate": [
+            4489,
+            1,
+            1
+          ],
+          "clip": [
+            896,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 550,
+          "y": 462,
+          "baseline": [
+            119,
+            0,
+            0
+          ],
+          "candidate": [
+            2999,
+            1,
+            0
+          ],
+          "clip": [
+            119,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 564,
+          "y": 462,
+          "baseline": [
+            122,
+            0,
+            1
+          ],
+          "candidate": [
+            2987,
+            1,
+            1
+          ],
+          "clip": [
+            122,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 567,
+          "y": 462,
+          "baseline": [
+            122,
+            0,
+            1
+          ],
+          "candidate": [
+            3338,
+            1,
+            0
+          ],
+          "clip": [
+            122,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 537,
+          "y": 463,
+          "baseline": [
+            1001,
+            0,
+            0
+          ],
+          "candidate": [
+            2998,
+            1,
+            0
+          ],
+          "clip": [
+            1001,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 538,
+          "y": 463,
+          "baseline": [
+            1001,
+            0,
+            0
+          ],
+          "candidate": [
+            2998,
+            1,
+            0
+          ],
+          "clip": [
+            1001,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 559,
+          "y": 463,
+          "baseline": [
+            121,
+            0,
+            0
+          ],
+          "candidate": [
+            2987,
+            1,
+            0
+          ],
+          "clip": [
+            121,
+            0,
+            0
+          ]
+        }
+      ],
+      "half_only_with_same_source": {
+        "whole_view": {
+          "pixels": 1000000,
+          "baseline_mismatches": 0,
+          "candidate_mismatches": 0,
+          "resolved_baseline": 0,
+          "still_mismatched": 0,
+          "new_regressions": 0
+        },
+        "central3321": {
+          "pixels": 3321,
+          "baseline_mismatches": 0,
+          "candidate_mismatches": 0,
+          "resolved_baseline": 0,
+          "still_mismatched": 0,
+          "new_regressions": 0
+        },
+        "band_bounding_rect": {
+          "pixels": 180901,
+          "baseline_mismatches": 0,
+          "candidate_mismatches": 0,
+          "resolved_baseline": 0,
+          "still_mismatched": 0,
+          "new_regressions": 0
+        },
+        "visible_band_union": {
+          "pixels": 23318,
+          "baseline_mismatches": 0,
+          "candidate_mismatches": 0,
+          "resolved_baseline": 0,
+          "still_mismatched": 0,
+          "new_regressions": 0
+        },
+        "visible_band_outside_central": {
+          "pixels": 20082,
+          "baseline_mismatches": 0,
+          "candidate_mismatches": 0,
+          "resolved_baseline": 0,
+          "still_mismatched": 0,
+          "new_regressions": 0
+        }
+      },
+      "any_identity": {
+        "whole_view": {
+          "pixels": 1000000,
+          "baseline_mismatches": 691,
+          "candidate_mismatches": 600,
+          "resolved_baseline": 165,
+          "still_mismatched": 526,
+          "new_regressions": 74
+        },
+        "central3321": {
+          "pixels": 3321,
+          "baseline_mismatches": 142,
+          "candidate_mismatches": 72,
+          "resolved_baseline": 119,
+          "still_mismatched": 23,
+          "new_regressions": 49
+        },
+        "band_bounding_rect": {
+          "pixels": 180901,
+          "baseline_mismatches": 600,
+          "candidate_mismatches": 509,
+          "resolved_baseline": 165,
+          "still_mismatched": 435,
+          "new_regressions": 74
+        },
+        "visible_band_union": {
+          "pixels": 23318,
+          "baseline_mismatches": 517,
+          "candidate_mismatches": 428,
+          "resolved_baseline": 163,
+          "still_mismatched": 354,
+          "new_regressions": 74
+        },
+        "visible_band_outside_central": {
+          "pixels": 20082,
+          "baseline_mismatches": 375,
+          "candidate_mismatches": 356,
+          "resolved_baseline": 44,
+          "still_mismatched": 331,
+          "new_regressions": 25
+        }
+      }
+    },
+    "roi68-depth3": {
+      "component": {
+        "whole_view": {
+          "pixels": 1000000,
+          "baseline_mismatches": 577,
+          "candidate_mismatches": 454,
+          "resolved_baseline": 191,
+          "still_mismatched": 386,
+          "new_regressions": 68
+        },
+        "central3321": {
+          "pixels": 3321,
+          "baseline_mismatches": 141,
+          "candidate_mismatches": 39,
+          "resolved_baseline": 133,
+          "still_mismatched": 8,
+          "new_regressions": 31
+        },
+        "band_bounding_rect": {
+          "pixels": 180901,
+          "baseline_mismatches": 536,
+          "candidate_mismatches": 413,
+          "resolved_baseline": 191,
+          "still_mismatched": 345,
+          "new_regressions": 68
+        },
+        "visible_band_union": {
+          "pixels": 23321,
+          "baseline_mismatches": 503,
+          "candidate_mismatches": 383,
+          "resolved_baseline": 188,
+          "still_mismatched": 315,
+          "new_regressions": 68
+        },
+        "visible_band_outside_central": {
+          "pixels": 20083,
+          "baseline_mismatches": 362,
+          "candidate_mismatches": 344,
+          "resolved_baseline": 55,
+          "still_mismatched": 307,
+          "new_regressions": 37
+        }
+      },
+      "source_face_or_component": {
+        "whole_view": {
+          "pixels": 1000000,
+          "baseline_mismatches": 691,
+          "candidate_mismatches": 568,
+          "resolved_baseline": 192,
+          "still_mismatched": 499,
+          "new_regressions": 69
+        },
+        "central3321": {
+          "pixels": 3321,
+          "baseline_mismatches": 142,
+          "candidate_mismatches": 39,
+          "resolved_baseline": 134,
+          "still_mismatched": 8,
+          "new_regressions": 31
+        },
+        "band_bounding_rect": {
+          "pixels": 180901,
+          "baseline_mismatches": 600,
+          "candidate_mismatches": 477,
+          "resolved_baseline": 192,
+          "still_mismatched": 408,
+          "new_regressions": 69
+        },
+        "visible_band_union": {
+          "pixels": 23321,
+          "baseline_mismatches": 517,
+          "candidate_mismatches": 396,
+          "resolved_baseline": 189,
+          "still_mismatched": 328,
+          "new_regressions": 68
+        },
+        "visible_band_outside_central": {
+          "pixels": 20083,
+          "baseline_mismatches": 375,
+          "candidate_mismatches": 357,
+          "resolved_baseline": 55,
+          "still_mismatched": 320,
+          "new_regressions": 37
+        }
+      },
+      "new_source_mismatch_witnesses": [
+        {
+          "x": 518,
+          "y": 437,
+          "baseline": [
+            4112,
+            1,
+            0
+          ],
+          "candidate": [
+            1192,
+            0,
+            1
+          ],
+          "clip": [
+            4112,
+            1,
+            0
+          ]
+        },
+        {
+          "x": 519,
+          "y": 437,
+          "baseline": [
+            1191,
+            0,
+            0
+          ],
+          "candidate": [
+            4112,
+            1,
+            0
+          ],
+          "clip": [
+            1191,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 524,
+          "y": 438,
+          "baseline": [
+            1191,
+            0,
+            0
+          ],
+          "candidate": [
+            4112,
+            1,
+            0
+          ],
+          "clip": [
+            1191,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 528,
+          "y": 439,
+          "baseline": [
+            1191,
+            0,
+            0
+          ],
+          "candidate": [
+            4112,
+            1,
+            0
+          ],
+          "clip": [
+            1191,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 560,
+          "y": 441,
+          "baseline": [
+            4111,
+            1,
+            1
+          ],
+          "candidate": [
+            38,
+            0,
+            1
+          ],
+          "clip": [
+            4111,
+            1,
+            1
+          ]
+        },
+        {
+          "x": 494,
+          "y": 444,
+          "baseline": [
+            890,
+            0,
+            1
+          ],
+          "candidate": [
+            3353,
+            1,
+            1
+          ],
+          "clip": [
+            890,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 565,
+          "y": 444,
+          "baseline": [
+            4111,
+            1,
+            1
+          ],
+          "candidate": [
+            39,
+            0,
+            0
+          ],
+          "clip": [
+            4111,
+            1,
+            1
+          ]
+        },
+        {
+          "x": 513,
+          "y": 446,
+          "baseline": [
+            893,
+            0,
+            1
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            893,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 514,
+          "y": 446,
+          "baseline": [
+            893,
+            0,
+            1
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            893,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 548,
+          "y": 446,
+          "baseline": [
+            111,
+            0,
+            1
+          ],
+          "candidate": [
+            3717,
+            1,
+            0
+          ],
+          "clip": [
+            111,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 526,
+          "y": 447,
+          "baseline": [
+            888,
+            0,
+            0
+          ],
+          "candidate": [
+            3717,
+            1,
+            1
+          ],
+          "clip": [
+            888,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 527,
+          "y": 447,
+          "baseline": [
+            888,
+            0,
+            0
+          ],
+          "candidate": [
+            3717,
+            1,
+            1
+          ],
+          "clip": [
+            888,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 527,
+          "y": 448,
+          "baseline": [
+            902,
+            0,
+            0
+          ],
+          "candidate": [
+            3717,
+            1,
+            1
+          ],
+          "clip": [
+            902,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 496,
+          "y": 449,
+          "baseline": [
+            902,
+            0,
+            1
+          ],
+          "candidate": [
+            4485,
+            1,
+            0
+          ],
+          "clip": [
+            902,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 520,
+          "y": 449,
+          "baseline": [
+            907,
+            0,
+            1
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            907,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 511,
+          "y": 450,
+          "baseline": [
+            902,
+            0,
+            0
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            902,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 500,
+          "y": 451,
+          "baseline": [
+            903,
+            0,
+            1
+          ],
+          "candidate": [
+            4485,
+            1,
+            0
+          ],
+          "clip": [
+            903,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 502,
+          "y": 451,
+          "baseline": [
+            902,
+            0,
+            1
+          ],
+          "candidate": [
+            4485,
+            1,
+            0
+          ],
+          "clip": [
+            902,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 563,
+          "y": 452,
+          "baseline": [
+            115,
+            0,
+            0
+          ],
+          "candidate": [
+            3718,
+            1,
+            0
+          ],
+          "clip": [
+            115,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 562,
+          "y": 453,
+          "baseline": [
+            113,
+            0,
+            0
+          ],
+          "candidate": [
+            3718,
+            1,
+            0
+          ],
+          "clip": [
+            113,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 580,
+          "y": 456,
+          "baseline": [
+            43,
+            0,
+            0
+          ],
+          "candidate": [
+            3339,
+            1,
+            1
+          ],
+          "clip": [
+            43,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 581,
+          "y": 456,
+          "baseline": [
+            43,
+            0,
+            0
+          ],
+          "candidate": [
+            3339,
+            1,
+            1
+          ],
+          "clip": [
+            43,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 582,
+          "y": 457,
+          "baseline": [
+            44,
+            0,
+            1
+          ],
+          "candidate": [
+            3339,
+            1,
+            1
+          ],
+          "clip": [
+            44,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 583,
+          "y": 457,
+          "baseline": [
+            43,
+            0,
+            0
+          ],
+          "candidate": [
+            3339,
+            1,
+            1
+          ],
+          "clip": [
+            43,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 584,
+          "y": 457,
+          "baseline": [
+            43,
+            0,
+            0
+          ],
+          "candidate": [
+            4093,
+            1,
+            0
+          ],
+          "clip": [
+            43,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 585,
+          "y": 458,
+          "baseline": [
+            44,
+            0,
+            1
+          ],
+          "candidate": [
+            4093,
+            1,
+            0
+          ],
+          "clip": [
+            44,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 569,
+          "y": 459,
+          "baseline": [
+            123,
+            0,
+            0
+          ],
+          "candidate": [
+            3338,
+            1,
+            0
+          ],
+          "clip": [
+            123,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 587,
+          "y": 459,
+          "baseline": [
+            44,
+            0,
+            1
+          ],
+          "candidate": [
+            4093,
+            1,
+            0
+          ],
+          "clip": [
+            44,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 589,
+          "y": 460,
+          "baseline": [
+            44,
+            0,
+            1
+          ],
+          "candidate": [
+            4093,
+            1,
+            0
+          ],
+          "clip": [
+            44,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 533,
+          "y": 461,
+          "baseline": [
+            1001,
+            0,
+            0
+          ],
+          "candidate": [
+            2998,
+            1,
+            0
+          ],
+          "clip": [
+            1001,
+            0,
+            0
+          ]
+        }
+      ],
+      "half_only_with_same_source": {
+        "whole_view": {
+          "pixels": 1000000,
+          "baseline_mismatches": 0,
+          "candidate_mismatches": 0,
+          "resolved_baseline": 0,
+          "still_mismatched": 0,
+          "new_regressions": 0
+        },
+        "central3321": {
+          "pixels": 3321,
+          "baseline_mismatches": 0,
+          "candidate_mismatches": 0,
+          "resolved_baseline": 0,
+          "still_mismatched": 0,
+          "new_regressions": 0
+        },
+        "band_bounding_rect": {
+          "pixels": 180901,
+          "baseline_mismatches": 0,
+          "candidate_mismatches": 0,
+          "resolved_baseline": 0,
+          "still_mismatched": 0,
+          "new_regressions": 0
+        },
+        "visible_band_union": {
+          "pixels": 23321,
+          "baseline_mismatches": 0,
+          "candidate_mismatches": 0,
+          "resolved_baseline": 0,
+          "still_mismatched": 0,
+          "new_regressions": 0
+        },
+        "visible_band_outside_central": {
+          "pixels": 20083,
+          "baseline_mismatches": 0,
+          "candidate_mismatches": 0,
+          "resolved_baseline": 0,
+          "still_mismatched": 0,
+          "new_regressions": 0
+        }
+      },
+      "any_identity": {
+        "whole_view": {
+          "pixels": 1000000,
+          "baseline_mismatches": 691,
+          "candidate_mismatches": 568,
+          "resolved_baseline": 192,
+          "still_mismatched": 499,
+          "new_regressions": 69
+        },
+        "central3321": {
+          "pixels": 3321,
+          "baseline_mismatches": 142,
+          "candidate_mismatches": 39,
+          "resolved_baseline": 134,
+          "still_mismatched": 8,
+          "new_regressions": 31
+        },
+        "band_bounding_rect": {
+          "pixels": 180901,
+          "baseline_mismatches": 600,
+          "candidate_mismatches": 477,
+          "resolved_baseline": 192,
+          "still_mismatched": 408,
+          "new_regressions": 69
+        },
+        "visible_band_union": {
+          "pixels": 23321,
+          "baseline_mismatches": 517,
+          "candidate_mismatches": 396,
+          "resolved_baseline": 189,
+          "still_mismatched": 328,
+          "new_regressions": 68
+        },
+        "visible_band_outside_central": {
+          "pixels": 20083,
+          "baseline_mismatches": 375,
+          "candidate_mismatches": 357,
+          "resolved_baseline": 55,
+          "still_mismatched": 320,
+          "new_regressions": 37
+        }
+      }
+    },
+    "roi68-depth3-restored-transparent": {
+      "component": {
+        "whole_view": {
+          "pixels": 1000000,
+          "baseline_mismatches": 577,
+          "candidate_mismatches": 708,
+          "resolved_baseline": 145,
+          "still_mismatched": 432,
+          "new_regressions": 276
+        },
+        "central3321": {
+          "pixels": 3321,
+          "baseline_mismatches": 141,
+          "candidate_mismatches": 242,
+          "resolved_baseline": 88,
+          "still_mismatched": 53,
+          "new_regressions": 189
+        },
+        "band_bounding_rect": {
+          "pixels": 180901,
+          "baseline_mismatches": 536,
+          "candidate_mismatches": 660,
+          "resolved_baseline": 139,
+          "still_mismatched": 397,
+          "new_regressions": 263
+        },
+        "visible_band_union": {
+          "pixels": 23321,
+          "baseline_mismatches": 503,
+          "candidate_mismatches": 629,
+          "resolved_baseline": 136,
+          "still_mismatched": 367,
+          "new_regressions": 262
+        },
+        "visible_band_outside_central": {
+          "pixels": 20083,
+          "baseline_mismatches": 362,
+          "candidate_mismatches": 387,
+          "resolved_baseline": 48,
+          "still_mismatched": 314,
+          "new_regressions": 73
+        }
+      },
+      "source_face_or_component": {
+        "whole_view": {
+          "pixels": 1000000,
+          "baseline_mismatches": 691,
+          "candidate_mismatches": 824,
+          "resolved_baseline": 146,
+          "still_mismatched": 545,
+          "new_regressions": 279
+        },
+        "central3321": {
+          "pixels": 3321,
+          "baseline_mismatches": 142,
+          "candidate_mismatches": 242,
+          "resolved_baseline": 89,
+          "still_mismatched": 53,
+          "new_regressions": 189
+        },
+        "band_bounding_rect": {
+          "pixels": 180901,
+          "baseline_mismatches": 600,
+          "candidate_mismatches": 726,
+          "resolved_baseline": 140,
+          "still_mismatched": 460,
+          "new_regressions": 266
+        },
+        "visible_band_union": {
+          "pixels": 23321,
+          "baseline_mismatches": 517,
+          "candidate_mismatches": 643,
+          "resolved_baseline": 137,
+          "still_mismatched": 380,
+          "new_regressions": 263
+        },
+        "visible_band_outside_central": {
+          "pixels": 20083,
+          "baseline_mismatches": 375,
+          "candidate_mismatches": 401,
+          "resolved_baseline": 48,
+          "still_mismatched": 327,
+          "new_regressions": 74
+        }
+      },
+      "new_source_mismatch_witnesses": [
+        {
+          "x": 518,
+          "y": 437,
+          "baseline": [
+            4112,
+            1,
+            0
+          ],
+          "candidate": [
+            1192,
+            0,
+            1
+          ],
+          "clip": [
+            4112,
+            1,
+            0
+          ]
+        },
+        {
+          "x": 519,
+          "y": 437,
+          "baseline": [
+            1191,
+            0,
+            0
+          ],
+          "candidate": [
+            4112,
+            1,
+            0
+          ],
+          "clip": [
+            1191,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 524,
+          "y": 438,
+          "baseline": [
+            1191,
+            0,
+            0
+          ],
+          "candidate": [
+            4112,
+            1,
+            0
+          ],
+          "clip": [
+            1191,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 528,
+          "y": 439,
+          "baseline": [
+            1191,
+            0,
+            0
+          ],
+          "candidate": [
+            4112,
+            1,
+            0
+          ],
+          "clip": [
+            1191,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 549,
+          "y": 441,
+          "baseline": [
+            38,
+            0,
+            1
+          ],
+          "candidate": [
+            4112,
+            1,
+            1
+          ],
+          "clip": [
+            38,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 560,
+          "y": 441,
+          "baseline": [
+            4111,
+            1,
+            1
+          ],
+          "candidate": [
+            38,
+            0,
+            1
+          ],
+          "clip": [
+            4111,
+            1,
+            1
+          ]
+        },
+        {
+          "x": 542,
+          "y": 443,
+          "baseline": [
+            111,
+            0,
+            1
+          ],
+          "candidate": [
+            4112,
+            1,
+            1
+          ],
+          "clip": [
+            111,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 494,
+          "y": 444,
+          "baseline": [
+            890,
+            0,
+            1
+          ],
+          "candidate": [
+            3353,
+            1,
+            1
+          ],
+          "clip": [
+            890,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 497,
+          "y": 444,
+          "baseline": [
+            890,
+            0,
+            1
+          ],
+          "candidate": [
+            3353,
+            1,
+            1
+          ],
+          "clip": [
+            890,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 503,
+          "y": 444,
+          "baseline": [
+            888,
+            0,
+            1
+          ],
+          "candidate": [
+            3353,
+            1,
+            0
+          ],
+          "clip": [
+            888,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 543,
+          "y": 444,
+          "baseline": [
+            111,
+            0,
+            1
+          ],
+          "candidate": [
+            3717,
+            1,
+            0
+          ],
+          "clip": [
+            111,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 544,
+          "y": 444,
+          "baseline": [
+            111,
+            0,
+            1
+          ],
+          "candidate": [
+            3717,
+            1,
+            0
+          ],
+          "clip": [
+            111,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 545,
+          "y": 444,
+          "baseline": [
+            111,
+            0,
+            1
+          ],
+          "candidate": [
+            3717,
+            1,
+            0
+          ],
+          "clip": [
+            111,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 565,
+          "y": 444,
+          "baseline": [
+            4111,
+            1,
+            1
+          ],
+          "candidate": [
+            39,
+            0,
+            0
+          ],
+          "clip": [
+            4111,
+            1,
+            1
+          ]
+        },
+        {
+          "x": 466,
+          "y": 445,
+          "baseline": [
+            1197,
+            0,
+            1
+          ],
+          "candidate": [
+            4125,
+            1,
+            0
+          ],
+          "clip": [
+            1197,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 494,
+          "y": 445,
+          "baseline": [
+            891,
+            0,
+            1
+          ],
+          "candidate": [
+            3353,
+            1,
+            1
+          ],
+          "clip": [
+            891,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 495,
+          "y": 445,
+          "baseline": [
+            891,
+            0,
+            1
+          ],
+          "candidate": [
+            3353,
+            1,
+            1
+          ],
+          "clip": [
+            891,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 496,
+          "y": 445,
+          "baseline": [
+            891,
+            0,
+            1
+          ],
+          "candidate": [
+            3353,
+            1,
+            1
+          ],
+          "clip": [
+            891,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 497,
+          "y": 445,
+          "baseline": [
+            891,
+            0,
+            1
+          ],
+          "candidate": [
+            3353,
+            1,
+            1
+          ],
+          "clip": [
+            891,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 499,
+          "y": 445,
+          "baseline": [
+            891,
+            0,
+            1
+          ],
+          "candidate": [
+            3353,
+            1,
+            1
+          ],
+          "clip": [
+            891,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 500,
+          "y": 445,
+          "baseline": [
+            891,
+            0,
+            1
+          ],
+          "candidate": [
+            3353,
+            1,
+            1
+          ],
+          "clip": [
+            891,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 503,
+          "y": 445,
+          "baseline": [
+            891,
+            0,
+            1
+          ],
+          "candidate": [
+            3353,
+            1,
+            0
+          ],
+          "clip": [
+            891,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 544,
+          "y": 445,
+          "baseline": [
+            112,
+            0,
+            0
+          ],
+          "candidate": [
+            3717,
+            1,
+            0
+          ],
+          "clip": [
+            112,
+            0,
+            0
+          ]
+        },
+        {
+          "x": 546,
+          "y": 445,
+          "baseline": [
+            111,
+            0,
+            1
+          ],
+          "candidate": [
+            3717,
+            1,
+            0
+          ],
+          "clip": [
+            111,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 463,
+          "y": 446,
+          "baseline": [
+            1197,
+            0,
+            1
+          ],
+          "candidate": [
+            4125,
+            1,
+            1
+          ],
+          "clip": [
+            1197,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 491,
+          "y": 446,
+          "baseline": [
+            892,
+            0,
+            1
+          ],
+          "candidate": [
+            3353,
+            1,
+            1
+          ],
+          "clip": [
+            892,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 495,
+          "y": 446,
+          "baseline": [
+            892,
+            0,
+            1
+          ],
+          "candidate": [
+            3353,
+            1,
+            1
+          ],
+          "clip": [
+            892,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 513,
+          "y": 446,
+          "baseline": [
+            893,
+            0,
+            1
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            893,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 514,
+          "y": 446,
+          "baseline": [
+            893,
+            0,
+            1
+          ],
+          "candidate": [
+            3343,
+            1,
+            0
+          ],
+          "clip": [
+            893,
+            0,
+            1
+          ]
+        },
+        {
+          "x": 545,
+          "y": 446,
+          "baseline": [
+            112,
+            0,
+            0
+          ],
+          "candidate": [
+            3717,
+            1,
+            0
+          ],
+          "clip": [
+            112,
+            0,
+            0
+          ]
+        }
+      ],
+      "half_only_with_same_source": {
+        "whole_view": {
+          "pixels": 1000000,
+          "baseline_mismatches": 0,
+          "candidate_mismatches": 0,
+          "resolved_baseline": 0,
+          "still_mismatched": 0,
+          "new_regressions": 0
+        },
+        "central3321": {
+          "pixels": 3321,
+          "baseline_mismatches": 0,
+          "candidate_mismatches": 0,
+          "resolved_baseline": 0,
+          "still_mismatched": 0,
+          "new_regressions": 0
+        },
+        "band_bounding_rect": {
+          "pixels": 180901,
+          "baseline_mismatches": 0,
+          "candidate_mismatches": 0,
+          "resolved_baseline": 0,
+          "still_mismatched": 0,
+          "new_regressions": 0
+        },
+        "visible_band_union": {
+          "pixels": 23321,
+          "baseline_mismatches": 0,
+          "candidate_mismatches": 0,
+          "resolved_baseline": 0,
+          "still_mismatched": 0,
+          "new_regressions": 0
+        },
+        "visible_band_outside_central": {
+          "pixels": 20083,
+          "baseline_mismatches": 0,
+          "candidate_mismatches": 0,
+          "resolved_baseline": 0,
+          "still_mismatched": 0,
+          "new_regressions": 0
+        }
+      },
+      "any_identity": {
+        "whole_view": {
+          "pixels": 1000000,
+          "baseline_mismatches": 691,
+          "candidate_mismatches": 824,
+          "resolved_baseline": 146,
+          "still_mismatched": 545,
+          "new_regressions": 279
+        },
+        "central3321": {
+          "pixels": 3321,
+          "baseline_mismatches": 142,
+          "candidate_mismatches": 242,
+          "resolved_baseline": 89,
+          "still_mismatched": 53,
+          "new_regressions": 189
+        },
+        "band_bounding_rect": {
+          "pixels": 180901,
+          "baseline_mismatches": 600,
+          "candidate_mismatches": 726,
+          "resolved_baseline": 140,
+          "still_mismatched": 460,
+          "new_regressions": 266
+        },
+        "visible_band_union": {
+          "pixels": 23321,
+          "baseline_mismatches": 517,
+          "candidate_mismatches": 643,
+          "resolved_baseline": 137,
+          "still_mismatched": 380,
+          "new_regressions": 263
+        },
+        "visible_band_outside_central": {
+          "pixels": 20083,
+          "baseline_mismatches": 375,
+          "candidate_mismatches": 401,
+          "resolved_baseline": 48,
+          "still_mismatched": 327,
+          "new_regressions": 74
+        }
+      }
+    }
+  }
+}

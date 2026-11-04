@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-11-03T19:27:31.010Z",
+  "scope": "Read-only in-memory alternative. No production writes.",
+  "counts": {
+    "aspersorium": 4704,
+    "table": 288,
+    "inventoryProxies": 16,
+    "aspergillum": 5008,
+    "combined": 64848,
+    "remaining": 688
+  },
+  "codec": {
+    "semanticWater": 17,
+    "semanticOccupancy": 17,
+    "logicalCases": 289,
+    "packedCases": 294,
+    "radices": [
+      2,
+      3,
+      7,
+      7
+    ],
+    "rotations": 16,
+    "paddingAliases": 5
+  },
+  "verification": {
+    "oldStates": 9216,
+    "semanticChecks": 9216,
+    "componentChecks": 9600,
+    "waterAliasInputs": 512,
+    "emptyCosmeticAliasInputs": 4320,
+    "actualPureDomainDockingCases": 21760,
+    "actualPureDomainLoadingCases": 43520,
+    "projectedUndockCases": 4352,
+    "projectedRecolorCases": 69632,
+    "inputsUnchanged": true
+  },
+  "normalization": "Water(9,8) already decodes to16 and is explicitly canonicalized. Empty nonzero cosmetic is explicitly canonicalized; inverse raw-state restoration requires original snapshot metadata.",
+  "limitations": [
+    "Actual pure domain resolveDocking/loadFromAspersorium functions were executed, but no inventory, registry, transaction, event handler or Minecraft engine was executed.",
+    "This couples water and occupancy in a schema: every mutator must decode and encode the full tuple, preserving unrelated values and late conflict detection.",
+    "Requires the same raw registry/world/pack backup and mismatch report as the simpler occupancy candidate. No implementation approval assumed.",
+    "688 states is a modest reserve for these two packs only, not a performance guarantee."
+  ],
+  "inputs": {
+    "src/domain/aspersorium-water.ts": "4c12afd2071e4a8f3457c4d2ffa8e9d117536a1d2ac8d72d182e6c76bb079e2c",
+    "src/domain/aspergillum.ts": "fd8b3f75da610428c21b7001836bf9a6e4e75df8f4d621ba059b016a76dcfc09",
+    "src/domain/docking.ts": "16c26e3ebdce512d038d954ba9727aa5ab69b4eb80354ae41585b022e80162fc",
+    "packs/behavior/blocks/aspersorium.block.json": "578d089c748208dddb47471d704fe6ccfe52945ad1a1f5bcbf6c0b02e64ac5d3"
+  }
+}

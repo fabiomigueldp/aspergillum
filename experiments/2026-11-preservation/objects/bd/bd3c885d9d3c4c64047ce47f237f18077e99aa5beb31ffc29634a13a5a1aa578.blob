@@ -1,0 +1,31 @@
+"""Orthographic projected coverage of native shell+band+anatomy triangles.
+A numerical silhouette diagnostic, not a shaded render, full-scene/game test, or occlusion proof.
+"""
+from pathlib import Path
+import sys,json,hashlib
+import numpy as np
+from scipy.ndimage import binary_erosion,distance_transform_edt
+from PIL import Image,ImageDraw
+R=Path(__file__).resolve().parents[1];B=R.parent
+paths=[Path(sys.argv[1]),Path(sys.argv[2])];tag=sys.argv[3]
+body=np.load(B/'body_interface_v9/constrained_fit/retained-anatomy.npz');shell=np.load(B/'ear_rim_v11/structural_rebuild/retained-shell.npz')
+common=np.concatenate([body['points'][body['triangles']],shell['points'][shell['triangles']]])
+views=[('front',(.25,-3.5,3.44),(.03,-.20,3.43),.85),('profile',(3,-.1,3.4),(.03,-.10,3.42),.8),('back',(2,3,3.5),(.03,-.1,3.34),.95)]
+views += [('left-ear',(-3,-.16,3.50),(-.085,-.205,3.485),.50),('right-ear',(3,-.16,3.48),(.17,-.205,3.46),.50),('left-oblique',(-2,-1.5,3.82),(-.085,-.205,3.485),.50),('right-oblique',(2,-1.5,3.82),(.17,-.205,3.46),.50)]
+rows={};N=2048
+for name,pos,target,scale in views:
+ fwd=np.array(target)-pos;fwd/=np.linalg.norm(fwd);right=np.cross(fwd,[0,0,1]);right/=np.linalg.norm(right);up=np.cross(right,fwd);masks=[]
+ for path in paths:
+  d=np.load(path);tri=np.concatenate([common,d['points'][d['triangles']]]);a=tri-np.array(target);xy=np.stack((a@right,-a@up),axis=-1)/scale*N+N/2;im=Image.new('1',(N,N));dr=ImageDraw.Draw(im)
+  for t in xy:dr.polygon([tuple(q) for q in t],fill=1)
+  masks.append(np.array(im))
+ old,new=masks;diff=old^new
+ # Compare outermost x coverage per scanline, ignoring internal holes.
+ outlines=[]
+ for m in masks:
+  has=m.any(1);lo=np.where(has,m.argmax(1),-1);hi=np.where(has,N-1-m[:,::-1].argmax(1),-1);outlines.append((has,lo,hi))
+ o,n=outlines;both=o[0]&n[0];edge=float(max(np.max(abs(o[1][both]-n[1][both]),initial=0),np.max(abs(o[2][both]-n[2][both]),initial=0)))
+ bound0=old ^ binary_erosion(old);bound1=new ^ binary_erosion(new);bd=np.r_[distance_transform_edt(~bound1)[bound0],distance_transform_edt(~bound0)[bound1]]
+ rows[name]={'boundary_bidirectional_nearest_max_pixels':float(bd.max()),'boundary_bidirectional_nearest_p95_pixels':float(np.quantile(bd,.95)),'boundary_bidirectional_nearest_max_mm':float(bd.max()*scale/N*1000),'xor_coverage_pixels':int(diff.sum()),'coverage_pixels_before':int(old.sum()),'coverage_pixels_after':int(new.sum()),'changed_scanline_presence':int(np.count_nonzero(o[0]!=n[0])),'max_outer_edge_shift_pixels':edge,'pixel_world_size_mm':scale/N*1000,'max_outer_edge_shift_mm':edge*scale/N*1000}
+ rgb=np.full((N,N,3),255,np.uint8);rgb[old&new]=[100,100,100];rgb[old&~new]=[235,70,70];rgb[new&~old]=[40,90,230];Image.fromarray(rgb).save(R/f'evidence/{tag}-outline-{name}.png')
+rep={'method':'2048px orthographic binary union of candidate native band, frozen V11 shell and frozen V9 part15 triangles; no halo or other pieces, no alpha expansion, lighting or normals. Red=removed coverage, blue=added. Horizontal scanline shift can overstate near-horizontal contour movement; bidirectional nearest boundary distance is also reported. Both are view-limited and raster-quantized, not a 3D silhouette guarantee.','inputs':[{'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in paths],'views':rows,'minecraft_test':False};(R/f'evidence/{tag}-outline.json').write_text(json.dumps(rep,indent=2));print(json.dumps(rows,indent=2))

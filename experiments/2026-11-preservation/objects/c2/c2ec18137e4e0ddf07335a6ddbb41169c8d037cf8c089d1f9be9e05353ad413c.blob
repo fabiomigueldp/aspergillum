@@ -1,0 +1,19 @@
+# V61 — estudo reversível de apoio/base e tornozelo
+FonteV60 preservada. Não promovida automaticamente.
+
+## Base inferida, não medida real
+Na foto de referência (arquivo.arq.br/projetos/paroquia-nossa-senhora-da-paz), os pés estão contidos sobre a laje. No modelo, pé chegavaY−0.425 e laje terminava−0.355:70mm fora. Transladar/rotacionar pé para caber mudaria pose/perfil e exigiria inclinar perna. Por autorização do responsável, estudo estende somente frente da laje paraY−0.450, deixando25mm de margem aos dois pés. Dimensão inferida para coerência de apoio, NÃO medida física da igreja. Largura, traseira, plano superiorZ0.4925 e espessura permanecem iguais, confirmado na malha avaliada. Original preservado pela chaveTESTE61=0.
+
+## Apoio, não só menorZ
+Ambos pés descem5.5mm sem mudarXY. Pequena acomodação inferior em regiões de calcanhar/antepé cria áreas de contato: ajuste extra máximo2.755mm no pé visível e10.837mm no pé oposto ainda elipsoidal. Não foi redesenhada superfície superior do pé oposto.
+Raycast contra a laje avaliada confirma contato de CALCANHAR e ANTEPÉ em ambos: folga0 no visível,−0.0000000298m no outro (erro de arredondamento). Há47/85v de contato em calcanhar/antepé visível e37/73 no oposto, tolerância0.2mm. Não há penetração significativa abaixo do plano, e todas pontas estão25mm para dentro da borda anterior.
+Zero auto-interseções/0inversões nas duas malhas. Área visível0.956..1.495×; pé oposto0.839..2.752×. Esta última deformação maior deve ser revisada; contato numérico não aprova anatomia do pé oposto.
+
+## Tornozelo
+Só perna visível recebe cópia reversível: controle inferiorZ−15mm e raio0.8→0.62; controlesXY preservados. Reduz corte abrupto em tornozelo sem mover poseXY. Original curva permanece intacta/oculta. Há67pares de interseção entre pé e tornozelo na inserção intencional; são superfícies separadas, não união topológica pronta para impressão.
+
+## Revisão visual
+Frente/perfil/3-4 pareados comV60 mostram remoção da flutuação e da ponta fora da base. O pé visível mantém silhueta de estudo e ainda lê como sapato sem dedos; pé oposto continua cápsula com acomodação plantar. Não alegar gêmeo final. Dimensão inferida da base e acomodação plantar oposta precisam validação independente.
+
+## Rollback
+Zerar TESTE61 naLaje e nos dois pés; ocultar `Menino — tornozelo afilado V61 reversível` e reexibir `Menino — perna` original (viewport/render) restauraV60. Demais meshes/curves/matrizes/chaves idênticos porhash, incluindo Maria e corpo.

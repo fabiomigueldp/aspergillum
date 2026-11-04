@@ -1,0 +1,21 @@
+import bpy,json,hashlib
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/'
+def snap():
+ d={}
+ for o in bpy.data.objects:
+  if o.type not in ['MESH','CURVE']:continue
+  if o.name in ['Maria — mão protetora anatômica','Maria — túnica e mangas integradas','Maria — túnica manga distal V66 reversível']:continue
+  q={'matrix':[list(row) for row in o.matrix_world],'hidden':o.hide_render}
+  if o.type=='MESH':q.update(vertices=[list(v.co) for v in o.data.vertices],keys=[(k.name,k.value,[list(v.co) for v in k.data]) for k in o.data.shape_keys.key_blocks] if o.data.shape_keys else [])
+  else:q['points']=[[(list(p.co),p.radius) for p in s.bezier_points] for s in o.data.splines]
+  d[o.name]=hashlib.sha256(json.dumps(q,sort_keys=True).encode()).hexdigest()
+ return d
+bpy.ops.wm.open_mainfile(filepath=r+'V63-opposite-ankle-trial.blend',use_scripts=False);a=snap();bpy.ops.wm.open_mainfile(filepath=r+'V66-protective-sleeve-trial.blend',use_scripts=False);b=snap();dg=bpy.context.evaluated_depsgraph_get()
+def tree(o):
+ e=o.evaluated_get(dg);m=e.to_mesh();p=[o.matrix_world@v.co for v in m.vertices];f=[tuple(v.vertices) for v in m.polygons];e.to_mesh_clear();return BVHTree.FromPolygons(p,f)
+h=tree(bpy.data.objects['Maria — mão protetora anatômica']);s=tree(bpy.data.objects['Maria — túnica manga distal V66 reversível']);contacts={}
+for o in bpy.data.objects:
+ if o.name.startswith('Menino') and not o.hide_render and o.type in ['MESH','CURVE']:
+  t=tree(o);contacts[o.name]={'hand_pairs':len(h.overlap(t)),'tunic_pairs':len(s.overlap(t)),'baseline_tunic_pairs':len(tree(bpy.data.objects['Maria — túnica e mangas integradas']).overlap(t))}
+report={'other_objects_identical':a==b,'changed_unexpected':[n for n in a if a[n]!=b.get(n)],'child_contacts':contacts,'packed_images':[i.name for i in bpy.data.images if i.packed_file]};json.dump(report,open(r+'V66-scope-and-child-audit.json','w'),indent=2);print(report)

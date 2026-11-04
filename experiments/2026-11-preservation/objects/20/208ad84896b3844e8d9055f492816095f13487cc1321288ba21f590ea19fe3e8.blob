@@ -1,0 +1,40 @@
+# Manga exploratória P85 — NÃO INTEGRADA, NÃO APROVADA COMO FIDELIDADE
+
+Resultado desta etapa: ferramenta geométrica independente para estudar gesto sem deformar a túnica fundida de V75. Não substitui V75, não é novo modelo final e não alterou o addon.
+
+## Arquivos
+- `V85-PROXY-MANGA-NAO-INTEGRADA.blend`: cópia V75 intacta em geometria com coleção PROXY85 separada (âmbar).
+- `V85-DIAGNOSTICO-contexto.blend`: mesma geometria, original translúcido para comparação. Material fantasma NÃO é material da escultura.
+- `PROVISORIO-profile.png`, `-front.png`, `-threequarter.png`: contexto diagnóstico.
+- `PROVISORIO-isolated.png`: somente manga e mão provisórias, sem sobreposição.
+- `controls.json`: controles explícitos, medidas estimadas e não levantamento físico.
+- `audit.json`, `rig-test.json`: verificações.
+
+## Controle e reversibilidade
+A coleção PROXY85 é independente. Ocultá-la restaura a geometria V75. Na cópia diagnóstica, abrir o primeiro blend ou o checkpoint original para restaurar materiais.
+
+Armature `PROXY85 controles`: ossos ombro_cotovelo e cotovelo_punho. A manga usa pesos contínuos; a mão recebe 100% do osso distal, preservando dedos. Posicionar em Pose Mode altera o conjunto da manga independentemente do torso. Nenhum teste de poses arbitrárias certifica ausência de colisões; sempre reauditar.
+
+Cage regular29×32 pontos; curva Bezier de trajetória longa e quadros por projeção/transporte da normal anterior, sem Frenet instável. A mão é cópia rígida da geometria V75, com rotação exploratória−15° emX e posicionamento do punho. Não foram criados dedos ou detalhes ocultos.
+
+## Gates verificados no repouso
+- Superfície subdividida:14.594vértices,14.592faces.
+- Zero auto-interseções e zero arestas não-manifold.
+- Zero interseções manga/mão provisórias com objetos do Menino.
+-81pares manga–mão na inserção do punho: não é união soldada ou contato perfeito.
+-1.346pares com túnica/manga V75: sobreposição intencional de diagnóstico, NÃO integração resolvida.
+- Teste do osso distal0,1rad: mão deslocada até76,2mm; erro máximo de comprimento das arestas0,19micrômetro e retorno exato ao repouso.
+
+## Defeitos e limites
+- Silhueta do gesto NÃO aprovada: mão segue lateralmente distante em frente/3/4; perfil não prova posição3D.
+- Manga ainda é volume tubular afunilado, não tecido esculpido da referência.
+- Ombro truncado e cap fechado de punho são suportes provisórios, não anatomia ou junção definitiva. Há pequena pinçagem do cap no punho no render isolado.
+- Manchas/serrilhas nos renders de contexto vêm também da sobreposição com geometria original; não confundir com superfície do isolado.
+- Fonte de direção projetada: `paz-refinement/reference-8.jpg`; não há reconstrução fotogramétrica nem medida física. Costas/axila/depth são hipóteses de controle, explicitamente não cópia fiel.
+
+Uma integração futura exige desenho e revisão da fronteira manga–torso, além de referência suficiente para orientação da mão. Não cortar ou ocultar automaticamente a manga original e chamar isto de modelo resolvido.
+
+## Parecer independente P85
+Revisor confirmou utilidade apenas como controle técnico: isolado tem superfície longitudinal limpa, manchas do contexto são sobreposição. Não aprova gesto/arte; aponta tubo afunilado, cap do punho pinçado, ombro truncado e ambiguidade da posição da mão. A impressão de distância frontal não constitui medição calibrada; hipóteseP86 de aproximação foi testada e rejeitada separadamente por nova invasão do torso/evidência insuficiente.
+
+OriginalV75 verificado por SHA-256 igual ao checkpoint: `2c14fbc7566217ad350ef926abc1dc4a1bc41f457eaab8f10351e90b1f4777d9`.

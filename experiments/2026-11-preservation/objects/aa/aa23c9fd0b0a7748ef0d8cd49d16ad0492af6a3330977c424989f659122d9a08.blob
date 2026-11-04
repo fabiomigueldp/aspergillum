@@ -1,0 +1,11 @@
+import bpy,numpy as np,json
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/'
+name='Maria — anatomia feminina adaptada CC0'
+def read(f):
+ bpy.ops.wm.open_mainfile(filepath=r+f,use_scripts=False);o=bpy.data.objects[name];dg=bpy.context.evaluated_depsgraph_get();m=o.evaluated_get(dg).to_mesh();p=np.array([v.co[:] for v in m.vertices]);fs=[list(f.vertices) for f in m.polygons];o.evaluated_get(dg).to_mesh_clear();return p,fs
+p,fs=read('V63-opposite-ankle-trial.blend');q,gs=read('V73-gui-planes-trial.blend');d=np.linalg.norm(q-p,axis=1);a=p[np.array([f[:3] for f in fs])];b=q[np.array([f[:3] for f in fs])];na=np.cross(a[:,1]-a[:,0],a[:,2]-a[:,0]);nb=np.cross(b[:,1]-b[:,0],b[:,2]-b[:,0]);aa=np.linalg.norm(na,axis=1);ab=np.linalg.norm(nb,axis=1);valid=aa>1e-12;rat=ab[valid]/aa[valid]
+def pairs(v):
+ t=BVHTree.FromPolygons(v.tolist(),fs);return set(tuple(sorted((a,b))) for a,b in t.overlap(t) if a<b and not set(fs[a])&set(fs[b]))
+base=pairs(p);now=pairs(q)
+json.dump({'affected':int((d>1e-7).sum()),'above_z_3_42_max_delta_m':float(d[p[:,2]>3.42].max()),'above_z_3_42_count_over_10micron':int(((p[:,2]>3.42)&(d>1e-5)).sum()),'max_delta_m':float(d.max()),'area_range':list(map(float,[rat.min(),rat.max()])),'flips':int(((na*nb).sum(axis=1)<-1e-15).sum()),'new_self_pairs':len(now-base),'baseline_pairs':len(base),'changed_bbox':[q[d>1e-7].min(axis=0).tolist(),q[d>1e-7].max(axis=0).tolist()] if (d>1e-7).any() else []},open(r+'V73-verification.json','w'),indent=2)

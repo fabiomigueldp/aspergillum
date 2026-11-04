@@ -1,0 +1,9 @@
+import bpy,numpy as np,json
+from scipy.sparse import coo_matrix
+from scipy.sparse.csgraph import connected_components
+r='/workspace/scratch/212c580ada5b/';bpy.ops.wm.open_mainfile(filepath=r+'paz-refinement/gui-test/V75-tunic-lower-trial.blend',use_scripts=False)
+o=bpy.data.objects['Maria — túnica e mangas integradas'];p=np.array([v.co[:] for v in o.data.vertices]);e=np.array([a.vertices[:] for a in o.data.edges]);seed=np.argmin(np.linalg.norm(p-[-.226,-.206,2.0],axis=1));out=[]
+for z in [2.10,2.11,2.12,2.15,2.30,2.55,2.85,3.05,3.12]:
+ mask=p[:,2]<z;inds=np.where(mask)[0];idx=np.full(len(p),-1);idx[inds]=np.arange(len(inds));ee=e[mask[e].all(1)];a=idx[ee];g=coo_matrix((np.ones(len(a)*2),(np.r_[a[:,0],a[:,1]],np.r_[a[:,1],a[:,0]])),shape=(len(inds),len(inds)));n,l=connected_components(g);vs=inds[l==l[idx[seed]]];out.append({'cut_z':z,'connected_vertices':len(vs),'bounds':[p[vs].min(0).tolist(),p[vs].max(0).tolist()],'reaches_lower_torso':bool(p[vs,2].min()<1)})
+inventory=[{'name':x.name,'hidden':x.hide_render,'vertices':len(x.data.vertices)} for x in bpy.data.objects if x.type=='MESH' and any(t in x.name.lower() for t in ['manga','túnica','braço','torso','ombro','sleeve'])]
+json.dump({'cross_section_connectivity':out,'relevant_objects':inventory,'attributes':[a.name for a in o.data.attributes]},open(r+'paz-arm-chain/junction-feasibility.json','w'),indent=2);print(out);print(inventory)

@@ -1,0 +1,123 @@
+{
+  "method": "Original parseCube, setShape and updateUV functions extracted unchanged from official Blockbench source and executed with minimal data/UI stubs; actual Three BoxGeometry attribute arrays. No full application or engine.",
+  "sourceFiles": [
+    {
+      "name": "blockbench-bedrock.js",
+      "gitBlob": "f27d89e774003486b1161b0578971f686fece0a8",
+      "url": "https://github.com/JannisX11/blockbench/blob/ec0b2827104d0799c153bfb5f867579c0c44652f/js/formats/bedrock/bedrock.js"
+    },
+    {
+      "name": "blockbench-cube.js",
+      "gitBlob": "70cb939ab827f999f9178fac05839a2ecb005d5b",
+      "url": "https://github.com/JannisX11/blockbench/blob/ec0b2827104d0799c153bfb5f867579c0c44652f/js/outliner/types/cube.js"
+    },
+    {
+      "name": "blockbench-three-custom.js",
+      "gitBlob": "c700631f613689344764b210af7d4fc56c1eba33",
+      "url": "https://github.com/JannisX11/blockbench/blob/ec0b2827104d0799c153bfb5f867579c0c44652f/js/util/three_custom.js"
+    }
+  ],
+  "input": {
+    "origin": [
+      -7,
+      2,
+      3
+    ],
+    "size": [
+      5,
+      4,
+      0
+    ],
+    "pivot": [
+      -2,
+      2,
+      3
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "uv": {
+      "south": {
+        "uv": [
+          11,
+          13
+        ],
+        "uv_size": [
+          7,
+          9
+        ]
+      }
+    }
+  },
+  "parsed": {
+    "from": [
+      2,
+      2,
+      3
+    ],
+    "to": [
+      7,
+      6,
+      3
+    ],
+    "rotation": [
+      0,
+      0,
+      0
+    ],
+    "pivot": [
+      2,
+      2,
+      3
+    ]
+  },
+  "southVertices": [
+    {
+      "bb": [
+        2,
+        6,
+        3
+      ],
+      "uvTexels": [
+        11,
+        13
+      ]
+    },
+    {
+      "bb": [
+        7,
+        6,
+        3
+      ],
+      "uvTexels": [
+        18,
+        13
+      ]
+    },
+    {
+      "bb": [
+        2,
+        2,
+        3
+      ],
+      "uvTexels": [
+        11,
+        22
+      ]
+    },
+    {
+      "bb": [
+        7,
+        2,
+        3
+      ],
+      "uvTexels": [
+        18,
+        22
+      ]
+    }
+  ],
+  "conclusion": "South U increases with Blockbench +X. After converting Blockbench to the Aspergillum world basis by X reflection, U must decrease with viewer X. Existing Aspergillum direct-geometry module instead increases U with viewer X."
+}

@@ -1,0 +1,29 @@
+import bpy,json,math,hashlib,numpy as np
+from pathlib import Path
+from mathutils import Vector,Euler
+R=Path(__file__).resolve().parents[1];G=R/'shared_mask/shared_mask_2048.geo.json';T=R/'shared_mask/shared_mask_2048.png';S=R/'evidence/shared-2048-diagnostic.blend';O=R/'evidence/V15-SHARED-MASK-DIAGNOSTIC-NOT-APPROVED.blend'
+bpy.ops.wm.open_mainfile(filepath=str(S));s=bpy.context.scene;cam=s.camera;cam.location=(4.5,-7.2,2.5);target=Vector((0,-.03,1.88));cam.rotation_euler=(target-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.ortho_scale=4.25;s.render.resolution_x=800;s.render.resolution_y=1100
+s['candidate_approved']=False;s['minecraft_tested']=False;s['scope']='Actual V15 shared2048 JSON reconstruction; external flat diagnostic; alpha/shadow defects remain. No PBR fidelity claim.'
+bpy.ops.wm.save_as_mainfile(filepath=str(O));bpy.ops.wm.open_mainfile(filepath=str(O))
+g=json.loads(G.read_text())['minecraft:geometry'][0];tw,th=g['description']['texture_width'],g['description']['texture_height']
+corners={'north':[(0,1,0),(0,0,0),(1,0,0),(1,1,0)],'south':[(1,1,1),(1,0,1),(0,0,1),(0,1,1)],'east':[(1,1,0),(1,0,0),(1,0,1),(1,1,1)],'west':[(0,1,1),(0,0,1),(0,0,0),(0,1,0)],'up':[(0,1,1),(0,1,0),(1,1,0),(1,1,1)],'down':[(0,0,0),(0,0,1),(1,0,1),(1,0,0)]}
+checks=[]
+for bone in g['bones']:
+ ob=bpy.data.objects[bone['name']+' FROM JSON ONLY'];vv=[];uvs=[];fs=[]
+ for c in bone['cubes']:
+  o=Vector(c['origin']);sz=Vector(c['size']);pv=Vector(c.get('pivot',[o[i]+sz[i]/2 for i in range(3)]));pv=Vector((-pv.x,pv.y,pv.z));a=c.get('rotation',[0,0,0]);rot=Euler(tuple(math.radians(x) for x in [-a[0],-a[1],a[2]]),'XYZ').to_matrix()
+  for face,uv in c['uv'].items():
+   q=[]
+   for k in corners[face]:
+    p=o+Vector([k[i]*sz[i] for i in range(3)]);bb=rot@(Vector((-p.x,p.y,p.z))-pv)+pv;q.append([bb.x/16,-bb.z/16,bb.y/16])
+   st=len(vv);vv.extend(q);fs.append(tuple(range(st,st+4)));u,v=uv['uv'];du,dv=uv['uv_size'];uvs.extend([(u/tw,1-v/th),(u/tw,1-(v+dv)/th),((u+du)/tw,1-(v+dv)/th),((u+du)/tw,1-v/th)])
+ vactual=np.array([v.co[:] for v in ob.data.vertices],dtype=np.float32);uactual=np.array([v.uv[:] for v in ob.data.uv_layers.active.data],dtype=np.float32)
+ check={'bone':bone['name'],'vertices':len(vv),'quads':len(fs),'vertices_exact_float32':bool(np.array_equal(vactual,np.array(vv,dtype=np.float32))),'uv_exact_float32':bool(np.array_equal(uactual,np.array(uvs,dtype=np.float32))),'quad_indices_exact':fs==[tuple(p.vertices) for p in ob.data.polygons]};assert all(check[k] for k in ['vertices_exact_float32','uv_exact_float32','quad_indices_exact']);checks.append(check)
+meshes=[o.name for o in bpy.context.scene.objects if o.type=='MESH'];assert len(meshes)==20
+images=[]
+for im in bpy.data.images:
+ if im.packed_file:
+  h=hashlib.sha256(im.packed_file.data).hexdigest();images.append({'name':im.name,'packed_sha256':h});assert h==hashlib.sha256(T.read_bytes()).hexdigest()
+assert len(images)==1
+report={'status':'Saved and reopened diagnostic scene verified against supplied JSON; not visual approval','minecraft_tested':False,'all20_meshes_from_json':meshes,'checks':checks,'packed_images':images,'geometry_sha256':hashlib.sha256(G.read_bytes()).hexdigest(),'scene_sha256':hashlib.sha256(O.read_bytes()).hexdigest(),'caveat':'Checks freeze scene/importer consistency, not engine behavior or independent validation of importer math.'}
+(R/'evidence/frozen-scene-check.json').write_text(json.dumps(report,indent=2)+'\n');print('V15 frozen scene verified')

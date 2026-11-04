@@ -1,0 +1,46 @@
+from pathlib import Path
+import json,uuid,zipfile,hashlib,math
+from PIL import Image
+ROOT=Path(__file__).resolve().parents[1];RP=ROOT/'resource_pack';BP=ROOT/'behavior_pack';checks=[]
+rpm=json.load(open(RP/'manifest.json'));bpm=json.load(open(BP/'manifest.json'))
+ids=[]
+for m in (rpm,bpm):
+ ids.append(m['header']['uuid']);ids.extend(x['uuid'] for x in m['modules'])
+assert len(ids)==len(set(ids))==4
+for x in ids:uuid.UUID(x)
+assert bpm['dependencies']==[{'uuid':rpm['header']['uuid'],'version':rpm['header']['version']}]
+checks.append('Unique fresh RP/BP UUIDs and matching dependency')
+geometries={}
+for p in (RP/'models/entity').glob('*.json'):
+ data=json.load(open(p));assert data['format_version']=='1.14.0';assert 'poly_mesh' not in p.read_text()
+ for g in data['minecraft:geometry']:
+  name=g['description']['identifier'];assert name not in geometries;geometries[name]=g
+  for bone in g['bones']:
+   for c in bone['cubes']:
+    assert all(math.isfinite(float(x)) for k in ('origin','size') for x in c[k]);assert min(c['size'])>=0
+    for uv in c['uv'].values():
+     for axis,dim in enumerate(('texture_width','texture_height')):
+      begin=uv['uv'][axis];end=begin+uv['uv_size'][axis];assert min(begin,end)>=0 and max(begin,end)<=g['description'][dim]
+checks.append('All geometry parses, no poly_mesh, finite non-negative cubes, bounded UVs')
+rc=json.load(open(RP/'render_controllers/sculpture.render_controllers.json'))['render_controllers'];entities=[]
+for path in (RP/'entity').glob('*.json'):
+ c=json.load(open(path))['minecraft:client_entity']['description'];identifier=c['identifier'];assert identifier.startswith('paz_v75_lab:');entities.append(identifier)
+ g=geometries[c['geometry']['default']];assert c['materials']['default'] in ('entity','entity_alphatest')
+ png=RP/(c['textures']['default']+'.png');im=Image.open(png);im.load();assert im.size==(g['description']['texture_width'],g['description']['texture_height'])
+ assert all(r in rc for r in c['render_controllers'])
+ b=json.load(open(BP/'entities'/(identifier.split(':')[1]+'.json')))['minecraft:entity'];assert b['description']['identifier']==identifier and b['description']['is_summonable']
+checks.append('All three entity IDs, behavior/client/geometry/PNG/render-controller links resolve')
+archive=ROOT/'Paz-V75-LAB-INDEPENDENT-NOT-RELEASE.mcaddon'
+with zipfile.ZipFile(archive) as z:
+ assert z.testzip() is None
+ for pack,prefix in [(RP,'PazV75Lab_RP'),(BP,'PazV75Lab_BP')]:
+  for p in pack.rglob('*'):
+   if p.is_file():assert p.read_bytes()==z.read(prefix+'/'+str(p.relative_to(pack)))
+checks.append('ZIP integrity passed and every packed byte equals completed RP/BP files')
+source=json.load(open(ROOT/'evidence/source-export.json'));assert hashlib.sha256(Path(source['source']).read_bytes()).hexdigest()==source['sha256'];checks.append('Original V75 blend SHA256 unchanged')
+old=ROOT.parent/'paz-addon-audit-20261103/source'
+for name,new in [('Paz_RP',rpm),('Paz_BP',bpm)]:
+ oldm=json.load(open(old/name/'manifest.json'));assert oldm['header']['uuid'] not in ids
+checks.append('New pack identities differ from original addon; original block identifier not claimed')
+report={'passed':checks,'entity_identifiers':entities,'archive_sha256':hashlib.sha256(archive.read_bytes()).hexdigest(),'not_run':['Minecraft import and Content Log','Actual Bedrock render/culling/mipmaps','Touch controls / selection / spawn positioning','Performance on target hardware','Save load/unload persistence','Production gameplay integration'],'release_approved':False}
+(ROOT/'evidence/pack-validation.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))

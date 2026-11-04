@@ -1,0 +1,17 @@
+from pathlib import Path
+import numpy as np,json,sys
+from collections import defaultdict,Counter
+O=Path(__file__).resolve().parent;B=O.parents[1];tag=sys.argv[1] if len(sys.argv)>1 else 'valley-source-mask-n8';c=np.load(B/f'band_shell_v13/constrained_fit/{tag}.npz');a=np.load(B/f'band_shell_v13/constrained_fit/{tag}-local-audit-arrays.npz');baseline=json.loads((O/'contact-segments-with-uv.json').read_text());d=defaultdict(list)
+for pair,p in zip(a['shell_witness_pair_indices'],a['shell_witness_points']):d[tuple(pair)].append(p)
+rows=[]
+for (i,j),pts in d.items():
+ pts=np.array(pts);dm=np.linalg.norm(pts[:,None]-pts[None,:],axis=2);idx=np.unravel_index(dm.argmax(),dm.shape);seg=pts[list(idx)];t=c['points'][c['triangles'][i]];xy=np.linalg.lstsq(np.stack([t[1]-t[0],t[2]-t[0]],1),seg.mean(0)-t[0],rcond=None)[0];bc=np.r_[1-xy.sum(),xy];uv=bc@c['source_uv'][c['triangles'][i]];part=int(c['face_parts'][i]);role=int(c['v13_face_roles'][i]);cat='internal_wall_visibility_undetermined' if part==1 else 'v12_terminal_closure_visibility_undetermined' if part==3 else 'old_return_visibility_undetermined' if part==2 else 'outer_upper_margin_source_embedding_supported_region' if uv[1]<3 else 'outer_other_visibility_undetermined';rows.append({'band_face':int(i),'shell_face':int(j),'v12_parent_face':int(c['v13_parent_face_indices'][i]),'band_part':part,'v13_role':role,'uv':uv.tolist(),'segment':seg.tolist(),'length_mm':float(dm[idx]*1000),'classification':cat})
+rep={'candidate':tag,'method':'Segments recomputed from current-candidate local-audit witness endpoints; maximum endpoint separation per triangle pair. Sum without spatial union/dedup. Classification is physical wall/parameter location, not artistic intent or global visibility. Upper v<3 label means region supported by separate source ordering samples, not each contact proven intentional.','pair_count':len(rows),'length_mm_sum_without_union':sum(r['length_mm'] for r in rows),'by_wall':{},'by_category':{},'patch_contacts':{}}
+for part in [0,1,2,3]:
+ rr=[r for r in rows if r['band_part']==part];bb=[r for r in baseline if r['band_part']==part];rep['by_wall'][str(part)]={'candidate_pairs':len(rr),'candidate_length_mm_sum':sum(r['length_mm'] for r in rr),'baseline_pairs':len(bb),'baseline_length_mm_sum':sum(r['length_mm'] for r in bb)}
+for cat in sorted(set(r['classification'] for r in rows)):
+ rr=[r for r in rows if r['classification']==cat];rep['by_category'][cat]={'pairs':len(rr),'length_mm_sum':sum(r['length_mm'] for r in rr)}
+for part in [0,1]:
+ rr=[r for r in rows if r['band_part']==part and r['v13_role']==2];rep['patch_contacts'][str(part)]={'pairs':len(rr),'length_mm_sum':sum(r['length_mm'] for r in rr),'uv_range':[np.min([r['uv'] for r in rr],axis=0).tolist(),np.max([r['uv'] for r in rr],axis=0).tolist()] if rr else None}
+rep['outer_valley_contacts']=[r for r in rows if r['band_part']==0 and 5<=r['uv'][1]<=11 and np.mean(r['segment'],0)[1]<-.28]
+(O/f'{tag}-remaining-contacts.json').write_text(json.dumps(rep,indent=2));(O/f'{tag}-shell-segments.json').write_text(json.dumps(rows,indent=2));print(json.dumps(rep,indent=2))

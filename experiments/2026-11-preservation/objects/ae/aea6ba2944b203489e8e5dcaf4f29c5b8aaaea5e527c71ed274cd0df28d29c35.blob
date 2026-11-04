@@ -1,0 +1,11 @@
+# V75 — fechamento inferior da túnica, candidata reversível
+
+Origem V74 preservada, arquivo V75-tunic-lower-trial.blend. Chave TESTE75 — fechamento inferior da túnica; zero restaura V74. Reparametrização monotônica deZ apenas abaixo0,85m, sem alteraçãoXY; geometria superior intacta.
+
+18.829 vértices alterados, máximo66,413mm. Área0,49729–1,49189, zero flips/auto-interseções. Outros objetos, inclusive mantoV74, mãos, pés e laje, idênticos por hash. Pares de interseção manto–túnica1230 antes/depois; nenhum na região inferior.
+
+MínimoZ passa0,501038→0,493500m frente ao topo da laje0,492500m: folga mínima1mm (não afirmar contato soldado/exato). Toda túnica permanece acima da laje. Apoio plantar infantil não mudou porque pés/base são idênticos; este estudo não move pés nem promete resolver topologia para impressão.
+
+No perfil a curva inferior fica menos bulbosa e a sombra de flutuação diminui; frente mantém pregas existentes e fechamento mais plano. O ajuste não cria nova costura ou sobreposição. Área quase0,5× em parte da transição exige revisão; no render não vejo inversão ou vinco novo. Proponho revisão independente como melhoria local, não modelo final.
+
+Comparar V74/V75-mantle-lower-profile.png, -front.png e -back.png com mesmas câmeras,600×900,48amostras e luz original. Referência8 sustenta fechamento menos arredondado, mas a medida1mm é margem técnica do estudo, não medida do original.

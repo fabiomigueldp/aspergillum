@@ -1,0 +1,26 @@
+{
+  "method": "All float64 AABB overlapping triangle pairs. Treat as near-coplanar if maximum plane distance <=1e-12 m and normal alignment |dot|>=1-1e-10. Convex polygon clipping in 3D projected planes. Positive area threshold1e-17m\u00b2. Adjacent pairs included; external shell/anatomy checked independently of strict intersection predicate.",
+  "results": {
+    "self": {
+      "aabb_pairs": 17681,
+      "near_coplanar_pairs": 433,
+      "positive_overlap_pairs": 0,
+      "overlap_area_mm2_sum_not_union": 0,
+      "rows": []
+    },
+    "shell": {
+      "aabb_pairs": 21046,
+      "near_coplanar_pairs": 0,
+      "positive_overlap_pairs": 0,
+      "overlap_area_mm2_sum_not_union": 0,
+      "rows": []
+    },
+    "anatomy": {
+      "aabb_pairs": 4318,
+      "near_coplanar_pairs": 0,
+      "positive_overlap_pairs": 0,
+      "overlap_area_mm2_sum_not_union": 0,
+      "rows": []
+    }
+  }
+}

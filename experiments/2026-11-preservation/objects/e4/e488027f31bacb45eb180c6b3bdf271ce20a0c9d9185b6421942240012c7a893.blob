@@ -1,0 +1,68 @@
+# V10: ponte e orelhas, investigação encerrada sem candidata retida
+
+**Nenhuma V10 aprovada ou exportada.** As 97 tentativas estão preservadas para pesquisa. A referência continua sendo a casca V7 com a anatomia V9 e a faixa V5, cujos arquivos não foram alterados. Não houve publicação, remoção silenciosa de faces, mudança de alfa, substituição do addon ou integração da arte P85.
+
+O resultado útil é a identificação da barreira estrutural e a rejeição verificável de correções que melhoravam uma métrica enquanto pioravam a peça.
+
+## Diagnóstico da causa
+
+- A montagem V7+V9 tem 607 pares de cruzamento casca/anatomia: 207 na calota e 400 na ponte. Desses 400, 365 tocam faces incidentes às orelhas.
+- Dezesseis pares atravessam arestas da costura calota–ponte cujos dois extremos são fonte. Seus 32 vértices coincidem bit a bit com a escultura V75 avaliada e as chaves fonte testadas. As faces de orelha envolvidas também não foram deformadas pela V8/V9.
+- Logo, mover somente vértices internos gerados da ponte, mantendo a costura e a calota congeladas, não elimina esses 16 pares nem os 207 da calota. Essa é uma limitação **condicional dessa hipótese**, não prova de impossibilidade de remodelagem geral.
+- A casca é uma única componente fechada, com 6.244 vértices, 12.484 faces e característica de Euler 2. As lâminas nas cavidades são trechos visíveis dessa superfície, não componentes independentes comprovadamente ocultos. Excluir faces sem reconstruir as bordas abriria a casca.
+- A anatomia tem uma pequena componente defeituosa herdada de 3 vértices/2 faces. Continua congelada e fora do escopo; não foi apagada para melhorar estatísticas.
+
+Evidências: `independent_diagnosis/DIAGNOSIS_BRIDGE_EAR.md`, `fixed-edge-crossing-witnesses.json`, `source-provenance-proof.json` e `component-connectivity.json`.
+
+## Ensaios e resultados
+
+Foram testados campos suaves nos pontos gerados, ampliação explicitamente local da costura para a calota, suportes menores, compensação posterolateral e relaxamento dos centros pareados com restrições de forma, pele, diretores e contorno. A anatomia inteira, a faixa e as posições do manto permaneceram fixas. As variantes ampliadas alteram vértices fonte **nas cópias candidatas**, não nos arquivos originais.
+
+**Recuo direto de 30 mm (`boundary-posterior-30mm`)**
+
+- Casca/anatomia: 607 → 212 pares, sendo 177 na calota e 35 na ponte; 185 pares são novos.
+- Zero auto-interseções estritas, inclusive no teste explícito dos 91.602 pares adjacentes; topologia fechada preservada.
+- Entretanto, stretch da ponte 0,3007–6,7919, área mínima de 31,94% e uma normal roda mais de 90° em relação à referência. Essa rotação não foi confundida com prova de inversão topológica.
+- A revisão visual confirma limpeza das lâminas vermelha/azul do centro das duas cavidades, mas também novas manchas de pele, fenda na têmpora, ombro na silhueta posterior e fragmentos ouro ainda expostos. Foi rejeitada.
+- Distância máxima de borda projetada chega a 21,00 mm nas sete vistas testadas, embora o perfil estrito não mude. Só olhar o perfil esconderia a regressão.
+
+**Relaxamento livre representativo (`relax065-t2-iteration03`)**
+
+- 137 pares casca/anatomia e zero auto-interseções estritas, mas 6 faces centrais têm diretores de espessura mistos. Não foi retido nem classificado como ótimo global.
+- Há outros checkpoints com contagem ligeiramente menor, mas nenhum recebeu aprovação artística pela contagem.
+
+**Continuação com contorno congelado (`relax075-continuation-iteration05`)**
+
+- Casca/anatomia: 513 pares, dos quais 316 novos. Casca/faixa: 1.430 pares, dos quais 413 novos.
+- A revisão independente confirma **42 auto-interseções reais**: 25 calota–calota, 13 calota–ponte, 3 ponte–manto e 1 ponte–ponte. Reprovada.
+- Os 1.027 vértices identificados perto do contorno em sete vistas ficam exatamente imóveis; ainda assim, o contorno projetado pode mudar entre eles, chegando a 5,90 mm no teste frontal. A máscara não é garantia universal de silhueta.
+- Paredes pareadas mantêm os vetores de separação e zero diretores mistos. Isso não basta para evitar cruzamentos globais.
+- As lâminas permanecem nas cavidades, acompanhadas de novas quinas e alteração na terminação da faixa. Não há motivo visual para trocar a referência por essa tentativa.
+
+**Não confundir métricas:** os 797 pares **faixa/anatomia** da V9 permanecem constantes, pois ambas estão congeladas. Os números 2.004 → 866 ou 1.430 acima se referem a **casca/faixa**, uma relação diferente. Contagens de pares dependem da tesselação e não medem profundidade ou qualidade artística.
+
+O conjunto das 97 tentativas e os códigos estão em `structural_fit/`; leia seu `README.md` e `trials-manifest.json`. Todos os relaxamentos usam penalidades suaves e atingiram o limite de 900 iterações. Valores-alvo não foram apresentados como metas alcançadas ou prova de convergência.
+
+## Comparação visual e independente
+
+- Nove vistas da referência estão em `evidence/baseline-v9-*.png`. Sete são cópias exatas das imagens V9 anteriores; duas oblíquas foram renderizadas com a mesma montagem e sem halo.
+- `boundary30-*-oblique.png` e `constrained-final-*-oblique.png` usam as mesmas câmeras, luz e ausência de halo das duas novas referências.
+- As duas imagens `boundary30-left-ear.png`/`right-ear.png` também não têm halo, ao contrário das vistas laterais V9 antigas. A avaliação não atribuiu essa diferença de halo à casca.
+- `evidence/review-visual-v10.md` e os pareceres em `independent_diagnosis/` são revisões separadas da implementação.
+- `tools/compare_shell_outline.py` compara a cobertura nativa projetada em sete vistas. Seu controle identidade produziu zero diferença em todas elas. É um teste rasterizado limitado às vistas, não prova de invisibilidade, percepção ou contorno 3D inteiro.
+
+Os renders são **diagnósticos Blender, nunca capturas de Minecraft**. A anatomia é a malha legada reduzida com a correção V9, sem troca por rosto highpoly. Casca, ponte e faixa são triângulos nativos coloridos por componente; outras partes vêm do JSON legado real. Culling está ativo, sem normalmap. Nenhuma tentativa V10 foi convertida em cubos Bedrock.
+
+## Limite e próximo experimento possível
+
+Esta família preserva a conectividade antiga e translada centros de paredes pareadas. Sob essa parametrização, os ensaios não conciliam limpeza das orelhas, forma, contorno e ausência de cruzamentos. Isso é um limite prático observado, não um teorema de inviabilidade.
+
+A hipótese seguinte seria reconstruir a região cap-ponte com nova conectividade e borda guiada pela anatomia congelada, mantendo fechamento e espessura, em outra cópia. Não foi implementada nesta etapa. Remover componentes por presunção de invisibilidade ou mascarar com alfa não resolveria o problema demonstrado.
+
+A ausência de teste Bedrock continua sendo um limite adicional, mas a reprovação desta etapa já ocorre na geometria e nas imagens externas. Não há versão pronta para o jogo a apresentar.
+
+## Arquivos e reexecução
+
+`V75-V10-BRIDGE-EAR-REJECTED-RESEARCH-NOT-ADDON.zip` reúne documentos, revisões, todas as métricas, imagens, cenas diagnósticas e quatro NPZs representativos. `V75-V10-ALL-97-TRIALS.zip` guarda o diretório `structural_fit` completo, incluindo os 97 candidatos e os mapas de contatos. Ambos se extraem sob `bridge_ear_v10/`; o segundo complementa o primeiro. Todos os arquivos também permanecem no workspace.
+
+A bancada depende dos diretórios V3–V9 e dos recursos fonte já existentes no projeto, especialmente casca V7, anatomia V9, faixa V5 e JSON/atlas V2. Esses inputs não são duplicados nos arquivos de pesquisa. Seus hashes estão em `evidence/input-hashes.json` e foram verificados novamente em `evidence/final-validation.json`. Scripts foram conferidos sintaticamente; a reprodução exige Blender 4.3.2, NumPy, SciPy e Pillow. Não há dependência de instalação ou publicação do addon.

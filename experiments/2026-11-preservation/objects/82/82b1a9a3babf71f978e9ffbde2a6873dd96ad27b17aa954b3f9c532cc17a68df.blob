@@ -1,0 +1,74 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import {twinPedestalFamilyGeometry} from '../addons/altare/assets-src/atelier/twin-pedestal-family-study.mjs';
+import {twinPedestalCells} from '../addons/altare/assets-src/atelier/twin-pedestal-cell-study.mjs';
+import {twinPedestalCollision} from '../addons/altare/assets-src/atelier/twin-pedestal-collision-study.mjs';
+import {garment} from '../addons/altare/assets-src/atelier/garment.mjs';
+import {clothTexture,seamTexture} from '../addons/altare/tools/universal-pack.mjs';
+import {SHARED_TEXTILES,LITURGICAL_COLORS,centerRole} from '../addons/altare/src/domain/catalog.ts';
+import {serializeCube} from '../addons/altare/assets-src/block-primitives.mjs';
+const root=path.resolve(import.meta.dirname,'..'),output=path.join(root,'out/two-pedestal-integration');
+const canonical=v=>Array.isArray(v)?v.map(canonical):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,canonical(v[k])])):v;
+const hash=v=>crypto.createHash('sha256').update(JSON.stringify(canonical(v))).digest('hex');
+const cubeSignature=cubes=>cubes.map(c=>JSON.stringify(canonical(c))).sort();
+const recipes=SHARED_TEXTILES.flatMap(textile=>(textile==='floral'?LITURGICAL_COLORS:[undefined]).map(color=>({id:textile+(color?'_'+color:''),textile,palette:color,sourceTextile:textile==='floral'?'ruby':textile})));
+const sets=Object.fromEntries(recipes.map(r=>[r.id,{visual:new Set(),logicalFacing:new Set(),rawVisual:new Set(),rawLogicalFacing:new Set(),contourRole:new Set(),cloth:new Set(),maxCubes:0,maxStructuralCubes:0,maxGarmentCubes:0,maxQuads:0,maxStructuralQuads:0,maxGarmentQuads:0,interior:new Set(),perimeter:new Set()}]));
+const clothCache=new Map(),clothCubes=new Map([['none',0]]),clothQuads=new Map([['none',0]]),structural=new Set(),structuralFacing=new Set(),structuralNative=new Set(),rawStructural=new Set();let instances=0;
+function clothKey(recipe,edges,facing,role){
+ if(recipe.textile==='none')return 'none';
+ const key=[recipe.id,edges,facing,role].join('/');if(clothCache.has(key))return clothCache.get(key);
+ const d={textile:recipe.sourceTextile,palette:recipe.palette};
+ const g=garment(d.textile,edges,{facing,surface:i=>`cloth_${i}`,twoSided:true});
+ const materials={top:'linen',linen:'linen',seam:seamTexture(d)};
+ for(let i=0;i<4;i++)materials[`cloth_${i}`]=clothTexture(d,i===facing?role:0);
+ const cubes=g.bones.flatMap(b=>b.cubes).map(serializeCube).map(c=>({...c,uv:Object.fromEntries(Object.entries(c.uv).map(([face,uv])=>[face,{...uv,material_instance:materials[uv.material_instance]??uv.material_instance}]))}));
+ const result=hash(cubeSignature(cubes));clothCache.set(key,result);clothCubes.set(result,cubes.length);clothQuads.set(result,cubes.reduce((n,c)=>n+Object.keys(c.uv).length,0));return result;
+}
+for(let width=1;width<=16;width++)for(let depth=1;depth<=8;depth++)for(let facing=0;facing<4;facing++){
+ const sourceModel=twinPedestalFamilyGeometry(width,depth,facing,{depthCap:3,alignToEndCell:false});
+ const plan=twinPedestalCells(width,depth,facing,{uvPolicy:'module-grain',capCuts:true,sourceModel}),collision=twinPedestalCollision(width,depth,facing,{sourceModel});
+ const nativeByCell=new Map(collision.cells.map(c=>[`${c.x},${c.z}`,c.nativeBoxes]));
+ const nx=facing%2?depth:width,nz=facing%2?width:depth;
+ for(const cell of plan.cells){
+  instances++;
+  const cubes=cell.doc['minecraft:geometry'][0].bones.flatMap(b=>b.cubes),visual=hash(cubeSignature(cubes));
+  const quads=cubes.reduce((n,c)=>n+Object.keys(c.uv).length,0);
+  const boxes=nativeByCell.get(`${cell.x},${cell.z}`);if(!boxes)throw Error('Missing native collision');
+  const rawVisual=hash(cubes.map(c=>JSON.stringify(c)).sort());rawStructural.add(rawVisual);
+  const native=hash([visual,boxes]);structural.add(visual);structuralNative.add(native);structuralFacing.add(`${native}/${facing}`);
+  const edges=(cell.z===0?1:0)|(cell.x===nx-1?2:0)|(cell.z===nz-1?4:0)|(cell.x===0?8:0);
+  let index=facing%2?cell.z:cell.x;if(facing>=2)index=width-1-index;
+  const role=edges&(1<<facing)?centerRole(width,index):0;
+  for(const recipe of recipes){
+   const s=sets[recipe.id],cloth=clothKey(recipe,edges,facing,role),combined=`${native}/${cloth}`;
+   s.maxCubes=Math.max(s.maxCubes,cubes.length+clothCubes.get(cloth));s.maxStructuralCubes=Math.max(s.maxStructuralCubes,cubes.length);s.maxGarmentCubes=Math.max(s.maxGarmentCubes,clothCubes.get(cloth));
+   s.maxQuads=Math.max(s.maxQuads,quads+clothQuads.get(cloth));s.maxStructuralQuads=Math.max(s.maxStructuralQuads,quads);s.maxGarmentQuads=Math.max(s.maxGarmentQuads,clothQuads.get(cloth));
+   (edges===0?s.interior:s.perimeter).add(`${combined}/${facing}`);
+   s.rawVisual.add(`${rawVisual}/${cloth}`);s.rawLogicalFacing.add(`${rawVisual}/${cloth}/${facing}`);s.visual.add(combined);s.logicalFacing.add(`${combined}/${facing}`);s.contourRole.add(`${native}/${edges}/${role}/${facing}`);s.cloth.add(cloth);
+  }
+ }
+}
+
+function padded(n){if(!n)return {declared:0,cardinalities:[],padding:0};let best;for(let a=1;a<=16;a++)for(let b=a;b<=16;b++)for(let c=b;c<=16;c++){const declared=a*b*c;if(declared>=n&&(!best||declared<best.declared))best={declared,cardinalities:[a,b,c],padding:declared-n};}if(!best)throw Error('Too many states');return best;}
+function bank(n){return Math.ceil(n/256)*256;}
+const baseline=Object.values(sets).reduce((n,s)=>n+s.logicalFacing.size,0);
+const baselinePacked=Object.values(sets).reduce((n,s)=>n+padded(s.logicalFacing.size).declared,0);
+const baselineBank=Object.values(sets).reduce((n,s)=>n+bank(s.logicalFacing.size),0);
+const rows=recipes.map(r=>({recipe:r.id,interior:sets[r.id].interior.size,perimeter:sets[r.id].perimeter.size,whole:sets[r.id].logicalFacing.size,overlap:[...sets[r.id].interior].filter(k=>sets[r.id].perimeter.has(k)).length}));
+function scenario(name,sharedRecipes){
+ const ids=new Set(sharedRecipes),pool=new Set(),slots=[];
+ for(const r of recipes){const s=sets[r.id];if(ids.has(r.id)){for(const k of s.interior)pool.add(k);slots.push({id:r.id+'_perimeter',entries:s.perimeter.size});}else slots.push({id:r.id,entries:s.logicalFacing.size});}
+ slots.push({id:'shared_interior_pool',entries:pool.size});
+ const useful=slots.reduce((n,s)=>n+s.entries,0),declared=slots.reduce((n,s)=>n+padded(s.entries).declared,0),fixed=slots.reduce((n,s)=>n+bank(s.entries),0);
+ const colocated=slots.filter(s=>s.id!=='shared_interior_pool').map(s=>({...s}));colocated.find(s=>s.id===sharedRecipes[0]+'_perimeter').entries+=pool.size;
+ const colocatedPool={hostRecipe:sharedRecipes[0],declared:colocated.reduce((n,s)=>n+padded(s.entries).declared,0),fixedBankDeclared:colocated.reduce((n,s)=>n+bank(s.entries),0)};
+ return {name,sharedRecipes,colocatedPool,sharedInteriorEntries:pool.size,useful,savedUseful:baseline-useful,declared,savedDeclared:baselinePacked-declared,fixedBankDeclared:fixed,savedFixedBank:baselineBank-fixed,minimumCombined:51608+9744+declared,fixedCombined:51608+9744+fixed,withinReference:51608+9744+declared<=65536,slots:slots.map(s=>({...s,packed:padded(s.entries),bankDeclared:bank(s.entries)}))};
+}
+const scenarios=[scenario('floral_colors_only',recipes.filter(r=>r.textile==='floral').map(r=>r.id)),scenario('all_covered_textiles',recipes.filter(r=>r.textile!=='none').map(r=>r.id)),scenario('all_recipes_interior_pool',recipes.map(r=>r.id))];
+const inputs=['tools/audit-pedestal-interior-sharing.mjs','addons/altare/assets-src/atelier/twin-pedestal-family-study.mjs','addons/altare/assets-src/atelier/twin-pedestal-cell-study.mjs','addons/altare/assets-src/atelier/twin-pedestal-collision-study.mjs','addons/altare/assets-src/atelier/garment.mjs','addons/altare/tools/universal-pack.mjs'];
+const notes=['Measurement only. No runtime, registry, recipe, catalog, world, selection or migration contract is adopted.','Source family explicitly uses depthCap3 and alignToEndCell:false. Both visual slicing and native collision receive the same sourceModel.','Only edges=0 cells may share; all edges!=0 cells retain recipe identity. Logical facing remains in every key.','Equivalence includes canonical structural cubes with UV/material slots, native collision, and garment cubes with actual texture keys substituted only on emitted faces. Wood materials are identical across all recipes. Unused dye/seam bindings are not counted.','All textile recipes have the same interior linen-only garment output; bare wood has no garment and cannot be equated to linen. Pooling distinct bare and linen profiles in a single block ID still uses separate codebook entries.','A new global assembly recipe would have to be recovered from all relevant loaded perimeter blocks. Pick-block on shared interiors, borderless fragments, partial loading, mixed or damaged perimeters and copying interiors lose current local recipe semantics.','This does not solve those ownership/inference problems. The parent is evaluating whether the measured savings justify a separate contract.','Dedicated shared-pool IDs add a fixed bank. An alternative places generic interior codes inside one canonical recipe bank; perimeter codes still identify their recipe. This can avoid bank overhead but still changes interior recipe semantics. Both are reported.','Covered-top overlap at15.91..16 remains unresolved. Counts are from the unchanged structural-plus-garment study, not a rendering approval.','The all-covered-only scenario avoids moving bare cells into a shared pool when doing so adds no sharing benefit.']
+const report={schemaVersion:1,createdAt:new Date().toISOString(),configurations:512,cellInstances:instances,options:{depthCap:3,alignToEndCell:false,capCuts:true,twoSided:true},baseline:{useful:baseline,declared:baselinePacked,fixedBankDeclared:baselineBank},rows,scenarios,notes,inputHashes:Object.fromEntries(inputs.map(p=>[p,crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex')]))};
+fs.mkdirSync(output,{recursive:true});fs.writeFileSync(path.join(output,'pedestal-interior-sharing.json'),JSON.stringify(report,null,2)+'\n');
+fs.writeFileSync(path.join(output,'pedestal-interior-sharing.md'),['# Interior-only sharing measurement','',`Independent per-recipe baseline: ${baseline} entries; ${baselinePacked} minimum declared; ${baselineBank} fixed-bank declared.`,'','## Scenarios',...scenarios.map(s=>`- ${s.name}: ${s.useful} entries, saving ${s.savedUseful}; minimum ${s.declared}, saving ${s.savedDeclared}; fixed banks ${s.fixedBankDeclared}, saving ${s.savedFixedBank}; shared interior pool ${s.sharedInteriorEntries}. Combined with51608+9744: ${s.minimumCombined} minimum, ${s.fixedCombined} fixed; colocated canonical pool ${s.colocatedPool.declared} minimum / ${s.colocatedPool.fixedBankDeclared} fixed.`),'','## Per recipe',...rows.map(r=>`- ${r.recipe}: ${r.interior} interior / ${r.perimeter} perimeter; ${r.whole} total; overlap ${r.overlap}.`),'','## Limits',...notes.map(n=>`- ${n}`),'','Run: node --experimental-strip-types tools/audit-pedestal-interior-sharing.mjs',''].join('\n'));
+console.log(JSON.stringify(report,null,2));

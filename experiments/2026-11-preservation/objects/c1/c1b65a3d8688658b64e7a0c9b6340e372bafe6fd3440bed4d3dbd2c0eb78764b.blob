@@ -1,0 +1,102 @@
+"""V14 LAB: append-only atlas and exact-face zero-depth cube transport.
+Only writes export_work and resource_pack next to this file; never modifies source assets.
+Flat-alpha first proof. PBR detail on new shell/band is explicitly pending, not synthesized.
+"""
+from pathlib import Path
+import copy,gzip,hashlib,json,uuid,warnings
+import numpy as np
+from PIL import Image
+from scipy.spatial.transform import Rotation
+W=Path(__file__).resolve().parent; R=W.parent/'resource_pack'; B=W.parent.parent
+LEG=B/'pbr_normals_v2/resource_pack'; TILE=20; PAD=1; SIZE=4096; OLD=2048
+SRC=[('band',0,'band_shell_v13/constrained_fit/retained-band.npz'),('shell',1,'ear_rim_v11/structural_rebuild/retained-shell.npz'),('anatomy',15,'body_interface_v9/constrained_fit/retained-anatomy.npz')]
+A=np.array([[1,0,0],[0,0,1],[0,-1,0]],dtype=float)
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def canon(x):return hashlib.sha256(json.dumps(x,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+def savej(p,d):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,indent=2,allow_nan=False)+'\n')
+def norm(x):return x/np.linalg.norm(x,axis=-1,keepdims=True)
+def facebasis(p):
+ u=p[1]-p[0];w=np.linalg.norm(u);u/=w;z=p[2]-p[0];t=float(z@u);v=z-t*u;h=np.linalg.norm(v);v/=h;n=np.cross(u,v);return np.column_stack((u,v,n)),float(w),float(h),t
+# Separate grid rectangles ensure no new tile intersects legacy 2048-square region.
+slots=[(2048+x*TILE,y*TILE)for y in range(SIZE//TILE)for x in range((SIZE-OLD)//TILE)]
+slots += [(x*TILE,2048+y*TILE)for y in range((SIZE-OLD)//TILE)for x in range(OLD//TILE)]
+orig_geo=LEG/'models/entity/paz_v75_pbr_sculpture.geo.json';orig_color=LEG/'textures/entity/paz_v75_pbr_sculpture.png';orig_normal=LEG/'textures/entity/paz_v75_pbr_sculpture_normal_dx.png'
+g0=json.loads(orig_geo.read_text());g=copy.deepcopy(g0);old=g0['minecraft:geometry'][0];geom=g['minecraft:geometry'][0];geom['description']['identifier']='geometry.paz_v75_v14_lab.sculpture';geom['description']['texture_width']=SIZE;geom['description']['texture_height']=SIZE
+legacy_color=np.array(Image.open(orig_color).convert('RGBA')); legacy_normal=np.array(Image.open(orig_normal).convert('RGBA'))
+assert legacy_color.shape==(OLD,OLD,4) and legacy_normal.shape==(OLD,OLD,4)
+atlas=np.zeros((SIZE,SIZE,4),np.uint8);atlas[:OLD,:OLD]=legacy_color
+normal=np.empty((SIZE,SIZE,4),np.uint8);normal[:]=[128,128,255,255];normal[:OLD,:OLD]=legacy_normal
+meta=json.loads((B/'evidence/source-export.json').read_text()); low=np.load(B/'pbr_normals_v2/evidence/repaired_meshes.npz')
+# Legacy cube UV tile IDs exactly identify repaired low triangle rows in original export.
+legacy_faces={}
+for bi,b in enumerate(old['bones']):
+ for ci,c in enumerate(b['cubes']):
+  if set(c['uv'])=={'south'} and c['uv']['south']['uv_size']==[20,20]:
+   x,y=c['uv']['south']['uv']; ti=int(y//TILE)*102+int(x//TILE);legacy_faces[ti]=(bi,ci,c)
+records=[]; arr={k:[]for k in ['part','native_face','native_vertex_order','basis_bb','triangle_bb','mask_local','uv','quad_size','weights_pixel_to_native','normal_method','legacy_source_face']}; perpart=[];warnings_list=[]; maxres=0.;seen=0
+Y,X=np.mgrid[0:TILE,0:TILE]
+for label,pi,relative in SRC:
+ d=np.load(B/relative); v=d['points'];f=d['triangles']; bb=v@A.T*16;bone=geom['bones'][pi];bone['cubes']=[]
+ native_copy={k:d[k]for k in d.files};np.savez_compressed(W/f'source-{label}-frozen.npz',**native_copy)
+ rgb=np.array(meta['parts'][pi]['color'][:3]); rgb=np.where(rgb<=.0031308,12.92*rgb,1.055*rgb**(1/2.4)-.055);base_rgb=np.rint(rgb*255).astype(np.uint8)
+ stats={'part':pi,'label':label,'source':relative,'source_sha256':sha(B/relative),'vertices':len(v),'faces':len(f),'covered_texels':0,'min_triangle_height_blocks':None,'max_aspect_ratio':0.,'normal_method':'neutral tangent placeholder (pending detail); original quadrant unchanged','near_degenerate_faces':[]}
+ for fi,idx0 in enumerate(f):
+  p0=bb[idx0];edges=np.linalg.norm(np.roll(p0,-1,axis=0)-p0,axis=1);roll=int(np.argmax(edges));idx=np.roll(idx0,-roll);p=bb[idx];a,b,c=p;M,w,h,t=facebasis(p)
+  if not np.all(np.isfinite(M)) or h<=0 or w<=0:raise RuntimeError(f'Unexportable exact degenerate {label}:{fi}')
+  mu=w*PAD/(TILE-2*PAD);mv=h*PAD/(TILE-2*PAD);ww=w+2*mu;hh=h+2*mv
+  with warnings.catch_warnings(record=True) as warn:
+   e=Rotation.from_matrix(M).as_euler('xyz',degrees=True)
+   if warn:warnings_list.append({'part':pi,'face':fi,'warning':str(warn[0].message)})
+  # Float64 JSON numbers, no legacy seven-decimal truncation of tiny native faces.
+  frm=a+[-mu,-mv,0];uv=slots[seen];cube={'origin':[-float(frm[0]+ww),float(frm[1]),float(frm[2])],'size':[ww,hh,0.0],'pivot':[-float(a[0]),float(a[1]),float(a[2])],'rotation':[-float(e[0]),-float(e[1]),float(e[2])],'uv':{'south':{'uv':list(uv),'uv_size':[TILE,TILE]}}};bone['cubes'].append(cube)
+  # Independent JSON round-trip: south local XY from reflected exporter origin.
+  jr=Rotation.from_euler('xyz',[-cube['rotation'][0],-cube['rotation'][1],cube['rotation'][2]],degrees=True).as_matrix();jp=np.array(cube['pivot'])*[-1,1,1];jo=np.array(cube['origin']);js=np.array(cube['size']);bbfrom=np.array([-(jo[0]+js[0]),jo[1],jo[2]])
+  q=np.array([[mu,mv,0],[w+mu,mv,0],[t+mu,h+mv,0]]);rec=(q+bbfrom-jp)@jr.T+jp;res=float(np.max(np.linalg.norm(rec-p,axis=1))/16);maxres=max(maxres,res)
+  px=(X+.5)/TILE*ww-mu;py=(1-(Y+.5)/TILE)*hh-mv;lc=py/h;lb=(px-t*lc)/w;la=1-lb-lc;weights=np.stack((la,lb,lc),axis=-1);weights=np.maximum(weights,0);weights/=weights.sum(-1,keepdims=True)
+  covered=np.ones((TILE,TILE),bool);pts=np.array([[0,0],[w,0],[t,h]])
+  for j in range(3):
+   q0=pts[j];q1=pts[(j+1)%3];ed=q1-q0;dist=(ed[0]*(py-q0[1])-ed[1]*(px-q0[0]))/np.linalg.norm(ed);covered &= dist>=-.75*min(ww/TILE,hh/TILE)
+  tx,ty=uv;patch=np.empty((TILE,TILE,4),np.uint8);patch[:,:,:3]=base_rgb;patch[:,:,3]=covered*255
+  oldfi=-1;oldinfo=None
+  if pi==15:
+   oldfi=int(d['source_face_indices'][fi]);assert np.array_equal(d['source_indices'][idx0],low['low_f'][oldfi]);opi,oci,oc=legacy_faces[oldfi];assert opi==15
+   oidx0=low['low_f'][oldfi];op0=low['low_v'][oidx0]@A.T*16;ok=int(np.argmax(np.linalg.norm(np.roll(op0,-1,axis=0)-op0,axis=1)));op=np.roll(op0,-ok,axis=0);OM,ow,oh,ot=facebasis(op);omu=ow/18;omv=oh/18;oww=ow*20/18;ohh=oh*20/18
+   # Rotate new longest-edge barycentrics back to native face order, then old longest-edge order.
+   wn=np.roll(weights,roll,axis=2);wo=np.roll(wn,-ok,axis=2);ox=wo[:,:,1]*ow+wo[:,:,2]*ot;oy=wo[:,:,2]*oh
+   sx=np.clip(np.floor((ox+omu)/oww*TILE).astype(int),0,19);sy=np.clip(np.floor((1-(oy+omv)/ohh)*TILE).astype(int),0,19);lx,ly=oc['uv']['south']['uv'];patch[:,:,:3]=legacy_color[ly+sy,lx+sx,:3]
+   oldinfo={'source_repaired_face':oldfi,'legacy_bone':opi,'legacy_cube':oci,'legacy_uv':[lx,ly],'legacy_vertex_roll':ok,'legacy_basis_bb':OM.tolist(),'legacy_shape':[ow,oh,ot,omu,omv,oww,ohh],'color_method':'nearest original atlas texel at identical canonical source-face barycentric coordinates; alpha regenerated','normal_method':'pending; untouched original 2048 quadrant preserved'}
+  atlas[ty:ty+TILE,tx:tx+TILE]=patch
+  # Affine transform [pixel_x+0.5,pixel_y+0.5,1] -> unclamped barycentric weights in native triangle order.
+  C=np.array([[-ww/TILE/w,hh/TILE/h-t*hh/TILE/(h*w),1+mu/w+t*(hh-mv)/(h*w)-(hh-mv)/h],[ww/TILE/w,t*hh/TILE/(h*w),-mu/w-t*(hh-mv)/(h*w)],[0,-hh/TILE/h,(hh-mv)/h]])
+  # rows above are barycentric channels; rotate to original native vertex order.
+  C=np.roll(C,roll,axis=0);assert np.max(np.abs((np.stack((X+.5,Y+.5,np.ones_like(X)),axis=-1)@C.T)-np.roll(np.stack((la,lb,lc),-1),roll,axis=2)))<1e-10
+  recd={'transport_id':seen,'part':pi,'bone':bone['name'],'cube_index':fi,'face_name':'south','native_source':relative,'source_sha256':stats['source_sha256'],'native_triangle_index':fi,'native_triangle':idx0.tolist(),'vertex_order':idx.tolist(),'vertex_roll':roll,'basis_bb':M.tolist(),'triangle_bb':p.tolist(),'mask_local':[[mu,mv],[w+mu,mv],[t+mu,h+mv]],'atlas_uv':list(uv),'atlas_uv_size':[20,20],'quad_size':[ww,hh],'pixel_to_native_barycentric':C.tolist(),'normal_method':'neutral_placeholder_pending','legacy_correspondence':oldinfo}
+  for key in ['face_parts','face_roles','baseline_face_indices','v13_face_roles','v13_parent_face_indices','source_face_indices']:
+   if key in d:recd[key]=int(d[key][fi])
+  records.append(recd)
+  for key,val in [('part',pi),('native_face',fi),('native_vertex_order',idx),('basis_bb',M),('triangle_bb',p),('mask_local',recd['mask_local']),('uv',uv),('quad_size',[ww,hh]),('weights_pixel_to_native',C),('normal_method',0),('legacy_source_face',oldfi)]:arr[key].append(val)
+  stats['covered_texels']+=int(covered.sum()); stats['min_triangle_height_blocks']=min(stats['min_triangle_height_blocks'] or h/16,h/16);stats['max_aspect_ratio']=max(stats['max_aspect_ratio'],w/h)
+  if np.linalg.norm(np.cross(p[1]-p[0],p[2]-p[0]))/256/2<1e-12:stats['near_degenerate_faces'].append(fi)
+  seen+=1
+  if fi%2000==0:print(label,fi,'total',seen,flush=True)
+ perpart.append(stats)
+geoout=R/'models/entity/paz_v75_v14_lab_sculpture.geo.json';geoout.parent.mkdir(parents=True,exist_ok=True);geoout.write_text(json.dumps(g,separators=(',',':'),allow_nan=False))
+texdir=R/'textures/entity';texdir.mkdir(parents=True,exist_ok=True);Image.fromarray(atlas).save(texdir/'paz_v75_v14_lab_sculpture.png');Image.fromarray(normal).save(texdir/'paz_v75_v14_lab_sculpture_normal_dx.png')
+with gzip.open(W/'transport_faces.jsonl.gz','wt')as fh:
+ for r in records:fh.write(json.dumps(r,separators=(',',':'),allow_nan=False)+'\n')
+np.savez_compressed(W/'transport_arrays.npz',**{k:np.array(v)for k,v in arr.items()})
+# Exact original inputs retained as evidence files (no overwrite of originals).
+for name,p in [('legacy-geometry.geo.json',orig_geo),('legacy-color.png',orig_color),('legacy-normal-dx.png',orig_normal)]: (W/name).write_bytes(p.read_bytes())
+unchanged=[i for i in range(len(old['bones']))if i not in [0,1,15]]
+assert all(geom['bones'][i]==old['bones'][i]for i in unchanged)
+assert np.array_equal(np.array(Image.open(texdir/'paz_v75_v14_lab_sculpture.png'))[:2048,:2048],legacy_color)
+assert np.array_equal(np.array(Image.open(texdir/'paz_v75_v14_lab_sculpture_normal_dx.png'))[:2048,:2048],legacy_normal)
+contract={'status':'LAB V14 geometry/alpha proof; NEW PBR DETAIL PENDING; not a game screenshot or a published addon','source_to_bb':{'matrix_rows':A.tolist(),'scale':16,'units':'1 source unit = 1 Minecraft block'},'bedrock_export':{'x_reflected':True,'rotation':'SciPy extrinsic xyz of [U,V,N]; JSON [-rx,-ry,+rz]','face':'south only','cube_depth':0,'reconstruct':'Inverse X reflection, then XYZ rotation about inverse-reflected pivot, then source=(bb.x,-bb.z,bb.y)/16'},'textures':{'size':[4096,4096],'legacy_region':[0,0,2048,2048],'legacy_preservation':'decoded RGBA pixels bit-exact; original PNG files additionally frozen byte-exact','tile':[20,20],'padding':1,'alpha':'binary 0/255; half-plane conservative cover 0.75*min(world units/texel)','new_slots':'right rectangle x=2048+20*c,y=20*r, c<102,r<204; then bottom-left x=20*c,y=2048+20*r,c<102,r<102','old_uv_addresses':'unchanged pixel coordinates and uv_size on all untouched bones; normalized UV halves with doubled texture size'},'per_texel_provenance':{'records':'transport_faces.jsonl.gz; one row per new cube/triangle','numeric':'transport_arrays.npz','source_inputs':'source-band-frozen.npz, source-shell-frozen.npz, source-anatomy-frozen.npz retain all lineage arrays','decode':'Find record whose atlas_uv rectangle contains texel. pixel_to_native_barycentric @ [local_x+0.5,local_y+0.5,1] yields raw native triangle barycentrics. Clamp each to >=0 and normalize for covered-margin sampling; native_triangle gives source vertex rows. source_uv, high_source face/bary and baseline IDs live in frozen NPZ. Alpha uses unprojected pixel center and oriented edge distances. Non-new upper-left pixels map to identical legacy coordinates; unused pixels are transparent zero-color and neutral normal.','normal_methods':{'0':'neutral [128,128,255,255] pending, not a highpoly detail bake'}},'limitations':['23,081 cubes and 4096-square textures may exceed practical target cost; no target runtime loading or performance claim.','South-only zero-depth cubes preserve established exporter conventions; winding, alpha cutoff, mipmaps and backface behavior remain runtime untested.','Conservative alpha and finite 20-pixel tiles are not lossless triangular geometry; subpixel walls/creases can rasterize differently.','New shell/band normals are pending because stored native normals are smooth geometry normals, not inherited highpoly detail.','Anatomy existing face correspondence is exact, but displaced faces need a declared normal-transport model rather than a false highpoly bake.','No behavior pack or published add-on is generated.']}
+savej(W/'transport_contract.json',contract)
+report={'status':'geometry_alpha_complete_pbr_pending','engine_tested':False,'published':False,'source_parts':perpart,'original_cubes':sum(len(b['cubes'])for b in old['bones']),'new_cubes':sum(len(b['cubes'])for b in geom['bones']),'new_faces_transported':seen,'unchanged_bones':unchanged,'unchanged_bone_hashes':{old['bones'][i]['name']:canon(old['bones'][i])for i in unchanged},'exact_legacy_rgba_region':True,'exact_legacy_normal_region':True,'max_float64_roundtrip_residual_blocks':maxres,'atlas_available_tiles':len(slots),'atlas_used_tiles':seen,'gimbal_warnings':warnings_list,'inputs_sha256':{str(p.relative_to(B)):sha(p)for p in [orig_geo,orig_color,orig_normal,B/'pbr_normals_v2/evidence/repaired_meshes.npz',*[B/s[2]for s in SRC]]},'outputs_sha256':{str(p.relative_to(W.parent)):sha(p)for p in [geoout,texdir/'paz_v75_v14_lab_sculpture.png',texdir/'paz_v75_v14_lab_sculpture_normal_dx.png',W/'transport_faces.jsonl.gz',W/'transport_arrays.npz']}}
+savej(W/'build-report.json',report)
+savej(R/'manifest.json',{'format_version':2,'header':{'name':'Paz V75 V14 GEOMETRY LAB RP — NOT RELEASE','description':'Isolated cube/alpha transport research. New surface PBR detail pending. Runtime untested. No behavior pack.','uuid':str(uuid.uuid5(uuid.NAMESPACE_URL,'paz-v75-v14-lab-resource-20261103')),'version':[0,14,0],'min_engine_version':[1,21,120]},'modules':[{'type':'resources','uuid':str(uuid.uuid5(uuid.NAMESPACE_URL,'paz-v75-v14-lab-module-20261103')),'version':[0,14,0]}]})
+savej(R/'entity/paz_v75_v14_lab.entity.json',{'format_version':'1.10.0','minecraft:client_entity':{'description':{'identifier':'paz_v75_v14_lab:sculpture','materials':{'default':'entity_alphatest'},'textures':{'default':'textures/entity/paz_v75_v14_lab_sculpture'},'geometry':{'default':'geometry.paz_v75_v14_lab.sculpture'},'render_controllers':['controller.render.paz_v75_v14_lab']}}})
+savej(R/'render_controllers/v14_lab.render_controllers.json',{'format_version':'1.8.0','render_controllers':{'controller.render.paz_v75_v14_lab':{'geometry':'Geometry.default','materials':[{'*':'Material.default'}],'textures':['Texture.default']}}})
+(W/'README.md').write_text('''# V14 isolated geometry and alpha transport LAB\n\nNot a released add-on. Not tested in Minecraft. No behavior pack or installation action.\n\nRun `python build_transport.py` from this directory to reconstruct the isolated assets. Only export_work and resource_pack are written.\n\nThe 17 untouched bones retain identical JSON values and original pixel UV addresses. The entire original 2048-square color and normal atlas is copied bit-exact in decoded RGBA into the upper-left of a 4096-square atlas; exact original PNG files are frozen here too.\n\nNew source triangles use the established south-only zero-depth-cube representation, one cube per native triangle, with no poly_mesh and no face simplification. Mapping is native triangle index = bone-local cube index. `transport_contract.json` defines coordinates, UVs, alpha and every texel’s reproducible source correspondence. `transport_faces.jsonl.gz` provides human-readable full mappings; `transport_arrays.npz` provides numeric arrays.\n\nNormal texture is deliberately not connected by a texture_set in this first geometry-alpha control. Its old quadrant is preserved and all new tiles are visibly documented neutral placeholders. Anatomy scalar color samples the original matching triangle’s atlas; band/shell colors are source part base stone colors with no invented AO or baked directional light. PBR investigation follows separately.\n\nGeometry values retain float64 precision; actual Bedrock arithmetic and precision are not certified. Some native triangles are extremely thin or tiny. Alpha is an approximation, not exact mesh transport. Use the native-vs-exported comparisons and independent verification before any later decision.\n''')
+print(json.dumps({k:v for k,v in report.items()if k not in ['inputs_sha256','outputs_sha256','unchanged_bone_hashes']},indent=2),flush=True)

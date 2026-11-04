@@ -1,0 +1,53 @@
+# Nossa Senhora da Paz V75: verificação com a bancada existente
+
+## Resultado
+
+Foi utilizada a implementação existente do conversor de geometria do Aspergillum/Bedrock Fidelity Renderer, em uma cópia isolada. A execução numérica em Node funcionou. A captura visual em Chromium não chegou a executar por limitações do ambiente. **Não existe PNG novo produzido por essa bancada nesta verificação.**
+
+Fonte: https://github.com/fabiomigueldp/aspergillum/tree/3eaf97b172a38dac794461b156b70864737875d6/viewer-3d
+
+- Bancada 2.2.1; Three.js 0.185.1; Playwright 1.58.2; Vite 8.2.0.
+- 34 arquivos selecionados foram materializados pelo conector GitHub e verificados contra seus hashes Git. Todos são byte-idênticos. Não foi feito clone completo nem alterado o repositório remoto.
+- npm ci, com scripts de instalação desativados, instalou as dependências travadas numa pasta isolada.
+- 17 testes focalizados do projeto passaram: documentos Bedrock, geometria, pivôs e UV. Não corresponde ao check completo do monorepo.
+
+## Entrada exata e geometria
+
+Usado o recurso de escultura referenciado pela entidade PBR V2: paz_v75_pbr_sculpture.geo.json, albedo, texture set e mapa de normais DirectX. Os arquivos de entrada foram apenas copiados; hashes em input-provenance.json.
+
+O módulo original src/shared/bedrock-geometry.js construiu:
+
+- 20 bones;
+- 7.793 malhas de cubos;
+- 7.810 grupos de faces;
+- posições e UVs finitos;
+- extensão espacial aproximada de 0,969 × 3,760 × 0,864 blocos.
+
+Os cantos das 7.810 faces foram comparados com uma expressão independente da transformação usada pelo importador Blender. A maior distância foi 2,945 × 10^-8 bloco. Isso demonstra concordância entre as duas reconstruções externas, não fidelidade ao highpoly, nem equivalência ao Minecraft.
+
+## Limites identificados no renderer existente
+
+1. O caminho de resolução trata attachables. Para uma geometria direta, usa material entity e não resolve o client_entity da escultura, que declara entity_alphatest. A geometria continua utilizável para diagnóstico, mas não se deve declarar essa cadeia como reproduzida integralmente.
+2. MER constante em array não está tratado em resolveTextureField. O valor [0,0,204] do pacote é convertido no caminho textures/entity/0,0,204.png, em vez de virar parâmetros constantes. Não alteramos o renderer nem o pacote para esconder isso.
+3. A normalScale do material é (1,1). O arquivo do protótipo está identificado como DirectX; não há conversão explícita do canal verde nessa cadeia do renderer. A convenção correta no Minecraft continua dependendo da calibração no motor.
+4. A bancada usa iluminação, tonemapping e material Three.js próprios. Mesmo uma captura concluída seria diagnóstico externo, não screenshot ou garantia visual do Bedrock.
+
+## Tentativa de captura
+
+O download do Chromium gerenciado terminou com arquivo ZIP inválido. Uma adaptação de ambiente externa aos arquivos do projeto selecionou o Chromium pré-instalado, mantendo o CLI capture-assets.mjs e launchRenderBrowser originais. A inicialização falhou com socket() failed: Operation not permitted. A via normal de execução com permissões ampliadas falhou na preparação do ambiente antes de executar o comando. Nenhuma tentativa de contornar essa restrição foi feita.
+
+Assim, shader, pixels, culling, consumo GPU e comparação visual classic/PBR **não foram testados**. Arquivos do pack, escultura original e saves não foram alterados.
+
+## Evidências
+
+- source-integrity.json: 34 comparações de hash Git.
+- input-provenance.json: hashes e inventário dos inputs.
+- focused-tests.log: 17 testes aprovados.
+- threejs-geometry-validation.json: execução do conversor original.
+- transform-comparison.json: comparação das transformações.
+- classic.log: tentativa de inicialização do browser.
+- browser-install.log: falha de download do Chromium gerenciado.
+- source/viewer-3d/run-canonical-capture.mjs: adaptação de ambiente, fora do código original.
+- source/viewer-3d/validate-paz-geometry.mjs: verificação numérica, fora do código original.
+
+As prévias da Paz produzidas antes desta verificação continuam identificadas como Blender 4.3.2 Cycles, conforme os logs e metadados próprios. Não foram reclassificadas como resultado do Aspergillum.

@@ -1,0 +1,123 @@
+import bpy, math, json, random, hashlib, zipfile
+from pathlib import Path
+from mathutils import Vector, Matrix
+ROOT=Path('/workspace/scratch/212c580ada5b')
+OUT=ROOT/'paz-minecraft-render-20261103'
+SRC=ROOT/'paz-addon-audit-20261103/source'
+GEO=SRC/'Paz_RP/models/blocks/imagem.geo.json'
+TEX=SRC/'Paz_RP/textures/blocks/imagem.png'
+# Verify the exact original assets, not a visual proxy or a subsequent sculpture.
+with zipfile.ZipFile(ROOT/'nspaz-delivery/Nossa-Senhora-da-Paz-0.1.3-development.mcaddon') as z:
+ for p in [GEO,TEX]: assert p.read_bytes()==z.read(str(p.relative_to(SRC)))
+g=json.loads(GEO.read_text())['minecraft:geometry'][0]
+assert len(g['bones'])==1 and len(g['bones'][0]['cubes'])==46
+bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
+scene=bpy.context.scene
+scene.render.engine='CYCLES';scene.cycles.samples=128;scene.cycles.use_denoising=False
+scene.render.threads_mode='FIXED';scene.render.threads=8
+scene.render.resolution_x=1600;scene.render.resolution_y=1200;scene.render.resolution_percentage=100
+scene.render.image_settings.file_format='PNG';scene.render.film_transparent=False
+scene.view_settings.view_transform='Standard';scene.view_settings.look='Medium High Contrast';scene.view_settings.exposure=-.2
+
+def material(name,color):
+ m=bpy.data.materials.new(name);m.diffuse_color=(*color,1);m.use_nodes=True
+ bs=m.node_tree.nodes.get('Principled BSDF');bs.inputs['Base Color'].default_value=(*color,1);bs.inputs['Roughness'].default_value=1
+ return m
+
+def textured(name,img):
+ m=material(name,(1,1,1));t=m.node_tree.nodes.new('ShaderNodeTexImage');t.image=img;t.interpolation='Closest';t.extension='REPEAT'
+ bs=m.node_tree.nodes.get('Principled BSDF');bs.inputs['Specular IOR Level'].default_value=.0
+ m.node_tree.links.new(t.outputs['Color'],bs.inputs['Base Color']);return m
+img=bpy.data.images.load(str(TEX));img.pack();mat=textured('Addon original opaque 64x64 nearest-neighbor',img)
+# Face arrays are top-left, bottom-left, bottom-right, top-right in the original image's coordinates.
+# Bedrock X,Y,Z -> Blender X,Z,Y (vertical Y becomes Z). Original cuboid vertices and pivots preserved.
+faces={
+ 'north': [(0,1,0),(0,0,0),(1,0,0),(1,1,0)],
+ 'south': [(1,1,1),(1,0,1),(0,0,1),(0,1,1)],
+ 'east': [(1,1,0),(1,0,0),(1,0,1),(1,1,1)],
+ 'west': [(0,1,1),(0,0,1),(0,0,0),(0,1,0)],
+ 'up': [(0,1,1),(0,1,0),(1,1,0),(1,1,1)],
+ 'down': [(0,0,0),(0,0,1),(1,0,1),(1,0,0)],
+}
+# Winding is explicitly corrected against the transformed outward normal.
+normal={'north':(0,0,-1),'south':(0,0,1),'east':(1,0,0),'west':(-1,0,0),'up':(0,1,0),'down':(0,-1,0)}
+verts_all=[]
+for idx,c in enumerate(g['bones'][0]['cubes']):
+ o=Vector(c['origin']);s=Vector(c['size']);pivot=Vector(c.get('pivot',[0,0,0]));R=Matrix.Identity(3)
+ for axis,a in enumerate(c.get('rotation',[0,0,0])):
+  if a:R=Matrix.Rotation(math.radians(a),3,'XYZ'[axis])@R
+ verts=[];polys=[];uvs=[]
+ for name,coords in faces.items():
+  fv=[]
+  for q in coords:
+   p=R@(o+Vector(tuple(q[i]*s[i] for i in range(3)))-pivot)+pivot
+   fv.append(Vector((p.x/16,p.z/16,p.y/16)))
+  u,v=c['uv'][name]['uv'];du,dv=c['uv'][name]['uv_size'];uv=[(u/64,1-v/64),(u/64,1-(v+dv)/64),((u+du)/64,1-(v+dv)/64),((u+du)/64,1-v/64)]
+  n=R@Vector(normal[name]);n=Vector((n.x,n.z,n.y))
+  if (fv[1]-fv[0]).cross(fv[2]-fv[0]).dot(n)<0: fv.reverse();uv.reverse()
+  base=len(verts);verts.extend(fv);polys.append(tuple(range(base,base+4)));uvs.extend(uv)
+ mesh=bpy.data.meshes.new('original_cube_%02d'%idx);mesh.from_pydata(verts,[],polys);mesh.update()
+ obj=bpy.data.objects.new('ADDON_0.1.3_cube_%02d'%idx,mesh);scene.collection.objects.link(obj);obj.data.materials.append(mat)
+ layer=mesh.uv_layers.new(name='Exact original per-face UV')
+ for loop,uv in zip(layer.data,uvs):loop.uv=uv
+ verts_all.extend(verts)
+
+# Environment is an original illustrative block scene, not game assets or a Minecraft screenshot.
+rng=random.Random(238)
+def pixelimg(name,base,kind):
+ im=bpy.data.images.new(name,width=16,height=16,alpha=True);pixels=[]
+ for y in range(16):
+  for x in range(16):
+   v=rng.choice([-.06,-.035,-.015,0,.02,.035,.055])
+   if kind=='stone' and (x==0 or y==0):v=-.105
+   if kind=='trunk':v+=.06 if (x%5 in [1,2]) else -.035
+   pixels.extend([min(1,max(0,c+v)) for c in base]+[1])
+ im.pixels=pixels;im.pack();return im
+stone=textured('Original pixel stone paving',pixelimg('Original stone 16px',(.45,.47,.43),'stone'))
+grass=textured('Original grass pixels',pixelimg('Original grass 16px',(.27,.45,.10),'grass'))
+dirt=textured('Original earth pixels',pixelimg('Original earth 16px',(.30,.20,.105),'dirt'))
+leaves=textured('Original leaf pixels',pixelimg('Original leaves 16px',(.17,.33,.07),'grass'))
+trunk=textured('Original bark pixels',pixelimg('Original bark 16px',(.31,.21,.10),'trunk'))
+
+def cube(name,loc,scale,mats):
+ bpy.ops.mesh.primitive_cube_add(size=1,location=loc);ob=bpy.context.object;ob.name=name;ob.dimensions=scale;bpy.ops.object.transform_apply(location=False,rotation=False,scale=True)
+ for m in mats:ob.data.materials.append(m)
+ if len(mats)>1:
+  for p in ob.data.polygons:p.material_index=1 if p.normal.z>.9 else 0
+ # One tile per cube face, keeping visible block / voxel scale.
+ for p in ob.data.polygons:
+  for li,co in zip(p.loop_indices,[(0,0),(1,0),(1,1),(0,1)]):ob.data.uv_layers.active.data[li].uv=co
+ return ob
+# Ground: paved little courtyard, grass beyond. Explicit one-block grid communicates true addon scale.
+for x in range(-10,11):
+ for y in range(-8,17):
+  if abs(x)<=1 and -2<=y<=2 or (x==0 and y<0):
+   cube('Stone floor block', (x,y,-.5),(1,1,1),[stone])
+  else:
+   height=0 if y<5 else (0.5 if y<10 else 1.5)
+   cube('Grass block',(x,y,height-.5),(1,1,1),[dirt,grass])
+# Simple distant voxel trees, never occluding the statue.
+for x,y,h in [(-4,5,4),(4,7,5),(-7,10,5),(7,13,4)]:
+ z0=.5 if y<10 else 1.5
+ for z in range(h):cube('Tree trunk',(x,y,z0+z+.5),(1,1,1),[trunk])
+ for dz,rad in [(h-2,1),(h-1,1),(h,1),(h+1,0)]:
+  for dx in range(-rad,rad+1):
+   for dy in range(-rad,rad+1):
+    if dx==dy==0 and dz<h:continue
+    cube('Voxel foliage',(x+dx,y+dy,z0+dz+.5),(1,1,1),[leaves])
+# A few distant sandstone block steps / plinths for an uncluttered village-garden context.
+
+world=bpy.data.worlds.new('Blue daylight');world.use_nodes=True;world.node_tree.nodes['Background'].inputs[0].default_value=(.52,.70,.92,1);world.node_tree.nodes['Background'].inputs[1].default_value=.55;scene.world=world
+sun=bpy.data.lights.new('Daylight','SUN');sun.energy=2.2;sun.angle=math.radians(3)
+so=bpy.data.objects.new('Daylight',sun);scene.collection.objects.link(so);so.rotation_euler=(math.radians(30),math.radians(-25),math.radians(-35))
+fill=bpy.data.lights.new('Soft sky fill','AREA');fill.energy=120;fill.size=5
+fo=bpy.data.objects.new('Soft sky fill',fill);scene.collection.objects.link(fo);fo.location=(-3,-4,5);fo.rotation_euler=(Vector((0,0,1))-fo.location).to_track_quat('-Z','Y').to_euler()
+camdata=bpy.data.cameras.new('Preview camera');cam=bpy.data.objects.new('Preview camera',camdata);scene.collection.objects.link(cam);scene.camera=cam
+cam.location=(2.1,-5.2,2.05);target=Vector((0,0,.86));cam.rotation_euler=(target-cam.location).to_track_quat('-Z','Y').to_euler();camdata.type='PERSP';camdata.lens=70;camdata.clip_end=100
+camdata.dof.use_dof=False
+scene.render.filepath=str(OUT/'Nossa-Senhora-da-Paz-0.1.3-preview-minecraft.png')
+bpy.ops.wm.save_as_mainfile(filepath=str(OUT/'Nossa-Senhora-da-Paz-0.1.3-preview.blend'))
+bpy.ops.render.render(write_still=True)
+metadata={'version':'0.1.3 experimental','engine':'Blender '+bpy.app.version_string+' Cycles','cube_count':46,'texture_dimensions':[64,64],'geometry_sha256':hashlib.sha256(GEO.read_bytes()).hexdigest(),'texture_sha256':hashlib.sha256(TEX.read_bytes()).hexdigest(),'exact_assets_match_original_mcaddon':True,'block_scale':16,'size_blocks':[max(v[i] for v in verts_all)-min(v[i] for v in verts_all) for i in range(3)],'render_is_game_screenshot':False,'environment':'Original illustrative block-style scenery, not game assets','limit':'Only geometry and texture appearance illustrated. Does not establish in-game compatibility, collision, lighting or gameplay correctness.'}
+(OUT/'render-metadata.json').write_text(json.dumps(metadata,indent=2))
+print('RENDER_COMPLETE',metadata)

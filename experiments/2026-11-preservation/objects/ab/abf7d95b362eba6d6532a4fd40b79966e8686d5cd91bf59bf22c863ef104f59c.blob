@@ -1,0 +1,589 @@
+{
+  "input": "body_interface_v9/constrained_fit/accumulated097-c30-iteration03.npz",
+  "sha256": "b736287967143275c9cdf6ba0fc5e6b1ee3f683b301b9dde2da4c0ae60a2e0c7",
+  "invariants": {
+    "triangles": true,
+    "source_indices": true,
+    "source_face_indices": true
+  },
+  "masks": {
+    "protected_vertices": {
+      "vertices": 280,
+      "bit_identical_to_baseline": true,
+      "max_displacement_mm": 0.0
+    },
+    "protected_face": {
+      "vertices": 153,
+      "bit_identical_to_baseline": true,
+      "max_displacement_mm": 0.0
+    },
+    "protected_ears": {
+      "vertices": 88,
+      "bit_identical_to_baseline": true,
+      "max_displacement_mm": 0.0
+    },
+    "protected_lowneck": {
+      "vertices": 39,
+      "bit_identical_to_baseline": true,
+      "max_displacement_mm": 0.0
+    },
+    "v8_inactive": {
+      "vertices": 410,
+      "bit_identical_to_baseline": true,
+      "max_displacement_mm": 0.0
+    }
+  },
+  "metrics": {
+    "moved_from_baseline": 281,
+    "moved_from_v8": 281,
+    "baseline_displacement_mm_percentiles_moved": [
+      0.007859827860681038,
+      0.7116735842683108,
+      1.1117349602170647,
+      2.061340287882351,
+      5.558181896127684,
+      9.416032629864603
+    ],
+    "v8_displacement_mm_percentiles_changed": [
+      0.013412875235727411,
+      0.20749906717396616,
+      0.3041127830355259,
+      1.4699094722094692,
+      4.034656008287292,
+      8.335618706327029
+    ],
+    "minimum_area_ratio": 0.968963291300521,
+    "area_ratio_percentiles": [
+      0.968963291300521,
+      0.9699739754863437,
+      0.9742013382659954,
+      1.0,
+      1.0094309594493587,
+      1.0294532786961104,
+      1.06065367582639
+    ],
+    "worst_area_face": 540,
+    "worst_source_face": 6768,
+    "worst_original_area_mm2": 342.08150497459445,
+    "worst_final_area_mm2": 331.46442095321856,
+    "baseline_face144_ratio": 0.9983807269328868,
+    "max_face_rotation_degrees": 12.260875039941089,
+    "inverted_faces": [],
+    "edge_ratio_min_max": [
+      0.9682133944572521,
+      1.0332273052689624
+    ],
+    "intrinsic_stretch_min_max": [
+      0.9636333703778164,
+      1.0402106673583071
+    ],
+    "intrinsic_stretch_ratio_max": 1.0676702805387543,
+    "faces_with_intrinsic_stretch_outside_0p95_1p05": []
+  },
+  "contacts": {
+    "shell": {
+      "pairs": 572,
+      "anatomy_faces": 71,
+      "obstacle_faces": 299,
+      "protected_only_pairs": 462,
+      "ear_only_pairs": 462,
+      "by_part": {
+        "0": 207,
+        "1": 365,
+        "2": 0
+      },
+      "versus_baseline": {
+        "new_pairs": 7,
+        "removed_pairs": 3604,
+        "common_pairs": 565,
+        "new_pair_indices": [
+          [
+            655,
+            592
+          ],
+          [
+            694,
+            319
+          ],
+          [
+            696,
+            321
+          ],
+          [
+            1238,
+            6794
+          ],
+          [
+            1238,
+            6912
+          ],
+          [
+            1238,
+            6913
+          ],
+          [
+            1333,
+            395
+          ]
+        ],
+        "new_pair_intersection_chord_mm_percentiles": [
+          0.03128291677165605,
+          0.32406410617982023,
+          0.47641599242798316,
+          1.1719137262709798,
+          6.946536055309954,
+          9.263599577982275
+        ],
+        "sum_new_intersection_chords_mm": 12.763254152083514,
+        "new_pair_centroid_bbox": [
+          [
+            0.16144890566576095,
+            -0.2541121551513711,
+            3.426649237020114
+          ],
+          [
+            0.179710310094236,
+            -0.14914868749056392,
+            3.5389744316055025
+          ]
+        ]
+      },
+      "versus_v8": {
+        "new_pairs": 7,
+        "removed_pairs": 105,
+        "common_pairs": 565,
+        "new_pair_indices": [
+          [
+            655,
+            592
+          ],
+          [
+            694,
+            319
+          ],
+          [
+            696,
+            321
+          ],
+          [
+            1238,
+            6794
+          ],
+          [
+            1238,
+            6912
+          ],
+          [
+            1238,
+            6913
+          ],
+          [
+            1333,
+            395
+          ]
+        ],
+        "new_pair_intersection_chord_mm_percentiles": [
+          0.03128291677165605,
+          0.32406410617982023,
+          0.47641599242798316,
+          1.1719137262709798,
+          6.946536055309954,
+          9.263599577982275
+        ],
+        "sum_new_intersection_chords_mm": 12.763254152083514,
+        "new_pair_centroid_bbox": [
+          [
+            0.16144890566576095,
+            -0.2541121551513711,
+            3.426649237020114
+          ],
+          [
+            0.179710310094236,
+            -0.14914868749056392,
+            3.5389744316055025
+          ]
+        ]
+      }
+    },
+    "band": {
+      "pairs": 798,
+      "anatomy_faces": 40,
+      "obstacle_faces": 603,
+      "protected_only_pairs": 657,
+      "ear_only_pairs": 657,
+      "versus_baseline": {
+        "new_pairs": 14,
+        "removed_pairs": 426,
+        "common_pairs": 784,
+        "new_pair_indices": [
+          [
+            651,
+            555
+          ],
+          [
+            651,
+            556
+          ],
+          [
+            651,
+            1409
+          ],
+          [
+            651,
+            1468
+          ],
+          [
+            651,
+            1540
+          ],
+          [
+            916,
+            945
+          ],
+          [
+            916,
+            984
+          ],
+          [
+            1230,
+            1816
+          ],
+          [
+            1230,
+            1817
+          ],
+          [
+            1333,
+            1309
+          ],
+          [
+            1333,
+            1812
+          ],
+          [
+            1333,
+            1813
+          ],
+          [
+            1333,
+            1822
+          ],
+          [
+            1333,
+            1823
+          ]
+        ],
+        "new_pair_intersection_chord_mm_percentiles": [
+          0.04390018965529229,
+          0.6226726609275812,
+          0.9081130017698482,
+          1.59877225118472,
+          2.117259159490581,
+          2.397106352811696
+        ],
+        "sum_new_intersection_chords_mm": 15.200952188772568,
+        "new_pair_centroid_bbox": [
+          [
+            -0.08936427888618922,
+            -0.28873660725719885,
+            3.4488019762716657
+          ],
+          [
+            0.17430242839556645,
+            -0.19976920524753838,
+            3.522772362684316
+          ]
+        ]
+      },
+      "versus_v8": {
+        "new_pairs": 14,
+        "removed_pairs": 331,
+        "common_pairs": 784,
+        "new_pair_indices": [
+          [
+            651,
+            555
+          ],
+          [
+            651,
+            556
+          ],
+          [
+            651,
+            1409
+          ],
+          [
+            651,
+            1468
+          ],
+          [
+            651,
+            1540
+          ],
+          [
+            916,
+            945
+          ],
+          [
+            916,
+            984
+          ],
+          [
+            1230,
+            1816
+          ],
+          [
+            1230,
+            1817
+          ],
+          [
+            1333,
+            1309
+          ],
+          [
+            1333,
+            1812
+          ],
+          [
+            1333,
+            1813
+          ],
+          [
+            1333,
+            1822
+          ],
+          [
+            1333,
+            1823
+          ]
+        ],
+        "new_pair_intersection_chord_mm_percentiles": [
+          0.04390018965529229,
+          0.6226726609275812,
+          0.9081130017698482,
+          1.59877225118472,
+          2.117259159490581,
+          2.397106352811696
+        ],
+        "sum_new_intersection_chords_mm": 15.200952188772568,
+        "new_pair_centroid_bbox": [
+          [
+            -0.08936427888618922,
+            -0.28873660725719885,
+            3.4488019762716657
+          ],
+          [
+            0.17430242839556645,
+            -0.19976920524753838,
+            3.522772362684316
+          ]
+        ]
+      }
+    }
+  },
+  "other_parts": {
+    "2": {
+      "name": "Menino \u2014 cabelo cont\u00ednuo V50 revers\u00edvel",
+      "geometry_current_native_intended": true,
+      "baseline_pairs": 0,
+      "v8_pairs": 0,
+      "candidate_pairs": 0,
+      "new_vs_baseline": [],
+      "new_vs_v8": []
+    },
+    "3": {
+      "name": "Menino \u2014 cabe\u00e7a colo retopologia V55 revers\u00edvel",
+      "geometry_current_native_intended": true,
+      "baseline_pairs": 0,
+      "v8_pairs": 0,
+      "candidate_pairs": 0,
+      "new_vs_baseline": [],
+      "new_vs_v8": []
+    },
+    "4": {
+      "name": "Menino \u2014 tornozelo afilado V61 revers\u00edvel",
+      "geometry_current_native_intended": true,
+      "baseline_pairs": 0,
+      "v8_pairs": 0,
+      "candidate_pairs": 0,
+      "new_vs_baseline": [],
+      "new_vs_v8": []
+    },
+    "5": {
+      "name": "Menino \u2014 tornozelo oposto V63 revers\u00edvel",
+      "geometry_current_native_intended": true,
+      "baseline_pairs": 0,
+      "v8_pairs": 0,
+      "candidate_pairs": 0,
+      "new_vs_baseline": [],
+      "new_vs_v8": []
+    },
+    "6": {
+      "name": "Base inferior",
+      "geometry_current_native_intended": false,
+      "baseline_pairs": 0,
+      "v8_pairs": 0,
+      "candidate_pairs": 0,
+      "new_vs_baseline": [],
+      "new_vs_v8": []
+    },
+    "7": {
+      "name": "Pedestal",
+      "geometry_current_native_intended": false,
+      "baseline_pairs": 0,
+      "v8_pairs": 0,
+      "candidate_pairs": 0,
+      "new_vs_baseline": [],
+      "new_vs_v8": []
+    },
+    "8": {
+      "name": "Laje",
+      "geometry_current_native_intended": false,
+      "baseline_pairs": 0,
+      "v8_pairs": 0,
+      "candidate_pairs": 0,
+      "new_vs_baseline": [],
+      "new_vs_v8": []
+    },
+    "9": {
+      "name": "Maria \u2014 t\u00fanica e mangas integradas",
+      "geometry_current_native_intended": true,
+      "baseline_pairs": 60,
+      "v8_pairs": 60,
+      "candidate_pairs": 60,
+      "new_vs_baseline": [],
+      "new_vs_v8": []
+    },
+    "10": {
+      "name": "Maria \u2014 aur\u00e9ola lisa",
+      "geometry_current_native_intended": false,
+      "baseline_pairs": 29,
+      "v8_pairs": 29,
+      "candidate_pairs": 29,
+      "new_vs_baseline": [],
+      "new_vs_v8": []
+    },
+    "11": {
+      "name": "Menino \u2014 t\u00fanica e mangas cont\u00ednuas",
+      "geometry_current_native_intended": true,
+      "baseline_pairs": 0,
+      "v8_pairs": 0,
+      "candidate_pairs": 0,
+      "new_vs_baseline": [],
+      "new_vs_v8": []
+    },
+    "12": {
+      "name": "Menino \u2014 p\u00e9",
+      "geometry_current_native_intended": true,
+      "baseline_pairs": 0,
+      "v8_pairs": 0,
+      "candidate_pairs": 0,
+      "new_vs_baseline": [],
+      "new_vs_v8": []
+    },
+    "13": {
+      "name": "Menino \u2014 p\u00e9.001",
+      "geometry_current_native_intended": true,
+      "baseline_pairs": 0,
+      "v8_pairs": 0,
+      "candidate_pairs": 0,
+      "new_vs_baseline": [],
+      "new_vs_v8": []
+    },
+    "14": {
+      "name": "Menino \u2014 aur\u00e9ola lisa",
+      "geometry_current_native_intended": false,
+      "baseline_pairs": 0,
+      "v8_pairs": 0,
+      "candidate_pairs": 0,
+      "new_vs_baseline": [],
+      "new_vs_v8": []
+    },
+    "16": {
+      "name": "Maria \u2014 m\u00e3o protetora anat\u00f4mica",
+      "geometry_current_native_intended": true,
+      "baseline_pairs": 0,
+      "v8_pairs": 0,
+      "candidate_pairs": 0,
+      "new_vs_baseline": [],
+      "new_vs_v8": []
+    },
+    "17": {
+      "name": "Maria \u2014 m\u00e3o ao peito anat\u00f4mica",
+      "geometry_current_native_intended": true,
+      "baseline_pairs": 0,
+      "v8_pairs": 0,
+      "candidate_pairs": 0,
+      "new_vs_baseline": [],
+      "new_vs_v8": []
+    },
+    "18": {
+      "name": "Menino \u2014 m\u00e3o anat\u00f4mica",
+      "geometry_current_native_intended": true,
+      "baseline_pairs": 0,
+      "v8_pairs": 0,
+      "candidate_pairs": 0,
+      "new_vs_baseline": [],
+      "new_vs_v8": []
+    },
+    "19": {
+      "name": "Menino \u2014 m\u00e3o anat\u00f4mica.001",
+      "geometry_current_native_intended": true,
+      "baseline_pairs": 0,
+      "v8_pairs": 0,
+      "candidate_pairs": 0,
+      "new_vs_baseline": [],
+      "new_vs_v8": []
+    }
+  },
+  "limits": [
+    "Strict triangle crossings do not certify coplanarity, tangency, positive global clearance or alpha pixel footprint.",
+    "Comparisons preserve tessellation, so new pair IDs are real new local strict crossing pairs, but not numbers of holes.",
+    "Hybrid parts6/7/8/10/14 are proxies only; no engine/export validation."
+  ],
+  "self_gate": {
+    "input": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/body_interface_v9/constrained_fit/accumulated097-c30-iteration03.npz",
+    "sha256": "b736287967143275c9cdf6ba0fc5e6b1ee3f683b301b9dde2da4c0ae60a2e0c7",
+    "method": "Blender BVH epsilon zero broad phase; double-precision strict segment-triangle intersection in both directions. Shared-vertex pairs are included.",
+    "limitations": "Not a proof for tangencies, general coplanar overlaps, minimum clearance, or intersections with other objects. BVH broad phase uses Blender precision. No game validation.",
+    "vertices": 692,
+    "triangles": 1376,
+    "euler": 4,
+    "boundary_edges": 0,
+    "edges_not_two_faces": 0,
+    "inconsistent_edge_winding": 0,
+    "bad_vertex_links": [
+      439,
+      438,
+      437
+    ],
+    "unused_vertices": [],
+    "degenerate_triangles": [],
+    "minimum_triangle_area": 5.068262347813025e-15,
+    "bvh_candidates": 0,
+    "strict_crossings": 0,
+    "crossings": [],
+    "opposed_coplanar_edge_adjacent_candidates": [
+      [
+        424,
+        1131
+      ],
+      [
+        424,
+        1131
+      ],
+      [
+        424,
+        1131
+      ]
+    ],
+    "elapsed_seconds": 0.04015303999767639,
+    "passes_screen": false
+  },
+  "input_hashes": {
+    "body_interface_v8/anatomy_fit/baseline-welded.npz": "495ccfd3beb46a61e1f0846471f8f8be61c511606dcf20c2c72d0d6d5a36be15",
+    "body_interface_v8/anatomy_fit/retained-anatomy.npz": "c1971f80ca5bd99a8d51461823a42e03ed6400282e31a18586602cd0216b4519",
+    "lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz": "712a550fbbb56090ae700e30e4e21153d04c16139062ebcd2a72e818f3e34f7b",
+    "shell_band_v5/retained_candidate/evidence/band-paired.npz": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647"
+  }
+}

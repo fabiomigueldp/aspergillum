@@ -1,0 +1,49 @@
+from pathlib import Path
+import numpy as np,json
+from mathutils.bvhtree import BVHTree
+O=Path(__file__).resolve().parent;B=O.parent.parent
+ba=np.load(B/'body_interface_v8/anatomy_fit/baseline-welded.npz');v8=np.load(B/'body_interface_v8/anatomy_fit/retained-anatomy.npz');sh=np.load(B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz');band=np.load(B/'shell_band_v5/retained_candidate/evidence/band-paired.npz');mask=np.load(O/'ear-visibility-real-mask.npz');dirs=mask['directions'];v=ba['points'];f=ba['triangles'];p=v[f];nr=np.cross(p[:,1]-p[:,0],p[:,2]-p[:,0]);fn=nr/np.maximum(np.linalg.norm(nr,axis=1)[:,None],1e-30);ear=np.ones(len(v),bool);eids=np.flatnonzero(ear)
+vv=np.r_[sh['points'],band['points'],v];ff=np.r_[sh['triangles'],band['triangles']+len(sh['points']),f+len(sh['points'])+len(band['points'])];tree=BVHTree.FromPolygons(vv.tolist(),ff.tolist(),all_triangles=True,epsilon=0);eps=2e-6
+edges={};vf=[[] for _ in range(len(v))]
+for fi,face in enumerate(f):
+ for vi in face:vf[vi].append(fi)
+ for j in range(3):edges.setdefault(tuple(sorted((int(face[j]),int(face[(j+1)%3])))),[]).append(fi)
+visible=np.zeros(len(v),bool);counts=np.zeros(len(v),int);di_first=np.full(len(v),-1,int)
+for vi in eids:
+ # A point is conservatively visible if ANY actual adjacent front-facing surface
+ # has an escaping camera ray, not merely the averaged vertex normal.
+ possible=np.any(dirs@fn[vf[vi]].T>0.005,axis=1)
+ for di in np.flatnonzero(possible):
+  dr=dirs[di];h=tree.ray_cast(tuple(v[vi]+eps*dr),tuple(dr),2)
+  if h[0] is None:visible[vi]=True;counts[vi]+=1;di_first[vi]=di if di_first[vi]<0 else di_first[vi]
+# Adjacent-face interior probes avoid declaring a vertex safely hidden only because
+# the exact mesh edge numerically occludes it.
+local_visible=np.zeros(len(v),bool);local_counts=np.zeros(len(v),int)
+for vi in eids:
+ for fi in vf[vi]:
+  q=.92*v[vi]+.08*p[fi].mean(0)
+  for di in np.flatnonzero(dirs@fn[fi]>.005):
+   dr=dirs[di];h=tree.ray_cast(tuple(q+eps*dr),tuple(dr),2)
+   if h[0] is None:local_visible[vi]=True;local_counts[vi]+=1;break
+contour=np.zeros(len(v),bool);visible_edges=[]
+for (a,b),fis in edges.items():
+ if not(ear[a] or ear[b]) or len(fis)!=2:continue
+ signs=dirs@fn[fis].T;possible=(signs[:,0]*signs[:,1]<0)
+ for di in np.flatnonzero(possible):
+  dr=dirs[di];q=.5*(v[a]+v[b]);h=tree.ray_cast(tuple(q+eps*dr),tuple(dr),2)
+  if h[0] is None:contour[[a,b]]=True;visible_edges.append([a,b,int(di)]);break
+hidden=ear&~visible&~local_visible&~contour
+protected=ear&~hidden
+# Area of incident faces exposed interior, separate from vertex hiding, must still
+# constrain any trials using hidden point mobility.
+face_interior_visible=np.zeros(len(f),bool)
+for fi in range(len(f)):
+ for q in np.array([[.6,.2,.2],[.2,.6,.2],[.2,.2,.6],[1/3]*3])@p[fi]:
+  for di in np.flatnonzero(dirs@fn[fi]>.005):
+   dr=dirs[di];h=tree.ray_cast(tuple(q+eps*dr),tuple(dr),2)
+   if h[0] is None:face_interior_visible[fi]=True;break
+  if face_interior_visible[fi]:break
+visible_adj=np.zeros(len(v),bool);visible_adj[np.unique(f[face_interior_visible])]=True
+np.savez_compressed(O/'allbody-vertex-contour-mask.npz',ear_broad=ear,ear_vertex_visible=ear&visible,ear_local_patch_visible=ear&local_visible,ear_contour_visible=ear&contour,ear_hidden_candidate=hidden,ear_hidden_incident_visible_face=hidden&visible_adj,ear_hidden_with_no_visible_incident_face=hidden&~visible_adj,ear_protected=protected,visible_ray_count=counts,first_visible_ray=di_first,face_interior_visible=face_interior_visible,visible_contour_edges=np.array(visible_edges,dtype=int),directions=dirs,source_indices=ba['source_indices'])
+rep={'broad_vertices':int(ear.sum()),'direct_vertex_visible':int((ear&visible).sum()),'local_patch_visible':int((ear&local_visible).sum()),'visible_contour_vertices':int((ear&contour).sum()),'hidden_candidate_vertices':np.flatnonzero(hidden).tolist(),'hidden_source_indices':ba['source_indices'][hidden].tolist(),'hidden_incident_visible_face_vertices':np.flatnonzero(hidden&visible_adj).tolist(),'hidden_without_visible_incident_face_vertices':np.flatnonzero(hidden&~visible_adj).tolist(),'face_interior_visible_count':int(face_interior_visible.sum()),'method':'910 full-sphere rays at each ear vertex, nearby face patch, and edges with adjacent-face sign change. Self-occlusion included. Epsilon0.002mm. Face interior exposure checked independently.','limits':'Finite directions, mesh points and patch samples do not prove universal invisibility. Hidden points adjacent to exposed face interiors may alter visible anatomy if moved. Keep exact exposed contour; small movement needs re-test of entire incident faces and rendered views.'}
+(O/'allbody-vertex-contour-summary.json').write_text(json.dumps(rep,indent=2));print(json.dumps(rep,indent=2))

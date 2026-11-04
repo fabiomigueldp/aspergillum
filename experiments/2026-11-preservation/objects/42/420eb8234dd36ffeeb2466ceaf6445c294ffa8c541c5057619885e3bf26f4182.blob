@@ -1,0 +1,10 @@
+from pathlib import Path
+from PIL import Image,ImageDraw,ImageFont
+R=Path(__file__).resolve().parents[1];B=R.parent;E=R/'evidence';im=Image.new('RGB',(1800,1390),'#20252b');d=ImageDraw.Draw(im);font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',24);sm=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',17)
+d.text((24,10),'V6 → V7 | reconstrução lateral | diagnóstico Blender, NÃO MINECRAFT',font=font,fill='white');d.text((24,45),'Zero refere-se à casca calota–ponte–manto. Contatos com o corpo antigo ainda não estão resolvidos.',font=sm,fill='#dddddd')
+cols=[(B/'integration_v6/evidence','physical-hermite','V6 controle | 172 pares na casca'),(E,'director-cone','V7 diretores | 56 pares na casca'),(E,'adaptive-consistent','V7 reconstruída | 0 pares na casca')]
+for j,view in enumerate(['junction-profile','junction-back']):
+ y=80+j*640
+ for i,(root,tag,label) in enumerate(cols):
+  d.text((i*600+12,y),label,font=sm,fill='white');pic=Image.open(root/f'{tag}-{view}.png').convert('RGB').resize((600,600));im.paste(pic,(i*600,y+30))
+d.text((24,1360),'Mesmos 12.484 triângulos. Mudança local até 19,458 mm. Casca nativa colorida; corpo antigo reimportado JSON.',font=sm,fill='#dddddd');im.save(E/'V6_V7_LATERAL_COMPARISON_NOT_MINECRAFT.png')

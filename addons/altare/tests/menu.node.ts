@@ -255,3 +255,46 @@ test('release after Apply but before its continuation invalidates the selected f
  assert.doesNotThrow(()=>sessions.release(session));
  assert.equal(await result,undefined);
 });
+
+test('failed native close leaves an open editor cancellable without retaining an Apply',async()=>{
+ for(const action of ['menu.cancel','menu.apply']){
+  const result=chooseFinish({},tiles,0),form=current,nativeClose=form.close.bind(form);
+  let calls=0;form.close=()=>{if(++calls===1)throw Error('EngineError');nativeClose();};
+  assert.throws(()=>click(action),/EngineError/);assert.equal(form.showing,true);
+  field('menu.color').value.setData(3);click('menu.restore');
+  assert.equal(field('menu.color').value.getData(),1);
+  click('menu.cancel');
+  // End even on a regression, so the test reports an assertion rather than hanging.
+  assert.equal(form.showing,false);assert.equal(await result,undefined);
+  assert.equal(calls,2);
+  assert.ok(form.controls.filter((c:any)=>c.value).every((c:any)=>c.value.callbacks.size===0));
+ }
+});
+
+test('failed Apply can be retried with the current draft rather than its previous choice',async()=>{
+ const result=chooseFinish({},tiles,0),form=current,nativeClose=form.close.bind(form);
+ let calls=0;form.close=()=>{if(++calls===1)throw Error('EngineError');nativeClose();};
+ assert.throws(()=>click('menu.apply'),/EngineError/);
+ field('menu.color').value.setData(3);field('menu.model').value.setData(3);
+ click('menu.apply');assert.equal(form.showing,false);
+ assert.equal((await result).design,'altare:l_trestle_marble_purple');assert.equal(calls,2);
+});
+
+test('close error after native dismissal cannot revive callbacks or commit a failed Apply',async()=>{
+ const result=chooseFinish({},tiles,0),form=current,nativeClose=form.close.bind(form);
+ let calls=0;form.close=()=>{calls++;nativeClose();throw Error('EngineError');};
+ assert.throws(()=>click('menu.apply'),/EngineError/);assert.equal(form.showing,false);
+ assert.doesNotThrow(()=>{click('menu.apply');click('menu.cancel');field('menu.color').value.setData(3);});
+ assert.equal(await result,undefined);assert.equal(calls,1);
+ assert.ok(form.controls.filter((c:any)=>c.value).every((c:any)=>c.value.callbacks.size===0));
+});
+
+test('a released session remains unable to Apply when native close initially fails',async()=>{
+ let valid=true,release:()=>void=()=>{};
+ const result=chooseFinish({},tiles,0,()=>valid,(callback:()=>void)=>{release=callback;return ()=>{};});
+ const form=current,nativeClose=form.close.bind(form);let calls=0;
+ form.close=()=>{if(++calls===1)throw Error('EngineError');nativeClose();};
+ valid=false;assert.throws(release,/EngineError/);assert.equal(form.showing,true);
+ assert.doesNotThrow(()=>click('menu.apply'));assert.equal(form.showing,false);
+ assert.equal(await result,undefined);assert.equal(calls,2);
+});

@@ -1,0 +1,50 @@
+# Dimensões orientadas do editor — 0.12.2
+
+## Defeito reproduzido
+
+Ao abrir o editor de um retângulo 7 × 2 pela frente norte, o título mostrava `7 × 2`. Trocar a frente para leste atualizava o rascunho e o futuro centro do tecido, mas o título continuava `7 × 2`, pois era construído uma única vez com a orientação inicial. O teste novo falha antes da correção exatamente nessa transição.
+
+A semântica permanece a existente: largura e profundidade são relativas à frente escolhida no rascunho. Norte/sul usam o eixo X como largura; leste/oeste usam Z, como o cálculo de `planFinish`. Não se muda a posição ou o tamanho do altar.
+
+## Correção restrita à apresentação
+
+`menu.ts` usa `ObservableUIRawMessage`, suportado pelos tipos estáveis instalados de `@minecraft/server-ui` 2.1.0. A assinatura de dois argumentos de [CustomForm](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server-ui/customform?view=minecraft-bedrock-stable) aceita essa observável, que oferece [setData](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server-ui/observableuirawmessage?view=minecraft-bedrock-stable). O título mantém sua tradução e só recebe novo valor quando a frente do rascunho muda. A observável não é gravável pelo cliente, não possui assinatura nova e não participa do commit.
+
+Restaurar também restaura o título. Valores inválidos são rejeitados pelo fluxo existente. Se a direção fica temporariamente oculta, por exemplo na Cruzeta sem toalha, o título conserva a orientação do rascunho, assim como o próprio valor guardado para uma toalha direcional futura. A aplicação do modelo simétrico continua normalizando o state para zero; nenhuma regra do codec é alterada.
+
+## Preservação
+
+Esta revisão não muda geometria, UV, textura, blocos, colisões, IDs, estados, sessão, rollback ou aplicação do acabamento. A estrutura permanece [Cruzeta 0.12.1](CROSSBRACE_0.12.1.md). Não se produziu outra mudança ornamental sem evidência de melhoria. Aspergillum permanece 1.2.5 e Estúdio 2.3.0.
+
+A comparação do runtime deve mostrar somente a apresentação do título e sua nova importação estável. Não requer novas permissões, APIs beta ou experimentos.
+
+## Testes reproduzíveis
+
+```
+node --experimental-strip-types --test addons/altare/tests/menu.node.ts
+npm --prefix addons/altare run check
+HOME=/tmp/altare-creator-home MCT_TEST_PINNED_MC_VERSION=1.26.40 node addons/altare/tools/package.mjs
+```
+
+Os testes do adaptador de UI verificam quatro frentes, Aplicar, Restaurar, Cancelar, preservação das entradas do mundo, valor inválido, título traduzido, observável somente do servidor, modelo simétrico e retorno ao tecido direcional. São testes de contrato de apresentação, não execução do cliente Bedrock.
+
+### Resultados desta revisão
+
+- Altare: 113 testes aprovados, incluindo 8 do menu; tipos e validação estrutural aprovados.
+- Aspergillum: 107 testes aprovados. Estúdio: 84 testes aprovados. Tipos, documentação e build da raiz aprovados.
+- Creator Tools oficial: zero erros, 2.084 avisos de complexidade já delimitados pela política existente e zero avisos inesperados. Validação offline com alvo 1.26.40 fixado; as consultas de registry devolveram 502, registradas no log, sem impedir a validação. O [relatório completo](../dist/validation/0.12.2/release-summary.json) preserva esses avisos.
+- Comparação dos arquivos distribuídos 0.12.1/0.12.2: 5.386 entradas idênticas, incluindo todos os 414 blocos, 4.700 arquivos de geometria e 265 arquivos de textura. Nenhum arquivo acrescentado ou removido.
+- As únicas sete entradas diferentes são o script com a correção de título, dois manifests e quatro arquivos de texto com a versão do pacote. O delta do runtime contém somente a nova observável e a atualização do título.
+- O arquivo final possui 5.393 entradas, CRC íntegro e conteúdo idêntico aos packs gerados. SHA-256: `2b7576872c69fa94f72130c3ae260ebdceafc906c2428985219782a6da4940a9`.
+
+As evidências locais ficam em `out/editor-dimensions/`: regressão antes/depois, logs das suítes, comparação de preservação e delta de runtime. Uma revisão independente de código confirmou a semântica e executou os testes direcionados.
+
+## Menor reteste nativo
+
+1. Importar BP/RP **[0,12,2]** em uma cópia do mundo, sem outra revisão Altare concorrente, no Minecraft mínimo 1.26.40 e sem experimentos.
+2. Abrir o acabamento de um altar 7 × 2 pela face norte. Confirmar título `7 × 2`.
+3. Trocar a frente para leste/oeste: título `2 × 7`. Norte/sul: `7 × 2`. Nenhuma alteração física deve acontecer antes de Aplicar.
+4. Clicar Restaurar, testar Cruzeta nua e depois Agnus/Floral; a direção do rascunho deve ser preservada quando ocultada. Cancelar não deve modificar blocos; Aplicar deve orientar o tecido como antes.
+5. Reabrir, salvar/recarregar e verificar Content Log sem novo erro de observável. Registrar o hash do `.mcaddon` testado.
+
+O ambiente de nuvem não possui cliente Bedrock. Não se declara que esse reteste foi executado. Os renders CPU 0.12.1 documentam a geometria preservada, mas não representam teste da UI nem substituem o jogo.

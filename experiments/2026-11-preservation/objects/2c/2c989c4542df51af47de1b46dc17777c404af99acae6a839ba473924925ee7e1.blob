@@ -1,0 +1,60 @@
+import { system, type PlayerBreakBlockBeforeEvent } from "@minecraft/server";
+import { readAspersoriumContents, readTableContents } from "../infrastructure/compact-block-state";
+import { ASPERSORIUM_BLOCK, SACRISTAN_TABLE_BLOCK } from "../infrastructure/constants";
+import { getDockedSnapshot } from "../infrastructure/docked-item-registry";
+import { ACTION_MESSAGES, action, type ActionMessage } from "../presentation/messaging";
+
+// Bounded, presentation-only throttling. Never authority for item/block state.
+const lastFeedback = new Map<string, number>();
+const FEEDBACK_COOLDOWN_TICKS = 20;
+const MAX_FEEDBACK_PLAYERS = 256;
+
+/** Narrow prevention, not recovery or a durable quarantine protocol. */
+export function preventUnsafePlayerBlockBreak(event: PlayerBreakBlockBeforeEvent): void {
+  let kind: "aspersorium" | "table";
+  try {
+    const id = event.block.typeId;
+    if (id === ASPERSORIUM_BLOCK) kind = "aspersorium";
+    else if (id === SACRISTAN_TABLE_BLOCK) kind = "table";
+    else return;
+  } catch {
+    // Cannot establish that this block belongs to us; do not affect other packs.
+    return;
+  }
+
+  let feedback: ActionMessage | undefined;
+  try {
+    if (!event.block.isValid) {
+      feedback = ACTION_MESSAGES.registryRepairRequired;
+    } else {
+      const contents = kind === "aspersorium" ? readAspersoriumContents(event.block.permutation) : readTableContents(event.block.permutation);
+      if (contents.cosmeticIndex !== null) feedback = ACTION_MESSAGES.emptyHandRequired;
+      else if (getDockedSnapshot(event.block.dimension.id, event.block.location) !== undefined) {
+        feedback = ACTION_MESSAGES.registryRecoveryRequired;
+      }
+    }
+  } catch {
+    // Once our block is identified, uncertainty preserves it instead of running
+    // the non-atomic destruction/recovery path or normalizing its registry.
+    feedback = ACTION_MESSAGES.registryRepairRequired;
+  }
+  if (feedback === undefined) return; // Never reverse an existing cancellation.
+  const message = feedback;
+  event.cancel = true; // Synchronous: only presentation is deferred below.
+
+  try {
+    const player = event.player;
+    const id = player.id;
+    const tick = system.currentTick;
+    const previous = lastFeedback.get(id);
+    if (previous !== undefined && tick >= previous && tick - previous < FEEDBACK_COOLDOWN_TICKS) return;
+    lastFeedback.set(id, tick);
+    if (lastFeedback.size > MAX_FEEDBACK_PLAYERS) lastFeedback.delete(lastFeedback.keys().next().value!);
+    system.run(() => {
+      try { if (player.isValid) action(player, message); }
+      catch { /* Presentation failure must not change the already-cancelled event. */ }
+    });
+  } catch (error) {
+    console.warn(`[Aspergillum] Prevented break; feedback unavailable: ${String(error)}`);
+  }
+}

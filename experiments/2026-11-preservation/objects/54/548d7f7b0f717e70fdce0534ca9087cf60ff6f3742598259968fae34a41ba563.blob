@@ -1,0 +1,20 @@
+import bpy,json
+from mathutils import Vector
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/'
+name='Maria — anatomia feminina adaptada CC0'
+def coords(o):
+ ks=o.data.shape_keys.key_blocks;out=[]
+ for v in o.data.vertices:
+  p=v.co.copy()
+  for k in list(ks)[1:]:p+=(k.data[v.index].co-k.relative_key.data[v.index].co)*k.value
+  out.append(p)
+ return out
+bpy.ops.wm.open_mainfile(filepath=r+'V36-orbits-gui-trial.blend',use_scripts=False);edited=coords(bpy.data.objects[name])
+bpy.ops.wm.open_mainfile(filepath=r+'V35-neck-verified.blend',use_scripts=False);o=bpy.data.objects[name];base=coords(o);d=[a-b for a,b in zip(edited,base)];changes=[x.length for x in d if x.length>1e-7]
+k=o.shape_key_add(name='TESTE 36 — volume e fechamento palpebral GUI');k.value=1
+for i,v in enumerate(k.data):v.co=o.data.vertices[i].co+(d[i] if d[i].length>1e-7 else Vector((0,0,0)))
+json.dump({'affected_vertices':len(changes),'max_delta':max(changes,default=0),'mean_delta':sum(changes)/max(1,len(changes)),'method':'Native GUI Deflate initial 50px/0.2, then 60px/0.7 plus Crease18px/0.2 on both lids; independent reversible shape key.'},open(r+'V36-verification.json','w'),indent=2)
+bpy.ops.wm.save_as_mainfile(filepath=r+'V36-orbits-verified.blend')
+s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=600;s.render.resolution_y=800;s.render.resolution_percentage=100;c=s.camera
+for view,loc,targ,scale in [('face',(-1.6,-5,3.7),(0,-.08,3.43),.88),('profile',(-5,-.05,3.6),(0,-.15,3.4),1.05)]:
+ c.location=loc;c.rotation_euler=(Vector(targ)-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=scale;s.render.filepath=r+'V36-compare-'+view+'.png';bpy.ops.render.render(write_still=True)

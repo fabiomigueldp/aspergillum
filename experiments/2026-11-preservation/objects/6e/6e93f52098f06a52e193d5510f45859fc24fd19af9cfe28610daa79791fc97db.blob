@@ -1,0 +1,20 @@
+# Restrições baricêntricas reais — prova recusada
+
+V75 permanece intacto. Nenhum blendV87/V88 salvo; saídas são dados temporários de prova, não versões do modelo.
+
+## Implementação distinta
+Extraí pontos reais de interseção triângulo–triângulo por cruzamento das arestas com os planos e teste baricêntrico. A normal do triângulo da pele gera restrição linear no deslocamento compartilhado dos nós médios; fronteira, anatomia e vetores entre camadas continuam fixos. As restrições reais somam-se às amostras, não são substituídas por elas.
+
+Na geometria inicial: todos529pares de polígonos (845pares com triangulação explícita) foram representados;1.950restrições de pontos reais e3.124restrições totais. Nenhum par inicial ficou sem ponto extraído.
+
+V87 foi interrompida quando a deformação dos quads tornou inconsistente a triangulação em leque usada na extração versus o BVH: surgiram pares sem restrição. Não foi aceita redução parcial desses pares. Corrigi a prova para usar triangulação explícita calculada pelo Blender, com identificação do polígono de origem (V88), evitando essa ambiguidade.
+
+## V88 e rejeição
+O primeiro subproblema linear não passou a tolerância estabelecida: residual máximo2,466micrômetros para tolerância1micrômetro. Parei, não relaxei o limite. O candidato diagnóstico ainda possui498pares pele–patch,473novos e504removidos; logo não é uma correção, mesmo com0flips e0novas auto-interseções. Área .5697–3.4608×. Contorno/fora do recorte delta0; mudança nos vetores das camadas~7e-18m.
+
+## Limite contínuo explícito
+Verifiquei trajetórias lineares de vértices inicialmente externos por raycast ao longo do segmento temporal; não houve testemunho desse tipo no passo. Isso NÃO certifica o movimento de uma face inteira nem eventos aresta–aresta ou vértice estático–face móvel. O solver atual não possui CCD completo ou barreira de distância contínua com tratamento de penetração inicial. Não posso chamar a ausência de um testemunho parcial de controle contínuo válido.
+
+Assim, as restrições baricêntricas reais foram implementadas e auditadas, mas a cadeia solver+controle contínuo ainda não atende ao pedido. Precisamos de resolução robusta condicionada e CCD completo capaz de despenetrar a configuração inicial, com qualidade de tesselação; não apenas aumentar margem, repetir suavização ou salvar outro candidato.
+
+Evidências: V87-intersection-extraction-incomplete.log (interrompida), V88-explicit-triangle-proof.json/.npz, neck-paired-midsurface-obstacle-proof.py. A ausência de novo blend é intencional.

@@ -1,0 +1,276 @@
+{
+  "input": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/lateral_v7/adaptive_patch/fidelity-0p178-assembly.npz",
+  "sha256": "f61fc3f685c3e8fed8c1f1a6f712665fe1b588ae2dff8abcf950caf0129743e9",
+  "method": "Blender BVH epsilon zero broad phase; double-precision strict segment-triangle intersection in both directions. Shared-vertex pairs are included.",
+  "limitations": "Not a proof for tangencies, general coplanar overlaps, minimum clearance, or intersections with other objects. BVH broad phase uses Blender precision. No game validation.",
+  "vertices": 6244,
+  "triangles": 12484,
+  "euler": 2,
+  "boundary_edges": 0,
+  "edges_not_two_faces": 0,
+  "inconsistent_edge_winding": 0,
+  "bad_vertex_links": [],
+  "unused_vertices": [],
+  "degenerate_triangles": [],
+  "minimum_triangle_area": 4.260022597417041e-07,
+  "bvh_candidates": 6,
+  "strict_crossings": 6,
+  "crossings": [
+    {
+      "triangles": [
+        6687,
+        6925
+      ],
+      "vertices": [
+        [
+          5767,
+          5887,
+          5886
+        ],
+        [
+          5886,
+          6006,
+          6005
+        ]
+      ],
+      "shared_vertices": 1,
+      "witnesses": [
+        [
+          0.1525976201801245,
+          -0.15305113047447413,
+          3.4015913693302062
+        ]
+      ],
+      "source_indices": [
+        [
+          186079,
+          186199,
+          186198
+        ],
+        [
+          186198,
+          186318,
+          186317
+        ]
+      ]
+    },
+    {
+      "triangles": [
+        6688,
+        6925
+      ],
+      "vertices": [
+        [
+          5767,
+          5768,
+          5887
+        ],
+        [
+          5886,
+          6006,
+          6005
+        ]
+      ],
+      "shared_vertices": 0,
+      "witnesses": [
+        [
+          0.1520953296176826,
+          -0.15119718242710134,
+          3.3996793272335433
+        ],
+        [
+          0.1525976201801246,
+          -0.15305113047447463,
+          3.4015913693302067
+        ]
+      ],
+      "source_indices": [
+        [
+          186079,
+          186080,
+          186199
+        ],
+        [
+          186198,
+          186318,
+          186317
+        ]
+      ]
+    },
+    {
+      "triangles": [
+        6689,
+        6925
+      ],
+      "vertices": [
+        [
+          5768,
+          5888,
+          5887
+        ],
+        [
+          5886,
+          6006,
+          6005
+        ]
+      ],
+      "shared_vertices": 0,
+      "witnesses": [
+        [
+          0.15174618743248663,
+          -0.14987260260596236,
+          3.3984323872391315
+        ],
+        [
+          0.1520953296176826,
+          -0.1511971824271012,
+          3.3996793272335433
+        ]
+      ],
+      "source_indices": [
+        [
+          186080,
+          186200,
+          186199
+        ],
+        [
+          186198,
+          186318,
+          186317
+        ]
+      ]
+    },
+    {
+      "triangles": [
+        6925,
+        6928
+      ],
+      "vertices": [
+        [
+          5886,
+          6006,
+          6005
+        ],
+        [
+          5887,
+          5888,
+          6007
+        ]
+      ],
+      "shared_vertices": 0,
+      "witnesses": [
+        [
+          0.14898223022435744,
+          -0.1391391221831215,
+          3.3891273325441293
+        ],
+        [
+          0.15174618743248655,
+          -0.1498726026059621,
+          3.3984323872391315
+        ]
+      ],
+      "source_indices": [
+        [
+          186198,
+          186318,
+          186317
+        ],
+        [
+          186199,
+          186200,
+          186319
+        ]
+      ]
+    },
+    {
+      "triangles": [
+        6928,
+        7164
+      ],
+      "vertices": [
+        [
+          5887,
+          5888,
+          6007
+        ],
+        [
+          6005,
+          6006,
+          6125
+        ]
+      ],
+      "shared_vertices": 0,
+      "witnesses": [
+        [
+          0.14898223022435741,
+          -0.1391391221831214,
+          3.3891273325441293
+        ],
+        [
+          0.14785964061212797,
+          -0.13486852115333733,
+          3.3854300506881962
+        ]
+      ],
+      "source_indices": [
+        [
+          186199,
+          186200,
+          186319
+        ],
+        [
+          186317,
+          186318,
+          186437
+        ]
+      ]
+    },
+    {
+      "triangles": [
+        6928,
+        7165
+      ],
+      "vertices": [
+        [
+          5887,
+          5888,
+          6007
+        ],
+        [
+          6006,
+          6126,
+          6125
+        ]
+      ],
+      "shared_vertices": 0,
+      "witnesses": [
+        [
+          0.14734060083146194,
+          -0.13289858261452636,
+          3.3837248363638293
+        ],
+        [
+          0.147859640612128,
+          -0.13486852115333742,
+          3.3854300506881967
+        ]
+      ],
+      "source_indices": [
+        [
+          186199,
+          186200,
+          186319
+        ],
+        [
+          186318,
+          186438,
+          186437
+        ]
+      ]
+    }
+  ],
+  "opposed_coplanar_edge_adjacent_candidates": [],
+  "elapsed_seconds": 0.45878815298783593,
+  "passes_screen": false
+}

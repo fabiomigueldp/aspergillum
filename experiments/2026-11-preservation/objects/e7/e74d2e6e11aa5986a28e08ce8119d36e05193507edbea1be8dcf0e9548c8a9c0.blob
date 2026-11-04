@@ -1,0 +1,9 @@
+import bpy,numpy as np,json
+from pathlib import Path
+R=Path(__file__).resolve().parents[1];S=R.parent.parent/'paz-refinement/gui-test/checkpoint-V75-20261102/V75-tunic-lower-trial.blend';bpy.ops.wm.open_mainfile(filepath=str(S),use_scripts=False);o=bpy.data.objects['TESTE 29 — faixa embutida com terminação suave'];o.hide_viewport=False;o.hide_set(False)
+for name,fun in [('lab_u',lambda i:i//17),('lab_v',lambda i:i%17)]:
+ a=o.data.attributes.new(name,'FLOAT','POINT')
+ for i,x in enumerate(a.data):x.value=fun(i)
+for m in o.modifiers:
+ if m.type=='SUBSURF':m.levels=m.render_levels
+bpy.context.view_layer.update();dg=bpy.context.evaluated_depsgraph_get();me=bpy.data.meshes.new_from_object(o.evaluated_get(dg),preserve_all_data_layers=True,depsgraph=dg);uv=np.array([[a.value,b.value] for a,b in zip(me.attributes['lab_u'].data,me.attributes['lab_v'].data)]);src=np.load(R/'evidence/band-source.npz');assert len(uv)==len(src['points']);np.savez_compressed(R/'evidence/band-source-parameters.npz',uv=uv);print('PARAMS',len(uv),uv[:20],flush=True)

@@ -1,0 +1,49 @@
+"""Independent JSON/UV reconstruction. No candidate exporter imports.
+Conventions fixed by the previously verified V14 Blockbench CPU oracle.
+"""
+from pathlib import Path
+import numpy as np,json,hashlib
+from PIL import Image
+O=Path(__file__).resolve().parent;B=O.parents[1]
+SOURCE={0:B/'band_shell_v13/constrained_fit/retained-band.npz',1:B/'ear_rim_v11/structural_rebuild/retained-shell.npz',15:B/'body_interface_v9/constrained_fit/retained-anatomy.npz'}
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(p,obj):Path(p).write_text(json.dumps(obj,indent=2,allow_nan=False)+'\n')
+def source_tri(part):
+ d=np.load(SOURCE[part]);return d['points'][d['triangles']]
+def rot(a):
+ x,y,z=np.radians(a)*[-1,-1,1];cx,cy,cz=np.cos([x,y,z]);sx,sy,sz=np.sin([x,y,z]);return np.array([[cz,-sz,0],[sz,cz,0],[0,0,1]])@np.array([[cy,0,sy],[0,1,0],[-sy,0,cy]])@np.array([[1,0,0],[0,cx,-sx],[0,sx,cx]])
+CORNERS={'north':[(0,1,0),(0,0,0),(1,0,0),(1,1,0)],'south':[(1,1,1),(1,0,1),(0,0,1),(0,1,1)],'east':[(1,1,0),(1,0,0),(1,0,1),(1,1,1)],'west':[(0,1,1),(0,0,1),(0,0,0),(0,1,0)],'up':[(0,1,1),(0,1,0),(1,1,0),(1,1,1)],'down':[(0,0,0),(0,0,1),(1,0,1),(1,0,0)]}
+def cube_quad(c,face):
+ o=np.array(c['origin']);s=np.array(c['size']);p=np.array(c.get('pivot',o+s/2))*[-1,1,1];R=rot(c.get('rotation',[0,0,0]));v=(o+np.array(CORNERS[face])*s)*[-1,1,1];v=(v-p)@R.T+p;return v[:,[0,2,1]]*[1/16,-1/16,1/16]
+def readgeo(p):return json.load(open(p))['minecraft:geometry'][0]
+def json_faces(p,parts=(0,1,15),texture=None):
+ g=readgeo(p);qs=[];uvs=[];ids=[];cubeids=[];names=[]
+ for bi,b in enumerate(g['bones']):
+  name=b['name'];part=int(name.split('_')[-1]);
+  if part not in parts:continue
+  assert not b.get('parent') and not any(b.get('rotation',[0,0,0]))
+  for ci,c in enumerate(b.get('cubes',[])):
+   assert isinstance(c.get('uv'),dict),str(p)
+   for fn,uv in c['uv'].items():
+    qs.append(cube_quad(c,fn));uvs.append(uv['uv']+uv['uv_size']);ids.append(part);cubeids.append(ci);names.append(fn)
+ q=np.array(qs);U=q[:,3]-q[:,0];V=q[:,1]-q[:,0];nn=np.cross(V,U);norm=np.linalg.norm(nn,axis=1);ok=norm>1e-30
+ return {'q':q,'U':U,'V':V,'n':nn/np.maximum(norm,1e-300)[:,None],'lU':(U*U).sum(1),'lV':(V*V).sum(1),'uv':np.array(uvs),'part':np.array(ids),'cube':np.array(cubeids),'face':np.array(names),'valid':ok,'texture':None if texture is None else np.array(Image.open(texture).convert('RGBA')),'geo':g}
+def trace_quads(scene,origin,direction,maxdist=10,details=False):
+ q,U,V,n=scene['q'],scene['U'],scene['V'],scene['n'];nd=n@direction;valid=scene['valid']&(nd< -1e-12);t=np.divide(np.einsum('ij,ij->i',q[:,0]-origin,n),nd,out=np.full(len(q),np.inf),where=np.abs(nd)>1e-12);valid&=(t>=0)&(t<=maxdist);ix=np.flatnonzero(valid)
+ if not len(ix):return None
+ point=origin+t[ix,None]*direction;dp=point-q[ix,0];u=np.einsum('ij,ij->i',dp,U[ix])/scene['lU'][ix];v=np.einsum('ij,ij->i',dp,V[ix])/scene['lV'][ix];inside=(u>=0)&(v>=0)&(u<1)&(v<1);ix=ix[inside];u=u[inside];v=v[inside]
+ if scene['texture'] is not None and len(ix):
+  uv=scene['uv'][ix];px=np.floor(uv[:,0]+u*uv[:,2]).astype(int);py=np.floor(uv[:,1]+v*uv[:,3]).astype(int);tex=scene['texture'];bounds=(px>=0)&(py>=0)&(px<tex.shape[1])&(py<tex.shape[0]);alpha=np.zeros(len(ix),bool);alpha[bounds]=tex[py[bounds],px[bounds],3]>0;ix=ix[alpha];u=u[alpha];v=v[alpha]
+ if not len(ix):return None
+ j=np.argmin(t[ix]);i=int(ix[j]);return {'part':int(scene['part'][i]),'cube':int(scene['cube'][i]),'face':str(scene['face'][i]),'distance_mm':float(t[i]*1000),'point':(origin+t[i]*direction).tolist(),'quad_uv':[float(u[j]),float(v[j])],'scene_face':i}
+def make_native():
+ tris=np.concatenate([source_tri(p)for p in (0,1,15)]);parts=np.concatenate([np.full(len(source_tri(p)),p)for p in (0,1,15)]);faces=np.concatenate([np.arange(len(source_tri(p)))for p in (0,1,15)]);return tris,parts,faces
+def native_trace(tri,parts,faces,origin,direction,maxdist=10):
+ e0=tri[:,1]-tri[:,0];e1=tri[:,2]-tri[:,0];n=np.cross(e0,e1);n/=np.linalg.norm(n,axis=1)[:,None];nd=n@direction;valid=nd< -1e-12;t=np.divide(np.einsum('ij,ij->i',tri[:,0]-origin,n),nd,out=np.full(len(n),np.inf),where=np.abs(nd)>1e-12);valid&=(t>=0)&(t<=maxdist);point=origin+t[:,None]*direction;dp=point-tri[:,0];a=(e0*e0).sum(1);b=(e0*e1).sum(1);c=(e1*e1).sum(1);den=a*c-b*b;d=(dp*e0).sum(1);e=(dp*e1).sum(1);u=(c*d-b*e)/den;v=(a*e-b*d)/den;valid&=(u>=-1e-9)&(v>=-1e-9)&(u+v<=1+1e-9);ids=np.flatnonzero(valid)
+ if not len(ids):return None
+ i=int(ids[np.argmin(t[ids])]);return {'part':int(parts[i]),'face':int(faces[i]),'distance_mm':float(t[i]*1000),'point':point[i].tolist()}
+def frozen_rays():
+ d=json.load(open(B/'assembly_transport_v14/independent_validation/critical-ray-alpha-comparison.json'));rays=[]
+ for r in d['neighbor_witnesses']:
+  c=d['central_rays'][r['ray']];direction=np.array(c['direction']);direction/=np.linalg.norm(direction);u=np.cross(direction,[0,0,1.]);u/=np.linalg.norm(u);v=np.cross(direction,u);x,y=np.array(r['offset_mm'])/1000;origin=np.array(c['origin'])+x*u+y*v;rays.append({'ray':r['ray'],'label':c['label'],'offset_mm':r['offset_mm'],'origin':origin,'direction':direction,'maxdist':c['maxdist'],'native':r['native_first'],'v14':r['alpha_first']})
+ return rays

@@ -1,0 +1,204 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+ RUN  v3.2.7 /workspace/scratch/212c580ada5b/aspergillum-state-compaction-20261103
+
+ ❯ tests/application/compact-event-routing.test.ts (40 tests | 12 failed | 25 skipped) 189ms
+   ↓ compact states through registered production event routes > deduplicates item and block input for aspersorium, then routes break and player-after-break once
+   ↓ compact states through registered production event routes > deduplicates item and block input for table, then routes break and player-after-break once
+   ↓ compact states through registered production event routes > playerHotbarSelectedSlotChange cancels production loading before delayed commit
+   ↓ compact states through registered production event routes > playerDimensionChange cancels production loading before delayed commit
+   ↓ compact states through registered production event routes > playerGameModeChange cancels production loading before delayed commit
+   ↓ compact states through registered production event routes > playerInventoryItemChange cancels production loading before delayed commit
+   ↓ compact states through registered production event routes > entityDie cancels production loading before delayed commit
+   ↓ compact states through registered production event routes > playerSpawn cancels production loading before delayed commit
+   ↓ compact states through registered production event routes > playerLeave cancels production loading before delayed commit
+   ↓ compact states through registered production event routes > playerHotbarSelectedSlotChange invalidates production table callbacks without losing its stored item
+   ↓ compact states through registered production event routes > playerDimensionChange invalidates production table callbacks without losing its stored item
+   ↓ compact states through registered production event routes > playerGameModeChange invalidates production table callbacks without losing its stored item
+   ↓ compact states through registered production event routes > entityDie invalidates production table callbacks without losing its stored item
+   ↓ compact states through registered production event routes > playerSpawn invalidates production table callbacks without losing its stored item
+   ↓ compact states through registered production event routes > playerLeave invalidates production table callbacks without losing its stored item
+   ↓ compact states through registered production event routes > preserves a replacement snapshot before a registered break callback executes its deferred recovery
+   ↓ table session identity regression fixes > keeps a newly opened table session alive after the old close callback
+   ↓ table session identity regression fixes > refuses stale table edit on a replacement item without a break event
+   ↓ table session identity regression fixes > refuses stale table profile on a replacement item without a break event
+   ↓ table session identity regression fixes > refuses stale table restore on a replacement item without a break event
+   ↓ table session identity regression fixes > refuses stale table retrieve on a replacement item without a break event
+   ↓ known lifecycle limitations retained outside the codec scope > records delayed break replay consuming the current missing snapshot
+   ↓ known lifecycle limitations retained outside the codec scope > records delayed break replay consuming the current replacement snapshot
+   ↓ known lifecycle limitations retained outside the codec scope > records loss after both the aspersorium docking write and hand rollback fail
+   ↓ known lifecycle limitations retained outside the codec scope > records loss after both the table docking write and hand rollback fail
+   × conservative prevention through the real player-before-break subscription > cancels occupied aspersorium without transferring, deleting, or mutating gameplay state 23ms
+     → expected false to be true // Object.is equality
+   × conservative prevention through the real player-before-break subscription > cancels occupied table without transferring, deleting, or mutating gameplay state 4ms
+     → expected false to be true // Object.is equality
+   × conservative prevention through the real player-before-break subscription > cancels visually empty aspersorium with an orphaned snapshot 3ms
+     → expected false to be true // Object.is equality
+   × conservative prevention through the real player-before-break subscription > cancels visually empty table with an orphaned snapshot 3ms
+     → expected false to be true // Object.is equality
+   × conservative prevention through the real player-before-break subscription > cancels reserved aspersorium contents instead of treating them as an empty block 3ms
+     → expected false to be true // Object.is equality
+   × conservative prevention through the real player-before-break subscription > cancels reserved table contents instead of treating them as an empty block 3ms
+     → expected false to be true // Object.is equality
+   × conservative prevention through the real player-before-break subscription > retains unreadable aspersorium shard bytes and cancels its break 2ms
+     → expected false to be true // Object.is equality
+   × conservative prevention through the real player-before-break subscription > retains unreadable table shard bytes and cancels its break 2ms
+     → expected false to be true // Object.is equality
+   × conservative prevention through the real player-before-break subscription > cancels known aspersorium when reading its permutation fails 2ms
+     → expected false to be true // Object.is equality
+   × conservative prevention through the real player-before-break subscription > cancels known table when reading its permutation fails 2ms
+     → expected false to be true // Object.is equality
+   ✓ conservative prevention through the real player-before-break subscription > allows valid empty aspersorium and never reverses another cancellation 4ms
+   ✓ conservative prevention through the real player-before-break subscription > allows valid empty table and never reverses another cancellation 6ms
+   ✓ conservative prevention through the real player-before-break subscription > leaves unrelated blocks alone while retaining the existing aspergillum mining cancellation 2ms
+   × conservative prevention through the real player-before-break subscription > keeps cancellation if feedback scheduling throws 9ms
+     → expected [Function] to not throw an error but 'AssertionError: expected false to be …' was thrown
+   × conservative prevention through the real player-before-break subscription > delayed feedback never consumes a replacement snapshot 3ms
+     → expected false to be true // Object.is equality
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 12 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > conservative prevention through the real player-before-break subscription > cancels occupied aspersorium without transferring, deleting, or mutating gameplay state
+ FAIL  tests/application/compact-event-routing.test.ts > conservative prevention through the real player-before-break subscription > cancels occupied table without transferring, deleting, or mutating gameplay state
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/application/compact-event-routing.test.ts:300:43
+    298|     setDockedSnapshot(dimension.id, block.location, snapshot);
+    299|     world.setDynamicProperty.mockClear();
+    300|     expect(attempt(block, player).cancel).toBe(true);
+       |                                           ^
+    301|     expect(player.onScreenDisplay.setActionBar).not.toHaveBeenCalled()…
+    302|     advanceTicks();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/12]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > conservative prevention through the real player-before-break subscription > cancels visually empty aspersorium with an orphaned snapshot
+ FAIL  tests/application/compact-event-routing.test.ts > conservative prevention through the real player-before-break subscription > cancels visually empty table with an orphaned snapshot
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/application/compact-event-routing.test.ts:313:43
+    311|     const snapshot = captureDockedAspergillum(createAspergillum(2), 2);
+    312|     setDockedSnapshot(dimension.id, block.location, snapshot); world.s…
+    313|     expect(attempt(block, player).cancel).toBe(true); advanceTicks();
+       |                                           ^
+    314|     expect(getDockedSnapshot(dimension.id, block.location)).toEqual(sn…
+    315|     expect(world.setDynamicProperty).not.toHaveBeenCalled(); expect(di…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/12]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > conservative prevention through the real player-before-break subscription > cancels reserved aspersorium contents instead of treating them as an empty block
+ FAIL  tests/application/compact-event-routing.test.ts > conservative prevention through the real player-before-break subscription > cancels reserved table contents instead of treating them as an empty block
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/application/compact-event-routing.test.ts:322:43
+    320|       ? { "aspergillum:contents_a": 1, "aspergillum:contents_b": 2, "a…
+    321|       : { "aspergillum:table_contents_a": 1, "aspergillum:table_conten…
+    322|     expect(attempt(block, player).cancel).toBe(true); advanceTicks();
+       |                                           ^
+    323|     expect(world.setDynamicProperty).not.toHaveBeenCalled(); expect(bl…
+    324|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/12]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > conservative prevention through the real player-before-break subscription > retains unreadable aspersorium shard bytes and cancels its break
+ FAIL  tests/application/compact-event-routing.test.ts > conservative prevention through the real player-before-break subscription > retains unreadable table shard bytes and cancels its break
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/application/compact-event-routing.test.ts:329:43
+    327|     const property = dockedShardPropertyId(dimension.id, block.locatio…
+    328|     world.setDynamicProperty(property, raw); world.setDynamicProperty.…
+    329|     expect(attempt(block, player).cancel).toBe(true); advanceTicks();
+       |                                           ^
+    330|     expect(world.getDynamicProperty(property)).toBe(raw); expect(world…
+    331|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/12]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > conservative prevention through the real player-before-break subscription > cancels known aspersorium when reading its permutation fails
+ FAIL  tests/application/compact-event-routing.test.ts > conservative prevention through the real player-before-break subscription > cancels known table when reading its permutation fails
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/application/compact-event-routing.test.ts:336:43
+    334|     Object.defineProperty(block, "typeId", { value: typeId });
+    335|     Object.defineProperty(block, "permutation", { get: () => { throw n…
+    336|     expect(attempt(block, player).cancel).toBe(true); advanceTicks();
+       |                                           ^
+    337|     expect(world.setDynamicProperty).not.toHaveBeenCalled(); expect(bl…
+    338|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/12]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > conservative prevention through the real player-before-break subscription > keeps cancellation if feedback scheduling throws
+AssertionError: expected [Function] to not throw an error but 'AssertionError: expected false to be …' was thrown
+
+- Expected: 
+undefined
+
++ Received: 
+"AssertionError: expected false to be true // Object.is equality"
+
+ ❯ tests/application/compact-event-routing.test.ts:355:72
+    353|     vi.spyOn(system, "run").mockImplementationOnce(() => { throw new E…
+    354|     vi.spyOn(console, "warn").mockImplementation(() => {});
+    355|     expect(() => expect(attempt(block, player).cancel).toBe(true)).not…
+       |                                                                        ^
+    356|     expect(world.setDynamicProperty).not.toHaveBeenCalled(); expect(bl…
+    357|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/12]⎯
+
+ FAIL  tests/application/compact-event-routing.test.ts > conservative prevention through the real player-before-break subscription > delayed feedback never consumes a replacement snapshot
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/application/compact-event-routing.test.ts:360:43
+    358|   it("delayed feedback never consumes a replacement snapshot", () => {
+    359|     const { block, player, dimension } = fixture("table"); occupy("tab…
+    360|     expect(attempt(block, player).cancel).toBe(true);
+       |                                           ^
+    361|     const replacement = captureDockedAspergillum(createAspergillum(4),…
+    362|     setDockedSnapshot(dimension.id, block.location, replacement); worl…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/12]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  12 failed | 3 passed | 25 skipped (40)
+   Start at  18:12:49
+   Duration  1.76s (transform 661ms, setup 0ms, collect 599ms, tests 189ms, environment 0ms, prepare 192ms)
+

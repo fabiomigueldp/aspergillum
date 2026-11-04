@@ -1,0 +1,16 @@
+"""Cheap connectivity check only; reuses already-run topology gates, no collision reruns."""
+from pathlib import Path
+import numpy as np,json,hashlib
+from scipy.sparse import coo_matrix
+from scipy.sparse.csgraph import connected_components
+O=Path(__file__).resolve().parent;B=O.parents[1];out={}
+for label,path in [('shell_v7',B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz'),('anatomy_v9',B/'body_interface_v9/constrained_fit/retained-anatomy.npz'),('band_v5',B/'shell_band_v5/retained_candidate/evidence/band-paired.npz')]:
+ d=np.load(path);v=d['points'];f=d['triangles'];e=np.r_[f[:,[0,1]],f[:,[1,2]],f[:,[2,0]]];g=coo_matrix((np.ones(len(e),bool),(e[:,0],e[:,1])),shape=(len(v),len(v)));n,c=connected_components(g,directed=False);parts=[]
+ for i in range(n):
+  vi=np.flatnonzero(c==i);fi=np.flatnonzero(c[f[:,0]]==i);t=v[f[fi]];area=np.linalg.norm(np.cross(t[:,1]-t[:,0],t[:,2]-t[:,0]),axis=1)*.5;parts.append({'vertices':len(vi),'triangles':len(fi),'vertex_indices':vi.tolist() if len(vi)<10 else None,'triangle_indices':fi.tolist() if len(fi)<10 else None,'source_indices':d['source_indices'][vi].tolist() if 'source_indices' in d.files and len(vi)<10 else None,'bbox':[v[vi].min(0).tolist(),v[vi].max(0).tolist()],'total_triangle_area_mm2':float(area.sum()*1e6)})
+ out[label]={'path':str(path.relative_to(B)),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'connected_components':n,'components':parts}
+ if label=='shell_v7':
+  vs=[set(np.unique(f[d['face_parts']==j]).tolist()) for j in range(3)];out[label]['shared_vertices_between_parts']={'cap_bridge':len(vs[0]&vs[1]),'bridge_mantle':len(vs[1]&vs[2]),'cap_mantle':len(vs[0]&vs[2])}
+r=json.loads((O/'boundary-posterior-30mm-review.json').read_text());out['boundary_posterior_30mm']={'same_triangles_and_indices_as_v7':r['topology_identity'],'connected_components_inherited':out['shell_v7']['connected_components'],'closed_topology_gate':{k:r['self_gate'][k] for k in ['euler','boundary_edges','edges_not_two_faces','inconsistent_edge_winding','bad_vertex_links','unused_vertices','degenerate_triangles']}}
+out['interpretation']='The shell is one connected closed 2-manifold surface. Cap, bridge and mantle are labels within it, not independent removable closed components. Exposed red/blue ear blades belong to that surface. No independent shell component has been certified universally invisible. Deleting a proper nonempty subset of faces of this connected face-adjacent closed manifold exposes boundary edges unless a replacement closure is reconstructed. The tiny separate anatomy component is inherited and intentionally frozen, not a V10 bridge component or deletion candidate.'
+(O/'component-connectivity.json').write_text(json.dumps(out,indent=2));print(json.dumps(out,indent=2))

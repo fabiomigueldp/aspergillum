@@ -1,0 +1,36 @@
+# Revisão independente da evidência visual V6
+
+Revisão em 2026-11-03. Nenhuma candidata está aprovada. Arquivos anteriores e fontes não foram alterados por esta revisão.
+
+## Alcance
+
+As imagens são diagnósticos Blender Cycles, materiais planos e faces com descarte do verso. O corpo cinza corresponde às 18 partes antigas reimportadas do JSON com alfa e transformações preservadas. Cabeça e halo são geometria antiga reduzida, não contexto highpoly. Cap azul, ponte vermelha, manto verde e faixa ouro são malhas nativas estruturais. Não são exportação final Bedrock nem screenshots Minecraft; não há normalmap. A correção de winding não é validação de exportação ou de jogo.
+
+## Observações verificadas nas imagens
+
+- `rejected-paired`: grandes regiões pretas atrás do pescoço e por toda a extensão do manto impedem ler sua superfície. No perfil aparecem apenas fragmentos coloridos na junção. Não tratar essas regiões pretas isoladamente como prova de buracos geométricos: o diagnóstico numérico de winding documenta um problema de orientação. Esta candidata também tem ponte/recorte diferentes; compará-la com `restored-orientation` não isola orientação e não permite atribuir diferenças de forma apenas ao winding.
+- `restored-orientation`: a ponte vermelha e o manto verde são legíveis. O perfil tem mudança brusca de direção na ponta inferior do cap e na saída da ponte. Atrás, o manto estreita sob o halo e se alarga em direção aos ombros; facetas, estrias e divisões horizontais continuam visíveis. Isso permite avaliar melhor a forma, mas não comprova continuidade física ou estética aprovada.
+- `physical-hermite`: no perfil, pregas/linhas estreitas vermelhas aparecem imediatamente atrás da orelha. Há uma área cinza irregular exposta na ponte logo abaixo da ponta do cap. É uma descontinuidade visual real, mas a imagem sozinha não separa exposição da cabeça/corpo, sobreposição e descarte de versos; não chamá-la de furo confirmado. Na vista traseira, a área cinza exposta reaparece sob o halo, acompanhada de uma pequena lasca clara próxima da outra lateral. O manto preserva o aspecto facetado e a mudança de inclinação abaixo da ponte.
+- Frente do corpo inteiro: orientação restaurada e Hermite física preservam a leitura geral da figura e deixam faixas verdes nas laterais. A junção ocupa poucos pixels e fica parcialmente oculta pela cabeça; a aparente semelhança frontal não pode aprovar a ligação.
+- Cabeça: manchas cinzas sobre o cap azul, incluindo uma maior próxima ao topo, recortes na faixa ouro e encontros irregulares junto às orelhas são visíveis. Devem ser descritos como contatos locais entre componentes nesta composição, não automaticamente como defeitos produzidos só pelo novo manto.
+- O corpo cinza continua visivelmente facetado, com pequenos pontos escuros na túnica; estas imagens não demonstram que a candidata causou esses detalhes preexistentes ou que houve regressão do corpo.
+
+## Ablação controlada de orientação
+
+Comparei `orientation-control-full-front.png`, `orientation-control-junction-profile.png` e `orientation-control-junction-back.png` com as vistas correspondentes `restored-orientation`. Diferentemente de `rejected-paired`, este controle usa a mesma geometria da variante restaurada. `orientation-ablation-validation.json` confirma igualdade de pontos, índices de origem, conjuntos de vértices por triângulo e classes de partes; winding de cap/ponte preservado e apenas os triângulos do manto invertidos.
+
+Nesse par controlado, a ponte vermelha já é visível antes da restauração. A alteração observada é principalmente o manto: quase preto no controle, passa a verde e revela facetas/estrias na restauração. Perfil, silhueta, faixa ouro, cap e geometria do corpo permanecem comparáveis. A faixa escura que acompanha o encontro ponte/manto no controle deixa de aparecer da mesma forma após a correção. Logo, o ganho de legibilidade do manto pode ser atribuído à orientação/normais nesse teste; não há evidência de reparo geométrico, afastamento de superfícies ou correção dos 90 cruzamentos. Não extrapolar essa atribuição às diferenças entre `rejected-paired` e `restored-orientation`.
+
+## Cruzamento com os diagnósticos
+
+`mantle-orientation-independent-validation.json` documenta inversão de 48.608/48.608 faces na comparação da peça completa com a fonte. A cópia restaurada mantém coordenadas idênticas, preserva cap/ponte e restaura orientação do manto. Não atribuir ao ajuste mudança de forma.
+
+`seam-swapped-7p5-restored-orientation-gate.json`: zero arestas de winding inconsistente e 90 cruzamentos estritos. `seam-hermite-physical-7p5-assembly-gate.json`: zero arestas de winding inconsistente e 172 cruzamentos estritos. Fechamento topológico e orientação coerente não eliminam os cruzamentos. A contagem é de pares de triângulos detectados, não número de furos ou manchas visuais.
+
+`bridge-hermite-physical-7p5-diagnosis.json` localiza os 172 pares nas laterais: 108 em t<0,2 e 64 em t>0,8. Não se pode identificar todos os pares só nos renders, e o halo oculta parte importante da junção traseira.
+
+`legacy-head-contact.json` usa proxy de plano da face mais próxima sobre 20.000 amostras fixas, não SDF nem prova exata de colisão. Com cabeça antiga, os eventos abaixo de -0,1 mm caem de 2.138 para 1.864 no agregado, embora existam 1.011 novos eventos locais e 1.285 recuperações. Não afirmar piora agregada; tampouco ignorar os novos contatos locais.
+
+## Conclusão adequada
+
+A orientação restaurada melhora a legibilidade da superfície, mas as candidatas reta e Hermite física continuam reprovadas pelos cruzamentos e exibem problemas locais de integração. Os resultados rejeitam estas construções específicas. Não provam impossibilidade global de redesign, nem validam uma entrega Bedrock final. É necessária uma candidata geométrica sem esses cruzamentos, seguida de avaliação das interfaces com o corpo antigo e validação da exportação no destino.

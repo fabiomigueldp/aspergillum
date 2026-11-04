@@ -1,0 +1,46 @@
+# Two-pedestal textile composition budget
+
+- configurations: 512
+- cellInstances: 19584
+- recipes: 17
+- rawKeyOrderModuleGrainVisual: 1160
+- moduleGrainVisual: 995
+- moduleGrainWithNative: 995
+- bareWithLogicalFacing: 1216
+- combinedPreservingRecipe: 17443
+- combinedPreservingRecipeAndFacing: 21156
+- rawKeyOrderPreservingRecipe: 20204
+- rawKeyOrderPreservingRecipeAndFacing: 21156
+- blindVisualTimesRecipes: 16915
+
+## Per recipe
+- none: 995 visual/native entries; 1216 preserving logical facing; 1 standalone cloth outputs.
+- linen_short: 995 visual/native entries; 1216 preserving logical facing; 16 standalone cloth outputs.
+- linen_long: 995 visual/native entries; 1216 preserving logical facing; 16 standalone cloth outputs.
+- gold_short: 995 visual/native entries; 1216 preserving logical facing; 16 standalone cloth outputs.
+- gold_long: 995 visual/native entries; 1216 preserving logical facing; 16 standalone cloth outputs.
+- agnus: 1043 visual/native entries; 1260 preserving logical facing; 63 standalone cloth outputs.
+- floral_white: 1043 visual/native entries; 1260 preserving logical facing; 63 standalone cloth outputs.
+- floral_red: 1043 visual/native entries; 1260 preserving logical facing; 63 standalone cloth outputs.
+- floral_green: 1043 visual/native entries; 1260 preserving logical facing; 63 standalone cloth outputs.
+- floral_purple: 1043 visual/native entries; 1260 preserving logical facing; 63 standalone cloth outputs.
+- floral_rose: 1043 visual/native entries; 1260 preserving logical facing; 63 standalone cloth outputs.
+- floral_black: 1043 visual/native entries; 1260 preserving logical facing; 63 standalone cloth outputs.
+- floral_gold: 1043 visual/native entries; 1260 preserving logical facing; 63 standalone cloth outputs.
+- floral_silver: 1043 visual/native entries; 1260 preserving logical facing; 63 standalone cloth outputs.
+- verdant: 1043 visual/native entries; 1260 preserving logical facing; 63 standalone cloth outputs.
+- requiem: 1043 visual/native entries; 1260 preserving logical facing; 63 standalone cloth outputs.
+- lace: 995 visual/native entries; 1216 preserving logical facing; 16 standalone cloth outputs.
+
+## Scope and limitations
+- Canonical object keys remove insertion-order-only distinctions in source cubes; raw-key-order counts are reported alongside for comparison with the earlier 1,160-profile measurement.
+- Recipe identity is retained even when interior cells have the same visible material. Logical facing is retained in the second count, even for symmetric or hidden cloth.
+- Only actually co-occurring pedestal profile, contour, textile center role and facing are enumerated across all 512 permitted assemblies.
+- Garment is generated from the real shared generator with fixed edges. Face material slots are replaced by their actual texture keys; unused material bindings do not inflate signatures.
+- Collision is the existing nativeBoxes study output, not a new collision design. Cubes are hashed canonically as sorted multisets; arrays inside cubes retain order.
+- This measures structural-plus-garment composition keys, not a validated rendered integration. Existing wooden top reaches16 and linen occupies15.91..16: implement an explicit covered-top clipping/removal policy before rendering. Such changes can alter profile counts.
+- Garment defaults use stoneEdge8.28/cornerEnd8.34, as shared generator; pedestal-specific attachment fit and cube/block limits require validation.
+- The structural wood is deliberately not culled behind cloth. Removing hidden wooden faces could reduce counts, but is not assumed.
+- These are exact construction-codebook entry counts, not padded declared-state totals, theoretical minima, or approved runtime schemas. No catalog/runtime/world changes.
+
+Run: node --experimental-strip-types tools/audit-pedestal-textile-budget.mjs

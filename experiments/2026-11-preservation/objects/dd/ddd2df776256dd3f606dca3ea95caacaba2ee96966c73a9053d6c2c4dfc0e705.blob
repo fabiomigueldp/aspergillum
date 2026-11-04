@@ -1,0 +1,16 @@
+from pathlib import Path
+import json,hashlib
+from PIL import Image
+R=Path(__file__).resolve().parents[1];B=R.parent
+cases=[('V14 flat',B/'assembly_transport_v14/resource_pack/models/entity/paz_v75_v14_lab_sculpture.geo.json',B/'assembly_transport_v14/resource_pack/textures/entity/paz_v75_v14_lab_sculpture.png')]
+for n in (300,700,1400):
+ d=R/f'opaque_band/budget-{n:04d}'
+ for mode in ('','pruned/'):
+  cases.append((f'opaque {n} '+('pruned' if mode else 'full'),d/(mode+'combined-v14.geo.json'),R/'opaque_band/combined-v14-opaque.png'))
+for n in (128,512,2048):cases.append((f'shared {n}',R/f'shared_mask/shared_mask_{n}.geo.json',R/f'shared_mask/shared_mask_{n}.png'))
+rows=[]
+for name,gp,tp in cases:
+ g=json.loads(gp.read_text())['minecraft:geometry'][0]; bones=g['bones']; cubes=sum(len(b.get('cubes',[])) for b in bones); quads=sum(len(c['uv']) for b in bones for c in b.get('cubes',[])); w,h=Image.open(tp).size
+ rows.append({'name':name,'geometry_path':str(gp.relative_to(B)),'texture_path':str(tp.relative_to(B)),'cube_count':cubes,'mapped_quads':quads,'raster_triangles':2*quads,'unwelded_vertices':4*quads,'geometry_bytes':gp.stat().st_size,'png_bytes':tp.stat().st_size,'atlas_pixels':[w,h],'rgba8_mip0_estimate_bytes':w*h*4,'cube_delta_percent_vs_v14':(cubes/23081-1)*100,'raster_triangle_delta_percent_vs_v14':(quads/23098-1)*100,'sha256_geometry':hashlib.sha256(gp.read_bytes()).hexdigest(),'sha256_png':hashlib.sha256(tp.read_bytes()).hexdigest()})
+(R/'evidence/cost-accounting.json').write_text(json.dumps({'comparison':'Flat color-only diagnostic, no normalmap/PBR equivalence claimed','measured':'JSON counts, file bytes, decoded dimensions','not_measured':'Minecraft load time, FPS, GPU memory, mipmap behavior; RGBA8 storage is an explicit estimate only','records':rows},indent=2)+'\n')
+print('\n'.join(f"{r['name']}: {r['cube_count']} cubes, {r['raster_triangles']} raster triangles, {r['rgba8_mip0_estimate_bytes']/2**20:.0f} MiB RGBA8" for r in rows))

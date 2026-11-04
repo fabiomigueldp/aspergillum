@@ -1,0 +1,16 @@
+from pathlib import Path
+import json
+import numpy as np
+from PIL import Image
+from scipy.ndimage import binary_fill_holes,binary_erosion,distance_transform_edt
+W=Path(__file__).resolve().parent
+for D in sorted(W.glob('budget-*')):
+ p=D/'silhouette-metrics.json';r=json.loads(p.read_text())
+ r['metric_caveat']='Raw boundary distance includes internal holes and subpixel raster topology. A small new/filled interior pixel can create a distant boundary, so raw maximum must not be described as outer-contour displacement. Added-coverage reach, removed-coverage reach, and hole-filled outer boundary metrics are included separately.'
+ for view,scopes in r['views'].items():
+  for scope,row in scopes.items():
+   rgb=np.array(Image.open(D/f'coverage-{scope}-{view}.png'));same=np.all(rgb==[110,110,110],axis=2);removed=np.all(rgb==[235,60,60],axis=2);added=np.all(rgb==[45,90,230],axis=2);o=same|removed;n=same|added
+   row['added_coverage_max_distance_to_native_coverage_mm']=float(np.max(distance_transform_edt(~o)[added],initial=0)*row['pixel_mm']);row['removed_coverage_max_distance_to_candidate_coverage_mm']=float(np.max(distance_transform_edt(~n)[removed],initial=0)*row['pixel_mm'])
+   of=binary_fill_holes(o);nf=binary_fill_holes(n);bo=of^binary_erosion(of);bn=nf^binary_erosion(nf);ds=np.r_[distance_transform_edt(~bn)[bo],distance_transform_edt(~bo)[bn]]*row['pixel_mm'];row['hole_filled_outer_boundary_nearest_max_mm']=float(ds.max());row['hole_filled_outer_boundary_nearest_p95_mm']=float(np.percentile(ds,95))
+ p.write_text(json.dumps(r,indent=2)+'\n')
+ print(D.name,'band added max',max(v['band-only']['added_coverage_max_distance_to_native_coverage_mm']for v in r['views'].values()),'union outer max',max(v['native-three-part-union']['hole_filled_outer_boundary_nearest_max_mm']for v in r['views'].values()),flush=True)

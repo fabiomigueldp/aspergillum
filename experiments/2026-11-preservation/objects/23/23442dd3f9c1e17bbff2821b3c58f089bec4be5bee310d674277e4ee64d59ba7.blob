@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+"""Read-only OGG/PCM comparison; writes only beside this script. No resampling."""
+from pathlib import Path
+import array, hashlib, json, math, struct, subprocess, datetime
+OUT=Path(__file__).resolve().parent
+ROOT=OUT.parents[2]
+BASE=ROOT.parent/'altare-two-pillars-integration-20261103'
+REF=ROOT.parent/'altare-catalog-compaction-20261103'
+sha=lambda b:hashlib.sha256(b).hexdigest()
+def run(*args):return subprocess.check_output(args,stderr=subprocess.PIPE)
+def packets(data):
+    pos=0; pending=b''; result=[]; pages=[]
+    while pos<len(data):
+        assert data[pos:pos+4]==b'OggS'
+        n=data[pos+26]; ls=data[pos+27:pos+27+n]; cursor=pos+27+n
+        pages.append({'granule':struct.unpack_from('<q',data,pos+6)[0],'flags':data[pos+5],'serial':struct.unpack_from('<I',data,pos+14)[0]})
+        for l in ls:
+            pending+=data[cursor:cursor+l];cursor+=l
+            if l<255:result.append(pending);pending=b''
+        pos=cursor
+    assert not pending
+    return result,pages
+
+def probe(p):return json.loads(run('ffprobe','-v','error','-show_entries','format=duration:stream=codec_name,sample_rate,channels,channel_layout,start_time,duration:stream_tags','-of','json',str(p)))
+def decode(p,decoder):return run('ffmpeg','-v','error','-c:a',decoder,'-i',str(p),'-map','0:a:0','-c:a','pcm_f32le','-f','f32le','-')
+def metrics(a,b):
+    x=array.array('f',a);y=array.array('f',b)
+    assert len(x)==len(y)
+    ds=[float(i)-float(j) for i,j in zip(x,y)]
+    mse=sum(d*d for d in ds)/len(ds);ref=sum(float(v)**2 for v in x)/len(x)
+    return {'samples':len(x),'differingSamples':sum(i!=j for i,j in zip(x,y)),'peakAbsoluteDifference':max(map(abs,ds),default=0),'rmsDifference':math.sqrt(mse),'snrDb':10*math.log10(ref/mse) if mse and ref else None,'identicalBytes':a==b,'baselinePcmSha256':sha(a),'currentPcmSha256':sha(b)}
+files=sorted(p.relative_to(ROOT) for p in ROOT.glob('packs/**/*.ogg'))
+assert files==sorted(p.relative_to(BASE) for p in BASE.glob('packs/**/*.ogg'))
+report={'createdAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'roots':{'baseline':str(BASE),'current':str(ROOT),'sameToolchainReference':str(REF)},'ffmpegVersion':run('ffmpeg','-version').decode(),'ffprobeVersion':run('ffprobe','-version').decode(),'decodeCommand':'ffmpeg -v error -c:a {vorbis|libvorbis} -i INPUT -map 0:a:0 -c:a pcm_f32le -f f32le -','metricsConvention':'Interleaved float32 PCM, decoder native sample rate/channel count, no forced resample, exact aligned sample comparison; SNR=10log10(sum(baseline²)/sum(delta²)).','files':[]}
+for rel in files:
+    b,c,r=[(root/rel).read_bytes() for root in [BASE,ROOT,REF]]
+    row={'path':str(rel),'baselineSha256':sha(b),'currentSha256':sha(c),'referenceSha256':sha(r),'baselineBytes':len(b),'currentBytes':len(c),'byteIdenticalToBaseline':b==c,'byteIdenticalToReference':c==r}
+    if b!=c:
+        bp,bg=packets(b);cp,cg=packets(c)
+        row['ogg']={'baselinePacketCount':len(bp),'currentPacketCount':len(cp),'identificationHeaderEqual':bp[0]==cp[0],'commentHeaderEqual':bp[1]==cp[1],'setupHeaderEqual':bp[2]==cp[2],'audioPacketsEqual':bp[3:]==cp[3:],'differingAudioPackets':sum(x!=y for x,y in zip(bp[3:],cp[3:])),'baselineAudioPacketsSha256':sha(b''.join(struct.pack('<I',len(p))+p for p in bp[3:])),'currentAudioPacketsSha256':sha(b''.join(struct.pack('<I',len(p))+p for p in cp[3:])),'baselinePages':bg,'currentPages':cg}
+        row['baselineProbe']=probe(BASE/rel);row['currentProbe']=probe(ROOT/rel)
+        row['decoders']={decoder:metrics(decode(BASE/rel,decoder),decode(ROOT/rel,decoder)) for decoder in ['vorbis','libvorbis']}
+    report['files'].append(row)
+changed=[r for r in report['files'] if not r['byteIdenticalToBaseline']]
+report['summary']={'totalOggs':len(files),'byteIdenticalToBaseline':len(files)-len(changed),'byteDifferentFromBaseline':len(changed),'byteIdenticalToReference':sum(r['byteIdenticalToReference'] for r in report['files']),'changedAudioPackets':sum(not r['ogg']['audioPacketsEqual'] for r in changed),'decoders':{d:{'pcmIdenticalFiles':sum(r['decoders'][d]['identicalBytes'] for r in changed),'samplesCompared':sum(r['decoders'][d]['samples'] for r in changed),'samplesDifferent':sum(r['decoders'][d]['differingSamples'] for r in changed),'maxPeakAbsoluteDifference':max(r['decoders'][d]['peakAbsoluteDifference'] for r in changed),'minSnrDb':min(r['decoders'][d]['snrDb'] for r in changed if r['decoders'][d]['snrDb'] is not None),'maxSnrDb':max(r['decoders'][d]['snrDb'] for r in changed if r['decoders'][d]['snrDb'] is not None)} for d in ['vorbis','libvorbis']}}
+report['sourceHashes']={}
+for rel in ['tools/build-audio.mjs','assets-src/audio/audio-recipes.json','assets-src/audio/audio-catalog.json']:
+    report['sourceHashes'][rel]={label:sha((root/rel).read_bytes()) for label,root in [('baseline',BASE),('current',ROOT),('reference',REF)]}
+# Detect concurrent pack changes; never silently certify an earlier snapshot.
+for row in report['files']:
+    for key,root in [('baseline',BASE),('current',ROOT),('reference',REF)]:assert sha((root/row['path']).read_bytes())==row[key+'Sha256'],f'Changed during audit: {root/row["path"]}'
+report['limits']=['No perceptual listening or Minecraft playback test performed.','This proves exact equality or difference for two installed decoders, not subjective audibility or root cause.','Identical recipe/tool files do not prove identical input WAV masters or historical codec/filter versions.','For exact baseline audio preservation, retain original baseline OGG bytes rather than these regenerated outputs.']
+(OUT/'report.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps(report['summary'],indent=2))

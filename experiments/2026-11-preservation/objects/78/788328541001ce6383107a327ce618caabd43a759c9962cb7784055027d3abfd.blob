@@ -1,0 +1,55 @@
+"""Read-only geometry comparison. Runs in Blender; output only in this directory."""
+from pathlib import Path
+import numpy as np,json,time
+from mathutils.bvhtree import BVHTree
+O=Path(__file__).resolve().parent;B=O.parent.parent
+D={n:np.load(p) for n,p in {'v7':B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz','source_shell':O/'source-part1.npz','source_body':O/'source-part15.npz','legacy_body':O/'legacy-part15.npz'}.items()}
+T={k:BVHTree.FromPolygons(d['points'].tolist(),d['triangles'].tolist(),all_triangles=True,epsilon=0) for k,d in D.items()}
+
+def summary(a):
+ a=np.asarray(a);return {'min':float(a.min()),'median':float(np.median(a)),'p95':float(np.percentile(a,95)),'max':float(a.max())} if a.size else None
+
+def bbox(a):return [a.min(0).tolist(),a.max(0).tolist()] if len(a) else None
+
+def contacts(na,nb):
+ a,b=D[na],D[nb];pp=np.array(T[na].overlap(T[nb]),dtype=np.int64).reshape(-1,2);rows=[];ww=[];wi=[]
+ for st in range(0,len(pp),50000):
+  pairs=pp[st:st+50000];aa=a['points'][a['triangles'][pairs[:,0]]];bb=b['points'][b['triangles'][pairs[:,1]]]
+  ok=np.zeros(len(pairs),bool);local=[]
+  for orig,target in [(aa,bb),(bb,aa)]:
+   e1,e2=target[:,1]-target[:,0],target[:,2]-target[:,0]
+   for k in range(3):
+    p=orig[:,k];dr=orig[:,(k+1)%3]-p;h=np.cross(dr,e2);det=np.sum(e1*h,axis=1);valid=np.abs(det)>=1e-20;safe=np.where(valid,det,1);s=p-target[:,0];u=np.sum(s*h,axis=1)/safe;q=np.cross(s,e1);v=np.sum(dr*q,axis=1)/safe;t=np.sum(e2*q,axis=1)/safe
+    hit=valid&(t>1e-8)&(t<1-1e-8)&(u>1e-8)&(v>1e-8)&(u+v<1-1e-8);ok|=hit
+    local.append((np.flatnonzero(hit),p[hit]+t[hit,None]*dr[hit]))
+  hitids=np.flatnonzero(ok);idx=np.full(len(ok),-1);idx[hitids]=np.arange(len(hitids))+sum(len(r) for r in rows);rows.append(pairs[ok])
+  for j,w in local:ww.append(w);wi.append(idx[j])
+ pairs=np.concatenate(rows) if rows else np.zeros((0,2),int);w=np.concatenate(ww) if ww else np.zeros((0,3));idx=np.concatenate(wi) if wi else np.zeros(0,int);r={'pairs':pairs,'witnesses':w,'witness_pair':idx}
+ np.savez_compressed(O/f'{na}__{nb}__contacts.npz',**r)
+ print(na,nb,'candidates',len(pp),'strict pairs',len(pairs),'witness bbox',bbox(w),flush=True)
+ return r,{'bvh_candidates':len(pp),'strict_crossing_pairs':len(pairs),'unique_first_faces':len(np.unique(pairs[:,0])),'unique_second_faces':len(np.unique(pairs[:,1])),'witness_bbox_xyz':bbox(w)}
+
+rep={'method':'BVH epsilon=0; strict segment-triangle in both directions, float64, 1e-8 barycentric and segment endpoint threshold. No source mutation. Counts are triangulation-dependent and must not be compared as penetration severity.','unit':'Blender world XYZ, Z up; distances reported in millimeters with source-unit * 1000.','limitations':'Not tangency/coplanarity or minimum clearance certificate; no alpha-pixel expansion; original TESTE34 contains replaced shell and is only an original-source baseline, never merged into V7.','results':{}}
+C={}
+for na,nb in [('v7','legacy_body'),('v7','source_body'),('source_shell','source_body')]:
+ c,r=contacts(na,nb);C[na+'__'+nb]=c;rep['results'][na+'__'+nb]=r
+ if na=='v7':classes=D[na]['face_parts'];labels={0:'cap',1:'bridge',2:'mantle'}
+ else:
+  cap=(D[na]['triangles']<160386).sum(1);classes=np.where(cap==3,0,np.where(cap==0,2,1));labels={0:'original_cap',1:'original_mixed_seam',2:'original_mantle'}
+ r['regions']={}
+ for pi,label in labels.items():
+  ids=classes[c['pairs'][:,0]]==pi;mask=ids[c['witness_pair']]
+  r['regions'][label]={'pairs':int(ids.sum()),'first_faces':int(len(np.unique(c['pairs'][ids,0]))),'second_faces':int(len(np.unique(c['pairs'][ids,1]))),'witness_bbox_xyz':bbox(c['witnesses'][mask]),'distance_to_source_body_mm':summary([T['source_body'].find_nearest(tuple(p))[3]*1000 for p in c['witnesses'][mask]]) if nb=='legacy_body' else None}
+ (O/'comparison-summary.json').write_text(json.dumps(rep,indent=2))
+# Matched shell triangle contact categories remove body triangulation count confound.
+low=C['v7__legacy_body'];high=C['v7__source_body'];L=set(low['pairs'][:,0]);H=set(high['pairs'][:,0]);rep['matched_v7_faces']={}
+for pi,name in [(0,'cap'),(1,'bridge'),(2,'mantle')]:
+ part=set(np.flatnonzero(D['v7']['face_parts']==pi));rep['matched_v7_faces'][name]={}
+ for key,ids in [('both',L&H&part),('legacy_only',(L-H)&part),('source_only',(H-L)&part)]:
+  ids=np.array(sorted(ids),dtype=int);rep['matched_v7_faces'][name][key]={'count':len(ids),'face_ids':ids.tolist(),'geometry_bbox_xyz':bbox(D['v7']['points'][D['v7']['triangles'][ids]].reshape(-1,3))}
+# Nearest source-body displacement at legacy contact witnesses, retaining per-pair data.
+w=low['witnesses'];nearest=[T['source_body'].find_nearest(tuple(p)) for p in w];dist=np.array([x[3]*1000 for x in nearest]);pt=np.array([list(x[0]) for x in nearest]);nf=np.array([x[2] for x in nearest]);np.savez_compressed(O/'legacy-witness-source-distance.npz',witnesses=w,nearest_source=pt,source_face=nf,distance_mm=dist,legacy_pair=low['witness_pair'])
+rep['legacy_crossing_distance_to_evaluated_body_mm']=summary(dist)
+# Vertices and triangle-centroid distance identify reduction error not only at crossings.
+a=D['legacy_body'];lp=a['points'];lc=lp[a['triangles']].mean(1);rep['legacy_body_error_mm']={'vertex':summary([T['source_body'].find_nearest(tuple(p))[3]*1000 for p in lp]),'centroid':summary([T['source_body'].find_nearest(tuple(p))[3]*1000 for p in lc])}
+(O/'comparison-summary.json').write_text(json.dumps(rep,indent=2));print('COMPLETE',json.dumps({k:v['strict_crossing_pairs'] for k,v in rep['results'].items()}),flush=True)

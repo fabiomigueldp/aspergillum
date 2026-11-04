@@ -1,0 +1,36 @@
+import numpy as np,json
+from pathlib import Path
+R=Path(__file__).resolve().parents[1];a=np.load(R/'evidence/seam-source-inspection.npz');s=np.load(R/'evidence/seam-partitions.npz');v=np.load(R.parent/'shell_band_v5/retained_candidate/evidence/cap-paired.npz');cut=np.load(R/'evidence/v5-seam-cut-indices.npz');source=np.load(R.parent/'shell_band_v3/evidence/cap-source.npz');N=len(source['points']);adj={}
+for x,y in s['cap_boundary_edges']:adj.setdefault(int(x),[]).append(int(y));adj.setdefault(int(y),[]).append(int(x))
+anchors=set(v['source_indices'][cut['boundary_edges']].ravel());paths=[]
+for x,y in cut['boundary_source_edges']:
+ candidates=[]
+ for first in adj[int(x)]:
+  path=[int(x),first]
+  while path[-1] not in anchors:
+   nxt=[k for k in adj[path[-1]] if k!=path[-2]];assert len(nxt)==1;path.append(nxt[0]);assert len(path)<=457
+  if path[-1]==y:candidates.append(path)
+ assert len(candidates)==1,(x,y,candidates)
+ paths.append(candidates[0])
+assert sum(len(x)-2 for x in paths)==342
+ids=list(map(int,v['source_indices']));mp={sid:i for i,sid in enumerate(ids)};pts=list(v['points']);faces=v['triangles'][cut['keep_triangle_indices']].tolist()
+for path in paths:
+ for sid in path[1:-1]:
+  assert sid not in mp;mp[sid]=len(pts);ids.append(sid);pts.append(source['points'][sid])
+ lo,hi=mp[path[0]],mp[path[-1]];matches=[j for j,f in enumerate(faces) if lo in f and hi in f];assert len(matches)==1
+ j=matches[0];tri=faces.pop(j);k=tri.index(lo)
+ if tri[(k+1)%3]!=hi:path=path[::-1];lo,hi=hi,lo;k=tri.index(lo)
+ assert tri[(k+1)%3]==hi
+ third=tri[(k+2)%3];faces.extend([[mp[x],mp[y],third] for x,y in zip(path,path[1:])])
+cap_count=len(faces)
+# TESTE74 is active at value 1; no other keys or modifiers.
+key=a[[k for k in a.files if k.startswith('key_TESTE74')][0]]
+for sid in range(N,len(a['points'])):mp[sid]=len(pts);ids.append(sid);pts.append(key[sid])
+rest=np.concatenate([s['mixed_triangles'],s['rest_triangles']]);faces.extend([[mp[int(s)] for s in f] for f in rest]);pts=np.array(pts);faces=np.array(faces)
+e=np.concatenate([faces[:,[0,1]],faces[:,[1,2]],faces[:,[2,0]]]);ue,inv,c=np.unique(np.sort(e,axis=1),axis=0,return_inverse=True,return_counts=True);orient=np.bincount(inv,weights=np.where(e[:,0]<e[:,1],1,-1));area=np.linalg.norm(np.cross(pts[faces[:,1]]-pts[faces[:,0]],pts[faces[:,2]]-pts[faces[:,0]]),axis=1)/2
+from scipy.sparse import coo_matrix
+from scipy.sparse.csgraph import connected_components
+g=coo_matrix((np.ones(2*len(ue)),(np.r_[ue[:,0],ue[:,1]],np.r_[ue[:,1],ue[:,0]])),shape=(len(pts),len(pts))).tocsr();nc,lab=connected_components(g)
+report={'status':'Topology proof only, not Bedrock export or Minecraft validation','v5_removed_cap_faces':112,'v5_retained_cap_faces':5524,'source_curve_added_vertices':342,'refined_cap_faces':cap_count,'bridge_faces':len(s['mixed_triangles']),'rest_faces':len(s['rest_triangles']),'total_vertices':len(pts),'total_faces':len(faces),'boundary_edges':int((c==1).sum()),'nonmanifold_edges':int((c!=2).sum()),'orientation_mismatched_edges':int((orient!=0).sum()),'zero_area_faces':int((area==0).sum()),'connected_components':int(nc),'component_sizes':np.bincount(lab).tolist(),'source_path_lengths':dict(zip(*[x.tolist() for x in np.unique([len(p) for p in paths],return_counts=True)])),'rest_preserved_exactly':True,'TESTE74_applied_value':1.0,'matrix':a['matrix'].tolist()}
+np.savez_compressed(R/'evidence/seam-reconstruction-proof.npz',points=pts,triangles=faces,source_indices=np.array(ids),face_parts=np.r_[np.zeros(cap_count,int),np.ones(len(s['mixed_triangles']),int),np.full(len(s['rest_triangles']),2)],matrix=a['matrix'])
+(R/'evidence/seam-reconstruction-proof.json').write_text(json.dumps(report,indent=2));(R/'evidence/seam-source-paths.json').write_text(json.dumps(paths));print(json.dumps(report,indent=2))

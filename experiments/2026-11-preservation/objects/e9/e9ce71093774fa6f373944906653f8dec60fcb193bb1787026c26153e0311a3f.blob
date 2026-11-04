@@ -1,0 +1,49 @@
+import bpy,bmesh,json,math,numpy as np
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+from mathutils.kdtree import KDTree
+from collections import Counter
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V52-child-face-trial.blend',use_scripts=False);data=json.load(open(r+'V55-ring-input.json'));p=[Vector(q) for q in data['p']];fs=[tuple(f) for f in data['keep']];loops=sorted(data['loops'],key=lambda l:sum(p[i].z for i in l)/len(l));L,U=loops;h=bpy.data.objects['Menino — base infantil anatômica CC0'];n=bpy.data.objects['Menino — pescoço'];dg=bpy.context.evaluated_depsgraph_get();hb=BVHTree.FromObject(h,dg);nb=BVHTree.FromPolygons([n.matrix_world@v.co for v in n.evaluated_get(dg).data.vertices],[tuple(f.vertices) for f in n.data.polygons]);original=[v.co.copy() for v in h.evaluated_get(dg).data.vertices]
+def order(l):
+ a=[math.atan2(p[i].y+.265,p[i].x-.025)%(2*math.pi) for i in l]
+ # Rings verified angular monotonic; lower is exact 40-point latitude.
+ z=sorted(zip(a,l));return [v for a,v in z],[a for a,v in z]
+L,la=order(L);U,ua=order(U)
+def sample(ids,ang,a):
+ aa=ang+[ang[0]+2*math.pi];vv=ids+[ids[0]]
+ if a<aa[0]:a+=2*math.pi
+ i=min(len(ids)-1,int(np.searchsorted(aa,a,side='right'))-1);t=(a-aa[i])/(aa[i+1]-aa[i]);return p[vv[i]].lerp(p[vv[i+1]],t)
+N=128;K=16;rings=[];angles=[i*2*math.pi/N for i in range(N)]
+for j in range(1,K):
+ t=j/K;ring=[]
+ for a in angles:
+  lo=sample(L,la,a);up=sample(U,ua,a);d=up-lo;ln=nb.find_nearest(lo)[1];un=hb.find_nearest(up)[1];tl=d-ln*d.dot(ln);tu=d-un*d.dot(un)
+  if tl.length:tl=tl.normalized()*d.length
+  if tu.length:tu=tu.normalized()*d.length
+  q=(2*t**3-3*t*t+1)*lo+(t**3-2*t*t+t)*tl+(-2*t**3+3*t*t)*up+(t**3-t*t)*tu
+  ring.append(len(p));p.append(q)
+ rings.append(ring)
+newfaces=[]
+def stitch(A,aa,B,ba):
+ i=j=0
+ while i<len(A) or j<len(B):
+  an=aa[(i+1)%len(A)]+(2*math.pi if i+1>=len(A) else 0) if i<len(A) else 1e9
+  bn=ba[(j+1)%len(B)]+(2*math.pi if j+1>=len(B) else 0) if j<len(B) else 1e9
+  if an<bn:newfaces.append((A[i%len(A)],A[(i+1)%len(A)],B[j%len(B)]));i+=1
+  else:newfaces.append((A[i%len(A)],B[(j+1)%len(B)],B[j%len(B)]));j+=1
+stitch(L,la,rings[0],angles)
+for A,B in zip(rings[:-1],rings[1:]):
+ for i in range(N):newfaces.append((A[i],A[(i+1)%N],B[(i+1)%N],B[i]))
+stitch(rings[-1],angles,U,ua)
+fs+=newfaces;used=sorted({i for f in fs for i in f});remap={v:i for i,v in enumerate(used)};pp=[p[i] for i in used];faces=[tuple(remap[i] for i in f) for f in fs];mesh=bpy.data.meshes.new('V55 local regular collar');mesh.from_pydata(pp,[],faces);mesh.update();bm=bmesh.new();bm.from_mesh(mesh);bmesh.ops.recalc_face_normals(bm,faces=list(bm.faces));bm.to_mesh(mesh);bm.free();o=bpy.data.objects.new('Menino — cabeça colo retopologia V55 reversível',mesh);bpy.context.collection.objects.link(o)
+for mat in h.data.materials:mesh.materials.append(mat)
+for f in mesh.polygons:f.use_smooth=True
+h.hide_render=True;h.hide_set(True);n.hide_render=True;n.hide_set(True)
+fs=[tuple(f.vertices) for f in mesh.polygons];edge=Counter(tuple(sorted((f[i],f[(i+1)%len(f)]))) for f in fs for i in range(len(f)));bv=BVHTree.FromPolygons(pp,fs);pairs=[(i,j) for i,j in bv.overlap(bv) if i<j and not set(fs[i])&set(fs[j])];kd=KDTree(len(pp))
+for i,q in enumerate(pp):kd.insert(q,i)
+kd.balance();protected=[q for q in original if q.y<-.335 or q.z>1.72];areas=[f.area*1e6 for f in mesh.polygons[-len(newfaces):]]
+report={'source':'V52 with raw union only as boundary extraction, no smoothed V54 geometry','removed_irregular_faces':data['removed_count'],'lower_boundary_vertices':len(L),'upper_boundary_vertices':len(U),'regular_interior_samples_per_ring':N,'new_ring_faces':len(newfaces),'boundary_edges':sum(v==1 for v in edge.values()),'nonmanifold_edges':sum(v!=2 for v in edge.values()),'nonadjacent_self_intersections':len(pairs),'protected_face_cranium_max_delta_m':max(kd.find(q)[2] for q in protected),'new_face_area_mm2_min':min(areas),'new_face_area_mm2_max':max(areas),'new_face_area_mm2_median':float(np.median(areas)),'rollback':'Hide V55 object, unhide original child head and neck. V52 unchanged.'};json.dump(report,open(r+'V55-child-neck-verification.json','w'),indent=2);bpy.ops.wm.save_as_mainfile(filepath=r+'V55-child-neck-trial.blend')
+s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=700;s.render.resolution_y=700;s.render.resolution_percentage=100;c=s.camera;ct=Vector((.025,-.265,1.82));c.data.ortho_scale=.43
+for label,off in [('profile',(-3,0,0)),('front',(0,-3,0)),('threequarter',(-2,-3,0))]:
+ c.location=ct+Vector(off);c.rotation_euler=(ct-c.location).to_track_quat('-Z','Y').to_euler();s.render.filepath=r+'V55-child-neck-'+label+'.png';bpy.ops.render.render(write_still=True)
+print(report)

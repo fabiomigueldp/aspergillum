@@ -1,0 +1,25 @@
+"""One-variable diagnostic renders; exact-triangle mode is NOT a Bedrock deliverable."""
+import bpy,json,sys,numpy as np,hashlib
+from pathlib import Path
+from mathutils import Vector
+R=Path(__file__).resolve().parents[1];V3=R.parent/'shell_band_v3/constrained_source';mode=sys.argv[sys.argv.index('--')+1] if '--' in sys.argv else 'headless_alpha';bpy.ops.wm.open_mainfile(filepath=str(V3/'evidence/bedrock-perwall-diagnostic.blend'),use_scripts=False);s=bpy.context.scene;s.render.threads_mode='FIXED';s.render.threads=5
+head=bpy.data.objects['Maria — anatomia feminina adaptada CC0'];head.hide_render=mode.startswith('headless')
+obj=bpy.data.objects['V3 JSON cap band'];mat=obj.data.materials[0]
+if mode.endswith('exact'):
+ maps=json.loads((V3/'evidence/alpha-triangle-map.json').read_text());g=json.loads((V3/'resource_pack/models/entity/paired_cap_band.geo.json').read_text())['minecraft:geometry'][0];tw=g['description']['texture_width'];th=g['description']['texture_height'];verts=[];faces=[];uvs=[];counters={}
+ for m in maps:
+  pi=m['part'];ci=counters.get(pi,0);counters[pi]=ci+1;c=g['bones'][pi]['cubes'][ci];tx,ty=c['uv']['south']['uv'];W,H=c['uv']['south']['uv_size'];ww,hh=c['size'][:2];st=len(verts)
+  for key in ['a','b','c']:
+   p=m[key];verts.append((p[0]/16,-p[2]/16,p[1]/16))
+  faces.append((st,st+1,st+2));uvs.extend([((tx+x/ww*W)/tw,1-(ty+(1-y/hh)*H)/th) for x,y in m['mask_local']])
+ me=bpy.data.meshes.new('DIAGNOSTIC native triangle support exact UV');me.from_pydata(verts,[],faces);me.update();uv=me.uv_layers.new(name='Exact V3 UV')
+ for x,co in zip(uv.data,uvs):x.uv=co
+ mat=mat.copy();out=next(n for n in mat.node_tree.nodes if n.type=='OUTPUT_MATERIAL');alpha=next(n for n in mat.node_tree.nodes if n.type=='MIX_SHADER' and n.inputs[0].is_linked and n.inputs[0].links[0].from_node.type=='TEX_IMAGE');mat.node_tree.links.new(alpha.inputs[2].links[0].from_socket,out.inputs[0]);me.materials.append(mat);obj.hide_render=True;new=bpy.data.objects.new('DIAGNOSTIC exact triangles NOT BEDROCK',me);s.collection.objects.link(new)
+elif mode.endswith('strict'):
+ for n in mat.node_tree.nodes:
+  if n.type=='TEX_IMAGE' and n.image and Path(n.image.filepath).name=='paired_cap_band.png':
+   n.image=bpy.data.images.load(str(R/'assets/paired_cap_band_strict.png'));n.image.pack()
+cam=s.camera;cam.hide_render=False;cam.data.type='ORTHO';views=[('front',(.25,-3.5,3.44),(.03,-.20,3.43),.85),('profile',(3,-.2,3.50),(.03,-.20,3.48),.70)]
+for label,pos,target,scale in views:
+ cam.location=pos;cam.rotation_euler=(Vector(target)-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.ortho_scale=scale;s.render.filepath=str(R/f'evidence/{mode}-{label}.png');bpy.ops.render.render(write_still=True)
+report={'mode':mode,'engine':'Blender4.3.2 Cycles,48samples','minecraft_screenshot':False,'geometry':'Native triangles reconstructed from exported correspondence, only for ablation' if mode.endswith('exact') else 'Exact V3f JSON cubes','alpha':'Bypassed because support is exact native triangles' if mode.endswith('exact') else ('Strict pixel-center inside-triangle alpha, otherwise identical texture' if mode.endswith('strict') else 'Original V3f conservative cutout'),'head_visible':not head.hide_render,'head_context':'Original source head; never claimed converted','other_changes':'None to normal map, source positions, lights, UV or camera compared with V3f control','original_V3f_geometry_sha256':hashlib.sha256((V3/'resource_pack/models/entity/paired_cap_band.geo.json').read_bytes()).hexdigest()};(R/f'evidence/{mode}.json').write_text(json.dumps(report,indent=2))

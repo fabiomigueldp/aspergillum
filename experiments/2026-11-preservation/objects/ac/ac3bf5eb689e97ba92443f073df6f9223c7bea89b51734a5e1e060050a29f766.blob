@@ -1,0 +1,41 @@
+{
+  "legacy": {
+    "bones": 20,
+    "cubes": 7793,
+    "mapped_quad_faces": 7810,
+    "raster_triangles_if_quads_split": 15620,
+    "unwelded_vertices_if_four_per_quad": 31240,
+    "geometry_json_bytes": 6242831,
+    "color_png_bytes": 1050958,
+    "atlas_size": [
+      2048,
+      2048
+    ],
+    "color_mode": "RGBA",
+    "one_rgba8_atlas_uncompressed_MiB": 16.0,
+    "two_rgba8_atlases_uncompressed_MiB": 32.0,
+    "two_rgba8_atlases_with_full_mipchain_estimate_MiB": 42.666666666666664
+  },
+  "experimental": {
+    "bones": 20,
+    "cubes": 23081,
+    "mapped_quad_faces": 23098,
+    "raster_triangles_if_quads_split": 46196,
+    "unwelded_vertices_if_four_per_quad": 92392,
+    "geometry_json_bytes": 6727120,
+    "color_png_bytes": 1910320,
+    "atlas_size": [
+      4096,
+      4096
+    ],
+    "color_mode": "RGBA",
+    "one_rgba8_atlas_uncompressed_MiB": 64.0,
+    "two_rgba8_atlases_uncompressed_MiB": 128.0,
+    "two_rgba8_atlases_with_full_mipchain_estimate_MiB": 170.66666666666666
+  },
+  "limits": [
+    "Geometry and storage accounting, not a frame-time measurement or engine validation.",
+    "RGBA8 figures are explicit uncompressed allocation estimates, not observed GPU memory; formats/compression/mips may differ.",
+    "No official hard cube limit inferred from these counts; practical hardware cost remains unknown."
+  ]
+}

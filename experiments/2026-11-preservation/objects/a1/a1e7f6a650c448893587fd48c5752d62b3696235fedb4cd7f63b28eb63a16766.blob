@@ -1,0 +1,122 @@
+{
+  "createdAt": "2026-11-03T20:53:44.300Z",
+  "status": "passed",
+  "oldChecks": 9728,
+  "newChecks": 4992,
+  "reservedChecks": 96,
+  "sameResourceFiles": 285,
+  "resourceReferences": {
+    "importedAudioFiles": 48,
+    "sameToolchainResourceFiles": 237
+  },
+  "blocks": [
+    {
+      "kind": "aspersorium",
+      "before": 9216,
+      "after": 4704,
+      "normalizations": 4592,
+      "states": {
+        "aspergillum:contents_a": [
+          0,
+          1
+        ],
+        "aspergillum:contents_b": [
+          0,
+          1,
+          2
+        ],
+        "aspergillum:contents_c": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "aspergillum:contents_d": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "aspergillum:rotation": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ]
+      }
+    },
+    {
+      "kind": "sacristan_table",
+      "before": 512,
+      "after": 288,
+      "normalizations": 240,
+      "states": {
+        "aspergillum:table_contents_a": [
+          0,
+          1
+        ],
+        "aspergillum:table_contents_b": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "aspergillum:table_rotation": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ]
+      }
+    }
+  ],
+  "budget": {
+    "aspergillum": 5008,
+    "altare": 59840,
+    "combined": 64848,
+    "reference": 65536,
+    "remaining": 688
+  },
+  "limits": [
+    "Raw state normalization is explicit; exact inverse restoration requires original snapshots.",
+    "Reserved codes render empty/dry but runtime rejects them, without claiming recovery from corruption.",
+    "Visible aliases use unchanged source art; the separate pixel audit proves only the non-item atlas half is sampled by empty geometry.",
+    "All 48 OGGs and WAV master files are restored to exact imported-baseline bytes; the diagnostic build verifies pinned hashes instead of re-encoding. The archived prior reconstruction changed PCM in 33 of 34 byte-different OGGs, established by two decoders.",
+    "No worlds, Minecraft engine or gameplay event handlers are exercised by this generated-asset proof."
+  ]
+}

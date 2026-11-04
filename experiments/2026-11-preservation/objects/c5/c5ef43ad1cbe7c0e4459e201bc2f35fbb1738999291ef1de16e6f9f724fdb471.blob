@@ -1,0 +1,23 @@
+"""Double precision near-rim normal chord sampling, independent of old pair offsets."""
+from pathlib import Path
+import numpy as np,json,sys
+from collections import defaultdict
+O=Path(__file__).resolve().parent;B=O.parents[1];tag=sys.argv[1];d=np.load(B/f'ear_rim_v11/structural_rebuild/{tag}.npz');p=d['points'];f=d['triangles'];part=d['face_parts'];new=part==3;tr=p[f];e1=tr[:,1]-tr[:,0];e2=tr[:,2]-tr[:,0];raw=np.cross(e1,e2);norms=np.linalg.norm(raw,axis=1);norm=raw/np.maximum(norms[:,None],1e-300);edgefaces=defaultdict(list)
+for i,t in enumerate(f):
+ for k in range(3):edgefaces[tuple(sorted((int(t[k]),int(t[(k+1)%3]))))].append(i)
+bound=[]
+for ed,fs in edgefaces.items():
+ if len(fs)==2 and sum(new[fs])==1:bound.append((ed,next(i for i in fs if not new[i]),next(i for i in fs if new[i])))
+rows=[]
+for edge,old,rim in bound:
+ if norms[old]<2e-16:continue
+ center=tr[old].mean(0);mid=p[list(edge)].mean(0);direction=-norm[old]
+ h=np.cross(direction,e2);det=np.einsum('ij,ij->i',e1,h);valid=abs(det)>1e-12*np.linalg.norm(e1,axis=1)*np.linalg.norm(e2,axis=1);den=np.where(valid,det,1);valid[old]=False
+ for alpha in [.02,.1,.5,1]:
+  pt=mid*(1-alpha)+center*alpha;ss=pt-tr[:,0];u=np.einsum('ij,ij->i',ss,h)/den;q=np.cross(ss,e1);v=q@direction/den;t=np.einsum('ij,ij->i',e2,q)/den;ok=valid&(u>=-1e-12)&(v>=-1e-12)&(u+v<=1+1e-12)&(t>1e-12)&(t<.15);ids=np.flatnonzero(ok)
+  if len(ids):
+   i=ids[np.argmin(t[ids])];rows.append({'source_face':int(old),'rim_face':int(rim),'edge':list(edge),'alpha':alpha,'point':pt.tolist(),'hit':(pt+t[i]*direction).tolist(),'hit_face':int(i),'hit_part':int(part[i]),'exit_facing':float(norm[i]@direction),'chord_mm':float(t[i]*1000),'barycentric':[float(1-u[i]-v[i]),float(u[i]),float(v[i])]})
+valid=[r for r in rows if r['exit_facing']>1e-5];summary={'method':'All-triangle double precision first positive hit, no spatial BVH or float32 coordinates. Source face excluded. Start exactly on inherited face. Standard Moller-Trumbore with relative parallel threshold1e-12. Newly rebuilt mesh only.','boundary_edges':len(bound),'rays_excluding_degenerate_origins':int(4*sum(norms[old]>=2e-16 for _,old,_ in bound)),'hits':len(rows),'exit_hits':len(valid),'near_zero_hits_under_0_001mm':sum(r['chord_mm']<.001 for r in valid),'by_offset':{},'shortest_20':sorted(valid,key=lambda r:r['chord_mm'])[:20],'limits':['Sampling normal chords near a sharp rim is not a global minimum wall thickness certificate.','Rays that hit a rim at small distance may measure sharp wedge geometry; locations and exit parts are provided for interpretation.','Roots below1e-12 world units are discarded; near-zero or grazing roots remain numerically sensitive.']}
+for alpha in [.02,.1,.5,1]:
+ rr=[r for r in valid if r['alpha']==alpha];summary['by_offset'][str(alpha)]={'samples':len(rr),'chord_mm_percentiles':np.percentile([r['chord_mm'] for r in rr],[0,1,5,50,95,99,100]).tolist(),'rim_exit_samples':sum(r['hit_part']==3 for r in rr)}
+(O/(tag+'-exact-chords.json')).write_text(json.dumps(summary,indent=2));(O/(tag+'-exact-chord-samples.json')).write_text(json.dumps(rows,indent=2));print(json.dumps({k:v for k,v in summary.items() if k!='shortest_20'},indent=2))

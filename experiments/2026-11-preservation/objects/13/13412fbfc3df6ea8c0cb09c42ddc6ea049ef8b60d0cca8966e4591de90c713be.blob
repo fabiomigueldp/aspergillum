@@ -1,0 +1,70 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import {spawnSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+import {current,chooseFinish} from '../tests/helpers/native-ui.ts';
+import {locales} from '../assets-src/locales.mjs';
+import {planFinish} from '../src/domain/surface.ts';
+
+// This captures the actual form's declared controls and reactive choices.
+// It does not run Minecraft or imitate its unverified layout, font or focus.
+const root=fileURLToPath(new URL('../',import.meta.url));
+const output=path.join(root,'out/native-ui');fs.mkdirSync(output,{recursive:true});
+const translations=locales.pt_BR;
+const data=value=>value?.getData?value.getData():value;
+const text=message=>{
+ message=data(message);
+ if(typeof message==='string')return message;
+ if(message?.translate){const translated=translations[message.translate];if(!translated)throw Error(`Missing translation ${message.translate}`);return translated;}
+ return message?.text??message?.rawtext?.map(text).join('')??'';
+};
+const visible=c=>data(c.options?.visible)!==false;
+const field=key=>current.controls.find(c=>c.label===`altare.${key}`&&visible(c));
+const select=(key,choice)=>{const c=field(key);c.value.setData(c.items.find(i=>i.label.translate===`altare.${choice}`).value);};
+const cells=Array.from({length:14},(_,i)=>({position:{x:i%7,y:0,z:Math.floor(i/7)},stone:0,cloth:0,frontal:0,facing:0,edges:15}));
+const scenarios=[
+ {id:'classic',name:'Clássico com Guadalupe',finish:{stone:0,cloth:4,ornamental:true,facing:0}},
+ {id:'twin',name:'Dois pedestais',finish:{stone:0,cloth:0,ornamental:false,facing:0,design:'altare:n_twin_floral_purple'}},
+ {id:'relief',name:'Toalha com cor sem relevo',finish:{stone:0,cloth:0,ornamental:false,facing:0,design:'altare:a_ogive_marble_ruby_cross'},change:()=>select('menu.color','color.purple')},
+ {id:'symmetric',name:'Colunata sem direção',finish:{stone:0,cloth:0,ornamental:false,facing:0,design:'altare:s_colonnade_lace'}},
+];
+const snapshots=[];
+for(const scenario of scenarios){
+ const tiles=planFinish(cells,scenario.finish),before=JSON.stringify(tiles);
+ const pending=chooseFinish({},tiles,scenario.finish.facing);scenario.change?.();
+ snapshots.push({id:scenario.id,name:scenario.name,title:text(current.title),controls:current.controls.filter(visible).map(c=>({
+  kind:c.kind,...(c.label?{key:c.label,text:text({translate:c.label})}:{}),
+  ...(c.kind==='dropdown'?{value:text(c.items.find(i=>i.value===c.value.getData()).label),options:c.items.map(i=>text(i.label))}:{}),
+  ...(c.kind==='toggle'?{value:c.value.getData()}:{}),
+  ...(c.options?.description?{description:text(c.options.description)}:{}),
+  ...(data(c.options?.disabled)===true?{disabled:true}:{}),
+ }))});
+ field('menu.cancel').callback();if(await pending!==undefined||JSON.stringify(tiles)!==before)throw Error('Capture modified the draft result or world input');
+}
+const escape=value=>String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+const render=c=>{
+ const title=escape(c.text??'');
+ switch(c.kind){
+  case 'header':return `<h3>${title}</h3>`;
+  case 'label':return `<p class="hint">${title}</p>`;
+  case 'spacer':return '<div class="spacer"></div>';
+  case 'divider':return '<hr>';
+  case 'dropdown':return `<div class="field"><label>${title}</label><div class="select">${escape(c.value)}<span>⌄</span></div>${c.description?`<small>${escape(c.description)}</small>`:''}</div>`;
+  case 'toggle':return `<div class="toggle"><span>${title}</span><span class="switch ${c.value?'on':''}">${c.value?'✓':'○'}</span></div>`;
+  case 'button':return `<div class="button ${c.disabled?'disabled':''}">${title}</div>`;
+  default:throw Error(`Unsupported control ${c.kind}`);
+ }
+};
+const html=`<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>Altare · estrutura do editor</title><style>
+*{box-sizing:border-box}body{margin:0;padding:36px;background:#e8e7e2;color:#20251f;font:16px/1.4 Arial,sans-serif}header{max-width:1100px;margin-bottom:25px}h1{font-size:30px;margin:0 0 10px}header p{margin:5px 0;color:#4e554b}.badge{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.09em;color:#446346;margin-bottom:10px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;align-items:start}.scenario{font-size:14px;margin:0 0 10px;color:#4b5448}.panel{background:#fafbf8;border:1px solid #b5bbae;padding:20px;box-shadow:0 4px 12px #1c29130b}h2{font-size:18px;line-height:1.3;margin:0 0 14px}h3{font-size:16px;margin:12px 0 10px}.hint,small{font-size:13px;color:#565f50;line-height:1.4}.hint{margin:8px 0 12px}label{display:block;font-size:13px;margin:0 0 5px}.field{margin:0 0 12px}.select{min-height:39px;background:white;border:1px solid #abb3a5;padding:8px 12px;font-size:14px;display:flex;justify-content:space-between;gap:8px}.select span{color:#5a6554}.spacer{height:4px}small{display:block;margin-top:5px}hr{border:0;border-top:1px solid #d7dbd2;margin:18px 0 14px}.button{border:1px solid #abb3a5;background:#eef1e9;text-align:center;padding:9px;margin:8px 0;font-size:14px}.button.disabled{color:#7d8577;background:#f1f3ee;border-color:#d6dbcf}.toggle{display:flex;align-items:center;justify-content:space-between;gap:14px;font-size:14px;margin:14px 0}.switch{padding:2px 12px;background:#dce3d5;color:#36482f}.switch.on{background:#d1dec7}.footnote{margin:25px 0 0;color:#5a6254;font-size:13px}
+</style><header><span class="badge">SIMULAÇÃO DOCUMENTAL · SEM MINECRAFT</span><h1>Altare · personalização mais clara</h1><p>Textos, valores, ordem, visibilidade e estado dos botões extraídos do editor implementado.</p><p>Esta apresentação não representa a aparência final do Bedrock. Tipografia, cores, espaçamento e foco dependem do jogo.</p></header><div class="grid">${snapshots.map(s=>`<section><p class="scenario">${escape(s.name)}</p><div class="panel"><h2>${escape(s.title)}</h2>${s.controls.map(render).join('')}</div></section>`).join('')}</div><p class="footnote">Sem prévia no mundo: Aplicar confirma o rascunho. Desfazer alterações recupera as escolhas de abertura; Cancelar descarta a edição.</p></html>`;
+fs.writeFileSync(path.join(output,'native-ui.html'),html);
+fs.writeFileSync(path.join(output,'native-ui.json'),JSON.stringify({kind:'implementation-derived-layout-simulation',minecraftRun:false,locales:['pt_BR','en_US'],displayLocale:'pt_BR',sources:['src/presentation/menu.ts','assets-src/locales.mjs'].map(file=>({file,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex')})),scenarios:snapshots},null,2)+'\n');
+if(process.argv.includes('--png')){
+ // A documentary diagram avoids inventing native Bedrock rendering evidence.
+ const rendered=spawnSync(process.env.PYTHON??'python3',[path.join(root,'tools/render-native-ui.py'),output],{stdio:'inherit'});
+ if(rendered.error)throw rendered.error;
+ if(rendered.status!==0)throw Error(`UI diagram render failed: ${rendered.status}`);
+}
+console.log(`Implementation-derived UI simulation: ${output}`);

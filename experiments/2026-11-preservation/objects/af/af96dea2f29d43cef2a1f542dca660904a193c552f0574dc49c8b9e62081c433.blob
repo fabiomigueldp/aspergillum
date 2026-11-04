@@ -1,0 +1,74 @@
+// Independent reference attributes, real before/after mesh buffers. No browser.
+import fs from 'node:fs';
+import vm from 'node:vm';
+import crypto from 'node:crypto';
+import * as THREE from '../repo/viewer-3d/node_modules/three/build/three.module.js';
+import {buildBedrockGeometry as before} from '../../paz-workbench-validation-20261103/source/viewer-3d/src/shared/bedrock-geometry.js';
+import {buildBedrockGeometry as after} from '../repo/viewer-3d/src/shared/bedrock-geometry.js';
+const root=import.meta.dirname, workspace=new URL('../../',import.meta.url).pathname;
+const hash=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+const files=[['blockbench-bedrock.js','f27d89e774003486b1161b0578971f686fece0a8'],['blockbench-cube.js','70cb939ab827f999f9178fac05839a2ecb005d5b'],['blockbench-three-custom.js','c700631f613689344764b210af7d4fc56c1eba33']];
+const [bs,cs,ts]=files.map(([name,expected])=>{const b=fs.readFileSync(`${root}/../reference/${name}`);if(crypto.createHash('sha1').update(`blob ${b.length}\0`).update(b).digest('hex')!==expected)throw Error('Reference hash mismatch');return b.toString();});
+const parse=bs.slice(bs.indexOf('\tfunction parseCube('),bs.indexOf('\tfunction parseBone('));
+const update=cs.slice(cs.indexOf('\tupdateUV(element,'),cs.indexOf('\tupdateHighlight(element,'));
+const shape=ts.slice(ts.indexOf('THREE.BufferGeometry.prototype.setShape'),ts.indexOf('Object.assign( THREE.Euler.prototype'));
+class Face {constructor(){this.uv=[0,0,0,0];this.rotation=0;this.texture=false;}extend(x){if(x.uv){this.uv[0]=x.uv[0];this.uv[1]=x.uv[1];}this.rotation=x.rotation??0;}get uv_size(){return [this.uv[2]-this.uv[0],this.uv[3]-this.uv[1]];}set uv_size(v){this.uv[2]=this.uv[0]+v[0];this.uv[3]=this.uv[1]+v[1];}getTexture(){return false;}}
+class Cube {constructor(x){this.rotation=[...(x.rotation??[0,0,0])];this.origin=[...(x.origin??[0,0,0])];this.from=[0,0,0];this.from.V3_set=x=>this.from.splice(0,3,...x);this.to=[0,0,0];this.faces=Object.fromEntries(['east','west','up','down','south','north'].map(n=>[n,new Face()]));}addTo(){return this;}init(){return this;}}
+const context={THREE,Cube,Texture:class {},Canvas:{face_order:['east','west','up','down','south','north']},Project:{texture_width:64,texture_height:64},Format:{}};
+vm.createContext(context);vm.runInContext(shape+'\n'+parse+'\nvar controller={'+update+'dispatchEvent(){},updatePixelGrid(){}};',context);
+function referenceCube(cube,w,h){
+  if(cube.mirror||cube.inflate)throw Error('Reference extraction deliberately excludes mirror/inflate');
+  context.Project.texture_width=w;context.Project.texture_height=h;context.input=cube;
+  vm.runInContext('var parsed=parseCube(input,{name:"reference",color:0},{}); parsed.mesh=new THREE.Mesh(new THREE.BoxGeometry(1,1,1)); parsed.mesh.geometry.setShape(parsed.from,parsed.to); controller.updateUV(parsed);',context);
+  return context.parsed.mesh.geometry;
+}
+function extract(built,{southOnly=false,official=false,width=64,height=64}={}){
+  built.root.updateMatrixWorld(true);const vertices=[],uvs=[],normals=[],triangles=[];let quads=0;
+  for(const {mesh} of built.meshRecords){
+    const cube=mesh.userData.cube, g=official?referenceCube(cube,width,height):mesh.geometry;
+    const p=g.attributes.position,uv=g.attributes.uv,n=g.attributes.normal,normalMatrix=new THREE.Matrix3().getNormalMatrix(mesh.matrixWorld);
+    const center=cube.origin.map((x,i)=>x+cube.size[i]/2);
+    for(const group of mesh.geometry.groups){
+      if(southOnly&&group.start!==24)continue;
+      const idx=group.start/6*4,base=vertices.length;
+      for(let i=idx;i<idx+4;i++){
+        const point=new THREE.Vector3().fromBufferAttribute(p,i),normal=new THREE.Vector3().fromBufferAttribute(n,i);
+        if(official){point.x=-point.x;point.sub(new THREE.Vector3(...center)).multiplyScalar(1/16);normal.x=-normal.x;}
+        vertices.push(point.applyMatrix4(mesh.matrixWorld).toArray());normals.push(normal.applyNormalMatrix(normalMatrix).toArray());uvs.push([uv.getX(i),uv.getY(i)]);
+      }
+      for(let t=0;t<6;t+=3){const a=Array.from(g.index.array.slice(group.start+t,group.start+t+3)).map(x=>x-idx+base);if(official)[a[1],a[2]]=[a[2],a[1]];triangles.push(a);}quads++;
+    }
+    if(official)g.dispose();
+  }
+  return {vertices,uvs,normals,triangles,quads};
+}
+const sceneList=[],inputList=[];
+function addScene(name,data,format,texture,{southOnly=false,camera=[0,0,1],oracle=true,label=name}={}){
+  const summary={identifier:data.description?.identifier??name,formatVersion:format,textureWidth:data.description?.texture_width??64,textureHeight:data.description?.texture_height??64};
+  const opts={includePivots:false,includeLocators:false,scale:1/16};
+  const a=before(data,summary,{default:new THREE.MeshBasicMaterial()},opts),b=after(data,summary,{default:new THREE.MeshBasicMaterial()},opts);
+  const variants={before:extract(a,{southOnly}),after:extract(b,{southOnly})};
+  if(oracle)variants.reference=extract(a,{southOnly:true,official:true,width:summary.textureWidth,height:summary.textureHeight});
+  const payload={name,label,texture,camera,variants,oracleScope:oracle?'South-only official local attributes; existing transform matrices reused. No independent hierarchy/rotation validation.':null};
+  fs.writeFileSync(`${root}/${name}.json`,JSON.stringify(payload));sceneList.push({name,label,quads:variants.before.quads,variants:Object.keys(variants),camera,texture,southOnly});
+  for(const x of [a,b])for(const {mesh}of x.meshRecords)mesh.geometry.dispose();
+}
+for(const [name,depth,sign]of [['fixture-plane',0,1],['fixture-solid',2,1],['fixture-signed-plane',0,-1]]){
+ const cube={origin:[-7,2,3],size:[5,4,depth],pivot:[-2,2,3],rotation:[0,0,0],uv:{south:{uv:sign>0?[11,13]:[18,22],uv_size:[7*sign,9*sign]}}};
+ const data={bones:[{name:'root',pivot:[0,0,0],cubes:[cube]}]};
+ addScene(name,data,'1.14.0',`${root}/asymmetric-atlas.png`,{southOnly:true,label:`${name}: size [5,4,${depth}], signed UV ${sign}`});
+}
+const tablePath=`${root}/../repo/packs/resource/models/blocks/sacristan_table.geo.json`;
+const tableTexture=`${root}/../repo/packs/resource/textures/blocks/sacristan_table.png`;
+const table=JSON.parse(fs.readFileSync(tablePath));inputList.push({path:tablePath,sha256:hash(tablePath)},{path:tableTexture,sha256:hash(tableTexture)});
+addScene('table-full',table['minecraft:geometry'][0],table.format_version,tableTexture,{oracle:false,camera:[0.6,0.35,1],label:'Sacristan table: complete solid asset, 34 cubes'});
+addScene('table-south',table['minecraft:geometry'][0],table.format_version,tableTexture,{southOnly:true,camera:[0,0,1],label:'Sacristan table: South-only control'});
+const bandPath=`${workspace}/paz-bedrock-v75-prototype-20261103/assembly_transport_v14/resource_pack/models/entity/paz_v75_v14_lab_sculpture.geo.json`;
+const bandTexture=`${workspace}/paz-bedrock-v75-prototype-20261103/assembly_transport_v14/resource_pack/textures/entity/paz_v75_v14_lab_sculpture.png`;
+const band=JSON.parse(fs.readFileSync(bandPath)),data=band['minecraft:geometry'][0];data.bones=data.bones.filter(b=>b.name==='part_00');
+if(data.bones.length!==1||data.bones[0].cubes.some(c=>c.size[2]!==0||Object.keys(c.uv).join()!=='south'))throw Error('Unexpected planar source');
+fs.writeFileSync(`${root}/paz-v14-band-subset.geo.json`,JSON.stringify({format_version:band.format_version,'minecraft:geometry':[data]}));
+inputList.push({path:bandPath,sha256:hash(bandPath),subset:'part_00 only, 4444 South zero-depth cubes'},{path:bandTexture,sha256:hash(bandTexture)});
+addScene('paz-planar-band',data,band.format_version,bandTexture,{southOnly:true,camera:[0.25,0.12,1],label:'Paz V14 part_00 band: 4444 zero-depth South planes'});
+const report={referenceCommit:'ec0b2827104d0799c153bfb5f867579c0c44652f',referenceFiles:files,inputs:inputList,scenes:sceneList,notes:['Render arrays are extracted from the actual before/candidate Three module outputs.','The official reference uses unchanged Blockbench functions, with X reflection and reversed winding.','Asset reference reuses existing world transform matrices; only local UV/normal expectations are independent.','No epsilon, thickness, normal-map shader, MER, Chromium, WebGL or Minecraft.']};
+fs.writeFileSync(`${root}/manifest.json`,JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));

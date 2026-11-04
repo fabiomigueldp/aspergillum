@@ -1,0 +1,66 @@
+import numpy as np,json,subprocess,sys,shutil
+from pathlib import Path
+from scipy.spatial import Delaunay,cKDTree
+R=Path(__file__).resolve().parents[1];B=R.parent;src=np.load(B/'evidence/band-source.npz');uv=np.load(B/'evidence/band-source-parameters.npz')['uv'];wall=np.load(B/'evidence/band-source-wall-classes.npz')['wall_class'];hv=src['points'];hn=src['normals'];hf=src['triangles'];outer=np.unique(hf[wall==0]);inner=np.unique(hf[wall==1]);pairmap={tuple(np.round(uv[x],5)):int(x) for x in inner};innerpair=np.array([pairmap[tuple(np.round(uv[x],5))] for x in outer]);outertree=cKDTree(uv[outer]);d=np.load(B/'adaptive_source/evidence/band-paired.npz');nv=len(d['points'])//2;selected=set(d['source_indices'][:nv].tolist());history=[]
+def orient(t,p):
+ a,b,c=p[t];return t if np.cross(b-a,c-a)<0 else [t[0],t[2],t[1]]
+def proper2(a,b,c,d):
+ def cross(x,y,z):return float(np.cross(y-x,z-x))
+ return cross(a,b,c)*cross(a,b,d)<-1e-12 and cross(c,d,a)*cross(c,d,b)<-1e-12
+def constrain(tri,p):
+ fs=tri.tolist();constraints=[]
+ for j in [0,3,5,8,11,13,16]:
+  line=np.where(abs(p[:,1]-j)<1e-7)[0];line=line[np.argsort(p[line,0])]
+  constraints += [tuple(sorted([int(a),int(b)])) for a,b in zip(line,line[1:])]
+ for target in constraints:
+  for iteration in range(500):
+   edges={}
+   for ti,t in enumerate(fs):
+    for a,b in zip(t,np.roll(t,-1)):edges.setdefault(tuple(sorted([int(a),int(b)])),[]).append(ti)
+   if target in edges:break
+   a,b=target;flipped=False
+   for (c,d),ts in edges.items():
+    if len(ts)!=2 or len({a,b,c,d})<4 or not proper2(p[a],p[b],p[c],p[d]):continue
+    x=next(k for k in fs[ts[0]] if k not in (c,d));y=next(k for k in fs[ts[1]] if k not in (c,d))
+    if not proper2(p[c],p[d],p[x],p[y]):continue
+    fs[ts[0]]=orient([x,y,c],p);fs[ts[1]]=orient([y,x,d],p);flipped=True;break
+   if not flipped:raise RuntimeError(('Cannot recover constrained edge',target,p[list(target)]))
+  else:raise RuntimeError('Constraint recovery did not converge')
+ return np.array(fs)
+def build():
+ ids=np.array(sorted(selected));ip=np.array([pairmap[tuple(np.round(uv[x],5))] for x in ids]);vp=np.concatenate([hv[ids],hv[ip]]);npair=np.concatenate([hn[ids],hn[ip]]);tri=constrain(Delaunay(uv[ids]).simplices[:,::-1],uv[ids]);nv=len(ids);edge={}
+ for f in tri:
+  for a,b in zip(f,np.roll(f,-1)):edge.setdefault(tuple(sorted([int(a),int(b)])),[]).append((int(a),int(b)))
+ boundary=[es[0] for es in edge.values() if len(es)==1];fs=tri.tolist()+((tri[:,::-1]+nv).tolist())
+ for a,b in boundary:fs.extend([[b,a,a+nv],[b,a+nv,b+nv]])
+ f=np.array(fs);return ids,ip,vp,npair,f
+# Adaptive loop controlled by strict geometric intersections, not by a render aesthetic.
+for iteration in range(16):
+ ids,ip,v,n,f=build();p=R/f'evidence/iteration-{iteration:02d}.npz';np.savez_compressed(p,points=v,triangles=f,normals=n,source_indices=np.concatenate([ids,ip]),source_side=np.array([0]*len(ids)+[1]*len(ids)))
+ gate=R/f'evidence/iteration-{iteration:02d}-gate.json'
+ cmd=['/usr/bin/blender','-b','-t','2','--python',str(B/'tools/independent_gate.py'),'--',str(p),str(gate)]
+ res=subprocess.run(cmd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True);(R/f'evidence/iteration-{iteration:02d}-gate.log').write_text(res.stdout)
+ if not gate.exists():print(res.stdout);raise RuntimeError('Gate did not write result')
+ g=json.loads(gate.read_text());print('GATE_KEYS',list(g),flush=True)
+ # Filled after inspecting the stable independent CLI output schema.
+ pairs=[x['triangles'] for x in g['crossings']]
+ if isinstance(pairs,int):raise RuntimeError('Gate omitted pairs')
+ count=g.get('proper_segment_triangle_crossings',g.get('strict_crossings',len(pairs)))
+ history.append({'iteration':iteration,'vertices':len(v),'triangles':len(f),'proper_crossings':count,'reported_pairs':len(pairs)})
+ print(history[-1],flush=True);(R/'evidence/adaptive-progress.json').write_text(json.dumps(history,indent=2))
+ if count==0:
+  shutil.copyfile(p,R/'evidence/band-paired.npz');shutil.copyfile(gate,R/'evidence/final-adaptive-gate.json');break
+ new=[];changedtris=set(int(t) for pair in pairs for t in pair)
+ for ti in changedtris:
+  verts=f[ti]%len(ids);puv=uv[ids[verts]];targets=[puv.mean(0)]+[(puv[i]+puv[(i+1)%3])/2 for i in range(3)]
+  for target in targets:
+   _,near=outertree.query(target,k=12)
+   for k in np.atleast_1d(near):
+    oi=int(outer[int(k)])
+    if oi not in selected:new.append(oi);break
+ if not new:raise RuntimeError('No unused source samples near crossings')
+ selected.update(new)
+ if len(selected)>3000:raise RuntimeError('Prototype budget exceeded: stop and report, no release')
+else:raise RuntimeError('Adaptive gate did not converge within16 iterations; report unfinished')
+shutil.copyfile(B/'paired_refined/evidence/cap-paired.npz',R/'evidence/cap-paired.npz');cap=np.load(R/'evidence/cap-paired.npz');band=np.load(R/'evidence/band-paired.npz');np.savez_compressed(R/'evidence/paired-shells.npz',points=np.concatenate([cap['points'],band['points']]),triangles=np.concatenate([cap['triangles'],band['triangles']+len(cap['points'])]),normals=np.concatenate([cap['normals'],band['normals']]),parts=np.array([0]*len(cap['triangles'])+[1]*len(band['triangles'])))
+(R/'evidence/adaptive-history.json').write_text(json.dumps({'history':history,'method':'Exact source evaluated positions/normals; shared source parameter coordinates match outer and inner. Constrained source-UV triangulation with exact protected j0,3,5,8,11,13,16 polylines; recover edges by local convex flips. Insert existing high source samples only near strict intersections. No displacement or thickness inflation.','original_samples_retained':True,'source_mesh_modified':False,'not_runtime_tested':True},indent=2))

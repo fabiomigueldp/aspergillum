@@ -1,0 +1,11 @@
+import {planFinish,type Tile} from '../src/domain/surface.ts';
+import {encodeTile} from '../src/domain/block-codec.ts';
+import {DESIGNS} from '../src/domain/catalog.ts';
+export {DESIGNS};
+export * from '../src/domain/customization.ts';
+export function compose({width,depth,design,stone=0,cloth=3,ornamental=true,facing=0}:{width:number;depth:number;design?:string;stone?:number;cloth?:number;ornamental?:boolean;facing?:number}) {
+  if(!Number.isInteger(width)||width<1||width>16||!Number.isInteger(depth)||depth<1||depth>16||Math.min(width,depth)>8||!Number.isInteger(facing)||facing<0||facing>3)throw Error('Dimensões inválidas: ambos os lados 1–16, um lado até 8, frente 0–3.');
+  const nx=facing%2?depth:width,nz=facing%2?width:depth;
+  const tiles:Tile[]=Array.from({length:width*depth},(_,i)=>({position:{x:i%nx,y:0,z:Math.floor(i/nx)},stone:0,cloth:0,frontal:0,facing:0,edges:15}));
+  return planFinish(tiles,{stone,cloth,ornamental,facing,...(design?{design}:{})}).map(tile=>({...tile,...encodeTile(tile)}));
+}

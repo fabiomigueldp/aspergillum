@@ -1,0 +1,79 @@
+# Revisão independente V9: dois checkpoints, sem retenção presumida
+
+**Ambas são melhorias geométricas locais sobre V8, com qualidade intrínseca muito superior à sua compressão de nuca. Nenhuma resolve a interface completa, remove todos os pares novos ou pode ser chamada de ausência literal de compressão.**
+
+Revisadas lendo seus arquivos, sem importar o solver:
+
+- `../constrained_fit/intrinsic097-c30-iteration00.npz`.
+- `../constrained_fit/accumulated097-c30-iteration03.npz`.
+
+Os relatórios `*-review.json` preservam hashes, índices, métricas e contatos; `*-review-arrays.npz` guardam pares e campos por face; `*-new-pair-classification.json` localizam os novos e testam adjacências explicitamente.
+
+## Comparação independente
+
+| Medida | V8 retida | Intrinsic00 | Accumulated03 |
+|---|---:|---:|---:|
+| Casca: pares |670|607|572|
+| Casca: novos vsV8 |referência|29|7|
+| Casca: removidos vsV8 |referência|92|105|
+| Casca: novos vsbaseline original |40|41|7|
+| Faixa: pares |1.115|797|798|
+| Faixa: novos vsV8 |referência|12|14|
+| Faixa: removidos vsV8 |referência|330|331|
+| Faixa: novos vsbaseline original |111|12|14|
+| Área mínima / original |0,136658|0,969367|0,968963|
+| Área face144 / original |0,136658|0,998770|0,998381|
+| Stretch intrínseco mínimo |não reavaliado aqui|0,968192|0,963633|
+| Stretch intrínseco máximo |não reavaliado aqui|1,032648|1,040211|
+| Rotação máxima de normal |42,145°|12,261°|12,261°|
+| Deslocamento máximo |9,756mm|9,233mm|9,416mm|
+| p95 dos vértices movidos |2,885mm|5,050mm|5,558mm|
+| Vértices movidos desde original |274|281|281|
+
+O stretch é calculado independentemente como os dois valores singulares não nulos do mapa tangente entre cada triângulo original e final. Área preservada sozinha não limita alongamento anisotrópico. Nenhuma face válida das duas candidatas ultrapassa a faixa de stretch0,95…1,05. Isso não é aprovação artística, nem tolerância contratual; documenta o comportamento observado.
+
+Accumulated03 tem cap207/ponte365/manto0. A comparação não produz dominância estrita:03 retira35 pares da casca e22 pares novos da casca frente aIntrinsic00, mas tem1 par total/2 pares novos adicionais da faixa e maior strain/deslocamento. Não se deve selecionar automaticamente pelo menor total. Intrinsic00 favorece a preservação de forma;03 favorece reduzir contatos, com diferença visual pequena nas vistas examinadas.
+
+## Preservação, topologia e outras partes
+
+Em ambas:
+
+- Exatos692 vértices/1.376 triângulos, mesmas identidades e conectividade.
+- Os280 explicitamente protegidos (153face,88orelhas,39baixo-pescoço) são bit a bit iguais ao baseline.
+- Os410 fora do domínio ativo V8 são bit a bit iguais. Não houve expansão escondida do domínio nem movimentação da componente microscópica.
+- Nenhuma inversão de normal; zero cruzamentos estritos próprios no gate BVH.
+- Um segundo teste enumera explicitamente8.659 pares de faces adjacentes, sem depender da escolha de candidatos BVH: zero cruzamentos estritos próprios reais.
+- O predicado legado de determinante absoluto produziu um resultado espúrio por candidata em uma aresta exatamente compartilhada:111/824 emIntrinsic00 e696/1340 em03. O controle com tolerância paralela relativa1e−12 os remove. Os dados brutos e distâncias à aresta comum estão preservados no relatório, não escondidos como correção de malha.
+- A componente microscópica3v/2f (vértices437/438/439, faces424/1131) mantém o defeito coplanar/links já existente. Portanto o gate integral continua reprovado por herança, embora não haja regressão topológica medida.
+- Túnica parte9 mantém60 pares, sem novos; halo Maria proxy mantém29, sem novos. Outras partes examinadas não ganham contatos. Partes6/7/8/10/14 são proxies do mapa antigo, não uma certificação dos híbridos atuais.
+
+Os oito hashes de `../evidence/input-locks.json` foram conferidos, todos intactos: baseline, V8 e ZIPV8, cascaV7, faixaV5, arrays reparadosV2, JSON e texturaV2. Evidência: `input-hashes-final-check.json`.
+
+## Pares novos: não são todos ocultos
+
+EmIntrinsic00,7 dos29 novos pares da casca envolvem vértice de orelha,22 não envolvem vértice protegido. Em03, todos os7 novos pares da casca ficam nas transições da máscara de orelha. Na faixa,10/12 novos emIntrinsic00 e12/14 em03 envolvem orelha.
+
+Foi verificada a possibilidade de um raio de câmera escapar de amostras nos segmentos de interseção, contra a montagem completa nativa usada no teste. Foram encontrados raios em:
+
+- Intrinsic00:11/29 pares novos da casca e6/12 da faixa.
+- Accumulated03:4/7 da casca e7/14 da faixa.
+
+Isso impede classificar todos os novos contatos como ocultos. Um raio que escapa no ponto de cruzamento **não prova uma regressão de pixels percebível**: a amostra pode estar na fronteira já visível; de modo inverso, ausência de raio em uma amostragem finita não prova invisibilidade.
+
+O maior segmento de cruzamento novo com a casca fica no par anatomia694/casca319, perto da orelha deXpositivo, entre dois vértices de orelha fixos e um móvel. Seu comprimento é9,484mm emIntrinsic00 e9,264mm em03; não encontrou raio de exposição no teste. **Esse comprimento é extensão de uma interseção dentro de um par de triângulos, não profundidade de penetração nem tamanho de furo.** Os novos da faixa chegam a1,691mm e2,397mm respectivamente. IDs, testemunhas, classificação e limites estão nos JSONs.
+
+## Limites matemáticos, não falha numérica
+
+Com os88 pontos de orelha e obstáculos congelados,462 pares da casca e657 da faixa são imutáveis. Essa barreira foi reproduzida no baseline eV8, antes de rever as novas candidatas. Conservando todo o domínioV8, os limites são465 e705. Uma afirmação de zero interseção mantendo essas condições seria incompatível com a geometria.
+
+O diagnóstico de910 direções separou superfícies/contornos sem usar só quatro câmeras. Oito vértices de orelha não têm exposição pontual amostrada, mas todos afetam faces com alguma exposição. Assim, não foi autorizada a remoção automática de sua proteção. As vistas ampliadas dos dois lados mostram a ponte atravessando as cavidades das orelhas, não meramente atrás de uma região oculta.
+
+## Inspeção visual independente
+
+Foram inspecionadas a galeria baseline de nove direções, as orelhasV8 de ambos lados, as frentesIntrinsic00/03, as duas orelhas03 e a traseira03 sem halo. Não foi percebida mudança de rosto, contorno das orelhas ou mancha grande nova nessas imagens. A faixa fica mais limpa contra a testa; a ponte dentro das cavidades das orelhas permanece. O resultado visual é limitado às imagens e ao material neutro nativo, não a todo ângulo contínuo ou ao jogo.
+
+## Veredito
+
+Os dois checkpoints sustentam uma melhora local inspecionável, com compressão máxima de área reduzida de86,3% para cerca de3,1%, sem sacrificar as orelhas fixas e sem contatos novos nas demais partes válidas testadas. A movimentação foi distribuída por mais anatomia já ativa: o p95 aumentou e deve continuar declarado.
+
+Não há certificação de folga positiva global, tangência/coplanaridade geral, alpha/culling final, normalmap, Minecraft ou integralidade dos híbridos. Novos pares, resíduos fixos e a componente defeituosa herdada impedem chamar o resultado de interface limpa. Nenhuma exportação/publicação foi feita por esta revisão.

@@ -1,0 +1,14 @@
+import bpy,json,hashlib
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/'
+def snap():
+ d={}
+ for o in bpy.data.objects:
+  if o.type not in ['MESH','CURVE']:continue
+  if o.name in ['TESTE 34 — conexão de superfícies avaliadas']:continue
+  q={'matrix':[list(row) for row in o.matrix_world],'hidden':o.hide_render}
+  if o.type=='MESH':q.update(vertices=[list(v.co) for v in o.data.vertices],keys=[(k.name,k.value,[list(v.co) for v in k.data]) for k in o.data.shape_keys.key_blocks] if o.data.shape_keys else [])
+  else:q['points']=[[(list(p.co),p.radius) for p in s.bezier_points] for s in o.data.splines]
+  d[o.name]=hashlib.sha256(json.dumps(q,sort_keys=True).encode()).hexdigest()
+ return d
+bpy.ops.wm.open_mainfile(filepath=r+'V63-opposite-ankle-trial.blend',use_scripts=False);a=snap();bpy.ops.wm.open_mainfile(filepath=r+'V74-mantle-hem-trial.blend',use_scripts=False);b=snap();json.dump({'other_objects_identical':a==b,'changed_unexpected':[n for n in a if a[n]!=b.get(n)]},open(r+'V74-scope-audit.json','w'),indent=2)

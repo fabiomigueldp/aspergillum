@@ -1,0 +1,639 @@
+{
+  "status": {
+    "status": "EXPERIMENTAL_INTEGRATION_DIAGNOSED_NOT_RELEASE",
+    "geometry_transport_and_lineage_passed": true,
+    "only_three_bones_replaced": [
+      0,
+      1,
+      15
+    ],
+    "unchanged_bones": 17,
+    "native_faces_transported": 18484,
+    "cubes": 23081,
+    "quad_faces": 23098,
+    "raster_triangles": 46196,
+    "source_files_unchanged": true,
+    "legacy_atlas_quadrants_bit_exact": true,
+    "atlas_size": [
+      4096,
+      4096
+    ],
+    "scene_reopened_and_checked": true,
+    "reimported_scene_has_only_json_geometry": true,
+    "visual_fidelity_approved": false,
+    "alpha_fidelity_failed_under_nearest_mip0": true,
+    "alpha_center_only_trial_promoted": false,
+    "known_450_ray_regressions": {
+      "conservative": 1,
+      "center_only": 26
+    },
+    "partial_normal_experiment": true,
+    "full_sculpture_pbr_equivalence": false,
+    "shell_highpoly_normal_bake_proven": false,
+    "anatomy_identity_tiles": 736,
+    "source_protected_anatomy_triangles_with_identity_tiles": 463,
+    "anatomy_same_tile_fallbacks": 307,
+    "blockbench_primary_source_uv_oracle_passed": true,
+    "aspergillum_uv_and_normal_equivalence_failed": true,
+    "runtime_minecraft_tested": false,
+    "performance_tested": false,
+    "published": false,
+    "behavior_pack_created": false,
+    "mcaddon_created": false,
+    "visual_review_pngs": 40,
+    "final_scene": "evidence/v14-experimental-reimport.blend",
+    "limits": [
+      "Alpha cells extend outside triangles and leave holes, with visible seams against native control.",
+      "Normal-map experiment improves facial detail but does not remove alpha defects; dark ear shading is shared with the native control and legacy.",
+      "All shell faces and 258 band return/closure faces remain flat normal, not full source PBR.",
+      "The 23,081 cubes and 4096 atlases are unprofiled cost; not an engine hard-limit finding.",
+      "Old native-normal-experiment controls are superseded by exact-contract UV controls; native flat diagnostics are unaffected."
+    ]
+  },
+  "inputs": [
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/band_shell_v13/constrained_fit/retained-band.npz",
+      "sha256": "aa27567ac125b12a298c283b0e9c99130fe222bf2ce3bdf9f22edf2908f4404b",
+      "bytes": 183302,
+      "current_sha256": "aa27567ac125b12a298c283b0e9c99130fe222bf2ce3bdf9f22edf2908f4404b",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/ear_rim_v11/structural_rebuild/retained-shell.npz",
+      "sha256": "c79f296415d566db5f9c109389375e0d3ae112fbccbbc89c8628200939fbf81f",
+      "bytes": 348223,
+      "current_sha256": "c79f296415d566db5f9c109389375e0d3ae112fbccbbc89c8628200939fbf81f",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/body_interface_v9/constrained_fit/retained-anatomy.npz",
+      "sha256": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+      "bytes": 47106,
+      "current_sha256": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/pbr_normals_v2/resource_pack/models/entity/paz_v75_pbr_sculpture.geo.json",
+      "sha256": "160d00c5489e618bdb093eb48a388b17f606ca9970f00de88b164758fa1c46cf",
+      "bytes": 6242831,
+      "current_sha256": "160d00c5489e618bdb093eb48a388b17f606ca9970f00de88b164758fa1c46cf",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/pbr_normals_v2/resource_pack/textures/entity/paz_v75_pbr_sculpture.png",
+      "sha256": "9547dffd84fdc399535c97f88cf8694ade2af98e82de0ec71ec7117473eb7856",
+      "bytes": 1050958,
+      "current_sha256": "9547dffd84fdc399535c97f88cf8694ade2af98e82de0ec71ec7117473eb7856",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/pbr_normals_v2/resource_pack/textures/entity/paz_v75_pbr_sculpture_normal_dx.png",
+      "sha256": "b09802ad642c4d3cbc88f0a7b734a9a3c45336f38fb09716bfd585627e2a1e17",
+      "bytes": 2969319,
+      "current_sha256": "b09802ad642c4d3cbc88f0a7b734a9a3c45336f38fb09716bfd585627e2a1e17",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/pbr_normals_v2/resource_pack/textures/entity/paz_v75_pbr_sculpture.texture_set.json",
+      "sha256": "794de2dc4ebb919e8baeff1a00822576264c0ee6708b9fc971b8268f759da155",
+      "bytes": 226,
+      "current_sha256": "794de2dc4ebb919e8baeff1a00822576264c0ee6708b9fc971b8268f759da155",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/pbr_normals_v2/evidence/repaired_meshes.npz",
+      "sha256": "27dd26d77077d1482993e33fd1d78d0eaa18929b724e3368988a298fd0ef5f65",
+      "current_sha256": "27dd26d77077d1482993e33fd1d78d0eaa18929b724e3368988a298fd0ef5f65",
+      "unchanged": true
+    }
+  ],
+  "independent_validation": {
+    "verdict": "LAB_ONLY_ALPHA_FIDELITY_FAILURE_AND_PARTIAL_PBR",
+    "geometry_coordinates_and_lineage_pass": true,
+    "legacy_pixels_and_17_bones_preserved": true,
+    "original_sources_unchanged": true,
+    "new_native_faces": 18484,
+    "total_cubes": 23081,
+    "new_south_faces_with_aspergillum_U_mirror": 18484,
+    "new_south_faces_with_normal_opposed_to_own_winding": 18484,
+    "primary_Blockbench_UV_agreement": true,
+    "known_ray_neighborhood_old_alpha_regressions": 1,
+    "known_ray_neighborhood_center_only_regressions": 26,
+    "center_only_promoted": false,
+    "partial_pbr_declared_transfer_audit_pass": true,
+    "complete_sculpture_PBR_equivalence": false,
+    "minecraft_runtime_tested": false,
+    "performance_tested": false,
+    "published": false,
+    "report": "REVIEW_INDEPENDENT_V14.md",
+    "key_diagram": "critical-gap-alpha-regression.png",
+    "validated_current_artifact_sha256": {
+      "resource_pack/models/entity/paz_v75_v14_lab_sculpture.geo.json": "60ca91b76eb9f8d4a1cb2bf4f69f6e7e5c97d17abc63db26883cee9d3fead00b",
+      "resource_pack/textures/entity/paz_v75_v14_lab_sculpture.png": "4793c77398d1e0301ccd8dfaef53a83ded9befbbcbb88571a9d1479b2a972ac7",
+      "resource_pack/textures/entity/paz_v75_v14_lab_pbr_experimental_normal_dx.png": "f2a48b36bcb2855bb7e2cf698acedf884d35f9d902bfc51a98c66da7239b2f00",
+      "export_work/pbr-texel-provenance.npz": "7a651dd7913c93456d8a46823d53ad2d74d31a9f46ad58599dc3f86e300086d6",
+      "export_work/alpha-center-only-trial.png": "c173a3695d8bdf4a614690e2a76a89a3a403266e326011704709e401c6589ef1"
+    }
+  },
+  "frozen_reimport": {
+    "scene": "evidence/v14-experimental-reimport.blend",
+    "scene_sha256": "39607427cb89f8bc3d320dac7d3a3d319a4ade91b777178cfe6bfc37384fe89d",
+    "mesh_objects": [
+      "part_00 FROM JSON ONLY",
+      "part_01 FROM JSON ONLY",
+      "part_02 FROM JSON ONLY",
+      "part_03 FROM JSON ONLY",
+      "part_04 FROM JSON ONLY",
+      "part_05 FROM JSON ONLY",
+      "part_06 FROM JSON ONLY",
+      "part_07 FROM JSON ONLY",
+      "part_08 FROM JSON ONLY",
+      "part_09 FROM JSON ONLY",
+      "part_10 FROM JSON ONLY",
+      "part_11 FROM JSON ONLY",
+      "part_12 FROM JSON ONLY",
+      "part_13 FROM JSON ONLY",
+      "part_14 FROM JSON ONLY",
+      "part_15 FROM JSON ONLY",
+      "part_16 FROM JSON ONLY",
+      "part_17 FROM JSON ONLY",
+      "part_18 FROM JSON ONLY",
+      "part_19 FROM JSON ONLY"
+    ],
+    "all_twenty_bones_reconstructed_only_from_json": true,
+    "original_native_or_highpoly_sculpture_meshes_in_scene": false,
+    "bones": {
+      "part_00": {
+        "vertices": 17776,
+        "quad_faces": 4444,
+        "positions_match_expected_float32": true,
+        "indices_exact": true,
+        "uvs_match_expected_float32": true
+      },
+      "part_01": {
+        "vertices": 50656,
+        "quad_faces": 12664,
+        "positions_match_expected_float32": true,
+        "indices_exact": true,
+        "uvs_match_expected_float32": true
+      },
+      "part_02": {
+        "vertices": 1600,
+        "quad_faces": 400,
+        "positions_match_expected_float32": true,
+        "indices_exact": true,
+        "uvs_match_expected_float32": true
+      },
+      "part_03": {
+        "vertices": 3600,
+        "quad_faces": 900,
+        "positions_match_expected_float32": true,
+        "indices_exact": true,
+        "uvs_match_expected_float32": true
+      },
+      "part_04": {
+        "vertices": 480,
+        "quad_faces": 120,
+        "positions_match_expected_float32": true,
+        "indices_exact": true,
+        "uvs_match_expected_float32": true
+      },
+      "part_05": {
+        "vertices": 480,
+        "quad_faces": 120,
+        "positions_match_expected_float32": true,
+        "indices_exact": true,
+        "uvs_match_expected_float32": true
+      },
+      "part_06": {
+        "vertices": 24,
+        "quad_faces": 6,
+        "positions_match_expected_float32": true,
+        "indices_exact": true,
+        "uvs_match_expected_float32": true
+      },
+      "part_07": {
+        "vertices": 24,
+        "quad_faces": 6,
+        "positions_match_expected_float32": true,
+        "indices_exact": true,
+        "uvs_match_expected_float32": true
+      },
+      "part_08": {
+        "vertices": 24,
+        "quad_faces": 6,
+        "positions_match_expected_float32": true,
+        "indices_exact": true,
+        "uvs_match_expected_float32": true
+      },
+      "part_09": {
+        "vertices": 5200,
+        "quad_faces": 1300,
+        "positions_match_expected_float32": true,
+        "indices_exact": true,
+        "uvs_match_expected_float32": true
+      },
+      "part_10": {
+        "vertices": 200,
+        "quad_faces": 50,
+        "positions_match_expected_float32": true,
+        "indices_exact": true,
+        "uvs_match_expected_float32": true
+      },
+      "part_11": {
+        "vertices": 2800,
+        "quad_faces": 700,
+        "positions_match_expected_float32": true,
+        "indices_exact": true,
+        "uvs_match_expected_float32": true
+      },
+      "part_12": {
+        "vertices": 472,
+        "quad_faces": 118,
+        "positions_match_expected_float32": true,
+        "indices_exact": true,
+        "uvs_match_expected_float32": true
+      },
+      "part_13": {
+        "vertices": 472,
+        "quad_faces": 118,
+        "positions_match_expected_float32": true,
+        "indices_exact": true,
+        "uvs_match_expected_float32": true
+      },
+      "part_14": {
+        "vertices": 200,
+        "quad_faces": 50,
+        "positions_match_expected_float32": true,
+        "indices_exact": true,
+        "uvs_match_expected_float32": true
+      },
+      "part_15": {
+        "vertices": 5504,
+        "quad_faces": 1376,
+        "positions_match_expected_float32": true,
+        "indices_exact": true,
+        "uvs_match_expected_float32": true
+      },
+      "part_16": {
+        "vertices": 720,
+        "quad_faces": 180,
+        "positions_match_expected_float32": true,
+        "indices_exact": true,
+        "uvs_match_expected_float32": true
+      },
+      "part_17": {
+        "vertices": 720,
+        "quad_faces": 180,
+        "positions_match_expected_float32": true,
+        "indices_exact": true,
+        "uvs_match_expected_float32": true
+      },
+      "part_18": {
+        "vertices": 720,
+        "quad_faces": 180,
+        "positions_match_expected_float32": true,
+        "indices_exact": true,
+        "uvs_match_expected_float32": true
+      },
+      "part_19": {
+        "vertices": 720,
+        "quad_faces": 180,
+        "positions_match_expected_float32": true,
+        "indices_exact": true,
+        "uvs_match_expected_float32": true
+      }
+    },
+    "packed_images_byte_exact": {
+      "paz_v75_v14_lab_pbr_experimental.png": "b6a55bb305085b8fe760672aa4ab72bb368b8f2f9843cfe8dfb164a0491a3aa5",
+      "paz_v75_v14_lab_pbr_experimental_normal_dx.png": "f2a48b36bcb2855bb7e2cf698acedf884d35f9d902bfc51a98c66da7239b2f00"
+    },
+    "source_geo_sha256": "60ca91b76eb9f8d4a1cb2bf4f69f6e7e5c97d17abc63db26883cee9d3fead00b",
+    "minecraft_tested": false,
+    "visual_fidelity_approved": false,
+    "shader": "Diffuse diagnostic with partial DirectX normal-map experiment; not Bedrock/Vibrant Visuals shader"
+  },
+  "cost_accounting": {
+    "legacy": {
+      "bones": 20,
+      "cubes": 7793,
+      "mapped_quad_faces": 7810,
+      "raster_triangles_if_quads_split": 15620,
+      "unwelded_vertices_if_four_per_quad": 31240,
+      "geometry_json_bytes": 6242831,
+      "color_png_bytes": 1050958,
+      "atlas_size": [
+        2048,
+        2048
+      ],
+      "color_mode": "RGBA",
+      "one_rgba8_atlas_uncompressed_MiB": 16.0,
+      "two_rgba8_atlases_uncompressed_MiB": 32.0,
+      "two_rgba8_atlases_with_full_mipchain_estimate_MiB": 42.666666666666664
+    },
+    "experimental": {
+      "bones": 20,
+      "cubes": 23081,
+      "mapped_quad_faces": 23098,
+      "raster_triangles_if_quads_split": 46196,
+      "unwelded_vertices_if_four_per_quad": 92392,
+      "geometry_json_bytes": 6727120,
+      "color_png_bytes": 1910320,
+      "atlas_size": [
+        4096,
+        4096
+      ],
+      "color_mode": "RGBA",
+      "one_rgba8_atlas_uncompressed_MiB": 64.0,
+      "two_rgba8_atlases_uncompressed_MiB": 128.0,
+      "two_rgba8_atlases_with_full_mipchain_estimate_MiB": 170.66666666666666
+    },
+    "limits": [
+      "Geometry and storage accounting, not a frame-time measurement or engine validation.",
+      "RGBA8 figures are explicit uncompressed allocation estimates, not observed GPU memory; formats/compression/mips may differ.",
+      "No official hard cube limit inferred from these counts; practical hardware cost remains unknown."
+    ]
+  },
+  "syntax_check": {
+    "passed": true,
+    "files": [
+      "tools/render_assembly_projected_uv_checkpoint.py",
+      "tools/finalize_package.py",
+      "tools/freeze_verify_reimport.py",
+      "tools/render_assembly.py",
+      "export_work/build_alpha_center_only_trial.py",
+      "export_work/check_delivery.py",
+      "export_work/build_transport.py",
+      "export_work/build_pbr_experiment.py",
+      "independent_validation/audit_pbr.py",
+      "independent_validation/check_microcomponent.py",
+      "independent_validation/audit_transport.py",
+      "independent_validation/plot_critical_alpha.py",
+      "independent_validation/audit_critical_rays.py",
+      "independent_validation/audit_alpha_trial.py",
+      "independent_validation/audit_anatomy_resampling.py",
+      "independent_validation/audit_inputs.py",
+      "independent_validation/compare_position_uv.py"
+    ]
+  },
+  "evidence_pngs": [
+    {
+      "path": "evidence/alpha-center-trial-band-front.png",
+      "bytes": 1288033,
+      "sha256": "ce0445bffcc9ef2d231e3c089f4bed805c18851a4fc2812786c51e7e7ab90802"
+    },
+    {
+      "path": "evidence/alpha-center-trial-mantle-back.png",
+      "bytes": 1077568,
+      "sha256": "2be4ea62fd76b832a7f7bc28381da8fb303a591e255ef8c8531be97f2e826286"
+    },
+    {
+      "path": "evidence/json-color-control-band-front.png",
+      "bytes": 1261551,
+      "sha256": "b440c5cea5165e2536af68a20bbeffe7645daf2f7d2b61ab4f1f378ed959013b"
+    },
+    {
+      "path": "evidence/json-color-control-head-front.png",
+      "bytes": 976871,
+      "sha256": "064e7455787ee02d74ed3087ad58e40c437e637cdd66f9e36466afeb6099fb8a"
+    },
+    {
+      "path": "evidence/json-color-control-mantle-back.png",
+      "bytes": 1082920,
+      "sha256": "db0f8ad663bd68ad9a1f3e6e1607a0ef6acf1f3d75e1cba5a737e52ac1e482a6"
+    },
+    {
+      "path": "evidence/json-flat-focus-band-front.png",
+      "bytes": 1243077,
+      "sha256": "124b3d7c089cbdbd7c90a0bfbd7d26948d105dda1e831a3cd9535865bf692c4f"
+    },
+    {
+      "path": "evidence/json-flat-focus-head-front.png",
+      "bytes": 966001,
+      "sha256": "ee42e78bd8070bb8d81d47c87ba43edf201fbd87f34f302912aaaf705fd07f85"
+    },
+    {
+      "path": "evidence/json-flat-focus-left-ear.png",
+      "bytes": 1342938,
+      "sha256": "27c4884616b3e634c14ccc5f930514514f8d0c31d13f423d3d11741368877e91"
+    },
+    {
+      "path": "evidence/json-flat-focus-mantle-back.png",
+      "bytes": 1060829,
+      "sha256": "c739a015d482c5e44835d669bfad69ff27855abb778f3ebc93caeef7d9e9394a"
+    },
+    {
+      "path": "evidence/json-flat-focus-right-ear.png",
+      "bytes": 1309130,
+      "sha256": "25b9a767adcb740cc0ad81698ef8a67b49fc6e49419f046f0da786d76fa46b52"
+    },
+    {
+      "path": "evidence/json-flat-whole-back.png",
+      "bytes": 914941,
+      "sha256": "55b5e6b0e66a7ee39ab15e69f129009798d6c3264a13336e92c51bb562a2222f"
+    },
+    {
+      "path": "evidence/json-flat-whole-front.png",
+      "bytes": 976768,
+      "sha256": "01a62dd8cc3a13b5551564d6a032c0a3a873a90d1ff8af13adae884edbc2e58f"
+    },
+    {
+      "path": "evidence/json-flat-whole-profile.png",
+      "bytes": 936110,
+      "sha256": "1707badd7cb490616425bc5bdfad12dac049150b3294fbc77c3762453c5f464c"
+    },
+    {
+      "path": "evidence/json-flat-whole-threequarter.png",
+      "bytes": 972392,
+      "sha256": "a51c22f7034c74ac2f5a59fcf8bee91ea9e049cb0e38131cb68fc150eb82e59b"
+    },
+    {
+      "path": "evidence/json-normal-experiment-band-front.png",
+      "bytes": 1266053,
+      "sha256": "d697f1a3c33cc962483fe4566e9c6bce8ab2e2d2154e818f5b2d04143a6dba40"
+    },
+    {
+      "path": "evidence/json-normal-experiment-front.png",
+      "bytes": 977798,
+      "sha256": "207465a82c4a6774245d0d969162eba9ac503120aba6e0425ea7ed880966d1ca"
+    },
+    {
+      "path": "evidence/json-normal-experiment-head-front.png",
+      "bytes": 978093,
+      "sha256": "76f4a88f2b368c9d4eda227fae34def68fcd5dddf35a5a1b209f660118a9974e"
+    },
+    {
+      "path": "evidence/json-normal-experiment-left-ear.png",
+      "bytes": 1349589,
+      "sha256": "7153b4e47f774e3c43cce4c1aa967106fd672a4dcd015cf1910b033b170031a6"
+    },
+    {
+      "path": "evidence/json-normal-experiment-mantle-back.png",
+      "bytes": 1084844,
+      "sha256": "dd5d905bc8285a103f221ad350d10038834a491ad91d7472c7615053b6830317"
+    },
+    {
+      "path": "evidence/json-normal-experiment-threequarter.png",
+      "bytes": 977501,
+      "sha256": "a603eec50a0e1c159e83f5eeaa4a1702af1af96f67b0f417906f594e0db02c13"
+    },
+    {
+      "path": "evidence/legacy-flat-whole-back.png",
+      "bytes": 857720,
+      "sha256": "ba8bcde0dc70187d62d5fd102e16ed5f30a2385cf987346a1a3909eaad4507d7"
+    },
+    {
+      "path": "evidence/legacy-flat-whole-front.png",
+      "bytes": 965165,
+      "sha256": "b7e69fd9dd58e33c623c20af1113a7bdce10c334089be9a3fea2c6e88607beff"
+    },
+    {
+      "path": "evidence/legacy-flat-whole-profile.png",
+      "bytes": 922577,
+      "sha256": "8f758c7bedeef7232b04966c55da2f473d8ba1f78a09f1a6766d1d32a75788e6"
+    },
+    {
+      "path": "evidence/legacy-flat-whole-threequarter.png",
+      "bytes": 965229,
+      "sha256": "979ae5a9ef697926286bb137ebfecb3831027e732301501a6338c9d796927734"
+    },
+    {
+      "path": "evidence/legacy-normal-back.png",
+      "bytes": 840438,
+      "sha256": "c726659975ca0d134757af01e5e68910a84503c89319c6d8ad8eb85f4fa5c097"
+    },
+    {
+      "path": "evidence/legacy-normal-front.png",
+      "bytes": 963319,
+      "sha256": "03ed5a08f70e623fb4ade8eb500ad421fd562eacd39036898388bcb4b931818d"
+    },
+    {
+      "path": "evidence/legacy-normal-head-front.png",
+      "bytes": 982441,
+      "sha256": "97530301ae1887bc297996a56e6096e1b271a64b0f07600f5c833fced9e2c3d5"
+    },
+    {
+      "path": "evidence/legacy-normal-profile.png",
+      "bytes": 918875,
+      "sha256": "87d783d86f3605e1921bc94215dc071100a3af12cb1bb94f2f5517986cbf89ce"
+    },
+    {
+      "path": "evidence/legacy-normal-threequarter.png",
+      "bytes": 966271,
+      "sha256": "c06fbee6a30b345bf93925ebbbd605114664ce4a5c0edb44e252cc77917ffeec"
+    },
+    {
+      "path": "evidence/native-flat-focus-band-front.png",
+      "bytes": 1161831,
+      "sha256": "ee4b2b33c2f6d6f008e56aec82fd193155e7cee0f817d7e36af82af4fbc364b8"
+    },
+    {
+      "path": "evidence/native-flat-focus-head-front.png",
+      "bytes": 933731,
+      "sha256": "2fd95c20766aaa6bad70907329e610a42b62c1c1f8878949b4ff4e2bb99f6bb9"
+    },
+    {
+      "path": "evidence/native-flat-focus-left-ear.png",
+      "bytes": 1258429,
+      "sha256": "f6ba8310eb517ae97675b01cf0e6144d07fa60ecd3474db688db74482ae41a17"
+    },
+    {
+      "path": "evidence/native-flat-focus-mantle-back.png",
+      "bytes": 983875,
+      "sha256": "a183ad4f9729cafc95de4372611d0b9017ed5b23c224decb2de18f569ec14660"
+    },
+    {
+      "path": "evidence/native-flat-focus-right-ear.png",
+      "bytes": 1213834,
+      "sha256": "eaeedf6fdea0d0491674d8951a161777e993526487ea19e10da025466397e726"
+    },
+    {
+      "path": "evidence/native-flat-whole-back.png",
+      "bytes": 873824,
+      "sha256": "a0f56cf5a88331bc1eb1cfaed69421511cd3b77cbcea329eb90ebe8b2736e1f0"
+    },
+    {
+      "path": "evidence/native-flat-whole-front.png",
+      "bytes": 970917,
+      "sha256": "c0e40be46bfd17f18ac10bb31f005d4212996cd3cc32575f47096171c26a55ad"
+    },
+    {
+      "path": "evidence/native-flat-whole-profile.png",
+      "bytes": 921576,
+      "sha256": "57fda7dfc6098a2c8b39babb74e9da968b8b656f215a08b7fa029bbbfa9ea32b"
+    },
+    {
+      "path": "evidence/native-flat-whole-threequarter.png",
+      "bytes": 967355,
+      "sha256": "753f0cb9c0d8d7c4a0d4a3fbb0e7686197dbfe7cf305d5051554354b64cc3f87"
+    },
+    {
+      "path": "evidence/native-normal-contract-band-front.png",
+      "bytes": 1195217,
+      "sha256": "514b5db72686069c22f4299a09c4258add1cfd820a607843c867252ee3e2d344"
+    },
+    {
+      "path": "evidence/native-normal-contract-front.png",
+      "bytes": 973412,
+      "sha256": "006f74dc8a9299edb6f60a53b0a4ded4d906061cf58d117f4f9393d71eb95602"
+    },
+    {
+      "path": "evidence/native-normal-contract-head-front.png",
+      "bytes": 951665,
+      "sha256": "e66530b0f1d38160d73eae683c81d0fd69f431656141b7af3b0a62c64b4cbc73"
+    },
+    {
+      "path": "evidence/native-normal-contract-left-ear.png",
+      "bytes": 1280582,
+      "sha256": "820cff1fa3ac88930003df0e997c9f7616e1d6d682f651f14fab82bea70066cb"
+    },
+    {
+      "path": "evidence/native-normal-contract-mantle-back.png",
+      "bytes": 1010089,
+      "sha256": "57794769157c5220c95b549a0eae08518a92849fca7ff9b8d4ee9f8f7fa26005"
+    },
+    {
+      "path": "evidence/native-normal-contract-threequarter.png",
+      "bytes": 972097,
+      "sha256": "9a8c83e635df32b35edd03396393bdcc66229bb5bab27a84588c73b41aef9e0c"
+    },
+    {
+      "path": "evidence/native-normal-experiment-band-front.png",
+      "bytes": 1195235,
+      "sha256": "4a0a2e816c26380e0f42fc6c529d24f2f4c3ff7b9d8aba7533d4495195f1b7a1"
+    },
+    {
+      "path": "evidence/native-normal-experiment-front.png",
+      "bytes": 973394,
+      "sha256": "93b04ccc8408d8be21b7f92fe2c67c6267ac5f771b180f25cf4a9cbf94429e65"
+    },
+    {
+      "path": "evidence/native-normal-experiment-head-front.png",
+      "bytes": 951676,
+      "sha256": "e38e3c9a49b5e20a3f5c5322d94b5fdf7aac2ef93f55c26d627dfcdd64c85fc1"
+    },
+    {
+      "path": "evidence/native-normal-experiment-left-ear.png",
+      "bytes": 1280216,
+      "sha256": "fdde5a04ab958320d67e5aacaf170b52b3f1ac93f01d254959910628a6e90d24"
+    },
+    {
+      "path": "evidence/native-normal-experiment-mantle-back.png",
+      "bytes": 1010137,
+      "sha256": "f1df2b92f1e87edfb5429e49a8035e5b8f3d51e3ac0d6ea2606f7895297a22ad"
+    },
+    {
+      "path": "evidence/native-normal-experiment-threequarter.png",
+      "bytes": 972024,
+      "sha256": "cd800839955d9aa735560451dac8e444e58d26953ba81ca19c02acd79c64191c"
+    }
+  ],
+  "primary_visual_review": "evidence/review-visual-v14.md",
+  "primary_numeric_review": "independent_validation/REVIEW_INDEPENDENT_V14.md",
+  "native_uv_control_source": "exact per-vertex transport contract",
+  "superseded_native_uv_control_error_texels": {
+    "part_00": 12.580398484836223,
+    "part_01": 35.92212550760814,
+    "part_15": 0.0859512011948027
+  }
+}

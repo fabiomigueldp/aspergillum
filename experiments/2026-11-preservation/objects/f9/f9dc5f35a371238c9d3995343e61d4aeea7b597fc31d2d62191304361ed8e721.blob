@@ -1,0 +1,26 @@
+# V82 — localized cloth reconstruction rejected (2026-11-02)
+
+Baseline remains V75-tunic-lower-trial.blend. No V82 blend was saved and no anatomical object was changed.
+
+## New evidence
+The boundary was expanded from 583 to 623 original faces, staying within Z 3.22–3.42 and X <= .025. Two simple loops remain (288 and 216 vertices); all boundary segments were ray-tested against the skin, with no hits. Endpoint and quarter-point signed-distance samples exceeded .1 mm. This validates absence of segment intersections in the performed test, not a global continuous clearance certificate.
+
+Both loops have zero crossings in YZ projection. Their edge lengths are very irregular: approximately .72–36.30 mm and 1.09–36.03 mm. Regular interior retopology does not regularize the inherited boundary.
+
+## Technically distinct proof
+Constrained Delaunay triangulation in YZ with a 2 mm interior grid; original outside faces and boundary positions preserved. Two independent harmonic X surfaces, constrained by leftward skin-ray clearance (outer target 6 mm, inner target 3 mm). Removed 623 faces; inserted 4,481 triangles. Filtered output by constrained face membership, rather than retaining outside convex-hull triangles.
+
+## Rejection
+- 79 skin–new-patch triangle intersections.
+- 29 self-intersections involving new patch triangles.
+- 3 nonmanifold edges around one tiny CDT boundary triangle.
+- New triangle areas 9.15e-9–1.628e-4 m²; no claim of regular quality at inherited boundary.
+- Skin-hit triangles cluster at X [-.03818,.00947], Y [.00599,.02399], Z [3.30354,3.31554].
+- Some new self-intersections meet preserved neighboring folds, not merely each other. Increasing an offset would not establish safe continuity.
+
+The topology assertion stopped before creating/saving a replacement object. V75 remains unchanged. No render is offered as an improvement because the technical test already failed.
+
+## Implication
+A clear contour alone does not make independent two-layer X graphs a valid shell. A robust replacement needs a common midsurface/consistent shell correspondence, adaptive treatment of the silhouette (a one-direction ray may miss near a silhouette), and boundary subdivision shared with adjacent preserved faces. Exact original positions can remain fixed, but neighboring connectivity must change to match regular sampling. This is a different construction from increasing offsets or smoothing the failed patches. Do not repeat independent-layer harmonic projection as if it guaranteed thickness.
+
+Artifacts: neck-boundary-integral-growth.json; neck-contour-projection-audit.json; V82-retopology-verification.json (including full intersecting triangle coordinates and nonmanifold edge IDs); corresponding Python scripts.

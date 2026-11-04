@@ -1,0 +1,17 @@
+import numpy as np,json,collections
+from pathlib import Path
+R=Path(__file__).resolve().parents[1];s=np.load(R/'evidence/seam-partitions.npz');a=np.load(R/'evidence/seam-source-inspection.npz');f=s['mixed_triangles'];p=a['points'];mr=np.load(R/'evidence/mantle-rest.npz');me=mr['source_indices'][mr['boundary_edges']];ce=s['cap_boundary_edges']
+def labels(e,starts):
+ adj=collections.defaultdict(list)
+ for x,y in e:adj[int(x)].append(int(y));adj[int(y)].append(int(x))
+ vals={int(x):(side,float(i)/(len(ids)-1)) for side,ids in enumerate(starts) for i,x in enumerate(ids)};anchor=set(vals)
+ for x in anchor:
+  for nxt in adj[x]:
+   path=[x,nxt]
+   while path[-1] not in anchor:path.append(next(k for k in adj[path[-1]] if k!=path[-2]))
+   y=path[-1];sx,tx=vals[x];sy,ty=vals[y]
+   for k,z in enumerate(path[1:-1],1):vals[z]=(sx if sx==sy else 2,tx+(ty-tx)*k/(len(path)-1))
+ return vals
+cl=labels(ce,[np.arange(4956,5013),np.arange(9996,10053)]);ml=labels(me,[np.arange(720,800)+160386,np.arange(1520,1600)+160386]);e=np.unique(np.sort(np.concatenate([f[:,[0,1]],f[:,[1,2]],f[:,[2,0]]]),axis=1),axis=0);e=e[(e<160386).sum(1)==1];groups=collections.defaultdict(list)
+for x,y in e:groups[(cl[int(x)][0],ml[int(y)][0])].append([int(x),int(y),cl[int(x)][1],ml[int(y)][1],float(np.linalg.norm(p[x]-p[y]))])
+r={'cross_edges':len(e),'side_groups':{str(k):{'count':len(v),'cap_parameter_range':[min(x[2] for x in v),max(x[2] for x in v)],'mantle_parameter_range':[min(x[3] for x in v),max(x[3] for x in v)],'parameter_difference_range':[min(x[2]-x[3] for x in v),max(x[2]-x[3] for x in v)],'length_range':[min(x[4] for x in v),max(x[4] for x in v)]} for k,v in groups.items()},'anchor_edge_examples':[x for v in groups.values() for x in v if x[0]<10080 and x[1]-160386<1600]};(R/'evidence/bridge-alignment.json').write_text(json.dumps(r,indent=2));np.savez_compressed(R/'evidence/bridge-boundary-parameters.npz',cap_ids=np.array(list(cl)),cap_side=np.array([v[0] for v in cl.values()]),cap_t=np.array([v[1] for v in cl.values()]),mantle_ids=np.array(list(ml)),mantle_side=np.array([v[0] for v in ml.values()]),mantle_t=np.array([v[1] for v in ml.values()]));print(json.dumps(r,indent=2))

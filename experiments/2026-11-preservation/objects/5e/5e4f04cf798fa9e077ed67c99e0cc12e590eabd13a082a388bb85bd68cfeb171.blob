@@ -1,0 +1,34 @@
+{
+  "name": "aspergillum-model-viewer",
+  "version": "2.4.0",
+  "private": true,
+  "type": "module",
+  "description": "Bancada 3D multi-add-on e ferramentas headless para inspeção de assets Bedrock.",
+  "scripts": {
+    "renderer:check": "node scripts/probe-renderer.mjs",
+    "studio": "node scripts/prepare-studio.mjs && vite --open \"/?tool=studio&addon=altare\"",
+    "render:altars": "node scripts/prepare-studio.mjs && node scripts/render-altars.mjs",
+    "smoke:studio": "node scripts/smoke-studio.mjs",
+    "sync-assets": "node scripts/sync-assets.mjs",
+    "validate:workspace": "node scripts/validate-workspace.mjs",
+    "test": "node --test tests/*.node.mjs",
+    "smoke:workbench": "node scripts/smoke-workbench.mjs",
+    "capture": "npm run sync-assets && node scripts/capture-models.mjs",
+    "capture:assets": "npm run sync-assets && node scripts/capture-assets.mjs",
+    "capture:avatars": "npm run sync-assets && node scripts/capture-avatars.mjs",
+    "capture:equipment": "npm run sync-assets && node scripts/capture-avatars.mjs",
+    "render:cover": "npm run sync-assets && node scripts/render-cover.mjs",
+    "render:invitation": "npm run sync-assets && node scripts/render-invitation.mjs",
+    "render:inventory-icons": "npm run sync-assets && node scripts/render-inventory-icons.mjs",
+    "dev": "npm run sync-assets && vite",
+    "build": "npm test && npm run sync-assets && npm run validate:workspace && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "0.185.1"
+  },
+  "devDependencies": {
+    "playwright": "1.58.2",
+    "vite": "8.2.0"
+  }
+}

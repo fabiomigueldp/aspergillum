@@ -1,0 +1,11 @@
+# V84 — distal chest-hand articulation study
+
+V75 preserved. V84 is a separate blend with reversible TESTE84 key; no global pose change. Existing finger face sets identify phalanges; palm, wrist/cuff and thumb remain fixed. Middle finger is the stable axis. Little/ring/index MCP adduction6°,3°,−4°. Distal phalanges undergo rigid rotations; transition uses18mm geodesic distance from the exact palm boundary. Initial Z-based support caused3 palm-root crossings and was rejected before saving (V84a report retained).
+
+Technical result:931 affected vertices, max5.548mm; triangle area ratio.87519–1.07259; zero flips/new self-intersections.78 baseline cloth pairs remain identical. Palm/thumb max delta0. Distal spans differ only at submicrometer numerical precision. Whole-hand signed volume changes+0.6478%: not exactly volume-preserving; localized root transition accounts for deformation. Other source objects unchanged by construction.
+
+Visual result: front close shows narrower finger spread, but profile and contextual gesture barely change. It does not solve floating support, wrist integration or overall reference gesture. Reference8 only gives oblique/profile low-resolution hand; reference9 omits it. No definitive frontal gap reconstruction is possible from these sources.
+
+Self-assessment: do NOT promote as substantive fidelity gain. Keep only optional reversible experiment unless independent reviewer finds useful local improvement. Avoid repeated small angle variants. Technical success is not artistic success.
+
+Evidence: V75/V84-chest-hand-{front,profile,threequarter}.png; V75/V84-chest-hand-context.png; V84-fingers-verification.json; V84-volume-audit.json. Close renders600×800,32samples, ortho.48; context450×700,24samples, ortho1.20. Paired camera/light settings identical within each pair.

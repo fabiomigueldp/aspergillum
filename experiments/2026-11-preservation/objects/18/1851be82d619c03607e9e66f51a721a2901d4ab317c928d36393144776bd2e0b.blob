@@ -1,0 +1,88 @@
+# V11: borda calota–ponte reconstruída, retenção técnica local
+
+**Retida:** `structural_rebuild/retained-shell.npz`, byte-idêntica à variante `polygonal-pinna-0.5mm-clean.npz`.
+
+SHA-256: `c79f296415d566db5f9c109389375e0d3ae112fbccbbc89c8628200939fbf81f`.
+
+A reconstrução fechada remove as lâminas vermelha/azul do centro das cavidades das orelhas nas vistas examinadas, sem deformar a anatomia V9. As revisões geométrica e visual independentes são favoráveis à **retenção técnica local**. Não aprovam a interface inteira, a aparência final ou o uso no jogo. Nenhuma exportação Bedrock, publicação, substituição do addon ou integração da arte P85 ocorreu.
+
+## O que mudou em relação à família V10 rejeitada
+
+A V10 movia pontos mantendo a conectividade. Dezesseis cruzamentos atravessavam arestas fonte fixas na costura, uma barreira que essa parametrização não removia.
+
+A V11 parte novamente da casca V7 original e reconstrói a região por diferença sólida contra dois envelopes locais das orelhas, fechando o corte entre as paredes interna e externa. Não apaga simplesmente faces e não presume que a região seja invisível. Os 16 testemunhos anteriores estão dentro do novo envelope; nenhuma dessas 16 arestas inteiras permanece na candidata.
+
+O primeiro hull tridimensional incluía quatro pontos altos da máscara protetora direita e abria uma região excessiva na têmpora. Foi rejeitado. A máscara V9 era uma seleção conservadora de proteção, não uma segmentação anatômica precisa. A variante final exclui esses quatro pontos somente do envelope, sem mover qualquer ponto anatômico. Usa um contorno local no plano yz extrudido através das duas paredes. A margem nominal é de 0,5 mm, chegando a aproximadamente 0,70 mm nos cantos do offset poligonal.
+
+A alternativa com borda arredondada também ficou visualmente adequada, mas introduzia triângulos muito estreitos. A versão poligonal é preferida pela estabilidade numérica, não por uma melhora visual adicional que não foi observada.
+
+## Preservação e tamanho da malha
+
+- Anatomia V9 completa, faixa V5 e todos os arquivos fonte/versões anteriores permanecem intactos.
+- 6.084 vértices V7 sobreviventes mantêm coordenadas bit a bit idênticas; 12.060 faces orientadas originais ficam exatas, incluindo todo o manto.
+- 424 faces antigas intersectadas pelo envelope foram recortadas ou retiradas da cópia. Há 160 vértices antigos retirados, 250 novos, 358 triângulos recortados e 246 faces novas de fechamento.
+- Resultado: **6.334 vértices e 12.664 triângulos**, contra 6.244/12.484 da V7. É acréscimo de 180 triângulos, não promessa de desempenho.
+- Ancestralidade de faces, coordenadas baricêntricas, vértices sobreviventes/novos e domínio do cutter estão registrados no NPZ e nos relatórios. Não se reutiliza identidade de pares antiga como se a tesselação fosse igual.
+
+## Geometria e espessura, verificadas independentemente
+
+A retida tem uma componente fechada, Euler 2, orientação consistente, zero arestas abertas/não-manifold, enlaces de vértices defeituosos ou faces degeneradas abaixo do limiar testado. **Zero auto-interseções estritas confirmadas**, incluindo 92.731 pares adjacentes; três flags de dupla precisão foram resolvidos como resíduos numéricos por predicados com 80 dígitos, preservando-se os dados brutos.
+
+O domínio de cada patch recortado foi conferido por clipping analítico. A área esperada original menos cutter corresponde aos filhos, com erro máximo por ancestral de 7,62×10⁻¹⁶ m². Não se detectou sobreposição coplanar acima do limiar entre os filhos ou novos fechamentos testados. A variante poligonal não exigiu retriangulação adicional; a alternativa arredondada teve sete polígonos corrigidos e verificados separadamente.
+
+As curvas reais de encontro das duas paredes com o novo rim foram medidas, sem apresentar pares antigos como prova da borda nova:
+
+- Distância mínima entre lábios opostos: **0,23747 mm à esquerda e 0,33972 mm à direita**.
+- Raios em dupla precisão nos centróides: corda mínima 0,24423 mm, mediana 0,59094 mm.
+- Raios muito próximos de uma quina podem sair pelo próprio rim com trajeto menor. Isso foi distinguido de afinamento de parede, não escondido nem tratado como espessura mínima global.
+
+Essas medições mostram fechamento das duas paredes com largura finita nos pontos testados. **Não certificam espessura mínima ou folga positiva globais**, tangências, coplanaridade geral ou interseções com todos os componentes do addon.
+
+## Condicionamento float32
+
+A comparação independente arredonda as coordenadas para float32 e volta a float64. Nenhum vértice colapsa e nenhuma face degenera ou inverte.
+
+- Altitude mínima de triângulo: 0,005024 mm, contra 0,000171 mm na alternativa arredondada.
+- Maior rotação de normal: 0,3284°, contra 4,0679°.
+- Razão de áreas float32/float64: 0,995607–1,011406, contra 0,934691–1,131601.
+
+Ainda existem cinco triângulos fonte recortados com ângulo menor que 0,1°; a V7 original é numericamente mais bem condicionada. Esse controle é de quantização, **não de transporte JSON/cubos, alfa, mipmaps, PBR, normalmap ou runtime Bedrock**. A nova borda ainda precisará de exportação e bake próprios.
+
+## Comparação visual
+
+`evidence/review-visual-v11.md` registra inspeção independente das nove câmeras da versão poligonal, comparando com a V7+V9 e com a alternativa arredondada.
+
+- As lâminas vermelha/azul deixam o centro das duas cavidades nas vistas laterais e oblíquas examinadas.
+- Pinna, lóbulos e silhueta ampla mantêm extensão aparente. A grande exposição temporal do primeiro hull não reaparece.
+- Não se observou regressão adicional relevante da versão poligonal contra a arredondada. A preferência entre elas é técnica.
+- **Continuam visíveis** ouro da faixa, vermelho temporal/posterior e pequenas bordas/pontos escuros junto aos polos superiores. Esses sinais não foram classificados como ocultos ou resolvidos.
+
+O teste rasterizado de contorno da união casca+faixa+anatomia, em sete vistas de 2048 pixels, mostra zero diferença em seis vistas e somente 16 pixels de cobertura alterados na frontal, com distância máxima de borda de 1,245 mm. Portanto não alegamos silhueta global exatamente idêntica. A máscara de contorno anterior serviu como alerta, não como prova.
+
+Imagens finais:
+
+- `evidence/polygon05-{full-front,head-front,junction-profile,junction-back,left-ear,right-ear}.png`: mesmas câmeras com halo dos controles `baseline-v9-*`.
+- `evidence/polygon05-nohalo-{left-ear-oblique,right-ear-oblique,rear-open}.png`: mesmas câmeras sem halo dos controles correspondentes.
+- `evidence/retained-structural-diagnostic.blend`: cena de diagnóstico com os meshes nativos retidos, não arquivo de jogo.
+
+Os renders são **Blender externos, nunca capturas de Minecraft**. A anatomia é a malha legada reduzida com a correção V9, sem troca por rosto ou halo highpoly. Casca/ponte/faixa são triângulos nativos coloridos por região; outras partes vêm do JSON legado real. Culling está ativo, sem normalmap.
+
+## Contatos e limites remanescentes
+
+- Casca/anatomia: **98 pares**, dos quais 55 na calota, 35 na ponte e 8 no rim novo.
+- Casca/faixa: **1.339 pares**, incluindo 40 no rim.
+- Faixa/anatomia: os **797 pares** da V9 seguem congelados e são uma relação diferente.
+
+A queda de 122 para 98 pares entre as duas alternativas V11 vem principalmente da mudança de tesselação, não de limpeza adicional. A soma dos comprimentos dos segmentos triângulo–triângulo é praticamente igual: 288,355 mm na arredondada e 288,366 mm na poligonal. Contra a referência V7+V9, essa soma era 1.199,136 mm. **Não há união/deduplicação espacial global**, e a soma não mede profundidade de penetração, área visível ou folga. Os segmentos individuais estão preservados para auditoria.
+
+A retida resolve uma falha local demonstrada, mas não transforma V7/V9 em interface global limpa. O encaixe da faixa exposta e os contatos temporais/nuca continuam pendentes. O defeito microscópico herdado da anatomia também não foi apagado. Não há aprovação artística final nem teste de desempenho no Minecraft.
+
+## Arquivos e reprodução
+
+- `structural_rebuild/README.md` e `trials-manifest.json`: quatro cortadores executados, sete checkpoints, códigos, rejeições e escolha retida.
+- `independent_diagnosis/REVIEW_FINAL_V11.md`: parecer geométrico independente, com índice de métricas/testemunhos no README do diretório.
+- `evidence/review-visual-v11.md`: parecer visual independente.
+- `evidence/final-validation.json`: identidade da retida, fontes congeladas e arquivos finais.
+- `package-validation.json`: CRC, tamanhos e hashes dos arquivos distribuídos.
+
+Os scripts dependem da bancada existente V3–V9, especialmente casca V7, anatomia V9, faixa V5 e JSON/atlas V2. Esses recursos anteriores não são duplicados na entrega. O ambiente usa Blender 4.3.2, NumPy, SciPy, Pillow e mpmath já disponíveis. Fontes, tentativas rejeitadas e candidatas permanecem no workspace; nada foi sobrescrito ou publicado.

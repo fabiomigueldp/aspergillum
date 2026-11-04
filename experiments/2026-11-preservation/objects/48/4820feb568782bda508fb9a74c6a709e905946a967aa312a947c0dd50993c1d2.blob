@@ -1,0 +1,25 @@
+# Revisão independente da faixa V12
+
+Parecer: `REVIEW_FINAL_V12.md`. Candidata recomendada tecnicamente: `../structural_rebuild/polygonal-pinna-0.6mm-clean.npz`, condicionada ao parecer visual. A variante de 0,5 mm é diagnóstico preservado, não recomendação.
+
+## Evidências principais
+
+- `baseline-map.json`, `.npz` e `baseline-cut-polygons.json`: regiões e linhagens do recorte inicial, paredes, fonte e contatos herdados.
+- `polygonal-pinna-0.6mm-clean-review.json` / `-review-arrays.npz`: topologia, preservação, qualidade, triagem própria e novos contatos.
+- `-predicate-check.json`: refinamento de todas as flags próprias com 80 dígitos; os arrays brutos não são cruzamentos confirmados.
+- `-patch-domain-check.json`: orçamento de área de todos os 1.912 ancestrais, sobreposições entre filhos, plano e domínio do cutter.
+- `-ridge-domains.json`: cobertura por intervalos geométricos das duas cristas em ambas as paredes.
+- `-coplanar-contacts.json`: teste de todos os pares relevantes da faixa contra si, casca e anatomia; o equivalente de 0,5 mm preserva os 60 overlaps rejeitados.
+- `-rim-lips.json`: curvas reais de encontro do novo fechamento com ambas as paredes.
+- `-exact-chords.json` e `-exact-chord-samples.json`: raios diretos em dupla precisão contra a malha nova.
+- `-float32-check.json`: quantização e testemunhos numéricos.
+- `-contact-trace-lengths.json`, `-baseline-{anatomy,shell}-segments.json`, `-candidate-{anatomy,shell}-segments.json`: comparação espacial sem subtrair IDs de tesselações diferentes.
+- `frozen-inputs-final.json`: hashes dos inputs congelados e da candidata final.
+
+## Reprodução
+
+Na raiz da bancada, executar `python band_ear_v12/independent_diagnosis/map_baseline.py` para o mapa inicial. Para a candidata, usar `blender -b -t 2 --python band_ear_v12/independent_diagnosis/review_candidate.py -- band_ear_v12/structural_rebuild/polygonal-pinna-0.6mm-clean.npz polygonal-pinna-0.6mm-clean`.
+
+Os demais scripts recebem somente o tag `polygonal-pinna-0.6mm-clean`, via Python: `resolve_predicates.py`, `check_patch_domains.py`, `check_ridge_domains.py`, `check_coplanar_contacts.py`, `measure_rim_lips.py`, `measure_exact_rim_chords.py`, `check_float32_transport.py` e `measure_contact_traces.py`. Executar o refinamento depois da revisão principal, e os traços depois dos arrays de revisão. Todos escrevem somente neste diretório. Scripts usam NumPy, SciPy, mpmath e Blender já disponíveis. Não executam testes de Minecraft.
+
+O relatório do protótipo de 0,5 mm foi gravado integralmente antes de uma falha final de impressão (referência obsoleta a uma variável de amostragem removida); o script foi corrigido, os dados completos foram verificados e refinados sem repetir o gate caro. O log original permanece preservado. A execução final de 0,6 mm concluiu normalmente.

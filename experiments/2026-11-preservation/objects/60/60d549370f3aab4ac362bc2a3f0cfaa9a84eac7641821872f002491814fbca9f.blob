@@ -1,0 +1,35 @@
+# Revisão visual independente V16
+
+**Conclusão: melhora local clara, sem aprovação global.** O nível 3 reduz bastante a cicatriz retangular central da faixa. Não alcança o recorte analítico, conserva riscos laterais e muda algumas marcas para pior. É um resultado de diagnóstico, não uma versão visualmente concluída.
+
+## Inspeção
+
+Comparei diretamente os PNGs iluminados V15 `shared-2048-band-front.png` e `shared-2048-analytic-clip-control-band-front.png` com os três `roi68-depth{1,2,3}-band-front.png` e o controle `roi68-depth3-restored-transparent-band-front.png`. Inspecionei as imagens completas e ampliações sem interpolação dos mesmos pixels. Também comparei as quatro vistas de contexto do nível 3 com suas correspondentes V15. Os recortes de inspeção foram feitos em memória, sem modificar as evidências.
+
+O recorte analítico é referência diagnóstica. Os resultados abaixo descrevem aparência nas imagens, não certificam a geometria ou o runtime.
+
+## Centro da faixa e regressões visíveis
+
+- **Nível 1:** alivia parte do grupo de riscos, mas o contorno retangular central continua muito legível.
+- **Nível 2:** redução maior; os riscos horizontais e laterais do retângulo ficam mais fracos, ainda reconhecíveis.
+- **Nível 3:** melhor centro dos três. O grupo escuro perde bastante contraste, mas restam traços pontilhados e pequenas linhas; não se torna a superfície limpa do controle analítico.
+- **Controle restaurado:** o grupo central reaparece fortemente, com riscos densos nas laterais do retângulo. Visualmente é pior que o nível 3 e mais marcado em partes do centro que o baseline. Dada a conferência separada dos buffers retidos e dos 476 retângulos alfa zero, esta comparação sustenta a influência da geometria transparente. A imagem sozinha não identifica cada etapa do percurso do raio.
+- **A melhora não é ponto a ponto.** Na vista frontal de 1000 × 1000, o nível 3 apresenta uma extensão escura mais forte junto à borda inferior, aproximadamente em x466–476/y483–487. À direita, perto de x645–649/y526–528, surge uma extensão oblíqua mais nítida no grupo de riscos já existente; o nível 2 também a mostra. Há ainda pequenas marcas junto ao topo central, aproximadamente x524–528/y438–439. São observações de aparência, não atribuições individuais de causa.
+- Os riscos ao longo da faixa, sobretudo em sua borda inferior e nas extremidades, permanecem. A curva escura contínua da borda também existe no recorte analítico e não deve ser confundida inteira com defeito; as interrupções, pontas e riscos adicionais são a diferença relevante.
+
+Como apoio quantitativo, `lit-image-comparison.json` registra 301 pixels mais escuros que o recorte por pelo menos 10 níveis no centro do baseline, contra 228/102/25 nos níveis 1/2/3 e 441 no restaurado. São métricas observacionais de renders amostrados, não contagens de falhas geométricas nem prova de equivalência.
+
+## Contexto
+
+- **Cabeça frontal:** a melhora central continua visível sem o enquadramento extremo. As marcas laterais persistem. Não observo alteração grosseira da forma da cabeça ou do halo nessa comparação.
+- **Orelha esquerda:** continuam o contorno irregular junto à orelha, os riscos na faixa e as marcas isoladas na casca/manto. Não há limpeza geral dessa lateral.
+- **Orelha direita:** continuam riscos sobre a faixa, junto à orelha e na parte posterior. A aparência global é muito próxima do V15, sem evidência visual de resolução desses defeitos.
+- **Três quartos, estátua inteira:** a mudança central é pequena nessa escala. Silhueta e composição aparentam preservadas; pontos escuros e marcas no manto continuam visíveis. Isso não constitui identidade de pixels nem auditoria de todas as vistas.
+
+## Decisão e limites
+
+Manter o nível 3 como **melhor resultado local observado**, sem promovê-lo a correção final. Os resíduos e as novas marcas concordam com a auditoria de IDs, que registra melhorias e novas trocas de superfície. O próximo candidato precisa melhorar a faixa inteira e as outras vistas sem novas falhas, além de passar novamente pela verificação de suporte.
+
+Esta revisão não avalia normal maps, Minecraft/Bedrock, desempenho, dispositivos móveis ou aceitação artística final. Controles que desativam sombras ou resposta difusa não foram tratados como soluções candidatas.
+
+Evidências complementares: `../independent_rays/REVIEW_PRIMARY_RAYS_V16.md`, `../lighting_research/REVIEW_TARGETED_TRIM_V16.md` e `lit-image-comparison.json`. As conclusões geométricas e de identidade desses relatórios são separadas desta inspeção visual.

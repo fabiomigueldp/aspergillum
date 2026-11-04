@@ -1,0 +1,74 @@
+{
+  "registered": false,
+  "baseVersion": "0.12.3",
+  "scenes": [
+    {
+      "id": "native-3x2-exact",
+      "w": 3,
+      "d": 2,
+      "uvPolicy": "exact",
+      "triangles": 584,
+      "geometryHash": "e21d61a56fc4db1419e99bcafc7cffd1556ca9dcf2c3a781926f63c521579571"
+    },
+    {
+      "id": "native-3x2-module-grain",
+      "w": 3,
+      "d": 2,
+      "uvPolicy": "module-grain",
+      "triangles": 776,
+      "geometryHash": "357abde43b8e44c25895dfd7f281a34e0b87425c45950cb26b7220e417ea31b7"
+    },
+    {
+      "id": "native-7x2-exact",
+      "w": 7,
+      "d": 2,
+      "uvPolicy": "exact",
+      "triangles": 896,
+      "geometryHash": "538e9895bbef5b7b95cc0ec0a2c5a879a09064b78118a1eddac8bdaa48cb12a2"
+    },
+    {
+      "id": "native-7x2-module-grain",
+      "w": 7,
+      "d": 2,
+      "uvPolicy": "module-grain",
+      "triangles": 1400,
+      "geometryHash": "e3c9e0f0421d99bd2da8a26763bd7429a5be422583c2f1d2ca30a70de9d2fc99"
+    },
+    {
+      "id": "native-3x2-module-grain-damaged",
+      "w": 3,
+      "d": 2,
+      "uvPolicy": "module-grain",
+      "brokenCell": [
+        0,
+        0
+      ],
+      "triangles": 606,
+      "geometryHash": "357abde43b8e44c25895dfd7f281a34e0b87425c45950cb26b7220e417ea31b7"
+    }
+  ],
+  "sources": [
+    {
+      "path": "assets-src/atelier/twin-pedestal-prototype.mjs",
+      "sha256": "44cbc44564831e2b26d3ce6e85efa3de4c91c9e149059277ed251e78fbc2b4ad"
+    },
+    {
+      "path": "assets-src/atelier/twin-pedestal-cell-study.mjs",
+      "sha256": "1010fd86ca302531f681e5c8c5ae885716636980dc78128688f7c43b072e137a"
+    }
+  ],
+  "textures": [
+    {
+      "name": "atelier_walnut",
+      "sha256": "f780cb89fd0cbd6353534bc9a5df465242e65330243386d69d747e00167968f8"
+    },
+    {
+      "name": "joinery_walnut_horizontal",
+      "sha256": "66624c3cd5ae70a32865104e6d188276a406905a9ad7c6b3743fa2d8cbb25e32"
+    },
+    {
+      "name": "crossbrace_inlay",
+      "sha256": "956784eb27b97ba8676cdf6908b231bd134b711fe0cc8eb91e12e5a001b41e37"
+    }
+  ]
+}

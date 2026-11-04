@@ -1,0 +1,41 @@
+# Revisão independente: boundary-posterior-30mm
+
+**Pesquisa útil, sem aprovação de retenção.** A candidata reduz interseções, mas altera extensamente a calota e redistribui os contatos. Não alcança interface limpa nem preservação geométrica próxima da casca V7. A decisão visual pertence à comparação Blender pareada; nenhuma aprovação Minecraft é implícita.
+
+Candidata: `../structural_fit/boundary-posterior-30mm.npz`.
+
+## Confirmado
+
+- Anatomia V9 e faixa V5 congeladas. Todos os 88 vértices de orelhas ficam no input anatômico intacto.
+- Mesmos 6.244 vértices / 12.484 triângulos da casca e identidades preservadas.
+- Casca fechada, sem arestas inconsistentes, degêneros ou links inválidos. Zero cruzamentos próprios no gate BVH e também no teste explícito dos 91.602 pares adjacentes.
+- Espessuras pareadas geradas: 0,936784–5,049498 mm, desvio máximo da espessura original < 4×10⁻¹³ mm. Sem produtos diretor/normal não positivos ou faces de transversabilidade mista. Isso não prova espessura mínima global.
+- Manto preservado. Arquivos fonte congelados continuam intactos.
+
+## Contatos e exposição
+
+- Casca × anatomia: 607 → 212; 177 calota + 35 ponte. São **185 novos**, 580 removidos e 27 comuns. Todos os 177 pares atuais da calota são novos relativamente à V7 com anatomia V9.
+- Casca × faixa: 2.004 → 866, com **44 novos**. Não confundir com os 797 pares **faixa × anatomia**, que permanecem congelados.
+- Há raios de exposição para **91/185 novos pares casca × anatomia** (84 calota + 7 ponte) e **17/44 novos pares casca × faixa**. O teste usa 910 direções e testemunhos dos cruzamentos, com casca, anatomia e faixa como oclusores. Outras peças legadas não estão nesse teste, portanto um raio pode ser bloqueado no restante da escultura. Ausência de raio não prova invisibilidade.
+- Nenhuma peça válida adicional examinada ganhou contatos. O proxy legado do halo Maria passou de 34 para 64 pares nas faces alteradas, com 46 novos e 16 removidos. Esse proxy não certifica o halo híbrido real; é um alerta, não um diagnóstico definitivo dele.
+
+## Custo da alteração
+
+- 1.496 vértices movidos, incluindo 1.188 vértices fonte da calota na **candidata**. Fontes originais não foram editadas. Deslocamento máximo e p95 dos movidos: 30 mm; mediana: 21,875 mm.
+- Ponte: área mínima 31,943% da V7; stretches intrínsecos 0,300657–6,791944. Este strain é da casca, não deformação da anatomia congelada.
+- Rotação máxima de normal: 91,055°, face 6926. É uma rotação em relação à V7, não por si só prova de inversão topológica; os testes próprios e de transversabilidade passam.
+- Pior stretch na face 6924 e menor área na face 7035. Concentram-se em s≈0,5–0,667 e t≈0–0,054, onde o deslocamento posterior decai antes da parte inferior da ponte.
+- A calota também comprime perto de t≈0,17: faces 5450–5453 e 5678–5681. Essas regiões devem ser suavizadas sem recolher orelhas ou ampliar cegamente o suporte sobre a silhueta.
+
+## Evidências
+
+- `boundary-posterior-30mm-review.json` e `-review-arrays.npz`: gate, preservação, strain, contatos e outras peças.
+- `boundary-posterior-30mm-new-contact-visibility.json`: raios e adjacência explícita.
+- `boundary-posterior-30mm-strain-hotspots.json`: localizações dos triângulos mais deformados.
+- `review_bridge_candidate.py` e `classify_bridge_contacts.py`: procedimentos reproduzíveis.
+
+Tangência, coplanaridade geral, distância mínima global, pixels alfa, normais exportadas, PBR, culling/mipmaps no jogo e desempenho permanecem fora do gate. Nenhuma candidata ou fonte foi modificada pela revisão.
+
+## Componente única da casca
+
+Conectividade e faces permanecem idênticas à V7: uma única superfície conexa fechada, Euler 2. Os 456 vértices compartilhados calota–ponte e 640 ponte–manto mostram que as peças coloridas são regiões da mesma casca. Não há componente independente invisível certificada para excluir; apagar faces da lâmina exposta abre a superfície sem uma reconstrução adicional do fechamento. O pequeno defeito de 3 vértices / 2 faces da anatomia é outra componente, herdada, congelada e fora do escopo. Evidência: `component-connectivity.json`.

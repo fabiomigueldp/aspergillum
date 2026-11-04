@@ -1,0 +1,9 @@
+import bpy,numpy as np
+from pathlib import Path
+R=Path(__file__).resolve().parents[1];bpy.ops.wm.open_mainfile(filepath=str(R.parent/'evidence/hybrid-cull-reimported-asset.blend'),use_scripts=False)
+s=bpy.context.scene;s.cycles.transparent_max_bounces=512;s.cycles.samples=64
+for o in list(bpy.context.scene.objects):
+ if o.type=='MESH':bpy.data.objects.remove(o,do_unlink=True)
+d=np.load(R/'evidence/repaired_meshes.npz');me=bpy.data.meshes.new('DIAGNOSTIC_NATIVE_TRIANGLES_NOT_BEDROCK');me.from_pydata(d['high_v'].tolist(),[],d['high_f'].tolist());me.update();o=bpy.data.objects.new('DIAGNOSTIC_NATIVE_TRIANGLES_NOT_BEDROCK',me);s.collection.objects.link(o)
+m=bpy.data.materials.new('DIAGNOSTIC diffuse culling');m.use_nodes=True;n=m.node_tree.nodes;n.clear();bs=n.new('ShaderNodeBsdfDiffuse');bs.inputs['Color'].default_value=(.63,.62,.59,1);tr=n.new('ShaderNodeBsdfTransparent');geo=n.new('ShaderNodeNewGeometry');mix=n.new('ShaderNodeMixShader');out=n.new('ShaderNodeOutputMaterial');l=m.node_tree.links;l.new(geo.outputs['Backfacing'],mix.inputs[0]);l.new(bs.outputs[0],mix.inputs[1]);l.new(tr.outputs[0],mix.inputs[2]);l.new(mix.outputs[0],out.inputs[0]);me.materials.append(m)
+s.render.filepath=str(R/'evidence/diagnostic-high-source-cull.png');bpy.ops.render.render(write_still=True)

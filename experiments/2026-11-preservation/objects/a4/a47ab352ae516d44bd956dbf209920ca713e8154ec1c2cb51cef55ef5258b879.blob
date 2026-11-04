@@ -1,0 +1,91 @@
+# V75 · V6 · integração estrutural da calota/faixa V5
+
+**Resultado: orientação do manto corrigida em cópia; integração completa ainda REPROVADA.**
+
+Não há addon novo, publicação ou aprovação artística. V5, V4, fontes e protótipos anteriores permanecem intactos. Não houve teste no Minecraft nem novo trabalho de normalmap.
+
+## Avanços comprovados
+
+1. **A costura foi recuperada por índices fonte.** O objeto TESTE 34 mantém a cap V75, exceto um disco de 1.792 triângulos. A abertura usa 456 vértices. Na V5, remover 112 faces da borda restaurada e inserir 342 pontos intermediários exatos abre esse mesmo contorno, sem deslocar seus pontos. O manto tem uma abertura correspondente de 640 vértices, ligada pela ponte original de 1.096 triângulos.
+2. **TESTE 74 foi preservado.** A peça escondida do manto tem 25.570 vértices e coincide, na mesma ordem, com a Basis do TESTE 34 a partir do índice 160386. As coordenadas usadas para montagem são as finais, com a deformação TESTE 74=1, não a Basis antiga.
+3. **A inversão do manto foi identificada e reparada.** Comparação independente de todas as faces mostrou que 48.608/48.608 faces do manto no TESTE 34 estavam invertidas em relação à peça original fechada. Restaurar faces e normais em cópia, sem mover coordenadas, removeu as 640 inconsistências de winding da montagem fisicamente pareada. As normais restauradas concordam com a fonte original: dot mínimo +0,999592. O grande manto preto do diagnóstico desapareceu.
+4. **Uma parte do manto agora tem redução pareada limpa.** A região abaixo do parâmetro row 7.5, com 4.322 triângulos e abertura de 640 arestas, conserva coordenadas finais da fonte e não apresenta cruzamentos estritos no teste aplicado. É uma peça aberta intermediária, não o manto completo aprovado. O recorte remove a faixa superior problemática somente nesta candidata.
+
+## Por que a montagem foi rejeitada
+
+A fonte visualmente fechada já tinha auto-interseções. Topologia fechada e orientação consistente não bastam para aceitar uma superfície.
+
+| Variante | Cruzamentos estritos | Winding inconsistente | Decisão |
+|---|---:|---:|---|
+| TESTE 34 fonte avaliado | 1.823 | 0 | Referência com defeitos geométricos |
+| V5 aberta + ponte/resto exatos | 1.809 | 0 | Rejeitada |
+| Tiras pareadas, região superior original e manto reduzido | 1.772 | 0 | Rejeitada |
+| Troca física de paredes, corte 7.5, antes de reparar orientação | 90 | 640 | Rejeitada |
+| Mesma montagem, orientação do manto restaurada | 90 | 0 | Rejeitada geometricamente |
+| Hermite inicial, correspondência de paredes incorreta | 934 | 0 | Rejeitada |
+| Hermite com correspondência física e orientação restauradas | 172 | 0 | Rejeitada |
+
+A ponte original tinha deslocamento paramétrico oposto nas duas paredes e 18 arestas ligando paredes opostas nas extremidades. Corrigir apenas esse alinhamento não bastava. Os vetores de espessura dos lados indexados cap/manto também apontam em sentidos opostos; “side 0” não é o mesmo lado físico nas duas peças. A primeira conclusão de incompatibilidade de orientação foi revista após descobrir a inversão global do manto no TESTE 34: não é impedimento topológico fundamental.
+
+A última Hermite usa 600 vértices interiores e 2.296 triângulos de ponte. Sua superfície média agora chega alinhada aos dois endpoints (cossenos medianos +0,9994 e +0,9985), mas ainda cruza nas extremidades: 159 pares ponte×ponte e 13 ponte×manto, todos em t<0,2 ou t>0,8. Nenhum par com a cap nesse teste. É falha desta construção e dos encaixes laterais, não prova de impossibilidade de outra reconstrução.
+
+**Não foi escolhido um resultado apenas por ter menos cruzamentos.** A montagem reta com 90 e a curva com 172 continuam reprovadas. O próximo trabalho geométrico é redesenhar as transições laterais, com gates e revisão visual, antes de qualquer exportação final de pacote.
+
+## Fidelidade e nova interface com a cabeça
+
+A reconstrução altera a região de ligação; não é uma transferência sem perdas da superfície fonte. Em 10.000 amostras por área da ponte, a distância unilateral p95 à fonte foi:
+
+- Ponte sincronizada na abertura original:0,000969 unidade.
+- Ponte reta física após corte 7.5:0,003062 unidade.
+- Hermite física:0,008933 unidade, máximo amostrado 0,012384.
+
+Unidades Blender, interpretadas como metros no projeto. A fonte também contém superfícies cruzadas, portanto essa distância mede mudança, não aprovação estética ou clearance.
+
+Nos renders desta etapa, a cabeça e o halo são a geometria antiga reduzida do protótipo, não a referência highpoly usada nos estudos locais V3–V5. As cores revelam contatos cinzas na cap azul e junto à faixa. O proxy de contato com a cabeça foi verificado em 20.000 pontos: a cabeça antiga tem 1.864 eventos abaixo de−0,1 mm, contra 2.138 da cabeça highpoly, mas existem 1.011 eventos locais novos e 1.285 recuperados. Não há piora agregada nessa contagem; há mudança de contato por região. Esse teste usa o plano da face mais próxima, não SDF exato nem prova de colisão. Não atribuir todas as manchas visuais só ao novo manto, nem considerar o encaixe aprovado pelos renders locais anteriores.
+
+## Leitura das imagens
+
+Todos os PNGs são **diagnósticos Blender, NÃO Minecraft**:
+
+- Cinza:18 partes antigas reimportadas do JSON Bedrock V2 com seu alfa, transformações e UVs. Material de diagnóstico sem normalmap.
+- Azul:cap V5 aberta para a costura.
+- Vermelho:ponte experimental.
+- Verde:manto experimental.
+- Ouro:faixa V5 preservada.
+
+Cap/ponte/manto/faixa são malhas nativas estruturais nesta bancada, não uma nova exportação Bedrock. Normais planas, faces de um lado, nenhuma suavização/norma pintada para esconder falhas. Os PNGs de corpo inteiro verificam composição, não detalhes da junção. Nenhuma geometria original highpoly de cabeça ou halo foi acrescentada para melhorar a apresentação.
+
+- `orientation-control-*` versus `restored-orientation-*`: controle idêntico de geometria, mudando somente winding/normais do manto; validado em `orientation-ablation-validation.json`.
+- `rejected-paired-*`: montagem anterior, com recorte e ponte diferentes. Não é ablação isolada de orientação.
+- `restored-orientation-*`: mostra a correção concreta, mas a ponte reta continua reprovada.
+- `physical-hermite-*`: mostra a transição curva ainda reprovada.
+- `rejected-hermite-*`: tentativa anterior, com correspondência física inadequada; não é candidata vigente.
+
+A revisão visual independente está em `evidence/review-integration-visual.md`. A bancada revela manto facetado, transições laterais, pregas e áreas de contato ainda não resolvidas. Não existe aprovação de qualidade artística.
+
+## Artefatos úteis para continuar
+
+- `evidence/cap-open.npz`:cap com abertura precisa de 456 pontos.
+- `evidence/mantle-cut-7p5-restored-orientation.npz`:peça inferior limpa, coordenadas preservadas, orientação corrigida.
+- `evidence/seam-source-paths.json`, `v5-seam-cut-indices.npz`:correspondência da costura.
+- `evidence/mantle-orientation-independent-validation.json`:prova da inversão global e reparo.
+- `evidence/seam-swapped-7p5-restored-orientation.npz`:montagem reta rejeitada,90 cruzamentos.
+- `evidence/seam-hermite-physical-7p5-assembly.npz`:montagem curva rejeitada,172 cruzamentos; inclui máscara de vértices novos e índice de partes.
+- `evidence/*-gate.json`:gates, pares e testemunhos de cruzamento.
+- `evidence/legacy-head-contact.json`:diagnóstico novo de interface cabeça/cap.
+- `tools/`:extração, reconstrução, comparação, gates e renderização reproduzíveis.
+
+O teste de interseção usa BVH de precisão Blender e interseções estritas em precisão dupla, inclusive pares com vértices compartilhados. Não certifica tangências, sobreposição coplanar geral, distância mínima ou colisões com todas as outras peças da escultura.
+
+## Exportação e runtime
+
+A geometria moderna permite selecionar faces de cubos por UV, mas isso não transforma uma malha defeituosa em uma montagem aprovada. A exportação final das peças novas foi deliberadamente bloqueada pelo gate geométrico; a pasta resource_pack deste estudo não contém um pacote instalável. Fontes oficiais de formato consultadas:
+
+- [Geometria Bedrock 1.14](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/visualreference/geometry.v1.14.0?view=minecraft-bedrock-stable)
+- [Render controllers](https://learn.microsoft.com/en-us/minecraft/creator/documents/animations/animationrendercontroller?view=minecraft-bedrock-stable)
+
+Sem teste de engine, Content Log, shader, culling, tangentes, mipmaps, PBR/Vibrant Visuals ou desempenho. Nenhuma publicação e nenhuma substituição dos protótipos anteriores.
+
+## Arquivo de pesquisa
+
+O ZIP não é instalável. Inclui candidatas, relatórios, scripts e as três séries visuais finais com ablação controlada. Para evitar duplicação, não inclui os grandes snapshots `.blend`, três datasets completos de fonte derivados, nem as imagens de tentativas antigas `rejected-paired`/`rejected-hermite`; esses arquivos continuam preservados no workspace. A reprodução completa usa o Blender V75 e os diretórios irmãos V3–V5, que também não são substituídos. `file-manifest.json` identifica cada arquivo incluído por hash; `package-validation.json`, fora do ZIP, registra CRC e hash do arquivo final.

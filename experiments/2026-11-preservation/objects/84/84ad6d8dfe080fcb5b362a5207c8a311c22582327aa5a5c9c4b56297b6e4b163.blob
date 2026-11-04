@@ -1,0 +1,486 @@
+{
+  "format_version": "1.26.30",
+  "minecraft:block": {
+    "description": {
+      "identifier": "aspergillum:aspersorium",
+      "menu_category": {
+        "category": "construction",
+        "group": "minecraft:itemGroup.name.decorations"
+      },
+      "states": {
+        "aspergillum:contents_a": [
+          0,
+          1
+        ],
+        "aspergillum:contents_b": [
+          0,
+          1,
+          2
+        ],
+        "aspergillum:contents_c": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "aspergillum:contents_d": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "aspergillum:rotation": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ]
+      }
+    },
+    "permutations": [
+      {
+        "condition": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0)",
+        "components": {
+          "minecraft:loot": "loot_tables/blocks/aspersorium_docked.loot.json"
+        }
+      },
+      {
+        "condition": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0 ? math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) - 1 : 0) == 1",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_silver_oxblood",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0 ? math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) - 1 : 0) == 2",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_silver_black",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0 ? math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) - 1 : 0) == 3",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_antique_chestnut",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0 ? math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) - 1 : 0) == 4",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_antique_oxblood",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0 ? math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) - 1 : 0) == 5",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_antique_black",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0 ? math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) - 1 : 0) == 6",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_gilded_chestnut",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0 ? math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) - 1 : 0) == 7",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_gilded_oxblood",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0 ? math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) - 1 : 0) == 8",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_gilded_black",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0 ? math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) - 1 : 0) == 9",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_silver_ivory",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0 ? math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) - 1 : 0) == 10",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_antique_ivory",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0 ? math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) - 1 : 0) == 11",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_gilded_ivory",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0 ? math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) - 1 : 0) == 12",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_bronze_chestnut",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0 ? math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) - 1 : 0) == 13",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_bronze_oxblood",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0 ? math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) - 1 : 0) == 14",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_bronze_black",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0 ? math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) - 1 : 0) == 15",
+        "components": {
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "aspersorium_bronze_ivory",
+              "render_method": "opaque"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 1",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_1",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0)"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 2",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_2",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0)"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 3",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_3",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0)"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 4",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_4",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0)"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 5",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_5",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0)"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 6",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_6",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0)"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 7",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_7",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0)"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 8",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_8",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0)"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 9",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_9",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0)"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 10",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_10",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0)"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 11",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_11",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0)"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 12",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_12",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0)"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 13",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_13",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0)"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 14",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_14",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0)"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('aspergillum:rotation') == 15",
+        "components": {
+          "minecraft:geometry": {
+            "identifier": "geometry.aspergillum.aspersorium.rotation_15",
+            "uv_lock": false,
+            "bone_visibility": {
+              "resting_aspergillum": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0)"
+            }
+          }
+        }
+      }
+    ],
+    "components": {
+      "minecraft:display_name": "tile.aspergillum:aspersorium.name",
+      "minecraft:geometry": {
+        "identifier": "geometry.aspergillum.aspersorium.rotation_0",
+        "uv_lock": false,
+        "bone_visibility": {
+          "resting_aspergillum": "(math.mod(((1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) < 289 ? (1 * q.block_state('aspergillum:contents_a') + 2 * q.block_state('aspergillum:contents_b') + 6 * q.block_state('aspergillum:contents_c') + 42 * q.block_state('aspergillum:contents_d')) : 0), 17) > 0)"
+        }
+      },
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "aspersorium",
+          "render_method": "opaque"
+        }
+      },
+      "minecraft:collision_box": {
+        "origin": [
+          -6,
+          0,
+          -6
+        ],
+        "size": [
+          12,
+          11,
+          12
+        ]
+      },
+      "minecraft:selection_box": {
+        "origin": [
+          -7,
+          0,
+          -7
+        ],
+        "size": [
+          14,
+          16,
+          14
+        ]
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 1.4
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 6
+      },
+      "minecraft:map_color": "#9b9b91",
+      "minecraft:light_dampening": 0,
+      "minecraft:movable": {
+        "movement_type": "immovable"
+      },
+      "minecraft:placement_filter": {
+        "conditions": [
+          {
+            "allowed_faces": [
+              "up"
+            ]
+          }
+        ]
+      },
+      "minecraft:loot": "loot_tables/blocks/aspersorium.loot.json",
+      "aspergillum:aspersorium_interaction": {},
+      "minecraft:tick": {
+        "interval_range": [
+          80,
+          120
+        ],
+        "looping": true
+      },
+      "minecraft:destruction_particles": {
+        "texture": "aspersorium_destruction",
+        "tint_method": "none",
+        "particle_count": 56
+      }
+    }
+  }
+}

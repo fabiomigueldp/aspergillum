@@ -1,0 +1,11 @@
+# Guia não convexa — anchors reais inválidos
+
+Antes de construir guia, contornos herdados foram testados contra os próprios triângulos da peleV75, não contra hull e não por distância assinada. Raycast de cada segmento identificou candidatos; todos foram confirmados por solução direta segmento–triângulo com t,u,v estritamente internos e resíduo numérico registrado.
+
+Quatro cruzamentos no arco da calota (arestas locais1–2,4–5,51–52,54–55) e quatro no topo do manto (2–3,6–7,72–73,76–77). Oito testemunhas de interseção reais. Ausência de outros hits não é certificação universal de tangências/coplanaridade, mas as oito testemunhas já bastam para reprovar esses contornos fixos.
+
+**Não existe superfície-guia externa que preserve integralmente esses segmentos atravessantes como borda.** Isso não é impossibilidade geral de modelar o pano: exige redesenhar os próprios contornos laterais nas têmporas/orelhas antes de procurar qualquer guia. Nenhuma superfície, deslocamento, render ou .blend novo foi produzido nesta etapa.
+
+Revisão independente de outra região: auréola foi confrontada visualmente com fotos8/9 e vista globalV75. Ambas mostram disco fino oblíquo; sem calibração não há evidência suficiente para alterar diâmetro/ângulo como melhoria substantiva. Não foi produzida variação arbitrária. Frente rosto ainda tem diferença artística evidente, mas as tentativas anteriores não demonstraram controle suficiente; não retomei microvariações rejeitadas.
+
+V75 permanece baseline. Próxima decisão útil seria permitir redefinição explícita dos oito trechos de contorno, com proteção de feições e faixa, e gate de segmento–triângulo antes de superfície; não repetir solver com anchors inválidos.

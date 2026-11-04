@@ -1,0 +1,57 @@
+# Revisão independente da anatomia V8 retida
+
+**Veredito: melhoria técnica local, não interface limpa e não aprovação da escultura completa.** A retenção é justificada como hipótese inspecionável, com resíduos explícitos. Não há addon ou execução de jogo validada.
+
+Entrada: `../anatomy_fit/retained-anatomy.npz`.
+SHA-256: `c1971f80ca5bd99a8d51461823a42e03ed6400282e31a18586602cd0216b4519`.
+A retida é byte-idêntica à `inward-0p5mm-iteration00.npz`, e o gate foi repetido lendo a cópia retida.
+
+## Resultados reproduzidos
+
+- Contra casca V7: **4.169 → 670 pares estritos**. Resíduos: cap260, ponte410, manto0; 96 faces da anatomia e 356 faces da casca afetadas.
+- Delta de pares: 630 comuns, **40 novos**, 3.539 removidos. Não interpretar a redução líquida como ausência de novos contatos locais.
+- Zero auto-interseções estritas detectadas, incluindo teste de pares que compartilham vértices; nenhum novo problema de borda, incidência de arestas ou winding.
+- Conectividade, índices de correspondência de vértices e de faces preservados exatamente.
+- Os 280 vértices explicitamente protegidos estão bit a bit iguais: face153, orelhas88, pescoço baixo39.
+- 274 vértices movidos. Máximo9,7556 mm; mediana dos movidos0,9710 mm; p95 dos movidos2,8850 mm. O p95 de todos os692 vértices é1,4829 mm; os denominadores não devem ser confundidos.
+- Nenhuma inversão de normal geométrica das1.374 faces principais. Rotação máxima de normal42,145°. A área mínima relativa é0,1366575: face soldada144/source_face6360 passa de72,996 para9,975 mm², na nuca. É compressão local forte, apesar de não haver inversão.
+
+`retained-anatomy-review.json` contém o gate integral e as invariantes. O teste integral de anatomia **não passa** por causa da componente microscópica de3v/2f, coplanar e com normais opostas, herdada e inalterada. O detector lista o mesmo par424/1131 três vezes, uma por aresta; é um único par geométrico. O baseline apresenta exatamente o mesmo resíduo. Isso deve ser distinguido de uma regressão causada pelo refit.
+
+## Resíduos da casca e máscara
+
+- **465 pares em51 faces anatômicas inteiramente imutáveis** pela máscara ativa: cap169/ponte296. Todos são pares já existentes.
+- Desses, **462 pares em49 faces estão inteiramente na máscara de orelhas**: cap166/ponte296. Limites XYZ: X−0,103632…0,183517; Y−0,250425…−0,172436; Z3,445291…3,548753. São297 pares na lateral X<0,04 e165 na outra.
+- 604 dos670 pares envolvem pelo menos um vértice protegido de orelha, incluindo transições;3 desses pares são novos.
+- Restam205 pares em triângulos com algum vértice móvel. Incluem as transições laterais e pequenos resíduos posteriores entre Z3,3446 e3,5512; todos os40 pares novos pertencem a esse grupo.
+
+Com a casca e um triângulo anatômico fixos, a interseção desse triângulo não pode desaparecer. Isso é uma limitação matemática **da máscara atual**, não prova de que a forma visível das orelhas deva ser modificada. A máscara é definida por intervalos de coordenadas e cobertura por raios de normais; não é uma segmentação anatômica nem uma certificação de visibilidade por câmera. Um próximo ensaio poderia distinguir superfície oculta, contorno visível e regiões intocáveis com mais precisão, sujeito à decisão de escopo, sem mover silenciosamente as orelhas.
+
+A imagem `inward-0p5mm-iteration00-RESIDUAL_LOCATIONS.png` foi inspecionada. Ela mostra resíduos fixos em vermelho e transições móveis em amarelo. `inward-0p5mm-iteration00-residuals.json` contém todos os IDs e40 novos pares; o nome da iteration00 se aplica à retida porque os bytes são idênticos.
+
+## Outros obstáculos: limite importante
+
+A faixa V5 nativa (`shell_band_v5/retained_candidate/evidence/band-paired.npz`) **não estava incluída no ajuste cap/ponte/manto**:
+
+- Anatomia baseline × faixa:1.210 pares.
+- Anatomia retida × faixa:1.115 pares.
+- **111 pares novos,206 removidos e1.004 comuns.**
+- Retida:90 faces anatômicas e755 faces da faixa afetadas, em X−0,097766…0,184109; Y−0,420507…−0,195519; Z3,449534…3,615211.
+
+O teste adicional da fonte confirma contato herdado: **TESTE29 original × anatomia fonte =6.706 pares estritos**, nas mesmas regiões gerais frontal/laterais (X−0,101566…0,182152; Y−0,420803…−0,195235; Z3,449569…3,615423). A contagem highpoly não é comparável em severidade aos1.210/1.115 pares lowpoly. Evidência: `original-band-source-contact.json/.npz`, reprodução vetorizada em `check_original_band_vectorized.py`.
+
+A existência de uma faixa embutida na escultura não torna automaticamente qualquer interseção aceitável. O ensaio não classifica esses contatos como intencionais nem os aprova. Portanto não cabe afirmar “sem novas interseções com outras peças”.
+
+A túnica parte9 permanece60→60 pares, sem novos ou removidos. Demais partes válidas do mapa legado não apresentaram contatos. As partes especiais6/7/8/10/14 foram substituídas posteriormente por cuboides/halos híbridos: seus resultados no mapa antigo são apenas proxies. O halo Maria proxy dá29→29, não uma certificação da geometria híbrida atual.
+
+Evidência: `retained-anatomy-other-contacts.json`, `band-retained-localization.json` (os111 novos pares). A comparação com a faixa usa geometria estrutural real da candidata V5, não o antigo mapa do ornamento.
+
+## Revisão do método
+
+O deslocamento é ao longo das normais internas do corpo baseline, com energia de suavização em grafo e limites inferiores derivados de planos locais da superfície interna da casca. Isso torna os resultados reproduzíveis e conserva a conectividade, mas planos locais não certificam distância global nem ausência de cruzamento entre as amostras. A ausência de cruzamentos do manto é resultado medido, não consequência garantida pela formulação. A faixa precisa entrar como obstáculo separado se a meta futura for limpar toda a interface.
+
+O teste independente leu o arquivo final e reaplicou o detector estrito existente, sem confiar na contagem do otimizador. A comparação fonte/corpo reduzido anterior está em `README.md`. Todos os cinco inputs congelados verificados, incluindo fonte V75, casca V7 e mapas/arrays legados, conservam seus hashes em `input-hashes-final-check.json`.
+
+## Limites
+
+O resultado mede geometria nativa e triângulos pretendidos do exportador, não expansão alfa de pixels nem polígonos visíveis finais de todos os objetos híbridos. Não certifica tangências, coplanaridade geral, folga mínima global, aparência por normalmap, culling/mipmap ou runtime Bedrock. A validação visual de vistas equivalentes é uma etapa distinta. Nenhuma fonte, V7, textura, addon ou versão publicada foi alterada por esta revisão.

@@ -1,0 +1,9 @@
+from pathlib import Path
+import numpy as np,json
+W=Path(__file__).resolve().parent
+for D in sorted(W.glob('budget-*')):
+ z=np.load(D/'band.npz');q=np.load(D/'metrics-samples.npz');C=z['cube_centers'];M=z['cube_bases'];H=z['cube_sizes']/2;P=q['native_sample_points'];best=[]
+ for st in range(0,len(P),256):
+  loc=np.einsum('qci,cij->qcj',P[st:st+256,None,:]-C[None,:,:],M);violation=(np.abs(loc)-H[None,:,:]).max(2).min(1);best.extend(violation)
+ best=np.array(best);r={'method':'31,108 native triangle samples tested against all cuboid solids by inverse local transform. The smallest maximum local plane violation across all boxes is <=0 for exact containment. Tolerance1nm used for float residuals. This tests sample coverage, not global union topology or silhouette.','count':len(P),'outside_gt_1nm':int(np.sum(best>1e-9)),'worst_plane_violation_mm':float(best.max()*1000),'maximum_inside_clearance_mm':float(-best.min()*1000)}
+ (D/'source-sample-coverage.json').write_text(json.dumps(r,indent=2)+'\n');print(D.name,r,flush=True)

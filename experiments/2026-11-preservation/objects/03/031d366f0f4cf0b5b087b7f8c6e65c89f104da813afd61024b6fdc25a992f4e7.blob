@@ -1,0 +1,25 @@
+import bpy, numpy as np, math, json
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+from pathlib import Path
+ROOT=Path('/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103');d=np.load(ROOT/'evidence/source_meshes.npz')
+print('build BVH',flush=True)
+bvh=BVHTree.FromPolygons(d['high_v'].tolist(),d['high_f'].tolist(),all_triangles=True)
+v=d['low_v']; ns=[];occ=[];ds=[]
+# Deterministic cosine-distributed hemisphere directions, ray reach is local to sculpt relief.
+for i,p0 in enumerate(v):
+ p,n,fi,dist=bvh.find_nearest(Vector(p0));n.normalize(); ds.append(dist)
+ tangent=n.cross(Vector((0,0,1)))
+ if tangent.length<.01:tangent=n.cross(Vector((0,1,0)))
+ tangent.normalize();bitangent=n.cross(tangent)
+ hits=0.; n_samples=24
+ for k in range(n_samples):
+  rr=math.sqrt((k+.5)/n_samples);ang=k*2.399963229728653
+  direction=math.cos(ang)*rr*tangent+math.sin(ang)*rr*bitangent+math.sqrt(1-rr*rr)*n
+  result=bvh.ray_cast(p+n*.0018,direction,.20)
+  if result[0] is not None: hits+=max(0,1-result[3]/.20)
+ ns.append(tuple(n));occ.append(1-.70*hits/n_samples)
+ if i%1000==0:print('baked',i,'/',len(v),flush=True)
+np.savez_compressed(ROOT/'evidence/vertex_bake.npz',normal=np.array(ns),ao=np.array(occ))
+(ROOT/'evidence/decimation-distance.json').write_text(json.dumps({'max_vertex_distance':max(ds),'mean_vertex_distance':sum(ds)/len(ds),'vertex_count':len(v),'method':'distance from low mesh vertices to evaluated source mesh; not surface Hausdorff'},indent=2))
+print('BAKE COMPLETE',len(v),flush=True)

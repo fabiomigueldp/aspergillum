@@ -1,0 +1,94 @@
+[
+  {
+    "file": "comparison-band.png",
+    "sources": [
+      {
+        "label": "Controle nativo (não Bedrock)",
+        "path": "assembly_transport_v14/evidence/native-flat-focus-band-front.png",
+        "sha256": "ee4b2b33c2f6d6f008e56aec82fd193155e7cee0f817d7e36af82af4fbc364b8"
+      },
+      {
+        "label": "V14 · recorte alfa por triângulo",
+        "path": "assembly_transport_v14/evidence/json-flat-focus-band-front.png",
+        "sha256": "124b3d7c089cbdbd7c90a0bfbd7d26948d105dda1e831a3cd9535865bf692c4f"
+      },
+      {
+        "label": "V15 · 1.400 peças opacas na faixa",
+        "path": "opaque_transport_v15/evidence/opaque-1400-band-front.png",
+        "sha256": "587a144af27ea3346b559a4488c4d28f3a0d13cffe25f6eabd8fd17fb655a202"
+      },
+      {
+        "label": "V15 · máscara compartilhada 2048",
+        "path": "opaque_transport_v15/evidence/shared-2048-band-front.png",
+        "sha256": "5d552653a3dcc65109b8f00fcd4bb73ac289d9ae5e0ef5c86ab63c50c0d05eb9"
+      }
+    ],
+    "crop_pixels": [
+      175,
+      365,
+      825,
+      705
+    ],
+    "display_scale": 1,
+    "pixel_edits": "none; identical crop/resizing and labels only",
+    "sha256": "61fc5296d10d277e8a921bb8ed2a6b5dbf679ff84a2da98cc94a4fb63c480f93"
+  },
+  {
+    "file": "comparison-whole.png",
+    "sources": [
+      {
+        "label": "Controle nativo (três partes)",
+        "path": "assembly_transport_v14/evidence/native-flat-whole-threequarter.png",
+        "sha256": "753f0cb9c0d8d7c4a0d4a3fbb0e7686197dbfe7cf305d5051554354b64cc3f87"
+      },
+      {
+        "label": "V14 · JSON reimportado",
+        "path": "assembly_transport_v14/evidence/json-flat-whole-threequarter.png",
+        "sha256": "a51c22f7034c74ac2f5a59fcf8bee91ea9e049cb0e38131cb68fc150eb82e59b"
+      },
+      {
+        "label": "V15 · JSON compartilhado 2048",
+        "path": "opaque_transport_v15/evidence/shared-2048-threequarter.png",
+        "sha256": "b4570ba6b9c043505babc0ca7ea718d76e01a156f6e70076cad2fd4d716dc1ff"
+      }
+    ],
+    "crop_pixels": null,
+    "display_scale": 0.6,
+    "pixel_edits": "none; identical crop/resizing and labels only",
+    "sha256": "af716163d995d27412a422b84d796e064f7fff187abb624b74f92229fa1a14b3"
+  },
+  {
+    "file": "comparison-causal-controls.png",
+    "sources": [
+      {
+        "label": "Controle nativo (não Bedrock)",
+        "path": "assembly_transport_v14/evidence/native-flat-focus-band-front.png",
+        "sha256": "ee4b2b33c2f6d6f008e56aec82fd193155e7cee0f817d7e36af82af4fbc364b8"
+      },
+      {
+        "label": "V15 · máscara compartilhada 2048",
+        "path": "opaque_transport_v15/evidence/shared-2048-band-front.png",
+        "sha256": "5d552653a3dcc65109b8f00fcd4bb73ac289d9ae5e0ef5c86ab63c50c0d05eb9"
+      },
+      {
+        "label": "Recorte analítico · não é cube Bedrock",
+        "path": "opaque_transport_v15/evidence/shared-2048-analytic-clip-control-band-front.png",
+        "sha256": "cdf7a8351ba3b04c835fb85679d5381004dbb711b1fd5eb3fea83408f65ecd96"
+      },
+      {
+        "label": "Sombras desligadas · não é correção",
+        "path": "opaque_transport_v15/evidence/shared-2048-no-shadow-control-band-front.png",
+        "sha256": "9d8c1adfd663b8c2c739b36cccb97fa73b022ee991458423dcb31eba343a6bae"
+      }
+    ],
+    "crop_pixels": [
+      175,
+      365,
+      825,
+      705
+    ],
+    "display_scale": 1,
+    "pixel_edits": "none; identical crop/resizing and labels only",
+    "sha256": "1f7f4e22aa18e8983feedfdb513cde1c703e6493ed18c531b7f5f520fc4f992a"
+  }
+]

@@ -1,0 +1,174 @@
+{
+  "candidate": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/ear_rim_v11/structural_rebuild/extruded-pinna-0.5mm.npz",
+  "sha256": "f775fd1d47d55299ca4f98c79223fc821a0c421bc3cda1f8d2a37d640f7821f0",
+  "self_gate": {
+    "input": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/ear_rim_v11/structural_rebuild/extruded-pinna-0.5mm.npz",
+    "sha256": "f775fd1d47d55299ca4f98c79223fc821a0c421bc3cda1f8d2a37d640f7821f0",
+    "method": "Blender BVH epsilon zero broad phase; double-precision strict segment-triangle intersection in both directions. Shared-vertex pairs are included.",
+    "limitations": "Not a proof for tangencies, general coplanar overlaps, minimum clearance, or intersections with other objects. BVH broad phase uses Blender precision. No game validation.",
+    "vertices": 6458,
+    "triangles": 12912,
+    "euler": 2,
+    "boundary_edges": 0,
+    "edges_not_two_faces": 0,
+    "inconsistent_edge_winding": 0,
+    "bad_vertex_links": [],
+    "unused_vertices": [],
+    "degenerate_triangles": [
+      12410,
+      12442,
+      12468,
+      12469,
+      12492,
+      12525,
+      12566,
+      12569,
+      12597
+    ],
+    "minimum_triangle_area": 1.117430753462301e-21,
+    "bvh_candidates": 0,
+    "strict_crossings": 0,
+    "crossings": [],
+    "opposed_coplanar_edge_adjacent_candidates": [],
+    "elapsed_seconds": 0.23197713799891062,
+    "passes_screen": false
+  },
+  "contacts": {
+    "anatomy": {
+      "pairs": 122,
+      "by_face_part": {
+        "0": 63,
+        "1": 35,
+        "2": 0,
+        "3": 24
+      },
+      "by_face_role": {
+        "0": 84,
+        "1": 14,
+        "2": 24
+      },
+      "ear_incident_pairs": 87,
+      "ear_only_pairs": 39
+    },
+    "band": {
+      "pairs": 1354,
+      "by_face_part": {
+        "0": 1132,
+        "1": 182,
+        "2": 0,
+        "3": 40
+      },
+      "by_face_role": {
+        "0": 1130,
+        "1": 184,
+        "2": 40
+      }
+    }
+  },
+  "limitations": [
+    "Contact pair counts are tessellation dependent. Baseline and candidate pair identities are not directly comparable after retopology.",
+    "Normal-ray lengths are sampled chord thickness, not a certified global wall-thickness minimum. Rays near rims are angle dependent.",
+    "Inherited paired wall distances describe retained source pairs only, not new rim thickness.",
+    "No view/game/beauty validation."
+  ],
+  "preservation": {
+    "unchanged_original_faces": 12060,
+    "original_face_fraction": 0.9660365267542455,
+    "surviving_original_points_bit_identical": true,
+    "mantle_faces_unchanged": true,
+    "anatomy_sha256": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+    "band_sha256": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647"
+  },
+  "paired_survivor_thickness": [
+    {
+      "group": "cap",
+      "surviving_pairs": 1525,
+      "source_pairs": 79521,
+      "full_thickness_mm_min_max": [
+        0.33539384391316107,
+        0.6003583115208139
+      ],
+      "max_change_mm": 0.0
+    },
+    {
+      "group": "bridge",
+      "surviving_pairs": 773,
+      "source_pairs": 827,
+      "full_thickness_mm_min_max": [
+        0.33539384391316107,
+        5.979747960072942
+      ],
+      "max_change_mm": 0.0
+    }
+  ],
+  "triangles": {
+    "minimum_area_m2": 1.117430753462301e-21,
+    "new_rim_area_mm2_percentiles": [
+      6.179308647824065e-06,
+      0.001258615235524706,
+      0.007728316203766968,
+      0.1340704095389102,
+      2.156500006862325,
+      5.219292317873848
+    ],
+    "new_rim_min_altitude_mm_percentiles": [
+      0.00017114865876314468,
+      0.007724961118629203,
+      0.02736614963985177,
+      0.32746804100071003,
+      1.1213318682013662,
+      1.8940463562032057
+    ],
+    "signed_volume_m3": 0.013593730251764866
+  },
+  "normal_ray_chords": {
+    "all_inherited_surfaces": {
+      "tested_faces": 12542,
+      "valid_rays": 12179,
+      "length_mm_percentiles": [
+        0.14207466267887503,
+        0.2907904146229848,
+        0.4589745151568204,
+        0.4978638415448367,
+        0.7005868170633912,
+        5.991808550268412,
+        27.953814735471763,
+        991.7812214622497
+      ],
+      "below_0_1mm": 0,
+      "below_0_3mm": 13
+    },
+    "trimmed_inherited_surfaces": {
+      "tested_faces": 482,
+      "valid_rays": 477,
+      "length_mm_percentiles": [
+        0.24423043180629614,
+        0.2486406136993319,
+        0.317819577710703,
+        0.35971630534529686,
+        0.5886166396774352,
+        3.486710639506578,
+        9.094421548604968,
+        256.3904689083099
+      ],
+      "below_0_1mm": 0,
+      "below_0_3mm": 4
+    },
+    "new_rim": {
+      "tested_faces": 370,
+      "valid_rays": 369,
+      "length_mm_percentiles": [
+        0.007282535650825594,
+        0.007738058938935865,
+        0.013001110117125791,
+        0.22067221400700515,
+        1.4187268603816627,
+        6.144440399318929,
+        8.37258568203449,
+        13.376407084822654
+      ],
+      "below_0_1mm": 11,
+      "below_0_3mm": 28
+    }
+  }
+}

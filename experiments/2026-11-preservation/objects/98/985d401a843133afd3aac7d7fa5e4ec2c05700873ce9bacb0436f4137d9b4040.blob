@@ -1,0 +1,45 @@
+"""V10 generated-only bridge translation fields. No anatomy/band/source edit.
+Run blender -b -t 3 --python this.py. Preserves paired directors and thickness.
+Grid fields are openly heuristic, compared on exact strict intersections.
+"""
+from pathlib import Path
+import sys,json,hashlib,time,os
+import numpy as np
+from mathutils.bvhtree import BVHTree
+O=Path(__file__).resolve().parent; B=O.parents[1]
+a=np.load(B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz');m=np.load(B/'lateral_v7/adaptive_patch/consistent-1-midfield.npz');field=np.load(B/'lateral_v7/evidence/offset-reach-field.npz');body=np.load(B/'body_interface_v9/constrained_fit/retained-anatomy.npz');band=np.load(B/'shell_band_v5/retained_candidate/evidence/band-paired.npz');p0=a['points'];f=a['triangles'];part=a['face_parts'];gen=m['generated_pair_indices'];c0=m['center'];fmid=m['triangles'];sid={int(s):i for i,s in enumerate(a['source_indices'])};n=len(p0)
+trees={k:BVHTree.FromPolygons(v['points'].tolist(),v['triangles'].tolist(),all_triangles=True,epsilon=0) for k,v in [('body',body),('band',band)]}
+def pairs(p,f,q,g,tree,selftest=False):
+ t=BVHTree.FromPolygons(p.tolist(),f.tolist(),all_triangles=True,epsilon=0); cs=np.asarray(t.overlap(tree),int).reshape(-1,2)
+ if selftest:cs=cs[cs[:,0]<cs[:,1]]
+ aa=p[f[cs[:,0]]];bb=q[g[cs[:,1]]];hit=np.zeros(len(cs),bool)
+ for x,y in [(aa,bb),(bb,aa)]:
+  e1=y[:,1]-y[:,0];e2=y[:,2]-y[:,0]
+  for k in range(3):
+   v=x[:,k];d=x[:,(k+1)%3]-v;h=np.cross(d,e2);det=np.einsum('ij,ij->i',e1,h);valid=np.abs(det)>1e-20;den=np.where(valid,det,1);s=v-y[:,0];u=np.einsum('ij,ij->i',s,h)/den;cross=np.cross(s,e1);vv=np.einsum('ij,ij->i',d,cross)/den;t=np.einsum('ij,ij->i',e2,cross)/den;hit|=valid&(t>1e-8)&(t<1-1e-8)&(u>1e-8)&(vv>1e-8)&(u+vv<1-1e-8)
+ return cs[hit]
+def metrics(p,basepairs):
+ cs=pairs(p,f,body['points'],body['triangles'],trees['body']);bd=pairs(p,f,band['points'],band['triangles'],trees['band']);tree=BVHTree.FromPolygons(p.tolist(),f.tolist(),all_triangles=True,epsilon=0);selfp=pairs(p,f,p,f,tree,True)
+ q=p[f];raw=np.cross(q[:,1]-q[:,0],q[:,2]-q[:,0]);q0=p0[f];raw0=np.cross(q0[:,1]-q0[:,0],q0[:,2]-q0[:,0]);ar=np.linalg.norm(raw,axis=1)/np.linalg.norm(raw0,axis=1);cos=np.einsum('ij,ij->i',raw,raw0)/(np.linalg.norm(raw,axis=1)*np.linalg.norm(raw0,axis=1));d=np.linalg.norm(p-p0,axis=1)*1000;cur=set(map(tuple,cs));old=set(map(tuple,basepairs))
+ return {'body_pairs':len(cs),'body_parts':{str(k):int(sum(part[cs[:,0]]==k)) for k in [0,1,2]},'new_body_pairs':len(cur-old),'removed_body_pairs':len(old-cur),'self_pairs':len(selfp),'band_pairs':len(bd),'moved_vertices':int(sum(d>1e-8)),'displacement_max_mm':float(d.max()),'displacement_p95_moved_mm':float(np.percentile(d[d>1e-8],95)) if (d>1e-8).any() else 0.,'area_ratio_min':float(ar.min()),'normal_rotation_max_deg':float(np.rad2deg(np.arccos(np.clip(cos,-1,1))).max()),'original_sources_exact':bool(np.array_equal(p[~a['generated_vertices']],p0[~a['generated_vertices']]))},cs,bd,selfp
+basepairs=pairs(p0,f,body['points'],body['triangles'],trees['body']);summary=[]
+def save(tag,D,params):
+ tag=(os.environ['RUN_ID']+'-'+tag) if os.environ.get('RUN_ID') else tag
+ out=O/(tag+'.npz')
+ if out.exists():raise ValueError('Refuse overwriting '+str(out))
+ p=p0.copy();D=D.reshape(5,57,3)
+ for ss,s,t,side,fraction in field['generated_vertex_map']:
+  p[sid[int(ss)]]+=D[int(s)-1,int(t)]
+ vals={k:a[k] for k in a.files};raw=np.cross(p[f[:,1]]-p[f[:,0]],p[f[:,2]]-p[f[:,0]]);norm=np.zeros_like(p)
+ for j in range(3):np.add.at(norm,f[:,j],raw)
+ norm/=np.maximum(np.linalg.norm(norm,axis=1)[:,None],1e-30);vals.update(points=p,normals=norm,provenance=np.array(json.dumps({'version':'V10 isolated generated-only trial','baseline':'adaptive-consistent','method':'Paired rigid translation of each baseline wall pair and lateral arc; unchanged topology/thickness/source vertices.','parameters':params})))
+ np.savez_compressed(out,**vals);rep,cs,bd,selfp=metrics(p,basepairs);rep.update(tag=tag,parameters=params,sha256=hashlib.sha256(out.read_bytes()).hexdigest());np.savez_compressed(O/(tag+'-contacts.npz'),shell_body_pairs=cs,shell_band_pairs=bd,self_pairs=selfp);(O/(tag+'-metrics.json')).write_text(json.dumps(rep,indent=2));summary.append(rep);(O/'scan-summary.json').write_text(json.dumps(summary,indent=2));print(json.dumps(rep),flush=True)
+if __name__=='__main__':
+ print('baseline',metrics(p0,basepairs)[0],flush=True)
+ ss=np.arange(1,6)/6;tt=np.arange(57);edge=np.minimum(tt,56-tt)
+ for name,v in [('posterior',[0,1,0]),('inferior',[0,0,-1]),('posteroinferior',[0,2**-.5,-2**-.5]),('medial',[-1,0,0]),('lateral',[1,0,0])]:
+  for amp in [2,5,10,20,30]:
+   # Fixed t=.2..8 strip, C1 taper across edge domain.
+   wt=np.where(edge<12,np.cos(np.pi*edge/24)**2,0);ws=np.sin(np.pi*ss);D=ws[:,None,None]*wt[None,:,None]*np.array(v)[None,None,:]*amp/1000
+   if name in ['medial','lateral']:D[:,:,0]*=np.sign(c0[gen].reshape(5,57,3)[:,:,0]-.04)
+   save(f'grid-{name}-{amp:02d}mm',D,dict(direction=name,amplitude_mm=amp,s_shape='sin(pi*s)',t_extent=12))

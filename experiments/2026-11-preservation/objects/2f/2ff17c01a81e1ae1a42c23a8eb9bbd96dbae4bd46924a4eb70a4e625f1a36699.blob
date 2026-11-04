@@ -1,0 +1,16 @@
+import bpy,hashlib
+from pathlib import Path
+from mathutils import Vector
+R=Path(__file__).resolve().parents[1]
+p=R/'structural_rebuild/retained-shell.npz';assert p.exists()
+bpy.ops.wm.open_mainfile(filepath=str(R/'evidence/polygon05-diagnostic.blend'),use_scripts=False)
+s=bpy.context.scene
+s['research_scope']='V11 reconstructed shell NATIVE + V9 anatomy NATIVE + V5 band NATIVE. Other pieces legacy JSON. Local research retention only, not final art or Bedrock export.'
+s['retained_sha256']=hashlib.sha256(p.read_bytes()).hexdigest()
+s['bedrock_exported']=False;s['minecraft_tested']=False;s['published']=False
+s['remaining_limits']='Residual shell/anatomy and band contacts, exposed gold fragments and small dark ear edges. No global clearance, engine/performance or final art approval.'
+cam=s.camera;cam.location=(0,-8,1.9);cam.rotation_euler=(Vector((0,-.03,1.88))-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.ortho_scale=4.3
+s.render.resolution_x=900;s.render.resolution_y=1200
+for o in bpy.data.objects:
+ if o.name.startswith('Candidate assembly'):o.name='V11 retained shell NATIVE research NOT Bedrock'
+bpy.ops.wm.save_as_mainfile(filepath=str(R/'evidence/retained-structural-diagnostic.blend'))

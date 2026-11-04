@@ -1,0 +1,97 @@
+# Reconstrução estrutural V11 da borda das orelhas
+
+## Resultado retido localmente
+
+**Retida técnica local:** `retained-shell.npz`, cópia byte a byte de `polygonal-pinna-0.5mm-clean.npz`. Identidade e SHA-256 em `retained-identity.json`. A revisão independente e a comparação visual em nove vistas apoiam esta retenção limitada; isso não é aprovação da montagem inteira.
+
+A hipótese de nova conectividade produziu uma reconstrução local **fechada, sem deslocar nenhum ponto V7 sobrevivente**, com paredes novas entre a parede externa e interna. Não é repetição dos campos de deslocamento V10 e não foi usada uma V10 reprovada como baseline.
+
+- Candidata de estudo já revisada: `extruded-pinna-0.5mm-clean.npz`, 6.458 vértices / 12.912 triângulos, 370 faces novas de fechamento. Uma superfície fechada, Euler 2, sem degenerados e sem cruzamentos próprios estritos confirmados na revisão independente. Mantém 6.084 vértices V7 bit a bit e 12.060 faces originais exatas. Há 160 vértices V7 removidos pelo recorte volumétrico e 374 novos, todos explicitamente identificados.
+- Versão poligonal retida, com melhor condicionamento, geometria revisada independentemente e comparação visual favorável em nove vistas: `polygonal-pinna-0.5mm-clean.npz`, 6.334 vértices / 12.664 triângulos, 246 faces novas. Os mesmos 6.084 vértices V7 e 12.060 faces permanecem exatos. Há 250 vértices novos. Os gates de construção e da revisão independente passam. O arquivo bruto `polygonal-pinna-0.5mm.npz` tem geometria idêntica: a limpeza não encontrou polígonos defeituosos para mudar.
+- Nenhum arquivo é um addon, exportação Bedrock, teste Minecraft ou aprovação global da montagem. Restam fragmentos dourados, trechos vermelhos temporais/posteriores, pequenas bordas escuras e contatos herdados da faixa e de outras regiões. O contorno frontal não é exatamente idêntico; as outras vistas avaliadas não certificam silhueta universal.
+
+A revisão independente está em `../independent_diagnosis/`; imagens e decisões visuais ficam em `../evidence/`. Este diretório contém somente implementação e evidências da construção. Resultados independentes têm precedência sobre autoavaliação.
+
+## Método e delimitação
+
+A casca V7 é subtraída de dois cortadores volumétricos limitados à região das orelhas. A operação Boolean EXACT gera novas faces de fechamento sobre o cortador e reconecta paredes internas e externas. Portanto não se apagam lâminas deixando buracos, nem se cobre a orelha com uma faixa nova, nem se usa transparência.
+
+O primeiro envelope convexo tridimensional, derivado de `protected_ears`, abriu excessivamente a têmpora direita. Essa máscara era proteção conservadora, não segmentação de pinna. Quatro pontos altos (índices anatômicos 657, 662, 669 e 676, z entre 3,520 e 3,550 m) apoiavam o recorte errado. A versão seguinte os exclui **somente do cortador**; anatomia continua byte a byte intacta. O restante da seleção direita tem z ≤ 3,49513 m. Essa delimitação é uma hipótese geométrica/visual explícita, não certificação anatômica. A seleção esquerda foi mantida.
+
+A nova seleção é projetada em yz e extrudida em x pelo lado correspondente, para atravessar as duas paredes em vez de raspar só uma. Os limites dos prismas são [-0,4; 0,04] m à esquerda e [0,04; 0,4] m à direita; suas pontas não encontram a casca na região yz selecionada. A cavidade da concha está incluída no envelope, não apenas a superfície de pele.
+
+A candidata circular usa um offset amostrado em 32 direções com raio 0,5 mm. A alternativa poligonal desloca cada reta de apoio do convex hull yz em 0,5 mm e intersecta retas adjacentes. Suas extensões reais de canto são limitadas a 0,69837 mm à esquerda e 0,66863 mm à direita, valores registrados no manifesto. A menor fragmentação não foi obtida por mover a parede nem por afinar a casca.
+
+O controle `polygonal-pinna-0.5mm-clean-v10-barrier-disposition.json` localiza os 16 testemunhos de arestas fonte fixas que bloquearam V10. Todos ficam dentro do cortador V11, e nenhuma dessas arestas inteiras sobrevive na conectividade retida. Segmentos externos podem sobreviver; a revisão de contatos é separada.
+
+## Precisão e triangulação
+
+Blender armazena entrada/saída em float32. Cada vértice original sobrevivente é reconhecido e restaurado a partir da coordenada float64 original. Cada vértice novo é restaurado aos planos float64 das suas faces ancestrais da fonte e do cortador. Os pontos fora da região, as faces originais externas ao recorte, o manto, a anatomia e a faixa permanecem exatos.
+
+O primeiro código usava proximidade de planos e falhou em dois triângulos. `build_boolean_rim_v2.py` usa ancestralidade exata das faces do cortador. Isso resolve a restauração, mas a triangulação float32 pode ainda criar triângulos colineares quando há muitos pequenos segmentos do cortador.
+
+Na candidata circular, `retriangulate_inherited_patches.py` substituiu a triangulação de sete polígonos fonte (nove triângulos degenerados), sem mover/remover um vértice e sem mudar as bordas orientadas ou a área geométrica. A contagem total de faces ficou igual. O script rejeita múltiplos loops e vértices interiores não tratados, em vez de apagar geometria para fazer o gate passar. A revisão independente conferiu domínio, cobertura, área, borda e ausência de sobreposição em aritmética de alta precisão.
+
+A candidata poligonal já saiu não degenerada; sua cópia `-clean` serve apenas como checkpoint de pipeline. Os registros de limpeza estão vazios porque nada precisou mudar.
+
+## Fechamento e espessura
+
+Ambas as candidatas limpas passam a topologia combinatória (duas faces por aresta, orientação consistente, links de vértice válidos, Euler 2). O teste local de spans identifica traços de parede externa e interna em **todos** os planos de fechamento que interceptam a casca: 43 na circular, 12 na poligonal. Não apareceu uma face de cortador que só raspasse uma parede sem cruzar a outra.
+
+A separação mínima dos traços é cerca de 0,23747 mm à esquerda e 0,340 mm à direita na candidata circular, confirmada independentemente. Distâncias de pares fonte sobreviventes ficam exatamente iguais às V7. Distância pareada, distância entre traços e espessura por normal são métricas diferentes; diretores oblíquos fazem seus valores diferirem.
+
+Raios próximos à quina do recorte podem sair imediatamente pelo rim. Isso não é, sozinho, prova de uma parede afinada até zero. Os primeiros mínimos de BVH float32 não foram apresentados como espessura certificada; a revisão independente refez os cálculos em double. Centroides recortados da candidata circular têm chord mínimo de aproximadamente 0,244 mm. Esses testes são amostragens e não certificam espessura mínima global, tangências ou coplanaridade geral.
+
+## Condicionamento em float32
+
+- Circular limpa: ângulo mínimo 0,00344°, 54 faces abaixo de 0,1°, altitude mínima 0,000171 mm. Arredondar posições a float32 não colapsa/inverte faces, mas pode girar normais até 4,068° e mudar áreas por fatores 0,93469–1,13160.
+- Poligonal: ângulo mínimo 0,08220°, cinco faces abaixo de 0,1°, altitude mínima 0,005024 mm. Zero colapso/degeneração no mesmo controle, rotação máxima 0,32842°, áreas por fatores 0,99561–1,01141.
+
+A melhora de condicionamento e a comparação visual sem regressão adicional relevante motivaram reter a alternativa poligonal. Nenhuma das duas equivale a prova de transporte Bedrock/PBR/culling/mipmaps.
+
+## Contatos restantes
+
+Após a mudança de conectividade, IDs de pares não são comparáveis diretamente com V7; contagem depende da tesselação e não mede profundidade ou gravidade.
+
+- V7: 607 pares casca/anatomia.
+- Circular limpa: 122 (63 calota, 35 ponte, 24 fechamento novo) e 1.356 pares casca/faixa. À esquerda restam 24 contatos no baixo pescoço/ponte, nenhum incidente à seleção da orelha. À direita, 87 dos 98 contatos incidem nos quatro pontos temporais altos excluídos do cortador. Zero contato em faces inteiramente formadas pela seleção experimental de pinna.
+- Poligonal: 98 pares casca/anatomia (55 calota, 35 ponte, oito fechamento novo) e 1.339 pares casca/faixa. Exige a mesma distinção entre relações e regiões, não aprovação pela contagem.
+
+A revisão independente mediu comprimento somado das linhas de interseção casca/anatomia: baseline 1.199,136 mm, circular 288,355 mm e poligonal 288,366 mm. A queda de 122 para 98 pares entre as duas candidatas reflete principalmente a tesselação: o comprimento fica praticamente igual. Esse comprimento também não é profundidade, medida de visibilidade ou certificado para contato coplanar.
+
+Faixa/anatomia permanece congelada e é uma relação diferente. Fragmentos dourados que sobrevivam visualmente não foram mascarados nem recolhidos.
+
+## Formato NPZ e proveniência
+
+- `points`, `triangles`, `normals`: casca nativa triangular.
+- `face_parts`: 0 calota herdada, 1 ponte herdada, 2 manto herdado, 3 parede nova de fechamento. Renderer V11 conhece a cor púrpura do valor 3.
+- `source_indices`: ID fonte original para um sobrevivente V7; -1 para um vértice novo. Não usar -1 como identidade única.
+- `baseline_vertex_indices`: índice V7 exato, ou -1 se novo. `v11_vertex_ids` oferece identidade única por linha do candidato.
+- `generated_vertices`: mantém o flag V7 de sobreviventes e é verdadeiro para todos os vértices novos.
+- `baseline_face_indices`: ancestral de uma face herdada, ou -1 para rim. `cutter_face_indices`: ancestral no cortador para rim.
+- `face_roles`: 0 face original exata, 1 superfície original recortada/retriangulada, 2 rim novo.
+- `source_face_for_new_vertex`, `source_face_barycentrics`: suporte/bariêntricas na fonte quando disponível; -1/NaN se o vértice vem apenas do cortador.
+- `removed_baseline_vertices`, `removed_or_trimmed_baseline_faces`: listas explícitas do recorte.
+- `provenance`: JSON de método, delimitação, limiares, ressalvas e semântica.
+
+## Reexecução
+
+Dependências existentes: Python, NumPy, SciPy e Blender 4.3.2. Não foi instalado software novo. Inputs somente leitura:
+
+- `../../lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz`
+- `../../body_interface_v9/constrained_fit/retained-anatomy.npz`
+- `../../shell_band_v5/retained_candidate/evidence/band-paired.npz`
+- Correspondência cap/bridge nas pastas V4/V7 e auditores nativos anteriores.
+
+Scripts geradores recusam sobrescrever candidatos/cortadores; use uma cópia desta pasta limpa para repetir do zero. Exemplo de cadeia da alternativa poligonal:
+
+```sh
+python build_polygonal_pinna.py
+blender -b -t 4 --python build_boolean_rim_v2.py -- polygonal-pinna-0.5mm
+python retriangulate_inherited_patches.py polygonal-pinna-0.5mm polygonal-pinna-0.5mm-clean
+blender -b -t 4 --python audit_rebuild.py -- polygonal-pinna-0.5mm-clean
+python measure_rim_spans.py polygonal-pinna-0.5mm-clean
+python finalize_rebuild_report.py
+```
+
+`trials-manifest.json` preserva sete checkpoints de casca, de quatro cortadores efetivamente executados. Os quatorze cortadores preparados não equivalem a quatorze cascas testadas. A cópia poligonal bruta/clean é geometricamente idêntica. `final-validation.json` reconfirma hashes dos três inputs congelados e sintaxe dos scripts. Nenhuma publicação ou exportação Bedrock foi feita.

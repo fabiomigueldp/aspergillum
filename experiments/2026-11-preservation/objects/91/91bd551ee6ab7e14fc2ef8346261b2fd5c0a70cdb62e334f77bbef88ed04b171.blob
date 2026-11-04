@@ -1,0 +1,75 @@
+"""Independent float64 intersections of actual saved float32 Blender loop triangles.
+This is not Cycles' ray kernel. Nearest mip0 alpha, geometric frontface test.
+"""
+from pathlib import Path
+import numpy as np,json
+from PIL import Image
+O=Path(__file__).resolve().parent;B=O.parents[1]
+T=dict(np.load(B/'opaque_transport_v15/shared_mask/transport_arrays.npz'))
+MAP={p:np.flatnonzero(T['part']==p)for p in [0,1,15]}
+
+def scene(tag):
+ d=dict(np.load(O/f'{tag}-renderer-inputs.npz'));d['alpha']=np.load((O/f'alpha-{tag}.npy')if(O/f'alpha-{tag}.npy').exists()else(O/'alpha-quads.npy'),mmap_mode='r');d['tag']=tag
+ explicit_lineage='native_face'in d and'half'in d
+ if not explicit_lineage:d['native_face']=d['polygon'].copy();d['half']=np.full(len(d['part']),-1)
+ if tag!='native'and not explicit_lineage:
+  for p in MAP:
+   ix=np.flatnonzero(d['part']==p);ti=MAP[p][d['polygon'][ix]];d['native_face'][ix]=T['native_face'][ti];d['half'][ix]=T['half'][ti]
+ v=d['triangles'];n=np.cross(v[:,1]-v[:,0],v[:,2]-v[:,0]);d['geometric_normal']=np.divide(n,np.linalg.norm(n,axis=1)[:,None],out=np.zeros_like(n),where=np.linalg.norm(n,axis=1)[:,None]>0)
+ return d
+
+def trace(d,pixels,stacks=False,arithmetic=np.float64):
+ # pixels follow conventional image coordinates; integer coordinates are pixel centers.
+ C=d['camera_origin'];R=d['camera_rotation'];scale=float(d['camera_scale']);x=(pixels[:,0]+.5-500)*scale/1000;y=(500-pixels[:,1]-.5)*scale/1000
+ n=len(x);best=np.full(n,np.inf);hit=np.full(n,-1,dtype=int);bary=np.full((n,3),np.nan);intersections=[]
+ local=(d['triangles']-C)@R;front=(d['geometric_normal']@(-R[:,2]))<0
+ xx=local[:,:,0];yy=local[:,:,1];ids=np.flatnonzero((xx.max(1)>=x.min())&(xx.min(1)<=x.max())&(yy.max(1)>=y.min())&(yy.min(1)<=y.max()))
+ for ti in ids:
+  a=local[ti].astype(arithmetic);e=a[1]-a[0];f=a[2]-a[0];det=e[0]*f[1]-e[1]*f[0]
+  if abs(det)<1e-24:continue
+  ix=np.flatnonzero((x>=min(a[:,0]))&(x<=max(a[:,0]))&(y>=min(a[:,1]))&(y<=max(a[:,1])))
+  if not len(ix):continue
+  dx=x[ix].astype(arithmetic)-a[0,0];dy=y[ix].astype(arithmetic)-a[0,1];u=(dx*f[1]-dy*f[0])/det;v=(e[0]*dy-e[1]*dx)/det
+  inside=(u>=0)&(v>=0)&(u+v<=1);ix=ix[inside];u=u[inside];v=v[inside]
+  if not len(ix):continue
+  bc=np.stack([1-u-v,u,v],axis=1);depth=-(bc@a[:,2]);uv=bc@d['uv'][ti].astype(arithmetic);w,h=d['alpha'].shape[1],d['alpha'].shape[0];px=np.floor(uv[:,0]*w).astype(int);py=np.floor(uv[:,1]*h).astype(int);bounds=(px>=0)&(px<w)&(py>=0)&(py<h);opaque=np.ones(len(ix),dtype=bool)
+  if d['masked'][ti]:
+   opaque=np.zeros(len(ix),dtype=bool);opaque[bounds]=d['alpha'][py[bounds],px[bounds]]>.5
+  accepted=opaque&front[ti]&(depth>=0)
+  if stacks:intersections.append((ti,ix,depth,bc,uv,opaque,front[ti]))
+  closer=accepted&(depth<best[ix]);out=ix[closer];best[out]=depth[closer];hit[out]=ti;bary[out]=bc[closer]
+ return {'hit':hit,'distance':best,'bary':bary,'intersections':intersections}
+
+def ang(a,b):return np.degrees(np.arctan2(np.linalg.norm(np.cross(a,b),axis=-1),np.sum(a*b,axis=-1)))
+def witness(d,r,i):
+ t=int(r['hit'][i]);bc=r['bary'][i]
+ if t<0:return None
+ n=(bc[:,None]*d['corner_normal'][t]).sum(0);n/=max(np.linalg.norm(n),1e-300)
+ return {'triangle':t,'part':int(d['part'][t]),'native_face':int(d['native_face'][t]),'half':int(d['half'][t]),'polygon':int(d['polygon'][t]),'local_loop_triangle':int(d['local_triangle'][t]),'distance_mm':float(r['distance'][i]*1000),'barycentric':bc.tolist(),'point':(bc@d['triangles'][t]).tolist(),'UV':(bc@d['uv'][t]).tolist(),'flat_corner_normal':n.tolist(),'triangle_geometric_normal':d['geometric_normal'][t].tolist()}
+
+def compare(a,ra,b,rb,sel):
+ ia=ra['hit'][sel];ib=rb['hit'][sel];valid=(ia>=0)&(ib>=0);ia=ia[valid];ib=ib[valid];de=np.abs(ra['distance'][sel][valid]-rb['distance'][sel][valid])*1000;na=a['polygon_normal'][ia];nb=b['polygon_normal'][ib];an=ang(na,nb);ca=np.einsum('ij,ijk->ik',ra['bary'][sel][valid],a['corner_normal'][ia]);cb=np.einsum('ij,ijk->ik',rb['bary'][sel][valid],b['corner_normal'][ib]);can=ang(ca,cb);gan=ang(a['geometric_normal'][ia],b['geometric_normal'][ib])
+ return {'count':int(np.sum(sel)),'both_hit':len(ia),'part_mismatch':int(np.sum(a['part'][ia]!=b['part'][ib])),'native_face_mismatch':int(np.sum((a['part'][ia]!=b['part'][ib])|(a['native_face'][ia]!=b['native_face'][ib]))),'half_mismatch_when_same_source':int(np.sum((a['native_face'][ia]==b['native_face'][ib])&(a['half'][ia]!=b['half'][ib]))) if a['tag']!='native' and b['tag']!='native' else None,'depth_abs_mm_percentiles':dict(zip(['median','p95','p99','max'],np.percentile(de,[50,95,99,100]).tolist())),'polygon_normal_angle_degrees_percentiles':dict(zip(['median','p95','p99','max'],np.percentile(an,[50,95,99,100]).tolist())),'interpolated_stored_corner_normal_angle_degrees_percentiles':dict(zip(['median','p95','p99','max'],np.percentile(can,[50,95,99,100]).tolist())),'geometric_loop_triangle_normal_angle_degrees_percentiles':dict(zip(['median','p95','p99','max'],np.percentile(gan,[50,95,99,100]).tolist()))}
+
+if __name__=='__main__':
+ scenes={t:scene(t)for t in ['quads','clipped','native']};xx,yy=np.meshgrid(np.arange(300,701),np.arange(420,571));pixels=np.c_[xx.ravel(),yy.ravel()];results={}
+ for t,d in scenes.items():results[t]=trace(d,pixels);print(t,'traced',len(pixels),flush=True)
+ # Define visible dark marks by rendered difference from clip; retain image values as selection evidence.
+ imgs={t:np.array(Image.open(B/'opaque_transport_v15/evidence'/f'shared-2048{suffix}-band-front.png').convert('RGB'),dtype=float)for t,suffix in [('quads',''),('clipped','-analytic-clip-control')]};lum={t:a.mean(2)for t,a in imgs.items()};pd=lum['clipped'][pixels[:,1],pixels[:,0]]-lum['quads'][pixels[:,1],pixels[:,0]]
+ rois={'central_strip':np.ones(len(pixels),bool),'actual_scar_window':(pixels[:,0]>=490)&(pixels[:,0]<=570)&(pixels[:,1]>=440)&(pixels[:,1]<=480)};rois['scar_dark_10']=rois['actual_scar_window']&(pd>=10);rois['nearby_clean_abs3']=rois['actual_scar_window']&(np.abs(pd)<=3)
+ report={'method':'Independent float64 barycentric intersections on actual Blender float32 loop-triangle positions and UVs; float64 view mapping using explicit float32 camera pose. One-sided geometry and actual packed-image nearest mip0 alpha. Pixel centers, not Cycles stochastic subpixel sample reconstruction.','pixel_bounds_inclusive':[300,700,420,570],'pixel_count':len(pixels),'comparisons':{},'images':{'scar_selector':'clip minus shared mean RGB >=10 in x490..570 y440..480','clean_selector':'absolute clip minus shared mean RGB <=3 in same window'},'witnesses':[]}
+ for name,sel in rois.items():report['comparisons'][name]={'quads_vs_clip':compare(scenes['quads'],results['quads'],scenes['clipped'],results['clipped'],sel),'quads_vs_native':compare(scenes['quads'],results['quads'],scenes['native'],results['native'],sel)}
+ # Spatially separated strongest scar witnesses, plus a nearby clean pixel per witness.
+ cand=np.flatnonzero(rois['scar_dark_10']);cand=cand[np.argsort(pd[cand])[::-1]];chosen=[]
+ for i in cand:
+  if all(np.linalg.norm(pixels[i]-pixels[j])>=7 for j in chosen):chosen.append(int(i))
+  if len(chosen)>=12:break
+ clean=np.flatnonzero(rois['nearby_clean_abs3']);clean_chosen=[]
+ for i in chosen:
+  if len(clean):clean_chosen.append(int(clean[np.argmin(np.linalg.norm(pixels[clean]-pixels[i],axis=1))]))
+ for kind,ids in [('scar',chosen),('nearby_clean',list(dict.fromkeys(clean_chosen)))]:
+  for i in ids:report['witnesses'].append({'kind':kind,'pixel':pixels[i].tolist(),'clip_minus_quad_mean_rgb':float(pd[i]),'quad_rgb':imgs['quads'][pixels[i,1],pixels[i,0]].tolist(),'clip_rgb':imgs['clipped'][pixels[i,1],pixels[i,0]].tolist(),**{t:witness(d,results[t],i)for t,d in scenes.items()}})
+ arrays={'pixels':pixels,'clip_minus_quad_mean_rgb':pd}
+ for t,r in results.items():
+  for k in ['hit','distance','bary']:arrays[f'{t}_{k}']=r[k]
+ np.savez_compressed(O/'primary-ray-grid.npz',**arrays);(O/'primary-ray-report.json').write_text(json.dumps(report,indent=2));print(json.dumps(report['comparisons'],indent=2),flush=True)

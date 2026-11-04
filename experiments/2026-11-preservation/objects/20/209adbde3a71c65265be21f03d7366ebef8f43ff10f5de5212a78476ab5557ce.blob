@@ -1,0 +1,38 @@
+from pathlib import Path
+import json,hashlib,zipfile
+R=Path(__file__).resolve().parents[1];B=R.parent
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+S=R/'evidence/V15-SHARED-MASK-DIAGNOSTIC-NOT-APPROVED.blend'
+original=B.parent/'paz-refinement/gui-test/checkpoint-V75-20261102/V75-tunic-lower-trial.blend';assert sha(original)=='2c14fbc7566217ad350ef926abc1dc4a1bc41f457eaab8f10351e90b1f4777d9'
+status=json.loads((R/'STATUS.json').read_text());initial=json.loads((R/'evidence/frozen-inputs.json').read_text());assert all(sha(B/p)==h for p,h in initial.items())
+required=['evidence/review-visual-v15.md','independent_validation/REVIEW_INDEPENDENT_V15.md','independent_validation/REVIEW_BLENDER_NORMAL_CONFOUND.md','evidence/frozen-scene-check.json','evidence/comparison-band.png','evidence/comparison-whole.png']
+assert all((R/p).exists() for p in required)
+status['original_V75_sha256']=sha(original);status['independent_visual_review_complete']=True;status['independent_geometric_review_complete']=True;(R/'STATUS.json').write_text(json.dumps(status,indent=2)+'\n')
+validation={'status':'Research complete, neither family approved as full faithful visual transport','gates':{'source_preservation':True,'shared_coverage_tests':True,'opaque_source_shape_fidelity':False,'shared_lit_visual_fidelity':False,'shared_per_face_PBR_preservation':False,'Minecraft_runtime':'not_tested','Minecraft_performance':'not_measured'},'independent_reports':required[:3],'original_V75_sha256':sha(original),'retained_scene_sha256':sha(S),'PNG_diagnostic_count':27,'V14_control_PNG_count':12,'review_is_not_game_certification':True}
+(R/'evidence/final-validation.json').write_text(json.dumps(validation,indent=2)+'\n')
+excluded={'file-manifest.json','package-validation.json','review-package-validation.json'}
+files=[]
+for p in sorted(R.rglob('*')):
+ if not p.is_file() or '__pycache__' in p.parts or p.suffix in ['.zip','.pyc','.blend1']:continue
+ if p.suffix=='.blend' and p!=S:continue
+ if p.parent==R and p.name in excluded:continue
+ files.append(p)
+manifest={str(p.relative_to(R)):{'bytes':p.stat().st_size,'sha256':sha(p)}for p in files};(R/'file-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n');files.append(R/'file-manifest.json')
+full=R/'V75-V15-ALTERNATIVES-LAB-NOT-RELEASE.zip'
+with zipfile.ZipFile(full,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+ for p in files:z.write(p,str(p.relative_to(R)))
+with zipfile.ZipFile(full) as z:
+ assert z.testzip() is None
+ for name in z.namelist():assert z.read(name)==(R/name).read_bytes()
+report={'path':full.name,'bytes':full.stat().st_size,'sha256':sha(full),'members':len(files),'CRC_ok':True,'all_member_bytes_match_workspace':True,'no_publication':True};(R/'package-validation.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
+review_names=['README.md','STATUS.json','evidence/final-validation.json','evidence/frozen-scene-check.json','evidence/cost-accounting.json','evidence/review-visual-v15.md','independent_validation/REVIEW_INDEPENDENT_V15.md','independent_validation/REVIEW_BLENDER_NORMAL_CONFOUND.md','evidence/comparison-provenance.json','evidence/comparison-band.png','evidence/comparison-whole.png','evidence/comparison-causal-controls.png','evidence/V15-SHARED-MASK-DIAGNOSTIC-NOT-APPROVED.blend','shared_mask/shared_mask_2048.geo.json','shared_mask/shared_mask_2048.png','shared_mask/transport_contract.json']
+review_names += [f'evidence/shared-2048-{v}.png'for v in ['threequarter','head-front','band-front','left-ear','right-ear','mantle-back']]
+review_names += ['evidence/opaque-0300-band-front.png','evidence/opaque-1400-band-front.png','evidence/shared-2048-analytic-clip-control-band-front.png','evidence/shared-2048-no-shadow-control-band-front.png']
+review=R/'V75-V15-REVIEW-ONLY-NOT-ADDON.zip'
+with zipfile.ZipFile(review,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+ z.writestr('START-HERE.txt','This is a review subset of V15 research, not an addon or Minecraft test. Neither alternative passed full visual fidelity. Read README.md and the independent reviews. The .blend is the actual shared2048 JSON reconstruction with a flat diagnostic material. Analytical/no-shadow controls are not candidate assets. Full reproduction requires the separate complete research archive and documented V14 workspace inputs. Full archive SHA256: '+sha(full)+'\n')
+ for name in review_names:z.write(R/name,name)
+with zipfile.ZipFile(review) as z:
+ assert z.testzip() is None
+ for name in review_names:assert z.read(name)==(R/name).read_bytes()
+rr={'path':review.name,'bytes':review.stat().st_size,'sha256':sha(review),'members':len(review_names)+1,'CRC_ok':True,'all_file_bytes_match_workspace':True,'full_archive_sha256':sha(full),'subset_not_reproduction_or_addon':True};(R/'review-package-validation.json').write_text(json.dumps(rr,indent=2)+'\n');print(json.dumps(rr),flush=True)

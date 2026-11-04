@@ -1,0 +1,607 @@
+{
+  "scope": "OFFLINE ABSTRACT MODEL ONLY",
+  "assumptions": [
+    "One serialized writer; each modeled write mutates one field atomically.",
+    "Every applied write survives simulated reload, in program order; no torn writes.",
+    "An exception may occur before or after a mutation; all exceptions stop forward execution.",
+    "Raw registry is an opaque UTF-8 string, never parsed/sanitized; missing is explicit null.",
+    "All participating routes honor journal quarantine; reload never retries effects automatically.",
+    "The modeled item backup is abstract, not proof of complete ItemStack serialization."
+  ],
+  "limitations": [
+    "No Bedrock transaction, fsync, persistence ordering or engine-event guarantee is established.",
+    "Preserved evidence is not restored gameplay state, availability, or exactly-once delivery.",
+    "A journal ignored by an older pack cannot enforce quarantine after downgrade.",
+    "No event generation token means a late old event and a valid new event can be indistinguishable.",
+    "Completed journal entries also block further modeled operations: no liveness, tombstone GC or reuse policy is proved.",
+    "Generation is an abstract label only; it is not supplied by native events or proved globally unique.",
+    "No integrated protocol, repair command, migration, world access, pack change or publication."
+  ],
+  "coverage": {
+    "rows": 54,
+    "injectedFaults": 51,
+    "successfulPaths": 3,
+    "modes": [
+      "throw-before",
+      "throw-after",
+      "interrupt-after"
+    ],
+    "steps": {
+      "dock": [
+        "prepare",
+        "mark-ambiguous",
+        "registry",
+        "remove-hand",
+        "occupy",
+        "complete"
+      ],
+      "undock": [
+        "prepare",
+        "mark-ambiguous",
+        "clear-block",
+        "delete-registry",
+        "deliver",
+        "complete"
+      ],
+      "break": [
+        "prepare",
+        "mark-ambiguous",
+        "deliver",
+        "delete-registry",
+        "complete"
+      ]
+    }
+  },
+  "successfulAssertions": true,
+  "rows": [
+    {
+      "kind": "dock",
+      "step": "prepare",
+      "mode": "throw-before",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "prepare:throw-before"
+    },
+    {
+      "kind": "dock",
+      "step": "prepare",
+      "mode": "throw-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "prepare:throw-after"
+    },
+    {
+      "kind": "dock",
+      "step": "prepare",
+      "mode": "interrupt-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "prepare:interrupt-after"
+    },
+    {
+      "kind": "dock",
+      "step": "mark-ambiguous",
+      "mode": "throw-before",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "mark-ambiguous:throw-before"
+    },
+    {
+      "kind": "dock",
+      "step": "mark-ambiguous",
+      "mode": "throw-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "mark-ambiguous:throw-after"
+    },
+    {
+      "kind": "dock",
+      "step": "mark-ambiguous",
+      "mode": "interrupt-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "mark-ambiguous:interrupt-after"
+    },
+    {
+      "kind": "dock",
+      "step": "registry",
+      "mode": "throw-before",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "registry:throw-before"
+    },
+    {
+      "kind": "dock",
+      "step": "registry",
+      "mode": "throw-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "registry:throw-after"
+    },
+    {
+      "kind": "dock",
+      "step": "registry",
+      "mode": "interrupt-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "registry:interrupt-after"
+    },
+    {
+      "kind": "dock",
+      "step": "remove-hand",
+      "mode": "throw-before",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "remove-hand:throw-before"
+    },
+    {
+      "kind": "dock",
+      "step": "remove-hand",
+      "mode": "throw-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "remove-hand:throw-after"
+    },
+    {
+      "kind": "dock",
+      "step": "remove-hand",
+      "mode": "interrupt-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "remove-hand:interrupt-after"
+    },
+    {
+      "kind": "dock",
+      "step": "occupy",
+      "mode": "throw-before",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "occupy:throw-before"
+    },
+    {
+      "kind": "dock",
+      "step": "occupy",
+      "mode": "throw-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "occupy:throw-after"
+    },
+    {
+      "kind": "dock",
+      "step": "occupy",
+      "mode": "interrupt-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "occupy:interrupt-after"
+    },
+    {
+      "kind": "dock",
+      "step": "complete",
+      "mode": "throw-before",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "complete:throw-before"
+    },
+    {
+      "kind": "dock",
+      "step": "complete",
+      "mode": "throw-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "complete:throw-after"
+    },
+    {
+      "kind": "dock",
+      "step": "complete",
+      "mode": "interrupt-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "complete:interrupt-after"
+    },
+    {
+      "kind": "dock",
+      "step": "all",
+      "mode": "success",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "success"
+    },
+    {
+      "kind": "undock",
+      "step": "prepare",
+      "mode": "throw-before",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "prepare:throw-before"
+    },
+    {
+      "kind": "undock",
+      "step": "prepare",
+      "mode": "throw-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "prepare:throw-after"
+    },
+    {
+      "kind": "undock",
+      "step": "prepare",
+      "mode": "interrupt-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "prepare:interrupt-after"
+    },
+    {
+      "kind": "undock",
+      "step": "mark-ambiguous",
+      "mode": "throw-before",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "mark-ambiguous:throw-before"
+    },
+    {
+      "kind": "undock",
+      "step": "mark-ambiguous",
+      "mode": "throw-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "mark-ambiguous:throw-after"
+    },
+    {
+      "kind": "undock",
+      "step": "mark-ambiguous",
+      "mode": "interrupt-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "mark-ambiguous:interrupt-after"
+    },
+    {
+      "kind": "undock",
+      "step": "clear-block",
+      "mode": "throw-before",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "clear-block:throw-before"
+    },
+    {
+      "kind": "undock",
+      "step": "clear-block",
+      "mode": "throw-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "clear-block:throw-after"
+    },
+    {
+      "kind": "undock",
+      "step": "clear-block",
+      "mode": "interrupt-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "clear-block:interrupt-after"
+    },
+    {
+      "kind": "undock",
+      "step": "delete-registry",
+      "mode": "throw-before",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "delete-registry:throw-before"
+    },
+    {
+      "kind": "undock",
+      "step": "delete-registry",
+      "mode": "throw-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "delete-registry:throw-after"
+    },
+    {
+      "kind": "undock",
+      "step": "delete-registry",
+      "mode": "interrupt-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "delete-registry:interrupt-after"
+    },
+    {
+      "kind": "undock",
+      "step": "deliver",
+      "mode": "throw-before",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "deliver:throw-before"
+    },
+    {
+      "kind": "undock",
+      "step": "deliver",
+      "mode": "throw-after",
+      "evidencePreserved": true,
+      "deliveries": 1,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "deliver:throw-after"
+    },
+    {
+      "kind": "undock",
+      "step": "deliver",
+      "mode": "interrupt-after",
+      "evidencePreserved": true,
+      "deliveries": 1,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "deliver:interrupt-after"
+    },
+    {
+      "kind": "undock",
+      "step": "complete",
+      "mode": "throw-before",
+      "evidencePreserved": true,
+      "deliveries": 1,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "complete:throw-before"
+    },
+    {
+      "kind": "undock",
+      "step": "complete",
+      "mode": "throw-after",
+      "evidencePreserved": true,
+      "deliveries": 1,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "complete:throw-after"
+    },
+    {
+      "kind": "undock",
+      "step": "complete",
+      "mode": "interrupt-after",
+      "evidencePreserved": true,
+      "deliveries": 1,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "complete:interrupt-after"
+    },
+    {
+      "kind": "undock",
+      "step": "all",
+      "mode": "success",
+      "evidencePreserved": true,
+      "deliveries": 1,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "success"
+    },
+    {
+      "kind": "break",
+      "step": "prepare",
+      "mode": "throw-before",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "prepare:throw-before"
+    },
+    {
+      "kind": "break",
+      "step": "prepare",
+      "mode": "throw-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "prepare:throw-after"
+    },
+    {
+      "kind": "break",
+      "step": "prepare",
+      "mode": "interrupt-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "prepare:interrupt-after"
+    },
+    {
+      "kind": "break",
+      "step": "mark-ambiguous",
+      "mode": "throw-before",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "mark-ambiguous:throw-before"
+    },
+    {
+      "kind": "break",
+      "step": "mark-ambiguous",
+      "mode": "throw-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "mark-ambiguous:throw-after"
+    },
+    {
+      "kind": "break",
+      "step": "mark-ambiguous",
+      "mode": "interrupt-after",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "mark-ambiguous:interrupt-after"
+    },
+    {
+      "kind": "break",
+      "step": "deliver",
+      "mode": "throw-before",
+      "evidencePreserved": true,
+      "deliveries": 0,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "deliver:throw-before"
+    },
+    {
+      "kind": "break",
+      "step": "deliver",
+      "mode": "throw-after",
+      "evidencePreserved": true,
+      "deliveries": 1,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "deliver:throw-after"
+    },
+    {
+      "kind": "break",
+      "step": "deliver",
+      "mode": "interrupt-after",
+      "evidencePreserved": true,
+      "deliveries": 1,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "deliver:interrupt-after"
+    },
+    {
+      "kind": "break",
+      "step": "delete-registry",
+      "mode": "throw-before",
+      "evidencePreserved": true,
+      "deliveries": 1,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "delete-registry:throw-before"
+    },
+    {
+      "kind": "break",
+      "step": "delete-registry",
+      "mode": "throw-after",
+      "evidencePreserved": true,
+      "deliveries": 1,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "delete-registry:throw-after"
+    },
+    {
+      "kind": "break",
+      "step": "delete-registry",
+      "mode": "interrupt-after",
+      "evidencePreserved": true,
+      "deliveries": 1,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "delete-registry:interrupt-after"
+    },
+    {
+      "kind": "break",
+      "step": "complete",
+      "mode": "throw-before",
+      "evidencePreserved": true,
+      "deliveries": 1,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "complete:throw-before"
+    },
+    {
+      "kind": "break",
+      "step": "complete",
+      "mode": "throw-after",
+      "evidencePreserved": true,
+      "deliveries": 1,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "complete:throw-after"
+    },
+    {
+      "kind": "break",
+      "step": "complete",
+      "mode": "interrupt-after",
+      "evidencePreserved": true,
+      "deliveries": 1,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "complete:interrupt-after"
+    },
+    {
+      "kind": "break",
+      "step": "all",
+      "mode": "success",
+      "evidencePreserved": true,
+      "deliveries": 1,
+      "automaticDeliveriesAfterReload": 0,
+      "stopped": "success"
+    }
+  ],
+  "counterexamples": {
+    "ambiguousDelivery": {
+      "journalBefore": "{\"schemaVersion\":1,\"operation\":\"break\",\"phase\":\"effects-may-have-occurred\",\"address\":\"overworld:0,0,0\",\"occupancyGeneration\":\"abstract-generation-A\",\"rawRegistry\":\"{ \\\"schemaVersion\\\":1, \\\"entries\\\":{\\\"0,0,0\\\":{\\\"instanceId\\\":\\\"A\\\",\\\"unknown\\\":\\\"preserve\\\"}} }\",\"originalHand\":null,\"originalBlock\":\"air\"}",
+      "journalAfter": "{\"schemaVersion\":1,\"operation\":\"break\",\"phase\":\"effects-may-have-occurred\",\"address\":\"overworld:0,0,0\",\"occupancyGeneration\":\"abstract-generation-A\",\"rawRegistry\":\"{ \\\"schemaVersion\\\":1, \\\"entries\\\":{\\\"0,0,0\\\":{\\\"instanceId\\\":\\\"A\\\",\\\"unknown\\\":\\\"preserve\\\"}} }\",\"originalHand\":null,\"originalBlock\":\"air\"}",
+      "equalRecoveryJournal": true,
+      "deliveredBefore": 0,
+      "deliveredAfter": 1,
+      "observation": "In the delivered history the item can be collected into an unavailable inventory; absence nearby is not proof of non-delivery.",
+      "retryOutcomes": [
+        1,
+        2
+      ]
+    },
+    "replayWithoutGeneration": {
+      "validNewEvent": {
+        "address": "0,0,0",
+        "brokenPermutation": "occupied",
+        "registry": "new-B"
+      },
+      "replayOldEvent": {
+        "address": "0,0,0",
+        "brokenPermutation": "occupied",
+        "registry": "new-B"
+      },
+      "outcome": "Same handler inputs; current-registry identity cannot tell which occupation generated the event."
+    },
+    "downgrade": {
+      "quarantinedJournal": "{\"schemaVersion\":1,\"operation\":\"break\",\"phase\":\"effects-may-have-occurred\",\"address\":\"overworld:0,0,0\",\"occupancyGeneration\":\"abstract-generation-A\",\"rawRegistry\":\"{ \\\"schemaVersion\\\":1, \\\"entries\\\":{\\\"0,0,0\\\":{\\\"instanceId\\\":\\\"A\\\",\\\"unknown\\\":\\\"preserve\\\"}} }\",\"originalHand\":null,\"originalBlock\":\"air\"}",
+      "retainedRegistry": "{ \"schemaVersion\":1, \"entries\":{\"0,0,0\":{\"instanceId\":\"A\",\"unknown\":\"preserve\"}} }",
+      "deliveriesBefore": 1,
+      "deliveriesAfterOldHandler": 2,
+      "outcome": "Old spawn-before-delete handler ignores journal and emits A again."
+    },
+    "reorderedCrash": {
+      "programOrder": [
+        "prepare-journal",
+        "spawn-A"
+      ],
+      "persistedAfterCrash": {
+        "journal": null,
+        "registry": "{ \"schemaVersion\":1, \"entries\":{\"0,0,0\":{\"instanceId\":\"A\",\"unknown\":\"preserve\"}} }",
+        "delivered": 1
+      },
+      "outcome": "If spawn survives but earlier journal write does not, quarantine evidence is absent. Readback before spawn does not establish flush ordering."
+    },
+    "legacyDoubleRollbackFailure": {
+      "programOrder": [
+        "write-snapshot",
+        "remove-hand",
+        "occupy throws-before",
+        "restore-hand throws-before",
+        "restore-block",
+        "delete-snapshot"
+      ],
+      "final": {
+        "hand": null,
+        "registry": null,
+        "block": "empty",
+        "delivered": 0
+      },
+      "outcome": "Current defensive rollback can erase the only remaining item representation."
+    }
+  }
+}

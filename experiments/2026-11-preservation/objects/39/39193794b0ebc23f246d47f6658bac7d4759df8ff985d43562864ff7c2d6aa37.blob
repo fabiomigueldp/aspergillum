@@ -1,0 +1,35 @@
+import bpy,numpy as np,json,collections
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False);dg=bpy.context.evaluated_depsgraph_get();o=bpy.data.objects['TESTE 34 — conexão de superfícies avaliadas'];em=o.evaluated_get(dg).to_mesh();p=np.array([v.co[:] for v in em.vertices]);fs=[tuple(f.vertices) for f in em.polygons];o.evaluated_get(dg).to_mesh_clear();q=p.copy();removed=set(json.load(open(r+'neck-contact-boundary-growth.json'))['removed_faces']);hb=BVHTree.FromObject(bpy.data.objects['Maria — anatomia feminina adaptada CC0'],dg)
+counts=collections.Counter(tuple(sorted((a,b))) for i in removed for a,b in zip(fs[i],fs[i][1:]+fs[i][:1]));boundary={v for e,n in counts.items() if n==1 for v in e};adj=collections.defaultdict(set)
+for a,b in counts:adj[a].add(b);adj[b].add(a)
+seen=set();comps=[]
+for v in adj:
+ if v in seen:continue
+ todo=[v];seen.add(v);comp=[]
+ while todo:
+  a=todo.pop();comp.append(a)
+  for b in adj[a]:
+   if b not in seen:seen.add(b);todo.append(b)
+ comps.append(comp)
+assert len(comps)==2
+comps.sort(key=lambda c:np.mean(p[c,0]));reports=[]
+for ci,comp in enumerate(comps):
+ inside=sorted(set(comp)-boundary);offset=.004 if ci==0 else .001;limits={};neigh={};weights={}
+ for i in inside:
+  h,n,f,dist=hb.ray_cast(Vector((-1,p[i,1],p[i,2])),Vector((1,0,0)),2)
+  limits[i]=h.x-offset if h is not None else p[i,0]+1
+  neigh[i]=np.array(sorted(adj[i]));weights[i]=1/np.maximum(np.linalg.norm(p[neigh[i]]-p[i],axis=1),1e-6);weights[i]/=weights[i].sum()
+ for it in range(2000):
+  nx=np.array([min(float(np.dot(q[neigh[i],0],weights[i])),limits[i]) for i in inside]);err=float(abs(nx-q[inside,0]).max()) if inside else 0;q[inside,0]=nx
+  if err<1e-8:break
+ reports.append({'component':ci,'interior_vertices':len(inside),'boundary_vertices':len(set(comp)&boundary),'clearance_goal':offset,'iterations':it+1,'last_change':err})
+tri=np.array([f[:3] for f in fs]);A=p[tri];B=q[tri];na=np.cross(A[:,1]-A[:,0],A[:,2]-A[:,0]);nb=np.cross(B[:,1]-B[:,0],B[:,2]-B[:,0]);area=np.linalg.norm(na,axis=1);ratio=np.linalg.norm(nb,axis=1)[area>1e-12]/area[area>1e-12]
+def tree(v):return BVHTree.FromPolygons(v.tolist(),fs)
+def pairs(t):return set((a,b) for a,b in t.overlap(t) if a<b and not set(fs[a])&set(fs[b]))
+bt=tree(p);nt=tree(q);base=pairs(bt);now=pairs(nt);hc0=set(hb.overlap(bt));hc1=set(hb.overlap(nt));d=np.linalg.norm(q-p,axis=1);report={'method':'Two bounded shell patches with fixed collision-free boundary; harmonic X fairing constrained outside fixed skin; no anatomical change','components':reports,'changed_vertices':int((d>1e-7).sum()),'maximum_delta_m':float(d.max()),'area_range':list(map(float,[ratio.min(),ratio.max()])),'flips':int(((na*nb).sum(axis=1)<-1e-15).sum()),'new_self_pairs':len(now-base),'removed_self_pairs':len(base-now),'baseline_self_pairs':len(base),'head_new_pairs':len(hc1-hc0),'head_removed_pairs':len(hc0-hc1),'patch_head_pairs_before':sum(b in removed for a,b in hc0),'patch_head_pairs_after':sum(b in removed for a,b in hc1),'boundary_max_delta':float(d[list(boundary)].max()),'outside_patch_delta':float(d[[i for i in range(len(p)) if i not in adj]].max())};json.dump(report,open(r+'V81-obstacle-verification.json','w'),indent=2);print(report)
+assert report['flips']==0 and report['new_self_pairs']==0 and report['head_new_pairs']==0 and report['patch_head_pairs_after']==0
+k=o.shape_key_add(name='TESTE81 — superfície local com afastamento da pele');k.value=1
+for i,v in enumerate(k.data):v.co=o.data.vertices[i].co+Vector(q[i]-p[i])
+bpy.ops.wm.save_as_mainfile(filepath=r+'V81-neck-cloth-surface-trial.blend')

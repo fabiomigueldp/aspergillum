@@ -1,0 +1,74 @@
+# Diagnóstico independente da interface corpo × casca V7
+
+**Resultado: a anatomia reduzida não é a única causa. Repor a anatomia highpoly sem corrigir a interface não resolve.** A fonte V75 já tem interseções entre anatomia e TESTE34, a casca aproximada acrescenta contatos e a redução da anatomia muda outros contatos locais. Nenhuma correção foi implementada neste diagnóstico.
+
+## Identidade e coordenadas verificadas
+
+- Parte 15 = **Maria — anatomia feminina adaptada CC0**. Nesta cena é a cabeça/pescoço, não o manto. A fonte avaliada tem 102.088 vértices e 204.160 triângulos; a redução tem 708 vértices e 1.400 triângulos, dos quais 1.376 foram exportados no mapa alfa.
+- Reabertura da fonte V75 com scripts desativados, sem salvar: coordenadas e índices da anatomia e do TESTE34 coincidem bit a bit com `evidence/source_meshes.npz`.
+- Inversa do mapa de triângulos: `(BBx, BBy, BBz) → (BBx/16, −BBz/16, BBy/16)`. Todos os 1.376 triângulos da parte 15 coincidem exatamente com `repaired_meshes.npz`, admitida a rotação cíclica da ordem dos vértices.
+- Coordenadas são Blender world XYZ; +Z é cima e frente é −Y, confirmado pelas câmeras de diagnóstico V7. Não há normalização adicional. As medidas em “mm” usam 1 unidade fonte = 1 m, portanto ×1000; o transporte existente usa 1 unidade fonte = 1 bloco.
+- TESTE34 é usado exclusivamente como baseline da escultura original, incluindo calota/junção/manto antigos. Não é uma peça limpa para recolocar sobre V7.
+
+Evidência: `coordinate-verification.json`, script `extract_verify.py`, arrays `source-part1.npz`, `source-part15.npz`, `legacy-part15.npz`.
+
+## Interseções estritas reproduzidas
+
+| Comparação | Cap | Ponte/junção | Manto | Total de pares |
+|---|---:|---:|---:|---:|
+| V7 × anatomia reduzida pretendida | 2.917 | 916 | 336 | 4.169 |
+| V7 × anatomia fonte avaliada | 13.053 | 2.051 | 533 | 15.637 |
+| TESTE34 original × anatomia fonte | 3.626 | 545 | 1.974 | 6.145 |
+
+**Não interpretar contagens de pares entre highpoly e lowpoly como severidade de penetração.** São dependentes da tesselação. A junção original é classificada por triângulos mistos entre os primeiros 160.386 vértices da cap e os demais; não corresponde um-a-um à ponte V7.
+
+Uma comparação menos confundida pela tesselação do corpo usa os mesmos IDs de faces V7:
+
+| Faces V7 afetadas | Nos dois corpos | Só reduzido | Só fonte |
+|---|---:|---:|---:|
+| Cap | 518 | 622 | 490 |
+| Ponte | 551 | 38 | 78 |
+| Manto | 200 | 14 | 5 |
+
+No total, 1.943 faces V7 cruzam o corpo reduzido; 1.842 cruzam o corpo fonte. Restaurar highpoly tira alguns contatos e acrescenta outros, sem limpar a interface.
+
+## Onde ocorre e por quê
+
+1. **Topo e laterais/orelhas já cruzavam na fonte.** O mapa original mostra anel no topo da cabeça, contatos nas duas laterais e baixo pescoço. Há evidência explícita na fonte, sem redução de corpo nem casca V7.
+2. **A aproximação da calota perde uma folga muito pequena e gera uma rede ampla de contatos.** O extremo frontal dos cruzamentos originais é Y=−0,320927. Na V7 contra anatomia fonte chega a Y=−0,410184. Na região nova Y<−0,33, os pontos de cruzamento estão somente 0,295–0,428 mm da superfície TESTE34 original (mediana 0,378 mm). Assim, desvios submilimétricos da aproximação podem produzir muitos contatos sobre uma grande área. Isso não é uma certificação de folga mínima original.
+3. **Na ponte, há mudança material de forma além do problema herdado.** Nos cruzamentos V7 contra corpo fonte, distância à TESTE34 original: mediana 5,361 mm, p95 8,784 mm, máximo 11,170 mm. A faixa posterior da ponte deve ser tratada como uma interface nova, não apenas restituição da fonte.
+4. **No manto alto/pescoço o contato é majoritariamente herdado, com mudança local.** Intervalo de contato V7 fonte: X=−0,09095…0,01043; Y=−0,04965…0,02819; Z=3,28580…3,32399. A distância unilateral dos cruzamentos à TESTE34 é mediana 0,404 mm, p95 0,707 mm.
+5. **A redução da anatomia altera contatos numa escala de milímetros.** Distância dos pontos de cruzamento da anatomia reduzida à anatomia fonte: cap mediana0,203/p950,776/max2,107 mm; ponte mediana0,458/p951,271/max2,223 mm; manto mediana0,474/p951,001/max1,150 mm. São distâncias ao corpo fonte, não profundidades de penetração.
+
+As imagens `CONTACT_LOCATION_SOURCE_VS_REDUCED.png` e `HEAD_CROSS_SECTIONS.png` foram geradas dos arrays e inspecionadas. As seções em X=−0,06, +0,04 e +0,14 m mostram a calota quase coincidente com a cabeça e a ponte V7 mais próxima do pescoço que o contorno original. Não são renders Minecraft.
+
+`source-contact-components.json` agrupa **23 conjuntos de faces afetadas** conectadas por qualquer vértice. Não são 23 furos: é um agrupamento conservador para edição local. Os maiores grupos são:
+
+- 818 faces, cap728/ponte90, X−0,072…0,184; Y−0,339…−0,056; Z3,407…3,715.
+- 410 faces, cap4/ponte254/manto152, X−0,091…0,094; Y−0,079…0,028; Z3,286…3,417.
+- 181 faces, cap81/ponte100, lateral X−0,104…−0,054; Y−0,224…−0,108; Z3,451…3,559.
+- 157 faces somente ponte, X−0,050…0,092; Y−0,075…−0,041; Z3,343…3,376.
+- 88 faces somente cap frontal, X−0,062…0,139; Y−0,410…−0,343; Z3,567…3,657.
+
+O arquivo contém todos os IDs V7. `v7-source-witness-attribution.npz` e `legacy-witness-source-distance.npz` contêm testemunhas de contato e correspondências fonte; `comparison-summary.json` contém IDs de faces comuns/exclusivas.
+
+## Consequência para correção
+
+Uma correção local da anatomia sob a casca pode preservar a casca V7, mas deve selecionar explicitamente a região oculta, preservar rosto/orelhas e validar a superfície resultante, não só puxar os vértices dos triângulos que atualmente cruzam. Há contatos herdados junto às orelhas e desvio de até 11 mm da ponte contra o contorno original, portanto uma contração radial global ou simples reposição da fonte não oferece a garantia necessária. A nova malha deve ser testada contra toda a casca, contra si própria, contra as demais partes pertinentes e em vistas equivalentes.
+
+## Resíduos herdados separados
+
+Os 24 triângulos de área zero da redução são duas componentes colapsadas de 8 vértices/12 faces cada, em (~0,111003,−0,128998,3,324000) e (~0,116985,−0,128999,3,326696). Já eram omitidos pelo exportador. O mapa alfa inclui a componente principal 689v/1.374f e outra microscópica 3v/2f em (~0,083916,−0,254903,3,275974), composta pelas faces locais 424 e 1143. Isso deve constar separadamente num gate global; não é um defeito criado pelo refit V8.
+
+## Reprodução e limites
+
+1. Blender: `extract_verify.py`.
+2. Blender: `compare_contacts.py`.
+3. Blender: `measure_local_attribution.py`.
+4. Python com NumPy/Matplotlib: `plot_diagnosis.py`.
+
+O detector usa Blender BVH epsilon zero e testes estritos segmento/triângulo em float64 nas duas direções, com limite 1e−8 nos parâmetros. Reproduziu independentemente os 4.169 pares/916 ponte contra anatomia legada. Não certifica tangência, coplanaridade geral, distância mínima global, cobertura expandida de pixels alfa, culling/mipmap ou execução de jogo. Nenhuma fonte, casca V7, textura ou addon foi alterado; não houve instalação ou publicação.
+
+## Revisão posterior da anatomia retida
+
+A pedido do coordenador, este mesmo diagnóstico revisou a candidata `retained-anatomy.npz` sem alterá-la. Resultado em `REVIEW_RETAINED_ANATOMY.md`: 670 pares residuais na casca, 1.115 na faixa V5, invariantes preservadas e limites explícitos. Essa revisão não altera as conclusões sobre a fonte nem transforma a candidata em interface limpa.

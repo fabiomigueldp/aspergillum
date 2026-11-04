@@ -1,0 +1,21 @@
+import numpy as np,json
+from pathlib import Path
+R=Path(__file__).resolve().parents[1];hidden=np.load(R/'evidence/mantle-hidden-source.npz');rest=np.load(R/'evidence/mantle-rest.npz');cut=np.load(R/'evidence/mantle-cut-7p5.npz');hf={tuple(sorted(f)):tuple(map(int,f)) for f in hidden['triangles']}
+def cyclic(f):return [tuple(f),tuple(np.roll(f,1)),tuple(np.roll(f,2))]
+def compare(a):
+ same=rev=missing=0
+ for f in a['source_indices'][a['triangles']]-160386:
+  old=hf.get(tuple(sorted(f)))
+  if old is None:missing+=1
+  elif old in cyclic(f):same+=1
+  elif old in cyclic(f[::-1]):rev+=1
+  else:raise ValueError('unexpected')
+ return {'same_winding':same,'opposite_winding':rev,'not_same_source_triangle':missing}
+corrected={k:cut[k].copy() for k in cut.files};corrected['triangles']=corrected['triangles'][:,::-1];corrected['normals']=-corrected['normals'];np.savez_compressed(R/'evidence/mantle-cut-7p5-restored-orientation.npz',**corrected)
+a=np.load(R/'evidence/seam-swapped-7p5-assembly.npz');out={k:a[k].copy() for k in a.files};mask=out['face_parts']==2;out['triangles'][mask]=out['triangles'][mask][:,::-1];mp={int(s):n for s,n in zip(corrected['source_indices'],corrected['normals'])}
+for i,s in enumerate(out['source_indices']):
+ if int(s) in mp:out['normals'][i]=mp[int(s)]
+np.savez_compressed(R/'evidence/seam-swapped-7p5-restored-orientation.npz',**out)
+# Verify source-indexed vertex normals against hidden original, excluding deformation interpretation.
+nd=(rest['normals']*hidden['normals'][rest['source_indices']-160386]).sum(1);cd=(corrected['normals']*hidden['normals'][corrected['source_indices']-160386]).sum(1)
+r={'original_full_mantle_vs_hidden':compare(rest),'cut_before_vs_hidden':compare(cut),'cut_after_vs_hidden':compare(corrected),'original_vertex_normal_dot_hidden_min_median_max':[float(nd.min()),float(np.median(nd)),float(nd.max())],'corrected_vertex_normal_dot_hidden_min_median_max':[float(cd.min()),float(np.median(cd)),float(cd.max())],'cut_coordinates_bit_identical':bool(np.array_equal(cut['points'],corrected['points'])),'assembly_coordinates_bit_identical':bool(np.array_equal(a['points'],out['points'])),'cap_and_bridge_faces_unchanged':bool(np.array_equal(a['triangles'][~mask],out['triangles'][~mask])),'flipped_mantle_faces':int(mask.sum()),'original_candidates_preserved':True,'note':'Reduced cut triangles not present verbatim in hidden topology cannot be compared by sorted face identity. Full original mantle proves global source inversion; restored reduced cut uses the same global reversal, with geometry and TESTE74 coordinates untouched.'};(R/'evidence/mantle-orientation-independent-validation.json').write_text(json.dumps(r,indent=2));print(json.dumps(r,indent=2))

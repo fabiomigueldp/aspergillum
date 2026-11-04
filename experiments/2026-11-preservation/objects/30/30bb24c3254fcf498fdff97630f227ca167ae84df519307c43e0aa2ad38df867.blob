@@ -1,0 +1,32 @@
+import bpy,json,hashlib
+from mathutils import Vector
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/'
+bpy.ops.wm.open_mainfile(filepath=r+'cuff-manual-mask-audit.blend',use_scripts=False)
+o=bpy.data.objects['Maria — túnica e mangas integradas'];m=o.data;a=m.attributes['.sculpt_mask'];coords=[v.co.copy() for v in m.vertices];ids={i for i,v in enumerate(a.data) if v.value>.5};adj=[set() for v in m.vertices]
+for e in m.edges:
+ i,j=e.vertices;adj[i].add(j);adj[j].add(i)
+rem=set(ids);comps=[]
+while rem:
+ seed=rem.pop();seen={seed};q=[seed]
+ while q:
+  for j in adj[q.pop()]:
+   if j in rem:rem.remove(j);seen.add(j);q.append(j)
+ comps.append(seen)
+main=max(comps,key=len);w={i:1. for i in main}
+for it in range(8):w={i:.5*w[i]+.5*sum(w.get(j,0) for j in adj[i])/len(adj[i]) for i in main}
+for i,v in enumerate(a.data):v.value=w.get(i,0)
+changed=max((v.co-coords[i]).length for i,v in enumerate(m.vertices));positive=[i for i,v in enumerate(a.data) if v.value>0];report={'removed_isolated_vertices':len(ids-main),'support_count':len(positive),'support_growth':len(set(positive)-main),'posterior_positive_count':sum(coords[i].y>=0 for i in positive),'geometry_max_delta':changed,'mask_weight_min':min(w.values()),'mask_weight_max':max(w.values()),'method':'8 Jacobi steps, 0.5 self + 0.5 neighbor mean; outside original anterior component forced zero; no fill or growth','functional_gap':'Original unmasked notch retained; smoothing does not fill it. Do not deform until judged suitable.'};json.dump(report,open(r+'cuff-manual-mask-clean.json','w'),indent=2);print(report)
+bpy.ops.wm.save_as_mainfile(filepath=r+'cuff-manual-mask-clean.blend')
+# Audit render materials only, not saved into blend.
+start=len(m.materials)
+for k in range(11):
+ mat=bpy.data.materials.new('AUDIT influence '+str(k));t=k/10;mat.diffuse_color=(.8,.8*(1-t)+.015*t,.8*(1-t)+.01*t,1);m.materials.append(mat)
+for p in m.polygons:
+ v=sum(a.data[i].value for i in p.vertices)/len(p.vertices)
+ if v>0:p.material_index=start+round(10*v)
+h=bpy.data.objects['Maria — mão ao peito anatômica'];center=sum((v.co for v in h.data.vertices),Vector())/len(h.data.vertices);s=bpy.context.scene;s.cycles.samples=24;s.render.resolution_x=600;s.render.resolution_y=800;s.render.resolution_percentage=100;c=s.camera
+for view,off in [('front',(0,-5,0)),('threequarter',(-3,-5,.2)),('profile',(5,0,0)),('reverse',(-5,0,0)),('isolatedback',(0,5,0))]:
+ if view=='isolatedback':
+  for obj in s.objects:
+   if obj.type=='MESH' and obj!=o:obj.hide_render=True
+ c.location=center+Vector(off);c.rotation_euler=(center-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=.6;s.render.filepath=r+'cuff-manual-mask-clean-'+view+'.png';bpy.ops.render.render(write_still=True)

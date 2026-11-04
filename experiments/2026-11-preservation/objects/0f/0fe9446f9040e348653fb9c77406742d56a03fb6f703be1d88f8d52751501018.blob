@@ -1,0 +1,42 @@
+✔ counts compact emitted blocks recursively, including all state-free proxies (14.884551ms)
+✔ measures the legacy sibling and rejects its actual over-budget native combination (2.366117ms)
+✔ the historical 51608-state catalog fits both measured sibling variants (3.91839ms)
+✔ supports array and integer-range domains and an omitted states field (1.176725ms)
+✔ reads current files again rather than caching a previous sibling version (4.614431ms)
+✔ refuses missing manifest rather than returning zero or a historical fallback (1.086624ms)
+✔ refuses invalid manifest rather than returning zero or a historical fallback (0.746298ms)
+✔ refuses missing block directory rather than returning zero or a historical fallback (0.885932ms)
+✔ refuses empty block directory rather than returning zero or a historical fallback (0.62468ms)
+✔ refuses invalid JSON rather than returning zero or a historical fallback (1.677215ms)
+✔ refuses invalid definition rather than returning zero or a historical fallback (0.530849ms)
+✔ refuses wrong namespace rather than returning zero or a historical fallback (0.530637ms)
+✔ refuses duplicate identifier rather than returning zero or a historical fallback (0.825448ms)
+✔ refuses symbolic file rather than returning zero or a historical fallback (0.790512ms)
+✔ refuses null states without silently undercounting (0.556034ms)
+✔ refuses array states without silently undercounting (0.751252ms)
+✔ refuses empty domain without silently undercounting (0.558248ms)
+✔ refuses duplicate values without silently undercounting (0.352437ms)
+✔ refuses mixed values without silently undercounting (0.47316ms)
+✔ refuses unknown domain without silently undercounting (0.497641ms)
+✔ refuses missing range bound without silently undercounting (0.742653ms)
+✔ refuses descending range without silently undercounting (0.778061ms)
+✔ refuses fractional range without silently undercounting (0.448215ms)
+✔ refuses oversized range without silently undercounting (0.872938ms)
+✔ refuses unsafe product without silently undercounting (1.262066ms)
+✔ the threshold remains exactly 65536, not an adjustable diagnostic exception (0.262829ms)
+✔ native verifier reports the actual compact sibling even with unrelated cwd and legacy baseline (8387.177074ms)
+✔ verify-native-integration.mjs rejects an over-budget legacy sibling before approving comparison (1249.725355ms)
+✔ verify-native-integration.mjs fails clearly if the actual sibling is absent (1016.966719ms)
+✔ verify-catalog-compaction.mjs rejects an over-budget legacy sibling before approving comparison (1131.531298ms)
+✔ verify-catalog-compaction.mjs fails clearly if the actual sibling is absent (1044.403285ms)
+✔ historical catalog verifier measures a legacy sibling while retaining its 51608-state scope (9430.034535ms)
+✔ historical catalog verifier measures a compact sibling while retaining its 51608-state scope (13241.253408ms)
+✔ historical verifier still rejects native-family scope rather than relaxing its identity gate (4922.288057ms)
+ℹ tests 34
+ℹ suites 0
+ℹ pass 34
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 40729.553214

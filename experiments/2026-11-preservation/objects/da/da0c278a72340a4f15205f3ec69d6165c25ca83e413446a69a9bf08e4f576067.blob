@@ -1,0 +1,43 @@
+import bpy,json,math,numpy as np
+from mathutils import Vector
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V63-opposite-ankle-trial.blend',use_scripts=False);o=bpy.data.objects['Maria — anatomia feminina adaptada CC0'];dg=bpy.context.evaluated_depsgraph_get();old=[v.co.copy() for v in o.evaluated_get(dg).data.vertices];fs=[tuple(f.vertices) for f in o.data.polygons];bv=BVHTree.FromPolygons(old,fs);xc=.0135;zs=np.linspace(3.325,3.445,121);profile=[]
+for z in zs:
+ row=[]
+ for x in [xc-.052,xc,xc+.052]:
+  hit,*_=bv.ray_cast(Vector((x,-1,z)),Vector((0,1,0)))
+  if hit is None:raise RuntimeError('missing nasal profile ray')
+  row.append(hit.y)
+ profile.append(row)
+profile=np.array(profile)
+def sm(t):t=max(0,min(1,t));return t*t*(3-2*t)
+new=[];weights=[]
+for p in old:
+ dx=p.x-xc;ax=abs(dx);w=sm((p.z-3.325)/.018)*(1-sm((p.z-3.415)/.030))*(1-sm((ax-.032)/.020))
+ # Preserve the tip anchor and length; avoid touching terminal tip patch.
+ w*=sm((math.sqrt((dx/.018)**2+((p.z-3.344)/.019)**2)-1)/.65)
+ yL=float(np.interp(p.z,zs,profile[:,0]));yc=float(np.interp(p.z,zs,profile[:,1]));yR=float(np.interp(p.z,zs,profile[:,2]));side=yR if dx>0 else yL
+ u=max(0,min(1,(ax-.009)/(.052-.009)));target=yc+(side-yc)*u
+ w*=1-sm((p.y-yc-.018)/.038)
+ w*=1-sm((p.z-3.38)/.02)*sm((ax-.015)/.011)
+ delta=max(-.008,min(.008,target-p.y))*.8*w;q=p.copy();q.y+=delta;new.append(q);weights.append(abs(delta))
+k=o.shape_key_add(name='TESTE69 — dorso e planos nasais contínuos');k.value=1
+for i,v in enumerate(k.data):v.co=o.data.vertices[i].co+new[i]-old[i]
+nb=BVHTree.FromPolygons(new,fs)
+def overlaps(t):return set((a,b) for a,b in t.overlap(t) if a<b and not set(fs[a])&set(fs[b]))
+before=overlaps(bv);after=overlaps(nb)
+def av(p,f):return sum(((p[f[j]]-p[f[0]]).cross(p[f[j+1]]-p[f[0]])*.5 for j in range(1,len(f)-1)),Vector())
+rat=[];flip=0
+for f in fs:
+ if not any(weights[i]>1e-8 for i in f):continue
+ a,b=av(old,f),av(new,f)
+ if a.length>1e-12:rat.append(b.length/a.length);flip+=a.dot(b)<0
+anchors=[i for i,p in enumerate(old) if ((p.x-xc)/.018)**2+((p.z-3.344)/.019)**2<1];report={'source':'V63','method':'Ray-derived shared bridge/side planes, fixed terminal nasal anchor, no global shortening or engraved grooves','affected_vertices':sum(w>1e-8 for w in weights),'max_depth_delta_m':max(weights),'area_ratio_min_max':[min(rat),max(rat)],'flipped_faces':flip,'baseline_self_pairs':len(before),'new_self_pairs':len(after-before),'orbital_side_guard_max_delta_m':max((a-b).length for a,b in zip(old,new) if a.z>=3.40 and abs(a.x-xc)>=.026),'tip_anchor_max_delta_m':max((old[i]-new[i]).length for i in anchors),'eyes_lips_chin_max_delta_m':max((a-b).length for a,b in zip(old,new) if a.z>=3.445 or a.z<=3.325),'rollback':'TESTE69=0 restores V63'};json.dump(report,open(r+'V69-nasal-planes-verification.json','w'),indent=2);assert not (after-before) and not flip
+bpy.ops.wm.save_as_mainfile(filepath=r+'V69-nasal-planes-trial.blend')
+s=bpy.context.scene
+for ob in bpy.data.objects:
+ if ob.type=='LIGHT':ob.hide_render=True
+s.world.node_tree.nodes['Background'].inputs['Strength'].default_value=.025;ld=bpy.data.lights.new('Nasal diagnostic key','AREA');ld.energy=12;ld.shape='DISK';ld.size=.35;lo=bpy.data.objects.new('Nasal diagnostic key',ld);bpy.context.collection.objects.link(lo);lo.location=(-.7,-1,4.3);lo.rotation_euler=(Vector((.015,-.32,3.40))-lo.location).to_track_quat('-Z','Y').to_euler();s.cycles.samples=64;s.render.resolution_x=700;s.render.resolution_y=900;s.render.resolution_percentage=100;c=s.camera
+for view,loc,targ,scale in [('oblique',(-1.6,-5,3.7),(0,-.25,3.44),.62),('profile',(-5,-.05,3.6),(0,-.25,3.42),.70)]:
+ c.location=loc;c.rotation_euler=(Vector(targ)-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=scale;s.render.filepath=r+'V69-nasal-balanced-'+view+'.png';bpy.ops.render.render(write_still=True)
+print(report)

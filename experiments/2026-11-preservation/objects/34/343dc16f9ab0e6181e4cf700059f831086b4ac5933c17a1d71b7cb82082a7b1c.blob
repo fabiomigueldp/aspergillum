@@ -1,0 +1,33 @@
+{
+  "original_full_mantle_vs_hidden": {
+    "same_winding": 0,
+    "opposite_winding": 48608,
+    "not_same_source_triangle": 0
+  },
+  "cut_before_vs_hidden": {
+    "same_winding": 0,
+    "opposite_winding": 4,
+    "not_same_source_triangle": 4318
+  },
+  "cut_after_vs_hidden": {
+    "same_winding": 4,
+    "opposite_winding": 0,
+    "not_same_source_triangle": 4318
+  },
+  "original_vertex_normal_dot_hidden_min_median_max": [
+    -1.0000001837500219,
+    -0.9999999731000457,
+    0.17899983540957543
+  ],
+  "corrected_vertex_normal_dot_hidden_min_median_max": [
+    0.9995924249593577,
+    0.9999999654622262,
+    1.0000001769852516
+  ],
+  "cut_coordinates_bit_identical": true,
+  "assembly_coordinates_bit_identical": true,
+  "cap_and_bridge_faces_unchanged": true,
+  "flipped_mantle_faces": 4322,
+  "original_candidates_preserved": true,
+  "note": "Reduced cut triangles not present verbatim in hidden topology cannot be compared by sorted face identity. Full original mantle proves global source inversion; restored reduced cut uses the same global reversal, with geometry and TESTE74 coordinates untouched."
+}

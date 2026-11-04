@@ -1,0 +1,31 @@
+import bpy,json,numpy as np,bmesh,math
+from pathlib import Path
+from mathutils import Vector
+R=Path(__file__).resolve().parents[1];source=R.parent.parent/'paz-refinement/gui-test/checkpoint-V75-20261102/V75-tunic-lower-trial.blend';bpy.ops.wm.open_mainfile(filepath=str(source),use_scripts=False)
+o=bpy.data.objects['Maria — véu reconstruído de perfil'];o.hide_viewport=False;o.hide_set(False)
+mods=[];thick=.006;offset=0
+for m in o.modifiers:
+ mods.append({'type':m.type,'name':m.name,'thickness':getattr(m,'thickness',None),'offset':getattr(m,'offset',None)})
+ if m.type=='SOLIDIFY':thick=m.thickness;offset=m.offset;m.show_viewport=False;m.show_render=False
+ if m.type=='SUBSURF':m.levels=m.render_levels
+bpy.context.view_layer.update();dg=bpy.context.evaluated_depsgraph_get();mesh=bpy.data.meshes.new_from_object(o.evaluated_get(dg),depsgraph=dg);mesh.transform(o.matrix_world);mesh.calc_loop_triangles();before=len(mesh.loop_triangles)
+new=bpy.data.objects.new('LAB midsurface first, then thickness',mesh);bpy.context.scene.collection.objects.link(new);bpy.ops.object.select_all(action='DESELECT');new.select_set(True);bpy.context.view_layer.objects.active=new
+md=new.modifiers.new('Decimate only one sheet','DECIMATE');md.ratio=350/before;md.use_collapse_triangulate=True;bpy.ops.object.modifier_apply(modifier=md.name);mid_count=len(new.data.polygons)
+md=new.modifiers.new('Rebuild coherent thickness after reduction','SOLIDIFY');md.thickness=thick;md.offset=offset;md.use_even_offset=True;md.use_quality_normals=True;bpy.ops.object.modifier_apply(modifier=md.name)
+mesh=new.data;mesh.calc_loop_triangles();points=np.array([v.co[:] for v in mesh.vertices]);faces=np.array([f.vertices[:] for f in mesh.loop_triangles]);bm=bmesh.new();bm.from_mesh(mesh);boundary=sum(e.is_boundary for e in bm.edges);nonman=sum(len(e.link_faces)>2 for e in bm.edges);bm.free()
+np.savez_compressed(R/'evidence/cap-midsurface-first.npz',points=points,triangles=faces)
+report={'source_object':o.name,'source_modifiers':mods,'evaluated_midsurface_triangles':before,'reduced_sheet_triangles':mid_count,'final_closed_shell_triangles':len(faces),'thickness':thick,'offset':offset,'boundary_edges':boundary,'nonmanifold_edges':nonman,'integration_status':'Standalone diagnostic cap only. Not substituted into V75 or addon. Joining the latest mantle and V74 displacement still needs correspondence/seam validation.'}
+(R/'evidence/cap-midsurface-first.json').write_text(json.dumps(report,ensure_ascii=False,indent=2));print(report,flush=True)
+# View the new cap with source face for context; source cape assembly excluded to avoid overlay concealment.
+for ob in bpy.context.scene.objects:ob.hide_render=True
+new.hide_render=False
+head=bpy.data.objects['Maria — anatomia feminina adaptada CC0'];head.hide_render=False
+halo=bpy.data.objects['Maria — auréola lisa'];halo.hide_render=False
+s=bpy.context.scene;s.render.engine='CYCLES';s.cycles.samples=64;s.cycles.transparent_max_bounces=512;s.render.threads_mode='FIXED';s.render.threads=8;s.view_settings.view_transform='Standard';s.view_settings.look='None';s.render.resolution_x=900;s.render.resolution_y=900;s.render.resolution_percentage=100
+s.world.use_nodes=True;bg=s.world.node_tree.nodes.get('Background');bg.inputs['Color'].default_value=(.60,.65,.72,1);bg.inputs['Strength'].default_value=.65
+ld=bpy.data.lights.new('Diagnostic neutral sun','SUN');lo=bpy.data.objects.new('Diagnostic neutral sun',ld);s.collection.objects.link(lo);lo.hide_render=False;lo.rotation_euler=(.35,-.5,-.35);ld.energy=1.5;ld.angle=.1
+m=bpy.data.materials.new('Plain diffuse, backfaces culled');m.use_nodes=True;n=m.node_tree.nodes;n.clear();bs=n.new('ShaderNodeBsdfDiffuse');bs.inputs['Color'].default_value=(.63,.62,.59,1);tr=n.new('ShaderNodeBsdfTransparent');gn=n.new('ShaderNodeNewGeometry');mix=n.new('ShaderNodeMixShader');out=n.new('ShaderNodeOutputMaterial');l=m.node_tree.links;l.new(gn.outputs['Backfacing'],mix.inputs[0]);l.new(bs.outputs[0],mix.inputs[1]);l.new(tr.outputs[0],mix.inputs[2]);l.new(mix.outputs[0],out.inputs[0])
+for ob in (new,head,halo):ob.data.materials.clear();ob.data.materials.append(m)
+cam=s.camera;cam.hide_render=False;cam.location=(.25,-3.5,3.44);center=Vector((.03,-.20,3.43));cam.rotation_euler=(center-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.type='ORTHO';cam.data.ortho_scale=.85
+s.render.filepath=str(R/'evidence/diagnostic-midsurface-first-cap-cull.png');bpy.ops.render.render(write_still=True)
+bpy.ops.wm.save_as_mainfile(filepath=str(R/'evidence/diagnostic-midsurface-first-cap.blend'))

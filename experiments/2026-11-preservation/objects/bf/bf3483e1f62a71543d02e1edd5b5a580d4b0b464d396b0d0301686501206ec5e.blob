@@ -1,0 +1,36 @@
+# Altare state redundancy audit
+
+Source: /workspace/scratch/212c580ada5b/altare-editor-review-20261103
+Version: 0.12.3
+Generated: 2026-11-03T17:42:50.011Z
+
+Enumerate every declared state; shallow-merge matching permutation components in order; evaluate bone_visibility; recursively sort object keys and preserve arrays; SHA-256 effective component JSON. Identifiers inside components, unused material bindings, collision, and tick behavior are retained. Block identifier/description and latent states are excluded.
+
+Declared: **80000**, across 414 block IDs. Canonical component signatures: **70496**; duplicate outputs: **9504**. Additional cross-ID exact duplicates: 0.
+Prior noncanonical count: 70,496; canonicalization delta: 0. Sorting keys did not change the result.
+
+## Families
+- a: 34560 declared → 29664 signatures; 4896 duplicate outputs.
+- j: 3840 declared → 3840 signatures; 0 duplicate outputs.
+- l: 7056 declared → 5040 signatures; 2016 duplicate outputs.
+- mensa: 11520 declared → 11040 signatures; 480 duplicate outputs.
+- s: 32 declared → 32 signatures; 0 duplicate outputs.
+- u: 22992 declared → 20880 signatures; 2112 duplicate outputs.
+
+## Practical redesign arithmetic
+- Bare-only exact-output quotient: 77984. Six Pilaster/Ogive IDs require 16 component outputs each; three Trestle IDs require 64. This discards latent role/facing.
+- Tailored Atelier: 6 × 16 + 3 × 64 + 126 × 112 = 14400; catalog becomes 59840. The 112-state restriction preserves planner poses, not all arbitrary saves.
+- Legacy rectangle planner: 42 poses × 4 facings × 3 stones × 5 cloths = 2520; combined catalog 50840.
+- Retain role 5 as well: 50 poses × 60 = 3000; combined catalog 51320.
+
+## Limitations
+- Component equivalence is not decoded-state or future editor equivalence.
+- Different geometry identifiers are not resolved to mesh equivalence.
+- Counts of unique signatures are not automatically realizable Cartesian state declarations; packed domains may require padding or ID splits.
+- Planner restriction excludes arbitrary historical role/mask combinations and needs an explicit migration policy.
+- No source definitions, worlds, schemas or packages are changed.
+
+## Reproduce
+node --experimental-strip-types tools/audit-state-redundancy.mjs "/workspace/scratch/212c580ada5b/altare-editor-review-20261103" "/workspace/scratch/212c580ada5b/altare-two-pillars-integration-20261103/out/two-pedestal-integration"
+
+The JSON contains every audited block and SHA-256 hashes of the package, manifest, source codecs/planner and all input block definitions.

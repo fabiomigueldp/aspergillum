@@ -1,0 +1,31 @@
+# Independent lateral diagnosis, 2026-11-03
+
+No V6 or source artifact modified. Diagnostic artifacts are not deliverable geometry and have no game validation.
+
+## Exact classification
+
+Hermite physical: 172 strict crossings. 124 opposite-wall bridge pairs, 35 same-wall pairs (29 outer,6 inner),13 bridge outer against mantle outer. No lateral-cap faces occur. Only18 bridge/bridge pairs involve the cap-to-first-generated-row interval. The other141 bridge/bridge pairs are not fixed by replacing that first interval alone. All13 mantle contacts involve final interval s=[5/6,1] and mantle rows[7.25,7.5]. Bridge t ranges participating: [0,.10714286] or[.91071429,.98214286]. A whole lateral strip, not only an end cap, is implicated.
+
+Straight physical: 90 =35 opposite-wall bridge pairs,15 outer/outer bridge pairs,28 cap inner/bridge outer,12 bridge outer/mantle outer. Cap inner classification uses exact boundary side labels on participating triangles.
+
+Full source face IDs, witnesses, wall classes and s/t ranges are in the two `*-classified.json` files.
+
+## Strongest structural evidence
+
+The central 7×57 triangulated surface has zero strict intersections. Its gate is expected to fail closure because this is an open diagnostic surface, not a solid.
+
+There are29 central triangles for which the three analytic vertex offset directions have mixed signed dot products with the triangle normal. These directions do not consistently push the three vertices to the same side of the local center triangle. This is an incompatibility between analytic derivative normals and coarse sampled connectivity near the lateral strips. Positive thickness alone does not imply non-intersecting discrete walls.
+
+Controlled open-interior diagnostics keep the center surface and normals fixed, scale only thickness, and omit source attachment rows: thickness scales1,.75,.5,.25,.1 produce133,112,111,112,108 strict crossings. Therefore simply making the wall thinner is NOT sufficient; curvature-only adaptive thickness is not the first fix.
+
+Principal curvature, including mixed s/t derivative, does give additional risk: max half-thickness×|principal curvature|≈1.583. But it is a finite-difference estimate on the original coarse grid, not a certified radius/reach bound. Coordinate-direction curve curvature alone missed this issue. Max |cos(s tangent,t tangent)|=.9891 shows near-parallel parameter directions and severe shear. No sampled longitudinal wall edge reverses its center edge projection, another insufficient one-dimensional check.
+
+## Concrete next hypothesis
+
+Rebuild only lateral t strips with adaptive connectivity/parameter samples or a consistently transverse offset director. Require each central triangle's three director dot products to have one strict sign, and independently require positive pairwise wall separation after meshing. Triangulation changes can be tested first while preserving every source vertex and exact interfaces. The central unaffected strip can remain fixed. Only after fixing discrete transversality should curvature-limited thickness be considered. Straight-bridge DP with aspect and wall-separation constraints is consistent with this evidence; a plain t zipper or blind Hermite parameter sweep is not.
+
+## Requested field
+
+`offset-reach-field.npz` stores s(7),t(57),center(7,57,3),offset_normals,half_thickness,principal curvatures/radius and fundamental forms. Curvature values are approximate diagnostic estimates only.
+
+`generated_vertex_map` has600 rows and columns[source_id, s_grid_index, t_grid_index, side, wall_fraction]. side0/1 are570 wall vertices; side2 are30 lateral-arc vertices. wall_fraction0=outer,1=inner, with .25/.5/.75 for intermediate lateral vertices. Generated IDs185956..186555,120 per interior s row:57 outer,57 inner,3 t=0 cap-interior,3 t=1 cap-interior. All endpoint source arrays and their nonuniform t coordinates are included separately. The first/last analytic center rows have57 samples and are interpolated summaries, not replacement source endpoints. `center_face_offset_normal_cosines` and `center_faces_mixed_transversality` preserve the strongest diagnostic.

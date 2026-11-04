@@ -1,0 +1,10 @@
+"""Compare C1 n4/n8 positions at the same independent dense-map UV samples."""
+import json,numpy as np
+from pathlib import Path
+O=Path(__file__).resolve().parent;dense=np.load(O.parent/'independent_diagnosis/valley-dense-map.npz');samples=dense['samples'];parents=samples[:,0].astype(int);query=samples[:,1:3];result={}
+for tag in ['valley-source-c1-n8','valley-source-c1-n4']:
+ d=dict(np.load(O/(tag+'.npz')));p=d['points'];f=d['triangles'];uv=d['source_uv'];pa=d['v13_parent_face_indices'];out=np.zeros((len(query),3));mins=[]
+ for par in np.unique(parents):
+  rows=np.flatnonzero(parents==par);ids=np.flatnonzero(pa==par);t=uv[f[ids]];e=np.stack([t[:,1]-t[:,0],t[:,2]-t[:,0]],axis=-1);iv=np.linalg.inv(e);vv=np.einsum('tij,ntj->nti',iv,query[rows,None]-t[None,:,0]);bc=np.concatenate([1-vv.sum(-1,keepdims=True),vv],axis=-1);pick=np.argmax(bc.min(-1),axis=1);bb=bc[np.arange(len(rows)),pick];assert bb.min()>-1e-8;out[rows]=(p[f[ids[pick]]]*bb[:,:,None]).sum(1);mins.append(float(bb.min()))
+ result[tag]=out
+norm=np.linalg.norm(result['valley-source-c1-n4']-result['valley-source-c1-n8'],axis=1)*1000;i=int(norm.argmax());report={'samples':len(query),'method':'Same original-face/UV query samples from independent dense map. Locate each UV in actual candidate child triangles and interpolate actual 3D positions. No nearest-vertex proxy.','position_difference_n4_vs_n8_mm_quantiles':np.quantile(norm,[0,.5,.9,.99,1]).tolist(),'max_witness':{'row':i,'old_face':int(parents[i]),'uv':query[i].tolist(),'difference_mm':float(norm[i]),'n4':result['valley-source-c1-n4'][i].tolist(),'n8':result['valley-source-c1-n8'][i].tolist()},'limits':'Only independently sampled valley v5–11/y<−0.28; not a global Hausdorff or silhouette bound and not weighted by area.'};(O/'density-n4-n8-comparison.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))

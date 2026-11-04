@@ -1,0 +1,13 @@
+from audit_primary_rays import *
+r=json.load(open(O/'float32-ties-all-pixels.json'));g=np.load(O/'primary-ray-grid.npz');p=g['pixels'];sel=(p[:,0]>=490)&(p[:,0]<=570)&(p[:,1]>=440)&(p[:,1]<=480);diff=g['clip_minus_quad_mean_rgb'][sel];q=scene('quads');out=[];groups={'dark_alpha0':{},'all_alpha0':{},'dark_all_transparent':{},'all_transparent':{}}
+for i,row in enumerate(r):
+ pixel=np.array(row['pixel']);dark=diff[i]>=10;cards=[]
+ for a in row['within_one_ulp_transparents']:
+  ti=a['triangle'];part=int(q['part'][ti]);cube=int(q['polygon'][ti]);triangle=(q['triangles'][ti]-q['camera_origin'])@q['camera_rotation'];x=(pixel[0]+.5-500)*float(q['camera_scale'])/1000;y=(500-pixel[1]-.5)*float(q['camera_scale'])/1000;v0=triangle[0];e=triangle[1]-v0;f=triangle[2]-v0;det=e[0]*f[1]-e[1]*f[0];dx=x-v0[0];dy=y-v0[1];u=(dx*f[1]-dy*f[0])/det;v=(e[0]*dy-e[1]*dx)/det;uv=np.array([1-u-v,u,v])@q['uv'][ti];w,h=q['alpha'].shape[1],q['alpha'].shape[0];ix,iy=np.floor(uv*[w,h]).astype(int);alpha=float(q['alpha'][iy,ix])if 0<=ix<w and 0<=iy<h else 0.;front=bool(q['geometric_normal'][ti]@(-q['camera_rotation'][:,2])<0);item={**a,'bone':f'part_{part:02d}','cube_index':cube,'alpha_at_witness':alpha,'frontfacing':front,'uv':uv.tolist()};cards.append(item);key=(part,cube)
+  for name,include in [('all_transparent',True),('dark_all_transparent',dark),('all_alpha0',alpha==0),('dark_alpha0',dark and alpha==0)]:
+   if include:
+    if key not in groups[name]:groups[name][key]={'bone':item['bone'],'part':part,'cube_index':cube,'native_face':item['native_face'],'half':item['half'],'pixel_count':0,'pixels':[]}
+    groups[name][key]['pixel_count']+=1;groups[name][key]['pixels'].append(row['pixel'])
+ if cards:out.append({'pixel':row['pixel'],'clip_minus_quad_mean_rgb':float(diff[i]),'dark':bool(dark),'ideal':row['ideal'],'near_ulp_cards':cards})
+report={'selection':'Actual shared2048 saved scene loop triangles, pixel centers x490..570 y440..480. Transparent faces within one float32 t ULP of ideal first opaque; dark means clip minus shared mean RGB>=10. This is local selection only, not all-view proof.','json_original_cube_index_contract':'Saved mesh polygon index equals original shared2048 bone cube index, independently checked against transport_arrays cube_index for parts0/1/15.','counts':{k:len(v)for k,v in groups.items()},'selections':{k:[v for key,v in sorted(rows.items())]for k,rows in groups.items()},'per_pixel':out}
+(O/'trim-candidate-original-cubes.json').write_text(json.dumps(report,indent=2));print(report['counts']);print({k:sorted(set(vv['part']for vv in v.values()))for k,v in groups.items()})

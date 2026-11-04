@@ -1,0 +1,17 @@
+# Revisão visual: Cruzeta 0.12.1
+
+Não permanece falha visual bloqueante nas prévias técnicas examinadas. A revisão cobre os dez tecidos, oito cores Floral, quatro frentes, detalhe 1×1, juntas 2×1, 1×3, 2×2, 3×2, 7×2 e 8×2, quinas, vistas rasantes e parte inferior. A comparação 0.12.0/0.12.1 usa a mesma câmera corrigida e as texturas próprias de cada pacote.
+
+## Achados resolvidos
+
+- A marchetaria mudava drasticamente de escala entre travessas e cabeças. A repetição agora é regular, cada cabeça tem um motivo legível e os pés conservam apenas filetes. Os motivos nas pontas das travessas são completos.
+- O fuste de quina recuava só em um eixo. A seção agora é quadrada e os degraus são coerentes, sem folga na travessa inferior.
+- A primeira câmera CPU espelhava a cena inteira. A leitura invertida dos monogramas permitiu localizar o erro; somente a câmera foi corrigida. Verdante e Floral finais leem JHS corretamente, sem inverter a arte do pacote.
+
+As cavilhas ficam centradas nos encontros dos X. Montantes compartilhados e travessas conservam continuidade; não foi observada estrutura atravessando tecido. Linho curto e renda deixam os X mais visíveis; tecidos longos naturalmente os cobrem. A comparação mostra maior regularidade e menos ruído nos apoios.
+
+## Verificação e limites
+
+Revisão independente confirmou os oito testes Cruzeta e cinco bases de câmera: ortogonalidade, determinante positivo e orientação norte/sul corretas. A matriz final contém 35 PNGs e hashes verificados de 137 fontes geométricas/texturas e cinco fontes de renderização.
+
+A conclusão se limita à rasterização CPU de cor. Não comprova PBR, iluminação do jogo, cintilação em movimento, colisão física ou paridade Minecraft. O pacote exato requer o reteste nativo documentado. Não foi executado Chromium nem contornada a restrição do ambiente.

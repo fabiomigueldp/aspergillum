@@ -1,0 +1,5801 @@
+{
+  "root": "/workspace/scratch/212c580ada5b/altare-two-pillars-integration-20261103/addons/altare",
+  "created": "2026-11-03T18:57:02.711Z",
+  "method": "Exhaustive declared Cartesian states. Signature preserves recipe ID, logical facing, semantic stone/cloth and every effective component (including unused material bindings); geometry identifier preserved. Planner covers every authorized local width1..16 depth1..8, facing0..3, ornament false/true and every contour mutation0..15.",
+  "totals": {
+    "declared": 51608,
+    "exactWithFacing": 51464
+  },
+  "reach": [
+    {
+      "name": "classic",
+      "rectangleCells": 39168,
+      "plannerPoses": 42,
+      "afterContourRepair": 42,
+      "poses": [
+        "[0,0,0]",
+        "[1,0,0]",
+        "[1,1,0]",
+        "[1,2,0]",
+        "[1,3,0]",
+        "[1,4,0]",
+        "[1,8,0]",
+        "[1,9,0]",
+        "[10,0,0]",
+        "[11,0,0]",
+        "[11,2,0]",
+        "[12,0,0]",
+        "[13,0,0]",
+        "[13,11,0]",
+        "[13,3,0]",
+        "[13,7,0]",
+        "[14,0,0]",
+        "[15,0,0]",
+        "[15,2,0]",
+        "[2,0,0]",
+        "[3,0,0]",
+        "[3,10,0]",
+        "[3,4,0]",
+        "[3,6,0]",
+        "[4,0,0]",
+        "[5,0,0]",
+        "[5,1,0]",
+        "[5,2,0]",
+        "[5,3,0]",
+        "[5,4,0]",
+        "[5,8,0]",
+        "[5,9,0]",
+        "[6,0,0]",
+        "[7,0,0]",
+        "[7,10,0]",
+        "[7,4,0]",
+        "[7,6,0]",
+        "[8,0,0]",
+        "[9,0,0]",
+        "[9,11,0]",
+        "[9,3,0]",
+        "[9,7,0]"
+      ],
+      "closure": [
+        "[0,0,0]",
+        "[1,0,0]",
+        "[1,1,0]",
+        "[1,2,0]",
+        "[1,3,0]",
+        "[1,4,0]",
+        "[1,8,0]",
+        "[1,9,0]",
+        "[10,0,0]",
+        "[11,0,0]",
+        "[11,2,0]",
+        "[12,0,0]",
+        "[13,0,0]",
+        "[13,11,0]",
+        "[13,3,0]",
+        "[13,7,0]",
+        "[14,0,0]",
+        "[15,0,0]",
+        "[15,2,0]",
+        "[2,0,0]",
+        "[3,0,0]",
+        "[3,10,0]",
+        "[3,4,0]",
+        "[3,6,0]",
+        "[4,0,0]",
+        "[5,0,0]",
+        "[5,1,0]",
+        "[5,2,0]",
+        "[5,3,0]",
+        "[5,4,0]",
+        "[5,8,0]",
+        "[5,9,0]",
+        "[6,0,0]",
+        "[7,0,0]",
+        "[7,10,0]",
+        "[7,4,0]",
+        "[7,6,0]",
+        "[8,0,0]",
+        "[9,0,0]",
+        "[9,11,0]",
+        "[9,3,0]",
+        "[9,7,0]"
+      ],
+      "unencodable": []
+    },
+    {
+      "name": "compact",
+      "rectangleCells": 39168,
+      "plannerPoses": 26,
+      "afterContourRepair": 28,
+      "poses": [
+        "[0,0,0]",
+        "[1,0,0]",
+        "[1,1,0]",
+        "[1,2,0]",
+        "[1,3,0]",
+        "[10,0,0]",
+        "[11,1,0]",
+        "[12,0,0]",
+        "[13,0,0]",
+        "[13,2,0]",
+        "[14,0,0]",
+        "[15,1,0]",
+        "[2,0,0]",
+        "[3,0,0]",
+        "[3,3,0]",
+        "[4,0,0]",
+        "[5,0,0]",
+        "[5,1,0]",
+        "[5,2,0]",
+        "[5,3,0]",
+        "[6,0,0]",
+        "[7,0,0]",
+        "[7,3,0]",
+        "[8,0,0]",
+        "[9,0,0]",
+        "[9,2,0]"
+      ],
+      "closure": [
+        "[0,0,0]",
+        "[1,0,0]",
+        "[1,1,0]",
+        "[1,2,0]",
+        "[1,3,0]",
+        "[10,0,0]",
+        "[11,0,0]",
+        "[11,1,0]",
+        "[12,0,0]",
+        "[13,0,0]",
+        "[13,2,0]",
+        "[14,0,0]",
+        "[15,0,0]",
+        "[15,1,0]",
+        "[2,0,0]",
+        "[3,0,0]",
+        "[3,3,0]",
+        "[4,0,0]",
+        "[5,0,0]",
+        "[5,1,0]",
+        "[5,2,0]",
+        "[5,3,0]",
+        "[6,0,0]",
+        "[7,0,0]",
+        "[7,3,0]",
+        "[8,0,0]",
+        "[9,0,0]",
+        "[9,2,0]"
+      ],
+      "unencodable": []
+    },
+    {
+      "name": "classic_textile",
+      "rectangleCells": 39168,
+      "plannerPoses": 52,
+      "afterContourRepair": 54,
+      "poses": [
+        "[0,0,0]",
+        "[1,0,0]",
+        "[1,0,1]",
+        "[1,0,2]",
+        "[1,0,3]",
+        "[1,1,0]",
+        "[1,2,1]",
+        "[1,3,2]",
+        "[1,4,3]",
+        "[1,8,0]",
+        "[1,9,0]",
+        "[10,0,0]",
+        "[11,0,1]",
+        "[11,2,1]",
+        "[12,0,0]",
+        "[13,0,0]",
+        "[13,0,2]",
+        "[13,11,0]",
+        "[13,3,2]",
+        "[13,7,0]",
+        "[14,0,0]",
+        "[15,0,1]",
+        "[15,2,1]",
+        "[2,0,0]",
+        "[3,0,0]",
+        "[3,0,3]",
+        "[3,10,0]",
+        "[3,4,3]",
+        "[3,6,0]",
+        "[4,0,0]",
+        "[5,0,0]",
+        "[5,0,1]",
+        "[5,0,2]",
+        "[5,0,3]",
+        "[5,1,0]",
+        "[5,2,1]",
+        "[5,3,2]",
+        "[5,4,3]",
+        "[5,8,0]",
+        "[5,9,0]",
+        "[6,0,0]",
+        "[7,0,0]",
+        "[7,0,3]",
+        "[7,10,0]",
+        "[7,4,3]",
+        "[7,6,0]",
+        "[8,0,0]",
+        "[9,0,0]",
+        "[9,0,2]",
+        "[9,11,0]",
+        "[9,3,2]",
+        "[9,7,0]"
+      ],
+      "closure": [
+        "[0,0,0]",
+        "[1,0,0]",
+        "[1,0,1]",
+        "[1,0,2]",
+        "[1,0,3]",
+        "[1,1,0]",
+        "[1,2,1]",
+        "[1,3,2]",
+        "[1,4,3]",
+        "[1,8,0]",
+        "[1,9,0]",
+        "[10,0,0]",
+        "[11,0,0]",
+        "[11,0,1]",
+        "[11,2,1]",
+        "[12,0,0]",
+        "[13,0,0]",
+        "[13,0,2]",
+        "[13,11,0]",
+        "[13,3,2]",
+        "[13,7,0]",
+        "[14,0,0]",
+        "[15,0,0]",
+        "[15,0,1]",
+        "[15,2,1]",
+        "[2,0,0]",
+        "[3,0,0]",
+        "[3,0,3]",
+        "[3,10,0]",
+        "[3,4,3]",
+        "[3,6,0]",
+        "[4,0,0]",
+        "[5,0,0]",
+        "[5,0,1]",
+        "[5,0,2]",
+        "[5,0,3]",
+        "[5,1,0]",
+        "[5,2,1]",
+        "[5,3,2]",
+        "[5,4,3]",
+        "[5,8,0]",
+        "[5,9,0]",
+        "[6,0,0]",
+        "[7,0,0]",
+        "[7,0,3]",
+        "[7,10,0]",
+        "[7,4,3]",
+        "[7,6,0]",
+        "[8,0,0]",
+        "[9,0,0]",
+        "[9,0,2]",
+        "[9,11,0]",
+        "[9,3,2]",
+        "[9,7,0]"
+      ],
+      "unencodable": []
+    },
+    {
+      "name": "edges",
+      "rectangleCells": 39168,
+      "plannerPoses": 16,
+      "afterContourRepair": 16,
+      "poses": [
+        "[0,0,0]",
+        "[1,0,0]",
+        "[10,0,0]",
+        "[11,0,0]",
+        "[12,0,0]",
+        "[13,0,0]",
+        "[14,0,0]",
+        "[15,0,0]",
+        "[2,0,0]",
+        "[3,0,0]",
+        "[4,0,0]",
+        "[5,0,0]",
+        "[6,0,0]",
+        "[7,0,0]",
+        "[8,0,0]",
+        "[9,0,0]"
+      ],
+      "closure": [
+        "[0,0,0]",
+        "[1,0,0]",
+        "[10,0,0]",
+        "[11,0,0]",
+        "[12,0,0]",
+        "[13,0,0]",
+        "[14,0,0]",
+        "[15,0,0]",
+        "[2,0,0]",
+        "[3,0,0]",
+        "[4,0,0]",
+        "[5,0,0]",
+        "[6,0,0]",
+        "[7,0,0]",
+        "[8,0,0]",
+        "[9,0,0]"
+      ],
+      "unencodable": []
+    },
+    {
+      "name": "symmetric",
+      "rectangleCells": 39168,
+      "plannerPoses": 16,
+      "afterContourRepair": 16,
+      "poses": [
+        "[0,0,0]",
+        "[1,0,0]",
+        "[10,0,0]",
+        "[11,0,0]",
+        "[12,0,0]",
+        "[13,0,0]",
+        "[14,0,0]",
+        "[15,0,0]",
+        "[2,0,0]",
+        "[3,0,0]",
+        "[4,0,0]",
+        "[5,0,0]",
+        "[6,0,0]",
+        "[7,0,0]",
+        "[8,0,0]",
+        "[9,0,0]"
+      ],
+      "closure": [
+        "[0,0,0]",
+        "[1,0,0]",
+        "[10,0,0]",
+        "[11,0,0]",
+        "[12,0,0]",
+        "[13,0,0]",
+        "[14,0,0]",
+        "[15,0,0]",
+        "[2,0,0]",
+        "[3,0,0]",
+        "[4,0,0]",
+        "[5,0,0]",
+        "[6,0,0]",
+        "[7,0,0]",
+        "[8,0,0]",
+        "[9,0,0]"
+      ],
+      "unencodable": []
+    }
+  ],
+  "results": [
+    {
+      "id": "altare:a_ogive_limestone_agnus_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_limestone_agnus_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_limestone_agnus_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_limestone_none_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_limestone_none_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_limestone_none_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_limestone_requiem_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_limestone_requiem_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_limestone_requiem_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_limestone_ruby_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_limestone_ruby_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_limestone_ruby_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_limestone_verdant_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_limestone_verdant_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_limestone_verdant_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_marble_agnus_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_marble_agnus_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_marble_agnus_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_marble_none_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_marble_none_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_marble_none_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_marble_requiem_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_marble_requiem_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_marble_requiem_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_marble_ruby_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_marble_ruby_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_marble_ruby_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_marble_verdant_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_marble_verdant_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_marble_verdant_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_walnut_agnus_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_walnut_agnus_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_walnut_agnus_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_walnut_none_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_walnut_none_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_walnut_none_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_walnut_requiem_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_walnut_requiem_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_walnut_requiem_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_walnut_ruby_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_walnut_ruby_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_walnut_ruby_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_walnut_verdant_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_walnut_verdant_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_ogive_walnut_verdant_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_limestone_agnus_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_limestone_agnus_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_limestone_agnus_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_limestone_none_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_limestone_none_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_limestone_none_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_limestone_requiem_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_limestone_requiem_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_limestone_requiem_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_limestone_ruby_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_limestone_ruby_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_limestone_ruby_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_limestone_verdant_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_limestone_verdant_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_limestone_verdant_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_marble_agnus_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_marble_agnus_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_marble_agnus_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_marble_none_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_marble_none_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_marble_none_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_marble_requiem_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_marble_requiem_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_marble_requiem_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_marble_ruby_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_marble_ruby_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_marble_ruby_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_marble_verdant_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_marble_verdant_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_marble_verdant_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_walnut_agnus_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_walnut_agnus_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_walnut_agnus_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_walnut_none_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_walnut_none_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_walnut_none_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_walnut_requiem_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_walnut_requiem_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_walnut_requiem_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_walnut_ruby_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_walnut_ruby_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_walnut_ruby_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_walnut_verdant_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_walnut_verdant_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_pilaster_walnut_verdant_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_limestone_agnus_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_limestone_agnus_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_limestone_agnus_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_limestone_none_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_limestone_none_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_limestone_none_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_limestone_requiem_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_limestone_requiem_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_limestone_requiem_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_limestone_ruby_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_limestone_ruby_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_limestone_ruby_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_limestone_verdant_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_limestone_verdant_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_limestone_verdant_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_marble_agnus_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_marble_agnus_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_marble_agnus_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_marble_none_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_marble_none_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_marble_none_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_marble_requiem_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_marble_requiem_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_marble_requiem_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_marble_ruby_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_marble_ruby_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_marble_ruby_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_marble_verdant_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_marble_verdant_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_marble_verdant_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_walnut_agnus_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_walnut_agnus_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_walnut_agnus_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_walnut_none_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_walnut_none_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_walnut_none_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_walnut_requiem_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_walnut_requiem_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_walnut_requiem_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_walnut_ruby_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_walnut_ruby_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_walnut_ruby_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_walnut_verdant_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_walnut_verdant_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:a_trestle_walnut_verdant_none",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_baluster_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_baluster_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_baluster_requiem",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_baluster_ruby",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_baluster_ruby_black",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_baluster_ruby_gold",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_baluster_ruby_green",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_baluster_ruby_purple",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_baluster_ruby_rose",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_baluster_ruby_silver",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_baluster_ruby_white",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_baluster_verdant",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_coffer_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_coffer_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_coffer_requiem",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_coffer_ruby",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_coffer_ruby_black",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_coffer_ruby_gold",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_coffer_ruby_green",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_coffer_ruby_purple",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_coffer_ruby_rose",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_coffer_ruby_silver",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_coffer_ruby_white",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_coffer_verdant",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_crossbrace_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_crossbrace_none",
+      "codec": "symmetric",
+      "declared": 16,
+      "exactWithFacing": 16,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_crossbrace_requiem",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_crossbrace_ruby",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_crossbrace_ruby_black",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_crossbrace_ruby_gold",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_crossbrace_ruby_green",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_crossbrace_ruby_purple",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_crossbrace_ruby_rose",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_crossbrace_ruby_silver",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_crossbrace_ruby_white",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:j_crossbrace_verdant",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_ogive_limestone_black",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_ogive_limestone_gold",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_ogive_limestone_green",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_ogive_limestone_purple",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_ogive_limestone_rose",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_ogive_limestone_silver",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_ogive_limestone_white",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_ogive_marble_black",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_ogive_marble_gold",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_ogive_marble_green",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_ogive_marble_purple",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_ogive_marble_rose",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_ogive_marble_silver",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_ogive_marble_white",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_ogive_walnut_black",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_ogive_walnut_gold",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_ogive_walnut_green",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_ogive_walnut_purple",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_ogive_walnut_rose",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_ogive_walnut_silver",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_ogive_walnut_white",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_pilaster_limestone_black",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_pilaster_limestone_gold",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_pilaster_limestone_green",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_pilaster_limestone_purple",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_pilaster_limestone_rose",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_pilaster_limestone_silver",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_pilaster_limestone_white",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_pilaster_marble_black",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_pilaster_marble_gold",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_pilaster_marble_green",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_pilaster_marble_purple",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_pilaster_marble_rose",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_pilaster_marble_silver",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_pilaster_marble_white",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_pilaster_walnut_black",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_pilaster_walnut_gold",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_pilaster_walnut_green",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_pilaster_walnut_purple",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_pilaster_walnut_rose",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_pilaster_walnut_silver",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_pilaster_walnut_white",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_trestle_limestone_black",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_trestle_limestone_gold",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_trestle_limestone_green",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_trestle_limestone_purple",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_trestle_limestone_rose",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_trestle_limestone_silver",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_trestle_limestone_white",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_trestle_marble_black",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_trestle_marble_gold",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_trestle_marble_green",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_trestle_marble_purple",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_trestle_marble_rose",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_trestle_marble_silver",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_trestle_marble_white",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_trestle_walnut_black",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_trestle_walnut_gold",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_trestle_walnut_green",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_trestle_walnut_purple",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_trestle_walnut_rose",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_trestle_walnut_silver",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:l_trestle_walnut_white",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:mensa",
+      "codec": "classic",
+      "declared": 3000,
+      "exactWithFacing": 3000,
+      "tuples": 50,
+      "aliases": []
+    },
+    {
+      "id": "altare:s_colonnade_bare",
+      "codec": "symmetric",
+      "declared": 16,
+      "exactWithFacing": 16,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:s_colonnade_lace",
+      "codec": "symmetric",
+      "declared": 16,
+      "exactWithFacing": 16,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_baluster_walnut_gold_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_baluster_walnut_gold_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_baluster_walnut_lace_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_baluster_walnut_linen_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_baluster_walnut_linen_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_classic_agnus",
+      "codec": "classic_textile",
+      "declared": 648,
+      "exactWithFacing": 648,
+      "tuples": 54,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_classic_lace",
+      "codec": "classic_textile",
+      "declared": 648,
+      "exactWithFacing": 504,
+      "tuples": 54,
+      "aliases": [
+        [
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 0,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 0,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 0,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 1,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 1,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 1,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 2,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 2,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 2,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 3,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 3,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 15,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 3,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 1,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 1,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 0,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 1,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 0,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 1,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 0,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 1,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 1,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 0,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 1,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 0,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 1,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 0,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 1,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 1,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 0,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 1,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 0,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 1,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 0,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 2,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 2,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 1,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 2,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 1,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 2,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 1,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 2,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 2,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 1,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 2,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 1,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 2,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 1,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 2,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 2,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 1,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 2,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 1,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 2,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 1,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 4,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 4,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 2,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 4,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 2,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 4,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 2,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 4,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 4,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 2,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 4,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 2,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 4,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 2,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 4,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 4,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 2,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 4,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 2,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 4,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 2,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 8,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 8,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 3,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 8,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 3,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 8,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 3,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 8,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 8,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 3,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 8,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 3,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 8,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 3,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 8,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 8,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 3,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 8,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 3,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 8,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 3,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 3,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 3,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 0,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 3,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 3,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 0,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 3,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 3,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 0,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 6,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 6,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 1,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 6,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 6,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 1,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 6,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 6,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 1,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 12,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 12,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 2,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 12,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 12,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 2,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 12,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 12,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 2,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 9,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 9,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 3,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 9,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 9,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 3,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 9,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 9,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 3,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 0,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 0,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 0,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 0,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 0,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 0,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 0,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 0,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 0,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 1,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 1,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 1,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 1,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 1,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 1,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 1,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 1,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 1,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 2,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 2,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 2,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 2,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 2,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 2,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 2,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 2,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 5,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 2,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 3,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 3,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 3,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 3,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 3,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 3,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 3,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 3,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 10,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 3,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 7,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 7,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 0,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 7,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 7,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 0,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 7,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 7,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 0,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 14,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 14,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 1,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 14,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 14,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 1,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 14,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 14,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 1,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 13,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 13,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 2,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 13,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 13,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 2,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 13,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 13,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 2,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 11,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 11,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 3,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 11,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 11,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 3,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 11,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 11,
+            "frontal": 0,
+            "textileRole": 3,
+            "facing": 3,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 9,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 9,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 0,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 9,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 9,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 0,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 9,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 9,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 0,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 3,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 3,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 1,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 3,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 3,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 1,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 3,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 3,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 1,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 6,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 6,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 2,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 6,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 6,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 2,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 6,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 6,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 2,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 12,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 12,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 3,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 12,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 12,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 3,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 12,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 12,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 3,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 11,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 11,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 0,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 11,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 11,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 0,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 11,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 11,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 0,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 7,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 7,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 1,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 7,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 7,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 1,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 7,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 7,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 1,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 14,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 14,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 2,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 14,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 14,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 2,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 14,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 14,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 2,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 13,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 13,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 3,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 13,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 13,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 3,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 13,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 13,
+            "frontal": 0,
+            "textileRole": 1,
+            "facing": 3,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 13,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 13,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 0,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 13,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 13,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 0,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 13,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 0,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 13,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 0,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 11,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 11,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 1,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 11,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 11,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 1,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 11,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 1,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 11,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 1,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 7,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 7,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 2,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 7,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 7,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 2,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 7,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 2,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 7,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 2,
+            "stone": 2,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 14,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 0,
+            "cloth": 5
+          },
+          {
+            "edges": 14,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 3,
+            "stone": 0,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 14,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 1,
+            "cloth": 5
+          },
+          {
+            "edges": 14,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 3,
+            "stone": 1,
+            "cloth": 5
+          }
+        ],
+        [
+          {
+            "edges": 14,
+            "frontal": 0,
+            "textileRole": 0,
+            "facing": 3,
+            "stone": 2,
+            "cloth": 5
+          },
+          {
+            "edges": 14,
+            "frontal": 0,
+            "textileRole": 2,
+            "facing": 3,
+            "stone": 2,
+            "cloth": 5
+          }
+        ]
+      ]
+    },
+    {
+      "id": "altare:u_classic_requiem",
+      "codec": "classic_textile",
+      "declared": 648,
+      "exactWithFacing": 648,
+      "tuples": 54,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_classic_ruby_black",
+      "codec": "classic_textile",
+      "declared": 648,
+      "exactWithFacing": 648,
+      "tuples": 54,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_classic_ruby_gold",
+      "codec": "classic_textile",
+      "declared": 648,
+      "exactWithFacing": 648,
+      "tuples": 54,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_classic_ruby_green",
+      "codec": "classic_textile",
+      "declared": 648,
+      "exactWithFacing": 648,
+      "tuples": 54,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_classic_ruby_purple",
+      "codec": "classic_textile",
+      "declared": 648,
+      "exactWithFacing": 648,
+      "tuples": 54,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_classic_ruby_red",
+      "codec": "classic_textile",
+      "declared": 648,
+      "exactWithFacing": 648,
+      "tuples": 54,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_classic_ruby_rose",
+      "codec": "classic_textile",
+      "declared": 648,
+      "exactWithFacing": 648,
+      "tuples": 54,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_classic_ruby_silver",
+      "codec": "classic_textile",
+      "declared": 648,
+      "exactWithFacing": 648,
+      "tuples": 54,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_classic_ruby_white",
+      "codec": "classic_textile",
+      "declared": 648,
+      "exactWithFacing": 648,
+      "tuples": 54,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_classic_verdant",
+      "codec": "classic_textile",
+      "declared": 648,
+      "exactWithFacing": 648,
+      "tuples": 54,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_coffer_walnut_gold_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_coffer_walnut_gold_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_coffer_walnut_lace_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_coffer_walnut_linen_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_coffer_walnut_linen_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_colonnade_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_colonnade_gold_long",
+      "codec": "symmetric",
+      "declared": 16,
+      "exactWithFacing": 16,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_colonnade_gold_short",
+      "codec": "symmetric",
+      "declared": 16,
+      "exactWithFacing": 16,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_colonnade_linen_long",
+      "codec": "symmetric",
+      "declared": 16,
+      "exactWithFacing": 16,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_colonnade_linen_short",
+      "codec": "symmetric",
+      "declared": 16,
+      "exactWithFacing": 16,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_colonnade_requiem",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_colonnade_ruby_black",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_colonnade_ruby_gold",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_colonnade_ruby_green",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_colonnade_ruby_purple",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_colonnade_ruby_red",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_colonnade_ruby_rose",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_colonnade_ruby_silver",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_colonnade_ruby_white",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_colonnade_verdant",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_crossbrace_walnut_gold_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_crossbrace_walnut_gold_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_crossbrace_walnut_lace_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_crossbrace_walnut_linen_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_crossbrace_walnut_linen_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_limestone_gold_long_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_limestone_gold_long_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_limestone_gold_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_limestone_gold_short_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_limestone_gold_short_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_limestone_gold_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_limestone_lace_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_limestone_lace_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_limestone_lace_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_limestone_linen_long_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_limestone_linen_long_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_limestone_linen_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_limestone_linen_short_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_limestone_linen_short_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_limestone_linen_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_marble_gold_long_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_marble_gold_long_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_marble_gold_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_marble_gold_short_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_marble_gold_short_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_marble_gold_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_marble_lace_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_marble_lace_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_marble_lace_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_marble_linen_long_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_marble_linen_long_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_marble_linen_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_marble_linen_short_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_marble_linen_short_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_marble_linen_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_walnut_gold_long_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_walnut_gold_long_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_walnut_gold_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_walnut_gold_short_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_walnut_gold_short_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_walnut_gold_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_walnut_lace_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_walnut_lace_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_walnut_lace_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_walnut_linen_long_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_walnut_linen_long_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_walnut_linen_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_walnut_linen_short_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_walnut_linen_short_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_ogive_walnut_linen_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_limestone_gold_long_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_limestone_gold_long_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_limestone_gold_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_limestone_gold_short_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_limestone_gold_short_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_limestone_gold_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_limestone_lace_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_limestone_lace_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_limestone_lace_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_limestone_linen_long_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_limestone_linen_long_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_limestone_linen_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_limestone_linen_short_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_limestone_linen_short_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_limestone_linen_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_marble_gold_long_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_marble_gold_long_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_marble_gold_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_marble_gold_short_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_marble_gold_short_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_marble_gold_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_marble_lace_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_marble_lace_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_marble_lace_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_marble_linen_long_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_marble_linen_long_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_marble_linen_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_marble_linen_short_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_marble_linen_short_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_marble_linen_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_walnut_gold_long_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_walnut_gold_long_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_walnut_gold_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_walnut_gold_short_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_walnut_gold_short_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_walnut_gold_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_walnut_lace_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_walnut_lace_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_walnut_lace_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_walnut_linen_long_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_walnut_linen_long_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_walnut_linen_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_walnut_linen_short_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_walnut_linen_short_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_pilaster_walnut_linen_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_limestone_gold_long_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_limestone_gold_long_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_limestone_gold_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_limestone_gold_short_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_limestone_gold_short_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_limestone_gold_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_limestone_lace_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_limestone_lace_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_limestone_lace_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_limestone_linen_long_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_limestone_linen_long_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_limestone_linen_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_limestone_linen_short_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_limestone_linen_short_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_limestone_linen_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_marble_gold_long_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_marble_gold_long_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_marble_gold_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_marble_gold_short_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_marble_gold_short_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_marble_gold_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_marble_lace_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_marble_lace_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_marble_lace_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_marble_linen_long_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_marble_linen_long_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_marble_linen_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_marble_linen_short_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_marble_linen_short_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_marble_linen_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_walnut_gold_long_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_walnut_gold_long_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_walnut_gold_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_walnut_gold_short_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_walnut_gold_short_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_walnut_gold_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_walnut_lace_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_walnut_lace_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_walnut_lace_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_walnut_linen_long_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_walnut_linen_long_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_walnut_linen_long_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_walnut_linen_short_agnus",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_walnut_linen_short_cross",
+      "codec": "compact",
+      "declared": 112,
+      "exactWithFacing": 112,
+      "tuples": 28,
+      "aliases": []
+    },
+    {
+      "id": "altare:u_trestle_walnut_linen_short_none",
+      "codec": "edges",
+      "declared": 64,
+      "exactWithFacing": 64,
+      "tuples": 16,
+      "aliases": []
+    }
+  ]
+}

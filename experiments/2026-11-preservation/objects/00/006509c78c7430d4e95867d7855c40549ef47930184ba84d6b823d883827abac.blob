@@ -1,0 +1,39 @@
+{
+  "hypothesis": "Constrained thin-plate minimization removes near-antiparallel lateral center folds before offsetting. Fixed source interfaces and unaffected central strip; preserve original paired wall thickness.",
+  "method": "Constrained anisotropic thin-plate, physical step ratio3, displacement regularizer1.0; fixed endpoint director half-spaces margin0.2; obstacle plane supports faces10958/10959/10976 at0.2mm; area-weighted directors projected into incident normal cone margin0.1.",
+  "center_moved_vertices": 120,
+  "center_displacement_max_mm": 9.827099605788387,
+  "center_displacement_p95_mm": 6.21561369992079,
+  "shell_displacement_max_mm": 10.442055563777805,
+  "mixed_director_faces": 5,
+  "nonpositive_director_products": 7,
+  "cone_failures": [
+    {
+      "index": 343,
+      "message": "Positive directional derivative for linesearch"
+    },
+    {
+      "index": 400,
+      "message": "Positive directional derivative for linesearch"
+    },
+    {
+      "index": 457,
+      "message": "Positive directional derivative for linesearch"
+    }
+  ],
+  "cone_margin_min": -0.9769688957857084,
+  "source_vertices_exact": true,
+  "central_center_exact": true,
+  "thickness_min_mm": 0.9367844656692647,
+  "thickness_max_mm": 5.049497780673556,
+  "triangles": 12484,
+  "provenance": {
+    "input": "lateral_v7/evidence/director-cone-assembly.npz",
+    "source_geometry": "integration_v6/evidence/seam-hermite-physical-7p5-assembly.npz",
+    "only_generated_vertices_moved": true,
+    "connectivity_preserved": true,
+    "source_orientation_preserved": true,
+    "face_parts": "0 cap;1 bridge;2 restored mantle",
+    "source_indices_preserved": true
+  }
+}

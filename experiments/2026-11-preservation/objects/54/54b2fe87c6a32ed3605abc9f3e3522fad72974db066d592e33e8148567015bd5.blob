@@ -1,0 +1,13 @@
+from pathlib import Path
+import numpy as np,json
+from mathutils.bvhtree import BVHTree
+O=Path(__file__).resolve().parent;B=O.parent.parent
+a=np.load(B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz');s=np.load(O/'source-part1.npz');b=np.load(O/'source-part15.npz');c=np.load(O/'v7__source_body__contacts.npz');w=c['witnesses'];pair=c['pairs'][c['witness_pair']];cl=a['face_parts'][pair[:,0]]
+tree=BVHTree.FromPolygons(s['points'].tolist(),s['triangles'].tolist(),all_triangles=True,epsilon=0)
+n=[tree.find_nearest(tuple(p)) for p in w];near=np.array([list(x[0]) for x in n]);nf=np.array([x[2] for x in n]);dist=np.array([x[3]*1000 for x in n]);bn=np.cross(b['points'][b['triangles'][pair[:,1],1]]-b['points'][b['triangles'][pair[:,1],0]],b['points'][b['triangles'][pair[:,1],2]]-b['points'][b['triangles'][pair[:,1],0]]);bn/=np.maximum(np.linalg.norm(bn,axis=1)[:,None],1e-30);signed=np.sum((near-w)*bn,axis=1)*1000
+np.savez_compressed(O/'v7-source-witness-attribution.npz',witnesses=w,nearest_original_shell=near,original_shell_face=nf,distance_original_shell_mm=dist,signed_body_normal_mm=signed,v7_face=pair[:,0],source_body_face=pair[:,1],shell_part=cl)
+def desc(x):return {'min':float(x.min()),'median':float(np.median(x)),'p95':float(np.percentile(x,95)),'max':float(x.max())} if len(x) else None
+rep={'method':'At each V7×evaluated-body strict contact witness, nearest point on evaluated original TESTE34. Positive signed_body_normal_mm follows uncorrected source body face winding, not certified inside/outside. Distances do not alone prove collision causality.','regions':{}}
+for label,mask in [('cap',cl==0),('bridge',cl==1),('mantle',cl==2),('new_front_y_below_minus_0p33',(w[:,1]<-.33)),('low_neck_z_below_3p33',w[:,2]<3.33)]:
+ rep['regions'][label]={'witness_count':int(mask.sum()),'distance_original_shell_mm':desc(dist[mask]),'signed_body_normal_mm':desc(signed[mask]),'unique_v7_faces':np.unique(pair[mask,0]).tolist(),'witness_bbox_xyz':[w[mask].min(0).tolist(),w[mask].max(0).tolist()] if mask.any() else None}
+(O/'local-attribution.json').write_text(json.dumps(rep,indent=2));print(json.dumps({k:{kk:vv for kk,vv in v.items() if kk!='unique_v7_faces'} for k,v in rep['regions'].items()},indent=2),flush=True)

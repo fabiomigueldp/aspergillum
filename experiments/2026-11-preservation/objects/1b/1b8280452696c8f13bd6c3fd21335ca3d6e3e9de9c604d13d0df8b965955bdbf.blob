@@ -1,0 +1,44 @@
+# Interior-only sharing measurement
+
+Independent per-recipe baseline: 8232 entries; 8232 minimum declared; 8704 fixed-bank declared.
+
+## Scenarios
+- floral_colors_only: 7840 entries, saving 392; minimum 7840, saving 392; fixed banks 8960, saving -256; shared interior pool 56. Combined with51608+9744: 69192 minimum, 70312 fixed.
+- all_covered_textiles: 7392 entries, saving 840; minimum 7392, saving 840; fixed banks 8960, saving -256; shared interior pool 56. Combined with51608+9744: 68744 minimum, 70312 fixed.
+- all_recipes_interior_pool: 7392 entries, saving 840; minimum 7392, saving 840; fixed banks 8960, saving -256; shared interior pool 112. Combined with51608+9744: 68744 minimum, 70312 fixed.
+
+## Per recipe
+- none: 56 interior / 392 perimeter; 448 total; overlap 0.
+- linen_short: 56 interior / 392 perimeter; 448 total; overlap 0.
+- linen_long: 56 interior / 392 perimeter; 448 total; overlap 0.
+- gold_short: 56 interior / 392 perimeter; 448 total; overlap 0.
+- gold_long: 56 interior / 392 perimeter; 448 total; overlap 0.
+- agnus: 56 interior / 448 perimeter; 504 total; overlap 0.
+- floral_white: 56 interior / 448 perimeter; 504 total; overlap 0.
+- floral_red: 56 interior / 448 perimeter; 504 total; overlap 0.
+- floral_green: 56 interior / 448 perimeter; 504 total; overlap 0.
+- floral_purple: 56 interior / 448 perimeter; 504 total; overlap 0.
+- floral_rose: 56 interior / 448 perimeter; 504 total; overlap 0.
+- floral_black: 56 interior / 448 perimeter; 504 total; overlap 0.
+- floral_gold: 56 interior / 448 perimeter; 504 total; overlap 0.
+- floral_silver: 56 interior / 448 perimeter; 504 total; overlap 0.
+- verdant: 56 interior / 448 perimeter; 504 total; overlap 0.
+- requiem: 56 interior / 448 perimeter; 504 total; overlap 0.
+- lace: 56 interior / 392 perimeter; 448 total; overlap 0.
+
+## Canonical-bank alternative
+
+The8960 fixed-bank totals assume a dedicated pool bank. Hosting shared interior codes in a canonical recipe bank keeps every scenario at8704 fixed states, unchanged from baseline. Minimal declared totals remain7840 for Floral-only and7392 for all covered recipes. This does not avoid the new global identity contract.
+
+## Limits
+- Measurement only. No runtime, registry, recipe, catalog, world, selection or migration contract is adopted.
+- Source family explicitly uses depthCap3 and alignToEndCell:false. Both visual slicing and native collision receive the same sourceModel.
+- Only edges=0 cells may share; all edges!=0 cells retain recipe identity. Logical facing remains in every key.
+- Equivalence includes canonical structural cubes with UV/material slots, native collision, and garment cubes with actual texture keys substituted only on emitted faces. Wood materials are identical across all recipes. Unused dye/seam bindings are not counted.
+- All textile recipes have the same interior linen-only garment output; bare wood has no garment and cannot be equated to linen. Pooling distinct bare and linen profiles in a single block ID still uses separate codebook entries.
+- A new global assembly recipe would have to be recovered from all relevant loaded perimeter blocks. Pick-block on shared interiors, borderless fragments, partial loading, mixed or damaged perimeters and copying interiors lose current local recipe semantics.
+- This does not solve those ownership/inference problems. The parent is evaluating whether the measured savings justify a separate contract.
+- Covered-top overlap at15.91..16 remains unresolved. Counts are from the unchanged structural-plus-garment study, not a rendering approval.
+- The all-covered-only scenario avoids moving bare cells into a shared pool when doing so adds no sharing benefit.
+
+Run: node --experimental-strip-types tools/audit-pedestal-interior-sharing.mjs

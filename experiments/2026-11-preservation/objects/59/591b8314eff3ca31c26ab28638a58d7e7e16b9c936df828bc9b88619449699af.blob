@@ -1,0 +1,90 @@
+"""Blender exact Boolean ear-rim rebuild. No writes outside this directory.
+blender -b -t 4 --python build_boolean_rim.py -- convex-protected-1.5mm
+The candidate is DIFFERENCE of the V7 solid and two local cavity envelopes.
+Every surviving V7 vertex is restored bit-exact; new intersection vertices are
+projected to original float64 source/cutter planes. No point displacement family.
+"""
+from pathlib import Path
+import sys,json,hashlib,time
+import numpy as np
+import bpy,bmesh
+from scipy.spatial import cKDTree
+from collections import defaultdict,Counter
+sys.dont_write_bytecode=True
+O=Path(__file__).resolve().parent;B=O.parents[1]
+args=sys.argv[sys.argv.index('--')+1:];tag=args[0];dst=O/(tag+'.npz')
+if dst.exists():raise FileExistsError(dst)
+src=B/'lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz';cutpath=O/(tag+'-cutter.npz');ap=B/'body_interface_v9/constrained_fit/retained-anatomy.npz';bp=B/'shell_band_v5/retained_candidate/evidence/band-paired.npz'
+locked=[src,ap,bp];hashes={str(p.relative_to(B)):hashlib.sha256(p.read_bytes()).hexdigest() for p in locked}
+d=np.load(src);c=np.load(cutpath);p0=d['points'];f0=d['triangles'];cp=c['points'];cf=c['triangles'];start=time.time()
+bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
+mats=[bpy.data.materials.new(n) for n in ['cap','bridge','mantle','new_rim']]
+def obj(name,p,f,parts,parent):
+ me=bpy.data.meshes.new(name);me.from_pydata(p.tolist(),[],f.tolist());me.update()
+ for m in mats:me.materials.append(m)
+ for poly,part in zip(me.polygons,parts):poly.material_index=int(part)
+ a=me.attributes.new('baseline_face','INT','FACE');a.data.foreach_set('value',np.array(parent,dtype=np.int32))
+ ob=bpy.data.objects.new(name,me);bpy.context.collection.objects.link(ob);return ob
+shell=obj('V7 shell exact source copy',p0,f0,d['face_parts'],np.arange(len(f0)))
+cutter=obj('Local frozen-ear cavity convex cutter',cp,cf,np.full(len(cf),3),np.full(len(cf),-1))
+bpy.context.view_layer.objects.active=shell;shell.select_set(True)
+mod=shell.modifiers.new('Reconstruct closed ear rims','BOOLEAN');mod.operation='DIFFERENCE';mod.solver='EXACT';mod.object=cutter;mod.use_self=False;mod.use_hole_tolerant=False
+bpy.ops.object.modifier_apply(modifier=mod.name)
+# Triangulate all boolean polygons with deterministic beauty triangulation.
+bm=bmesh.new();bm.from_mesh(shell.data);bmesh.ops.triangulate(bm,faces=list(bm.faces),quad_method='BEAUTY',ngon_method='BEAUTY');bm.to_mesh(shell.data);bm.free();me=shell.data
+p=np.array([v.co[:] for v in me.vertices],dtype=np.float64);f=np.array([poly.vertices[:] for poly in me.polygons],int);parts=np.array([poly.material_index for poly in me.polygons],int);parent=np.array([a.value for a in me.attributes['baseline_face'].data],int)
+# Exact preservation map. Float32 conversion is only a lookup key, never retained
+# as a substitute for the original source coordinates.
+keys=defaultdict(list)
+for i,q in enumerate(p0.astype(np.float32)):keys[tuple(q)].append(i)
+baseidx=np.full(len(p),-1,int);amb=[]
+for i,q in enumerate(p.astype(np.float32)):
+ ids=keys.get(tuple(q),[])
+ if len(ids)==1:baseidx[i]=ids[0];p[i]=p0[ids[0]]
+ elif len(ids)>1:amb.append([i,ids])
+if amb:raise RuntimeError('Ambiguous baseline float keys: '+str(amb[:4]))
+# Restore new intersections to original float64 planes (baseline coordinates
+# at z~=3.5 otherwise lose ~0.0001 mm in Blender float32).
+raw=np.cross(p0[f0[:,1]]-p0[f0[:,0]],p0[f0[:,2]]-p0[f0[:,0]]);nn=raw/np.maximum(np.linalg.norm(raw,axis=1)[:,None],1e-30);dd=-np.einsum('ij,ij->i',nn,p0[f0[:,0]])
+cr=np.cross(cp[cf[:,1]]-cp[cf[:,0]],cp[cf[:,2]]-cp[cf[:,0]]);cn=cr/np.maximum(np.linalg.norm(cr,axis=1)[:,None],1e-30);cd=-np.einsum('ij,ij->i',cn,cp[cf[:,0]])
+inc=defaultdict(set)
+for j,t in enumerate(f):
+ if parts[j]!=3 and 0<=parent[j]<len(f0):
+  for v in t:inc[int(v)].add(int(parent[j]))
+projection=[];origin_face=np.full(len(p),-1,int);bary=np.full((len(p),3),np.nan);cpdist,cpi=cKDTree(cp).query(p)
+for i in np.flatnonzero(baseidx<0):
+ before=p[i].copy();ids=sorted(inc[i]);ci=np.flatnonzero(abs(cn@p[i]+cd)<2e-6)
+ if cpdist[i]<2e-6 and not ids:
+  p[i]=cp[cpi[i]];kind='cutter_original'
+ else:
+  A=np.concatenate([nn[ids],cn[ci]]);rhs=np.r_[dd[ids],cd[ci]]
+  if len(A):
+   delta=np.linalg.lstsq(A,-(A@p[i]+rhs),rcond=1e-9)[0]
+   if np.linalg.norm(delta)<1e-5:p[i]+=delta;kind='plane_intersection'
+   else:kind='float32_intersection_unrestored'
+  else:kind='float32_intersection_unrestored'
+ if ids:
+  j=ids[0];tri=p0[f0[j]];uv=np.linalg.lstsq(np.stack([tri[1]-tri[0],tri[2]-tri[0]],axis=1),p[i]-tri[0],rcond=None)[0];origin_face[i]=j;bary[i]=[1-uv.sum(),*uv]
+ projection.append({'vertex':int(i),'kind':kind,'incident_baseline_faces':ids,'matched_cutter_planes':ci.tolist(),'float32_restoration_mm':float(np.linalg.norm(p[i]-before)*1000)})
+# Exact unchanged faces retain lineage. Trimmed source faces retain ancestry,
+# and cutter faces explicitly have no baseline face ancestor.
+parent[parts==3]=-1;role=np.full(len(f),1,int);role[parts==3]=2
+for i,t in enumerate(f):
+ if parent[i]>=0 and np.all(baseidx[t]>=0) and set(baseidx[t])==set(f0[parent[i]]):role[i]=0
+sids=np.full(len(p),-1,int);sids[baseidx>=0]=d['source_indices'][baseidx[baseidx>=0]];gen=np.ones(len(p),bool);gen[baseidx>=0]=d['generated_vertices'][baseidx[baseidx>=0]]
+raw=np.cross(p[f[:,1]]-p[f[:,0]],p[f[:,2]]-p[f[:,0]]);norm=np.zeros_like(p)
+for k in range(3):np.add.at(norm,f[:,k],raw)
+norm/=np.maximum(np.linalg.norm(norm,axis=1)[:,None],1e-30)
+metadata={'method':'Blender EXACT Boolean DIFFERENCE with local frozen-ear convex envelopes; new connectivity and explicitly closed cut walls','baseline':str(src.relative_to(B)),'cutter':cutpath.name,'cutter_metadata':json.loads(str(c['metadata'])),'face_parts':{'0':'inherited cap','1':'inherited bridge','2':'inherited mantle','3':'new reconstructed rim'},'face_roles':{'0':'exact original face','1':'trimmed/retriangulated original face','2':'new cutter wall'},'source_indices':'Original source ID if a surviving baseline vertex; -1 for every genuinely new vertex. baseline_vertex_indices is canonical exact-survivor map. New vertex unique identity is its candidate row index; v11_vertex_ids is explicit.','baseline_face_indices':'Original baseline face ancestor for inherited surfaces, -1 for new rim walls.','source_face_for_new_vertex':'A supporting source face when available, -1 for cutter-only vertices. source_face_barycentrics describes position on that frozen face.','preservation':'Every surviving baseline vertex restored from original float64 coordinates; no inherited vertex moved; source files unchanged. Removed baseline vertices/faces explicitly listed.','limitations':['Boolean EXACT uses exact predicates on Blender float32 input, not infinite-precision source input. Intersection coordinates restored to source planes where identifiable.','No clinical/anatomical claim; frozen legacy ear geometry guides a research cutter.','Thickness requires measured review; closure alone does not certify minimum wall thickness.','No visibility/beauty/Bedrock approval by construction.']}
+np.savez_compressed(dst,points=p,triangles=f,normals=norm,source_indices=sids,generated_vertices=gen,face_parts=parts,provenance=np.array(json.dumps(metadata)),baseline_vertex_indices=baseidx,v11_vertex_ids=np.arange(len(p)),baseline_face_indices=parent,face_roles=role,source_face_for_new_vertex=origin_face,source_face_barycentrics=bary,removed_baseline_vertices=np.setdiff1d(np.arange(len(p0)),baseidx[baseidx>=0]),removed_or_trimmed_baseline_faces=np.setdiff1d(np.arange(len(f0)),parent[role==0]))
+edges=Counter(tuple(sorted((int(t[k]),int(t[(k+1)%3])))) for t in f for k in range(3));nei=defaultdict(set)
+for x,y in edges:nei[x].add(y);nei[y].add(x)
+left=set(range(len(p)));components=[]
+while left:
+ seen=set();stack=[next(iter(left))]
+ while stack:
+  x=stack.pop()
+  if x not in seen:seen.add(x);stack.extend(nei[x]-seen)
+ left-=seen;components.append(len(seen))
+rep={'candidate':str(dst),'sha256':hashlib.sha256(dst.read_bytes()).hexdigest(),'vertices':len(p),'triangles':len(f),'euler':len(p)-len(edges)+len(f),'boundary_edges':sum(n==1 for n in edges.values()),'nonmanifold_edges':sum(n!=2 for n in edges.values()),'components_vertices':sorted(components,reverse=True),'face_parts':dict(Counter(map(int,parts))),'face_roles':dict(Counter(map(int,role))),'surviving_baseline_vertices':int((baseidx>=0).sum()),'surviving_baseline_positions_bit_exact':bool(np.array_equal(p[baseidx>=0],p0[baseidx[baseidx>=0]])),'removed_baseline_vertices':int(len(p0)-(baseidx>=0).sum()),'removed_or_trimmed_baseline_faces':int(len(f0)-(role==0).sum()),'new_vertices':int((baseidx<0).sum()),'new_rim_triangles':int((parts==3).sum()),'new_vertex_coordinate_methods':dict(Counter(r['kind'] for r in projection)),'max_float32_restoration_mm':max((r['float32_restoration_mm'] for r in projection),default=0),'input_hashes_start':hashes,'input_hashes_finish':{str(p.relative_to(B)):hashlib.sha256(p.read_bytes()).hexdigest() for p in locked},'elapsed_seconds':time.time()-start}
+rep['inputs_intact']=rep['input_hashes_start']==rep['input_hashes_finish'];(O/(tag+'-construction.json')).write_text(json.dumps(rep,indent=2));(O/(tag+'-intersection-provenance.json')).write_text(json.dumps(projection,indent=2));print(json.dumps(rep,indent=2),flush=True)

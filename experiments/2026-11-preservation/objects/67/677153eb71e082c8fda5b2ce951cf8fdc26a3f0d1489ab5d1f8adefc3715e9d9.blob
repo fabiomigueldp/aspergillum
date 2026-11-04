@@ -1,0 +1,118 @@
+{
+  "createdAt": "2026-11-03T20:15:28.721Z",
+  "status": "passed",
+  "oldChecks": 9728,
+  "newChecks": 4992,
+  "reservedChecks": 96,
+  "sameResourceFiles": 285,
+  "blocks": [
+    {
+      "kind": "aspersorium",
+      "before": 9216,
+      "after": 4704,
+      "normalizations": 4592,
+      "states": {
+        "aspergillum:contents_a": [
+          0,
+          1
+        ],
+        "aspergillum:contents_b": [
+          0,
+          1,
+          2
+        ],
+        "aspergillum:contents_c": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "aspergillum:contents_d": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "aspergillum:rotation": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ]
+      }
+    },
+    {
+      "kind": "sacristan_table",
+      "before": 512,
+      "after": 288,
+      "normalizations": 240,
+      "states": {
+        "aspergillum:table_contents_a": [
+          0,
+          1
+        ],
+        "aspergillum:table_contents_b": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "aspergillum:table_rotation": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ]
+      }
+    }
+  ],
+  "budget": {
+    "aspergillum": 5008,
+    "altare": 59840,
+    "combined": 64848,
+    "reference": 65536,
+    "remaining": 688
+  },
+  "limits": [
+    "Raw state normalization is explicit; exact inverse restoration requires original snapshots.",
+    "Reserved codes render empty/dry but runtime rejects them, without claiming recovery from corruption.",
+    "Visible aliases use unchanged source art; the separate pixel audit proves only the non-item atlas half is sampled by empty geometry.",
+    "Audio authoring sources are byte-identical. Full build regenerates OGGs with this toolchain, matching the earlier same-toolchain build; 34 OGG files differ from the original imported baseline bytes.",
+    "No worlds, Minecraft engine or gameplay event handlers are exercised by this generated-asset proof."
+  ]
+}

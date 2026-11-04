@@ -1,0 +1,18 @@
+import bpy,json
+from mathutils import Vector
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V43-hand-contact-trial.blend',use_scripts=False);m=bpy.data.objects['Maria — túnica e mangas integradas'].data;p=[v.co.copy() for v in m.vertices];adj=[set() for _ in p]
+for e in m.edges:i,j=e.vertices;adj[i].add(j);adj[j].add(i)
+point=Vector((.13,-.22,2.94));report=[]
+for z in [2.86,2.88,2.90,2.92,2.94]:
+ rem={i for i,v in enumerate(p) if v.z>z};comps=[]
+ while rem:
+  s=rem.pop();seen={s};todo=[s]
+  while todo:
+   for j in adj[todo.pop()]:
+    if j in rem:rem.remove(j);seen.add(j);todo.append(j)
+  comps.append(seen)
+ info=[]
+ for ids in sorted(comps,key=lambda ids:min((p[i]-point).length for i in ids))[:6]:
+  info.append({'count':len(ids),'closest_to_cuff_m':min((p[i]-point).length for i in ids),'bbox':[(min(p[i][j] for i in ids),max(p[i][j] for i in ids)) for j in range(3)]})
+ report.append({'plane_z':z,'components':len(comps),'nearest_components':info})
+json.dump(report,open(r+'cuff-section-topology.json','w'),indent=2);print(report)

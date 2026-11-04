@@ -1,0 +1,18 @@
+import bpy,bmesh,numpy as np,json,collections
+from mathutils.bvhtree import BVHTree
+from scipy.spatial import cKDTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False)
+def source(label):
+ d=np.load(r+'cap-mantle-source-'+label+'.npz');flat=d['face_flat'];lens=d['face_lengths'];starts=np.r_[0,np.cumsum(lens)];return d['points'],[flat[starts[i]:starts[i+1]].tolist() for i in range(len(lens))]
+c,cf=source('cap');m,mf=source('mantle');off=len(c);P=np.concatenate((c,m));faces=cf+[[v+off for v in f] for f in mf];A=list(range(44*112+28,44*112+85));B=list(range(off+720,off+800))
+def arclen(ids):
+ s=np.r_[0,np.cumsum(np.linalg.norm(np.diff(P[ids],axis=0),axis=1))];return s/s[-1]
+sa=arclen(A);sb=arclen(B);i=j=0;bridge=[]
+while i<len(A)-1 or j<len(B)-1:
+ if j==len(B)-1 or (i<len(A)-1 and sa[i+1]<=sb[j+1]):bridge.append([A[i],A[i+1],B[j]]);i+=1
+ else:bridge.append([A[i],B[j+1],B[j]]);j+=1
+faces+=bridge;me=bpy.data.meshes.new('Coherent source midsurface diagnostic');me.from_pydata(P.tolist(),[],faces);me.update();bm=bmesh.new();bm.from_mesh(me);bmesh.ops.recalc_face_normals(bm,faces=bm.faces);nonman=sum(len(e.link_faces)>2 for e in bm.edges);boundary=sum(e.is_boundary for e in bm.edges);bm.to_mesh(me);bm.free();o=bpy.data.objects.new('Diagnostic coherent cap-mantle',me);bpy.context.collection.objects.link(o);group=o.vertex_groups.new(name='Source thickness');group.add(list(range(off)),.1,'REPLACE');group.add(list(range(off,len(P))),1,'REPLACE');sol=o.modifiers.new('Single positive shell','SOLIDIFY');sol.thickness=.006;sol.vertex_group=group.name;sol.thickness_vertex_group=0;sub=o.modifiers.new('Source subdivision','SUBSURF');sub.levels=2;sub.render_levels=2;bpy.context.view_layer.update();dg=bpy.context.evaluated_depsgraph_get();em=o.evaluated_get(dg).to_mesh();Q=np.array([v.co[:] for v in em.vertices]);EF=[list(f.vertices) for f in em.polygons];o.evaluated_get(dg).to_mesh_clear();t=np.clip((1.45-Q[:,2])/.94,0,1);w=t*t*(3-2*t);a=np.clip((.29-Q[:,1])/.27,0,1);a=a*a*(3-2*a);Q[:,2]+=(.10+.19*a)*w
+out=bpy.data.meshes.new('Evaluated retained hem diagnostic');out.from_pydata(Q.tolist(),[],EF);out.update();out.calc_loop_triangles();T=[list(t.vertices) for t in out.loop_triangles];bt=BVHTree.FromPolygons(Q.tolist(),T,all_triangles=True);sp=[(a,b) for a,b in bt.overlap(bt) if a<b and not set(T[a])&set(T[b])];contacts={}
+for name in ['Maria — anatomia feminina adaptada CC0','Maria — túnica e mangas integradas']:
+ h=bpy.data.objects[name];hm=h.evaluated_get(dg).to_mesh();hm.calc_loop_triangles();hp=[v.co[:] for v in hm.vertices];ht=[list(t.vertices) for t in hm.loop_triangles];h.evaluated_get(dg).to_mesh_clear();pairs=bt.overlap(BVHTree.FromPolygons(hp,ht,all_triangles=True));contacts[name]=len(pairs)
+old=np.load(r+'cap-mantle-transfer-gate.npz')['target'];low=old[160386:];low=low[low[:,2]<1.45];dist=cKDTree(Q).query(low)[0];rp={'source_vertices':len(P),'source_faces':len(faces),'bridge_triangles':len(bridge),'source_edges_more_than_two_faces':nonman,'source_boundary_edges':boundary,'evaluated_vertices':len(Q),'evaluated_triangles':len(T),'self_nonadjacent_pairs':len(sp),'contacts':contacts,'lower_hem_nearest_delta_max_m':float(dist.max()),'lower_hem_over_1micrometer':int((dist>1e-6).sum()),'blend_saved':False,'status':'diagnostic, reject if collisions; no candidate'};json.dump(rp,open(r+'cap-mantle-unified-midsurface-proof.json','w'),indent=2);np.savez(r+'cap-mantle-unified-midsurface-proof.npz',points=Q,triangles=np.array(T));print(rp)

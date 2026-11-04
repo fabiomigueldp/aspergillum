@@ -1,0 +1,11 @@
+"""Copy the frozen V11 0.5 mm envelope as the first V12 experiment.
+No frozen data is written and no destination is overwritten.
+"""
+from pathlib import Path
+import hashlib, shutil
+O=Path(__file__).resolve().parent;B=O.parents[1]
+src=B/'ear_rim_v11/structural_rebuild/polygonal-pinna-0.5mm-cutter.npz';dst=O/src.name
+if dst.exists():raise FileExistsError(dst)
+shutil.copyfile(src,dst)
+assert hashlib.sha256(src.read_bytes()).digest()==hashlib.sha256(dst.read_bytes()).digest()
+print(dst)

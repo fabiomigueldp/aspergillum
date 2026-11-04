@@ -1,0 +1,6 @@
+import bpy,json
+from pathlib import Path
+O=Path(__file__).resolve().parent;B=O.parents[1];r={}
+for tag,p in [('quads',B/'opaque_transport_v15/evidence/shared-2048-diagnostic.blend'),('clipped',B/'opaque_transport_v15/evidence/shared-2048-analytic-clip-control-diagnostic.blend'),('native',B/'assembly_transport_v14/evidence/native-flat-focus-diagnostic.blend')]:
+ bpy.ops.wm.open_mainfile(filepath=str(p));s=bpy.context.scene;c=s.camera.data;r[tag]={'clip_start':c.clip_start,'clip_end':c.clip_end,'dof_use':c.dof.use_dof,'pixel_filter_type':s.cycles.pixel_filter_type,'filter_width':s.cycles.filter_width,'samples':s.cycles.samples,'seed':s.cycles.seed,'sampling_pattern':s.cycles.sampling_pattern}
+(O/'camera-clip.json').write_text(json.dumps(r,indent=2));print(r)

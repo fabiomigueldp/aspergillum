@@ -1,0 +1,127 @@
+import crypto from 'node:crypto';
+import path from 'node:path';
+import {buildSync} from 'esbuild';
+const root=path.resolve(import.meta.dirname,'../..');
+async function domain(file){const result=buildSync({entryPoints:[path.join(root,file)],bundle:true,write:false,platform:'node',format:'esm'});return import('data:text/javascript;base64,'+Buffer.from(result.outputFiles[0].contents).toString('base64'));}
+const codec=await domain('src/domain/block-state-layout.ts');
+const {dockedShardPropertyId,dockedEntryKey}=await domain('src/domain/docking.ts');
+export const SOURCE_SCHEMA='aspergillum-1.2.5';
+export const TARGET_SCHEMA='aspergillum-compact-v1';
+export const LIMITS=Object.freeze({bytes:16*1024*1024,cells:65536,depth:16});
+export const sha256=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
+export const jsonBytes=value=>Buffer.from(JSON.stringify(value,null,2)+'\n','utf8');
+export class SnapshotError extends Error {constructor(code,message){super(message);this.code=code;}}
+const reject=(code,message)=>{throw new SnapshotError(code,message);};
+const object=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
+const exact=(v,keys)=>object(v)&&Object.keys(v).length===keys.length&&keys.every(k=>Object.hasOwn(v,k));
+const integer=(v,min,max)=>typeof v==='number'&&Number.isSafeInteger(v)&&!Object.is(v,-0)&&v>=min&&v<=max;
+export const CONTRACT=Object.freeze({aspersorium:'contents_a:2,contents_b:3,contents_c:7,contents_d:7;lsd;water*17+occupancy',table:'table_contents_a:2,table_contents_b:9;lsd;occupancy',occupancy:'empty=0;cosmetic=1..16',rotation:'unchanged0..15',itemSchema:'3;raw-registry-unmodified'});
+function requireContract(){
+ const expected=(n,keys,radices)=>Object.fromEntries(keys.map((k,i)=>{const value=n%radices[i];n=Math.floor(n/radices[i]);return ['aspergillum:'+k,value];}));
+ for(let waterUnits=0;waterUnits<=16;waterUnits++)for(let occupancy=0;occupancy<=16;occupancy++){
+  const cosmeticIndex=occupancy===0?null:occupancy-1;
+  if(JSON.stringify(codec.encodeAspersoriumContents({waterUnits,cosmeticIndex}))!==JSON.stringify(expected(waterUnits*17+occupancy,['contents_a','contents_b','contents_c','contents_d'],[2,3,7,7])))reject('contract-changed','Aspersorium codec changed.');
+  if(JSON.stringify(codec.encodeTableContents({cosmeticIndex}))!==JSON.stringify(expected(occupancy,['table_contents_a','table_contents_b'],[2,9])))reject('contract-changed','Table codec changed.');
+ }
+}
+/** Native JSON parsing plus an independent bounded token walk to retain evidence
+ * of duplicate object keys before JSON.parse would silently discard it. */
+export function parseSnapshotJson(bytes){
+ if(bytes.length>LIMITS.bytes)reject('input-too-large',`Input exceeds ${LIMITS.bytes} bytes.`);
+ let text;try{text=new TextDecoder('utf-8',{fatal:true}).decode(bytes);}catch{reject('invalid-utf8','Input is not valid UTF-8.');}
+ let i=0;const space=()=>{while(/[\t\n\r ]/.test(text[i]??'x'))i++;};
+ function string(){
+  const start=i;if(text[i++]!=='"')reject('invalid-json','Expected an object key.');
+  while(i<text.length){const c=text[i++];if(c==='"'){try{return JSON.parse(text.slice(start,i));}catch{reject('invalid-json','Invalid JSON string.');}}if(c==='\\')i++;}
+  reject('invalid-json','Unterminated JSON string.');
+ }
+ function value(depth){
+  if(depth>LIMITS.depth)reject('too-deep',`JSON exceeds nesting depth ${LIMITS.depth}.`);
+  space();const c=text[i];
+  if(c==='{'){
+   i++;space();const keys=new Set();if(text[i]==='}'){i++;return;}
+   while(true){space();const key=string();if(keys.has(key))reject('duplicate-json-key',`Repeated JSON object key: ${JSON.stringify(key.slice(0,128))}.`);keys.add(key);space();if(text[i++]!==':')reject('invalid-json','Expected colon.');value(depth+1);space();const next=text[i++];if(next==='}')return;if(next!==',')reject('invalid-json','Expected comma or closing object.');}
+  }
+  if(c==='['){i++;space();if(text[i]===']'){i++;return;}while(true){value(depth+1);space();const next=text[i++];if(next===']')return;if(next!==',')reject('invalid-json','Expected comma or closing array.');}}
+  if(c==='"'){string();return;}
+  const match=/^(?:true|false|null|-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?)/.exec(text.slice(i));
+  if(!match)reject('invalid-json','Invalid JSON value.');
+  const token=match[0];
+  if(!['true','false','null'].includes(token)&&(!/^-?(?:0|[1-9]\d*)$/.test(token)||!Number.isSafeInteger(Number(token))||String(Number(token))!==token))reject('noncanonical-number','Only canonical safe-integer JSON number tokens are accepted; no fractions, exponents or negative zero.');
+  i+=token.length;
+ }
+ value(0);space();if(i!==text.length)reject('invalid-json','Unexpected trailing input.');
+ try{return JSON.parse(text);}catch{reject('invalid-json','Invalid JSON document.');}
+}
+function convertCell(cell){
+ const table=cell.id==='aspergillum:sacristan_table';
+ if(!table&&cell.id!=='aspergillum:aspersorium')reject('unsupported-id','Only selected aspersorium and sacristan_table blocks are supported.');
+ const prefix='aspergillum:',occupiedKey=prefix+(table?'table_has_aspergillum':'has_aspergillum'),cosmeticKey=prefix+(table?'table_cosmetic':'cosmetic'),rotationKey=prefix+(table?'table_rotation':'rotation');
+ const keys=[occupiedKey,cosmeticKey,rotationKey,...(table?[]:[prefix+'water_base',prefix+'water_offset'])],s=cell.states;
+ if(!exact(s,keys)||typeof s[occupiedKey]!=='boolean'||!integer(s[cosmeticKey],0,15)||!integer(s[rotationKey],0,15)||(!table&&(!integer(s[prefix+'water_base'],0,9)||![0,9].includes(s[prefix+'water_base'])||!integer(s[prefix+'water_offset'],0,8))))reject('invalid-states','Expected exact legacy keys and domains; mixed and compact schemas are rejected.');
+ const normalizations=[];
+ if(!s[occupiedKey]&&s[cosmeticKey]!==0)normalizations.push({code:'empty-cosmetic-normalized',previous:s[cosmeticKey],next:0});
+ const water=table?0:s[prefix+'water_base']+s[prefix+'water_offset'];
+ if(water===17)normalizations.push({code:'water-alias-normalized',previous:{water_base:9,water_offset:8},next:16});
+ const semantics={waterUnits:Math.min(16,water),cosmeticIndex:s[occupiedKey]?s[cosmeticKey]:null};
+ return {cell:{...cell,states:{...(table?codec.encodeTableContents(semantics):codec.encodeAspersoriumContents(semantics)),[rotationKey]:s[rotationKey]}},normalizations,occupied:s[occupiedKey]};
+}
+/** Audit only, never repair the registry. Raw strings are opaque preservation payloads. */
+function registryAudit(registry,cells){
+ const records=new Map(),warnings=[];
+ for(const [index,record] of registry.entries()){
+  if(!exact(record,['propertyId','rawValue'])||typeof record.propertyId!=='string'||!/^[a-zA-Z0-9_.:-]{1,160}$/.test(record.propertyId)||(record.rawValue!==null&&typeof record.rawValue!=='string'))reject('invalid-registry','Registry records require propertyId and rawValue (raw string or null for absent).');
+  if(records.has(record.propertyId))reject('duplicate-registry','Repeated registry property ID.');
+  let entries=null,status='absent';
+  if(record.rawValue!==null){
+   try{const parsed=parseSnapshotJson(Buffer.from(record.rawValue));
+    if(!object(parsed)||parsed.schemaVersion!==1){status='unknown-or-future';}
+    else if(!object(parsed.entries)){status='malformed';}
+    else{entries=parsed.entries;status='inspectable';}
+   }catch{status='malformed-or-noncanonical';}
+  }
+  records.set(record.propertyId,{entries,status});
+  if(!['absent','inspectable'].includes(status))warnings.push({code:'registry-opaque-preserved',index,propertyId:record.propertyId,status});
+ }
+ for(const {cell,occupied} of cells){
+  const propertyId=dockedShardPropertyId(cell.dimension,cell.position),entryKey=dockedEntryKey(cell.position),record=records.get(propertyId),location={dimension:cell.dimension,position:cell.position,propertyId,entryKey};
+  if(!record){warnings.push({code:'registry-not-covered',...location});continue;}
+  if(record.status!=='inspectable'&&record.status!=='absent'){warnings.push({code:'registry-presence-unknown',...location});continue;}
+  const present=record.entries!==null&&Object.hasOwn(record.entries,entryKey);
+  if(occupied&&!present)warnings.push({code:'occupied-without-snapshot',...location});
+  if(!occupied&&present)warnings.push({code:'empty-with-snapshot',...location});
+  if(present&&!object(record.entries[entryKey]))warnings.push({code:'snapshot-payload-unvalidated',...location});
+ }
+ return warnings;
+}
+export function auditSnapshot(document,{allowNormalization=false}={}){
+ requireContract();
+ if(typeof allowNormalization!=='boolean')reject('invalid-options','allowNormalization must be boolean.');
+ if(!exact(document,['format','schemaVersion','stateSchema','source','cells','registry'])||document.format!=='aspergillum-block-snapshot'||document.schemaVersion!==1||document.stateSchema!==SOURCE_SCHEMA)reject('invalid-envelope','Expected exact aspergillum-block-snapshot schema 1, stateSchema aspergillum-1.2.5.');
+ const source=document.source;
+ if(!exact(source,['addonVersion','exportedAt','coverage','registryCoverage'])||source.addonVersion!=='1.2.5'||source.coverage!=='selected-cells'||source.registryCoverage!=='selected-properties'||typeof source.exportedAt!=='string'||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(source.exportedAt)||!Number.isFinite(Date.parse(source.exportedAt))||new Date(source.exportedAt).toISOString()!==source.exportedAt)reject('invalid-source','Declare version 1.2.5, canonical UTC exportedAt, selected-cells and selected-properties coverage.');
+ if(!Array.isArray(document.cells)||document.cells.length<1||document.cells.length>LIMITS.cells||!Array.isArray(document.registry)||document.registry.length>LIMITS.cells)reject('invalid-count','Expected 1..65536 cells and 0..65536 registry records.');
+ const issues=[],normalizations=[],converted=[],seen=new Set();
+ for(const [index,cell] of document.cells.entries()){
+  try{
+   if(!exact(cell,['dimension','position','id','states']))reject('invalid-cell','Cell requires dimension, position, id and states.');
+   if(typeof cell.dimension!=='string'||cell.dimension.length>128||!/^[a-z0-9_.-]+:[a-z0-9_./-]+$/.test(cell.dimension))reject('invalid-dimension','Expected bounded namespaced dimension.');
+   if(!exact(cell.position,['x','y','z'])||!Object.values(cell.position).every(n=>integer(n,-2147483648,2147483647)))reject('invalid-position','Expected signed 32-bit integer x/y/z.');
+   const key=JSON.stringify([cell.dimension,cell.position.x,cell.position.y,cell.position.z]);
+   if(seen.has(key))reject('duplicate-position','Repeated dimension and position.');seen.add(key);
+   const result=convertCell(cell);converted.push(result);
+   for(const normalization of result.normalizations)normalizations.push({index,dimension:cell.dimension,position:cell.position,...normalization});
+  }catch(error){if(!(error instanceof SnapshotError))throw error;issues.push({index,code:error.code,message:error.message});}
+ }
+ const registryWarnings=registryAudit(document.registry,converted),eligible=issues.length===0&&(normalizations.length===0||allowNormalization);
+ const report={format:'aspergillum-snapshot-audit',schemaVersion:1,sourceStateSchema:SOURCE_SCHEMA,targetStateSchema:TARGET_SCHEMA,totalCells:document.cells.length,convertedCells:converted.length,rejectedCells:issues.length,normalizationCount:normalizations.length,normalizationsAllowed:allowNormalization,eligible,issues,normalizations,registryWarnings,registryUnmodified:true,limitations:[
+ 'Selected cells and selected properties only; neither source origin nor completeness is authenticated.',
+ 'No world, LevelDB, Minecraft, installed pack, inventory or entity is read or modified.',
+ 'Registry presence is diagnostic only; raw unknown, future and malformed values are preserved without sanitizing, fixing or deleting. Item payload validity is not certified.',
+ 'Conversion is NOT permission to load an old world with the new block schema. No world importer exists.',
+ 'Raw backup restores source JSON bytes, not a world. Keep independent world and pack backups.',
+ 'Use trusted canonical directories without concurrent writers; hostile directory replacement is outside this guarantee.',
+ 'Hashes need a separately trusted digest to detect coordinated replacement of a whole bundle.'
+ ]};
+ return {report,converted:eligible?{...document,stateSchema:TARGET_SCHEMA,cells:converted.map(r=>r.cell),registry:document.registry}:null};
+}

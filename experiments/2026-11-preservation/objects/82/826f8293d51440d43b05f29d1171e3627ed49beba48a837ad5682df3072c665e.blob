@@ -1,0 +1,33 @@
+import { system, type PlayerBreakBlockBeforeEvent } from "@minecraft/server";
+import { ACTION_MESSAGES, action, type ActionMessage } from "../presentation/messaging";
+import { blockDestructionRisk } from "./block-destruction-safety";
+
+// Bounded, presentation-only throttling. Never authority for item/block state.
+const lastFeedback = new Map<string, number>();
+const FEEDBACK_COOLDOWN_TICKS = 20;
+const MAX_FEEDBACK_PLAYERS = 256;
+
+/** Narrow prevention, not recovery or a durable quarantine protocol. */
+export function preventUnsafePlayerBlockBreak(event: PlayerBreakBlockBeforeEvent): void {
+  const risk = blockDestructionRisk(event.block);
+  if (risk === undefined) return; // Never reverse an existing cancellation.
+  const message: ActionMessage = risk === "occupied" ? ACTION_MESSAGES.emptyHandRequired
+    : risk === "orphaned" ? ACTION_MESSAGES.registryRecoveryRequired : ACTION_MESSAGES.registryRepairRequired;
+  event.cancel = true; // Synchronous: only presentation is deferred below.
+
+  try {
+    const player = event.player;
+    const id = player.id;
+    const tick = system.currentTick;
+    const previous = lastFeedback.get(id);
+    if (previous !== undefined && tick >= previous && tick - previous < FEEDBACK_COOLDOWN_TICKS) return;
+    lastFeedback.set(id, tick);
+    if (lastFeedback.size > MAX_FEEDBACK_PLAYERS) lastFeedback.delete(lastFeedback.keys().next().value!);
+    system.run(() => {
+      try { if (player.isValid) action(player, message); }
+      catch { /* Presentation failure must not change the already-cancelled event. */ }
+    });
+  } catch (error) {
+    console.warn(`[Aspergillum] Prevented break; feedback unavailable: ${String(error)}`);
+  }
+}

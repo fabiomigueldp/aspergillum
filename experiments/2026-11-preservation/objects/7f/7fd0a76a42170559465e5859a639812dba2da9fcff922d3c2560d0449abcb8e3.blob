@@ -1,0 +1,26 @@
+exec(open('/workspace/scratch/212c580ada5b/paz-refinement/gui-test/neck-cloth-obstacle-surface-trial.py').read().split('counts=collections.Counter')[0])
+em=o.evaluated_get(dg).to_mesh();em.calc_loop_triangles();TT=[list(t.vertices) for t in em.loop_triangles];FM=[t.polygon_index for t in em.loop_triangles];o.evaluated_get(dg).to_mesh_clear();tree=BVHTree.FromPolygons(p.tolist(),TT,all_triangles=True);pairs=[(a,b) for a,b in tree.overlap(tree) if a<b and not set(TT[a])&set(TT[b])];g=collections.defaultdict(set)
+for a,b in pairs:
+ a,b=FM[a],FM[b]
+ if a!=b:g[a].add(b);g[b].add(a)
+active=set(g);edges=collections.defaultdict(list)
+for fi in active:
+ f=fs[fi]
+ for a,b in zip(f,f[1:]+f[:1]):edges[tuple(sorted((a,b)))].append(fi)
+for v in edges.values():
+ for a in v:
+  for b in v:
+   if a!=b:g[a].add(b)
+seen=set();comps=[]
+for fi in active:
+ if fi in seen:continue
+ todo=[fi];seen.add(fi);comp=[]
+ while todo:
+  a=todo.pop();comp.append(a)
+  for b in g[a]:
+   if b not in seen:seen.add(b);todo.append(b)
+ pts=p[list({v for a in comp for v in fs[a]})];comps.append({'faces':sorted(comp),'count':len(comp),'bounds':[pts.min(0).tolist(),pts.max(0).tolist()],'target':180902 in comp or 180873 in comp})
+pairverts=set((np.load(r+'neck-source-layer-pairs.npz')['pairs']+160386).ravel().tolist())
+for c in comps:
+ c['faces_touching_cap']=sum(any(v<160386 for v in fs[fi]) for fi in c['faces']);c['faces_without_complete_shell_pair']=sum(any(v not in pairverts for v in fs[fi]) for fi in c['faces']);c['faces_beyond_neck_safety_bounds']=sum(any(p[v,2]<3.22 or p[v,2]>3.42 or p[v,0]>.025 for v in fs[fi]) for fi in c['faces'])
+rp={'explicit_triangle_pairs':len(pairs),'component_definition':'Intersection graph of source faces plus shared-edge adjacency among intersecting faces only; no iterative growth','components':comps};json.dump(rp,open(r+'neck-self-intersection-component-audit.json','w'),indent=2);print('pairs',len(pairs),'components',len(comps));print([{k:v for k,v in c.items() if k!='faces'} for c in comps if c['target']])

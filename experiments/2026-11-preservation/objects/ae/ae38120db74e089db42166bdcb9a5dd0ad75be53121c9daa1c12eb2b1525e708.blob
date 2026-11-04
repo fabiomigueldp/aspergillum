@@ -1,0 +1,1303 @@
+{
+  "status": {
+    "status": "INVESTIGATION_COMPLETE_NO_V10_RETAINED",
+    "attempt_count": 97,
+    "all_attempts_preserved": true,
+    "retained_candidate": null,
+    "reference_shell": "lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz",
+    "reference_anatomy": "body_interface_v9/constrained_fit/retained-anatomy.npz",
+    "reference_band": "shell_band_v5/retained_candidate/evidence/band-paired.npz",
+    "original_inputs_unchanged": true,
+    "all_trials_same_connectivity": true,
+    "all_trials_mantle_positions_exact": true,
+    "last_checkpoint": "structural_fit/relax075-continuation-iteration05.npz",
+    "last_checkpoint_rejected": true,
+    "last_checkpoint_self_crossings_independent": 42,
+    "native_geometric_approval": false,
+    "artistic_approval": false,
+    "bedrock_exported": false,
+    "minecraft_runtime_tested": false,
+    "published": false,
+    "hidden_components_removed": false,
+    "scope": "Local structural cap-bridge experiments with frozen V9 anatomy and V5 band; no change to original files. No retained improvement in this family."
+  },
+  "inputs": [
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/lateral_v7/adaptive_patch/adaptive-consistent-assembly.npz",
+      "sha256": "712a550fbbb56090ae700e30e4e21153d04c16139062ebcd2a72e818f3e34f7b",
+      "bytes": 230433,
+      "current_sha256": "712a550fbbb56090ae700e30e4e21153d04c16139062ebcd2a72e818f3e34f7b",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/body_interface_v9/constrained_fit/retained-anatomy.npz",
+      "sha256": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+      "bytes": 47106,
+      "current_sha256": "c22893a90e024ebbd1133ac34a2314db8b11d225dbe2b17be6abe128946de9db",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/shell_band_v5/retained_candidate/evidence/band-paired.npz",
+      "sha256": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647",
+      "bytes": 34942,
+      "current_sha256": "c2c9e494d3f1f5b5af9fe711af99b7a73b5cadb860fd3b4a76f495df7f732647",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/pbr_normals_v2/resource_pack/models/entity/paz_v75_pbr_sculpture.geo.json",
+      "sha256": "160d00c5489e618bdb093eb48a388b17f606ca9970f00de88b164758fa1c46cf",
+      "bytes": 6242831,
+      "current_sha256": "160d00c5489e618bdb093eb48a388b17f606ca9970f00de88b164758fa1c46cf",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-bedrock-v75-prototype-20261103/pbr_normals_v2/resource_pack/textures/entity/paz_v75_pbr_sculpture.png",
+      "sha256": "9547dffd84fdc399535c97f88cf8694ade2af98e82de0ec71ec7117473eb7856",
+      "bytes": 1050958,
+      "current_sha256": "9547dffd84fdc399535c97f88cf8694ade2af98e82de0ec71ec7117473eb7856",
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/212c580ada5b/paz-refinement/gui-test/checkpoint-V75-20261102/V75-tunic-lower-trial.blend",
+      "sha256": "2c14fbc7566217ad350ef926abc1dc4a1bc41f457eaab8f10351e90b1f4777d9",
+      "bytes": 59672216,
+      "current_sha256": "2c14fbc7566217ad350ef926abc1dc4a1bc41f457eaab8f10351e90b1f4777d9",
+      "unchanged": true
+    }
+  ],
+  "attempt_checks": [
+    {
+      "candidate": "boundary-medial-05mm.npz",
+      "sha256": "babeaf46114fc24f02aac2f4605321680a80561b9811fd65d1763e2d87660062",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-medial-10mm.npz",
+      "sha256": "9d37dd9cea9eb1c2e1a6f1a40b38071a07a4e7132e18463e836f01abfea486f9",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-medial-15mm.npz",
+      "sha256": "cad64e1be49b394cce2df5cf587ff15ce542669a3b9137e3156ce76ae5b331a4",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-medial-20mm.npz",
+      "sha256": "a59647850455edf270c6843eeacdfab54af3d06d37603bf2dc1ffaf45ffab7e0",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-medial-30mm.npz",
+      "sha256": "468efc6ae145293c55b889f1214c710be362ddd7893c5854bd5abedd18d77033",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-medial-40mm.npz",
+      "sha256": "f198cefd85b82f9213a3a41f182a84f7aff678d6f3aaacaf534f5f0b6d3a9149",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-posterior-05mm.npz",
+      "sha256": "8fec8103bfab5612e4f1d27eec7026cc7497eed7bba274cb05c4fc42c4839ba3",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-posterior-10mm.npz",
+      "sha256": "6e389805ebf2ef88157480417a58268d4fae8d0886cc4f3b59da6e021011a692",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-posterior-15mm.npz",
+      "sha256": "0cc86214add36919b2e75bf5bc5f5e610d623ca167ddc63dd4014cd9290e2b50",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-posterior-20mm.npz",
+      "sha256": "b0c80b66ef582242dd972683f8481f80d9964adf7aad21629cd244042e21694c",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-posterior-30mm.npz",
+      "sha256": "19f428ce7a5f246cef5a2daa2224faae55d1c0c8ebbc96997284c62e8b7ad1b0",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-posterior-40mm.npz",
+      "sha256": "aa0b0e1b9841ba3951391cf44dcb643cb670e3c2f91f965d3444848e5b316bda",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-postinferior-05mm.npz",
+      "sha256": "78fd5f89c87df17cac45e0284a8759054f3fea0edc9077a0d902373fef522958",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-postinferior-10mm.npz",
+      "sha256": "ba7aacd59b4dfd58647195b8e031f65f3ba09b556beb698dd41187c0c3d6082b",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-postinferior-15mm.npz",
+      "sha256": "2bc949691bd703cdf1c05693bd0957580df330d2ccadbe8921a6c704de0fd9f1",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-postinferior-20mm.npz",
+      "sha256": "b6c256d92e83199795af53ea519418af4911bdfa6be82839c0e67e419e401d35",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-postinferior-30mm.npz",
+      "sha256": "feeaf7b82412b99545fe4ceb15bc84ee39b6ff04ce8cfdabda45d203d2aae5cb",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-postinferior-40mm.npz",
+      "sha256": "448d4b72caa71e2dcb04033f3e369a50727b53f73a920814edebc351a964a498",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-postmedial-05mm.npz",
+      "sha256": "f91de6f5546ffe8c44f2f0405f4b085fd1cf229cd0bc975dc0547b717a4f9c6c",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-postmedial-10mm.npz",
+      "sha256": "dbb75d583ac1bd1fccea78ac21fdee4d9c67be8bdcd97f3fd16e2727be9171ed",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-postmedial-15mm.npz",
+      "sha256": "56dbc0b0be11c0387965d24d5bebe80825299b9acb1e37e9c2fedd013a93a914",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-postmedial-20mm.npz",
+      "sha256": "2f74daf09024adbd1584d5ae807d46c477cb4178a01d479ae6759c403063e02d",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-postmedial-30mm.npz",
+      "sha256": "5619c4fd317aa5941ae29f1d90abeff59863ace59f56adcd962b28505a5a0788",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "boundary-postmedial-40mm.npz",
+      "sha256": "19d2cce5d9417c2b2b6924a4b5c04d68a716a454b8d1a1089b8d70e0bc70957f",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-inferior-02mm.npz",
+      "sha256": "bb93c93557c1bf69f886e3cd7d23a011bbaa88443f78962122fcfd9189517d37",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-inferior-05mm.npz",
+      "sha256": "d6e00a937e53a8897f9d813d10e11a3899df174de6b129da69ba2326f2bae4c3",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-inferior-10mm.npz",
+      "sha256": "e4f6670907c194565fd578f0bcd731b4b35d2c47cdee0513258df6a9ed2ce342",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-inferior-20mm.npz",
+      "sha256": "236834b7b0164a0a9cf6d63b121e6a6dae4fdc36c697f3461cd0026cace1d580",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-inferior-30mm.npz",
+      "sha256": "a94b2bb1f13d1b81df501b6897fb6c38f0cb1a1bece12e4871db1c49bab30e02",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-lateral-02mm.npz",
+      "sha256": "6097875352435bf565eb3a0c74a8c6fafa60c8adf3db2a52a72f1816255f4be0",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-lateral-05mm.npz",
+      "sha256": "37777fc8fb3d91e8133f47e7e71e12e25273a2bdd78eeb9f2da8eec4daa7abe8",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-lateral-10mm.npz",
+      "sha256": "4dfcb574584d98537bf47dab5f4f165d8d0519c3fe804c96edbce34905825afb",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-lateral-20mm.npz",
+      "sha256": "d9af36e75d9a7fa205bacd5b7332b86a385c33690c772f99bffa5209b39a5300",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-lateral-30mm.npz",
+      "sha256": "4469400aa49552e3fa1e62beb61b5d8736d90e701b2281b9d22b44e23a20f379",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-medial-02mm.npz",
+      "sha256": "8ce0abe388d4f3938e8f95238adeaab234d1c178bed5d4bf6bdcb20e867c0a88",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-medial-05mm.npz",
+      "sha256": "f3bc68e77462440ea018f2770873ae82a16a62580c0deed5c6c281bbadce3bd6",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-medial-10mm.npz",
+      "sha256": "a7e62e61d3e5144e21bad7faaf76ea12f1e5fba06b9a5cd619a86ffbdb2e708a",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-medial-20mm.npz",
+      "sha256": "8c34c1e87ff3ca808f6d4c6640849733a2a50471c29c601dc748b7228b5e93b2",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-medial-30mm.npz",
+      "sha256": "bccb527b70e6456aacdc9118bc794c358c043ccea3148be708b8c49613617d24",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-posterior-02mm.npz",
+      "sha256": "71cd7f86801a234364dc9d0af9559c161595a94c7937da6223380abc3c4c78b8",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-posterior-05mm.npz",
+      "sha256": "c3142f109b87c24d8495ee10ca057a15d567599e8d692c13c9702dc96822b33e",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-posterior-10mm.npz",
+      "sha256": "1a65859f8dc107db837dd6f54efe68348bb5777a06acec6c79cf73cf81f91935",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-posterior-20mm.npz",
+      "sha256": "ee7478af0a5fd7105dfcaddf190b9586514e99255e33c26a43b96a76095b9aac",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-posterior-30mm.npz",
+      "sha256": "0e3d92d9b2b992fc17892527628f50351920e1c72a2ec9167f555fdeef331173",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-posteroinferior-02mm.npz",
+      "sha256": "bb0d2441c522edf85de023aeea64e5f4d8cf6e760fad147bf50d327223eb3f0a",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-posteroinferior-05mm.npz",
+      "sha256": "a5d326c097accf1b6a7e1a6713eff4ce44f0a987ad8f44f8c3d2c7076ecbb840",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-posteroinferior-10mm.npz",
+      "sha256": "70e685d6176f9cf2efc07e540b52974844632d962829b226ee38744d4673d615",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-posteroinferior-20mm.npz",
+      "sha256": "c71030e29f8822f411dac92541c216984d84c15cf681c4cf617e4084b4235152",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "grid-posteroinferior-30mm.npz",
+      "sha256": "d9bb3677d77b9d4149ebf1c20541ccc496b7d3fe0fa903beec8e891ac4ecaa5d",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "posterolateral-k0p05-20mm.npz",
+      "sha256": "20535d891503568d2a4049100326ea8f958dd755f9c72925de541fbb93f73ad4",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "posterolateral-k0p05-25mm.npz",
+      "sha256": "2e3a1659962c514378ca5fd565b48aa251601be0bb54eda58a8b9a66947776aa",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "posterolateral-k0p05-30mm.npz",
+      "sha256": "9dc882091273bd1432af4d715ebafd63466b487acbd43ebc1235c8d41561bd92",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "posterolateral-k0p1-20mm.npz",
+      "sha256": "ce6df2aeae52aa9351b7dbc330c9deed7236b4016284c68d068bc223d58f5c29",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "posterolateral-k0p1-25mm.npz",
+      "sha256": "3613835b1f2ac76abf3e3770ac6b00526e2a0d733e8d719f8d9191ed2f740327",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "posterolateral-k0p1-30mm.npz",
+      "sha256": "ecbb17dc8a3584cae747bbfa148133e5fd37ae54958fd0024f85e3a768d99978",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "posterolateral-k0p15-20mm.npz",
+      "sha256": "171324047d14a47d3cb07a87b5a49196c074e5765d96e9cb46f9114aec2802bb",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "posterolateral-k0p15-25mm.npz",
+      "sha256": "d88745631e5a7e1e69684840da374fa1fef7916dd42a722d6a7c77868d6f53d6",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "posterolateral-k0p15-30mm.npz",
+      "sha256": "8210125f8c122f14361258aa1f4ef27c3adc9d2a57c9bc6a1acb50327d9b037c",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "posterolateral-k0p2-20mm.npz",
+      "sha256": "f0ff8ff6e2cd1e5af8bbb9ec8a2c61f179ecedf05aeb489c877a630bf0b7059a",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "posterolateral-k0p2-25mm.npz",
+      "sha256": "b532e30e8e4075ca83d1b7a69c74c67b1c36f16636c6c004b8a277d83cb3afe2",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "posterolateral-k0p2-30mm.npz",
+      "sha256": "a0b2078e31d68ec848dd3f0f2ab7af55c9d8ed4cb3019414d2c3678fc24e6480",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "posterolateral-k0p3-20mm.npz",
+      "sha256": "90be26a09c3cb5eca5f8a82a8620dc187f977e24279636fed0a354b71eb08324",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "posterolateral-k0p3-25mm.npz",
+      "sha256": "a996a2b8884e917f778fdb566f675be4b3ae7e070f2fb615a78e0e7ca4c39ed3",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "posterolateral-k0p3-30mm.npz",
+      "sha256": "4a88f38724a28695b54309eb6851ca77ed73a54d5b6ce9ff29abcceba9ddf8c4",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "posterolateral-k0p4-20mm.npz",
+      "sha256": "9b2ca37ff85cda24756c0095c6802b74102bf971207ec8a622a72be751943adb",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "posterolateral-k0p4-25mm.npz",
+      "sha256": "2d13ec6da4e2a7c650a400ef950b85e12d8715b108b0dca892c0cc76eab2bc53",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "posterolateral-k0p4-30mm.npz",
+      "sha256": "293247988ceb1bbe3363ed4d5754e916574254648362a16faa2def96afb78527",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "relax065-t2-iteration00.npz",
+      "sha256": "04519b4458f770c5e64efdfbdd4ae84bedf7ae6bbaef82568c4ca065e1af73f1",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "relax065-t2-iteration01.npz",
+      "sha256": "46a43b60ca4e8c288185b998df09fc7ece4171e34fb8141f126f345ccc807449",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "relax065-t2-iteration02.npz",
+      "sha256": "88bd5d94c912d4ac39e17d70643409085e7d0d056360b8a39167e9490c289141",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "relax065-t2-iteration03.npz",
+      "sha256": "b3444dccbbecb44a16ba193dcd43149a19a3d6c05ce4fa2220f5fc832447ae83",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "relax075-continuation-iteration00.npz",
+      "sha256": "82d97ed3b0fb01baceee76b9b2bdcfb24681d60b57ea2312d24b6435c6ba52bf",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "relax075-continuation-iteration01.npz",
+      "sha256": "b0c18970133569d4a827cf610ac7235f973d9164589666e4ca696dbca1c6c7a2",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "relax075-continuation-iteration02.npz",
+      "sha256": "9fd0d0e45bdcbfd273f19885d22910ab67bbcfe68e39ffda404be0c32ada6256",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "relax075-continuation-iteration03.npz",
+      "sha256": "ace935ec6cec237565b0a7e70b587181bc26d1939cb14868f8c77f100396350c",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "relax075-continuation-iteration04.npz",
+      "sha256": "1e116a26e0fc1f9d9f18fc02773a75d8c5a7804f750d240be995c70a7a64b8e0",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "relax075-continuation-iteration05.npz",
+      "sha256": "5aaf825d37ba30a858ac67f36c57fcd459ff6eed617e7efdff99f7bad9496906",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "relax075-contour-iteration00.npz",
+      "sha256": "461a0e687c68d57c57adf0734801081042a5fe5d4d84b4c9ffe575a9f17dc3f1",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "relax075-contour-iteration01.npz",
+      "sha256": "f4298d625cea5ceee021609c11ce613b914cf62d8d8e94edc957d131df0ea7af",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "relax075-contour-iteration02.npz",
+      "sha256": "3af081f1e4bfa1ca0f6d90f3e2972ee768b6d9cb5230a2269530bc2e2dd61443",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "relax075-contour-iteration03.npz",
+      "sha256": "30910ec4dd9e52ccdb546ac757815e7db38490a8652bac120cd9ea18a2bb68cd",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "support-earonly-posterior-20mm.npz",
+      "sha256": "ea0593bbbd997a0bd0ee9fb1a58f33b4278418476f683479d9f6ac09fb0eba11",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "support-earonly-posterior-25mm.npz",
+      "sha256": "ca5ab800c3e49ed1c0256540b45025b9d5f0d7df5570495d6a1016cc53815389",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "support-earonly-posterior-30mm.npz",
+      "sha256": "7ba97939f905d73016925b425f19d826802563aa95352ef362764448e8f8cbdb",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "support-earonly-posterior-35mm.npz",
+      "sha256": "6b54c9a54ea60d8d2bb3235522daa15860260dfde0eb16e00a9c88da18f898a4",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "support-tight-posterior-20mm.npz",
+      "sha256": "5d830e54833421774956b4534f40766c26d6a91510952c298f11737535574658",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "support-tight-posterior-25mm.npz",
+      "sha256": "f36342591b834478748c3efff85dacfedddceebcf757a37a2da3c6a29e7e8e64",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "support-tight-posterior-30mm.npz",
+      "sha256": "85a2a1e59245b763dc57c41d19843a9f23f6000ff1b01aa627f31d9489dcc44d",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "support-tight-posterior-35mm.npz",
+      "sha256": "71d77339561d3c008ab190b833a1a577c6b0b5e443b32f2f205424f8d1dac974",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "support-tightlow-posterior-20mm.npz",
+      "sha256": "631a8115cc3c14328edfbcce3784fd57555da4937399fc6a325e4eacb67496b6",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "support-tightlow-posterior-25mm.npz",
+      "sha256": "b6efcc5159315c229b6f039fe162b218009a31a957361ab3d2b8d1b3f71b42cc",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "support-tightlow-posterior-30mm.npz",
+      "sha256": "6891676429b37c69d804e4d380abd1a10ba0287bb86d9cf666b88c85bb77003b",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "support-tightlow-posterior-35mm.npz",
+      "sha256": "ea900dbddc59a970377ff48094a9ab1a604a0df53338f38e0e0261152ea78905",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "support-widevertical-posterior-20mm.npz",
+      "sha256": "7501ca219764209b7f345b7ab9e2ec2418c2b179620bd03fcaa1bc2d4419eb70",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "support-widevertical-posterior-25mm.npz",
+      "sha256": "38bf67db51e9e4a97d3d62c4bd336ed5c9df04a10fab91f94f01bee296c6ad3c",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "support-widevertical-posterior-30mm.npz",
+      "sha256": "ce68fbb4b3fb1f90cfab0f07d61ae547ea92bc0b33098dde4dd17aa86b96e07c",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    },
+    {
+      "candidate": "support-widevertical-posterior-35mm.npz",
+      "sha256": "69e983defe4f02baf007d85ceb5fadff73e82a8da3966bc12fa85710e69b7bf2",
+      "sha256_matches": true,
+      "triangles_exact": true,
+      "source_indices_exact": true,
+      "face_parts_exact": true,
+      "mantle_positions_exact": true,
+      "finite_points": true
+    }
+  ],
+  "independent_geometric_review": "independent_diagnosis/REVIEW_FINAL_V10.md",
+  "independent_visual_review": "evidence/review-visual-v10.md",
+  "renderer": "Blender Cycles, native shell+band+V9 anatomy, legacy remaining JSON; not Minecraft",
+  "outline_checks": {
+    "baseline-identity": {
+      "front": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 1266757,
+        "coverage_pixels_after": 1266757,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.4150390625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "profile": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 1433373,
+        "coverage_pixels_after": 1433373,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.390625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "back": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 1382130,
+        "coverage_pixels_after": 1382130,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.4638671875,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "left-ear": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 2761990,
+        "coverage_pixels_after": 2761990,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "right-ear": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 2842914,
+        "coverage_pixels_after": 2842914,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "left-oblique": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 2585138,
+        "coverage_pixels_after": 2585138,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "right-oblique": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 2601673,
+        "coverage_pixels_after": 2601673,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 0.0
+      }
+    },
+    "boundary30": {
+      "front": {
+        "boundary_bidirectional_nearest_max_pixels": 5.0,
+        "boundary_bidirectional_nearest_p95_pixels": 3.1622776601683795,
+        "boundary_bidirectional_nearest_max_mm": 2.0751953125,
+        "xor_coverage_pixels": 1626,
+        "coverage_pixels_before": 1266757,
+        "coverage_pixels_after": 1267381,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 5.0,
+        "pixel_world_size_mm": 0.4150390625,
+        "max_outer_edge_shift_mm": 2.0751953125
+      },
+      "profile": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 1433373,
+        "coverage_pixels_after": 1433373,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.390625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "back": {
+        "boundary_bidirectional_nearest_max_pixels": 35.0,
+        "boundary_bidirectional_nearest_p95_pixels": 17.46424919657298,
+        "boundary_bidirectional_nearest_max_mm": 16.2353515625,
+        "xor_coverage_pixels": 9783,
+        "coverage_pixels_before": 1382130,
+        "coverage_pixels_after": 1391913,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 35.0,
+        "pixel_world_size_mm": 0.4638671875,
+        "max_outer_edge_shift_mm": 16.2353515625
+      },
+      "left-ear": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 2761990,
+        "coverage_pixels_after": 2761990,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "right-ear": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 2842914,
+        "coverage_pixels_after": 2842914,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "left-oblique": {
+        "boundary_bidirectional_nearest_max_pixels": 74.67261881037788,
+        "boundary_bidirectional_nearest_p95_pixels": 68.0,
+        "boundary_bidirectional_nearest_max_mm": 18.230619826752413,
+        "xor_coverage_pixels": 52840,
+        "coverage_pixels_before": 2585138,
+        "coverage_pixels_after": 2637978,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 75.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 18.310546875
+      },
+      "right-oblique": {
+        "boundary_bidirectional_nearest_max_pixels": 86.0,
+        "boundary_bidirectional_nearest_p95_pixels": 74.63008769784564,
+        "boundary_bidirectional_nearest_max_mm": 20.99609375,
+        "xor_coverage_pixels": 52989,
+        "coverage_pixels_before": 2601673,
+        "coverage_pixels_after": 2654662,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 86.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 20.99609375
+      }
+    },
+    "constrained-final": {
+      "front": {
+        "boundary_bidirectional_nearest_max_pixels": 14.212670403551895,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 5.898813399911675,
+        "xor_coverage_pixels": 999,
+        "coverage_pixels_before": 1266757,
+        "coverage_pixels_after": 1267756,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 17.0,
+        "pixel_world_size_mm": 0.4150390625,
+        "max_outer_edge_shift_mm": 7.0556640625
+      },
+      "profile": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 1433373,
+        "coverage_pixels_after": 1433373,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.390625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "back": {
+        "boundary_bidirectional_nearest_max_pixels": 9.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 4.174804687499999,
+        "xor_coverage_pixels": 648,
+        "coverage_pixels_before": 1382130,
+        "coverage_pixels_after": 1382778,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 9.0,
+        "pixel_world_size_mm": 0.4638671875,
+        "max_outer_edge_shift_mm": 4.174804687499999
+      },
+      "left-ear": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 2761990,
+        "coverage_pixels_after": 2761990,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "right-ear": {
+        "boundary_bidirectional_nearest_max_pixels": 0.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.0,
+        "boundary_bidirectional_nearest_max_mm": 0.0,
+        "xor_coverage_pixels": 0,
+        "coverage_pixels_before": 2842914,
+        "coverage_pixels_after": 2842914,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 0.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 0.0
+      },
+      "left-oblique": {
+        "boundary_bidirectional_nearest_max_pixels": 7.0,
+        "boundary_bidirectional_nearest_p95_pixels": 0.9499999999989086,
+        "boundary_bidirectional_nearest_max_mm": 1.708984375,
+        "xor_coverage_pixels": 1431,
+        "coverage_pixels_before": 2585138,
+        "coverage_pixels_after": 2586569,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 9.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 2.197265625
+      },
+      "right-oblique": {
+        "boundary_bidirectional_nearest_max_pixels": 18.681541692269406,
+        "boundary_bidirectional_nearest_p95_pixels": 10.770329614269007,
+        "boundary_bidirectional_nearest_max_mm": 4.56092326471421,
+        "xor_coverage_pixels": 6472,
+        "coverage_pixels_before": 2601673,
+        "coverage_pixels_after": 2608145,
+        "changed_scanline_presence": 0,
+        "max_outer_edge_shift_pixels": 19.0,
+        "pixel_world_size_mm": 0.244140625,
+        "max_outer_edge_shift_mm": 4.638671875
+      }
+    }
+  }
+}

@@ -1,0 +1,55 @@
+(!) Failed to run dependency scan. Skipping dependency pre-bundling. Error: failed to resolve rolldownOptions.input value: "index.html".
+    at resolvePath (file:///workspace/scratch/212c580ada5b/paz-workbench-validation-20261103/source/viewer-3d/node_modules/vite/dist/node/chunks/node.js:31336:29)
+    at async Promise.all (index 0)
+    at async computeEntries (file:///workspace/scratch/212c580ada5b/paz-workbench-validation-20261103/source/viewer-3d/node_modules/vite/dist/node/chunks/node.js:31341:41)
+    at async scan (file:///workspace/scratch/212c580ada5b/paz-workbench-validation-20261103/source/viewer-3d/node_modules/vite/dist/node/chunks/node.js:31284:19)
+    at async file:///workspace/scratch/212c580ada5b/paz-workbench-validation-20261103/source/viewer-3d/node_modules/vite/dist/node/chunks/node.js:34311:15
+Error: Unable to start verified renderer: hardware: browserType.launch: Target page, context or browser has been closed
+Browser logs:
+
+<launching> /usr/bin/chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --enable-gpu --user-data-dir=/tmp/playwright_chromiumdev_profile-uaT1AC --remote-debugging-pipe --no-startup-window
+<launched> pid=41
+[pid=41][err] [41:41:1103/040206.484992:ERROR:third_party/crashpad/crashpad/util/file/filesystem_posix.cc:63] mkdir : No such file or directory (2)
+[pid=41][err] chrome_crashpad_handler: --database is required
+[pid=41][err] Try 'chrome_crashpad_handler --help' for more information.
+[pid=41][err] [41:41:1103/040206.488958:FATAL:chrome/browser/process_singleton_posix.cc:297] Check failed: . socket() failed: Operation not permitted (1)
+Call log:
+[2m  - <launching> /usr/bin/chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --enable-gpu --user-data-dir=/tmp/playwright_chromiumdev_profile-uaT1AC --remote-debugging-pipe --no-startup-window[22m
+[2m  - <launched> pid=41[22m
+[2m  - [pid=41][err] [41:41:1103/040206.484992:ERROR:third_party/crashpad/crashpad/util/file/filesystem_posix.cc:63] mkdir : No such file or directory (2)[22m
+[2m  - [pid=41][err] chrome_crashpad_handler: --database is required[22m
+[2m  - [pid=41][err] Try 'chrome_crashpad_handler --help' for more information.[22m
+[2m  - [pid=41][err] [41:41:1103/040206.488958:FATAL:chrome/browser/process_singleton_posix.cc:297] Check failed: . socket() failed: Operation not permitted (1)[22m
+[2m  - [pid=41] <gracefully close start>[22m
+[2m  - [pid=41] <kill>[22m
+[2m  - [pid=41] <will force kill>[22m
+[2m  - [pid=41] <process did exit: exitCode=null, signal=SIGABRT>[22m
+[2m  - [pid=41] starting temporary directories cleanup[22m
+[2m  - [pid=41] finished temporary directories cleanup[22m
+[2m  - [pid=41] <gracefully close end>[22m
+; software: browserType.launch: Target page, context or browser has been closed
+Browser logs:
+
+<launching> /usr/bin/chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --use-angle=swiftshader --enable-unsafe-swiftshader --user-data-dir=/tmp/playwright_chromiumdev_profile-dtAAxn --remote-debugging-pipe --no-startup-window
+<launched> pid=60
+[pid=60][err] [60:60:1103/040211.587023:ERROR:third_party/crashpad/crashpad/util/file/filesystem_posix.cc:63] mkdir : No such file or directory (2)
+[pid=60][err] chrome_crashpad_handler: --database is required
+[pid=60][err] Try 'chrome_crashpad_handler --help' for more information.
+[pid=60][err] [60:60:1103/040211.590841:FATAL:chrome/browser/process_singleton_posix.cc:297] Check failed: . socket() failed: Operation not permitted (1)
+Call log:
+[2m  - <launching> /usr/bin/chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --use-angle=swiftshader --enable-unsafe-swiftshader --user-data-dir=/tmp/playwright_chromiumdev_profile-dtAAxn --remote-debugging-pipe --no-startup-window[22m
+[2m  - <launched> pid=60[22m
+[2m  - [pid=60][err] [60:60:1103/040211.587023:ERROR:third_party/crashpad/crashpad/util/file/filesystem_posix.cc:63] mkdir : No such file or directory (2)[22m
+[2m  - [pid=60][err] chrome_crashpad_handler: --database is required[22m
+[2m  - [pid=60][err] Try 'chrome_crashpad_handler --help' for more information.[22m
+[2m  - [pid=60][err] [60:60:1103/040211.590841:FATAL:chrome/browser/process_singleton_posix.cc:297] Check failed: . socket() failed: Operation not permitted (1)[22m
+[2m  - [pid=60] <gracefully close start>[22m
+[2m  - [pid=60] <kill>[22m
+[2m  - [pid=60] <will force kill>[22m
+[2m  - [pid=60] <process did exit: exitCode=null, signal=SIGABRT>[22m
+[2m  - [pid=60] starting temporary directories cleanup[22m
+[2m  - [pid=60] finished temporary directories cleanup[22m
+[2m  - [pid=60] <gracefully close end>[22m
+
+    at launchRenderBrowser (file:///workspace/scratch/212c580ada5b/paz-workbench-validation-20261103/source/viewer-3d/scripts/lib/render-browser.mjs:98:9)
+    at async main (file:///workspace/scratch/212c580ada5b/paz-workbench-validation-20261103/source/viewer-3d/scripts/capture-assets.mjs:208:15)

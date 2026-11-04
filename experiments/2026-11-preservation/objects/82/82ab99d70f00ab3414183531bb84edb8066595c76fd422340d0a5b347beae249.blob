@@ -1,0 +1,32 @@
+from pathlib import Path
+import json,hashlib,subprocess,re,os,time,collections
+R=Path('/workspace/scratch/212c580ada5b'); A=R/'paz-preservation-audit-20261104'; D=A/'sculpture-lossless-archive'; (D/'objects').mkdir(parents=True,exist_ok=True)
+rows=json.loads((A/'sculpture-binary-inventory.json').read_text()); groups=collections.defaultdict(list)
+for x in rows:
+ if x['source'].endswith(('.blend','.blend1')):groups[x['sha256']].append(x)
+def stage(r):
+ s=Path(r['source']).name
+ m=re.search(r'(?:^|[_-])(?:V|P|v)(\d+)',s)
+ return int(m.group(1)) if m else (20 if r['bytes']>=20_000_000 else 0)
+def choose(xs):return min(xs,key=lambda x:(x['source'].endswith('.blend1'),len(x['source']),x['source']))
+unique=[(h,choose(v),v) for h,v in groups.items()]
+unique.sort(key=lambda t:(t[1]['bytes']>=20_000_000,stage(t[1]),t[1]['source']))
+manifest={'format_version':1,'codec':'zstd --patch-from','codec_version':subprocess.check_output(['zstd','--version'],text=True).strip(),'status':'ARCHIVAL_ONLY_NOT_APPROVED_SCULPTURE_OR_RELEASE','created_utc':'2026-11-04','originals_untouched':True,'objects':[],'aliases':[]}
+prev={}; start=time.time()
+for i,(h,row,aliases) in enumerate(unique):
+ family='large-sculpture' if row['bytes']>=20_000_000 else 'small-bedrock-scenes'; src=R/row['source']; dest=D/'objects'/f'{h}.zst'; full=D/'objects'/f'.{h}.full.zst'; delta=D/'objects'/f'.{h}.delta.zst'
+ subprocess.run(['zstd','-q','-f','-3','--single-thread','--long=27',str(src),'-o',str(full)],check=True)
+ parent=prev.get(family); ref=None
+ if parent:
+  subprocess.run(['zstd','-q','-f','-3','--single-thread','--long=27',f'--patch-from={R/parent["source"]}',str(src),'-o',str(delta)],check=True)
+  if delta.stat().st_size<full.stat().st_size:delta.replace(dest);full.unlink();ref=parent['sha256']
+  else:full.replace(dest);delta.unlink()
+ else:full.replace(dest)
+ compressed_hash=hashlib.file_digest(dest.open('rb'),'sha256').hexdigest()
+ manifest['objects'].append({'sha256':h,'bytes':row['bytes'],'representation':str(dest.relative_to(D)),'compressed_sha256':compressed_hash,'compressed_bytes':dest.stat().st_size,'reference_sha256':ref,'canonical_source':row['source'],'status':'HISTORICAL_EXPERIMENTAL_INPUT_NOT_PROMOTED'})
+ for x in aliases:manifest['aliases'].append({'path':x['source'],'sha256':h,'bytes':x['bytes']})
+ prev[family]=row
+ if (i+1)%10==0:print(f'{i+1}/{len(unique)} objects; compressed={sum(x["compressed_bytes"] for x in manifest["objects"]):,}; elapsed={time.time()-start:.1f}s',flush=True)
+manifest['totals']={'unique_objects':len(unique),'source_paths':len(manifest['aliases']),'unique_original_bytes':sum(x['bytes'] for x in manifest['objects']),'compressed_bytes':sum(x['compressed_bytes'] for x in manifest['objects'])}
+(D/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
+print(json.dumps(manifest['totals'],indent=2),flush=True)

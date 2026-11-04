@@ -1,0 +1,15 @@
+import numpy as np,json,gzip
+from pathlib import Path
+from PIL import Image
+O=Path(__file__).resolve().parent;V=O.parent;B=V.parent;W=V/'export_work';records=[json.loads(l)for l in gzip.open(W/'transport_faces.jsonl.gz','rt')];prov=dict(np.load(W/'pbr-texel-provenance.npz'));raster=dict(np.load(O/'raster-audit-arrays.npz'));old=dict(np.load(B/'pbr_normals_v2/evidence/repaired_meshes.npz'));source=dict(np.load(B/'body_interface_v9/constrained_fit/retained-anatomy.npz'));oldgeo=json.loads((W/'legacy-geometry.geo.json').read_text())['minecraft:geometry'][0];oldalpha=np.array(Image.open(W/'legacy-color.png'))[:,:,3];atlas=np.array(Image.open(V/'resource_pack/textures/entity/paz_v75_v14_lab_sculpture.png'))[:,:,3];Y,X=np.mgrid[:20,:20];pix=np.stack([X+.5,Y+.5,np.ones_like(X)],-1);wrong=0;flagged=0;required=0;maxmove=0.;outside=0;flags_agree=True
+for i,r in enumerate(records):
+ if r['part']!=15:continue
+ fi=r['native_triangle_index'];xy=raster['triangle_tile_xy'][i];C=np.linalg.inv(np.column_stack([xy,np.ones(3)]).T);bc=pix@C.T;bc=np.maximum(bc,0);bc/=bc.sum(-1,keepdims=True);of=old['low_f'][int(source['source_face_indices'][fi])];pts=old['low_v'][of][:,[0,2,1]]*[16,16,-16];k=int(np.argmax(np.linalg.norm(np.roll(pts,-1,axis=0)-pts,axis=1)));p=np.roll(pts,-k,axis=0);u=p[1]-p[0];w=np.linalg.norm(u);u/=w;v=p[2]-p[0];t=v@u;h=np.linalg.norm(v-t*u);q=np.roll(bc,-k,axis=-1);fx=(q[:,:,1]*w+q[:,:,2]*t+w/18)/(w*20/18)*20;fy=(1-(q[:,:,2]*h+h/18)/(h*20/18))*20;sx=np.clip(np.floor(fx).astype(int),0,19);sy=np.clip(np.floor(fy).astype(int),0,19);legacyuv=oldgeo['bones'][15]['cubes'][fi]['uv']['south']['uv'];lx,ly=legacyuv;oldmask=oldalpha[ly:ly+20,lx:lx+20]>0;tx,ty=r['atlas_uv'];mask=atlas[ty:ty+20,tx:tx+20]>0;need=mask&~oldmask[sy,sx]
+ if prov['anatomy_identity_face'][fi]:sx=X.copy();sy=Y.copy();need=mask&~oldmask
+ expected=np.stack([lx+sx,ly+sy],-1);coords=np.argwhere(oldmask);flag=prov['anatomy_same_face_alpha_fallback'][fi]
+ # Only visible texels outside the old alpha need the declared fallback.
+ flags_agree &= np.array_equal(flag,need)
+ for y,x in np.argwhere(need):
+  dist=((coords-np.array([sy[y,x],sx[y,x]]))**2).sum(1);best=coords[np.argmin(dist)];expected[y,x]=[lx+best[1],ly+best[0]];maxmove=max(maxmove,float(np.sqrt(dist.min())))
+ got=prov['anatomy_legacy_texel_xy'][fi];wrong+=int(np.any(expected!=got,axis=-1).sum());flagged+=int(flag.sum());required+=int(need.sum());outside+=int(((got[...,0]<lx)|(got[...,0]>=lx+20)|(got[...,1]<ly)|(got[...,1]>=ly+20)).sum())
+rep={'all_provenance_xy_rederived':wrong==0,'wrong_texel_count':wrong,'fallback_flags_equal_independently_required_mask':bool(flags_agree),'fallback_pixels_flagged':flagged,'fallback_pixels_required':required,'fallback_max_distance_legacy_texels':maxmove,'samples_outside_matching_legacy_tile':outside,'method':'Independent inverse from already-audited triangle tile coordinates, source-face barycentrics and original source geometry; compare every target anatomy pixel, including deterministic nearest-covered fallback within its original tile.'};(O/'anatomy-resampling-audit.json').write_text(json.dumps(rep,indent=2));print(json.dumps(rep,indent=2))

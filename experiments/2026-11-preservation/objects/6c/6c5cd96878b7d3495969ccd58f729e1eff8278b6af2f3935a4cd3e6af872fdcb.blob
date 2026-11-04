@@ -1,0 +1,54 @@
+{
+  "status": "complete",
+  "isolatedCopy": "/workspace/scratch/212c580ada5b/altare-snapshot-audit-20261103",
+  "newFiles": 5,
+  "existingSourcesModified": 0,
+  "tests": {
+    "newAdversarial": 14,
+    "altareTotal": 143,
+    "typecheck": "passed",
+    "build": "passed",
+    "structuralValidators": "passed",
+    "independentReview": "two concrete findings fixed; review and 14 adversarial tests passed",
+    "patchCheck": "passed without applying to baseline"
+  },
+  "catalogAudit": {
+    "oldStates": 80000,
+    "converted": 19416,
+    "unchanged": 33920,
+    "rejected": 26664,
+    "explicitNormalizations": 1728
+  },
+  "preservation": {
+    "src": {
+      "files": 16,
+      "byteIdentical": true
+    },
+    "assets-src": {
+      "files": 27,
+      "byteIdentical": true
+    },
+    "packs": {
+      "files": 5393,
+      "byteIdentical": true
+    }
+  },
+  "demonstration": {
+    "syntheticOnly": true,
+    "worldAccess": false,
+    "inputUnchanged": true,
+    "normalizationBlockedByDefault": true,
+    "approvedBundleVerified": true,
+    "rollbackByteIdentical": true,
+    "incompatibleRejectCount": 1,
+    "sourceSha256": "7f3ae58ecc9b49384aade34878ffb294348bb8ddee22c3dd0f14b78339c6b474",
+    "manifestSha256": "f0040c7890f4b44c54ddb5c73f7f68d460a9afda80e3b29d24ed51a4c0799b78"
+  },
+  "limits": [
+    "Selected-cell file conversion only; no exporter, importer, world migration or installation.",
+    "No production/user world or snapshot was read; demonstrations were synthetic.",
+    "POSIX Node 24; canonical trusted directories without concurrent writers.",
+    "Source schema exactly altare-0.12.3; target compact-v1 pinned by codebook/codec hashes.",
+    "Whole-world backups and native migration tests remain required for any real rollout."
+  ]
+}

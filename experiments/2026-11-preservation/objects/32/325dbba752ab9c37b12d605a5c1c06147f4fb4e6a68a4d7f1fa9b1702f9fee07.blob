@@ -1,0 +1,605 @@
+import type { BlockCustomComponent, CustomComponentParameters, Direction, ItemComponentUseOnEvent, ItemCustomComponent, StartupEvent } from "@minecraft/server";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+
+// Exercise the real bootstrap subscriptions and production handlers. Only the
+// Minecraft host and presentation ports are fakes, not evidence of engine timing.
+const engine = vi.hoisted(() => ({
+  startup: undefined as undefined | ((event: StartupEvent) => void),
+  after: new Map<string, Array<(event: unknown) => void>>(),
+  before: new Map<string, Array<(event: unknown) => void>>(),
+}));
+vi.mock("@minecraft/server", async () => {
+  const runtime = await import("../mocks/compact-runtime");
+  return {
+    ...runtime,
+    Player: runtime.FakePlayer,
+    BlockPermutation: runtime.FakePermutation,
+    EntitySwingSource: { Attack: "attack", Mine: "mine" },
+    PlayerInventoryType: { Hotbar: "hotbar" },
+    system: Object.assign(runtime.system, { beforeEvents: { startup: { subscribe: (callback: (event: StartupEvent) => void) => { engine.startup = callback; } } } }),
+    world: Object.assign(runtime.world, {
+      beforeEvents: new Proxy({}, { get: (_target, name) => ({ subscribe: (callback: (event: unknown) => void) => {
+        const key = String(name);
+        engine.before.set(key, [...engine.before.get(key) ?? [], callback]);
+      } }) }),
+      afterEvents: new Proxy({}, { get: (_target, name) => ({ subscribe: (callback: (event: unknown) => void) => {
+        const key = String(name);
+        engine.after.set(key, [...engine.after.get(key) ?? [], callback]);
+      } }) }),
+    }),
+  };
+});
+vi.mock("../../src/application/sprinkle", () => ({ cancelWaterSpray: vi.fn(), clearSprinklePlayerState: vi.fn(), getSprinkleSession: vi.fn(), trySprinkle: vi.fn() }));
+vi.mock("../../src/presentation/animation-coordinator", () => ({ playLoadingAnimation: vi.fn() }));
+vi.mock("../../src/presentation/audio/bedrock-audio-adapter", () => ({ audioPort: { emit: vi.fn() } }));
+vi.mock("../../src/presentation/wet-feedback", () => ({ presentLoadedAspergillum: vi.fn() }));
+vi.mock("../../src/presentation/customization-menu", () => ({ showCustomizationMenu: vi.fn() }));
+vi.mock("../../src/presentation/aspersorium-water-visual", () => ({ reconcileLoadedAspersoriumWaterVisual: vi.fn(), scheduleAspersoriumWaterVisualReconciliation: vi.fn(), scheduleAspersoriumWaterVisualRemoval: vi.fn() }));
+
+import { clearCustomizationPlayerState } from "../../src/application/sacristan-table";
+import { decodeAspersoriumContents, encodeAspersoriumContents, encodeTableContents } from "../../src/domain/block-state-layout";
+import { dockedShardPropertyId } from "../../src/domain/docking";
+import { acquireCustomizationSession, isCurrentCustomizationSession } from "../../src/infrastructure/customization-session";
+import { getActionLease } from "../../src/infrastructure/action-lease";
+import { ASPERGILLUM_COMPONENT, ASPERSORIUM_BLOCK, ASPERSORIUM_COMPONENT, ROTATION_STATE, SACRISTAN_TABLE_BLOCK, SACRISTAN_TABLE_COMPONENT, TABLE_ROTATION_STATE } from "../../src/infrastructure/constants";
+import { getDockedSnapshot, setDockedSnapshot } from "../../src/infrastructure/docked-item-registry";
+import { captureDockedAspergillum, createAspergillum, readAspergillumState } from "../../src/infrastructure/item-state";
+import { getLoadingBlockOwner, getLoadingSession } from "../../src/infrastructure/loading-session";
+import { showCustomizationMenu } from "../../src/presentation/customization-menu";
+import { scheduleAspersoriumWaterVisualRemoval } from "../../src/presentation/aspersorium-water-visual";
+import { advanceTicks, failOnce, FakeBlock, FakeDimension, FakePermutation, FakePlayer, resetRuntime, system, world } from "../mocks/compact-runtime";
+
+const components = new Map<string, BlockCustomComponent>();
+const itemComponents = new Map<string, ItemCustomComponent>();
+const parameters = { params: {} } as CustomComponentParameters;
+const players: string[] = [];
+beforeAll(async () => {
+  await import("../../src/bootstrap/main");
+  if (!engine.startup) throw new Error("Bootstrap startup subscription missing");
+  engine.startup({
+    blockComponentRegistry: { registerCustomComponent: (id: string, component: BlockCustomComponent) => { components.set(id, component); } },
+    itemComponentRegistry: { registerCustomComponent: (id: string, component: ItemCustomComponent) => { itemComponents.set(id, component); } },
+  } as unknown as StartupEvent);
+});
+
+beforeEach(() => { resetRuntime(); vi.clearAllMocks(); });
+afterEach(() => {
+  for (const id of players.splice(0)) clearCustomizationPlayerState(id);
+  advanceTicks(50);
+  vi.restoreAllMocks();
+});
+function fixture(kind: "aspersorium" | "table") {
+  const dimension = new FakeDimension();
+  const block = new FakeBlock(dimension, new FakePermutation(kind === "aspersorium" ? ASPERSORIUM_BLOCK : SACRISTAN_TABLE_BLOCK,
+    kind === "aspersorium" ? { ...encodeAspersoriumContents({ waterUnits: 14, cosmeticIndex: null }), [ROTATION_STATE]: 7 }
+      : { ...encodeTableContents({ cosmeticIndex: null }), [TABLE_ROTATION_STATE]: 11 }).asPermutation());
+  const player = new FakePlayer(dimension);
+  Object.assign(player.container, { size: 0 }); // No inventory migration fixtures in this routing test.
+  players.push(player.id);
+  const component = components.get(kind === "aspersorium" ? ASPERSORIUM_COMPONENT : SACRISTAN_TABLE_COMPONENT);
+  if (!component?.onPlayerInteract || !component.onBreak) throw new Error(`Missing ${kind} event callbacks`);
+  return { dimension, block, player, component };
+}
+function emit(name: string, event: unknown): void {
+  const subscribers = engine.after.get(name);
+  if (!subscribers?.length) throw new Error(`Missing subscription: ${name}`);
+  for (const callback of subscribers) callback(event);
+}
+function menu() {
+  const last = vi.mocked(showCustomizationMenu).mock.calls.at(-1);
+  if (!last) throw new Error("Expected customization callback port");
+  return last[2];
+}
+function lifecycle(name: string, player: FakePlayer): void {
+  const event = name === "entityDie" ? { deadEntity: player.asPlayer() }
+    : name === "playerLeave" ? { playerId: player.id }
+      : name === "playerInventoryItemChange" ? { player: player.asPlayer(), inventoryType: "hotbar", slot: player.selectedSlotIndex, itemStack: undefined }
+        : { player: player.asPlayer(), initialSpawn: false };
+  emit(name, event);
+}
+
+describe("compact states through registered production event routes", () => {
+  it.each(["aspersorium", "table"] as const)("deduplicates item and block input for %s, then routes break and player-after-break once", (kind) => {
+    const { dimension, block, player, component } = fixture(kind);
+    player.hand = createAspergillum(4);
+    const expected = captureDockedAspergillum(player.hand, kind === "aspersorium" ? 2 : 4);
+    player.isSneaking = kind === "aspersorium";
+    const itemUse = itemComponents.get(ASPERGILLUM_COMPONENT)?.onUseOn;
+    if (!itemUse) throw new Error("Item onUseOn missing");
+    const itemEvent: ItemComponentUseOnEvent = {
+      source: player.asPlayer(), block: block.asBlock(), itemStack: player.hand,
+      usedOnBlockPermutation: block.permutation, blockFace: "Up" as Direction,
+      faceLocation: { x: 0.5, y: 1, z: 0.5 },
+    };
+    itemUse(itemEvent, parameters);
+    component.onPlayerInteract!(player.interaction(block), parameters);
+    player.isSneaking = false;
+    advanceTicks();
+    expect(player.hand).toBeUndefined();
+    expect(block.setPermutation).toHaveBeenCalledTimes(1);
+    expect(getDockedSnapshot(dimension.id, block.location)).toEqual(expected);
+    if (kind === "aspersorium") expect(decodeAspersoriumContents(block.permutation.getAllStates())).toEqual({ waterUnits: 16, cosmeticIndex: 0 });
+    const savedBreak = block.breakEvent();
+    // The live block after destruction is air; recovery must use the event's
+    // broken permutation, not read the live block to infer prior occupancy.
+    block.permutation = new FakePermutation("minecraft:air", {}).asPermutation();
+    component.onBreak!(savedBreak, parameters);
+    emit("playerBreakBlock", { ...savedBreak, player: player.asPlayer() });
+    if (kind === "table") expect(menu().finishAndRetrieve()).toBe(false);
+    advanceTicks(2);
+    expect(dimension.drops).toHaveLength(1);
+    expect(captureDockedAspergillum(dimension.drops[0]!.item, expected.charges)).toEqual(expected);
+    expect(getDockedSnapshot(dimension.id, block.location)).toBeUndefined();
+    expect(scheduleAspersoriumWaterVisualRemoval).toHaveBeenCalledTimes(kind === "aspersorium" ? 1 : 0);
+  });
+
+  it.each(["playerHotbarSelectedSlotChange", "playerDimensionChange", "playerGameModeChange", "playerInventoryItemChange", "entityDie", "playerSpawn", "playerLeave"])("%s cancels production loading before delayed commit", (name) => {
+    const { block, player, component } = fixture("aspersorium");
+    player.hand = createAspergillum(0);
+    component.onPlayerInteract!(player.interaction(block), parameters);
+    advanceTicks();
+    expect(getLoadingSession(player.id)).toBeDefined();
+    lifecycle(name, player);
+    advanceTicks(20);
+    expect(getLoadingSession(player.id)).toBeUndefined();
+    expect(getActionLease(player.id)).toBeUndefined();
+    expect(getLoadingBlockOwner(block.dimension.id, block.location)).toBeUndefined();
+    expect(readAspergillumState(player.hand!).charges).toBe(0);
+    expect(block.setPermutation).not.toHaveBeenCalled();
+  });
+
+  it.each(["playerHotbarSelectedSlotChange", "playerDimensionChange", "playerGameModeChange", "entityDie", "playerSpawn", "playerLeave"])("%s invalidates production table callbacks without losing its stored item", (name) => {
+    const { block, dimension, player, component } = fixture("table");
+    player.hand = createAspergillum(3);
+    component.onPlayerInteract!(player.interaction(block), parameters);
+    advanceTicks();
+    const saved = getDockedSnapshot(dimension.id, block.location);
+    const actions = menu();
+    lifecycle(name, player);
+    advanceTicks();
+    expect(actions.applyCosmetic("bronze_ivory")).toBe(false);
+    expect(actions.finishAndRetrieve()).toBe(false);
+    expect(getDockedSnapshot(dimension.id, block.location)).toEqual(saved);
+    expect(player.hand).toBeUndefined();
+    expect(dimension.drops).toHaveLength(0);
+    expect(block.setPermutation).toHaveBeenCalledTimes(1);
+  });
+
+  it("preserves a replacement snapshot before a registered break callback executes its deferred recovery", () => {
+    const { block, dimension, player, component } = fixture("table");
+    player.hand = createAspergillum(3);
+    component.onPlayerInteract!(player.interaction(block), parameters);
+    advanceTicks();
+    component.onBreak!(block.destroyForBreak(), parameters);
+    const replacement = captureDockedAspergillum(createAspergillum(1), 1);
+    setDockedSnapshot(dimension.id, block.location, replacement);
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    advanceTicks();
+    expect(getDockedSnapshot(dimension.id, block.location)).toEqual(replacement);
+    expect(dimension.drops).toHaveLength(0);
+    expect(console.error).toHaveBeenCalledWith(expect.stringContaining("replacement preserved"));
+  });
+
+  it.each(["aspersorium", "table"] as const)("registered %s recovery preserves a new occupancy with exactly the same snapshot", kind => {
+    const { block, dimension, player, component } = fixture(kind);
+    player.hand = createAspergillum(3); player.isSneaking = kind === "aspersorium";
+    component.onPlayerInteract!(player.interaction(block), parameters); advanceTicks();
+    const occupied = block.permutation;
+    const property = dockedShardPropertyId(dimension.id, block.location);
+    const raw = world.getDynamicProperty(property);
+    const broken = block.destroyForBreak();
+    component.onBreak!(broken, parameters);
+    block.permutation = occupied; // Address reused without any snapshot-content delta.
+    world.setDynamicProperty.mockClear(); block.setPermutation.mockClear();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    advanceTicks();
+    expect(world.getDynamicProperty(property)).toBe(raw);
+    expect(world.setDynamicProperty).not.toHaveBeenCalled();
+    expect(block.setPermutation).not.toHaveBeenCalled();
+    expect(dimension.drops).toHaveLength(0);
+  });
+});
+
+describe("table session identity regression fixes", () => {
+  it("keeps a newly opened table session alive after the old close callback", () => {
+    const { block, dimension, player, component } = fixture("table");
+    player.hand = createAspergillum(3);
+    component.onPlayerInteract!(player.interaction(block), parameters);
+    advanceTicks();
+    const oldActions = menu();
+    oldActions.close();
+    advanceTicks(3);
+    component.onPlayerInteract!(player.interaction(block), parameters);
+    advanceTicks();
+    const newActions = menu();
+    expect(newActions.applySprayProfile("contained")).toBe(true);
+    oldActions.close();
+    expect(oldActions.finishAndRetrieve()).toBe(false);
+    expect(oldActions.applyCosmetic("classic")).toBe(false);
+    expect(newActions.applyCosmetic("bronze_ivory")).toBe(true);
+    const contender = new FakePlayer(dimension);
+    players.push(contender.id);
+    component.onPlayerInteract!(contender.interaction(block), parameters);
+    advanceTicks();
+    expect(showCustomizationMenu).toHaveBeenCalledTimes(2);
+    expect(contender.hand).toBeUndefined();
+    expect(newActions.finishAndRetrieve()).toBe(true);
+    expect(readAspergillumState(player.hand!).cosmeticId).toBe("bronze_ivory");
+  });
+
+  it.each(["edit", "profile", "restore", "retrieve"] as const)("refuses stale table %s on a replacement item without a break event", (action) => {
+    const { block, dimension, player, component } = fixture("table");
+    player.hand = createAspergillum(3);
+    component.onPlayerInteract!(player.interaction(block), parameters);
+    advanceTicks();
+    const actions = menu();
+    const replacement = captureDockedAspergillum(createAspergillum(1), 1);
+    setDockedSnapshot(dimension.id, block.location, replacement);
+    const before = block.permutation.getAllStates();
+    if (action === "edit") expect(actions.applyCosmetic("bronze_ivory")).toBe(false);
+    if (action === "profile") expect(actions.applySprayProfile("contained")).toBe(false);
+    if (action === "restore") expect(actions.restoreClassic()).toBe(false);
+    if (action === "retrieve") expect(actions.finishAndRetrieve()).toBe(false);
+    expect(getDockedSnapshot(dimension.id, block.location)).toEqual(replacement);
+    expect(block.permutation.getAllStates()).toEqual(before);
+    expect(player.hand).toBeUndefined();
+    expect(dimension.drops).toHaveLength(0);
+    actions.close();
+    advanceTicks(3);
+    component.onPlayerInteract!(player.interaction(block), parameters);
+    advanceTicks();
+    const newActions = menu();
+    expect(newActions).not.toBe(actions);
+    actions.close();
+    expect(newActions.applySprayProfile("contained")).toBe(true);
+    expect(newActions.finishAndRetrieve()).toBe(true);
+    expect(captureDockedAspergillum(player.hand!, 1)).toEqual({ ...replacement, sprayProfileId: "contained" });
+  });
+
+});
+
+// Characterization, not acceptance: these assertions intentionally record the
+// pre-existing unsafe residuals. A green suite does not approve release/migration.
+describe("known lifecycle limitations retained outside the codec scope", () => {
+  it("still records delayed break replay consuming a replacement snapshot at an air address", () => {
+    const { dimension, block, player, component } = fixture("table");
+    player.hand = createAspergillum(3);
+    component.onPlayerInteract!(player.interaction(block), parameters);
+    advanceTicks();
+    const oldEvent = block.destroyForBreak(); // A replay while the live address remains air is still unsafe.
+    component.onBreak!(oldEvent, parameters);
+    advanceTicks();
+    expect(dimension.drops).toHaveLength(1);
+    const replacement = captureDockedAspergillum(createAspergillum(1), 1);
+    setDockedSnapshot(dimension.id, block.location, replacement);
+    component.onBreak!(oldEvent, parameters); // Injected replay, not observed engine behavior.
+    advanceTicks();
+    expect(dimension.drops).toHaveLength(2);
+    expect(readAspergillumState(dimension.drops[1]!.item).charges).toBe(1);
+    expect(captureDockedAspergillum(dimension.drops[1]!.item, 1)).toEqual(replacement);
+    expect(getDockedSnapshot(dimension.id, block.location)).toBeUndefined();
+  });
+
+  it.each(["aspersorium", "table"] as const)("records loss after both the %s docking write and hand rollback fail", (kind) => {
+    const { block, dimension, player, component } = fixture(kind);
+    player.hand = createAspergillum(3);
+    player.isSneaking = kind === "aspersorium";
+    const originalStates = block.permutation.getAllStates();
+    const setEquipment = player.equipment.setEquipment.getMockImplementation()!;
+    player.equipment.setEquipment.mockImplementationOnce(setEquipment).mockImplementationOnce(failOnce);
+    block.setPermutation.mockImplementationOnce(failOnce);
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    component.onPlayerInteract!(player.interaction(block), parameters);
+    advanceTicks();
+    expect(player.hand).toBeUndefined();
+    expect(getDockedSnapshot(dimension.id, block.location)).toBeUndefined();
+    expect(block.permutation.getAllStates()).toEqual(originalStates);
+    expect(dimension.drops).toHaveLength(0);
+  });
+});
+
+
+describe("conservative prevention through the real player-before-break subscription", () => {
+  function attempt(block: FakeBlock, player: FakePlayer, cancel = false) {
+    const event = { block: block.asBlock(), dimension: block.dimension.asDimension(), player: player.asPlayer(), itemStack: player.hand, cancel };
+    const subscribers = engine.before.get("playerBreakBlock");
+    if (subscribers?.length !== 1) throw new Error("Expected exactly one production before-break subscription");
+    for (const callback of subscribers) callback(event);
+    return event;
+  }
+  function occupy(kind: "aspersorium" | "table", block: FakeBlock) {
+    block.permutation = new FakePermutation(block.typeId, kind === "aspersorium"
+      ? { ...encodeAspersoriumContents({ waterUnits: 14, cosmeticIndex: 0 }), [ROTATION_STATE]: 7 }
+      : { ...encodeTableContents({ cosmeticIndex: 0 }), [TABLE_ROTATION_STATE]: 11 }).asPermutation();
+  }
+  it.each(["aspersorium", "table"] as const)("cancels occupied %s without transferring, deleting, or mutating gameplay state", (kind) => {
+    const { block, player, dimension } = fixture(kind); occupy(kind, block);
+    const snapshot = captureDockedAspergillum(createAspergillum(3), 3);
+    setDockedSnapshot(dimension.id, block.location, snapshot);
+    world.setDynamicProperty.mockClear();
+    expect(attempt(block, player).cancel).toBe(true);
+    expect(player.onScreenDisplay.setActionBar).not.toHaveBeenCalled(); // restricted before-event
+    advanceTicks();
+    expect(getDockedSnapshot(dimension.id, block.location)).toEqual(snapshot);
+    expect(world.setDynamicProperty).not.toHaveBeenCalled();
+    expect(player.equipment.setEquipment).not.toHaveBeenCalled();
+    expect(block.setPermutation).not.toHaveBeenCalled();
+    expect(dimension.drops).toHaveLength(0);
+  });
+  it.each(["aspersorium", "table"] as const)("cancels visually empty %s with an orphaned snapshot", (kind) => {
+    const { block, player, dimension } = fixture(kind);
+    const snapshot = captureDockedAspergillum(createAspergillum(2), 2);
+    setDockedSnapshot(dimension.id, block.location, snapshot); world.setDynamicProperty.mockClear();
+    expect(attempt(block, player).cancel).toBe(true); advanceTicks();
+    expect(getDockedSnapshot(dimension.id, block.location)).toEqual(snapshot);
+    expect(world.setDynamicProperty).not.toHaveBeenCalled(); expect(dimension.drops).toHaveLength(0);
+  });
+  it.each(["aspersorium", "table"] as const)("cancels reserved %s contents instead of treating them as an empty block", (kind) => {
+    const { block, player } = fixture(kind);
+    block.permutation = new FakePermutation(block.typeId, kind === "aspersorium"
+      ? { "aspergillum:contents_a": 1, "aspergillum:contents_b": 2, "aspergillum:contents_c": 6, "aspergillum:contents_d": 6, [ROTATION_STATE]: 7 }
+      : { "aspergillum:table_contents_a": 1, "aspergillum:table_contents_b": 8, [TABLE_ROTATION_STATE]: 11 }).asPermutation();
+    expect(attempt(block, player).cancel).toBe(true); advanceTicks();
+    expect(world.setDynamicProperty).not.toHaveBeenCalled(); expect(block.setPermutation).not.toHaveBeenCalled();
+  });
+  it.each(["aspersorium", "table"] as const)("retains unreadable %s shard bytes and cancels its break", (kind) => {
+    const { block, player, dimension } = fixture(kind);
+    const property = dockedShardPropertyId(dimension.id, block.location); const raw = '{"future":99,"opaque":"preserve"}';
+    world.setDynamicProperty(property, raw); world.setDynamicProperty.mockClear();
+    expect(attempt(block, player).cancel).toBe(true); advanceTicks();
+    expect(world.getDynamicProperty(property)).toBe(raw); expect(world.setDynamicProperty).not.toHaveBeenCalled();
+  });
+  it.each(["aspersorium", "table"] as const)("cancels known %s when reading its permutation fails", (kind) => {
+    const { block, player } = fixture(kind); const typeId = block.typeId;
+    Object.defineProperty(block, "typeId", { value: typeId });
+    Object.defineProperty(block, "permutation", { get: () => { throw new Error("unavailable permutation"); } });
+    expect(attempt(block, player).cancel).toBe(true); advanceTicks();
+    expect(world.setDynamicProperty).not.toHaveBeenCalled(); expect(block.setPermutation).not.toHaveBeenCalled();
+  });
+  it.each(["aspersorium", "table"] as const)("allows valid empty %s and never reverses another cancellation", (kind) => {
+    const { block, player, dimension } = fixture(kind);
+    expect(attempt(block, player).cancel).toBe(false);
+    expect(attempt(block, player, true).cancel).toBe(true); advanceTicks();
+    expect(world.setDynamicProperty).not.toHaveBeenCalled(); expect(dimension.drops).toHaveLength(0);
+  });
+  it("leaves unrelated blocks alone while retaining the existing aspergillum mining cancellation", () => {
+    const { block, player } = fixture("table"); block.permutation = new FakePermutation("minecraft:stone", {}).asPermutation();
+    expect(attempt(block, player).cancel).toBe(false);
+    expect(attempt(block, player, true).cancel).toBe(true);
+    player.hand = createAspergillum(1); expect(attempt(block, player).cancel).toBe(true);
+    expect(world.getDynamicProperty).not.toHaveBeenCalled();
+  });
+  it("keeps cancellation if feedback scheduling throws", () => {
+    const { block, player } = fixture("table"); occupy("table", block);
+    vi.spyOn(system, "run").mockImplementationOnce(() => { throw new Error("scheduler unavailable"); });
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    expect(() => expect(attempt(block, player).cancel).toBe(true)).not.toThrow();
+    expect(world.setDynamicProperty).not.toHaveBeenCalled(); expect(block.setPermutation).not.toHaveBeenCalled();
+  });
+  it("delayed feedback never consumes a replacement snapshot", () => {
+    const { block, player, dimension } = fixture("table"); occupy("table", block);
+    expect(attempt(block, player).cancel).toBe(true);
+    const replacement = captureDockedAspergillum(createAspergillum(4), 4);
+    setDockedSnapshot(dimension.id, block.location, replacement); world.setDynamicProperty.mockClear(); advanceTicks();
+    expect(getDockedSnapshot(dimension.id, block.location)).toEqual(replacement);
+    expect(world.setDynamicProperty).not.toHaveBeenCalled(); expect(dimension.drops).toHaveLength(0);
+  });
+  it.each(["aspersorium", "table"] as const)("refuses missing/legacy state schemas on %s", (kind) => {
+    const { block, player } = fixture(kind);
+    block.permutation = new FakePermutation(block.typeId, { "aspergillum:occupied": false, "aspergillum:cosmetic": 0 }).asPermutation();
+    expect(attempt(block, player).cancel).toBe(true); advanceTicks();
+    expect(world.setDynamicProperty).not.toHaveBeenCalled(); expect(block.setPermutation).not.toHaveBeenCalled();
+  });
+  it.each(["aspersorium", "table"] as const)("preserves unsupported neighbors while refusing empty %s break", (kind) => {
+    const { block, player, dimension } = fixture(kind);
+    const property = dockedShardPropertyId(dimension.id, block.location);
+    const raw = JSON.stringify({ schemaVersion: 1, entries: { "3,64,-3": { schemaVersion: 99, opaque: "neighbor" } } });
+    world.setDynamicProperty(property, raw); world.setDynamicProperty.mockClear();
+    expect(attempt(block, player).cancel).toBe(true); advanceTicks();
+    expect(world.getDynamicProperty(property)).toBe(raw); expect(world.setDynamicProperty).not.toHaveBeenCalled();
+  });
+  it("throttles repeated feedback without allowing a repeated break", () => {
+    const { block, player } = fixture("table"); occupy("table", block);
+    for (let i = 0; i < 3; i++) expect(attempt(block, player).cancel).toBe(true);
+    advanceTicks(); expect(player.onScreenDisplay.setActionBar).toHaveBeenCalledTimes(1);
+    expect(attempt(block, player, true).cancel).toBe(true); advanceTicks();
+    expect(player.onScreenDisplay.setActionBar).toHaveBeenCalledTimes(1);
+    advanceTicks(20); expect(attempt(block, player).cancel).toBe(true); advanceTicks();
+    expect(player.onScreenDisplay.setActionBar).toHaveBeenCalledTimes(2);
+    expect(world.setDynamicProperty).not.toHaveBeenCalled();
+  });
+  it("keeps cancellation after player invalidation or HUD failure", () => {
+    const { block, player } = fixture("table"); occupy("table", block);
+    const first = attempt(block, player); player.isValid = false; advanceTicks();
+    expect(first.cancel).toBe(true); expect(player.onScreenDisplay.setActionBar).not.toHaveBeenCalled();
+    player.isValid = true; advanceTicks(20);
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    player.onScreenDisplay.setActionBar.mockImplementationOnce(() => { throw new Error("HUD unavailable"); });
+    const second = attempt(block, player); expect(() => advanceTicks()).not.toThrow(); expect(second.cancel).toBe(true);
+    expect(world.setDynamicProperty).not.toHaveBeenCalled();
+  });
+  it("does not end a customization session when destruction was prevented", () => {
+    const { block, player, dimension } = fixture("table"); occupy("table", block);
+    const started = acquireCustomizationSession(player.id, dimension.id, block.location, system.currentTick);
+    if (started.status !== "acquired") throw new Error("Expected new session");
+    expect(attempt(block, player).cancel).toBe(true); advanceTicks();
+    expect(isCurrentCustomizationSession(started.session)).toBe(true);
+    expect(dimension.drops).toHaveLength(0); expect(world.setDynamicProperty).not.toHaveBeenCalled();
+  });
+
+});
+
+describe("selective prevention through the real explosion-before subscription", () => {
+  function eventFor(blocks: FakeBlock[], cancel = false) {
+    const impacted = blocks.map((block) => block.asBlock());
+    const event = {
+      cancel,
+      getImpactedBlocks: vi.fn(() => impacted),
+      setImpactedBlocks: vi.fn((_blocks: typeof impacted) => {}),
+    };
+    return event;
+  }
+  function dispatch(event: ReturnType<typeof eventFor>): void {
+    const subscribers = engine.before.get("explosion");
+    if (subscribers?.length !== 1) throw new Error("Expected exactly one production explosion-before subscription");
+    for (const callback of subscribers) callback(event);
+  }
+  function occupy(kind: "aspersorium" | "table", block: FakeBlock) {
+    block.permutation = new FakePermutation(block.typeId, kind === "aspersorium"
+      ? { ...encodeAspersoriumContents({ waterUnits: 14, cosmeticIndex: 0 }), [ROTATION_STATE]: 7 }
+      : { ...encodeTableContents({ cosmeticIndex: 0 }), [TABLE_ROTATION_STATE]: 11 }).asPermutation();
+  }
+  function unrelated(id = "minecraft:stone") {
+    return new FakeBlock(new FakeDimension(), new FakePermutation(id, {}).asPermutation());
+  }
+
+  it.each(["aspersorium", "table"] as const)("excludes occupied %s synchronously without writes, delivery or delayed recovery", (kind) => {
+    const { block, player, dimension } = fixture(kind); occupy(kind, block);
+    const snapshot = captureDockedAspergillum(createAspergillum(3), 3);
+    setDockedSnapshot(dimension.id, block.location, snapshot);
+    const raw = world.getDynamicProperty(dockedShardPropertyId(dimension.id, block.location));
+    world.setDynamicProperty.mockClear();
+    const stone = unrelated(); const otherAddon = unrelated("altare:classic");
+    const event = eventFor([stone, block, otherAddon]);
+    dispatch(event);
+    expect(event.cancel).toBe(false);
+    expect(event.setImpactedBlocks).toHaveBeenCalledExactlyOnceWith([stone.asBlock(), otherAddon.asBlock()]);
+    advanceTicks();
+    expect(world.getDynamicProperty(dockedShardPropertyId(dimension.id, block.location))).toBe(raw);
+    expect(world.setDynamicProperty).not.toHaveBeenCalled();
+    expect(player.equipment.setEquipment).not.toHaveBeenCalled();
+    expect(player.onScreenDisplay.setActionBar).not.toHaveBeenCalled();
+    expect(block.setPermutation).not.toHaveBeenCalled();
+    expect(dimension.drops).toHaveLength(0);
+    expect(scheduleAspersoriumWaterVisualRemoval).not.toHaveBeenCalled();
+  });
+  it.each(["aspersorium", "table"] as const)("excludes visually empty %s with an orphaned snapshot", (kind) => {
+    const { block, dimension } = fixture(kind);
+    const snapshot = captureDockedAspergillum(createAspergillum(2), 2);
+    setDockedSnapshot(dimension.id, block.location, snapshot); world.setDynamicProperty.mockClear();
+    const event = eventFor([block]); dispatch(event);
+    expect(event.setImpactedBlocks).toHaveBeenCalledExactlyOnceWith([]);
+    expect(getDockedSnapshot(dimension.id, block.location)).toEqual(snapshot);
+    expect(world.setDynamicProperty).not.toHaveBeenCalled(); expect(dimension.drops).toHaveLength(0);
+  });
+  it.each(["aspersorium", "table"] as const)("preserves unreadable %s shard bytes and excludes its block", (kind) => {
+    const { block, dimension } = fixture(kind);
+    const property = dockedShardPropertyId(dimension.id, block.location);
+    const raw = '{"future":99,"opaque":"preserve"}';
+    world.setDynamicProperty(property, raw); world.setDynamicProperty.mockClear();
+    const event = eventFor([block]); dispatch(event);
+    expect(event.setImpactedBlocks).toHaveBeenCalledExactlyOnceWith([]);
+    expect(world.getDynamicProperty(property)).toBe(raw); expect(world.setDynamicProperty).not.toHaveBeenCalled();
+  });
+  it.each(["aspersorium", "table"] as const)("excludes %s with an unsupported neighbor in the same shard", (kind) => {
+    const { block, dimension } = fixture(kind);
+    const property = dockedShardPropertyId(dimension.id, block.location);
+    const raw = JSON.stringify({ schemaVersion: 1, entries: { "3,64,-3": { schemaVersion: 99, opaque: "neighbor" } } });
+    world.setDynamicProperty(property, raw); world.setDynamicProperty.mockClear();
+    const event = eventFor([block]); dispatch(event);
+    expect(event.setImpactedBlocks).toHaveBeenCalledExactlyOnceWith([]);
+    expect(world.getDynamicProperty(property)).toBe(raw); expect(world.setDynamicProperty).not.toHaveBeenCalled();
+  });
+  it.each(["aspersorium", "table"] as const)("excludes reserved %s states", (kind) => {
+    const { block } = fixture(kind);
+    block.permutation = new FakePermutation(block.typeId, kind === "aspersorium"
+      ? { "aspergillum:contents_a": 1, "aspergillum:contents_b": 2, "aspergillum:contents_c": 6, "aspergillum:contents_d": 6, [ROTATION_STATE]: 7 }
+      : { "aspergillum:table_contents_a": 1, "aspergillum:table_contents_b": 8, [TABLE_ROTATION_STATE]: 11 }).asPermutation();
+    const event = eventFor([block]); dispatch(event);
+    expect(event.setImpactedBlocks).toHaveBeenCalledExactlyOnceWith([]);
+    expect(world.setDynamicProperty).not.toHaveBeenCalled(); expect(block.setPermutation).not.toHaveBeenCalled();
+  });
+  it.each(["aspersorium", "table"] as const)("excludes %s with legacy or missing states", (kind) => {
+    const { block } = fixture(kind);
+    block.permutation = new FakePermutation(block.typeId, { "aspergillum:occupied": false }).asPermutation();
+    const event = eventFor([block]); dispatch(event);
+    expect(event.setImpactedBlocks).toHaveBeenCalledExactlyOnceWith([]);
+  });
+  it.each(["aspersorium", "table"] as const)("excludes identified %s if its permutation becomes unavailable", (kind) => {
+    const { block } = fixture(kind); const id = block.typeId;
+    Object.defineProperty(block, "typeId", { value: id });
+    Object.defineProperty(block, "permutation", { get: () => { throw new Error("unavailable permutation"); } });
+    const event = eventFor([block]); dispatch(event);
+    expect(event.setImpactedBlocks).toHaveBeenCalledExactlyOnceWith([]);
+  });
+  it.each(["aspersorium", "table"] as const)("leaves valid empty %s in the explosion without rewriting its list", (kind) => {
+    const { block } = fixture(kind); const event = eventFor([block]); dispatch(event);
+    expect(event.setImpactedBlocks).not.toHaveBeenCalled(); expect(event.cancel).toBe(false);
+    expect(world.setDynamicProperty).not.toHaveBeenCalled();
+  });
+  it.each(["aspersorium", "table"] as const)("excludes an identified but invalid %s", (kind) => {
+    const { block } = fixture(kind); block.isValid = false;
+    const event = eventFor([block]); dispatch(event);
+    expect(event.setImpactedBlocks).toHaveBeenCalledExactlyOnceWith([]);
+    expect(world.getDynamicProperty).not.toHaveBeenCalled(); expect(world.setDynamicProperty).not.toHaveBeenCalled();
+  });
+  it.each(["aspersorium", "table"] as const)("excludes %s when registry reading fails without attempting repair", (kind) => {
+    const { block } = fixture(kind);
+    world.getDynamicProperty.mockImplementationOnce(() => { throw new Error("registry unavailable"); });
+    const event = eventFor([block]); dispatch(event);
+    expect(event.setImpactedBlocks).toHaveBeenCalledExactlyOnceWith([]);
+    expect(world.setDynamicProperty).not.toHaveBeenCalled(); expect(block.setPermutation).not.toHaveBeenCalled();
+  });
+  it("leaves other add-ons and unidentifiable blocks alone without reading their registry", () => {
+    const unknown = unrelated();
+    Object.defineProperty(unknown, "typeId", { get: () => { throw new Error("unavailable ID"); } });
+    const event = eventFor([unrelated(), unrelated("altare:classic"), unknown]); dispatch(event);
+    expect(event.setImpactedBlocks).not.toHaveBeenCalled(); expect(event.cancel).toBe(false);
+    expect(world.getDynamicProperty).not.toHaveBeenCalled();
+  });
+  it("retains unprotected order and duplicate occurrences while excluding both occupied kinds", () => {
+    const caldeirinha = fixture("aspersorium").block; occupy("aspersorium", caldeirinha);
+    const mesa = fixture("table").block; occupy("table", mesa);
+    const stone = unrelated(); const altare = unrelated("altare:classic");
+    const event = eventFor([caldeirinha, stone, mesa, altare, caldeirinha, stone]); dispatch(event);
+    expect(event.setImpactedBlocks).toHaveBeenCalledExactlyOnceWith([stone.asBlock(), altare.asBlock(), stone.asBlock()]);
+  });
+  it("does not inspect or reverse an already cancelled explosion", () => {
+    const { block } = fixture("table"); occupy("table", block);
+    const event = eventFor([block], true); dispatch(event);
+    expect(event.cancel).toBe(true); expect(event.getImpactedBlocks).not.toHaveBeenCalled();
+    expect(event.setImpactedBlocks).not.toHaveBeenCalled(); expect(world.getDynamicProperty).not.toHaveBeenCalled();
+  });
+  it("leaves an empty impact list untouched", () => {
+    const event = eventFor([]); dispatch(event);
+    expect(event.cancel).toBe(false); expect(event.setImpactedBlocks).not.toHaveBeenCalled();
+  });
+  it("does not cancel unrelated explosions when the impact list cannot be read", () => {
+    const event = eventFor([]);
+    event.getImpactedBlocks.mockImplementationOnce(() => { throw new Error("impact list unavailable"); });
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    expect(() => dispatch(event)).not.toThrow();
+    expect(event.cancel).toBe(false); expect(event.setImpactedBlocks).not.toHaveBeenCalled();
+    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining("impact list unavailable"));
+  });
+  it.each([false, true])("cancels conservatively if exclusion throws (mutation before throw: %s), without retry", (afterEffect) => {
+    const { block } = fixture("table"); occupy("table", block);
+    const stone = unrelated(); const event = eventFor([stone, block]);
+    let effected = event.getImpactedBlocks();
+    event.setImpactedBlocks.mockImplementationOnce((blocks) => {
+      if (afterEffect) effected = blocks;
+      throw new Error("exclusion failed");
+    });
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    expect(() => dispatch(event)).not.toThrow();
+    expect(event.cancel).toBe(true); expect(event.setImpactedBlocks).toHaveBeenCalledTimes(1);
+    expect(effected).toEqual(afterEffect ? [stone.asBlock()] : [stone.asBlock(), block.asBlock()]);
+    expect(world.setDynamicProperty).not.toHaveBeenCalled(); expect(block.setPermutation).not.toHaveBeenCalled();
+    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining("Cancelled explosion"));
+  });
+  it("does not end a customization session when explosion damage is excluded", () => {
+    const { block, player, dimension } = fixture("table"); occupy("table", block);
+    const started = acquireCustomizationSession(player.id, dimension.id, block.location, system.currentTick);
+    if (started.status !== "acquired") throw new Error("Expected new session");
+    const event = eventFor([block]); dispatch(event); advanceTicks();
+    expect(isCurrentCustomizationSession(started.session)).toBe(true);
+    expect(dimension.drops).toHaveLength(0); expect(world.setDynamicProperty).not.toHaveBeenCalled();
+  });
+  it("never schedules exclusion after the cancellable event has returned", () => {
+    const { block } = fixture("table"); occupy("table", block);
+    const run = vi.spyOn(system, "run"); const runTimeout = vi.spyOn(system, "runTimeout");
+    const event = eventFor([block]); dispatch(event);
+    expect(event.setImpactedBlocks).toHaveBeenCalledExactlyOnceWith([]);
+    expect(run).not.toHaveBeenCalled(); expect(runTimeout).not.toHaveBeenCalled();
+  });
+});

@@ -1,0 +1,79 @@
+# V14: integração experimental diagnosticada, não versão final
+
+**Resultado: o conjunto V11/V13/V9 foi transportado para uma cópia independente do protótipo e reimportado por inteiro. Coordenadas, rastreio e preservação dos componentes passam; fidelidade visual do recorte alfa não passa.** O PBR é parcial e não há teste Minecraft ou de desempenho. Não foi criado behavior pack ou `.mcaddon`, nem feita publicação/instalação.
+
+## O que foi integrado
+
+- `part_00`: faixa V13 C1 n4, 4.444 triângulos.
+- `part_01`: casca V11, 12.664 triângulos.
+- `part_15`: anatomia V9, 1.376 triângulos.
+- Os outros 17 bones do JSON V2 permanecem iguais, incluindo geometria, pivôs e UVs.
+
+Cada triângulo novo corresponde a um cube de profundidade zero com uma face south e máscara alfa. Não foi usado poly_mesh. Cada registro de transporte informa bone/cube, face e vértices nativos, mudança de base, UV, regra de máscara e procedência. Os arquivos fonte V9/V11/V13 e o protótipo original continuam byte-idênticos.
+
+O atlas cresceu de 2048² para 4096². Cor e normal legados estão preservados pixel a pixel no quadrante superior esquerdo; endereços UV antigos em texels não mudaram. Os arquivos originais também estão preservados byte a byte. O RP experimental tem namespace, identificadores e UUIDs próprios. Isso não é prova de carregamento no jogo.
+
+## Arquivos principais
+
+- `resource_pack/models/entity/paz_v75_v14_lab_sculpture.geo.json`: geometria experimental completa.
+- `resource_pack/textures/entity/paz_v75_v14_lab_sculpture.png`: controle de cor/alfa, sem texture_set PBR ligado.
+- `resource_pack/textures/entity/paz_v75_v14_lab_pbr_experimental*`: ensaio PBR separado.
+- `export_work/transport_faces.jsonl.gz`, `transport_arrays.npz`, `pbr-texel-provenance.npz`: rastreio por face/texel.
+- `evidence/v14-experimental-reimport.blend`: cena congelada, reaberta e verificada. Contém apenas os 20 bones reconstruídos do JSON, sem escultura highpoly ou substituição nativa escondida; dois PNGs PBR estão empacotados byte-idênticos.
+- `independent_validation/REVIEW_INDEPENDENT_V14.md` e `evidence/review-visual-v14.md`: pareceres independentes.
+- `STATUS.json`, `evidence/final-validation.json` e `package-validation.json`: estado e verificação do pacote.
+
+## Comparações do modelo inteiro
+
+Todas as imagens são diagnósticos externos Blender, **não screenshots Minecraft**, com câmera, luz e culling controlados.
+
+1. `evidence/legacy-flat-whole-{front,threequarter,profile,back}.png`: V2 reimportada, sem normalmap e com material uniforme.
+2. `evidence/json-flat-whole-{front,threequarter,profile,back}.png`: V14 integralmente reimportada do JSON/atlas.
+3. `evidence/native-flat-whole-{front,threequarter,profile,back}.png`: controle dos três componentes nativos, com os outros 17 ainda reimportados do JSON. Esse controle não é anunciado como geometria Bedrock.
+4. Pares `json-flat-focus-*` / `native-flat-focus-*`: cabeça, faixa, orelhas e manto.
+5. `json-normal-experiment-*` / `native-normal-contract-*`: mesmo atlas de cor/normal, comparando JSON e controle nativo. `json-color-control-*` desliga somente o normalmap, conservando cor, alfa, geometria, câmera e luz.
+
+Os controles `native-normal-experiment-*` anteriores foram **supersedidos**, não usados no parecer final PBR: reprojetar UV a partir de cantos float32 era numericamente frágil em faces finas. A versão `native-normal-contract-*` usa o UV exato por vértice do contrato. O flat nativo continua válido porque nele cor/normal/alpha do atlas não alimentam o material dos três componentes nativos.
+
+## Falha observada, não escondida por normalmap
+
+A composição e cobertura global melhoram em relação à V2, especialmente a calota. Porém o JSON/alfa introduz costuras e serrilhados na face/faixa e linhas no manto ausentes no controle nativo. A revisão visual examinou 40 PNGs e não aprovou esse transporte como acabamento fiel.
+
+A auditoria exata, sob amostragem **nearest em mip0**, confirma que pixels opacos cobrem regiões fora dos triângulos e também deixam pequenas regiões sem cobertura. Na faixa, a soma de áreas excedentes é 22,03% da soma das áreas nativas, e a perda é 0,514%. São áreas acumuladas por face, não união, silhueta, volume ou profundidade de penetração.
+
+Num testemunho perto do centro protegido da faixa, a malha nativa mantém a faixa à frente. O alfa torna visível a face 4488 da casca fora do seu triângulo, colocando-a 0,0216343 mm antes da faixa. Um mapa local de 201² amostras sobre 0,4 × 0,4 mm encontra 4.048 trocas de componente. `independent_validation/critical-gap-alpha-regression.png` é um mapa matemático dessa falha, não um render ou screenshot de jogo. O ponto central anterior era correto; a falha foi encontrada no entorno.
+
+O ensaio `export_work/alpha-center-only-trial.png` retira a dilatação conservativa, alterando apenas alfa dos novos tiles. Remove 594.473 pixels opacos e o pixel invasor, mas abre fissuras: as trocas faixa→casca passam de **1 para 26 em 450 raios**, e de 0 para 2 nos 18 raios centrais. Os dois renders `alpha-center-trial-*` também pioram visualmente. **Não foi retido nem ligado às entidades do RP.** Nenhuma malha foi deformada ou parte escondida para passar esse teste.
+
+## PBR parcial e seus limites
+
+A anatomia conserva 736 tiles de cor/normal bit-exatas, incluindo os 463 triângulos integralmente protegidos. As outras 640 faces transportam o bake legado entre frames, não recebem um novo bake highpoly. Os 307 fallbacks permanecem dentro da tile da mesma face e estão rastreados.
+
+A faixa usa correspondência fonte por UV e parede em 4.186 faces. Seus 258 retornos/fechamentos e todas as 12.664 faces da casca ficam flat. Não há alegação de detalhe PBR integral da escultura.
+
+O teste normalmap ligado/desligado recupera pálpebras e boca, mas produz sombras auriculares muito escuras também presentes no controle nativo e no legado. Isso não demonstra novos furos geométricos. Costuras de normal/atlas também permanecem, e as falhas alfa não desaparecem. A convenção DirectX foi adaptada apenas para o shader difuso de diagnóstico Blender; esse shader não é Vibrant Visuals.
+
+## Custo medido e o que não foi medido
+
+- V2: 7.793 cubes / 7.810 faces de quad.
+- V14: **23.081 cubes / 23.098 faces de quad / 46.196 triângulos raster**. Aumento de 196,18% em cubes.
+- Duas texturas RGBA8 4096² ocupariam **128 MiB sem mipmaps**, contra 32 MiB em 2048²; com cadeia completa de mipmaps, a estimativa seria cerca de 170,67 MiB. Isso é uma hipótese explícita de armazenamento descomprimido, não consumo GPU observado.
+- JSON e PNG comprimidos não medem custo de renderização. Nenhum FPS, tempo de carregamento ou limite móvel foi testado.
+
+O custo não impediu gerar ou reimportar o experimento. Não há evidência para declarar um limite rígido de engine ultrapassado; também não há prova de viabilidade prática. A recomendação publicada para número de cubes em blocos não deve ser transplantada para entidades.
+
+## Interoperabilidade da bancada
+
+Um teste de funções originais do Blockbench com fixture assimétrico confirma o UV adotado pelo exportador/importador. Já o módulo atual Aspergillum espelha U e produz atributos de normal opostos ao winding para os cubes zero-depth. O teste antigo de conjuntos de cantos não cobria isso. O viewer não foi alterado nem usado como prova de alfa/PBR. Ver `independent_validation/DOCUMENTED_SCOPE.md` e `blockbench-uv-oracle.json` para fontes, commits e escopo.
+
+## Alternativa e próximo critério de decisão
+
+Não recomendo simplesmente remover dilatação, ampliar toda a textura ou promover este RP por aparência frontal. O primeiro ensaio falhou; aumentar resolução só reduz uma aproximação, eleva memória e ainda precisaria provar os encontros críticos.
+
+Uma alternativa de produção é um protótipo separado de peças/cubóides opacos com orçamento e níveis de detalhe explícitos, comparado à silhueta V75 e aos detalhes essenciais. Isso muda a representação e pode perder curvas; precisa de revisão artística antes de substituir qualquer candidata. Outra investigação possível é alocação adaptativa de texels nos encontros comprovadamente problemáticos, com os mesmos testes de cobertura e sem prometer que resolverá. Nenhuma dessas alternativas foi implementada nesta etapa.
+
+A decisão de custo exige testar no dispositivo/versão Minecraft de destino. O laboratório atual preserva a evidência necessária para essa decisão, mas não é arte final nem integração runtime aprovada.
+
+## Reprodução e preservação
+
+Scripts de construção e auditoria estão em `export_work/`, `independent_validation/` e `tools/`. Algumas auditorias dependem da estrutura original de pastas e da bancada externa documentada; o ZIP de pesquisa não é um addon autônomo. Os três arquivos upstream Blockbench usados no oracle permanecem no workspace e têm URLs/hashes registrados, mas não são redistribuídos no pacote. Cenas intermediárias também permanecem preservadas, embora somente a cena final reimportada seja incluída no ZIP.

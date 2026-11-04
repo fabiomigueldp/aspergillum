@@ -1,0 +1,15 @@
+# V55 — retopologia localizada da junção, candidata reversível
+FonteV52. V53/V54 rejeitadas preservadas, não incorporadas.
+
+## Método distinto
+A união bruta exata foi usada somente para extrair duas bordas e eliminar superfícies internas.736faces irregulares da junção foram removidas. Borda superior152v preservada; borda inferior limpa40v em latitudez1.64. Superfície nova interpolada por Hermite com tangentes projetadas no plano tangente da cabeça e pescoço,15anéis internos de128amostras. Costuras trianguladas ligam as bordas existentes aos anéis regulares. Não foi feita suavização adicional da malha booleanaV54.
+
+## Auditoria
+2240faces novas; área mínima0.144576mm², mediana5.260136mm², máxima15.167571mm². Não se comparam razões por face comV54, pois a topologia foi substituída, não esticada.
+Zero bordas abertas,zero arestas não-manifold,zero auto-interseções não-adjacentes.
+Frente/crânio da cabeçaV52 preservados exatamente por teste de coordenadas. Todos objetos originais, transformações e chaves idênticos porhash, inclusive Maria/cuff. Só novo objeto e visibilidade dos originais mudam.
+
+## Visual e limites
+Frente e perfil foram comparados comV52/V54 em mesma câmera/luz. Há transição geométrica mais contínua que o pescoço separado e sem bulboV53, mas sombreamento sob mandíbula ainda precisa avaliação independente. Não afirmar fidelidade automática pela regularidade técnica. O nariz, cabelo e restante do modelo mantêm limitações conhecidas.
+
+ArquivoV55-child-neck-trial.blend. Rollback: ocultar objetoV55 e reexibir cabeça infantil e pescoço originais, viewport/render. FonteV52 intacta.

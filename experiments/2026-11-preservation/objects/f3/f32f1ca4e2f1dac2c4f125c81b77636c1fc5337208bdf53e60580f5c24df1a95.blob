@@ -1,0 +1,11 @@
+# Relaxamento dos dois endpoints — gate conjunto ainda reprovado
+
+Foram liberados somente os dois nós de transição previamente fixos (calota14 e42), mantendo demais limites e método. As arestas incidentes novas foram incluídas integralmente nas desigualdades contra triângulos; não basta liberar um nó sem verificar sua ligação ao próximo.
+
+Resultado: o conjunto móvel admite solução, porém os novos endpoints fixos15/41 não cumprem suporte+espessura, faltando0,19654 e0,16160mm. Portanto não existe contorno conjunto aprovado nesse suporte. Não apliquei apenas manto nem gravei calota parcialmente corrigida; nenhuma face foi alterada e nenhum tecido construído. Anatomia/faixa/bainha permanecem literalmente intactas.
+
+Auditoria adicional, sem novas tentativas, mostra déficit distribuído: nós15..21 e37..41 também falham nesse envelope lateralX. Não é um defeito limitado a dois endpoints. No centro posterior, a direçãoX deixa de ser adequada para contornar a nuca e pode exigir afastamentos grandes que não representam distância à pele; esses valores não justificam alargar crânio/pano.
+
+Assim não continuei liberando nós sucessivamente. Necessário um campo de direção3D contínuo acompanhando a nuca, com restrições completas dos segmentos e da espessura e novos limites explicitamente validados. A prova atual não fornece faces válidas nem continuidade tangencial certificada. Não há render/candidato a aprovar e não se declara solução.
+
+Dados: `cap-mantle-endpoint-relaxation-proof.json`, `cap-fixed-contour-clearance-audit.json`. V75 preservada.

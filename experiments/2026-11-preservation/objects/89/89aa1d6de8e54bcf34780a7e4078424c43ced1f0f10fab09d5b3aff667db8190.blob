@@ -1,0 +1,131 @@
+{
+  "files": [
+    {
+      "path": "addons/altare/README.md",
+      "sha256": "15b7a79fc7524d366ddeceab6304fda302d1ea8b2259fee0c3ed3c2e9ad3e281",
+      "new": false
+    },
+    {
+      "path": "addons/altare/docs/ARCHITECTURE.md",
+      "sha256": "ebffb8c39026cd80b5b14512c77006239912d4a3d08d69adf7fd4efe69611387",
+      "new": false
+    },
+    {
+      "path": "addons/altare/docs/CATALOG_COMPACTION.md",
+      "sha256": "d5e4b36e92cb86a5c192067ab46041093b851856f545edef513b46180463b8d6",
+      "new": true
+    },
+    {
+      "path": "addons/altare/docs/CLASSIC_COMPACTION.md",
+      "sha256": "62c5d669d003a8287ec21318adad84e4700dad8accb657fe2fad75cd5c9b1af0",
+      "new": true
+    },
+    {
+      "path": "addons/altare/docs/TESTING.md",
+      "sha256": "9295df483c69f41cbbf7f3d10b48b8714fc019411c9f380f0069aaf552730050",
+      "new": false
+    },
+    {
+      "path": "addons/altare/docs/VARIATIONS.md",
+      "sha256": "a010f1d3eec4955be3a8703e83ab1f141f02afa0800d9e2f41c10ae952b1db86",
+      "new": false
+    },
+    {
+      "path": "addons/altare/src/domain/block-codec.ts",
+      "sha256": "b6ecca617b87fe06d3ad29e22943176d8ef043b9f696c43dd71564f22cc79c26",
+      "new": false
+    },
+    {
+      "path": "addons/altare/src/domain/catalog-migration.ts",
+      "sha256": "ae8fae7e56d0460d72c1fee3696791dd055bb9794fb164ec091336f940a99e36",
+      "new": true
+    },
+    {
+      "path": "addons/altare/src/domain/catalog.ts",
+      "sha256": "c9471f686568b50599938d69ac9106d1e12ec39bdd58b9e5d9ff62b10f8c81f0",
+      "new": false
+    },
+    {
+      "path": "addons/altare/src/domain/classic-layout.ts",
+      "sha256": "9513c34566f3e690facf272b1354e9f5736005c3da400cf48e3c9b19c9b19e6f",
+      "new": true
+    },
+    {
+      "path": "addons/altare/src/domain/surface.ts",
+      "sha256": "bd6337b0e902152ba3fdee9f480bd3eb6e9c19192152a44cb932636b448955bd",
+      "new": false
+    },
+    {
+      "path": "addons/altare/tests/atelier-compaction.node.ts",
+      "sha256": "32da9566b386d63af08f5f98c44c8f6dc1d1cfb751b1adee56f2ba2e75958f80",
+      "new": true
+    },
+    {
+      "path": "addons/altare/tests/catalog.node.ts",
+      "sha256": "79e940d27bf6ec8a6704c50edf90cc0f156a380e1092cdc1738f26d99650d51c",
+      "new": false
+    },
+    {
+      "path": "addons/altare/tests/classic-compaction.node.ts",
+      "sha256": "469e94c284f1bfa6603f4cfd8e1069598654a88916fcacb87e1ca4f556ac0a87",
+      "new": true
+    },
+    {
+      "path": "addons/altare/tests/crossbrace.node.ts",
+      "sha256": "005ade5bc8422c632a39e6a7448f97ca97521f1f23b5cf03ddd58924f0e972b8",
+      "new": false
+    },
+    {
+      "path": "addons/altare/tests/palette.node.ts",
+      "sha256": "068e1939dc7c0abc8f2db893ba2ab82fd56f629214098662f0c91d5f637ceb3c",
+      "new": false
+    },
+    {
+      "path": "addons/altare/tools/audit-variations.mjs",
+      "sha256": "2f95f1dd1052cad4473fe5f76d44c5e17f5d1272f2d20148749dbbfd2e228640",
+      "new": false
+    },
+    {
+      "path": "addons/altare/tools/build.mjs",
+      "sha256": "2e0aa3207442bc2560272eac24f7cfa44a9a2d355dd3a8e39327e148ab9964b0",
+      "new": false
+    },
+    {
+      "path": "addons/altare/tools/catalog-pack.mjs",
+      "sha256": "d6d697ee75c797dfca898596a1a67fa8060b6ec9e1cb8ac4bcd03349b771fb75",
+      "new": false
+    },
+    {
+      "path": "addons/altare/tools/classic-pack.mjs",
+      "sha256": "4f211feac0a4778538e7bb024bafe37810a9dee30b909880b7b03f764c88d082",
+      "new": true
+    },
+    {
+      "path": "addons/altare/tools/validate-collection.mjs",
+      "sha256": "84e1e85fffd6bc1cc4426c8baaf36999e5f47a8c0d4ee80cf7b6db2379429938",
+      "new": false
+    },
+    {
+      "path": "addons/altare/tools/validate.mjs",
+      "sha256": "dbd603b7219160acd83cee3fbd1eaa48bb0426151a257a7a8a4a9c338d9937ba",
+      "new": false
+    },
+    {
+      "path": "addons/altare/tools/verify-catalog-compaction.mjs",
+      "sha256": "0c727774266dca728bbcd3d308f5a6d0ee59d2c86ed90073e9a0abf9f5a43eb0",
+      "new": true
+    }
+  ],
+  "baseline": "0.12.3 editor review",
+  "status": "isolated source candidate, not a released pack",
+  "tests": {
+    "altare": 129,
+    "aspergillum": 107,
+    "viewer": 84,
+    "fullAddonCheck": "passed",
+    "fullWorkspaceCheck": "passed",
+    "creatorTools": "FAILED: 416 unchanged format-version declarations vs unavailable current metadata; see creator-tools-summary.json",
+    "nativeMinecraft": "not tested"
+  },
+  "integration": "Copy/merge authored source only; rebuild generated packs. Final integration must receive a new version. No world or installed pack was modified."
+}

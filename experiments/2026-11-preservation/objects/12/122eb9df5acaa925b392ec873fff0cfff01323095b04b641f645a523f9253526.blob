@@ -1,0 +1,27 @@
+import bpy,json,math,collections,numpy as np
+from mathutils import Vector,Matrix
+from mathutils.bvhtree import BVHTree
+r='/workspace/scratch/212c580ada5b/paz-refinement/gui-test/';bpy.ops.wm.open_mainfile(filepath=r+'V75-tunic-lower-trial.blend',use_scripts=False);o=bpy.data.objects['Maria — mão ao peito anatômica'];m=o.data;dg=bpy.context.evaluated_depsgraph_get();em=o.evaluated_get(dg).to_mesh();p=[v.co.copy() for v in em.vertices];fs=[tuple(f.vertices) for f in em.polygons];o.evaluated_get(dg).to_mesh_clear();sets=collections.defaultdict(set)
+for f,a in zip(m.polygons,m.attributes['.sculpt_face_set'].data):sets[a.value].update(f.vertices)
+groups=[('little',[11,12,13],13,6),('ring',[5,14,17],17,3),('middle',[4,15,18],18,0),('index',[3,16,19],19,-4),('thumb',[21,22,23],23,0)]
+centers={n:sum((p[i] for i in sets[ss[0]]),Vector())/len(sets[ss[0]]) for n,ss,_,_ in groups};mem={n:set().union(*(sets[s] for s in ss)) for n,ss,_,_ in groups}
+for i in sets[10]:mem[min(centers,key=lambda n:(p[i]-centers[n]).length)].add(i)
+q=[v.copy() for v in p];stats=[]
+def ss(t):t=max(0,min(1,t));return t*t*(3-2*t)
+for name,s,prox,angle in groups:
+ if name=='thumb':continue
+ ids=mem[name]-sets[24];rootids=sorted(sets[prox],key=lambda i:p[i].z)[:max(8,len(sets[prox])//8)];pivot=sum((p[i] for i in rootids),Vector())/len(rootids)
+ for i in ids:
+  w=ss((p[i].z-pivot.z)/.018);q[i]=pivot+Matrix.Rotation(math.radians(angle)*w,3,'Y')@(p[i]-pivot)
+ distal=sorted(sets[s[0]]);a=distal[0];b=max(distal,key=lambda i:(p[i]-p[a]).length);stats.append({'finger':name,'angle_degrees':angle,'pivot':list(pivot),'distal_span_before':(p[a]-p[b]).length,'distal_span_after':(q[a]-q[b]).length})
+P=np.array(p);Q=np.array(q);T=np.array([f for f in fs]);na=np.cross(P[T[:,1]]-P[T[:,0]],P[T[:,2]]-P[T[:,0]]);nb=np.cross(Q[T[:,1]]-Q[T[:,0]],Q[T[:,2]]-Q[T[:,0]]);area=np.linalg.norm(na,axis=1);valid=area>1e-12;ratio=np.linalg.norm(nb,axis=1)[valid]/area[valid]
+def tree(v):return BVHTree.FromPolygons(v,fs)
+bt=tree(p);nt=tree(q)
+def pairs(t):return set((a,b) for a,b in t.overlap(t) if a<b and not set(fs[a])&set(fs[b]))
+before=pairs(bt);after=pairs(nt);cl=BVHTree.FromObject(bpy.data.objects['Maria — túnica e mangas integradas'],dg);c0=set(bt.overlap(cl));c1=set(nt.overlap(cl));d=np.linalg.norm(Q-P,axis=1);report={'method':'MCP rotation about per-finger roots with18mm continuous transition; distal spans rigid; no palm/wrist/thumb change','fingers':stats,'changed_vertices':int((d>1e-7).sum()),'max_delta_m':float(d.max()),'palm_max_delta':float(d[list(sets[24])].max()),'thumb_max_delta':float(d[list(mem['thumb'])].max()),'area_range':[float(ratio.min()),float(ratio.max())],'flips':int(((na*nb).sum(1)<-1e-15).sum()),'baseline_self_pairs':len(before),'new_pair_details':[{'faces':[a,b],'face_sets':[m.attributes['.sculpt_face_set'].data[a].value,m.attributes['.sculpt_face_set'].data[b].value],'centroid':list(sum((q[v] for v in fs[a]),Vector())/len(fs[a]))} for a,b in after-before],'new_self_pairs':len(after-before),'removed_self_pairs':len(before-after),'baseline_cloth_pairs':len(c0),'new_cloth_pairs':len(c1-c0),'removed_cloth_pairs':len(c0-c1),'reference_limit':'Adduction is conservative pose hypothesis; no frontal photograph of these fingers is available.'};json.dump(report,open(r+'V84-fingers-verification.json','w'),indent=2);print(report)
+assert report['flips']==0 and report['new_self_pairs']==0 and report['new_cloth_pairs']==0 and report['palm_max_delta']==0 and report['thumb_max_delta']==0
+k=o.shape_key_add(name='TESTE84 — adução distal reversível');k.value=1
+for i,v in enumerate(k.data):v.co=m.vertices[i].co+q[i]-p[i]
+bpy.ops.wm.save_as_mainfile(filepath=r+'V84-chest-fingers-trial.blend');s=bpy.context.scene;s.cycles.samples=32;s.render.resolution_x=600;s.render.resolution_y=800;s.render.resolution_percentage=100;c=s.camera;center=sum(p,Vector())/len(p)
+for view,off in [('front',(0,-5,0)),('profile',(-5,0,0)),('threequarter',(-3,-5,.2))]:
+ c.location=center+Vector(off);c.rotation_euler=(center-c.location).to_track_quat('-Z','Y').to_euler();c.data.ortho_scale=.48;s.render.filepath=r+'V84-chest-hand-'+view+'.png';bpy.ops.render.render(write_still=True)

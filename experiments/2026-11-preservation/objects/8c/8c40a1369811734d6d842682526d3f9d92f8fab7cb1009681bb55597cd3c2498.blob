@@ -1,0 +1,74 @@
+# Redução adicional de estados: análise sem mudar os packs
+
+Data: 03/11/2026. A cópia integrada do Altare continua em 0.13.0, com o gate conjunto bloqueado. Nenhum mundo, registro persistente, instalador ou código do Aspergillum foi alterado nesta análise.
+
+## Ponto de partida comprovado
+
+- Catálogo antigo do Altare: 80.000 → 51.608 estados. Preserva escolhas de materiais, apliques, toalhas e direção. A revisão de schema requer migração explícita, não abertura direta de saves antigos.
+- Dois pedestais: 8.232 estados para 17 receitas, incluindo as oito cores do Floral.
+- Altare atual: 59.840. Aspergillum atual: 9.744. Soma: 69.584, ou 4.048 acima da referência de 65.536.
+- O build integrado, 161 testes Altare e 87 testes Studio já foram concluídos. As análises abaixo não mudam o status do gate nem equivalem a teste Minecraft.
+
+## 1. Reduzir mais o catálogo antigo sem mudar semântica
+
+A nova enumeração dos 51.608 estados antigos, mantendo ID da receita, frente, material, tecido e todos os componentes efetivos, encontrou somente os 144 papéis invisíveis da renda clássica já conhecidos.
+
+O planejador compacto alcança 26 poses, mas o reparo após alterações de contorno exige as 28. O Clássico com toalhas alcança 52, mas precisa das 54 após reparo. O Clássico original precisa das 42 poses do planejador e das oito poses de roseta preservadas. Portanto, cortar duas poses do codec não é uma economia neutra.
+
+As supostas 4.128 economias por igualdade visual não são válidas com frente preservada: 3.984 delas descartariam a direção lógica. Nenhuma dessas reduções foi aplicada.
+
+Evidência: `recipe-reachability-report.json` e `audit-recipe-reachability.mjs`.
+
+## 2. Compactar apenas ocupação e cosmético no Aspergillum
+
+Hoje a caldeirinha e a mesa reservam 2 × 16 = 32 combinações: vazio/ocupado e 16 acabamentos. O comportamento normal usa 17 casos: um vazio e 16 ocupados. Acomodar usa o acabamento do item recebido; retirar zera o acabamento do bloco vazio. A restauração da identidade do item vem do registro persistente, não do cosmético oculto do bloco.
+
+Um código com 17 casos, empacotado em 18 slots (2 × 9), conserva separadamente todos os níveis/codificações atuais de água e as 16 rotações:
+
+- Caldeirinha: 9.216 → 5.184.
+- Mesa: 512 → 288.
+- Proxies de inventário: 16, sem alteração.
+- Aspergillum: 5.488. Conjunto: **65.328**, margem de apenas **208**.
+
+A prova enumera 9.728 estados antigos. Destes, 5.168 são canônicos e 4.560 normalizam um vazio com cosmético não zero. Esses valores podem existir por comandos, estruturas ou saves históricos; não são tratados como inexistentes. Foram feitas 10.640 comparações de componentes. As diferenças de atlas nos vazios não mudam os pixels referenciados pela geometria em cor, normal e MER. Os modelos e suas 16 rotações usam somente a metade inalterada do atlas quando vazios.
+
+Essa é a alteração mais localizada, mas a folga de 208 não é confortável para expansão. Outros addons também entram na contagem do mundo.
+
+## 3. Compactar água semântica e ocupação juntas
+
+O domínio real contém 17 quantidades de água (0–16) e 17 casos de ocupação. São 289 casos, empacotados em 294 slots (2 × 3 × 7 × 7), mantendo a rotação em um state separado com 16 valores.
+
+- Caldeirinha: 4.704.
+- Mesa: 288.
+- Proxies: 16.
+- Aspergillum: **5.008**. Conjunto: **64.848**, margem de **688**.
+
+O único alias de água removido é `(base=9, offset=8)`, que o decoder atual já limita a 16. As 16 rotações e todos os acabamentos continuam representáveis. Os cinco slots de padding têm interpretação explícita de vazio com água zero. Isso define o comportamento dos códigos excedentes, mas não equivale a recuperação segura de dados corrompidos.
+
+A prova executou 9.216 verificações semânticas e 9.600 comparações de componentes. Usou as funções puras reais `resolveDocking` e `loadFromAspersorium` em 21.760 e 43.520 combinações, respectivamente, com conservação de água/cargas conforme a política. Projeções de retirar/recolorir verificam somente o codec, não os handlers reais.
+
+Esta variante dá uma reserva um pouco melhor sem alterar o desenho do altar, mas acopla água e ocupação: todos os mutadores terão de ler e regravar a tupla completa, preservando os valores não alterados. Uma implementação precisaria substituir todos os consumidores, inclusive guardas de carregamento e snapshots de quebra.
+
+Evidência: `aspergillum-occupancy-report.json`, `aspergillum-coupled-state-report.json` e scripts correspondentes.
+
+## 4. Alterar proporções dos pedestais
+
+Uma hipótese de apoio padronizado por célula reduz a família de 8.232 para 5.158 estados, mas altera proporções aprovadas e ainda deixa o conjunto em 66.510, 974 acima da referência. Diminuir profundidade, estreitar o fuste ou usar os apoios da família de profundidade 1 não melhorou essa conta nas medições concluídas: todas mantêm 272 poses básicas e 320 com centro (273/320 após empacotamento). Não há justificativa para empobrecer o desenho por uma redução adicional inexistente. Nenhuma dessas geometrias foi adotada.
+
+## Saves, registro e rollback
+
+Nenhuma dessas opções é atualização direta sobre um mundo existente. Ambas mudam os schemas publicados de dois blocos do Aspergillum, mesmo mantendo os IDs. A autorização atual cobre somente o estudo desse addon.
+
+Antes de implementar em uma cópia, definir exportação com o decoder antigo, importação versionada, relatório de normalizações e preservação da identidade do pack. O backup deve incluir o mundo inteiro, inventários, estruturas, packs e valores brutos das propriedades dinâmicas.
+
+Não usar o parser de snapshots como mecanismo de backup byte a byte: ele normaliza cargas, promove versões e descarta dados desconhecidos ou inválidos. Guardar os valores brutos e seus hashes separadamente. Um bloco ocupado sem snapshot e um bloco vazio com snapshot precisam aparecer no relatório de inconsistências, sem reparo silencioso.
+
+A reversão exata de um vazio com cosmético antigo ou do alias de água requer o snapshot original. Reinstalar o pack antigo sozinho não restaura states convertidos. Restaurar conjuntamente mundo, registro e pack da mesma origem.
+
+Ainda faltam testes de adaptador com falhas parciais, inventário/registro, concorrência, cancelamento, recoloração, quebra, chunks desconhecidos e salvar/reabrir. O rollback atual é defensivo, não atomicidade garantida. Nenhuma prova offline aqui valida esses eventos no Minecraft.
+
+A revisão independente dos codecs está em `altare-occupancy-budget-independent-review.md`.
+
+## Encaminhamento
+
+Não reduzir opções ou direção para cumprir a conta. Manter o gate estrito. A compactação de ocupação é uma alternativa tecnicamente plausível, mas exige uma decisão explícita de estender a revisão de schema ao Aspergillum, seguida dos testes e do plano de recuperação. Até lá, o build integrado permanece diagnóstico e bloqueado para release.

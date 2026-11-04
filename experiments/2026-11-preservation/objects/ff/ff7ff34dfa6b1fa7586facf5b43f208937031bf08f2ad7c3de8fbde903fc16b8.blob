@@ -1,0 +1,66 @@
+# Recuperação: análise de falhas e fronteira de preservação
+
+Revisão diagnóstica 2.0.0, 03/11/2026. Trabalho somente na cópia de desenvolvimento, sem instalação, publicação ou acesso a mundos. **Não há protocolo durável integrado nem promessa de atomicidade.** O código de produção recebeu apenas a recusa demonstrável de registros que seriam interpretados com perda. O restante é um modelo offline que delimita o que ainda precisa de prova.
+
+## Modelo de falhas
+
+O snapshot persistente, a permutação do bloco e o ItemStack são representações distintas. As APIs documentadas expõem escritas de propriedades, entrega em equipamento e criação de entidade como chamadas separadas; não oferecem nessas interfaces uma transação conjunta ou chave de entrega idempotente. Isso fundamenta a análise conservadora, não uma afirmação de que todo erro nativo ocorre depois de modificar dados. Fontes consultadas: [World](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/world?view=minecraft-bedrock-stable), [Dimension](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/dimension?view=minecraft-bedrock-stable) e [EntityEquippableComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityequippablecomponent?view=minecraft-bedrock-stable). As declarações locais são de `@minecraft/server` 2.9.0.
+
+Nos testes adversariais, uma chamada pode falhar antes da mudança, efetuar a mudança e depois lançar, ou ser a última mudança aplicada antes da interrupção. Essa hipótese é mais forte que os testes antigos de falha antes da escrita. Não se toma uma exceção como comprovante de que nada aconteceu.
+
+| Operação atual | Ordem relevante | Falha demonstrada ou janela analisada |
+| --- | --- | --- |
+| Acomodar | gravar snapshot → retirar mão → ocupar bloco | Falha ao ocupar e falha ao restaurar mão podem ser seguidas da exclusão do último snapshot. |
+| Retirar | esvaziar bloco → excluir snapshot → entregar item | Interrupção antes da entrega pode perder a representação persistente. Se entrega modifica e lança, rollback repõe a origem enquanto o destinatário já recebeu. |
+| Quebrar | entregar item → excluir snapshot | Falha depois da entrega pode deixar o snapshot disponível para uma segunda entrega. |
+| Callback atrasado de quebra | capturar snapshot no despacho → revalidar no callback | Protege uma substituição diferente que chega depois do despacho, mas não identifica um evento antigo despachado depois de uma nova ocupação. |
+
+O evento fornece a permutação anterior, mas não um identificador persistente de geração da ocupação. No modelo, um evento legítimo novo e um replay antigo podem apresentar os mesmos argumentos ao handler. Comparar somente o snapshot corrente não distingue essas histórias. A ocorrência real desse replay no engine não foi estabelecida. Fonte: [BlockComponentBlockBreakEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/blockcomponentblockbreakevent?view=minecraft-bedrock-stable).
+
+## Correção implementada: não apagar dados que o runtime não entende
+
+O parser de domínio é permissivo: sanitiza metadados, normaliza cargas e descarta entradas desconhecidas. Usá-lo diretamente antes de regravar o shard inteiro podia apagar dados de outro bloco do mesmo chunk. A infraestrutura agora compara o documento original com a interpretação suportada antes de qualquer alteração.
+
+- Shard schema 1 e snapshots V2 canônicos continuam suportados. A ordem das propriedades pode variar.
+- Snapshot V1 criado pelo writer continua legível sem escrita. A única promoção permitida é V1 → V2 com zero cargas, conforme o contrato anterior. Ela pode ocorrer ao regravar um shard que contém vizinhos V1.
+- JSON inválido, versões futuras, chaves duplicadas, entradas inválidas, campos opacos, cargas que seriam normalizadas e propriedades descartadas fazem a operação parar. A string inteira original permanece intacta.
+- O teste de canonicalidade exige exatamente uma serialização `JSON.stringify` da entrada. Espaços externos, escapes alternativos e representações numéricas diferentes também são recusados, mesmo que um JSON externo seja semanticamente equivalente. É uma restrição deliberada de disponibilidade para evitar normalização silenciosa; não significa suporte a todo JSON V1/V2 produzido por terceiros.
+- Vetores com campos além de `kind`, `x`, `y`, `z` são recusados: o parser os mantinha, mas a restauração de ItemStack perderia os extras. As cinco propriedades centrais do item também não podem aparecer entre propriedades customizadas, onde poderiam substituir identidade/cargas. O writer normal nunca gera essas formas.
+- O limite continua sendo 30.000 bytes UTF-8 por shard, não caracteres. O payload a escrever também é validado antes da primeira escrita.
+
+A recusa vale para o shard inteiro: um vizinho não suportado bloqueia operações mesmo sobre um item válido. Não há reparo automático nem descarte seletivo. Na quebra, conservar o registro não recoloca o bloco que já foi destruído e não garante a recuperação do item. Não é uma prova de serialização completa de todos os componentes possíveis de ItemStack, nem solução para exceções depois de uma escrita nativa. Os schemas, nomes das propriedades, IDs e UUIDs não mudaram com esta proteção.
+
+Evidência: `tests/infrastructure/docked-registry-preservation.test.ts` e `tests/application/recovery-failure-semantics.test.ts`. Dez casos de perda falhavam antes do guard; seis casos adicionais de metadados falhavam antes de seu endurecimento. Os logs `registry-preservation-before.log` e `registry-extra-metadata-before.log` preservam esses resultados. Há testes de compatibilidade V1/V2, vizinhos, ordem de propriedades, bytes UTF-8 e recusa antes das escritas dos handlers. Quatro novos testes de falha após efeito caracterizam duplicação existente; passar nesses testes **não** aprova esse resultado para release.
+
+## Journal avaliado, não instalado
+
+O modelo em `tools/recovery-analysis.mjs` tenta a alternativa mais conservadora:
+
+1. Serializar intenção, endereço, representação original da mão/bloco e a string bruta do registro antes dos efeitos. A geração ali é apenas um rótulo abstrato.
+2. Validar o orçamento UTF-8 do envelope completo, incluindo escaping e todas as fases, antes da primeira mudança.
+3. Gravar uma fase indicando que efeitos podem ter ocorrido antes de chamá-los.
+4. Na presença de qualquer journal, inclusive inválido/futuro ou concluído, manter os dados e bloquear a operação. Reload não entrega, reverte ou apaga automaticamente nada.
+
+São 54 caminhos: 51 injeções em 17 fronteiras, mais três sucessos. As 12 verificações Node incluem seis variantes de registro opaco, limite de tamanho, journal já existente e 20 reloads sem nova entrega. Sob as hipóteses de um writer, escritas individuais atômicas e persistência na ordem aplicada, preserva-se a evidência original de registro, mão e bloco, sem mais de uma tentativa de entrega por operação modelada.
+
+**Essas hipóteses não foram comprovadas no Bedrock.** Readback de propriedade não demonstra flush no disco nem ordem durável relativa ao inventário ou à entidade. Se o item persistir mas o journal anterior não, a proteção desaparece. Também não se provou serialização completa do ItemStack, unicidade de geração, reuso de endereço, progresso depois de sucesso ou coleta segura de tombstones. O modelo mantém até journals concluídos para não esconder essa lacuna de disponibilidade. Não há módulo de journal importado pelo runtime.
+
+Os contraexemplos mostram por que não prometer mais:
+
+- Uma entrega que não aconteceu e outra que aconteceu podem deixar o mesmo journal; repetir resolve a primeira e duplica a segunda.
+- Buscar uma entidade próxima não prova ausência: o item pode estar em inventário indisponível.
+- Um pack anterior ignora o journal e pode executar a recuperação outra vez.
+- Persistência fora de ordem pode conservar o efeito sem conservar sua evidência.
+- O rollback duplamente falho atual pode eliminar a última representação do item.
+
+Relatório: `out/state-compaction/recovery-analysis/report.json`. Reprodução: `npm run verify:recovery-model`, também incluído em `npm run check`. A suíte Node separada não é contada como teste de handler ou de Minecraft.
+
+## Compatibilidade de saves e decisão
+
+Não foi criado um novo schema de registro nem modificado um save. A incompatibilidade de states compactos com blocos antigos permanece descrita no [contrato 2.0.0](COMPACT_BLOCK_STATES_2.0.0.md). Um journal futuro exigiria integração de todas as rotas, política explícita de quarentena e resolução humana de casos ambíguos, migração/versionamento e rollback que restaure dados e packs juntos. Reinstalar o pack antigo não garante que a quarentena seja respeitada.
+
+**NO-GO mantido.** Foi implementado apenas o limite de preservação demonstrado pelos testes. Não se integrou uma recuperação automática cuja segurança dependa de garantias nativas ainda ausentes. O próximo trabalho deve fechar identidade de geração, entrega ambígua e durabilidade, ou definir explicitamente a recuperação assistida e suas restrições, antes de qualquer novo protocolo no runtime. Creator Tools segue sem novo teste por falta de evidência de disponibilidade dos metadados. Nenhum teste no mundo foi executado.
+
+## Protótipo posterior de triagem
+
+A [revisão de quarentena e reconciliação assistida](RECOVERY_QUARANTINE_REVIEW.md) documenta o protótipo executável offline, com 53 testes e 12 exemplos sintéticos. Ele somente classifica evidências e registra propostas humanas sem efeitos. Não integra o journal abstrato a qualquer rota de produção e não modifica a decisão NO-GO.
