@@ -1,5 +1,6 @@
 export const locales={
  pt_BR:{
+  'altare.menu.mixed':'Acabamentos diferentes. Aplicar uniformiza o altar com estas escolhas.',
   'altare.menu.scope':'Personalize o altar inteiro. Nada muda até aplicar.',
   'altare.menu.material_walnut':'Material: nogueira',
   'altare.menu.material_marble':'Material: mármore claro',
@@ -31,6 +32,7 @@ export const locales={
   'altare.error.write':'§rNão foi possível concluir. Confira o altar e o Content Log antes de repetir.',
  },
  en_US:{
+  'altare.menu.mixed':'Mixed finishes. Apply gives the whole altar these choices.',
   'altare.menu.scope':'Customize the whole altar. Nothing changes until you apply.',
   'altare.menu.material_walnut':'Material: walnut',
   'altare.menu.material_marble':'Material: pale marble',

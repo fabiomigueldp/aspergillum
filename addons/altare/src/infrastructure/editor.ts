@@ -16,16 +16,20 @@ export async function edit(player:Player,dimension:Dimension,position:Position,f
   let session;
   let timer:number|undefined;
   try {
-    let before=collectSurface(position,p=>port.read(p));validateRectangle(before);
-    for(const t of before)port.reconcile(t.position);
-    before=collectSurface(position,p=>port.read(p));
+    // Opening a draft is read-only, including when another editor owns the lock.
+    // Contours are repaired by planFinish inside the guarded Apply transaction.
+    const before=collectSurface(position,p=>port.read(p));validateRectangle(before);
     session=sessions.acquire(player.id,dimension.id,before.map(t=>positionKey(t.position)),system.currentTick);
     if(!session){tell(player,'error.busy');return;}
     const active=session;
     timer=system.runTimeout(()=>sessions.release(active),1200);
     const selectedSlot=player.selectedSlotIndex;
-    const finish=await chooseFinish(player,before,face??before[0]!.facing,()=>sessions.isCurrent(active,system.currentTick),callback=>sessions.onRelease(active,callback));
-    if(!finish)return;
+    let interrupted=false;
+    const finish=await chooseFinish(player,before,face??before[0]!.facing,()=>sessions.isCurrent(active,system.currentTick),callback=>sessions.onRelease(active,callback),()=>{interrupted=true;});
+    if(!finish){
+      if(interrupted && player.isValid)tell(player,'error.expired');
+      return;
+    }
     const item=player.getComponent('minecraft:inventory')?.container?.getItem(selectedSlot);
     if(!sessions.isCurrent(session,system.currentTick)||!allowed(player)||player.dimension.id!==dimension.id
       ||player.selectedSlotIndex!==selectedSlot||item?.typeId!==TOOL

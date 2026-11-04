@@ -2,6 +2,16 @@
 
 Revisão de código sobre Altare 0.11.2, sem nova release de pacote. A apresentação usa o catálogo de sete modelos da main. IDs, estados, codecs, geometrias, colisões, dados salvos, locks, prazo e transação permanecem iguais. Estudos separados de compactação, migração e novas famílias não integram esta mudança nem recebem aprovação por ela.
 
+## Abertura, interrupção e conjuntos mistos — 04/11/2026
+
+A abertura do editor apenas lê e valida o conjunto. A reconciliação prévia escrevia contornos antes de adquirir o lock, inclusive ao Cancelar ou encontrar outro editor ocupado. Ela foi removida: **Aplicar** calcula os contornos com `planFinish` e os grava pela transação existente, após a revalidação. A manutenção independente por colocação/quebra/tick continua inalterada; uma mudança concorrente continua recusando um snapshot obsoleto.
+
+A liberação da sessão informa encerramento uma única vez quando interrompe uma tela aberta ou uma aplicação ainda não confirmada. Cancelar/fechar nativamente permanece silencioso, inclusive se a sessão for liberada antes da continuação da Promise. Uma sessão antiga não libera o lock de uma nova sessão. Jogador inválido não recebe mensagem tardia. O texto não afirma rollback ou alteração de blocos.
+
+Acabamentos diferentes exibem um aviso junto ao escopo: aplicar uniformiza o conjunto com as escolhas mostradas, inicialmente as do módulo clicado. A detecção compara acabamentos canônicos, incluindo frente, material, tecido e receita; ignora contorno, papéis de centro e a distribuição espacial da imagem de Guadalupe. Não acrescenta confirmação modal nem altera saves. A frente inicial continua sendo a lateral clicada; usar topo/base conserva a frente armazenada.
+
+Testes direcionados: 34 passaram, incluindo dez testes do adaptador de infraestrutura e uma matriz de uniformidade para todos os desenhos existentes. Oito regressões falham contra o editor/menu da base. O check completo do Altare passou com os 130 testes então presentes, typecheck, build e validação; o teste adicional de revalidação tardia passou na rodada direcionada final. A validação de documentação da raiz também passou. Isso não valida layout, foco ou lifecycle exato do Minecraft.
+
 ## Escolhas e organização
 
 - Uma frase inicial explica que a edição alcança o altar inteiro e só muda o mundo ao aplicar.
@@ -41,3 +51,10 @@ O adaptador não prova aparência, foco, toque, controle ou o comportamento exat
 4. Reaplicar sem mudar seleções após estender o altar. O botão Aplicar deve continuar disponível.
 5. Testar cliques rápidos e fechar pela interface nativa. Cancelar/fechar não pode aplicar o rascunho; nenhum `FormVisibilityError` ou lock deve permanecer.
 6. Conferir rolagem e foco com mouse, controle e toque na escala de UI usada. Exceder o prazo da sessão e invalidá-la durante a edição; aplicar uma tela obsoleta deve continuar impossível. Registrar Content Log sem novos erros do add-on.
+
+### Reteste adicional deste fluxo
+
+- Abrir e Cancelar com contornos desatualizados: o editor não deve escrever nem girar blocos. Repetir enquanto outro jogador possui o editor.
+- Aplicar sem mudar escolhas: recompõe os contornos/centros e mantém a frente explicitamente mostrada. Cancelar nunca faz essa recomposição.
+- Deixar a sessão expirar ou invalidar o altar enquanto aberta: fecha e informa encerramento; reabrir deve funcionar. Repetir com Aplicar imediatamente antes da invalidação.
+- Abrir um conjunto com pedras/tecidos/frentes diferentes: aviso de uniformização presente; Cancelar preserva diferenças. Um altar uniforme com Guadalupe/centros distribuídos não deve mostrar aviso falso.

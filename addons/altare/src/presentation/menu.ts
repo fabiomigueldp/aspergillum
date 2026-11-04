@@ -2,12 +2,12 @@ import {CustomForm, ObservableBoolean, ObservableNumber, ObservableUIRawMessage,
 import type {Player, RawMessage} from '@minecraft/server';
 import {bounds, type Finish, type Tile} from '../domain/surface.ts';
 import {SURFACES, FRONTALS, LITURGICAL_COLORS, designById} from '../domain/catalog.ts';
-import {MODELS, CLOTHS, customizationFromFinish, customizationFinish, customizationCapabilities, changeCustomization, type Customization} from '../domain/customization.ts';
+import {MODELS, CLOTHS, customizationFromFinish, customizationFinish, customizationCapabilities, changeCustomization, hasMixedFinishes, type Customization} from '../domain/customization.ts';
 
 export const tr=(key:string):RawMessage=>({translate:`altare.${key}`});
 export function tell(player:Player,key:string):void {try{player.onScreenDisplay.setActionBar(tr(key));}catch{/* Presentation never authorizes edits. */}}
 
-export async function chooseFinish(player:Player,tiles:readonly Tile[],facing:number,isCurrent:()=>boolean=()=>true,onRelease:(callback:()=>void)=>()=>void=()=>()=>{}):Promise<Finish|undefined>{
+export async function chooseFinish(player:Player,tiles:readonly Tile[],facing:number,isCurrent:()=>boolean=()=>true,onRelease:(callback:()=>void)=>()=>void=()=>()=>{},onInterrupted:()=>void=()=>{}):Promise<Finish|undefined>{
   const tile=tiles[0]!, b=bounds(tiles);
   // Architectural frontal values are centre roles, not the classic Guadalupe.
   // Universal classic textiles keep the icon in frontal and cloth in textileRole.
@@ -64,7 +64,9 @@ export async function chooseFinish(player:Player,tiles:readonly Tile[],facing:nu
     });cleanups.push(()=>value.unsubscribe(callback));
   }
   const onOrnamental=ornamental.subscribe(value=>update({ornamental:value}));cleanups.push(()=>ornamental.unsubscribe(onOrnamental));
-  form.label(tr('menu.scope')).header(tr('menu.structure'))
+  form.label(tr('menu.scope'));
+  if(hasMixedFinishes(tiles))form.label(tr('menu.mixed'));
+  form.header(tr('menu.structure'))
     .dropdown(tr('menu.model'),values.model,labels(MODELS,'structure'))
     .dropdown(tr('menu.surface'),values.surface,labels(SURFACES,'surface'),{visible:material})
     .label(tr('menu.material_walnut'),{visible:joinery})
@@ -88,7 +90,11 @@ export async function chooseFinish(player:Player,tiles:readonly Tile[],facing:nu
     .button(tr('menu.cancel'),()=>{if(alive)close();});
   refresh();
   if(!isCurrent()){alive=false;for(const cleanup of cleanups)cleanup();return undefined;}
-  const unsubscribe=onRelease(close);
+  const unsubscribe=onRelease(()=>{
+    // Voluntary dismissal has already cleared alive, even before show resolves.
+    if(selected || (alive&&form.isShowing()))onInterrupted();
+    close();
+  });
   try{await form.show();return isCurrent()?selected:undefined;}
   finally{alive=false;unsubscribe();for(const cleanup of cleanups)cleanup();}
 }

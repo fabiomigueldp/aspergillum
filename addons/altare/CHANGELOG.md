@@ -1,5 +1,11 @@
 # Changelog
 
+## Em desenvolvimento — 2026-11-04 — fluxo de edição
+
+- Remove escrita/reconciliação da abertura, antes do lock; Aplicar mantém a transação e a revalidação existentes.
+- Informa encerramento forçado sem avisos ao Cancelar e identifica conjuntos mistos antes da uniformização explícita.
+- Testa infraestrutura, concorrência, fechamento, expiração e detecção sem confundir papéis locais. Sem novo pacote, alteração de saves ou validação Minecraft.
+
 ## Em desenvolvimento — 2026-11-04 — editor nativo
 
 - Organiza escolhas, materiais fixos, ações e mensagens em pt_BR/en_US.

@@ -1,5 +1,5 @@
 import {STRUCTURES,JOINERY_STRUCTURES,SURFACES,FRONTALS,LITURGICAL_COLORS,SHARED_TEXTILES,designById,sharedDesignFor,textileOf} from './catalog.ts';
-import type {Finish} from './surface.ts';
+import type {Finish,Tile} from './surface.ts';
 export const MODELS=['classic',...STRUCTURES,...JOINERY_STRUCTURES,'colonnade'] as const;
 export const CLOTHS=SHARED_TEXTILES;
 export const CLASSIC_CLOTHS=['none','linen_short','linen_long','gold_short','gold_long'] as const;
@@ -30,4 +30,12 @@ export function changeCustomization(draft:Customization,patch:Partial<Customizat
  if(patch.ornateLace!==undefined&&patch.textile===undefined)next.textile=patch.ornateLace?'lace':'none';
  if(patch.cloth!==undefined&&patch.textile===undefined&&next.model==='classic')next.textile=CLASSIC_CLOTHS[patch.cloth]??next.textile;
  next.ornateLace=next.textile==='lace';customizationFinish(next);return next;
+}
+
+/** Centre/contour roles vary within one finish and must not imply mixed choices. */
+export function hasMixedFinishes(tiles:readonly Tile[]):boolean {
+ const ornamental=tiles.some(t=>t.frontal>0&&(!t.design||designById(t.design)?.structure==='classic'));
+ const key=(tile:Tile)=>JSON.stringify(customizationFinish(customizationFromFinish({stone:tile.stone,cloth:tile.cloth,ornamental,facing:tile.facing,...(tile.design?{design:tile.design}:{})})));
+ const first=tiles[0];if(!first)return false;
+ const initial=key(first);return tiles.some(tile=>key(tile)!==initial);
 }

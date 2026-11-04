@@ -298,3 +298,18 @@ test('a released session remains unable to Apply when native close initially fai
  assert.doesNotThrow(()=>click('menu.apply'));assert.equal(form.showing,false);
  assert.equal(await result,undefined);assert.equal(calls,2);
 });
+
+test('mixed notice distinguishes actual finishes from per-module contour and centre roles',async()=>{
+ const positions=Array.from({length:14},(_,i)=>({position:{x:i%7,y:0,z:Math.floor(i/7)},stone:0,cloth:0,frontal:0,facing:0,edges:15}));
+ for(const design of DESIGNS){
+  const uniform=planFinish(positions,{stone:0,cloth:0,ornamental:true,facing:1,design:design.id});
+  const result=chooseFinish({},uniform,1);
+  assert.equal(field('menu.mixed'),undefined,design.id);click('menu.cancel');await result;
+ }
+ const classic=planFinish(positions,{stone:0,cloth:1,ornamental:true,facing:0});
+ let result=chooseFinish({},classic,0);assert.equal(field('menu.mixed'),undefined);click('menu.cancel');await result;
+ for(const patch of [{stone:1},{cloth:2},{facing:1},{design:'altare:a_ogive_marble_ruby_cross'}]){
+  const mixed=classic.map((tile,i)=>i===0?{...tile,...patch}:tile),before=structuredClone(mixed);
+  result=chooseFinish({},mixed,0);assert.equal(field('menu.mixed')?.kind,'label');click('menu.cancel');await result;assert.deepEqual(mixed,before);
+ }
+});
