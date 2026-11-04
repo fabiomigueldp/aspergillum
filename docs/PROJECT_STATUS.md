@@ -1,8 +1,8 @@
 # Estado do projeto
 
-## Preservação do trabalho — 04/11/2026
+## Curadoria do arquivo de trabalho — 04/11/2026
 
-Fontes, modelos 3D, add-on Nossa Senhora da Paz e estudos históricos estão no [arquivo de desenvolvimento](../experiments/2026-11-preservation/README.md), com hashes e restauração independente. A main mantém Aspergillum 1.2.5, Altare 0.11.2 e Studio 2.2.1; somente as correções de fechamento das interfaces foram incorporadas ao runtime. Schemas compactos 2.0.0/0.13.0 continuam NO-GO para atualização de saves/release. Nenhuma instalação ou publicação de pacote foi realizada.
+Fontes, modelos 3D, add-on Nossa Senhora da Paz e estudos selecionados estão no [arquivo curado de desenvolvimento](../experiments/2026-11-preservation/README.md), com hashes, insumos e restauração independente. A curadoria retira 1.348.195.558 bytes de outputs históricos exclusivos do checkout, conserva V75/P85 e toda a cadeia Blender, e mantém os outros 12 snapshots intactos. O arquivo integral anterior continua recuperável no Git; não houve reescrita de histórico. A main mantém Aspergillum 1.2.5, Altare 0.11.2 e Studio 2.2.1; somente as correções de fechamento das interfaces foram incorporadas ao runtime. Schemas compactos 2.0.0/0.13.0 continuam NO-GO para atualização de saves/release. Nenhuma instalação ou publicação de pacote foi realizada.
 
 ## Editor Altare — código em desenvolvimento — 04/11/2026
 

@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "checked_date_utc": "2026-11-04",
+  "status": "PASS_FOR_STATED_SCOPE_ONLY",
+  "baseline_commit": "ca59e222b086e76e6065fe1a884ab852e682dcc6",
+  "curation_manifest_sha256": "f3326288e31f3f7578b8f02f63d0a5b169a81c46cf7708fc0fc32e6621e82fa6",
+  "counts": {
+    "paz_paths_before": 4397,
+    "paz_paths_retained": 2228,
+    "paz_paths_removed": 2169,
+    "common_objects_before": 5242,
+    "common_objects_retained": 3325,
+    "common_objects_removed": 1917,
+    "common_bytes_before": 1790157519,
+    "common_bytes_retained": 441961961,
+    "common_bytes_removed": 1348195558
+  },
+  "archive_integrity": {
+    "command": "python experiments/2026-11-preservation/archive.py verify --temp-dir ../",
+    "snapshots_verified": 13,
+    "common_entries_verified": 20491,
+    "blender_unique_objects_decoded_and_verified": 112,
+    "blender_decoded_unique_bytes": 4833932524,
+    "original_sources_read": false
+  },
+  "restore_smoke": {
+    "ui_final": {
+      "files": 2206,
+      "bytes": 113933652,
+      "all_restored_sha256_match": true
+    },
+    "v75": {
+      "source": "paz-refinement/gui-test/checkpoint-V75-20261102/V75-tunic-lower-trial.blend",
+      "sha256": "2c14fbc7566217ad350ef926abc1dc4a1bc41f457eaab8f10351e90b1f4777d9",
+      "bytes": 59672216,
+      "objects_decoded_and_verified": 96,
+      "decoded_unique_bytes": 4153881336
+    },
+    "all_temporary_restore_copies_removed": true
+  },
+  "tests": {
+    "restorer_and_curation_tests": 8,
+    "restorer_and_curation_status": "PASS",
+    "main_npm_run_check": "PASS",
+    "main_root_tests": 123,
+    "main_viewer_tests": 83,
+    "documentation_markdown_files": 50,
+    "approved_audio_validation": "PASS: 15 families, 48 mono 48 kHz OGG variants",
+    "existing_builder_report_overwrite_refused": true
+  },
+  "runtime_preservation": {
+    "tracked_runtime_sources_assets_packs_tools_and_configuration_unchanged": true,
+    "comparison_commit": "ca59e222b086e76e6065fe1a884ab852e682dcc6",
+    "note": "npm run check regenerated audio. Only those generated changes were restored from the approved baseline, and validate:audio passed again. No generated audio change is included."
+  },
+  "retained_builders": {
+    "status": "PASS",
+    "scope": "Selected builders only; no art approval, Minecraft test, release or installation",
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "pillow": "13.0.0",
+    "input_manifest_sha256": "f3326288e31f3f7578b8f02f63d0a5b169a81c46cf7708fc0fc32e6621e82fa6",
+    "checks": {
+      "v15_shared_mask": {
+        "input_files": 7,
+        "input_bytes": 7894170,
+        "outputs": [
+          {
+            "path": "paz-bedrock-v75-prototype-20261103/opaque_transport_v15/shared_mask/shared_mask_128.geo.json",
+            "bytes": 12445327,
+            "sha256": "2817fd3966c76e731292919afb44add520a6e4ec6c61227bf33fbf2780c60558",
+            "byte_identical": true
+          },
+          {
+            "path": "paz-bedrock-v75-prototype-20261103/opaque_transport_v15/shared_mask/shared_mask_128_new_parts.geo.json",
+            "bytes": 11327680,
+            "sha256": "165de776ad686b674d9bc21c718646950d0806426739f5cad9e74902ba6930fd",
+            "byte_identical": true
+          },
+          {
+            "path": "paz-bedrock-v75-prototype-20261103/opaque_transport_v15/shared_mask/shared_mask_128.png",
+            "bytes": 1288284,
+            "sha256": "8a7161f403a6cc7227e21c1588b9ee05b09d515dc85c24cd9ea30c8fdd7934b3",
+            "byte_identical": true
+          },
+          {
+            "path": "paz-bedrock-v75-prototype-20261103/opaque_transport_v15/shared_mask/shared_mask_512.geo.json",
+            "bytes": 12445327,
+            "sha256": "6416535dc54ee895a724a674fa83777e38a9dba1c0f7fa6b750fb93a4f5a6b15",
+            "byte_identical": true
+          },
+          {
+            "path": "paz-bedrock-v75-prototype-20261103/opaque_transport_v15/shared_mask/shared_mask_512_new_parts.geo.json",
+            "bytes": 11327680,
+            "sha256": "f44cfcd8f39b00e57c7aec2284fa587e0f222f9aefcd77a010a78526034caff9",
+            "byte_identical": true
+          },
+          {
+            "path": "paz-bedrock-v75-prototype-20261103/opaque_transport_v15/shared_mask/shared_mask_512.png",
+            "bytes": 1289956,
+            "sha256": "5a94ea56e54f2f6771fddc81920dc0fdbe9edae438b19c970965855bc7b282f8",
+            "byte_identical": true
+          },
+          {
+            "path": "paz-bedrock-v75-prototype-20261103/opaque_transport_v15/shared_mask/shared_mask_2048.geo.json",
+            "bytes": 12519264,
+            "sha256": "7d316ce8c92b346095a73e9f1f540167146a4f4aad707491d53f20b7d427de72",
+            "byte_identical": true
+          },
+          {
+            "path": "paz-bedrock-v75-prototype-20261103/opaque_transport_v15/shared_mask/shared_mask_2048_new_parts.geo.json",
+            "bytes": 11401619,
+            "sha256": "d885fedd787cc36a1a279a805abd4ce07624ac9d7f38897977a96cebcc168627",
+            "byte_identical": true
+          },
+          {
+            "path": "paz-bedrock-v75-prototype-20261103/opaque_transport_v15/shared_mask/shared_mask_2048.png",
+            "bytes": 1296414,
+            "sha256": "71dae6b4e599fc6aa3505974d9be95d4b9f78bc64e528e8ca32ddb33539eb620",
+            "byte_identical": true
+          }
+        ]
+      },
+      "v16_trim_and_control": {
+        "input_files": 6,
+        "input_bytes": 19703314,
+        "outputs": [
+          {
+            "path": "paz-bedrock-v75-prototype-20261103/lit_surface_v16/transparent_trim/roi68-depth1.geo.json",
+            "bytes": 12562098,
+            "sha256": "fc00b96e8174108fbc0383220b49285f38b1e92c684f527f7604bbe9a50d9ead",
+            "byte_identical": true
+          },
+          {
+            "path": "paz-bedrock-v75-prototype-20261103/lit_surface_v16/transparent_trim/roi68-depth2.geo.json",
+            "bytes": 12646980,
+            "sha256": "447726952733be98c08f421106172c12eccfa00eeb2a8590fb4ccb9f5896baad",
+            "byte_identical": true
+          },
+          {
+            "path": "paz-bedrock-v75-prototype-20261103/lit_surface_v16/transparent_trim/roi68-depth3.geo.json",
+            "bytes": 12817667,
+            "sha256": "0836f7efac70df97dc57ea32a9ecfbc347521a8a699164ef209fb82fd5e3a37b",
+            "byte_identical": true
+          },
+          {
+            "path": "paz-bedrock-v75-prototype-20261103/lit_surface_v16/transparent_trim/roi68-depth3-restored-transparent.geo.json",
+            "bytes": 12966416,
+            "sha256": "510b3666805386a8652be83e1c515b411b6b0d7dd10b1f47da94895d4b9c7fb7",
+            "byte_identical": true
+          },
+          {
+            "path": "paz-bedrock-v75-prototype-20261103/lit_surface_v16/transparent_trim/all-band-depth1.geo.json",
+            "bytes": 18118247,
+            "sha256": "f27077ca563efc82f987c22bcfdc587b8f9da856d3a3d9b770d0523918ec9263",
+            "byte_identical": true
+          }
+        ]
+      },
+      "addon_0_1_3": {
+        "tests_passed": 78,
+        "input_paths": 31,
+        "input_bytes": 196946,
+        "status": "static_checks_passed",
+        "package_sha256": "7f605c28e89734a27c733f3da6d7dfa7e9f2539ab6b69b055903e7dd9fc86f04",
+        "release_eligible": false,
+        "runtime_status": "not_run"
+      }
+    },
+    "temporary_build_copies_removed": true
+  },
+  "verification_source_sha256": {
+    "archive.py": "c4e58184478bae98b03f7e88bfb7fb5afb4d574ae90137f6937ff040ccf3430e",
+    "test_archive.py": "eaec95d14cda9d593f89b9fe04e88428b3975d4351c7c1463474c4225c173eed",
+    "test_curation.py": "473b81cdea971836f7ab2c6eb28ae1aa6395097ac25ca7a470a3a73efb4a54d4",
+    "verify_retained_builders.py": "168989f7d4efe2d7e1d1fa699cba8dd55489e445cc8a0ccb85da83bb23c134cc",
+    "sculpture-lossless/restore.py": "060bd4f86eb848f8e8f98f680b7aeb9c552659937afe819a5f2198f1d59775d1"
+  },
+  "not_claimed": [
+    "Exhaustive replay of discarded historical trials or all renders",
+    "Visual/artistic approval",
+    "Minecraft rendering parity or performance",
+    "Native Minecraft test",
+    "World/save migration",
+    "Release, installation, publication or deployment",
+    "Reduction of the existing full Git history or full-clone download size"
+  ]
+}

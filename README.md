@@ -134,4 +134,4 @@ Código e assets próprios sob a licença MIT. Minecraft é marca da Microsoft/M
 
 ## Trabalho preservado na main
 
-O [arquivo de estudos de novembro de 2026](experiments/2026-11-preservation/README.md) reúne as fontes históricas de Altare/Aspergillum, o modelo Nossa Senhora da Paz, seu add-on e os diagnósticos, com manifestos e restauração por hash. Esses estudos permanecem separados do runtime e não são releases nem atualizações de saves.
+O [arquivo curado de estudos de novembro de 2026](experiments/2026-11-preservation/README.md) reúne as fontes Altare/Aspergillum, o checkpoint editável Nossa Senhora da Paz, seu add-on e os diagnósticos selecionados, com insumos, manifestos e restauração por hash. Rascunhos pesados retirados estão inventariados e continuam recuperáveis no histórico Git. Esses estudos permanecem separados do runtime e não são releases nem atualizações de saves.

@@ -1,5 +1,10 @@
 # Changelog
 
+## Curadoria do arquivo — 2026-11-04
+
+- Seleciona fontes, insumos e melhores candidatos de pesquisa Paz; retira outputs históricos exclusivos do checkout com inventário e recuperação pelo commit anterior. Preserva os 12 outros snapshots e toda a cadeia Blender.
+- Verifica restauração, insumos e reconstrução das geometrias retidas. Não muda runtime, saves, áudio aprovado ou elegibilidade de release.
+
 ## Preservação — 2026-11-04
 
 - Preserva fontes, entradas, estudos históricos, modelo 3D e add-on Nossa Senhora da Paz em [arquivo isolado e restaurável](experiments/2026-11-preservation/README.md), com deduplicação e hashes por arquivo.

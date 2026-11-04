@@ -1,6 +1,6 @@
 {
   "captured_utc": "2026-11-04",
-  "status": "PRESERVED_SOURCE_AND_EVIDENCE_NOT_RELEASE",
+  "status": "CURATED_SOURCE_AND_SELECTED_EVIDENCE_NOT_RELEASE",
   "baseline_commit": "0c4645d1e67ffa0af1d014cd47722cedf02d26b2",
   "runtime_versions": {
     "aspergillum": "1.2.5",
@@ -64,9 +64,9 @@
     },
     {
       "id": "nossa-senhora-da-paz",
-      "manifest_sha256": "3de9502bf8623939eb8ed11532114a261f0815d9f724463c53260fea79e7520b",
-      "files": 4397,
-      "logical_bytes": 1712591893
+      "manifest_sha256": "82892fff58631e3212e304c02b45bfa7a08dc74d2fde2228ff8bf34208116630",
+      "files": 2228,
+      "logical_bytes": 238537061
     },
     {
       "id": "paz-workbench-cube-fix-20261103",
@@ -87,18 +87,51 @@
       "logical_bytes": 20869787
     }
   ],
-  "common_snapshot_entries": 22660,
+  "common_snapshot_entries": 20491,
   "blender": {
     "unique_scenes": 112,
     "original_paths": 127,
     "logical_unique_bytes": 4833932524,
     "compressed_bytes": 56814848
   },
-  "stored_objects": 5354,
-  "stored_object_bytes": 1846972367,
-  "largest_stored_object_bytes": 67108992,
+  "stored_objects": 3437,
+  "stored_object_bytes": 498776809,
+  "largest_stored_object_bytes": 16945129,
   "all_objects_under_github_100_mib": true,
   "verification": {
+    "all_common_file_sha256_and_sizes": "PASS",
+    "all_blender_decoded_sha256_and_sizes": "PASS",
+    "main_root_tests": 123,
+    "main_viewer_tests": 83,
+    "restorer_and_curation_unit_tests": 8,
+    "main_root_check": "PASS",
+    "approved_audio_restored_and_revalidated": "PASS",
+    "runtime_tracked_bytes_unchanged": "PASS",
+    "ui_final_restore_files": 2206,
+    "v75_restore_decoded_objects": 96,
+    "retained_builder_verification": "PASS: 14 byte-identical geometry/atlas outputs; 78 addon tests",
+    "report": "VERIFICATION.json",
+    "native_minecraft_test": "NOT_RUN",
+    "visual_approval": "NOT_GRANTED",
+    "release_install_or_deployment": "NOT_PERFORMED"
+  },
+  "github_limits_checked_utc": "2026-11-04",
+  "github_limits_source": "https://docs.github.com/en/repositories/creating-and-managing-repositories/repository-limits",
+  "curation": {
+    "manifest": "CURATION.json",
+    "previous_complete_commit": "ca59e222b086e76e6065fe1a884ab852e682dcc6",
+    "paz_paths_before": 4397,
+    "paz_paths_retained": 2228,
+    "paz_paths_removed": 2169,
+    "common_objects_before": 5242,
+    "common_objects_retained": 3325,
+    "common_objects_removed": 1917,
+    "common_bytes_before": 1790157519,
+    "common_bytes_retained": 441961961,
+    "common_bytes_removed": 1348195558
+  },
+  "previous_complete_preservation_pack_bytes": 1267624751,
+  "previous_complete_verification": {
     "all_common_file_sha256_and_sizes": "PASS",
     "all_blender_decoded_sha256_and_sizes": "PASS",
     "main_root_tests": 123,
@@ -109,8 +142,5 @@
     "restorer_unit_tests": 3,
     "native_minecraft_test": "NOT_RUN",
     "release_install_or_deployment": "NOT_PERFORMED"
-  },
-  "measured_preservation_pack_bytes": 1267624751,
-  "github_limits_checked_utc": "2026-11-04",
-  "github_limits_source": "https://docs.github.com/en/repositories/creating-and-managing-repositories/repository-limits"
+  }
 }
