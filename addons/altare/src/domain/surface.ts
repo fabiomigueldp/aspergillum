@@ -1,24 +1,39 @@
+import {nativePoseFor,nativePoseData,nativeCentered} from './native-pedestal-layout.ts';
 import {normalizeTile} from './block-codec.ts';
 import {frontalRole} from './frontal-layout.ts';
 import {designById,centerRole,SURFACES,TEXTILE_VALUES,compactLayout} from './catalog.ts';
 import {repairClassicTextile} from './classic-textile-layout.ts';
 import {paletteRoleAfterContour} from './palette-layout.ts';
 export interface Position { x:number; y:number; z:number }
-export interface Tile { position:Position; stone:number; cloth:number; frontal:number; facing:number; edges:number; design?:string; textileRole?:number }
+export interface Tile { position:Position; stone:number; cloth:number; frontal:number; facing:number; edges:number; design?:string; textileRole?:number; nativePose?:number }
 export interface Finish { stone:number; cloth:number; ornamental:boolean; facing:number; design?:string }
 export const LIMIT = 128;
 export const DIRECTIONS = [{x:0,z:-1},{x:1,z:0},{x:0,z:1},{x:-1,z:0}] as const;
 export const positionKey = (p:Position):string => `${p.x},${p.y},${p.z}`;
 export const neighbor = (p:Position,i:number):Position => ({x:p.x+DIRECTIONS[i]!.x,y:p.y,z:p.z+DIRECTIONS[i]!.z});
 export const sameTile = (a:Tile|null|undefined,b:Tile):boolean => !!a && positionKey(a.position)===positionKey(b.position)
-  && a.stone===b.stone && a.cloth===b.cloth && a.frontal===b.frontal && a.facing===b.facing && a.edges===b.edges && a.design===b.design&&(a.textileRole??0)===(b.textileRole??0);
+  && a.stone===b.stone && a.cloth===b.cloth && a.frontal===b.frontal && a.facing===b.facing && a.edges===b.edges && a.design===b.design&&(a.textileRole??0)===(b.textileRole??0)&&a.nativePose===b.nativePose;
 export function withEdges(tile:Tile,edges:number):Tile {
- const next={...tile,edges},d=designById(tile.design);if(!d||d.codec==='pose')return normalizeTile(next);if(d?.codec==='classic_textile')return {...next,...repairClassicTextile(next)};return compactLayout(d)?{...next,frontal:paletteRoleAfterContour(next)}:next;
+ if(designById(tile.design)?.codec==='native')return {...tile};
+ const next={...tile,edges},d=designById(tile.design);if(!d||d.codec==='pose')return normalizeTile(next);if(d?.codec==='classic_textile')return {...next,...repairClassicTextile(next)};return compactLayout(d)?normalizeTile({...next,frontal:paletteRoleAfterContour(next)}):normalizeTile(next);
 }
 
 /** A placed extension inherits the finish, never a neighbour's centre role. */
 export function isolatedTile(tile:Tile,position:Position):Tile {
+ if(designById(tile.design)?.codec==='native')return pendingTile(position);
  return normalizeTile({...tile,position:{...position},edges:15,frontal:0,...(tile.textileRole!==undefined?{textileRole:0}:{})});
+}
+
+/** A provisional extension is visibly plain and carries no native support pose. */
+export function pendingTile(position:Position):Tile {return {position:{...position},stone:0,cloth:0,frontal:0,facing:0,edges:15};}
+
+/** A pending plain extension should reopen its single native composition, even
+ * when the player targets the provisional cell. This only selects a draft. */
+export function editorSeed(tiles:readonly Tile[]):Tile {
+ const first=tiles[0];if(!first)throw Error('changed');
+ const native=tiles.find(t=>designById(t.design)?.codec==='native');
+ if(native&&tiles.every(t=>t.design===native.design||!t.design&&t.stone===0&&t.cloth===0&&t.frontal===0))return native;
+ return first;
 }
 
 /** undefined means unloaded/unknown, never air. Preserve the last known edge in that case. */
@@ -65,7 +80,12 @@ export function planFinish(tiles:readonly Tile[],finish:Finish):Tile[] {
     if((design||finish.ornamental) && (edges&(1<<finish.facing))){
       frontal=design?(['edges','symmetric'].includes(design.codec??'')?0:centerRole(width,index)):frontalRole(width,index);
     }
-    const {design:previousDesign,textileRole:previousRole,...base}=t;
+    const {design:previousDesign,textileRole:previousRole,nativePose:previousPose,...base}=t;
+    if(design?.codec==='native'){
+      const depth=horizontal?b.maxZ-b.minZ+1:b.maxX-b.minX+1;
+      const nativePose=nativePoseFor(width,depth,finish.facing,t.position.x-b.minX,t.position.z-b.minZ,frontal,nativeCentered(design.textile));
+      return {...base,design:design.id,stone:SURFACES.indexOf(design.surface),cloth:TEXTILE_VALUES.indexOf(design.textile),nativePose,...nativePoseData(nativePose,nativeCentered(design.textile))};
+    }
     const sharedClassic=design?.codec==='classic_textile';
     return normalizeTile({...base,...(design?{design:design.id}:{}),stone:design&&!sharedClassic?SURFACES.indexOf(design.surface):finish.stone,cloth:design?TEXTILE_VALUES.indexOf(design.textile):finish.cloth,facing:design?.codec==='symmetric'?0:finish.facing,edges,frontal:sharedClassic?(finish.ornamental&&(edges&(1<<finish.facing))?frontalRole(width,index):0):frontal,...(sharedClassic?{textileRole:edges&(1<<finish.facing)?centerRole(width,index):0}:{})});
   });

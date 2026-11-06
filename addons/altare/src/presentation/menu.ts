@@ -1,6 +1,6 @@
 import {CustomForm, ObservableBoolean, ObservableNumber, ObservableUIRawMessage, type UIRawMessage} from '@minecraft/server-ui';
 import type {Player, RawMessage} from '@minecraft/server';
-import {bounds, type Finish, type Tile} from '../domain/surface.ts';
+import {bounds, editorSeed, type Finish, type Tile} from '../domain/surface.ts';
 import {SURFACES, FRONTALS, LITURGICAL_COLORS, designById} from '../domain/catalog.ts';
 import {MODELS, CLOTHS, customizationFromFinish, customizationFinish, customizationCapabilities, changeCustomization, hasMixedFinishes, type Customization} from '../domain/customization.ts';
 
@@ -8,7 +8,7 @@ export const tr=(key:string):RawMessage=>({translate:`altare.${key}`});
 export function tell(player:Player,key:string):void {try{player.onScreenDisplay.setActionBar(tr(key));}catch{/* Presentation never authorizes edits. */}}
 
 export async function chooseFinish(player:Player,tiles:readonly Tile[],facing:number,isCurrent:()=>boolean=()=>true,onRelease:(callback:()=>void)=>()=>void=()=>()=>{},onInterrupted:()=>void=()=>{}):Promise<Finish|undefined>{
-  const tile=tiles[0]!, b=bounds(tiles);
+  const tile=editorSeed(tiles), b=bounds(tiles);
   // Architectural frontal values are centre roles, not the classic Guadalupe.
   // Universal classic textiles keep the icon in frontal and cloth in textileRole.
   const ornamentalOnOpen=tiles.some(t=>t.frontal>0&&(!t.design||designById(t.design)?.structure==='classic'));

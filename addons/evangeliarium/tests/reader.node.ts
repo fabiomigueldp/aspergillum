@@ -84,7 +84,7 @@ test('salto de página ritual valida entrada, preserva rascunho e não altera ma
  await click('Seções');await click('Ir para página');await cancel();assert.equal(title(),'Seções');await click('Voltar à leitura');assert.match(current().text,/ · 2\//);
 });
 test('seção curta não mostra salto de página',async()=>{
- await ritual('pontifical');await click('Ordens');await click('Ordenação');await click('Seções');assert.ok(!current().buttons.includes('Ir para página'));
+ await ritual('pontifical');await click('Ordens');await click('Seções');assert.ok(!current().buttons.includes('Ir para página'));
 });
 test('leitura retorna à mesma página da lista de seções',async()=>{
  await ritual();await click('Ordinário');await click('Mais seções');await click('Seção 12');await click('Seções');await click('Voltar à lista');
@@ -102,7 +102,7 @@ test('resposta de salto antiga não altera livro recém-aberto',async()=>{
  p.inventory.setItem(0,new ItemStack('evangeliarium:pontifical'));reader.open(p,books.held(p));await settle();const fresh=current();stale.respond({canceled:false,formValues:['2']});await settle();assert.equal(current(),fresh);assert.equal(fresh.showing,true);
 });
 test('seção compartilhada aparece em todos os grupos sem duplicar o resultado de busca',async()=>{
- await ritual();await click('Compartilhadas');assert.equal(current().buttons.filter((label:string)=>label==='Seção 0').length,1);await click('Seção 0');assert.equal(title(),'Seção 0');
+ await ritual();await click('Compartilhadas');assert.equal(title(),'Seção 0');assert.ok(current().buttons.includes('Seções'));
  await click('Seções');await click('Buscar');await submit('Compartilhadas');assert.ok(current().buttons.includes('Seção 0'));assert.match(current().text,/1–1 de 1/);
 });
 test('texto relacionado retorna à página do rito anterior e ao seu grupo',async()=>{
@@ -118,11 +118,11 @@ const lectionaryFixture={book:{title:'Lecionário',sections:[{id:'lc-advento',ti
 async function lectionarySetup(gospel=false){const p=new Player('lectionary-player',world.dimension);world.players.push(p);p.inventory.setItem(0,new ItemStack(gospel?ITEM:'evangeliarium:lectionary'));const books=new Books();books.load();const reader=new Reader(books,liturgyFixture,lectionaryFixture);const h=gospel?books.held(p):books.select(p,books.held(p),{mode:'index'});reader.open(p,h);await settle();if(gospel)await click('Índice');return{p,books,reader};}
 test('Lecionário abre índice próprio, conserva texto e marca página no exemplar',async()=>{
  const {p,books,reader}=await lectionarySetup();assert.equal(title(),'Lecionário');assert.deepEqual(itemState(p.inventory.getItem(0)).selection,{mode:'index'});
- await click('Advento');await click('1º Domingo do Advento · Ano A');assert.ok(!/Bíblia Livre|CNBB/.test(current().text));await click('Próxima');const text=current().text;
+ await click('Advento');assert.equal(title(),'1º Domingo do Advento · Ano A');assert.ok(!/Bíblia Livre|CNBB/.test(current().text));await click('Próxima');const text=current().text;
  await click('Seções');assert.match(current().text,/calendário local/);await click('Livro');await click('Marcar página');assert.deepEqual(itemState(p.inventory.getItem(0)).selection,{mode:'section',sectionId:'lc-advento',page:1});reader.open(p,books.held(p));await settle();assert.equal(current().text,text);
 });
 test('Evangeliário consulta formulários sem primeiras leituras e reabre marca litúrgica',async()=>{
- const {p,books,reader}=await lectionarySetup(true);await click('Advento');await click('1º Domingo do Advento · Ano A');assert.ok(!current().text.includes('Primeira leitura'));await click('Próxima');
+ const {p,books,reader}=await lectionarySetup(true);await click('Advento');assert.equal(title(),'1º Domingo do Advento · Ano A');assert.ok(!current().text.includes('Primeira leitura'));await click('Próxima');
  await click('Seções');await click('Livro');await click('Marcar página');const text=current().text;reader.open(p,books.held(p));await settle();assert.equal(current().text,text);assert.equal(itemState(p.inventory.getItem(0)).selection.sectionId,'lc-advento');
  await click('Seções');await click('Livro');await click('Seguir hoje');assert.ok(current().text.includes('24/10/2026')||title()==='Hoje');assert.deepEqual(itemState(p.inventory.getItem(0)).selection,{mode:'today'});
 });
@@ -130,11 +130,11 @@ test('índice evangélico sem seleção volta ao dia e busca preserva alternativ
  await lectionarySetup(true);await click('Buscar');await submit('alternativa');await click('1º Domingo do Advento · Ano A');await click('Seções');await click('Hoje');assert.ok(current().text.includes('24/10/2026')||title()==='Hoje');
 });
 test('callback de marca do Lecionário não modifica Evangeliário substituto',async()=>{
- const {p,books,reader}=await lectionarySetup();await click('Advento');await click('1º Domingo do Advento · Ano A');await click('Seções');await click('Livro');const stale=current();p.inventory.setItem(0,new ItemStack(ITEM));reader.open(p,books.held(p));await settle();const fresh=current();stale.respond({canceled:false,selection:stale.buttons.indexOf('Marcar página')});await settle();assert.deepEqual(itemState(p.inventory.getItem(0)).selection,{mode:'today'});assert.equal(current(),fresh);assert.equal(fresh.showing,true);
+ const {p,books,reader}=await lectionarySetup();await click('Advento');assert.equal(title(),'1º Domingo do Advento · Ano A');await click('Seções');await click('Livro');const stale=current();p.inventory.setItem(0,new ItemStack(ITEM));reader.open(p,books.held(p));await settle();const fresh=current();stale.respond({canceled:false,selection:stale.buttons.indexOf('Marcar página')});await settle();assert.deepEqual(itemState(p.inventory.getItem(0)).selection,{mode:'today'});assert.equal(current(),fresh);assert.equal(fresh.showing,true);
 });
 
 test('partes da leitura saltam para a página real e não mudam a marca',async()=>{
- const {p}=await lectionarySetup();await click('Advento');await click('1º Domingo do Advento · Ano A');await click('Seções');await click('Partes da leitura');const target=current().buttons.find((label:string)=>label.startsWith('Evangelho · página '));assert.ok(target);await click(target);assert.ok(current().text.includes('Evangelho'));assert.deepEqual(itemState(p.inventory.getItem(0)).selection,{mode:'index'});
+ const {p}=await lectionarySetup();await click('Advento');assert.equal(title(),'1º Domingo do Advento · Ano A');await click('Seções');await click('Partes da leitura');const target=current().buttons.find((label:string)=>label.startsWith('Evangelho · página '));assert.ok(target);await click(target);assert.ok(current().text.includes('Evangelho'));assert.deepEqual(itemState(p.inventory.getItem(0)).selection,{mode:'index'});
 });
 test('acervo real navega tempo, ciclo, semana e volta à mesma lista',async()=>{
  const p=new Player('real-lectionary',world.dimension);world.players.push(p);p.inventory.setItem(0,new ItemStack('evangeliarium:lectionary'));const books=new Books();books.load();const reader=new Reader(books);reader.open(p,books.held(p));await settle();await click('Seções');await click('Índice');assert.equal(title(),'Lecionário');
@@ -197,7 +197,7 @@ test('Ordo expiry restores the saved personal bookmark on reopening after reload
  now=Date.parse('2026-10-25T03:00:00Z');const reopened=new Reader(books);reader.close(p.id);reopened.open(p,books.held(p));await settle();assert.match(title(),/Lucas/);assert.equal(JSON.parse(world.getDynamicProperty('evangeliarium:ordo_state')).override,undefined);
 });
 test('Pontifical stays on its rite while a global date is active',async()=>{
- const {p,books,reader}=await ritual('pontifical');await click('Ordens');await click('Ordenação');await click('Seções');await click('Livro');await click('Marcar página');
+ const {p,books,reader}=await ritual('pontifical');await click('Ordens');await click('Seções');await click('Livro');await click('Marcar página');
  setOrdo('2026-10-25','comum/30/0/A');reader.open(p,books.held(p));await settle();assert.equal(title(),'Ordenação');
 });
 test('selected Christmas Mass points the Gospel to the explicitly chosen aurora, not the day Mass',async()=>{
@@ -208,4 +208,37 @@ test('missing Missal proper offers the index instead of unrelated or votive text
 });
 test('global Pentecost vigil uses its feast name, not the Saturday ferial label',async()=>{
  const {p,books,reader}=await setup();setOrdo('2027-05-15','pentecostes/B','Missa da Vigília');reader.open(p,books.held(p));await settle();assert.match(current().text,/Pentecostes/);assert.doesNotMatch(current().text,/7ª Semana da Páscoa/);
+});
+
+function setVotive(){world.setDynamicProperty('evangeliarium:ordo_state',JSON.stringify({schema:1,revision:1,override:{selection:{kind:'votive',id:'missal--santissima-trindade',readings:{kind:'date',date:'2026-12-25',key:'proprio/12-25',mass:'Missa da aurora'}},expiresAt:Date.parse('2026-11-06T03:00:00Z')}}));}
+test('global votive opens the exact Missal formulary and chosen readings in the other books',async()=>{
+ for(const book of ['missal','lectionary','gospel']){
+  const {p,books,reader}=await dailyBook(book);setVotive();reader.open(p,books.held(p));await settle();assert.match(current().text,/Santíssima Trindade/);assert.ok(current().buttons.includes('Seções'));
+  if(book==='missal'){assert.doesNotMatch(current().text,/Leituras de 25/);assert.match(current().text,/Trindade/);}else{assert.match(current().text,/Leituras de 25\/12\/2026/);assert.match(current().text,/Missa da aurora/);if(book==='gospel')assert.match(current().text,/Lucas 2/);}
+  reader.close(p.id);world.setDynamicProperty('evangeliarium:ordo_state',undefined);
+ }
+});
+test('votive does not interrupt an open page and expires on the real Brasília day boundary',async()=>{
+ const {p,books,reader}=await dailyBook('gospel');const page=current();setVotive();reader.tick();await settle();assert.equal(current(),page);reader.open(p,books.held(p));await settle();assert.match(current().text,/Santíssima Trindade/);now=Date.parse('2026-11-06T03:00:00Z');reader.open(p,books.held(p));await settle();assert.doesNotMatch(current().text,/Santíssima Trindade/);assert.match(current().text,/06\/11\/2026/);assert.equal(JSON.parse(world.getDynamicProperty('evangeliarium:ordo_state')).override,undefined);
+});
+test('grupo com uma seção abre diretamente e retorna ao índice sem lista redundante',async()=>{
+ await ritual('pontifical');const count=forms.length;await click('Ordens');
+ assert.equal(forms.length,count+1);assert.equal(title(),'Ordenação');assert.ok(current().buttons.includes('Seções'));
+ await click('Seções');await click('Voltar ao índice');assert.equal(title(),'Pontifical Romano');
+ await click('Ordens');assert.equal(title(),'Ordenação');await cancel();assert.equal(current().showing,false);
+});
+test('índice de rótulos curtos usa linhas compactas',async()=>{
+ await ritual();assert.ok(current().heading.startsWith('§0§2§0§2§r'));
+});
+test('um resultado de busca continua exibindo o título e permite retornar à consulta',async()=>{
+ await ritual('pontifical');await click('Buscar');await submit('Texto do Pontifical');
+ assert.equal(title(),'Resultados');await click('Ordenação');await click('Seções');await click('Voltar aos resultados');
+ assert.equal(title(),'Resultados');await click('Voltar');assert.equal(current().inputs[0].options.defaultValue,'Texto do Pontifical');
+});
+
+test('Missal real: Saudação abre o texto no primeiro clique e volta ao mesmo índice',async()=>{
+ const {p,books,reader:old}=await ritual();old.close(p.id);const reader=new Reader(books);reader.open(p,books.held(p));await settle();
+ const count=forms.length;await click('Saudação');assert.equal(forms.length,count+1);
+ assert.equal(title(),'Saudação');assert.ok(current().buttons.includes('Seções'));assert.match(current().text,/Em nome do Pai/);
+ await click('Seções');await click('Voltar ao índice');assert.equal(title(),'Missal Romano');assert.ok(current().buttons.includes('Saudação'));
 });

@@ -93,6 +93,7 @@ export function atelierDefinitions(){
  for(const theme of ['agnus','ruby','verdant','requiem'])for(let role=0;role<4;role++)result.push({id:`textile_${theme}_${role}`,size:256,alpha:true,sampleOffset:0,extendNormals:true,paint:(x,y)=>textilePaint(x,y,theme,role)});
  for(const color of Object.keys(textilePalette).filter(c=>c!=='red'))for(let role=0;role<4;role++)result.push({id:`textile_ruby_${role}_${color}`,size:256,alpha:true,sampleOffset:0,mapSource:`textile_ruby_${role}`,paint:(x,y)=>textilePaint(x,y,'ruby',role,color)});
  result.push({id:'atelier_agnus',size:256,sampleOffset:0,extendNormals:true,paint:plaquePaint});
+ result.push({id:'crossbrace_inlay',size:64,paint:crossbraceInlay});
  return [...result,...seamDefinitions(),...ornateDefinitions()];
 }
 
@@ -107,4 +108,13 @@ function seamDefinitions(){
    return {rgb:metal?(silver?[204,204,198]:[206,166,80]):rgb.map(c=>Math.round(c+thread)),metal:metal?160:0,rough:metal?175:237,height:metal?.08:.015};
   },
  }));
+}
+
+// Maple-on-walnut inlay shared by the twin-pedestal carving.
+export function crossbraceInlay(x,y){
+ const grain=walnutPaint(y,x),v=(y+.5)/128,u=(x+.5)/128;
+ const border=Math.min(Math.abs(v-.14),Math.abs(v-.86));
+ const diamonds=Math.abs(Math.abs(((u*8)%1)-.5)*2+Math.abs(v-.5)*4-.48);
+ const inlay=border<.018||(v>.32&&v<.68&&diamonds<.14);
+ return inlay?{rgb:[181,140,84],rough:202,metal:0,height:.008}:grain;
 }

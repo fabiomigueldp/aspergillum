@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {OrdoStore,OrdoStateError,nextBrazilMidnight,type OrdoSelection,type OrdoState} from '../src/domain/ordo.ts';
 const date:OrdoSelection={kind:'date',date:'2026-12-25',key:'christmas',mass:'Missa da Vigília'};
-const votive:OrdoSelection={kind:'votive',id:'holy-spirit'};
+const votive:OrdoSelection={kind:'votive',id:'holy-spirit',readings:date};
 const start=Date.parse('2026-11-05T12:00:00Z');
 const midnight=Date.parse('2026-11-06T03:00:00Z');
 const error=(code:string)=>(e:unknown)=>e instanceof OrdoStateError&&e.code===code;
@@ -27,4 +27,6 @@ test('reentrant commit is rejected and lock releases after failure',()=>{const f
 test('revision overflow is never silently rounded or overwritten',()=>{const f=fixture({schema:1,revision:Number.MAX_SAFE_INTEGER});assert.throws(()=>f.store.change(date,Number.MAX_SAFE_INTEGER),error('invalid_state'));assert.equal(f.writes,0);});
 test('invalid expected revisions and clocks fail closed',()=>{for(const r of [-1,0.5,NaN,Infinity]){const f=fixture();assert.throws(()=>f.store.change(date,r),error('conflict'));assert.equal(f.writes,0);}for(const now of [NaN,Infinity,Number.MAX_VALUE]){const f=fixture();f.now=now;assert.throws(()=>f.store.read(),error('invalid_state'));assert.equal(f.writes,0);}});
 test('midnight handles month, leap year and year transitions independently of host TZ',()=>{for(const [now,next] of [['2026-12-31T23:59:00Z','2027-01-01T03:00:00Z'],['2028-02-29T02:59:59Z','2028-02-29T03:00:00Z'],['2028-02-29T03:00:00Z','2028-03-01T03:00:00Z'],['2026-11-05T03:00:00Z','2026-11-06T03:00:00Z']])assert.equal(nextBrazilMidnight(Date.parse(now!)),Date.parse(next!));});
-test('catalog sets are snapshotted to prevent later unintended authorization',()=>{const f=fixture();f.options.votiveIds.add('unknown');assert.throws(()=>f.store.change({kind:'votive',id:'unknown'},0),error('invalid_selection'));});
+test('catalog sets are snapshotted to prevent later unintended authorization',()=>{const f=fixture();f.options.votiveIds.add('unknown');assert.throws(()=>f.store.change({kind:'votive',id:'unknown',readings:date},0),error('invalid_selection'));});
+
+test('votive requires an explicit validated reading selection, not just a title or id',()=>{const f=fixture();for(const value of [{kind:'votive',id:'holy-spirit'}, {...votive,readings:{kind:'date',date:'2026-12-25',key:'unknown'}},{...votive,readings:{kind:'votive',id:'holy-spirit'}}])assert.throws(()=>f.store.change(value as OrdoSelection,0),error('invalid_selection'));assert.equal(f.writes,0);});

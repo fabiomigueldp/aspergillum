@@ -50,3 +50,15 @@ test('the diagnostic exception cannot admit an over-budget geometry or a mismatc
  d=doc();d['minecraft:geometry'][0].description.identifier='geometry.altare.other';
  assert.equal(diagnosticColonnadeWarning(row(count(d)),()=>d),false);
 });
+
+
+test('native pedestal warning requires exact content-addressed identity, measured count and face budget',()=>{
+ const name='native_twin_'+'a'.repeat(24),d:any={'minecraft:geometry':[{description:{identifier:`geometry.altare.${name}`},bones:[{name:'body',cubes:Array.from({length:51},()=>({uv:{north:{uv:[0,0],uv_size:[1,1]}}}))}]}]};
+ const line=row(51).replace('ornate_colonnade_lace_e15',name);
+ assert.equal(diagnosticGeometryWarning(line,()=>d),true);
+ for(const changed of [line.replace(',501,',',500,'),line.replace('"Warning"','"Error"'),line.replace(',51,',',52,'),line.replace(name,'native_twin_bad')])assert.equal(diagnosticGeometryWarning(changed,()=>d),false);
+ const tooMany=structuredClone(d);tooMany['minecraft:geometry'][0].bones[0].cubes.push(...Array.from({length:10},()=>({uv:{north:{}}})));
+ assert.equal(diagnosticGeometryWarning(row(61).replace('ornate_colonnade_lace_e15',name),()=>tooMany),false);
+ const tooManyFaces=structuredClone(d);for(const c of tooManyFaces['minecraft:geometry'][0].bones[0].cubes)for(const side of ['south','east','west'])c.uv[side]={};
+ assert.equal(diagnosticGeometryWarning(line,()=>tooManyFaces),false);
+});

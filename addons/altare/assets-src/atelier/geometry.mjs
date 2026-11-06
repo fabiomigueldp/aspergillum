@@ -1,3 +1,4 @@
+import {crossbraceArchitecture,crossbraceCollision} from './crossbrace-model.mjs';
 import {pilasterArchitecture,pilasterProfile} from './pilaster-model.mjs';
 import {ogiveArchitecture,ogiveProfile,ogiveReliefFit} from './ogive-model.mjs';
 import {garment} from './garment.mjs';
@@ -34,9 +35,10 @@ export function legacyAtelierGeometry(structure,textile,frontal,facing=0,edges){
   add('tabletop_base',[box([-8,slabBottom,-8],[16,round(linenBottom-slabBottom),16],'stone')]);
   add('top',[box([-8,linenBottom,-8],[16,linenThickness,16],'top')]);
  }
- if(['coffer','baluster'].includes(structure)){
+ if(['coffer','baluster','crossbrace'].includes(structure)){
   if(frontal!=='none')throw Error('Joinery models have no applied relief');
-  joineryMembers(structure,add,turn,edge,edges);
+  if(structure==='crossbrace')for(const b of crossbraceArchitecture(edges??15).bones)add(b.name,b.cubes);
+  else joineryMembers(structure,add,turn,edge,edges);
  }else if(structure!=='trestle'){
   add('core',[box([bodyEdge,plinthHeight,bodyEdge],[bodyWidth,bodyHeight,bodyWidth],'stone'),box([-8,0,-8],[16,plinthHeight,16],'stone')]);
   // Internal joins extend the recessed body to the cell boundary. Recesses
@@ -124,7 +126,8 @@ export function legacyAtelierGeometry(structure,textile,frontal,facing=0,edges){
  return {doc,visibility};
 }
 export function structureCollision(structure,edges,facing){
- if(['coffer','baluster'].includes(structure))return joineryCollision(structure,edges);
+ if(structure==='crossbrace')return crossbraceCollision(edges);
+ if(['coffer','baluster','crossbrace'].includes(structure))return joineryCollision(structure,edges);
  if(structure!=='trestle')return true;
  const {doc,visibility}=atelierGeometry(structure,'none','none',facing);
  const q={block_state:()=>edges},math={floor:Math.floor,mod:(a,b)=>a%b};
@@ -147,6 +150,7 @@ export function structureCollision(structure,edges,facing){
 }
 
 export function atelierGeometry(structure,textile,frontal,facing=0,edges){
+ if(structure==='crossbrace'&&edges===undefined)edges=15;
  const out=legacyAtelierGeometry(structure,textile,frontal,facing,edges);
  if(['pilaster','ogive'].includes(structure)){
   const mask=edges??15,g=out.doc['minecraft:geometry'][0],appliques=g.bones.filter(b=>b.name.startsWith('applique_')&&(mask&(1<<facing)));
@@ -159,7 +163,7 @@ export function atelierGeometry(structure,textile,frontal,facing=0,edges){
   }return out;
  }
  if(textile==='none')return out;
- const cloth=garment(textile,edges,{facing,twoSided:['trestle','baluster'].includes(structure)});
+ const cloth=garment(textile,edges,{facing,twoSided:['trestle','baluster','crossbrace'].includes(structure)});
  const g=out.doc['minecraft:geometry'][0];g.bones=g.bones.filter(b=>b.name!=='top'&&!b.name.startsWith('drape_')&&!b.name.startsWith('fold_corner_'));
  for(const k of Object.keys(out.visibility))if(k==='top'||k.startsWith('drape_')||k.startsWith('fold_corner_'))delete out.visibility[k];
  g.bones.push(...cloth.bones.map(b=>({...b,pivot:[0,0,0],cubes:b.cubes.map(serializeCube)})));

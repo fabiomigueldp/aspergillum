@@ -1,14 +1,16 @@
 # Evangeliarium
 
+A revisão **0.5.3** corrige o roteamento das janelas dos livros e elimina listas intermediárias de uma única seção, como Saudação. Índices curtos ficam mais compactos. O Ordo também permite escolher um formulário existente (23 votivas e Santa Teresa) com as leituras de hoje ou outra data/Missa explicitamente escolhida; os três livros seguem a composição até a próxima meia-noite de Brasília. [Escopo e verificação](docs/READER_UI_0.5.3.md).
+
 Quatro livros litúrgicos independentes para Minecraft Bedrock: **Evangeliário, Lecionário, Missal Romano e Pontifical Romano**. Cada exemplar pode ser levado nas duas mãos, colocado aberto ou fechado, consultado e recolhido com sua marca preservada.
 
-**Candidato 0.5.2 — 05/11/2026.** Acrescenta ao índice do Missal o formulário da memória de Santa Teresa do Menino Jesus, com transcrição visual e corroboração paroquial brasileira documentadas. Não acrescenta leituras, seleção diária ou aplicação votiva. [Fontes, emenda e limites](docs/SANTA_TERESA_FORMULARY.md); [verificação do pacote](docs/VERIFICATION_0.5.2.md). O Ordo conserva o comportamento da 0.5.1: configuração global por operador, reset na próxima meia-noite de Brasília e consulta de votivas por membros. [Uso e reteste](docs/ORDO_0.5.0.md). Marcas e leituras em andamento permanecem intactas; Pontifical continua por rito. A validação nativa desta versão está pendente. Aspergillum permanece 1.2.5.
+**Histórico 0.5.2 — 05/11/2026.** Acrescenta ao índice do Missal o formulário da memória de Santa Teresa do Menino Jesus, com transcrição visual e corroboração paroquial brasileira documentadas. Não acrescenta leituras, seleção diária ou aplicação votiva. [Fontes, emenda e limites](docs/SANTA_TERESA_FORMULARY.md); [verificação do pacote](docs/VERIFICATION_0.5.2.md). Naquela revisão, o Ordo conservava o comportamento da 0.5.1: configuração global por operador, reset na próxima meia-noite de Brasília e consulta de votivas por membros. [Uso e reteste](docs/ORDO_0.5.0.md). Marcas e leituras em andamento permanecem intactas; Pontifical continua por rito. A validação nativa desta versão está pendente. Aspergillum permanece 1.2.5.
 
 ![Modelo distribuído, captura diagnóstica](assets-src/branding/book-closed.png)
 
 ## Testar
 
-Importe `dist/releases/Evangeliarium-0.5.2.mcaddon` e ative os packs de comportamento e recursos. Mínimo declarado: Bedrock `26.50`; alvo local de teste: `26.52`. APIs estáveis `@minecraft/server 2.10.0` e `@minecraft/server-ui 2.2.0`, sem experimentos.
+Importe `dist/releases/Evangeliarium-0.5.3.mcaddon` e ative os packs de comportamento e recursos. Mínimo declarado: Bedrock `26.50`; alvo local de teste: `26.52`. APIs estáveis `@minecraft/server 2.10.0` e `@minecraft/server-ui 2.2.0`, sem experimentos.
 
 ```mcfunction
 /give @s evangeliarium:book

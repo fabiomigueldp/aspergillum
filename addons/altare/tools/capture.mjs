@@ -64,6 +64,8 @@ const structurePresets=[
  ['ogive-white-7','ogive','marble','agnus','none',7,2,0],
 ].map(([id,s,m,c,f,w,d,facing])=>({id,w:facing%2?d:w,d:facing%2?w:d,stone:0,cloth:0,ornamental:false,facing,design:designFor(s,m,c,f).id}));
 const catalogPresets=[
+ {id:'crossbrace',w:3,d:2,stone:0,cloth:0,ornamental:false,facing:0,design:sharedDesignFor('crossbrace','walnut','none','none').id},
+ {id:'twin_pedestal',w:3,d:2,stone:0,cloth:0,ornamental:false,facing:0,design:sharedDesignFor('twin_pedestal','walnut','none','none').id},
  {id:'classic',w:3,d:2,stone:0,cloth:0,ornamental:false,facing:0},
  ...['pilaster','ogive','trestle','coffer','baluster','colonnade'].map(structure=>({id:structure,w:3,d:2,stone:0,cloth:0,ornamental:false,facing:0,design:designFor(structure,['trestle','coffer','baluster'].includes(structure)?'walnut':'marble','none','none').id})),
 ];
@@ -93,7 +95,8 @@ const selectedPresets=option('--matrix','materials')==='pilaster'?pilasterPreset
 const ogivePresets=[...pilasterPresets.map(p=>({...p,id:p.id.replaceAll('pilaster','ogive'),design:sharedDesignFor('ogive',p.surface,p.textile,p.frontal,p.color??'red').id})),
  ...['none','gold_long'].map(textile=>({id:`ogive-odd-relief-${textile}-7`,w:7,d:2,surface:'marble',textile,frontal:'agnus',facing:0,stone:0,cloth:0,ornamental:false,design:sharedDesignFor('ogive','marble',textile,'agnus').id})),
 ];
-const activePresets=option('--matrix','materials')==='ogive'?ogivePresets:selectedPresets;
+const nativePresets=[['bare',3,2,'none',0],['lace',7,2,'lace',0],['agnus',8,2,'agnus',1],['single',1,1,'none',0]].map(([id,w,d,textile,facing])=>({id:`twin-${id}`,w:facing%2?d:w,d:facing%2?w:d,stone:0,cloth:0,ornamental:false,facing,design:sharedDesignFor('twin_pedestal','walnut',textile,'none').id}));
+const activePresets=option('--matrix','materials')==='native'?nativePresets:option('--matrix','materials')==='ogive'?ogivePresets:selectedPresets;
 const views=[{id:'front',direction:[0,.08,-1],zoom:1.15},{id:'oblique',direction:[-.45,.38,-1],zoom:1.35},{id:'back',direction:[.4,.35,1],zoom:1.35},{id:'top',direction:[0,1,-.01],zoom:1.4},
  {id:'detail',direction:[0,.06,-1],zoom:1,focus:{anchor:'front',height:.82,extent:.85}},
  {id:'corner',direction:[-.65,.32,-1],zoom:1,focus:{anchor:'corner',height:.82,extent:1.15}},
@@ -134,7 +137,7 @@ try{
   for(const profile of profiles)for(const sourceView of views.filter(v=>!option('--views','')||option('--views','').split(',').includes(v.id))){
    const view=structuredClone(sourceView);
    if(view.focus)view.focus.facing=preset.facing;
-   if(['orientations','collection','palette','structures','joinery','universal','pilaster','ogive'].includes(option('--matrix','materials')))for(let i=0;i<preset.facing;i++){const [x,y,z]=view.direction;view.direction=[-z,y,x];}
+   if(['orientations','collection','palette','structures','joinery','universal','pilaster','ogive','native'].includes(option('--matrix','materials')))for(let i=0;i<preset.facing;i++){const [x,y,z]=view.direction;view.direction=[-z,y,x];}
    const config={tiles,pbr:profile==='pbr',width,height,...view};
    const {dataUrl,...evidence}=await page.evaluate(c=>window.captureAltare(c),config);
    const bytes=Buffer.from(dataUrl.split(',')[1],'base64'),file=`${preset.id}-${view.id}-${profile}.png`;

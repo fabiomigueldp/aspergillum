@@ -1,8 +1,12 @@
 import {SHARED_TEXTILES,sharedDesignFor} from '../../../addons/altare/src/domain/catalog.ts';
-export const STUDIO_VERSION='2.2.1';
+export const STUDIO_VERSION='2.3.0';
 export const STUDIO_ENVIRONMENTS=[{id:'gallery',label:'Presbitério de quartzo'},{id:'chapel',label:'Capela de madeira'},{id:'studio',label:'Claustro com jardim'},{id:'transparent',label:'Transparente'}];
 export const STUDIO_VIEWS=[{id:'hero',label:'Três quartos',direction:[-.4,.22,-1]},{id:'front',label:'Frente',direction:[0,.10,-1]},{id:'back',label:'Verso',direction:[.65,.36,1]},{id:'top',label:'Superior',direction:[-.1,1,-.2]},{id:'detail',label:'Bordado',direction:[-.2,.12,-1]},{id:'player',label:'Jogador',direction:[0,.1,-1]},{id:'wide',label:'Ambiente',direction:[-.18,.17,-1]}];
 export const STUDIO_PRESETS=[
+ {id:'crossbrace',name:'Cruzeta em nogueira',description:'Marcenaria aberta · travessas cruzadas',family:'crossbrace',surface:'walnut',textile:'none',frontal:'none',environment:'chapel',dressing:'none',width:5,depth:2},
+ {id:'crossbrace-linen',name:'Cruzeta com linho',description:'Nogueira · linho curto',family:'crossbrace',surface:'walnut',textile:'linen_short',frontal:'none',environment:'chapel',dressing:'none',width:7,depth:2},
+ {id:'twin-pedestal',name:'Dois pedestais',description:'Nogueira · dois apoios · sem toalha',family:'twin_pedestal',surface:'walnut',textile:'none',frontal:'none',environment:'chapel',dressing:'none',width:7,depth:2},
+ {id:'twin-pedestal-lace',name:'Dois pedestais e renda',description:'Nogueira · renda floral',family:'twin_pedestal',surface:'walnut',textile:'lace',frontal:'none',environment:'chapel',dressing:'none',width:7,depth:2},
  {id:'colonnade',name:'Colunata e renda',description:'Mármore claro · douramento · renda vazada',family:'colonnade',surface:'marble',textile:'lace',frontal:'none',environment:'gallery',candles:6,width:7},
  {id:'coffer',name:'Arca em nogueira',description:'Painéis rebaixados · molduras de madeira',family:'coffer',surface:'walnut',textile:'none',frontal:'none',environment:'chapel',dressing:'none',width:5},
  {id:'baluster',name:'Balaústres e linho',description:'Mesa aberta · apoios facetados',family:'baluster',surface:'walnut',textile:'agnus',frontal:'none',environment:'chapel',furnishing:'wood',candles:2,width:5},
@@ -16,7 +20,7 @@ export const STUDIO_PRESETS=[
  {id:'purple',name:'Roxo floral',description:'Ogivas · floral IHS',family:'ogive',surface:'limestone',textile:'palette',color:'purple',environment:'chapel',furnishing:'wood',season:'lent',candles:4},
 ];
 export const DEFAULT_STUDIO_CONFIG=Object.freeze({family:'classic',surface:'marble',textile:'gold_short',frontal:'none',color:'green',stone:0,cloth:3,ornamental:true,width:7,depth:2,environment:'gallery',view:'hero',ratio:'16:9',lighting:'classic',exposure:1,light:0,quality:'high',projection:'perspective',dressing:'ready',candles:6,season:'ordinary',furnishing:'gold',candlePlacement:'floor'});
-const choices={family:['classic','pilaster','ogive','trestle','coffer','baluster','colonnade'],surface:['marble','limestone','walnut'],textile:[...SHARED_TEXTILES,'ruby','palette'],frontal:['none','cross','agnus'],color:['white','red','green','purple','rose','black','gold','silver'],environment:STUDIO_ENVIRONMENTS.map(x=>x.id),view:STUDIO_VIEWS.map(x=>x.id),ratio:['16:9','4:3','1:1','4:5'],lighting:['classic','shadows'],quality:['draft','high'],projection:['perspective','orthographic']};
+const choices={family:['classic','pilaster','ogive','trestle','coffer','baluster','colonnade','crossbrace','twin_pedestal'],surface:['marble','limestone','walnut'],textile:[...SHARED_TEXTILES,'ruby','palette'],frontal:['none','cross','agnus'],color:['white','red','green','purple','rose','black','gold','silver'],environment:STUDIO_ENVIRONMENTS.map(x=>x.id),view:STUDIO_VIEWS.map(x=>x.id),ratio:['16:9','4:3','1:1','4:5'],lighting:['classic','shadows'],quality:['draft','high'],projection:['perspective','orthographic']};
 Object.assign(choices,{candlePlacement:['floor','mensa'],furnishing:['gold','wood'],dressing:['none','ready','gifts'],season:['ordinary','advent','lent','festive']});
 export function normalizeStudioConfig(input={}){
  if(!input||typeof input!=='object'||Array.isArray(input))throw Error('Configuração inválida.');
@@ -30,7 +34,7 @@ export function normalizeStudioConfig(input={}){
  if(result.family==='colonnade'){result.surface='marble';result.frontal='none';}
  if(result.textile==='floral'&&result.color!=='red')result.frontal='none';
  if(result.family==='classic'&&['none','linen_short','linen_long','gold_short','gold_long'].includes(result.textile))result.cloth=['none','linen_short','linen_long','gold_short','gold_long'].indexOf(result.textile);
- if(['coffer','baluster'].includes(result.family)){result.surface='walnut';result.frontal='none';}
+ if(['coffer','baluster','crossbrace','twin_pedestal'].includes(result.family)){result.surface='walnut';result.frontal='none';}
  return result;
 }
 export function studioDimensions(ratio,longEdge){

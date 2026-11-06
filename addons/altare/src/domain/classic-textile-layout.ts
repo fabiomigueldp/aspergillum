@@ -1,6 +1,6 @@
 import {rotateEdges} from './palette-layout.ts';
 
-// Published in 0.9.0. Append only: indices are persistent block identity.
+// Authored local poses; runtime removes only redundant blank-facing copies.
 // Local front=N. Entries combine the independent cloth and Guadalupe roles.
 export const CLASSIC_TEXTILE_POSES=Object.freeze([
  [15,0,0],[0,0,0],[1,0,0],[2,0,0],[3,0,0],[4,0,0],[5,0,0],[6,0,0],
@@ -11,16 +11,26 @@ export const CLASSIC_TEXTILE_POSES=Object.freeze([
  [1,0,2],[1,3,2],[1,0,3],[1,4,3],[13,7,0],[5,9,0],[5,8,0],[7,6,0],
  [9,7,0],[1,9,0],[1,8,0],[3,6,0],[5,1,0],[1,1,0],
 ].map(([edges,frontal,textileRole])=>Object.freeze({edges:edges!,frontal:frontal!,textileRole:textileRole!})));
-export const CLASSIC_TEXTILE_STATES=54*4*3;
+export const CLASSIC_TEXTILE_VISUAL_POSES=Object.freeze([
+ ...CLASSIC_TEXTILE_POSES.slice(0,16).map(p=>({...p,facing:0})),
+ ...CLASSIC_TEXTILE_POSES.slice(16).flatMap(p=>Array.from({length:4},(_,facing)=>({...p,edges:rotateEdges(p.edges,facing),facing}))),
+].map(p=>Object.freeze(p)));
+export const CLASSIC_TEXTILE_STATE_VALUES=Object.freeze({'altare:pose':Array.from({length:14},(_,i)=>i),'altare:part':Array.from({length:12},(_,i)=>i),'altare:stone':[0,1,2]});
+export const CLASSIC_TEXTILE_STATES=168*3;
 export interface ClassicTextilePose {edges:number;frontal:number;facing:number;stone:number;textileRole?:number}
-function indexFor(t:ClassicTextilePose){return CLASSIC_TEXTILE_POSES.findIndex(p=>p.edges===rotateEdges(t.edges,-t.facing)&&p.frontal===t.frontal&&p.textileRole===(t.textileRole??0));}
+const valid=(v:unknown,max:number):v is number=>typeof v==='number'&&Number.isInteger(v)&&v>=0&&v<=max;
+export function normalizeClassicTextile<T extends ClassicTextilePose>(t:T):T {
+ if(!valid(t.edges,15)||!valid(t.frontal,11)||!valid(t.facing,3)||!valid(t.stone,2)||!valid(t.textileRole??0,3))throw Error('configuration');
+ return t.frontal||(t.textileRole??0)?t:{...t,facing:0};
+}
+function indexFor(t:ClassicTextilePose){const p=normalizeClassicTextile(t);return CLASSIC_TEXTILE_VISUAL_POSES.findIndex(v=>v.edges===p.edges&&v.frontal===p.frontal&&v.textileRole===(p.textileRole??0)&&v.facing===p.facing);}
 export function encodeClassicTextile(t:ClassicTextilePose):Record<string,number>{
- const i=indexFor(t);if(i<0||!Number.isInteger(t.facing)||t.facing<0||t.facing>3||!Number.isInteger(t.stone)||t.stone<0||t.stone>2)throw Error('configuration');
- return {'altare:shape':Math.floor(i/6),'altare:detail':i%6,'altare:facing':t.facing,'altare:stone':t.stone};
+ const i=indexFor(t);if(i<0)throw Error('configuration');
+ return {'altare:pose':i%14,'altare:part':Math.floor(i/14),'altare:stone':t.stone};
 }
 export function decodeClassicTextile(s:Record<string,unknown>){
- const a=Number(s['altare:shape']),b=Number(s['altare:detail']),facing=Number(s['altare:facing']),stone=Number(s['altare:stone']);
- if(![a,b,facing,stone].every(Number.isInteger)||a<0||a>8||b<0||b>5||facing<0||facing>3||stone<0||stone>2)throw Error('configuration');
- const p=CLASSIC_TEXTILE_POSES[a*6+b]!;return {...p,edges:rotateEdges(p.edges,facing),facing,stone};
+ const pose=s['altare:pose'],part=s['altare:part'],stone=s['altare:stone'];
+ if(!valid(pose,13)||!valid(part,11)||!valid(stone,2))throw Error('configuration');
+ return {...CLASSIC_TEXTILE_VISUAL_POSES[pose+part*14]!,stone};
 }
-export function repairClassicTextile(t:ClassicTextilePose){return indexFor(t)>=0?t:{...t,frontal:0,textileRole:0};}
+export function repairClassicTextile(t:ClassicTextilePose){return normalizeClassicTextile(indexFor(t)>=0?t:{...t,frontal:0,textileRole:0});}

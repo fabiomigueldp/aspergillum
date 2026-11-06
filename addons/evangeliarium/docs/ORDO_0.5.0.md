@@ -6,7 +6,7 @@ Contrato atualizado para a revisão 0.5.1; evidências e pacote em [Verificaçã
 
 `evangeliarium:ordo` é um calendário de sacristia de madeira escura, papel claro e marcador vermelho. Use o item para abrir; agache e use sobre um bloco para colocá-lo. Use o calendário colocado para consultar. A receita usa papel, corante vermelho e três gravetos; o dev kit inclui o item. Quebrar o calendário entrega o item sem apagar a celebração. Exemplares não carregam configurações próprias.
 
-Todos veem a celebração atual e Consultar votivas. Operadores também têm Escolher data e, durante uma alteração, Voltar para hoje. Outros jogadores podem consultar, mas não alterar. O campo de data conserva entradas inválidas para correção; Voltar ou cancelar a prévia de uma data digitada retorna ao campo preenchido. Amanhã apenas antecipa a data; nunca presume uma vigília. Missas distintas são escolhas explícitas; uma data única recebe Usar esta celebração. O Ordo mostra Até 00h · Brasília apenas na sua própria tela.
+Todos veem a celebração atual. Operadores têm Escolher data, Escolher formulário e, durante uma alteração, Voltar para hoje. Outros jogadores têm Consultar formulários. Outros jogadores podem consultar, mas não alterar. O campo de data conserva entradas inválidas para correção; Voltar ou cancelar a prévia de uma data digitada retorna ao campo preenchido. Amanhã apenas antecipa a data; nunca presume uma vigília. Missas distintas são escolhas explícitas; uma data única recebe Usar esta celebração. O Ordo mostra Até 00h · Brasília apenas na sua própria tela.
 
 ## Autoridade, expiração e concorrência
 
@@ -24,11 +24,17 @@ Uma leitura já aberta conserva texto e posição, inclusive após mudança glob
 
 A escolha de uma Missa abre a posição correspondente dentro da seção original, sem recortar ou alterar seus textos, IDs, alternativas ou paginação persistida. As outras partes da seção continuam acessíveis. O Missal usa apenas mapeamentos explícitos de próprios existentes. Próprio ausente oferece o índice; não substitui por uma votiva, prefácio ou oração de nome semelhante. Essa limitação preexistente de cobertura não é escondida.
 
-## Votivas: limite editorial explícito
+## Formulários e leituras escolhidos pelo operador
 
-A tela apresenta os 23 formulários reais do Missal em catálogo paginado, com posição de página e retorno à mesma lista após a consulta. A aplicação global ainda não está habilitada: o acervo não contém remissões brasileiras verificadas para todas as leituras e Evangelhos. A informação de disponibilidade é curta, no detalhe de cada formulário. Ler formulário abre o texto do Missal para consulta paginada, sem aplicar a votiva ao mundo ou alterar marcas. Santa Teresinha não é inventada nem associada por semelhança de título.
+Escolher formulário reúne os 23 formulários votivos existentes e o próprio da memória de Santa Teresa do Menino Jesus. O último mantém seu título e texto originais; não é reclassificado como uma missa votiva oficialmente editada. A lista paginada conserva a posição ao consultar e voltar.
 
-Uma auditoria separada encontrou remissões oficiais portuguesas, mas elas não foram promovidas como vínculos brasileiros. Nenhuma hipótese externa autoriza a seleção de leituras no runtime. O allowlist de votivas é vazio por decisão editorial, não por falta de um mecanismo de persistência.
+Quando a data atual tem uma única escolha diurna, Usar com leituras de hoje aplica diretamente o formulário e essas leituras. Se há Missas distintas, Leituras de hoje abre as escolhas reais. Escolher leituras permite indicar outra data e selecionar sua celebração ou Missa. O operador compõe explicitamente a seleção; o addon não presume um vínculo litúrgico entre o formulário e as leituras nem inventa textos ausentes.
+
+O Missal abre o formulário escolhido. Lecionário e Evangeliário abrem o conjunto de leituras explicitamente escolhido, preservando a Missa da aurora, vigília ou outra divisão quando houver. O Ordo identifica o formulário e a data das leituras. Não há popups adicionais nos livros. A composição tem a mesma expiração à meia-noite de Brasília e as mesmas permissões das alterações por data. Consultar ou cancelar não altera o mundo.
+
+A seleção persistida inclui ambos os componentes; uma votiva sem leituras, seção desconhecida ou data/celebração incompatível é rejeitada. Santa Teresa permanece disponível em qualquer data por escolha manual, sem ser imposta ao calendário automaticamente.
+
+Este recurso não acrescenta textos nem afirma cobertura completa de próprios diários ou um Lecionário de Missas votivas. Utiliza somente o acervo já existente. Não foi executado no Minecraft nesta revisão.
 
 ## Compatibilidade
 
@@ -45,6 +51,6 @@ Testes automatizados cobrem domínio, persistência, permissões, concorrência,
 3. Abrir um livro marcado antes da mudança; manter a página aberta, mudar o Ordo por outro jogador e conferir que a página não muda. Reabrir segue a celebração; Livro → Ler marca conserva a marca. Pontifical continua no rito.
 4. Testar 24/12, 25/12, véspera de Pentecostes e Sábado Santo. As opções são explícitas; próprios ausentes não abrem textos substitutos. Verificar horários e títulos sem truncamento em janela estreita, controle e toque.
 5. Trocar item, dimensão, morrer, fechar ou sair durante os formulários. Nenhum callback antigo aplica escolha. Reabrir o mundo após o vencimento restaura o dia real. Teste de relógio deve ocorrer em ambiente isolado, nunca alterando o relógio do servidor de produção.
-6. Consultar as votivas como membro e operador: percorrer as quatro páginas, abrir formulários e retornar à mesma página; não há botão de aplicação global para vínculos pendentes. Digitar uma data, abrir a prévia e usar Voltar ou cancelar: o campo conserva a entrada. Fechar o Ordo descarta o rascunho. Conferir o Content Log sem erros de componente, geometria, bloco ou UI.
+6. Consultar os formulários como membro e operador: percorrer as quatro páginas, abrir e voltar à mesma lista. Como operador, aplicar com leituras de hoje e escolher outra data/Missa; confirmar os três livros e a expiração. Como membro, confirmar ausência dos controles de aplicação. Digitar uma data, abrir a prévia e usar Voltar ou cancelar: o campo conserva a entrada. Fechar o Ordo descarta o rascunho. Conferir o Content Log sem erros de componente, geometria, bloco ou UI.
 
 Capturas Blender e testes de dados são evidência de preparação, não confirmação de renderização nativa Bedrock.

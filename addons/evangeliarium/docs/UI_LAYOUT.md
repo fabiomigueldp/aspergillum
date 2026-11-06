@@ -31,3 +31,11 @@ Referências primárias: [elementos JSON UI](https://github.com/MicrosoftDocs/mi
 ## Seleção diária 0.4.1
 
 Hoje identifica a celebração nacional e oferece somente formulários disponíveis; Data conserva rascunhos inválidos. Índice e busca continuam secundários. Consulta não grava a seleção; Livro concentra Marcar página, Seguir hoje e Abrir pelo índice. O Pontifical não ganha falsa seleção por data. Ausências no Missal e escolhas de Missa são explícitas. Rótulos de instrução redundantes foram retirados das listas e os exemplos de busca correspondem a cada livro.
+
+## Correção de encaminhamento 0.5.3
+
+A inclusão de `catalogPrefix` havia introduzido condições com três operadores no mesmo nível na rota nativa/modal. A revisão gera uma expressão binária parentetizada a partir da lista de marcadores, deriva sua negação para a rota nativa e inicia cada ramo oculto até receber o título. Também parentetiza cada remoção de marcador do título. Os testes percorrem os três marcadores, títulos sem marcador e mudanças sucessivas de formulário, exigindo uma única rota visível. São testes da definição, não um emulador de Bedrock.
+
+Índices com rótulos curtos reutilizam as linhas de 32 unidades do menu. Catálogos que precisam de quebra de linha usam linhas de 44 unidades, com 30 reservadas ao texto. Grupos de uma seção abrem diretamente a leitura; buscas preservam a lista e a consulta. O retorno do grupo direto volta ao índice de origem.
+
+As capturas do usuário de 06/11 demonstram a sobreposição na versão anterior. Não extrapolar a aceitação nativa da 0.2.5 para as mudanças posteriores: o pacote 0.5.3 precisa ser observado no jogo.

@@ -40,8 +40,8 @@ assert.ok(ui.modal_router.controls.some(c=>c.native_container?.controls.some(n=>
 for(const state of ui['choice@common.button'].controls){const children=Object.values(state)[0].controls;assert.ok(children.find(c=>c.text).text.layer>0,'Button text must render above its surface');}
 assert.deepEqual(read('packs/resource/ui/_ui_defs.json').ui_defs,['ui/evangeliarium.json']);
 assert.ok(ui.long_router.controls.some(c=>c['catalog@evangeliarium_ui.catalog_frame']));
-assert.equal(ui.catalog_cell.size[1],56);assert.equal(ui.menu_cell.size[1],32);assert.equal(ui.nav_cell.size[1],28);
-for(const state of ui['catalog_choice@common.button'].controls){const text=Object.values(state)[0].controls.find(c=>c.text).text;assert.equal(text.size[1],40);assert.ok(text.layer>0);}
+assert.equal(ui.catalog_cell.size[1],44);assert.equal(ui.menu_cell.size[1],32);assert.equal(ui.nav_cell.size[1],28);
+for(const state of ui['catalog_choice@common.button'].controls){const text=Object.values(state)[0].controls.find(c=>c.text).text;assert.equal(text.size[1],30);assert.ok(text.layer>0);}
 assert.ok(!fs.existsSync(path.join(root,'packs/resource/font')));
 const luminance=c=>c.map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((n,v,i)=>n+v*[.2126,.7152,.0722][i],0);
 const contrast=(a,b)=>(Math.max(luminance(a),luminance(b))+.05)/(Math.min(luminance(a),luminance(b))+.05);

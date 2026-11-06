@@ -1,3 +1,4 @@
+import {nativePedestalStudyBudget} from '../assets-src/atelier/twin-pedestal-recipe-study.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
@@ -9,7 +10,7 @@ import {pilasterBudget} from '../assets-src/atelier/pilaster-model.mjs';
 import {ogiveBudget} from '../assets-src/atelier/ogive-model.mjs';
 const root=path.resolve(import.meta.dirname,'..');
 const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
-const geometries=new Map(fs.readdirSync(path.join(root,'packs/resource/models/blocks')).filter(f=>f.startsWith('atelier_')||f.startsWith('ornate_')||f.startsWith('universal_')).map(f=>{const doc=read('packs/resource/models/blocks/'+f);assert.equal(doc.format_version,'1.16.0');const g=doc['minecraft:geometry'][0];return [g.description.identifier,g];}));
+const geometries=new Map(fs.readdirSync(path.join(root,'packs/resource/models/blocks')).filter(f=>f.startsWith('atelier_')||f.startsWith('ornate_')||f.startsWith('universal_')||f.startsWith('native_twin_')).map(f=>{const doc=read('packs/resource/models/blocks/'+f);assert.equal(doc.format_version,'1.16.0');const g=doc['minecraft:geometry'][0];return [g.description.identifier,g];}));
 let total=MENSA_STATES,maxCubes=0;
 const atlas=read('packs/resource/textures/terrain_texture.json').texture_data;
 function combinations(states){
@@ -17,15 +18,16 @@ function combinations(states){
 }
 for(const g of geometries.values()){
  const cubes=g.bones.flatMap(b=>b.cubes??[]);maxCubes=Math.max(maxCubes,cubes.length);
+ const native=g.description.identifier.startsWith('geometry.altare.native_twin_');
  const colonnade=/geometry\.altare\.(?:ornate|universal)_colonnade_/.test(g.description.identifier);
  const pilaster=/geometry\.altare\.(?:atelier|universal)_pilaster_/.test(g.description.identifier);
  const ogive=/geometry\.altare\.(?:atelier|universal)_ogive_/.test(g.description.identifier);
- const budget=colonnade?colonnadeBudget:pilaster?pilasterBudget:ogive?ogiveBudget:{cubes:50};
+ const budget=native?nativePedestalStudyBudget:colonnade?colonnadeBudget:pilaster?pilasterBudget:ogive?ogiveBudget:{cubes:50};
  assert.ok(cubes.length<=budget.cubes,g.description.identifier);
  if(budget.quads)assert.ok(cubes.reduce((n,c)=>n+Object.values(c.uv).filter(Boolean).length,0)<=budget.quads,g.description.identifier+' face budget');
  for(const c of cubes){
   assert.ok(c.origin.every(Number.isFinite)&&c.size.every(v=>v>0));
-  for(const u of Object.values(c.uv))assert.ok(u.uv.every((v,i)=>Number.isInteger(v)&&v>=0&&v+u.uv_size[i]<=128));
+  for(const u of Object.values(c.uv))assert.ok(u.uv.every((v,i)=>(native?Number.isFinite(v):Number.isInteger(v))&&v>=-1e-6&&u.uv_size[i]>0&&v+u.uv_size[i]<=128+1e-6));
   // Independent Euler application in author/world basis, including ogive Z rotations.
   for(const ix of [0,1])for(const iy of [0,1])for(const iz of [0,1]){
    let v=c.origin.map((n,i)=>n+c.size[i]*[ix,iy,iz][i]);v[0]*=-1;
@@ -36,23 +38,25 @@ for(const g of geometries.values()){
    v=v.map((n,i)=>n+pivot[i]);assert.ok(v[1]>=-1e-6&&v[1]<=16+1e-6,`${g.description.identifier}: y=${v[1]}`);assert.ok(Math.abs(v[0])<=8.5&&Math.abs(v[2])<=8.5);
   }
  }
- assert.ok(g.bones.find(b=>b.name==='top').cubes.every(c=>c.origin[1]+c.size[1]===16));
+ if(native)assert.ok(Math.abs(Math.max(...cubes.map(c=>c.origin[1]+c.size[1]))-16)<1e-6);else assert.ok(g.bones.find(b=>b.name==='top').cubes.every(c=>c.origin[1]+c.size[1]===16));
 }
 for(const design of DESIGNS){
  const block=read(`packs/behavior/blocks/${design.id.split(':')[1]}.block.json`)['minecraft:block'];
  assert.equal(block.description.identifier,design.id);
  total+=Object.values(block.description.states).reduce((n,v)=>n*v.length,1);
  assert.ok(Object.values(block.description.states).every(v=>v.length<=16));
+ const rules=block.permutations.map(p=>({...p,matches:Function('q','math',`return ${p.condition}`)}));
  for(const states of combinations(block.description.states)){
   const decoded=decodeTile(design.id,{x:0,y:0,z:0},states);const {edges}=decoded,role=design.structure==='classic'?decoded.textileRole:decoded.frontal;
   const q={block_state:k=>states[k]},math={floor:Math.floor,mod:(a,b)=>a%b};
-  const matching=block.permutations.filter(p=>Function('q',`return ${p.condition}`)(q));
+  const matching=rules.filter(p=>p.matches(q,math));
   assert.equal(matching.filter(p=>p.components['minecraft:geometry']).length,1);
   const components=Object.assign({},block.components,...matching.map(p=>p.components));
   const component=components['minecraft:geometry'],geometry=geometries.get(component.identifier);assert.ok(geometry);
   assert.ok(Object.keys(component.bone_visibility).every(name=>geometry.bones.some(b=>b.name===name)));
   for(const m of Object.values(components['minecraft:material_instances'])){assert.equal(m.render_method,'alpha_test');assert.ok(atlas[m.texture]);}
-  if(design.palette){
+  if(design.codec==='native')for(const key of ['minecraft:geometry','minecraft:material_instances','minecraft:collision_box'])assert.ok(matching.filter(p=>p.components[key]).length<=1,'native component condition overlap');
+  if(design.palette&&design.codec!=='native'){
    assert.equal(components['minecraft:material_instances'].drape.texture,`altare_textile_ruby_${role}${design.palette==='red'?'':'_'+design.palette}`);
    assert.equal(components['minecraft:material_instances'].top.texture,'altare_linen');
    assert.ok(Object.values(component.bone_visibility).every(v=>typeof v==='boolean'));

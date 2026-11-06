@@ -1,0 +1,111 @@
+import {twinPedestalGeometry} from './twin-pedestal-prototype.mjs';
+import {serializeCube} from '../block-primitives.mjs';
+
+// Research output only. No block identifiers, catalog entries or states are registered.
+const EPS=1e-7;
+const clean=n=>Math.abs(n)<EPS?0:Number(n.toFixed(8));
+const faceAxes={north:[0,-1,1,-1],south:[0,1,1,-1],east:[2,-1,1,-1],west:[2,1,1,-1],up:[0,1,2,1],down:[0,1,2,-1]};
+const authorCube=c=>serializeCube(c); // basis conversion is its own inverse
+function rotate(p,c){
+ const pivot=c.pivot??[0,0,0];let v=p.map((n,i)=>n-pivot[i]);
+ for(let axis=0;axis<3;axis++){
+  const a=(c.rotation?.[axis]??0)*Math.PI/180,j=(axis+1)%3,k=(axis+2)%3,x=v[j],y=v[k];
+  v[j]=x*Math.cos(a)-y*Math.sin(a);v[k]=x*Math.sin(a)+y*Math.cos(a);
+ }
+ return v.map((n,i)=>clean(n+pivot[i]));
+}
+function cubeBounds(c){
+ const pts=[];for(const x of [0,1])for(const y of [0,1])for(const z of [0,1])pts.push(rotate(c.origin.map((n,i)=>n+c.size[i]*[x,y,z][i]),c));
+ return {min:[0,1,2].map(i=>Math.min(...pts.map(p=>p[i]))),max:[0,1,2].map(i=>Math.max(...pts.map(p=>p[i])))};
+}
+function local(c,center){
+ const q=structuredClone(c);for(const i of [0,2]){q.origin[i]-=center[i];if(q.pivot)q.pivot[i]-=center[i];}
+ for(const k of ['origin','size','pivot','rotation'])if(q[k])q[k]=q[k].map(clean);
+ return serializeCube(q);
+}
+function clipAxis(c,min,max,capCuts=false){
+ const lo=c.origin.map((n,i)=>Math.max(n,min[i])),hi=c.origin.map((n,i)=>Math.min(n+c.size[i],max[i]));
+ if(hi.some((n,i)=>n-lo[i]<EPS))return null;
+ const uv={};
+ for(const [face,value] of Object.entries(c.uv)){
+  const side={west:[0,0],east:[0,1],north:[2,0],south:[2,1],down:[1,0],up:[1,1]}[face];
+  if(!capCuts&&Math.abs((side[1]?hi:lo)[side[0]]-(c.origin[side[0]]+c.size[side[0]]*side[1]))>EPS)continue;
+  const [u,us,v,vs]=faceAxes[face],rect=structuredClone(value);
+  for(const [j,axis,sign] of [[0,u,us],[1,v,vs]]){
+   const a=(lo[axis]-c.origin[axis])/c.size[axis],b=(hi[axis]-c.origin[axis])/c.size[axis];
+   rect.uv[j]=clean(value.uv[j]+value.uv_size[j]*(sign>0?a:1-b));rect.uv_size[j]=clean(value.uv_size[j]*(b-a));
+  }
+  uv[face]=rect;
+ }
+ return Object.keys(uv).length?{origin:lo,size:hi.map((n,i)=>n-lo[i]),uv}:null;
+}
+function verticalEndpoints(c,face){
+ const [x,y,z]=c.origin,[w,h,d]=c.size;
+ // First endpoint samples the end of U, second endpoint the start of U.
+ const ends={north:[[x,y,z],[x+w,y,z]],south:[[x+w,y,z+d],[x,y,z+d]],east:[[x+w,y,z],[x+w,y,z+d]],west:[[x,y,z+d],[x,y,z]]}[face];
+ if(!ends)throw Error('Expected vertical face');return ends.map(p=>rotate(p,c));
+}
+function clipVerticalFace(c,min,max){
+ const face=Object.keys(c.uv)[0],[a,b]=verticalEndpoints(c,face),delta=b.map((n,i)=>n-a[i]);let t0=0,t1=1;
+ for(const axis of [0,2]){
+  if(Math.abs(delta[axis])<EPS){if(a[axis]<min[axis]-EPS||a[axis]>max[axis]+EPS)return null;continue;}
+  let lo=(min[axis]-a[axis])/delta[axis],hi=(max[axis]-a[axis])/delta[axis];if(lo>hi)[lo,hi]=[hi,lo];t0=Math.max(t0,lo);t1=Math.min(t1,hi);
+ }
+ if(t1-t0<EPS)return null;
+ const p=a.map((n,i)=>n+delta[i]*t0),q=a.map((n,i)=>n+delta[i]*t1),cx=(p[0]+q[0])/2,cz=(p[2]+q[2])/2,length=Math.hypot(q[0]-p[0],q[2]-p[2]);
+ const value=c.uv[face],uv=structuredClone(value);uv.uv[0]=clean(value.uv[0]+value.uv_size[0]*(1-t1));uv.uv_size[0]=clean(value.uv_size[0]*(t1-t0));
+ return {origin:[cx-length/2,c.origin[1],cz],size:[length,c.size[1],.02],pivot:[cx,c.origin[1],cz],rotation:[0,-Math.atan2(q[2]-p[2],q[0]-p[0])*180/Math.PI,0],uv:{north:uv}};
+}
+function moduleGrain(serialized){
+ const c=authorCube(serialized),uv={};
+ for(const [face,value] of Object.entries(c.uv)){
+  if(['inlay','wood_vertical'].includes(value.material_instance)){uv[face]=structuredClone(value);continue;}
+  if(c.rotation?.some(n=>Math.abs(n)>EPS)){
+   // Vertical chamfer strips keep a fixed texel density in their own plane.
+   uv[face]={...structuredClone(value),uv:[0,clean((16-c.origin[1]-c.size[1])*8)],uv_size:[clean(c.size[0]*8),clean(c.size[1]*8)]};
+  }else{
+   const [u,us,v,vs]=faceAxes[face],lo=c.origin,hi=c.origin.map((n,i)=>n+c.size[i]);
+   const coord=(axis,sign)=>sign>0?(lo[axis]+(axis===1?0:8))*8:((axis===1?16:8)-hi[axis])*8;
+   uv[face]={...structuredClone(value),uv:[clean(coord(u,us)),clean(coord(v,vs))],uv_size:[clean(c.size[u]*8),clean(c.size[v]*8)]};
+  }
+ }
+ return {...structuredClone(serialized),uv};
+}
+function shaftCutCaps(source,min,max){
+ const groups=new Map(),out=[];
+ for(const {name,c} of source)if(name.endsWith('_shaft')){if(!groups.has(name))groups.set(name,[]);groups.get(name).push(c);}
+ for(const [name,faces] of groups){
+  const segments=faces.map(c=>verticalEndpoints(c,Object.keys(c.uv)[0])),y=faces[0].origin[1],height=faces[0].size[1];
+  for(const axis of [0,2])for(const isMax of [false,true]){
+   const coordinate=(isMax?max:min)[axis],other=axis===0?2:0,values=segments.flatMap(s=>s.map(p=>p[axis]));
+   if(coordinate<=Math.min(...values)+EPS||coordinate>=Math.max(...values)-EPS)continue;
+   const cuts=[];for(const [a,b] of segments){const delta=b[axis]-a[axis];if(Math.abs(delta)<EPS)continue;const t=(coordinate-a[axis])/delta;if(t>=-EPS&&t<=1+EPS)cuts.push(a[other]+(b[other]-a[other])*t);}
+   if(cuts.length<2)continue;const lo=Math.max(min[other],Math.min(...cuts)),hi=Math.min(max[other],Math.max(...cuts));if(hi-lo<EPS)continue;
+   const origin=[0,y,0],size=[0,height,0],face=axis===0?(isMax?'east':'west'):(isMax?'south':'north');origin[axis]=coordinate-(isMax?.02:0);origin[other]=lo;size[axis]=.02;size[other]=hi-lo;
+   out.push({name:name+'_cut_caps',c:{origin,size,uv:{[face]:{uv:[0,clean((16-y-height)*8)],uv_size:[clean((hi-lo)*8),clean(height*8)],material_instance:'wood_vertical'}}}});
+  }
+ }
+ return out;
+}
+export function twinPedestalCells(width,depth,facing=0,{uvPolicy='exact',capCuts=false,sourceModel}={}){
+ if(!['exact','module-grain'].includes(uvPolicy))throw Error('Unknown UV policy');
+ const model=sourceModel??twinPedestalGeometry(width,depth,facing),geometry=model.doc['minecraft:geometry'][0],nx=facing%2?depth:width,nz=facing%2?width:depth;
+ const source=geometry.bones.flatMap(b=>b.cubes.map(c=>({name:b.name,c:authorCube(c)}))).map(s=>({...s,b:cubeBounds(s.c)})),cells=[];
+ for(let x=0;x<nx;x++)for(let z=0;z<nz;z++){
+  const center=[(x-(nx-1)/2)*16,0,(z-(nz-1)/2)*16],min=[center[0]-8,0,center[2]-8],max=[center[0]+8,16,center[2]+8],bones=new Map();
+  for(const {name,c,b} of source){
+   if([0,2].some(i=>Math.min(b.max[i],max[i])-Math.max(b.min[i],min[i])<EPS))continue;
+   let clipped;
+   if(!c.rotation?.some(n=>Math.abs(n)>EPS))clipped=clipAxis(c,min,max,capCuts);
+   else if(Object.keys(c.uv).length===1&&Math.abs(c.rotation[0])<EPS&&Math.abs(c.rotation[2])<EPS)clipped=clipVerticalFace(c,min,max);
+   else{
+    if([0,2].some(i=>b.min[i]<min[i]-EPS||b.max[i]>max[i]+EPS))throw Error(`Unsupported rotated inlay cut ${width}x${depth}/${facing}`);
+    clipped=structuredClone(c);
+   }
+   if(!clipped)continue;if(!bones.has(name))bones.set(name,[]);const piece=local(clipped,center);bones.get(name).push(uvPolicy==='module-grain'?moduleGrain(piece):piece);
+  }
+  if(capCuts)for(const {name,c} of shaftCutCaps(source,min,max)){if(!bones.has(name))bones.set(name,[]);const piece=local(c,center);bones.get(name).push(uvPolicy==='module-grain'?moduleGrain(piece):piece);}
+  cells.push({x,z,center,doc:{format_version:'1.16.0','minecraft:geometry':[{description:{identifier:`geometry.altare.study_twin_cell_${width}_${depth}_${facing}_${x}_${z}`,texture_width:128,texture_height:128,visible_bounds_width:2,visible_bounds_height:2,visible_bounds_offset:[0,.5,0]},bones:[...bones].map(([name,cubes])=>({name,pivot:[0,0,0],cubes}))}]}});
+ }
+ return {width,depth,facing,cells,uvPolicy,capCuts,prototype:true,registered:false};
+}

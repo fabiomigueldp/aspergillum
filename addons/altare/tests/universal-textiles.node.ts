@@ -62,7 +62,7 @@ test('long falls retain full reliefs above the plinth, with square motifs scaled
   const g=collection.models[suffix].doc['minecraft:geometry'][0];
   for(const b of g.bones.filter((b:any)=>b.name.startsWith('applique_')))for(const c of b.cubes.filter((c:any)=>Object.values(c.uv).some((u:any)=>u?.material_instance==='metal'||u?.material_instance==='plaque'))){assert.ok(c.origin[1]>=.75-1e-8);assert.ok(c.origin[1]+c.size[1]<=5+1e-8);}
  }
- assert.equal(UNIVERSAL_DESIGNS.length,172);
+ assert.equal(UNIVERSAL_DESIGNS.length,177);
  assert.equal(TEXTILE_VALUES.indexOf('ruby'),2,'published logical textile axes must retain their meaning');
  assert.equal(textileOf(sharedDesignFor('colonnade','marble','lace','none')),'lace');
 });

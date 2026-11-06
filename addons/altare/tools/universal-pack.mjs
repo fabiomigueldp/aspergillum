@@ -1,3 +1,5 @@
+import {NEUTRAL_PALETTE_STATE_VALUES} from '../src/domain/neutral-palette-layout.ts';
+import {CLASSIC_TEXTILE_STATE_VALUES} from '../src/domain/classic-textile-layout.ts';
 import {UNIVERSAL_DESIGNS} from '../src/domain/catalog.ts';
 import {decodeTile} from '../src/domain/block-codec.ts';
 import {legacyAuthorGeometry,visibility as classicVisibility} from '../assets-src/model.mjs';
@@ -14,7 +16,7 @@ export function clothTexture(d,role=0){
  return `textile_${d.textile}_${role}${d.palette&&d.palette!=='red'?'_'+d.palette:''}`;
 }
 export function seamTexture(d){return d.textile==='lace'||d.textile.startsWith('linen')?'linen':`seam_${seamFor(d.textile,d.palette)}`;}
-function geometryFor(d,pose){
+export function geometryFor(d,pose){
  const {edges,facing}=pose;
  if(d.structure==='classic'){
   const doc=legacyAuthorGeometry(false,facing),g=doc['minecraft:geometry'][0],visibility=classicVisibility(facing);
@@ -32,8 +34,8 @@ function geometryFor(d,pose){
   g.bones.push(...cloth.bones.map(b=>({...b,pivot:[0,0,0],cubes:b.cubes.map(serializeCube)})));
   const name=`universal_colonnade_${d.textile}_e${edges}`;g.description.identifier=`geometry.altare.${name}`;return {name,doc,visibility:{}};
  }
- const out=atelierGeometry(d.structure,d.textile,d.frontal,facing,['baluster','pilaster','ogive'].includes(d.structure)?edges:undefined),g=out.doc['minecraft:geometry'][0];
- const name=`universal_${d.structure}_${d.textile}_${d.frontal}_${facing}${['baluster','pilaster','ogive'].includes(d.structure)&&edges!==undefined?`_e${edges}`:''}`;
+ const out=atelierGeometry(d.structure,d.textile,d.frontal,facing,['baluster','crossbrace','pilaster','ogive'].includes(d.structure)?edges:undefined),g=out.doc['minecraft:geometry'][0];
+ const name=`universal_${d.structure}_${d.textile}_${d.frontal}_${facing}${['baluster','crossbrace','pilaster','ogive'].includes(d.structure)&&edges!==undefined?`_e${edges}`:''}`;
  g.description.identifier=`geometry.altare.${name}`;return {name,...out};
 }
 export function compileUniversal({models,blocks,sounds},collectionMaterials){
@@ -41,12 +43,12 @@ export function compileUniversal({models,blocks,sounds},collectionMaterials){
  const template=blocks['altare:a_pilaster_marble_none_none'];
  for(const d of UNIVERSAL_DESIGNS){
   if(['pilaster','ogive'].includes(d.structure))for(let facing=0;facing<4;facing++){const m=geometryFor(d,{facing});if(!models[m.name])models[m.name]=m;}
-  const states=d.codec==='classic_textile'?{'altare:shape':[0,1,2,3,4,5,6,7,8],'altare:detail':[0,1,2,3,4,5],'altare:facing':[0,1,2,3],'altare:stone':[0,1,2]}:d.codec==='symmetric'?{'altare:edges':[15,...Array.from({length:15},(_,i)=>i)]}:d.codec==='edges'?{'altare:edges':[15,...Array.from({length:15},(_,i)=>i)],'altare:facing':[0,1,2,3]}:{'altare:shape':[0,1,2,3,4,5,6],'altare:detail':[0,1,2,3],'altare:facing':[0,1,2,3]};
+  const states=d.codec==='classic_textile'?CLASSIC_TEXTILE_STATE_VALUES:d.codec==='neutral_palette'?NEUTRAL_PALETTE_STATE_VALUES:d.codec==='symmetric'?{'altare:edges':[15,...Array.from({length:15},(_,i)=>i)]}:d.codec==='edges'?{'altare:edges':[15,...Array.from({length:15},(_,i)=>i)],'altare:facing':[0,1,2,3]}:{'altare:shape':[0,1,2,3,4,5,6],'altare:detail':[0,1,2,3],'altare:facing':[0,1,2,3]};
   const rows=Object.entries(states).reduce((all,[key,values])=>all.flatMap(row=>values.map(v=>({...row,[key]:v}))),[{}]);
   const permutations=rows.map(state=>{
    const pose=decodeTile(d.id,{x:0,y:0,z:0},state),role=d.structure==='classic'?pose.textileRole:pose.frontal;
    const geometryPose=['pilaster','ogive'].includes(d.structure)&&d.frontal==='none'?{...pose,facing:0}:pose;
-   const key=d.structure==='colonnade'?`${d.structure}_${d.textile}_${pose.edges}`:`${d.structure}_${d.textile}_${d.frontal}_${geometryPose.facing}${['baluster','pilaster','ogive'].includes(d.structure)?'_'+pose.edges:''}`;
+   const key=d.structure==='colonnade'?`${d.structure}_${d.textile}_${pose.edges}`:`${d.structure}_${d.textile}_${d.frontal}_${geometryPose.facing}${['baluster','crossbrace','pilaster','ogive'].includes(d.structure)?'_'+pose.edges:''}`;
    let model=cache.get(key);if(!model){model=geometryFor(d,geometryPose);cache.set(key,model);models[model.name]=model;}
    const virtual={'altare:edges':pose.edges,'altare:role':pose.frontal,'altare:frontal':pose.frontal,'altare:facing':pose.facing,'altare:cloth':1},q={block_state:k=>virtual[k]},math={floor:Math.floor,mod:(a,b)=>a%b};
    const visible=Object.fromEntries(Object.entries(model.visibility).map(([k,v])=>[k,typeof v==='boolean'?v:Boolean(Function('q','math',`return ${v}`)(q,math))]));
@@ -59,7 +61,7 @@ export function compileUniversal({models,blocks,sounds},collectionMaterials){
    return {condition:Object.entries(state).map(([k,v])=>`q.block_state('${k}') == ${v}`).join(' && '),components:{'minecraft:geometry':{identifier:`geometry.altare.${model.name}`,bone_visibility:visible},'minecraft:material_instances':materials,'minecraft:collision_box':d.structure==='classic'||d.structure==='colonnade'?true:structureCollision(d.structure,pose.edges,pose.facing)}};
   });
   const doc=structuredClone(template),block=doc['minecraft:block'];block.description={identifier:d.id,states};block.permutations=permutations;
-  Object.assign(block.components,permutations[0].components,{'minecraft:light_dampening':['trestle','baluster'].includes(d.structure)?0:15});
+  Object.assign(block.components,permutations[0].components,{'minecraft:light_dampening':['trestle','baluster','crossbrace'].includes(d.structure)?0:15});
   blocks[d.id]=doc;sounds[d.id]={sound:d.surface==='walnut'?'wood':'stone'};
  }
 }

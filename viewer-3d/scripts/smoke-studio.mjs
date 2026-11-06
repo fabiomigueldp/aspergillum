@@ -94,7 +94,7 @@ try{
  assert.equal(await page.locator('#studio-surface').inputValue(),'marble');assert.equal(await page.locator('#studio-pattern-field').isVisible(),true);
  assert.equal(await page.locator('#studio-textile').inputValue(),'floral');
  await page.selectOption('#studio-textile','lace');await ready();assert.equal(await page.evaluate(()=>window.__BEDROCK_STUDIO__.scene().config.textile),'lace');
- for(const family of ['classic','pilaster','ogive','trestle','coffer','baluster','colonnade']){
+ for(const family of ['classic','pilaster','ogive','trestle','coffer','baluster','colonnade','crossbrace','twin_pedestal']){
   await page.click(`[data-model="${family}"]`);await ready();assert.equal(await page.locator('#studio-textile').inputValue(),'lace');
   assert.equal(await page.locator('#studio-textile option').count(),10);
  }

@@ -45,7 +45,7 @@ test('all models, cloths and colors expose one material and no empty details sec
 });
 
 test('fixed material labels match native wording while hidden choices survive a return',()=>{
- for(const [model,key]of [['coffer','menu.material_walnut'],['baluster','menu.material_walnut'],['colonnade','menu.material_marble']]){
+ for(const [model,key]of [['coffer','menu.material_walnut'],['baluster','menu.material_walnut'],['crossbrace','menu.material_walnut'],['twin_pedestal','menu.material_walnut'],['colonnade','menu.material_marble']]){
   const get=controls(),draft=changeCustomization(initial,{model});
   syncAppearanceControls(get,draft,customizationCapabilities(draft));
   assert.equal(get('fixed-material').textContent,locales.pt_BR[`altare.${key}`]);

@@ -6,8 +6,8 @@ import {commitFinish} from '../src/application/finish.ts';
 import {encodeTile,decodeTile,normalizeTile} from '../src/domain/block-codec.ts';
 const grid=(w:number,d:number):Tile[]=>Array.from({length:w*d},(_,i)=>({position:{x:i%w,y:4,z:Math.floor(i/w)},stone:0,cloth:3,frontal:0,facing:0,edges:15}));
 test('catalog has stable unique identities and a bounded total state budget',()=>{
- assert.equal(ATELIER_DESIGNS.length,135);assert.equal(DESIGNS.length,396);assert.equal(new Set(DESIGNS.map(d=>d.id)).size,396);
- assert.equal(CATALOG_PERMUTATIONS,54528);assert.ok(CATALOG_PERMUTATIONS+9744<=65536);
+ assert.equal(ATELIER_DESIGNS.length,135);assert.equal(DESIGNS.length,430);assert.equal(new Set(DESIGNS.map(d=>d.id)).size,430);
+ assert.equal(CATALOG_PERMUTATIONS,55736);assert.ok(CATALOG_PERMUTATIONS+9744<=65536);
  assert.equal(designFor('trestle','walnut','agnus','none').id,'altare:a_trestle_walnut_agnus_none');
  assert.equal(designById('altare:a_future'),undefined);assert.throws(()=>designFor('future','marble','agnus','none'));
 });

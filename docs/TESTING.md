@@ -1,5 +1,9 @@
 # Estratégia de testes e QA
 
+## Altare 0.13.0
+
+Verificar Cruzeta e Dois pedestais no editor e Studio. [Composição, verificação automatizada e reteste nativo mínimo](../addons/altare/docs/INTEGRATION_0.13.0.md).
+
 ## Estúdio 2.2.1 e Altare 0.11.2
 
 Conferir chanfros, mitras da ponta e nascimentos, continuidade nas quatro orientações e relevos no campo do fundo. Dez tecidos, tamanhos 1×1 a 16×8 e centro par/ímpar. Auditoria preserva os 397 blocos e todas as texturas/runtime; comparação com a mesma GPU/navegador da 0.11.1. [Reteste e profiling](../addons/altare/docs/OGIVE_DETAIL_0.11.2.md).

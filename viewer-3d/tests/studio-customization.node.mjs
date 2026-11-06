@@ -25,7 +25,7 @@ test('suspended relief returns after color or textile changes, including history
 
 test('joinery controls resolve real wood recipes and restore hidden stone/relief choices',()=>{
  const original=studioCustomization(normalizeStudioConfig({family:'ogive',surface:'limestone',textile:'ruby',frontal:'cross'}));
- for(const model of ['coffer','baluster']){
+ for(const model of ['coffer','baluster','crossbrace']){
   const draft=changeCustomization(original,{model});
   const appearance=studioAppearance(draft);
   assert.equal(appearance.surface,'walnut');assert.equal(appearance.frontal,'none');
@@ -43,4 +43,13 @@ test('symmetric model round-trips lace scenes and keeps earlier model choices',(
  const lace=studioAppearance(changeCustomization(draft,{ornateLace:true}));
  assert.equal(lace.textile,'lace');assert.equal(designId(studioAppearance(studioCustomization(normalizeStudioConfig(lace)))),'altare:s_colonnade_lace');
  assert.deepEqual(studioAppearance(changeCustomization(draft,{model:'ogive'})),{...studioAppearance(original),textile:'none'});
+});
+
+test('twin pedestals retain hidden choices through a model switch and undo/redo',()=>{
+ const original=studioCustomization(normalizeStudioConfig({family:'ogive',surface:'limestone',textile:'floral',color:'red',frontal:'cross'}));
+ const draft=changeCustomization(original,{model:'twin_pedestal'}),appearance=studioAppearance(draft);
+ assert.equal(appearance.surface,'walnut');assert.equal(appearance.frontal,'none');assert.equal(designId(appearance),'altare:n_twin_floral_red');
+ assert.deepEqual(studioAppearance(changeCustomization(draft,{model:'ogive'})),studioAppearance(original));
+ const history=createStudioHistory();history.record(original);history.record(draft);
+ assert.deepEqual(history.undo(),original);assert.deepEqual(history.redo(),draft);
 });

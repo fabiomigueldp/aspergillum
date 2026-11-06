@@ -29,8 +29,8 @@ test('visual codebooks have bounded state axes, safe defaults and reversible dec
    else assert.deepEqual(pose,layout.poses[0]);
   }
  }
- assert.equal(MENSA_LAYOUT.poses.length,368);assert.equal(CATALOG_PERMUTATIONS,54528);
- assert.equal(CATALOG_PERMUTATIONS+9744,64272);
+ assert.equal(MENSA_LAYOUT.poses.length,368);assert.equal(CATALOG_PERMUTATIONS,55736);
+ assert.equal(CATALOG_PERMUTATIONS+9744,65480);
 });
 
 test('every compact pose remains encodable after any contour change and preserves its visible motif',()=>{

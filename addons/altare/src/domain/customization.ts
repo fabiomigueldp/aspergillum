@@ -1,6 +1,6 @@
 import {STRUCTURES,JOINERY_STRUCTURES,SURFACES,FRONTALS,LITURGICAL_COLORS,SHARED_TEXTILES,designById,sharedDesignFor,textileOf} from './catalog.ts';
 import type {Finish,Tile} from './surface.ts';
-export const MODELS=['classic',...STRUCTURES,...JOINERY_STRUCTURES,'colonnade'] as const;
+export const MODELS=['classic',...STRUCTURES,'coffer','baluster','colonnade','crossbrace','twin_pedestal'] as const;
 export const CLOTHS=SHARED_TEXTILES;
 export const CLASSIC_CLOTHS=['none','linen_short','linen_long','gold_short','gold_long'] as const;
 export interface Customization {
@@ -13,8 +13,8 @@ export function customizationFromFinish(f:Finish):Customization {
  return {model:d?.structure??'classic',surface:d?.surface??(f.stone===1?'limestone':'marble'),textile,color:d?.palette??'red',relief:d?.frontal??'none',stone:f.stone,cloth:f.cloth>=0&&f.cloth<=4?f.cloth:0,ornamental:f.ornamental,facing:f.facing,ornateLace:textile==='lace'};
 }
 export function customizationCapabilities(d:Customization){
- const architectural=d.model!=='classic',ornate=d.model==='colonnade',joinery=JOINERY_STRUCTURES.some(s=>s===d.model),color=d.textile==='floral';
- return {architectural,ornate,joinery,color,material:architectural&&!ornate&&!joinery,relief:architectural&&!ornate&&!joinery&&(!color||d.color==='red'),directional:!ornate||['agnus','floral','verdant','requiem'].includes(d.textile)};
+ const architectural=d.model!=='classic',ornate=d.model==='colonnade',joinery=d.model==='twin_pedestal'||JOINERY_STRUCTURES.some(s=>s===d.model),color=d.textile==='floral';
+ return {architectural,ornate,joinery,color,material:architectural&&!ornate&&!joinery,relief:architectural&&!ornate&&!joinery&&(!color||d.color==='red'),directional:!(d.model==='crossbrace'&&d.textile==='none')&&(!ornate||['agnus','floral','verdant','requiem'].includes(d.textile))};
 }
 export function customizationFinish(d:Customization):Finish {
  if(!MODELS.includes(d.model)||!SURFACES.includes(d.surface)||!CLOTHS.includes(d.textile)||!LITURGICAL_COLORS.includes(d.color)||!FRONTALS.includes(d.relief)||!Number.isInteger(d.stone)||d.stone<0||d.stone>2||!Number.isInteger(d.cloth)||d.cloth<0||d.cloth>4||!Number.isInteger(d.facing)||d.facing<0||d.facing>3||typeof d.ornamental!=='boolean'||typeof d.ornateLace!=='boolean')throw Error('configuration');
@@ -40,6 +40,6 @@ export function hasMixedFinishes(tiles:readonly Tile[]):boolean {
  const initial=key(first);if(tiles.some(tile=>key(tile)!==initial))return true;
  // Blank compact faces have no ornamental direction. Compare direction only
  // where it affects a motif, the trestle structure, or an existing layout.
- const directed=tiles.filter(tile=>{const d=designById(tile.design);return tile.frontal>0||d?.structure==='trestle'||!!d&&d.codec!=='pose';});
+ const directed=tiles.filter(tile=>{const d=designById(tile.design);return tile.frontal>0||(tile.textileRole??0)>0||d?.structure==='trestle'||!!d&&!['pose','neutral_palette','symmetric','classic_textile'].includes(d.codec??'');});
  return directed.some(tile=>tile.facing!==directed[0]?.facing);
 }

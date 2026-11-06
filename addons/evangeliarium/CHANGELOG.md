@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5.3 — 06/11/2026
+
+- Ordo permite aplicar os 23 formulários votivos e o próprio de Santa Teresa com leituras escolhidas explicitamente: as de hoje em uma ação, ou de outra data/Missa. Missal, Lecionário e Evangeliário seguem a composição até a meia-noite de Brasília. Não presume leituras próprias nem altera os textos.
+
+- Encaminhamento visual compartilhado com uma condição única e sua inversa, operações binárias explicitamente parentetizadas e painéis inicialmente ocultos. Evita a rota nativa concorrente nas telas próprias dos quatro livros.
+- Grupos com uma única seção abrem diretamente a leitura, inclusive Saudação do Missal. O retorno preserva o índice de origem; resultados de busca continuam listados.
+- Rótulos curtos usam linhas compactas; linhas multilinha ficam reservadas aos títulos extensos.
+- Regressões de roteamento, busca, retorno e Missal real. Validação visual no Minecraft ainda pendente; ver [relatório](docs/READER_UI_0.5.3.md).
+
+
 ## 0.5.2 — 05/11/2026 — formulário de Santa Teresa
 
 - Acrescenta ao índice do Missal o formulário da memória, com transcrição visual e corroboração paroquial brasileira documentadas.

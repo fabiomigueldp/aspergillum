@@ -1,5 +1,9 @@
 # Estado do projeto
 
+## Altare — integração de modelos — 06/11/2026
+
+Altare 0.13.0 integra Cruzeta e Dois pedestais ao runtime/editor e Studio. São nove modelos e 430 acabamentos, incluindo 17 por modelo novo. A revisão mantém as correções atuais e a ferramenta 0.12.1; não incorpora a consolidada experimental inteira nem cria migração de saves. [Uso e limites](../addons/altare/docs/INTEGRATION_0.13.0.md). Validação nativa pendente.
+
 ## Ferramenta Altare — 05/11/2026
 
 Altare 0.12.1 refina apenas o ícone da ferramenta de acabamento: amostras têxteis, bainha e agulha em pixel art nativa 32×32. Gameplay e catálogo preservados. [Contrato e reteste](../addons/altare/docs/FINISH_TOOL_0.12.1.md). Importação no Minecraft e Content Log pendentes.

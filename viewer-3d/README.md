@@ -9,7 +9,7 @@ Bancada web integrada e toolchain headless para inspecionar geometrias, texturas
 
 ## Render Studio de altares
 
-Estúdio 2.2.1 integra Ogivas com chanfros e mitras refinados no Altare 0.11.2, preservando o editor corrigido. Miniaturas derivam dos recursos reais; [construção, comparação e reteste](../addons/altare/docs/OGIVE_DETAIL_0.11.2.md).
+Estúdio 2.3.0 acrescenta Cruzeta e Dois pedestais ao seletor, com quatro composições em nogueira: nuas, com linho ou renda. As dez toalhas e oito cores do Floral usam as receitas nativas do Altare. Mantém os sete modelos anteriores e as correções de interface, cenas e escolhas suspensas. Miniaturas derivam dos recursos reais do pack; a visualização externa não substitui o teste no Minecraft.
 
 Na raiz, `npm run studio:altare` abre a quarta aba da bancada, com os modelos reais do Altare e cenários de blocos/texturas vanilla. Estruturas, toalhas, cores, dimensões, câmeras e ambientes são ajustáveis. Exporta PNG até 4K e salva cenas JSON. `npm run render:altars -- --presets all --size 2560` gera a coleção e suas miniaturas. [Instruções e limites](../docs/RENDER_STUDIO.md).
 

@@ -1,4 +1,19 @@
-## Santa Teresa — candidato 0.5.2
+## Reteste de interface 0.5.3
+
+- Em Missal > Índice > Saudação, um clique abre o texto; Seções > Voltar ao índice retorna ao mesmo índice, sem uma lista repetindo Saudação.
+- Abrir leitura e Seções no Evangeliário, Lecionário, Missal e Pontifical: somente a moldura marfim, sem janela cinza ou texto duplicado. Avançar/voltar páginas e rolar até o fim.
+- Abrir Data, digitar uma data inválida e corrigir. Campos e envio continuam acessíveis; Escape volta ao menu anterior.
+- Buscar um único resultado, ler e voltar: a lista e a consulta continuam disponíveis. Testar também lista com várias seções e retorno da segunda página.
+- `/scriptevent evangeliarium:inspect ui-native` continua exibindo somente a aparência vanilla para formulários sem marcador.
+- Repetir em janela menor e conferir o Content Log. O teste automatizado de expressões não comprova renderização, foco ou comportamento do cliente.
+
+## Composição de formulário e leituras — 0.5.3
+
+- Como operador, Ordo → Escolher formulário → Santíssima Trindade → Usar com leituras de hoje. Abrir Missal (formulário), Lecionário e Evangeliário (leituras identificadas pela data).
+- Escolher leituras → 25/12/2026 → Missa da aurora. Conferir que ambos os livros de leituras abrem essa Missa, e o Missal permanece no formulário escolhido.
+- Selecionar Santa Teresa na última página da lista. Consultar como membro não permite aplicar; Voltar para hoje remove a composição. A mudança não interrompe uma leitura já aberta e expira na meia-noite de Brasília.
+
+## Santa Teresa — histórico 0.5.2
 
 Importar `Evangeliarium-0.5.2.mcaddon`, sem cópia antiga/cache concorrente. No Missal, abrir Índice → Próprio dos Santos e buscar `Teresa` e `Teresinha`; ambas as buscas devem encontrar a mesma memória. Conferir entrada, coleta, oferendas, comunhão e pós-comunhão, incluindo o texto final. Marcar a página, fechar, reabrir e verificar retorno. Marcas antigas e consulta das votivas do Ordo devem continuar intactas; a nova seção não aplica celebração nem escolhe leituras. Registrar Content Log e hash do pacote. [Evidências e limites](VERIFICATION_0.5.2.md).
 

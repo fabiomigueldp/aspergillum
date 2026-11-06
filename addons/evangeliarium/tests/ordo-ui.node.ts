@@ -26,9 +26,9 @@ async function choose(p?:any){const label=current(p).buttons.find((b:string)=>b!
 beforeEach(()=>{m.reset();forms.length=0;now=Date.parse('2026-11-05T12:00:00Z');});after(()=>{Date.now=originalNow;});
 
 test('operator configures, member and Custom permissions only inspect',async()=>{
- const op=await setup();assert.ok(current(op.p).buttons.includes('Escolher data'));assert.ok(current(op.p).buttons.includes('Consultar votivas'));
- const member=await setup(false,'member');assert.deepEqual(current(member.p).buttons,['Consultar votivas','Fechar']);assert.doesNotMatch(current(member.p).text,/Somente operadores/);
- member.p.playerPermissionLevel=PlayerPermissionLevel.Custom;member.controller.open(member.p,member.valid);await settle();assert.deepEqual(current(member.p).buttons,['Consultar votivas','Fechar']);assert.equal(persisted(),undefined);
+ const op=await setup();assert.ok(current(op.p).buttons.includes('Escolher data'));assert.ok(current(op.p).buttons.includes('Escolher formulário'));
+ const member=await setup(false,'member');assert.deepEqual(current(member.p).buttons,['Consultar formulários','Fechar']);assert.doesNotMatch(current(member.p).text,/Somente operadores/);
+ member.p.playerPermissionLevel=PlayerPermissionLevel.Custom;member.controller.open(member.p,member.valid);await settle();assert.deepEqual(current(member.p).buttons,['Consultar formulários','Fechar']);assert.equal(persisted(),undefined);
 });
 test('date browsing and preview do not write before deliberate celebration choice',async()=>{
  await setup();await preview();assert.equal(persisted(),undefined);await choose();assert.equal(title(),'Ordo');assert.deepEqual(persisted().override.selection,{kind:'date',date:'2026-11-06',key:m.dailyCalendar('2026-11-06').keys[0]});assert.equal(persisted().revision,1);
@@ -37,7 +37,7 @@ test('concurrent editors reject stale apply without overwriting first choice',as
  const a=await setup(true,'a'),b=await setup(true,'b');await preview('06/11/2026',a.p);await preview('07/11/2026',b.p);await choose(a.p);const saved=persisted();await choose(b.p);assert.deepEqual(persisted(),saved);assert.match(current(b.p).text,/O Ordo mudou/);assert.equal(title(b.p),'Ordo');
 });
 test('permission revoked before apply prevents commit and hides controls',async()=>{
- const {p}=await setup();await preview();p.playerPermissionLevel=PlayerPermissionLevel.Member;await choose();assert.equal(persisted(),undefined);assert.deepEqual(current().buttons,['Consultar votivas','Fechar']);assert.match(current().text,/exige um operador/);
+ const {p}=await setup();await preview();p.playerPermissionLevel=PlayerPermissionLevel.Member;await choose();assert.equal(persisted(),undefined);assert.deepEqual(current().buttons,['Consultar formulários','Fechar']);assert.match(current().text,/exige um operador/);
 });
 test('expiry with form open increments revision and rejects stale apply',async()=>{
  await setup();await preview();await choose();await preview('07/11/2026');now=Date.parse('2026-11-06T03:00:00Z');await choose();assert.deepEqual(persisted(),{schema:1,revision:2});assert.match(current().text,/A data virou em Brasília/);assert.match(current().text,/Hoje · 06\/11\/2026/);
@@ -67,8 +67,22 @@ test('invalid date preserves draft and error and permits correction',async()=>{
 test('return to today removes override with new revision',async()=>{
  await setup();await preview();await choose();await click('Voltar para hoje');assert.deepEqual(persisted(),{schema:1,revision:2});assert.match(current().text,/Hoje · 05\/11\/2026/);assert.ok(!current().buttons.includes('Voltar para hoje'));
 });
-test('votive catalog is read only until readings are validated',async()=>{
- await setup();await click('Consultar votivas');assert.equal(current().text,'Missal Romano · 1/4');const label=current().buttons.find((b:string)=>!['Voltar','Mais votivas','Anteriores'].includes(b));assert.ok(label);await click(label);assert.equal(title(),'Missa votiva');assert.ok(current().text.includes(label));assert.match(current().text,/Leituras e Evangelho não vinculados/);assert.deepEqual(current().buttons,['Ler formulário','Voltar']);await click('Ler formulário');assert.equal(title(),'Missal Romano');assert.ok(current().text.length>100);assert.equal(persisted(),undefined);await click('Votiva');assert.equal(title(),'Missa votiva');
+test('operator applies a votive with explicitly labeled daily readings in one action',async()=>{
+ await setup();await click('Escolher formulário');assert.equal(current().text,'Missal Romano · 1/4');const label=current().buttons[0];await click(label);
+ assert.equal(title(),'Formulário');assert.deepEqual(current().buttons,['Usar com leituras de hoje','Escolher leituras','Ler formulário','Voltar']);assert.equal(persisted(),undefined);
+ await click('Usar com leituras de hoje');assert.equal(title(),'Ordo');assert.equal(persisted().override.selection.kind,'votive');assert.equal(persisted().override.selection.readings.date,'2026-11-05');assert.match(current().text,/Leituras · 05\/11\/2026/);assert.ok(current().text.includes(label));
+});
+test('votive reading date and distinct Christmas Mass are selected deliberately',async()=>{
+ await setup();await click('Escolher formulário');await click(current().buttons[0]);await click('Escolher leituras');await submit('25/12/2026');assert.equal(title(),'Leituras');assert.equal(persisted(),undefined);
+ await click('Missa da aurora');assert.equal(persisted().override.selection.readings.mass,'Missa da aurora');assert.equal(persisted().override.selection.readings.date,'2026-12-25');
+});
+test('votive input and back preserve draft without committing',async()=>{
+ await setup();await click('Escolher formulário');await click(current().buttons[0]);await click('Escolher leituras');await submit('31/02/2026');assert.equal(current().inputs[0].options.defaultValue,'31/02/2026');await submit(' 25/12/2026 ');await click('Voltar');assert.equal(current().inputs[0].options.defaultValue,' 25/12/2026 ');await cancel();assert.equal(title(),'Formulário');assert.equal(persisted(),undefined);
+});
+test('votive commit checks permission, stale revision and midnight',async()=>{
+ const {p}=await setup();await click('Escolher formulário');await click(current().buttons[0]);p.playerPermissionLevel=PlayerPermissionLevel.Member;await click('Usar com leituras de hoje');assert.equal(persisted(),undefined);
+ p.playerPermissionLevel=PlayerPermissionLevel.Operator;const a=await setup(true,'a'),b=await setup(true,'b');await click('Escolher formulário',a.p);await click(current(a.p).buttons[0],a.p);await preview('06/11/2026',b.p);await choose(b.p);const saved=persisted();await click('Usar com leituras de hoje',a.p);assert.deepEqual(persisted(),saved);assert.match(current(a.p).text,/O Ordo mudou/);
+ await click('Escolher formulário',a.p);await click(current(a.p).buttons[0],a.p);now=Date.parse('2026-11-06T03:00:00Z');await click('Usar com leituras de hoje',a.p);assert.equal(persisted().override,undefined);
 });
 test('vigil selection names the actual feast rather than the weekday of its civil date',async()=>{
  await setup();await preview('15/05/2027');const vigil=current().buttons.find((b:string)=>/Vigília/.test(b));assert.match(vigil,/Pentecostes/);await click(vigil);assert.match(current().text,/Pentecostes/);assert.doesNotMatch(current().text,/7ª Semana/);
@@ -82,18 +96,18 @@ test('canceling a typed preview restores its draft, then canceling the editor re
  await setup();await preview('25/12/2026');await cancel();assert.equal(current().inputs[0]?.options.defaultValue,'25/12/2026');await cancel();assert.equal(title(),'Escolher data');assert.ok(current().buttons.includes('Outra data'));assert.equal(persisted(),undefined);
 });
 test('members can consult all votives without global changes or operator controls',async()=>{
- await setup(false);assert.deepEqual(current().buttons,['Consultar votivas','Fechar']);assert.doesNotMatch(current().text,/Somente operadores/);await click('Consultar votivas');
+ await setup(false);assert.deepEqual(current().buttons,['Consultar formulários','Fechar']);assert.doesNotMatch(current().text,/Somente operadores/);await click('Consultar formulários');
  const labels:string[]=[];
  for(let page=0;page<4;page++){
   assert.equal(current().text,`Missal Romano · ${page+1}/4`);assert.ok(!current().buttons.some((label:string)=>/Usar|Aplicar|Escolher data/.test(label)));
-  const entries=current().buttons.filter((label:string)=>!['Voltar','Mais votivas','Anteriores'].includes(label));labels.push(...entries);
+  const entries=current().buttons.filter((label:string)=>!['Voltar','Mais formulários','Anteriores'].includes(label));labels.push(...entries);
   for(const entry of entries){
-   await click(entry);assert.deepEqual(current().buttons,['Ler formulário','Voltar']);assert.match(current().text,/Leituras e Evangelho não vinculados/);
-   await click('Ler formulário');assert.equal(title(),'Missal Romano');assert.ok(current().text.length>100);await click('Votiva');await click('Voltar');assert.equal(current().text,`Missal Romano · ${page+1}/4`);
+   await click(entry);assert.deepEqual(current().buttons,['Ler formulário','Voltar']);assert.doesNotMatch(current().text,/não vinculados/);
+   await click('Ler formulário');assert.equal(title(),'Missal Romano');assert.ok(current().text.length>100);await click('Formulário');await click('Voltar');assert.equal(current().text,`Missal Romano · ${page+1}/4`);
   }
-  if(page<3)await click('Mais votivas');else assert.ok(!current().buttons.includes('Mais votivas'));
+  if(page<3)await click('Mais formulários');else assert.ok(!current().buttons.includes('Mais formulários'));
  }
- assert.equal(labels.length,23);assert.equal(new Set(labels).size,23);await click('Anteriores');assert.equal(current().text,'Missal Romano · 3/4');await click('Voltar');assert.deepEqual(current().buttons,['Consultar votivas','Fechar']);assert.equal(persisted(),undefined);
+ assert.equal(labels.length,24);assert.equal(new Set(labels).size,24);await click('Anteriores');assert.equal(current().text,'Missal Romano · 3/4');await click('Voltar');assert.deepEqual(current().buttons,['Consultar formulários','Fechar']);assert.equal(persisted(),undefined);
 });
 test('tomorrow preview returns to date choices rather than a date editor',async()=>{
  await setup();await click('Escolher data');for(const leave of [()=>click('Voltar'),()=>cancel()]){await click('Amanhã · 06/11/2026');await leave();assert.equal(title(),'Escolher data');assert.equal(current().inputs.length,0);assert.ok(current().buttons.includes('Outra data'));}assert.equal(persisted(),undefined);
@@ -101,4 +115,8 @@ test('tomorrow preview returns to date choices rather than a date editor',async(
 test('closed date draft cannot reopen an editor through a late back callback',async()=>{
  const {p,controller,valid}=await setup();await preview('25/12/2026');const stale=current(),index=stale.buttons.indexOf('Voltar');stale.respond({canceled:false,selection:index});controller.close(p.id);await settle();assert.equal(current(),stale);assert.equal(persisted(),undefined);
  controller.open(p,valid);await settle();await click('Escolher data');await click('Outra data');assert.equal(current().inputs[0].options.defaultValue,'');
+});
+
+test('Saint Therese uses the supplied memorial formulary without fabricated proper readings',async()=>{
+ await setup();await click('Escolher formulário');for(let page=0;page<3;page++)await click('Mais formulários');await click('Santa Teresa do Menino Jesus');assert.equal(title(),'Formulário');await click('Usar com leituras de hoje');assert.equal(persisted().override.selection.id,'missal--santa-teresa-do-menino-jesus');assert.equal(persisted().override.selection.readings.date,'2026-11-05');assert.match(current().text,/Santa Teresa do Menino Jesus/);
 });

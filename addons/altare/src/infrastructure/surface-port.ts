@@ -1,7 +1,7 @@
 import { BlockPermutation, type Block, type Dimension } from '@minecraft/server';
 import { edgeMask, neighbor, withEdges, positionKey, type Position, type Tile } from '../domain/surface.ts';
 import type { SurfacePort } from '../application/finish.ts';
-import {isAltarId} from '../domain/catalog.ts';
+import {isAltarId,designById} from '../domain/catalog.ts';
 import {decodeTile,encodeTile} from '../domain/block-codec.ts';
 
 export const ALTAR='altare:mensa';
@@ -33,7 +33,7 @@ export class BedrockSurfacePort implements SurfacePort {
     catch(cause){throw Error(`cannot write ${encoded.id} at ${positionKey(tile.position)}`,{cause});}
   }
   reconcile(position:Position):void {
-    const tile=this.read(position);if(!tile)return;
+    const tile=this.read(position);if(!tile||designById(tile.design)?.codec==='native')return;
     const connected=[0,1,2,3].map(i=>{const t=this.read(neighbor(position,i));return t===undefined?undefined:t!==null;});
     const edges=edgeMask(connected,tile.edges);
     if(edges!==tile.edges)this.write(withEdges(tile,edges));

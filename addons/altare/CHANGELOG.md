@@ -1,5 +1,12 @@
 # Changelog
 
+## Altare 0.13.0 — 06/11/2026
+
+- Integra Cruzeta e Dois pedestais ao catálogo, editor e Studio, com 34 acabamentos adicionais.
+- Reutiliza as fontes de marcenaria, modelos, tecidos e colisão preservadas no arquivo de desenvolvimento.
+- Reduz estados neutros visualmente equivalentes sem remover escolhas, e mantém o ícone de acabamento 0.12.1 e as correções atuais de UI.
+- Não adiciona migração de saves; teste dentro do Minecraft continua não executado.
+
 ## 0.12.1 — Ferramenta de acabamento
 
 - Ícone autoral 32×32 com amostras de linho, bordô e verde, bainha bordada e agulha de latão com olho e bisel.

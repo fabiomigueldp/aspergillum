@@ -62,7 +62,7 @@ export class Reader {
   });
  }
  private menu(s:Session,title:string,body:string,choices:Choice[],back?:()=>void,catalog=false){
-  const f=new ActionFormData().title((catalog?ui.catalogPrefix:ui.menuPrefix)+title).body(body);
+  const f=new ActionFormData().title((catalog&&choices.some(choice=>choice.label.length>42||choice.label.includes('\n'))?ui.catalogPrefix:ui.menuPrefix)+title).body(body);
   for(const c of choices)f.button(c.label);
   this.show(s,f,r=>{const c=choices[r.selection??-1];if(c)c.run();else this.close(s.player.id);},back);
  }
@@ -85,13 +85,14 @@ export class Reader {
   });
  }
  private celebration(s:Session){
-  const selection=this.globalOrdo.read().override?.selection;
-  if(!selection){this.dailyForms(s,brazilDate(Date.now()));return;}
-  if(selection.kind!=='date'){this.sectionIndex(s);return;}
+  const override=this.globalOrdo.read().override?.selection;
+  if(!override){this.dailyForms(s,brazilDate(Date.now()));return;}
+  const selection=override.kind==='votive'?override.readings:override;
+  const formulary=override.kind==='votive'?this.texts.books.missal.sections.find(section=>section.id===override.id):undefined;
   s.date=selection.date;s.readingMode='liturgy';s.section=undefined;s.sectionPages=undefined;s.sectionReturn=undefined;s.passage=undefined;s.pages=[];
-  const book=this.liturgicalBook(s),sections=s.handle.book==='missal'?ordoMissalSections(selection,book.sections):book.sections.filter(section=>section.id===lectionaryKeyToSection[selection.key]);
-  const context=displayDate(selection.date)+' · '+ordoCelebrationTitle(selection,this.readings.book.sections,lectionaryKeyToSection)+(selection.mass?' · '+selection.mass:'');
-  const read=(section:LiturgySection)=>{let starts=new Map<number,number>();liturgyPages(section,ui.pageCharacters,(index,page)=>starts.set(index,page));this.readSection(s,section,massStartPage(section,selection.mass,index=>starts.get(index)??0),context);};
+  const book=this.liturgicalBook(s),sections=s.handle.book==='missal'?(formulary?[formulary]:ordoMissalSections(selection,book.sections)):book.sections.filter(section=>section.id===lectionaryKeyToSection[selection.key]);
+  const context=formulary?sectionTitle(formulary)+(s.handle.book==='missal'?'':' · Leituras de '+displayDate(selection.date)+(selection.mass?' · '+selection.mass:'')):displayDate(selection.date)+' · '+ordoCelebrationTitle(selection,this.readings.book.sections,lectionaryKeyToSection)+(selection.mass?' · '+selection.mass:'');
+  const read=(section:LiturgySection)=>{let starts=new Map<number,number>();liturgyPages(section,ui.pageCharacters,(index,page)=>starts.set(index,page));this.readSection(s,section,massStartPage(section,s.handle.book==='missal'&&formulary?undefined:selection.mass,index=>starts.get(index)??0),context);};
   if(sections.length===1){read(sections[0]!);return;}
   this.menu(s,'Celebração',context+(sections.length?'':'\nPróprio não disponível neste acervo.'),[
    ...sections.map(section=>({label:sectionTitle(section),run:()=>read(section)})),
@@ -281,6 +282,9 @@ export class Reader {
   choices.push({label:'Voltar',run:back});this.menu(s,title,'',choices,back,true);
  }
  private sectionList(s:Session,sections:LiturgySection[],title:string,page:number,back:()=>void,query?:string){
+  // A group with one destination is navigation, not another choice screen. Searches
+  // still show the matched title and retain the query/results return path.
+  if(sections.length===1&&query===undefined){s.sectionReturn={label:'Voltar ao índice',run:back};this.readSection(s,sections[0]!);return;}
   const size=10,last=Math.max(0,Math.ceil(sections.length/size)-1);page=Math.max(0,Math.min(page,last));
   const choices:Choice[]=sections.slice(page*size,(page+1)*size).map(section=>({label:sectionTitle(section),run:()=>{s.sectionReturn={label:query!==undefined?'Voltar aos resultados':'Voltar à lista',run:()=>this.sectionList(s,sections,title,page,back,query)};this.readSection(s,section);}}));
   if(page>0)choices.push({label:'Seções anteriores',run:()=>this.sectionList(s,sections,title,page-1,back,query)});

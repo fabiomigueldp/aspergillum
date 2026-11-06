@@ -1,5 +1,7 @@
 # Altare
 
+**0.13.0 — Cruzeta e Dois pedestais integrados.** Os dois modelos estão no editor e no Studio, com nogueira, dez toalhas e oito cores florais. [Uso e implementação](docs/INTEGRATION_0.13.0.md).
+
 **0.12.0 — Poses visuais compactas.** Atelier e Mensa registram somente combinações visuais necessárias, preservando os centros em quebras laterais. O catálogo cai de 78.432 para **54.528 estados**, sem retirar escolhas do editor. [Arquitetura e testes](docs/COMPACT_POSES_0.12.0.md).
 
 A [marcenaria 0.6.1](docs/JOINERY_0.6.1.md) acrescenta Arca e Balaústres ao [contrato de personalização](docs/CUSTOMIZATION_0.5.0.md). Os dois modelos usam nogueira, todos os tecidos e as oito cores do Floral IHS, sem aplique adicional.
@@ -12,7 +14,7 @@ O uso principal é construção e ornamentação no Criativo. [Colunata e renda]
 - **Materiais:** mármore, calcário e nogueira.
 - **Toalhas:** linho curto/longo, bordado curto/longo, branco/Cordeiro, Floral IHS em oito cores, branco-verde/IHS, preto/prata, renda floral ou sem toalha. Dobras estáticas com profundidade, bordados e festões recortados.
 - **Apliques:** sem aplique, cruz dourada em relevo ou placa do Cordeiro. Na mesa aberta, o aplique tem suporte suspenso próprio.
-- **396 acabamentos**, além do bloco clássico: os 224 anteriores e 172 novas combinações. Centro único em frentes ímpares, duas metades alinhadas em pares. Retângulos até 16 × 8, em qualquer orientação, máximo de 128 módulos.
+- **430 acabamentos**, além do bloco clássico. Centro único em frentes ímpares, duas metades alinhadas em pares. Retângulos até 16 × 8, em qualquer orientação, máximo de 128 módulos.
 
 O editor configura o conjunto conectado inteiro. Toalha e estrutura ocupam somente as células da base: o tampo termina exatamente em `y + 1`, deixando livres as células superiores. Trocar a aparência não move, captura ou recria os vasos. Itens que não sejam colocáveis ainda precisam de um adaptador próprio; outros add-ons conservam suas regras de suporte.
 
@@ -22,7 +24,7 @@ Os recortes do tecido usam transparência binária; as dobras e a estrutura são
 
 O desenho **Floral IHS** oferece branco, vermelho, verde, roxo, róseo, preto, dourado e prateado festivos. São 104 combinações de cor/estrutura/material; nove vermelhas reutilizam receitas existentes. O bordado central, as flores claras e o ouro conservam suas cores. A cobertura sobre o tampo permanece branca.
 
-Esta família funciona nos sete modelos, com os materiais próprios de cada estrutura. Pilastras, ogivas e cavaletes aceitam relevo adicional no vermelho. Nas demais cores, o controle de relevo mostra a indisponibilidade e lembra a escolha durante a edição. Todos os desenhos ficam na mesma tela. A família permite escolher cores; não aplica calendário nem regras de celebração automaticamente. [Contrato, referências e autoria](docs/TEXTILES_0.4.0.md).
+Esta família funciona nos nove modelos, com os materiais próprios de cada estrutura. Pilastras, ogivas e cavaletes aceitam relevo adicional no vermelho. Nas demais cores, o controle de relevo mostra a indisponibilidade e lembra a escolha durante a edição. Todos os desenhos ficam na mesma tela. A família permite escolher cores; não aplica calendário nem regras de celebração automaticamente. [Contrato, referências e autoria](docs/TEXTILES_0.4.0.md).
 
 O polimento da coleção inclui fonte artística mais limpa, bainha com cordão, trama nos normais, dobras menos angulosas e cantos finos inclinados. O linho superior tem espessura própria sobre o tampo estrutural, mantendo a cota de apoio.
 
@@ -30,13 +32,13 @@ A 0.4.1 corrige as frestas entre facetas e a sobreposição de desenhos nas jun�
 
 O Content Log da 0.4.1 confirmou a rejeição das caixas de colisão dos 66 blocos de cavaletes: os IDs não eram registrados e a aplicação terminava em rollback. A 0.4.2 usa caixas estáveis `origin/size`, resolve todas as permutações antes da primeira escrita e registra a cadeia de causas. Refina também a estrutura dos cavaletes, pilastras e ogivas, preservando integralmente as texturas. [Diagnóstico](docs/STRUCTURES_0.4.2.md) · [comparação antes/depois](out/structure-comparison-0.4.2/index.html).
 
-## Testar a 0.12.0
+## Testar a 0.13.0
 
-[Baixar Altare-0.12.0.mcaddon](dist/releases/Altare-0.12.0.mcaddon) · [Relatório oficial](dist/validation/0.12.0/release-summary.json) · [Correção do editor](docs/EDITOR_FIX_0.11.1.md) · [Reteste visual](docs/OGIVE_DETAIL_0.11.2.md).
+[Baixar Altare-0.13.0.mcaddon](dist/releases/Altare-0.13.0.mcaddon) · [Relatório oficial](dist/validation/0.13.0/release-summary.json) · [Correção do editor](docs/EDITOR_FIX_0.11.1.md) · [Reteste visual](docs/OGIVE_DETAIL_0.11.2.md).
 
 [Ogivas: comparar antes e depois](out/ogive-comparison-0.11.2/index.html).
 
-1. Importar em um mundo de teste e ativar BP/RP **`[0,12,0]`**, sem outra revisão Altare concorrente. Alvo mínimo 1.26.40; Script API 2.9.0/UI 2.1.0 estáveis; sem experimentos. A ferramenta deve abrir a tela sem `InvalidObservableError`, inclusive ao alternar materiais fixos e aplique indisponível.
+1. Importar em um mundo de teste e ativar BP/RP **`[0,13,0]`**, sem outra revisão Altare concorrente. Alvo mínimo 1.26.40; Script API 2.9.0/UI 2.1.0 estáveis; sem experimentos. A ferramenta deve abrir a tela sem `InvalidObservableError`, inclusive ao alternar materiais fixos e aplique indisponível.
 2. Executar `/function altare/dev_kit`; montar 7 × 2 módulos, com um bloco de altura. Usar **Acabamento do altar**, escolher Ogivas e Sem toalha; conferir pontas, recessos, impostas, apoios e retorno dos cantos em movimento. Alternar tecidos, materiais e relevo; repetir em 8 × 2 e conferir o centro dividido.
 3. Usar **Acabamento do altar** na lateral frontal. Na mesma tela, escolher Cavaletes, Nogueira e Sem toalha; usar Aplicar. Reabrir, escolher Cordeiro e aplicar. Cancelar não altera blocos; Restaurar escolhas recupera a configuração aberta. Conferir dois cavaletes nas extremidades, escoras conectadas e vão central aberto.
 4. Colocar pedra vanilla e caldeirinha sobre o tampo; alternar cavaletes, pilastras e ogivas. Testar também **Floral IHS**, branco/roxo/róseo; salvar e reabrir. Objetos superiores devem permanecer na mesma posição.

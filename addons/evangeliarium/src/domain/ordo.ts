@@ -1,8 +1,7 @@
 import {brazilDate, parseDate} from './calendar.ts';
 
-export type OrdoSelection =
-  | {kind:'date'; date:string; key:string; mass?:string}
-  | {kind:'votive'; id:string};
+export type OrdoDateSelection={kind:'date'; date:string; key:string; mass?:string};
+export type OrdoSelection = OrdoDateSelection | {kind:'votive'; id:string; readings:OrdoDateSelection};
 export interface OrdoState {
   schema:1;
   revision:number;
@@ -40,7 +39,10 @@ export function validateOrdoSelection(value:unknown, votiveIds:ReadonlySet<strin
     if(value.kind==='date'&&keys(value,['kind','date','key','mass'])&&typeof value.date==='string'&&typeof value.key==='string'&&value.key.length>0&&value.key.length<=160&&(!('mass' in value)||(typeof value.mass==='string'&&value.mass.length>0&&value.mass.length<=80))) {
       try { const selection:Extract<OrdoSelection,{kind:'date'}>={kind:'date',date:value.date,key:value.key}; if(typeof value.mass==='string')selection.mass=value.mass; if(parseDate(value.date)===value.date&&dateSelectionAllowed(selection))return selection; } catch { /* reject rather than normalize */ }
     }
-    if(value.kind==='votive'&&keys(value,['kind','id'])&&typeof value.id==='string'&&votiveIds.has(value.id))return {kind:'votive',id:value.id};
+    if(value.kind==='votive'&&keys(value,['kind','id','readings'])&&typeof value.id==='string'&&votiveIds.has(value.id)&&record(value.readings)&&value.readings.kind==='date'){
+      const readings=validateOrdoSelection(value.readings,votiveIds,dateSelectionAllowed);
+      if(readings.kind==='date')return {kind:'votive',id:value.id,readings};
+    }
   }
   throw new OrdoStateError('invalid_selection','Seleção do Ordo inválida.');
 }
