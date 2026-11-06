@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import {PNG} from 'pngjs';
+import {createFinishToolIcon} from '../assets-src/finish-tool.mjs';
 import {locales} from '../assets-src/locales.mjs';
 import {definitions} from '../assets-src/textures.mjs';
 import {atelierDefinitions} from '../assets-src/atelier/materials.mjs';
@@ -130,3 +131,5 @@ assert.ok(!/onNeighborChanged|spawnEntity|spawnItem|setDynamicProperty|runInterv
 assert.ok(!/aspergillum:/.test(script));
 console.log(`Validated: ${cubes} cubes per geometry, ${budget} block permutations, y=16 support, opaque materials, stable API, locale parity.`);
 await import('./validate-collection.mjs');
+
+assert.deepEqual(fs.readFileSync(path.join(root,'packs/resource/textures/items/finish_tool.png')),PNG.sync.write(createFinishToolIcon()),'Finishing tool output must match its authored source');

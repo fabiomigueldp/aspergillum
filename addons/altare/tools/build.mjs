@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {PNG} from 'pngjs';
+import {createFinishToolIcon} from '../assets-src/finish-tool.mjs';
 import {build} from 'esbuild';
 import {authorGeometry,visibility,geometryName} from '../assets-src/model.mjs';
 import {definitions} from '../assets-src/textures.mjs';
@@ -93,13 +94,7 @@ write('packs/behavior/functions/altare/dev_kit.mcfunction','give @s altare:mensa
 json('packs/resource/blocks.json',{format_version:'1.1.0','altare:mensa':{sound:'stone'},...collection.sounds});
 json('packs/resource/textures/terrain_texture.json',{resource_pack_name:'altare',texture_name:'atlas.terrain',padding:8,num_mip_levels:4,texture_data:textureData});
 json('packs/resource/textures/item_texture.json',{resource_pack_name:'altare',texture_name:'atlas.items',texture_data:{altare_finish_tool:{textures:['textures/items/finish_tool']}}});
-const icon=new PNG({width:32,height:32});
-for(let y=3;y<29;y++)for(let x=3;x<29;x++){
- const needle=Math.abs(x-(y*.45+6))<1.3;
- const swatch=x>9&&x<26&&y>7&&y<23;
- if(swatch||needle)icon.data.set(needle?[183,141,63,255]:[237,233,222,255],(y*32+x)*4);
-}
-write('packs/resource/textures/items/finish_tool.png',PNG.sync.write(icon));
+write('packs/resource/textures/items/finish_tool.png',PNG.sync.write(createFinishToolIcon()));
 const packIcon=new PNG({width:256,height:256});
 for(let y=0;y<256;y++)for(let x=0;x<256;x++){
  let rgb=[41,49,43];if(x>29&&x<227&&y>79&&y<180)rgb=[192,174,143];

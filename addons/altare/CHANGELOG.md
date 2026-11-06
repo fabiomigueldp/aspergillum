@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.12.1 — Ferramenta de acabamento
+
+- Ícone autoral 32×32 com amostras de linho, bordô e verde, bainha bordada e agulha de latão com olho e bisel.
+- Fonte de pixel art reproduzível, transparência binária e testes de paleta, conectividade e identidade do PNG distribuído.
+- Mantidos identificador, comportamento, estados, modelos e demais texturas. [Critérios visuais e reteste](docs/FINISH_TOOL_0.12.1.md).
+
+
 ## 0.12.0 — Poses visuais compactas
 
 - Atelier e Mensa usam 54.528 estados no catálogo total, contra 78.432. Mantidos materiais, modelos, colisões e escolhas do editor.

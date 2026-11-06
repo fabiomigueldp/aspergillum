@@ -1,5 +1,10 @@
 # Estado do projeto
 
+## Ferramenta Altare — 05/11/2026
+
+Altare 0.12.1 refina apenas o ícone da ferramenta de acabamento: amostras têxteis, bainha e agulha em pixel art nativa 32×32. Gameplay e catálogo preservados. [Contrato e reteste](../addons/altare/docs/FINISH_TOOL_0.12.1.md). Importação no Minecraft e Content Log pendentes.
+
+
 ## Altare compacto — 04/11/2026
 
 Altare 0.12.0 evolui diretamente o schema de Atelier e Mensa: 54.528 estados, 64.272 junto com Aspergillum. O add-on não foi distribuído; não há requisito de migração ou preservação do schema anterior. Foram retirados o CLI e as barreiras de auditoria de compatibilidade acrescentados na revisão anterior. Modelos, materiais, colisão e escolhas do editor permanecem; quebras laterais dessas famílias preservam motivos. [Arquitetura e escopo](../addons/altare/docs/COMPACT_POSES_0.12.0.md). Aspergillum e Studio não mudam de versão.
