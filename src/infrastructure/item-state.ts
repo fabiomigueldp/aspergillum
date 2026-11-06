@@ -154,7 +154,10 @@ export function getMainhand(player: Player): ItemStack | undefined {
 }
 
 export function setMainhand(player: Player, item?: ItemStack): void {
-  player.getComponent(EntityComponentTypes.Equippable)?.setEquipment(EquipmentSlot.Mainhand, item);
+  const equipment = player.getComponent(EntityComponentTypes.Equippable);
+  if (equipment === undefined || !equipment.setEquipment(EquipmentSlot.Mainhand, item)) {
+    throw new Error("Could not write aspergillum mainhand equipment");
+  }
 }
 
 export function isAspergillum(item: ItemStack | undefined): item is ItemStack {

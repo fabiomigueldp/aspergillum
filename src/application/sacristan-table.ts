@@ -1,3 +1,4 @@
+import { scheduleDockedBreakRecovery } from "../infrastructure/break-recovery";
 import {
   Block,
   BlockComponentBlockBreakEvent,
@@ -11,11 +12,9 @@ import {
 } from "../domain/customization";
 import { resolveSprayProfile } from "../domain/spray-profile";
 import { getActionLease } from "../infrastructure/action-lease";
-import { readBooleanBlockState, withCustomBlockState } from "../infrastructure/block-state";
+import { hasValidCompactContents, readTableContents, withTableOccupancy } from "../infrastructure/compact-block-state";
 import {
   SACRISTAN_TABLE_BLOCK,
-  TABLE_COSMETIC_STATE,
-  TABLE_OCCUPIED_STATE,
 } from "../infrastructure/constants";
 import {
   acquireCustomizationSession,
@@ -32,7 +31,6 @@ import {
 import { resolvePlayerPolicies } from "../infrastructure/game-mode-policy";
 import {
   captureDockedAspergillum,
-  createAspergillum,
   getMainhand,
   giveOrDrop,
   initializeAspergillum,
@@ -66,7 +64,7 @@ function claimInteraction(player: Player, block: Block): boolean {
 }
 
 function isOccupied(block: Block): boolean {
-  return readBooleanBlockState(block.permutation.getAllStates(), TABLE_OCCUPIED_STATE);
+  return readTableContents(block.permutation).cosmeticIndex !== null;
 }
 
 function isWithinRange(player: Player, block: Block): boolean {
@@ -78,11 +76,7 @@ function isWithinRange(player: Player, block: Block): boolean {
 
 function tablePermutation(block: Block, occupied: boolean, cosmeticId: unknown) {
   const cosmetic = resolveCosmetic(cosmeticId);
-  return withCustomBlockState(
-    withCustomBlockState(block.permutation, TABLE_OCCUPIED_STATE, occupied),
-    TABLE_COSMETIC_STATE,
-    occupied ? cosmetic.index : 0,
-  );
+  return withTableOccupancy(block.permutation, occupied ? cosmetic.index : null);
 }
 
 function dockOnTable(player: Player, block: Block): boolean {
@@ -126,8 +120,11 @@ function dockOnTable(player: Player, block: Block): boolean {
   return true;
 }
 
-function undockFromTable(player: Player, block: Block): boolean {
-  if (!isOccupied(block)) return false;
+function undockFromTable(player: Player, block: Block, expectedInstanceId?: string): boolean {
+  if (!player.isValid || !block.isValid || block.typeId !== SACRISTAN_TABLE_BLOCK
+    || player.dimension.id !== block.dimension.id || !isWithinRange(player, block)
+    || resolvePlayerPolicies(player).denied) return false;
+  if (!hasValidCompactContents(block.permutation, "table") || !isOccupied(block)) return false;
   const dimensionId = block.dimension.id;
   let snapshot;
   try {
@@ -137,7 +134,17 @@ function undockFromTable(player: Player, block: Block): boolean {
     action(player, ACTION_MESSAGES.registryRepairRequired);
     return false;
   }
-  const restoredItem = snapshot === undefined ? createAspergillum(0) : restoreDockedAspergillum(snapshot);
+  // A delayed form owns the item it opened for, never a later replacement at
+  // the same address. The direct empty-hand recovery route has no form lease.
+  if (expectedInstanceId !== undefined && snapshot?.instanceId !== expectedInstanceId) {
+    action(player, ACTION_MESSAGES.tableUpdateFailed);
+    return false;
+  }
+  if (snapshot === undefined) {
+    action(player, ACTION_MESSAGES.registryRecoveryRequired);
+    return false;
+  }
+  const restoredItem = restoreDockedAspergillum(snapshot);
   const originalPermutation = block.permutation;
   const updatedPermutation = tablePermutation(block, false, "classic");
   try {
@@ -161,6 +168,7 @@ function updateStoredCustomization(
   player: Player,
   block: Block,
   session: CustomizationSession,
+  expectedInstanceId: string,
   cosmeticId?: string,
   sprayProfileId?: string,
 ): boolean {
@@ -170,6 +178,7 @@ function updateStoredCustomization(
     || !block.isValid
     || block.typeId !== SACRISTAN_TABLE_BLOCK
     || !isWithinRange(player, block)
+    || !hasValidCompactContents(block.permutation, "table")
     || !isOccupied(block)) return false;
 
   const dimensionId = block.dimension.id;
@@ -179,7 +188,7 @@ function updateStoredCustomization(
   } catch {
     return false;
   }
-  if (snapshot === undefined) return false;
+  if (snapshot === undefined || snapshot.instanceId !== expectedInstanceId) return false;
   const nextCosmeticId = cosmeticId === undefined ? snapshot.cosmeticId : resolveCosmetic(cosmeticId).id;
   const nextProfileId = sprayProfileId === undefined
     ? snapshot.sprayProfileId
@@ -223,38 +232,40 @@ function openTableMenu(player: Player, block: Block): void {
     return;
   }
   const session = acquired.session;
+  const itemInstanceId = snapshot.instanceId;
+  const closeSession = (): void => {
+    if (isCurrentCustomizationSession(session)) releaseCustomizationSession(player.id);
+  };
   try {
     showCustomizationMenu(player, {
       cosmeticId: snapshot.cosmeticId,
       sprayProfileId: snapshot.sprayProfileId,
     }, {
       applyCosmetic(cosmeticId) {
-        const applied = updateStoredCustomization(player, block, session, cosmeticId, undefined);
+        const applied = updateStoredCustomization(player, block, session, itemInstanceId, cosmeticId, undefined);
         if (!applied) action(player, ACTION_MESSAGES.tableUpdateFailed);
         return applied;
       },
       applySprayProfile(profileId) {
-        const applied = updateStoredCustomization(player, block, session, undefined, profileId);
+        const applied = updateStoredCustomization(player, block, session, itemInstanceId, undefined, profileId);
         if (!applied) action(player, ACTION_MESSAGES.tableUpdateFailed);
         return applied;
       },
       restoreClassic() {
         const classic = resolveCosmeticSelection("silver", "chestnut");
-        const applied = updateStoredCustomization(player, block, session, classic.id, "standard");
+        const applied = updateStoredCustomization(player, block, session, itemInstanceId, classic.id, "standard");
         if (!applied) action(player, ACTION_MESSAGES.tableUpdateFailed);
         return applied;
       },
       finishAndRetrieve() {
         if (!isCurrentCustomizationSession(session)) return false;
-        releaseCustomizationSession(player.id);
-        return undockFromTable(player, block);
+        closeSession();
+        return undockFromTable(player, block, itemInstanceId);
       },
-      close() {
-        releaseCustomizationSession(player.id);
-      },
+      close: closeSession,
     });
   } catch (error) {
-    releaseCustomizationSession(player.id);
+    closeSession();
     console.error(`[Aspergillum] Could not construct customization menu: ${String(error)}`);
   }
 }
@@ -263,6 +274,7 @@ function scheduleInteraction(player: Player, block: Block, isSneaking: boolean):
   if (!claimInteraction(player, block)) return;
   system.run(() => {
     if (!player.isValid || !block.isValid || block.typeId !== SACRISTAN_TABLE_BLOCK) return;
+    if (!hasValidCompactContents(block.permutation, "table")) return;
     if (resolvePlayerPolicies(player).denied) return;
     if (getActionLease(player.id) !== undefined) {
       action(player, ACTION_MESSAGES.actionBusy);
@@ -304,21 +316,9 @@ export function handleSacristanTableBreak(event: BlockComponentBlockBreakEvent):
   const dimension = event.dimension;
   const dimensionId = dimension.id;
   releaseCustomizationAtBlock(dimensionId, location);
-  if (event.brokenBlockPermutation.getAllStates()[TABLE_OCCUPIED_STATE] !== true) return;
-  system.run(() => {
-    try {
-      const snapshot = getDockedSnapshot(dimensionId, location);
-      const recovered = snapshot === undefined ? createAspergillum(0) : restoreDockedAspergillum(snapshot);
-      dimension.spawnItem(recovered, {
-        x: location.x + 0.5,
-        y: location.y + 0.8,
-        z: location.z + 0.5,
-      });
-      if (snapshot !== undefined) deleteDockedSnapshot(dimensionId, location);
-    } catch (error) {
-      console.error(`[Aspergillum] Could not recover customized item after table destruction: ${String(error)}`);
-    }
-  });
+  if (!hasValidCompactContents(event.brokenBlockPermutation, "table")) return;
+  if (readTableContents(event.brokenBlockPermutation).cosmeticIndex === null) return;
+  scheduleDockedBreakRecovery(dimension, location, 0.8);
 }
 
 export function clearCustomizationPlayerState(playerId: string): void {

@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.0.0 — 06/11/2026 — integração do runtime preservado
+
+- Compactação de água/ocupação da caldeirinha e da mesa: 5.008 estados em vez de 9.744, mantendo 16 acabamentos, água 0–16, 16 rotações e a arte existente.
+- Formulários da mesa ficam vinculados ao item e à sessão abertos; callbacks antigos não editam um substituto nem encerram a sessão nova. Falha de escrita na mão deixa de ser tratada como sucesso.
+- Recuperação de quebra captura o item antes de agendar, recusa um endereço reocupado e não fabrica um aspersório vazio quando o registro falta.
+- Build verifica os bytes aprovados do áudio em vez de reencodá-los incidentalmente. Reencodificação continua disponível somente no comando explícito.
+- Desenvolvimento direto, sem conversor de mundos ou requisito de migração. Não inclui as políticas experimentais de impedir quebra/explosão, journal ou quarentena. [Escopo e limites](docs/releases/2.0.0.md).
+
+
 ## Altare 0.13.0 — 06/11/2026
 
 - Integra Cruzeta e Dois pedestais ao catálogo, editor e Studio, com 34 acabamentos adicionais.

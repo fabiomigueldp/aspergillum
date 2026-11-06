@@ -7,6 +7,7 @@ import {
 } from "@minecraft/server";
 import { aspersoriumWaterVisualLevel } from "../domain/aspersorium-water";
 import { readAspersoriumWater } from "../infrastructure/aspersorium-water-state";
+import { hasValidCompactContents } from "../infrastructure/compact-block-state";
 import { ASPERSORIUM_BLOCK } from "../infrastructure/constants";
 
 export const ASPERSORIUM_WATER_VISUAL_ENTITY = "aspergillum:aspersorium_water_visual";
@@ -89,6 +90,7 @@ function bindVisualToBlock(entity: Entity, location: Vector3, level: 1 | 2 | 3 |
 export function reconcileAspersoriumWaterVisual(block: Block, loadedVisual?: Entity): void {
   if (!block.isValid || block.typeId !== ASPERSORIUM_BLOCK) return;
 
+  if (!hasValidCompactContents(block.permutation, "aspersorium")) return;
   const level = aspersoriumWaterVisualLevel(readAspersoriumWater(block));
   const visuals = visualEntitiesAt(block.dimension, block.location);
   if (

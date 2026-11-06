@@ -1,8 +1,8 @@
 {
   "name": "aspergillum-bedrock-addon",
-  "version": "1.2.5",
+  "version": "2.0.0",
   "aspergillum": {
-    "releaseLabel": "1.2.5"
+    "releaseLabel": "2.0.0"
   },
   "addonManager": {
     "schemaVersion": 1,
@@ -11,7 +11,9 @@
     "artifactPrefix": "Aspergillum",
     "sharedDirectory": "pack.asper",
     "worldDirectory": "aspergillum.managed",
-    "aliases": ["aspergillum"],
+    "aliases": [
+      "aspergillum"
+    ],
     "publicIdentity": {
       "behaviorUuid": "bac9f8bc-71f5-4db7-a0ff-3c5a365749b4",
       "resourceUuid": "fdb8a79c-8f77-4831-9a5c-8e2b8ecca29e"
@@ -30,7 +32,7 @@
     "generate:assets": "node tools/generate-assets.mjs",
     "build:audio": "node tools/build-audio.mjs",
     "build:script": "esbuild src/bootstrap/main.ts --bundle --format=esm --platform=neutral --external:@minecraft/server --external:@minecraft/server-ui --target=es2022 --outfile=packs/behavior/scripts/main.js",
-    "build": "npm run generate:assets && npm run build:audio && npm run build:script && npm run validate",
+    "build": "npm run generate:assets && npm run verify:audio-baseline && npm run build:script && npm run validate",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "validate": "node tools/validate.mjs && node tools/validate-animation-choreography.mjs && node tools/validate-vfx.mjs && node tools/validate-audio.mjs && node tools/validate-cosmetic-icons.mjs && node tools/validate-release-readiness.mjs",
@@ -63,7 +65,8 @@
     "release:render-diagnostics": "npm run build && npm run package:render-diagnostics",
     "release:water-diagnostics": "npm run build && npm run package:water-diagnostics",
     "release:entity-water-diagnostic": "npm run build && npm run package:entity-water-diagnostic",
-    "check": "npm run typecheck && npm test && npm --prefix viewer-3d test && npm run validate:docs && npm run build"
+    "check": "npm run typecheck && npm test && npm --prefix viewer-3d test && npm run validate:docs && npm run build",
+    "verify:audio-baseline": "node tools/verify-preserved-audio.mjs"
   },
   "devDependencies": {
     "@minecraft/common": "1.3.0",

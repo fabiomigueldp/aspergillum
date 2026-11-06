@@ -8,11 +8,11 @@
         "group": "minecraft:itemGroup.name.decorations"
       },
       "states": {
-        "aspergillum:table_has_aspergillum": [
-          false,
-          true
+        "aspergillum:table_contents_a": [
+          0,
+          1
         ],
-        "aspergillum:table_cosmetic": [
+        "aspergillum:table_contents_b": [
           0,
           1,
           2,
@@ -21,14 +21,7 @@
           5,
           6,
           7,
-          8,
-          9,
-          10,
-          11,
-          12,
-          13,
-          14,
-          15
+          8
         ],
         "aspergillum:table_rotation": [
           0,
@@ -52,13 +45,13 @@
     },
     "permutations": [
       {
-        "condition": "q.block_state('aspergillum:table_has_aspergillum') == true",
+        "condition": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0)",
         "components": {
           "minecraft:loot": "loot_tables/blocks/sacristan_table_occupied.loot.json"
         }
       },
       {
-        "condition": "q.block_state('aspergillum:table_cosmetic') == 1",
+        "condition": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0 ? ((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) - 1 : 0) == 1",
         "components": {
           "minecraft:material_instances": {
             "*": {
@@ -69,7 +62,7 @@
         }
       },
       {
-        "condition": "q.block_state('aspergillum:table_cosmetic') == 2",
+        "condition": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0 ? ((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) - 1 : 0) == 2",
         "components": {
           "minecraft:material_instances": {
             "*": {
@@ -80,7 +73,7 @@
         }
       },
       {
-        "condition": "q.block_state('aspergillum:table_cosmetic') == 3",
+        "condition": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0 ? ((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) - 1 : 0) == 3",
         "components": {
           "minecraft:material_instances": {
             "*": {
@@ -91,7 +84,7 @@
         }
       },
       {
-        "condition": "q.block_state('aspergillum:table_cosmetic') == 4",
+        "condition": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0 ? ((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) - 1 : 0) == 4",
         "components": {
           "minecraft:material_instances": {
             "*": {
@@ -102,7 +95,7 @@
         }
       },
       {
-        "condition": "q.block_state('aspergillum:table_cosmetic') == 5",
+        "condition": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0 ? ((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) - 1 : 0) == 5",
         "components": {
           "minecraft:material_instances": {
             "*": {
@@ -113,7 +106,7 @@
         }
       },
       {
-        "condition": "q.block_state('aspergillum:table_cosmetic') == 6",
+        "condition": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0 ? ((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) - 1 : 0) == 6",
         "components": {
           "minecraft:material_instances": {
             "*": {
@@ -124,7 +117,7 @@
         }
       },
       {
-        "condition": "q.block_state('aspergillum:table_cosmetic') == 7",
+        "condition": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0 ? ((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) - 1 : 0) == 7",
         "components": {
           "minecraft:material_instances": {
             "*": {
@@ -135,7 +128,7 @@
         }
       },
       {
-        "condition": "q.block_state('aspergillum:table_cosmetic') == 8",
+        "condition": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0 ? ((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) - 1 : 0) == 8",
         "components": {
           "minecraft:material_instances": {
             "*": {
@@ -146,7 +139,7 @@
         }
       },
       {
-        "condition": "q.block_state('aspergillum:table_cosmetic') == 9",
+        "condition": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0 ? ((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) - 1 : 0) == 9",
         "components": {
           "minecraft:material_instances": {
             "*": {
@@ -157,7 +150,7 @@
         }
       },
       {
-        "condition": "q.block_state('aspergillum:table_cosmetic') == 10",
+        "condition": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0 ? ((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) - 1 : 0) == 10",
         "components": {
           "minecraft:material_instances": {
             "*": {
@@ -168,7 +161,7 @@
         }
       },
       {
-        "condition": "q.block_state('aspergillum:table_cosmetic') == 11",
+        "condition": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0 ? ((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) - 1 : 0) == 11",
         "components": {
           "minecraft:material_instances": {
             "*": {
@@ -179,7 +172,7 @@
         }
       },
       {
-        "condition": "q.block_state('aspergillum:table_cosmetic') == 12",
+        "condition": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0 ? ((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) - 1 : 0) == 12",
         "components": {
           "minecraft:material_instances": {
             "*": {
@@ -190,7 +183,7 @@
         }
       },
       {
-        "condition": "q.block_state('aspergillum:table_cosmetic') == 13",
+        "condition": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0 ? ((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) - 1 : 0) == 13",
         "components": {
           "minecraft:material_instances": {
             "*": {
@@ -201,7 +194,7 @@
         }
       },
       {
-        "condition": "q.block_state('aspergillum:table_cosmetic') == 14",
+        "condition": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0 ? ((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) - 1 : 0) == 14",
         "components": {
           "minecraft:material_instances": {
             "*": {
@@ -212,7 +205,7 @@
         }
       },
       {
-        "condition": "q.block_state('aspergillum:table_cosmetic') == 15",
+        "condition": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0 ? ((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) - 1 : 0) == 15",
         "components": {
           "minecraft:material_instances": {
             "*": {
@@ -229,7 +222,7 @@
             "identifier": "geometry.aspergillum.sacristan_table.rotation_1",
             "uv_lock": false,
             "bone_visibility": {
-              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+              "resting_aspergillum": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0)"
             }
           }
         }
@@ -241,7 +234,7 @@
             "identifier": "geometry.aspergillum.sacristan_table.rotation_2",
             "uv_lock": false,
             "bone_visibility": {
-              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+              "resting_aspergillum": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0)"
             }
           }
         }
@@ -253,7 +246,7 @@
             "identifier": "geometry.aspergillum.sacristan_table.rotation_3",
             "uv_lock": false,
             "bone_visibility": {
-              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+              "resting_aspergillum": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0)"
             }
           }
         }
@@ -265,7 +258,7 @@
             "identifier": "geometry.aspergillum.sacristan_table.rotation_4",
             "uv_lock": false,
             "bone_visibility": {
-              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+              "resting_aspergillum": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0)"
             }
           }
         }
@@ -277,7 +270,7 @@
             "identifier": "geometry.aspergillum.sacristan_table.rotation_5",
             "uv_lock": false,
             "bone_visibility": {
-              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+              "resting_aspergillum": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0)"
             }
           }
         }
@@ -289,7 +282,7 @@
             "identifier": "geometry.aspergillum.sacristan_table.rotation_6",
             "uv_lock": false,
             "bone_visibility": {
-              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+              "resting_aspergillum": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0)"
             }
           }
         }
@@ -301,7 +294,7 @@
             "identifier": "geometry.aspergillum.sacristan_table.rotation_7",
             "uv_lock": false,
             "bone_visibility": {
-              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+              "resting_aspergillum": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0)"
             }
           }
         }
@@ -313,7 +306,7 @@
             "identifier": "geometry.aspergillum.sacristan_table.rotation_8",
             "uv_lock": false,
             "bone_visibility": {
-              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+              "resting_aspergillum": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0)"
             }
           }
         }
@@ -325,7 +318,7 @@
             "identifier": "geometry.aspergillum.sacristan_table.rotation_9",
             "uv_lock": false,
             "bone_visibility": {
-              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+              "resting_aspergillum": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0)"
             }
           }
         }
@@ -337,7 +330,7 @@
             "identifier": "geometry.aspergillum.sacristan_table.rotation_10",
             "uv_lock": false,
             "bone_visibility": {
-              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+              "resting_aspergillum": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0)"
             }
           }
         }
@@ -349,7 +342,7 @@
             "identifier": "geometry.aspergillum.sacristan_table.rotation_11",
             "uv_lock": false,
             "bone_visibility": {
-              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+              "resting_aspergillum": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0)"
             }
           }
         }
@@ -361,7 +354,7 @@
             "identifier": "geometry.aspergillum.sacristan_table.rotation_12",
             "uv_lock": false,
             "bone_visibility": {
-              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+              "resting_aspergillum": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0)"
             }
           }
         }
@@ -373,7 +366,7 @@
             "identifier": "geometry.aspergillum.sacristan_table.rotation_13",
             "uv_lock": false,
             "bone_visibility": {
-              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+              "resting_aspergillum": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0)"
             }
           }
         }
@@ -385,7 +378,7 @@
             "identifier": "geometry.aspergillum.sacristan_table.rotation_14",
             "uv_lock": false,
             "bone_visibility": {
-              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+              "resting_aspergillum": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0)"
             }
           }
         }
@@ -397,7 +390,7 @@
             "identifier": "geometry.aspergillum.sacristan_table.rotation_15",
             "uv_lock": false,
             "bone_visibility": {
-              "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+              "resting_aspergillum": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0)"
             }
           }
         }
@@ -409,7 +402,7 @@
         "identifier": "geometry.aspergillum.sacristan_table.rotation_0",
         "uv_lock": false,
         "bone_visibility": {
-          "resting_aspergillum": "q.block_state('aspergillum:table_has_aspergillum') == true"
+          "resting_aspergillum": "(((1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) < 17 ? (1 * q.block_state('aspergillum:table_contents_a') + 2 * q.block_state('aspergillum:table_contents_b')) : 0) > 0)"
         }
       },
       "minecraft:material_instances": {

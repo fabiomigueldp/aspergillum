@@ -1,5 +1,9 @@
 # Estado do projeto
 
+## Aspergillum 2.0.0 — 06/11/2026
+
+Integra o codec compacto e correções de identidade/sessão/recuperação preservadas no estudo. 5.008 estados do Aspergillum, sem alterações artísticas, áudio reencodado, migrador ou política que impeça quebra/explosão. Validação de jogo permanece distinta dos testes automatizados. [Entrega e limites](releases/2.0.0.md).
+
 ## Altare — integração de modelos — 06/11/2026
 
 Altare 0.13.0 integra Cruzeta e Dois pedestais ao runtime/editor e Studio. São nove modelos e 430 acabamentos, incluindo 17 por modelo novo. A revisão mantém as correções atuais e a ferramenta 0.12.1; não incorpora a consolidada experimental inteira nem cria migração de saves. [Uso e limites](../addons/altare/docs/INTEGRATION_0.13.0.md). Validação nativa pendente.

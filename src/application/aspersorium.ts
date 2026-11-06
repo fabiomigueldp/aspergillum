@@ -1,3 +1,4 @@
+import { scheduleDockedBreakRecovery } from "../infrastructure/break-recovery";
 import {
   Block,
   BlockComponentBlockBreakEvent,
@@ -10,14 +11,13 @@ import { loadFromAspersorium } from "../domain/aspergillum";
 import { ASPERSORIUM_CAPACITY, WATER_BUCKET_FILL } from "../domain/aspersorium-water";
 import { resolveDocking } from "../domain/docking";
 import { getActionLease } from "../infrastructure/action-lease";
-import { ASPERSORIUM_BLOCK, COSMETIC_STATE, DOCKED_STATE } from "../infrastructure/constants";
+import { ASPERSORIUM_BLOCK } from "../infrastructure/constants";
 import { resolveCosmetic } from "../domain/customization";
-import { readBooleanBlockState, withCustomBlockState } from "../infrastructure/block-state";
+import { hasValidCompactContents, readAspersoriumContents, withAspersoriumOccupancy } from "../infrastructure/compact-block-state";
 import { readAspersoriumWater, withAspersoriumWater } from "../infrastructure/aspersorium-water-state";
 import { resolvePlayerPolicies } from "../infrastructure/game-mode-policy";
 import {
   captureDockedAspergillum,
-  createAspergillum,
   getMainhand,
   giveOrDrop,
   ensureInitializedAspergillumInMainhand,
@@ -72,8 +72,8 @@ function claimAspersoriumInteraction(player: Player, block: Block): boolean {
   return true;
 }
 
-function getBooleanState(block: Block, state: string): boolean {
-  return readBooleanBlockState(block.permutation.getAllStates(), state);
+function isOccupied(block: Block): boolean {
+  return readAspersoriumContents(block.permutation).cosmeticIndex !== null;
 }
 
 function isWithinLoadingRange(player: Player, block: Block): boolean {
@@ -124,7 +124,8 @@ function commitLoading(player: Player, session: LoadingSession): boolean {
   if (player.dimension.id !== session.dimensionId || player.selectedSlotIndex !== session.slot) return false;
   const block = player.dimension.getBlock(session.blockLocation);
   if (block === undefined || !block.isValid || block.typeId !== ASPERSORIUM_BLOCK) return false;
-  if (!isWithinLoadingRange(player, block) || getBooleanState(block, DOCKED_STATE)) return false;
+  if (!hasValidCompactContents(block.permutation, "aspersorium")) return false;
+  if (!isWithinLoadingRange(player, block) || isOccupied(block)) return false;
 
   const currentItem = getMainhand(player);
   if (!isAspergillum(currentItem)) return false;
@@ -217,7 +218,7 @@ function loadItem(player: Player, block: Block): void {
 function dockItem(player: Player, block: Block): void {
   if (resolvePlayerPolicies(player).denied) return;
   const originalItem = getMainhand(player);
-  if (!isAspergillum(originalItem) || getBooleanState(block, DOCKED_STATE)) return;
+  if (!isAspergillum(originalItem) || isOccupied(block)) return;
   if (!isAspergillumSchemaSupported(originalItem)) {
     action(player, ACTION_MESSAGES.futureSchema);
     return;
@@ -242,13 +243,8 @@ function dockItem(player: Player, block: Block): void {
   }
   const snapshot = captureDockedAspergillum(item, resolution.remainingCharges);
   const originalPermutation = block.permutation;
-  const updatedPermutation = withCustomBlockState(
-    withCustomBlockState(
-      withAspersoriumWater(originalPermutation, resolution.nextWater),
-      DOCKED_STATE,
-      true,
-    ),
-    COSMETIC_STATE,
+  const updatedPermutation = withAspersoriumOccupancy(
+    withAspersoriumWater(originalPermutation, resolution.nextWater),
     resolveCosmetic(itemState.cosmeticId).index,
   );
   try {
@@ -287,7 +283,7 @@ function dockItem(player: Player, block: Block): void {
 
 function undockItem(player: Player, block: Block): void {
   if (resolvePlayerPolicies(player).denied) return;
-  if (!getBooleanState(block, DOCKED_STATE)) return;
+  if (!isOccupied(block)) return;
   const dimensionId = block.dimension.id;
   let snapshot;
   try {
@@ -297,13 +293,13 @@ function undockItem(player: Player, block: Block): void {
     action(player, ACTION_MESSAGES.registryRepairRequired);
     return;
   }
-  const restoredItem = snapshot === undefined ? createAspergillum(0) : restoreDockedAspergillum(snapshot);
+  if (snapshot === undefined) {
+    action(player, ACTION_MESSAGES.registryRecoveryRequired);
+    return;
+  }
+  const restoredItem = restoreDockedAspergillum(snapshot);
   const originalPermutation = block.permutation;
-  const updatedPermutation = withCustomBlockState(
-    withCustomBlockState(originalPermutation, DOCKED_STATE, false),
-    COSMETIC_STATE,
-    0,
-  );
+  const updatedPermutation = withAspersoriumOccupancy(originalPermutation, null);
   try {
     block.setPermutation(updatedPermutation);
     if (snapshot !== undefined) deleteDockedSnapshot(dimensionId, block.location);
@@ -331,22 +327,10 @@ export function handleAspersoriumBreak(event: BlockComponentBlockBreakEvent): vo
   const dimension = event.dimension;
   const dimensionId = dimension.id;
   cancelLoadingAtBlock(dimensionId, location);
-  if (event.brokenBlockPermutation.getAllStates()[DOCKED_STATE] !== true) return;
+  if (!hasValidCompactContents(event.brokenBlockPermutation, "aspersorium")) return;
+  if (readAspersoriumContents(event.brokenBlockPermutation).cosmeticIndex === null) return;
 
-  system.run(() => {
-    try {
-      const snapshot = getDockedSnapshot(dimensionId, location);
-      const recovered = snapshot === undefined ? createAspergillum(0) : restoreDockedAspergillum(snapshot);
-      dimension.spawnItem(recovered, {
-        x: location.x + 0.5,
-        y: location.y + 0.35,
-        z: location.z + 0.5,
-      });
-      if (snapshot !== undefined) deleteDockedSnapshot(dimensionId, location);
-    } catch (error) {
-      console.error(`[Aspergillum] Could not recover docked item after block destruction: ${String(error)}`);
-    }
-  });
+  scheduleDockedBreakRecovery(dimension, location, 0.35);
 }
 
 function scheduleAspersoriumInteraction(
@@ -357,6 +341,7 @@ function scheduleAspersoriumInteraction(
   if (!claimAspersoriumInteraction(player, block)) return;
   system.run(() => {
     if (!player.isValid || !block.isValid || block.typeId !== ASPERSORIUM_BLOCK) return;
+    if (!hasValidCompactContents(block.permutation, "aspersorium")) return;
     const item = getMainhand(player);
     const activeAction = getActionLease(player.id);
     if (activeAction !== undefined) {
@@ -373,7 +358,7 @@ function scheduleAspersoriumInteraction(
       fillFromBucket(player, block);
       return;
     }
-    if (getBooleanState(block, DOCKED_STATE)) {
+    if (isOccupied(block)) {
       if (item === undefined) undockItem(player, block);
       else if (isAspergillum(item)) {
         action(player, ACTION_MESSAGES.aspersoriumAlreadyContains);

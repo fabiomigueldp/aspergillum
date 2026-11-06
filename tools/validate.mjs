@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { PNG } from "pngjs";
+import {blockLayout} from "./compact-block-layout.mjs";
 
 const root = path.resolve(import.meta.dirname, "..");
 const packRoots = [path.join(root, "packs", "behavior"), path.join(root, "packs", "resource")];
@@ -172,20 +173,12 @@ if (!Array.isArray(rotationState) || rotationState.length !== 16) {
   errors.push("Aspersorium requires sixteen values in its stable custom rotation state");
 }
 const blockStates = block?.description?.states ?? {};
-const waterBaseState = blockStates["aspergillum:water_base"];
-const waterOffsetState = blockStates["aspergillum:water_offset"];
-const cosmeticState = blockStates["aspergillum:cosmetic"];
-if (JSON.stringify(waterBaseState) !== JSON.stringify([0, 9])) {
-  errors.push("Aspersorium water_base must use the compact numeric bases 0 and 9");
+const aspersoriumLayout = blockLayout("aspersorium");
+if (JSON.stringify(blockStates) !== JSON.stringify(aspersoriumLayout.states)) {
+  errors.push("Aspersorium must use the exact reviewed compact schema v2 and independent sixteen-way rotation");
 }
-if (JSON.stringify(waterOffsetState) !== JSON.stringify(Array.from({ length: 9 }, (_, index) => index))) {
-  errors.push("Aspersorium water_offset must use values 0 through 8");
-}
-if ("aspergillum:water_level" in blockStates) {
-  errors.push("Aspersorium must not restore the invalid seventeen-value water_level state");
-}
-if (JSON.stringify(cosmeticState) !== JSON.stringify(cosmetics.map(({ index }) => index))) {
-  errors.push("Aspersorium cosmetic state must match the authored customization catalog");
+if (baseGeometry?.bone_visibility?.resting_aspergillum !== aspersoriumLayout.occupied) {
+  errors.push("Aspersorium visibility must derive from the compact occupied tuple");
 }
 for (const [stateName, values] of Object.entries(blockStates)) {
   if (Array.isArray(values) && values.length > 16) {
@@ -196,8 +189,8 @@ const blockStateSpace = Object.values(blockStates).reduce(
   (product, values) => product * (Array.isArray(values) ? values.length : 1),
   1,
 );
-if (blockStateSpace !== 9216) {
-  errors.push(`Aspersorium must expose the reviewed 9216-state permutation space, found ${blockStateSpace}`);
+if (blockStateSpace !== 4704) {
+  errors.push(`Aspersorium must expose the reviewed 4704-state permutation space, found ${blockStateSpace}`);
 }
 const expectedWaterBones = ["water_low", "water_mid", "water_high", "water_full"];
 const baseBoneVisibility = baseGeometry?.bone_visibility ?? {};
@@ -304,9 +297,9 @@ if (block?.components?.["minecraft:movable"]?.movement_type !== "immovable") {
 }
 const cosmeticMaterialPermutations = new Map(
   block?.permutations
-    ?.filter((permutation) => permutation.condition.includes("aspergillum:cosmetic"))
+    ?.filter((permutation) => permutation.components?.["minecraft:material_instances"])
     .map((permutation) => [
-      Number(permutation.condition.match(/==\s*(\d+)/)?.[1]),
+      Number(permutation.condition.match(/==\s*(\d+)$/)?.[1]),
       permutation.components?.["minecraft:material_instances"]?.["*"]?.texture,
     ]),
 );
@@ -315,8 +308,7 @@ for (const cosmetic of cosmetics.slice(1)) {
     errors.push(`Aspersorium is missing material permutation for cosmetic ${cosmetic.id}`);
   }
   const permutation = block?.permutations?.find(
-    (candidate) => candidate.condition.includes("aspergillum:cosmetic")
-      && Number(candidate.condition.match(/==\s*(\d+)/)?.[1]) === cosmetic.index,
+    (candidate) => candidate.condition === `${aspersoriumLayout.cosmetic} == ${cosmetic.index}`,
   );
   validateAspersoriumMaterialProfile(
     permutation?.components?.["minecraft:material_instances"],
@@ -377,22 +369,16 @@ const tableDefinition = JSON.parse(
 );
 const tableBlock = tableDefinition["minecraft:block"];
 const tableStates = tableBlock?.description?.states ?? {};
-if (JSON.stringify(tableStates["aspergillum:table_has_aspergillum"]) !== JSON.stringify([false, true])) {
-  errors.push("Sacristan table must expose its stable occupied state");
-}
-if (JSON.stringify(tableStates["aspergillum:table_cosmetic"]) !== JSON.stringify(cosmetics.map(({ index }) => index))) {
-  errors.push("Sacristan table cosmetic state must match the authored catalog");
-}
-if (JSON.stringify(tableStates["aspergillum:table_rotation"])
-  !== JSON.stringify(Array.from({ length: 16 }, (_, index) => index))) {
-  errors.push("Sacristan table must expose all sixteen stable rotations");
+const tableLayout = blockLayout("sacristan_table");
+if (JSON.stringify(tableStates) !== JSON.stringify(tableLayout.states)) {
+  errors.push("Sacristan table must use the exact reviewed compact occupancy schema and sixteen rotations");
 }
 const tableStateSpace = Object.values(tableStates).reduce(
   (product, values) => product * (Array.isArray(values) ? values.length : 1),
   1,
 );
-if (tableStateSpace !== 512) {
-  errors.push(`Sacristan table must expose the reviewed 512-state space, found ${tableStateSpace}`);
+if (tableStateSpace !== 288) {
+  errors.push(`Sacristan table must expose the reviewed 288-state space, found ${tableStateSpace}`);
 }
 if (tableBlock?.components?.["minecraft:movable"]?.movement_type !== "immovable") {
   errors.push("Persistent customization metadata requires the Sacristan table to remain immovable");
@@ -416,7 +402,7 @@ if (JSON.stringify(terrainTextureDefinition.texture_data?.sacristan_table_destru
 const tableBaseGeometry = tableBlock?.components?.["minecraft:geometry"];
 if (tableBaseGeometry?.identifier !== "geometry.aspergillum.sacristan_table.rotation_0"
   || tableBaseGeometry?.bone_visibility?.resting_aspergillum
-    !== "q.block_state('aspergillum:table_has_aspergillum') == true") {
+    !== tableLayout.occupied) {
   errors.push("Sacristan table must hide and reveal its resting aspergillum through the occupied state");
 }
 const tableRotations = new Set(
@@ -431,9 +417,9 @@ for (let rotationIndex = 1; rotationIndex < 16; rotationIndex += 1) {
 }
 const tableCosmeticMaterials = new Map(
   tableBlock?.permutations
-    ?.filter((permutation) => permutation.condition.includes("aspergillum:table_cosmetic"))
+    ?.filter((permutation) => permutation.components?.["minecraft:material_instances"])
     .map((permutation) => [
-      Number(permutation.condition.match(/==\s*(\d+)/)?.[1]),
+      Number(permutation.condition.match(/==\s*(\d+)$/)?.[1]),
       permutation.components?.["minecraft:material_instances"]?.["*"]?.texture,
     ]),
 );

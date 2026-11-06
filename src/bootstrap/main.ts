@@ -22,6 +22,7 @@ import {
   handleSacristanTableInteraction,
   handleSacristanTableUseOn,
 } from "../application/sacristan-table";
+import { hasValidCompactContents } from "../infrastructure/compact-block-state";
 import { yawToSixteenWayRotation } from "../domain/rotation";
 import {
   cancelWaterSpray,
@@ -162,10 +163,12 @@ function orientBlock(event: BlockComponentPlayerPlaceBeforeEvent, state: string)
 }
 
 function orientAspersorium(event: BlockComponentPlayerPlaceBeforeEvent): void {
+  if (!hasValidCompactContents(event.permutationToPlace, "aspersorium")) { event.cancel = true; return; }
   orientBlock(event, ROTATION_STATE);
 }
 
 function orientSacristanTable(event: BlockComponentPlayerPlaceBeforeEvent): void {
+  if (!hasValidCompactContents(event.permutationToPlace, "table")) { event.cancel = true; return; }
   orientBlock(event, TABLE_ROTATION_STATE);
 }
 

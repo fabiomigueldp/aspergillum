@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { PNG } from "pngjs";
+import {compileCompactBlock} from "./compact-block-layout.mjs";
 
 const root = path.resolve(import.meta.dirname, "..");
 const generatedRoot = process.env.ASPERGILLUM_GENERATED_ROOT
@@ -800,11 +801,6 @@ for (const cosmetic of customizationCatalog.cosmetics) {
 const blockPath = path.join(generatedRoot, "packs/behavior/blocks/aspersorium.block.json");
 const blockDefinition = JSON.parse(fs.readFileSync(blockPath, "utf8"));
 const blockContent = blockDefinition["minecraft:block"];
-delete blockContent.description.states["aspergillum:water_level"];
-blockContent.description.states["aspergillum:water_base"] = [0, 9];
-blockContent.description.states["aspergillum:water_offset"] = Array.from({ length: 9 }, (_, index) => index);
-blockContent.description.states["aspergillum:cosmetic"] = customizationCatalog.cosmetics.map((cosmetic) => cosmetic.index);
-blockContent.description.states["aspergillum:rotation"] = Array.from({ length: 16 }, (_, index) => index);
 blockContent.components["minecraft:material_instances"] = opaqueMaterialInstances("aspersorium");
 blockContent.components["minecraft:destruction_particles"] = {
   texture: "aspersorium_destruction",
@@ -823,33 +819,7 @@ blockContent.components["minecraft:tick"] = {
   interval_range: [80, 120],
   looping: true,
 };
-blockContent.permutations = blockContent.permutations.filter(
-  (permutation) =>
-    !permutation.condition.includes("minecraft:sixteen_way_rotation") &&
-    !permutation.condition.includes("aspergillum:rotation") &&
-    !permutation.condition.includes("aspergillum:cosmetic"),
-);
-for (const cosmetic of customizationCatalog.cosmetics.slice(1)) {
-  const suffix = cosmeticTextureSuffix(cosmetic);
-  blockContent.permutations.push({
-    condition: `q.block_state('aspergillum:cosmetic') == ${cosmetic.index}`,
-    components: {
-      "minecraft:material_instances": opaqueMaterialInstances(`aspersorium${suffix}`),
-    },
-  });
-}
-for (let rotationIndex = 1; rotationIndex < 16; rotationIndex += 1) {
-  blockContent.permutations.push({
-    condition: `q.block_state('aspergillum:rotation') == ${rotationIndex}`,
-    components: {
-      "minecraft:geometry": {
-        identifier: `geometry.aspergillum.aspersorium.rotation_${rotationIndex}`,
-        uv_lock: false,
-        bone_visibility: boneVisibility,
-      },
-    },
-  });
-}
+compileCompactBlock(blockContent, "aspersorium", customizationCatalog.cosmetics);
 writeJson("packs/behavior/blocks/aspersorium.block.json", blockDefinition);
 
 const tableBlockPath = path.join(generatedRoot, "packs/behavior/blocks/sacristan_table.block.json");
@@ -860,40 +830,7 @@ tableBlockContent.components["minecraft:destruction_particles"] = {
   tint_method: "none",
   particle_count: SACRISTAN_TABLE_DESTRUCTION_PARTICLE_COUNT,
 };
-tableBlockContent.description.states["aspergillum:table_cosmetic"] = customizationCatalog.cosmetics.map(
-  (cosmetic) => cosmetic.index,
-);
-tableBlockContent.description.states["aspergillum:table_rotation"] = Array.from(
-  { length: 16 },
-  (_, index) => index,
-);
-tableBlockContent.permutations = tableBlockContent.permutations.filter(
-  (permutation) => !permutation.condition.includes("aspergillum:table_rotation")
-    && !permutation.condition.includes("aspergillum:table_cosmetic"),
-);
-const tableBoneVisibility = tableBlockContent.components["minecraft:geometry"].bone_visibility;
-tableBlockContent.components["minecraft:geometry"].identifier = "geometry.aspergillum.sacristan_table.rotation_0";
-for (const cosmetic of customizationCatalog.cosmetics.slice(1)) {
-  const suffix = cosmeticTextureSuffix(cosmetic);
-  tableBlockContent.permutations.push({
-    condition: `q.block_state('aspergillum:table_cosmetic') == ${cosmetic.index}`,
-    components: {
-      "minecraft:material_instances": opaqueMaterialInstances(`sacristan_table${suffix}`),
-    },
-  });
-}
-for (let rotationIndex = 1; rotationIndex < 16; rotationIndex += 1) {
-  tableBlockContent.permutations.push({
-    condition: `q.block_state('aspergillum:table_rotation') == ${rotationIndex}`,
-    components: {
-      "minecraft:geometry": {
-        identifier: `geometry.aspergillum.sacristan_table.rotation_${rotationIndex}`,
-        uv_lock: false,
-        bone_visibility: tableBoneVisibility,
-      },
-    },
-  });
-}
+compileCompactBlock(tableBlockContent, "sacristan_table", customizationCatalog.cosmetics);
 writeJson("packs/behavior/blocks/sacristan_table.block.json", tableBlockDefinition);
 
 const baseItemDefinition = JSON.parse(

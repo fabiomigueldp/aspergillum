@@ -1,6 +1,6 @@
 import type { Block, Dimension, Entity, Vector3 } from "@minecraft/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { WATER_BASE_STATE, WATER_OFFSET_STATE } from "../../src/infrastructure/constants";
+import { encodeAspersoriumContents } from "../../src/domain/block-state-layout";
 
 const scheduledRuns = vi.hoisted(() => [] as Array<() => void>);
 
@@ -116,10 +116,7 @@ class FakeBlock {
   }
 
   readonly permutation = {
-    getAllStates: () => ({
-      [WATER_BASE_STATE]: this.units >= 9 ? 9 : 0,
-      [WATER_OFFSET_STATE]: this.units >= 9 ? this.units - 9 : this.units,
-    }),
+    getAllStates: () => encodeAspersoriumContents({ waterUnits: this.units, cosmeticIndex: null }),
   };
 }
 
@@ -240,4 +237,24 @@ describe("aspersorium entity-water reconciliation", () => {
 
     expect(visual.removeCount).toBe(1);
   });
+  it("refuses legacy, mixed and reserved contents without touching existing visuals", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    for (const states of [
+      { "aspergillum:water_base": 9, "aspergillum:water_offset": 7 },
+      { ...encodeAspersoriumContents({ waterUnits: 16, cosmeticIndex: 15 }), "aspergillum:has_aspergillum": true },
+      { "aspergillum:contents_a": 1, "aspergillum:contents_b": 2, "aspergillum:contents_c": 6, "aspergillum:contents_d": 6 },
+    ]) {
+      const dimension = new FakeDimension();
+      const block = new FakeBlock(dimension, { x: 0, y: 64, z: 0 });
+      const visual = addVisual(dimension, "protected", { x: 0.5, y: 64, z: 0.5 });
+      block.permutation.getAllStates = () => states as Record<string, number>;
+      expect(() => reconcileAspersoriumWaterVisual(block as unknown as Block)).not.toThrow();
+      expect(dimension.spawnCount).toBe(0);
+      expect(visual.removeCount).toBe(0);
+      expect(visual.teleportCount).toBe(0);
+      expect(visual.properties.size).toBe(0);
+    }
+    warn.mockRestore();
+  });
+
 });
