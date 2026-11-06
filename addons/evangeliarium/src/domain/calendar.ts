@@ -4,7 +4,8 @@ export interface CalendarDay {date:string;celebration:string;readings:ReadingOpt
 export type Calendar=Record<string,CalendarDay>;
 export function brazilDate(timestamp:number):string{
   if(!Number.isFinite(timestamp))throw new ReadingError('Data indisponível.');
-  // Coverage 2026–2027: Brasília UTC−03. Never use world ticks or the client locale.
+  // Shared fixed Brasília UTC−03 policy. Never use world ticks, host timezone or client locale.
+  // Historical DST and future legal timezone changes are not reconstructed.
   return new Date(timestamp-3*3600_000).toISOString().slice(0,10);
 }
 export function parseDate(input:string):string{

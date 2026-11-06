@@ -1,7 +1,8 @@
+import {BOOKS,bookByItem} from '../domain/catalog.ts';
 import {EntityComponentTypes,EquipmentSlot,GameMode,system,world,type Player} from '@minecraft/server';
-import {ITEM,inventory} from '../infrastructure/items.ts';
+import {inventory} from '../infrastructure/items.ts';
 
-const stop="!q.is_item_name_any('slot.weapon.mainhand',0,'evangeliarium:book') || (q.get_equipped_item_name('off_hand') != '' && q.get_equipped_item_name('off_hand') != 'air') || q.is_swimming || q.is_gliding || q.is_riding || q.is_sleeping || q.is_emoting";
+const stop=`!q.is_item_name_any('slot.weapon.mainhand',0,${BOOKS.map(b=>"'"+b.id+"'").join(',')}) || (q.get_equipped_item_name('off_hand') != '' && q.get_equipped_item_name('off_hand') != 'air') || q.is_swimming || q.is_gliding || q.is_riding || q.is_sleeping || q.is_emoting`;
 interface Carry {viewers:Set<string>;dimension:string;sentAt:number}
 export class Poses {
  private active=new Map<string,Carry>();
@@ -10,7 +11,7 @@ export class Poses {
  inspect(p:Player){
   const offhand=p.getComponent(EntityComponentTypes.Equippable)?.getEquipment(EquipmentSlot.Offhand)?.typeId;
   const item=inventory(p).getItem(p.selectedSlotIndex)?.typeId;
-  const gates={book:item===ITEM,offhand:!!offhand,spectator:p.getGameMode()===GameMode.Spectator,swimming:p.isSwimming,gliding:p.isGliding,sleeping:p.isSleeping,emoting:p.isEmoting,riding:!!p.getComponent(EntityComponentTypes.Riding),alive:(p.getComponent(EntityComponentTypes.Health)?.currentValue??0)>0};
+  const gates={book:!!bookByItem(item),offhand:!!offhand,spectator:p.getGameMode()===GameMode.Spectator,swimming:p.isSwimming,gliding:p.isGliding,sleeping:p.isSleeping,emoting:p.isEmoting,riding:!!p.getComponent(EntityComponentTypes.Riding),alive:(p.getComponent(EntityComponentTypes.Health)?.currentValue??0)>0};
   const eligible=gates.book&&!gates.offhand&&!gates.spectator&&!gates.swimming&&!gates.gliding&&!gates.sleeping&&!gates.emoting&&!gates.riding&&gates.alive;
   const active=this.active.get(p.id);
   return {eligible,gates,item,offhand,dimension:p.dimension.id,location:p.location,rotation:p.getRotation(),tick:system.currentTick,lastDispatch:active?.sentAt,viewers:active?.viewers.size??0,lastError:this.failures.get(p.id)};

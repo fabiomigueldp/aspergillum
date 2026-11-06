@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-04",
+  "book": "missal",
+  "renderer": "Blender 4.3.2 / Cycles CPU / 96 spp / AgX Medium High Contrast",
+  "views": {
+    "open": {
+      "camera": "03 \u00b7 Open pages",
+      "frame": 36,
+      "resolution": [
+        1200,
+        1200
+      ]
+    },
+    "closed": {
+      "camera": "01 \u00b7 Front and spine",
+      "frame": 1,
+      "resolution": [
+        1200,
+        1200
+      ]
+    },
+    "inventory": {
+      "camera": "01 \u00b7 Front and spine",
+      "frame": 1,
+      "sourceResolution": [
+        256,
+        256
+      ],
+      "outputResolution": [
+        64,
+        64
+      ],
+      "resampling": "Lanczos"
+    }
+  },
+  "changes": [
+    "Four fore-edge tabs inserted into paper, retaining outer x=5.13",
+    "Blue/violet short markers tucked within second/third right-page signatures"
+  ],
+  "validation": {
+    "structuralChecks": 30,
+    "textureParity": "2/2 passed",
+    "blenderAuthorRoundtripTolerance": 1e-06,
+    "cuboids": 46,
+    "visibleQuads": 240,
+    "extraFaces": 0
+  },
+  "limitations": [
+    "Diagnostic rendering only; Minecraft Content Log and visual acceptance remain pending."
+  ],
+  "files": {
+    "addons/evangeliarium/assets-src/liturgical-books/renders/polish/missal_open.png": "42179c640215e41ccfc3f6ad690734f9796da33b8d138682dd5a225c41a83d2e",
+    "addons/evangeliarium/assets-src/liturgical-books/renders/polish/missal_closed.png": "f26b7f10aa18cee01811f744d42adc5955913ca620e319176d2ce2ff6dbd0480",
+    "addons/evangeliarium/assets-src/liturgical-books/renders/missal-item-256.png": "88fae5e853bba391a20cbcb9b9e85ea24e85f864e6d0dca1a8ceafa7d704c295",
+    "addons/evangeliarium/assets-src/branding/missal-item-64.png": "e49009ab8a5b119cdb17f7ad898896f1576007e349bf14543aa085fea39439d5"
+  }
+}

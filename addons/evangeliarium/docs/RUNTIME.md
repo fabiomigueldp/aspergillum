@@ -1,4 +1,6 @@
-# Implementação 0.2.5
+# Implementação 0.3.0
+
+A expansão acrescenta Missal Romano e Pontifical Romano com tipos físicos, conteúdo e índices próprios. [Contrato e verificação dos três livros](THREE_BOOKS_0.3.0.md). A evidência nativa descrita para 0.2.5 é histórica; a aceitação de 0.3.0 no Minecraft permanece pendente.
 
 O carregamento e a consulta das entidades visuais verificam `Entity.isValid` antes de acessar propriedades. Uma referência já expirada é ignorada; a recuperação periódica do bloco continua responsável por recriar sua apresentação. Critério da API: [Entity.isValid](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entity?view=minecraft-bedrock-stable#isvalid). O teste de regressão reproduz o aviso capturado na 0.2.3.
 
@@ -23,7 +25,7 @@ UUIDs, namespace, states e schema passam a ser contratos de compatibilidade a pa
 
 `src/domain` valida referências, páginas, datas de Brasília, seleção e revisão sem importar Minecraft. `src/application/transfer.ts` coordena transferência por interfaces. `src/infrastructure` adapta inventário, mundo, registros e locks. `src/presentation` contém leitor e pose. `src/bootstrap` registra eventos/componentes e compõe essas camadas.
 
-O estado do livro contém schema, `instanceId`, revisão e seleção `today` ou passagem fixa. A consulta de um leitor não muda a marca pública. Marcar incrementa a revisão; callbacks de uma tela antiga deixam de poder alterar a instância. O servidor valida jogador vivo, modo, dimensão, distância, slot, identidade e revisão antes de operações que exigem essa autoridade.
+O estado do livro contém schema, `instanceId`, revisão e seleção. O Evangeliário usa `today` ou passagem fixa; os novos livros usam índice ou seção/página. O tipo físico é conferido pelo catálogo e snapshot em cada transferência. A consulta de um leitor não muda a marca pública. Registros de estado desconhecido permanecem intactos no mundo sem impedir a leitura de outros exemplares. Marcar incrementa a revisão; callbacks de uma tela antiga deixam de poder alterar a instância. O servidor valida jogador vivo, modo, dimensão capturada pela sessão, distância, slot, tipo, identidade e revisão antes de operações que exigem essa autoridade.
 
 O item não empilha. Ao colocá-lo, um snapshot preserva tipo, nome, lore, propriedades dinâmicas, `canPlaceOn`, `canDestroy`, `keepOnDeath` e `lockMode`. O snapshot tem orçamento de 7.500 caracteres e é rejeitado antes da retirada do inventário se excedê-lo. Criativo move o item real; cópias detectadas recebem outra identidade e conservam a marca.
 
@@ -41,7 +43,7 @@ O bloco é a autoridade. Uma entidade sem colisão apresenta a abertura com inte
 
 ## Modelo, texturas e braços
 
-Fonte: `assets-src/design.mjs`. São 31 cuboides, nove bones no attachable e oito no livro colocado, abaixo dos orçamentos de 80/20. Capas, lombada, miolo, relevos e fitas derivam do mesmo modelo. O livro é vinho e dourado, com papel marfim e iconografia autoral simplificada. Três mapas de 256 × 256 fornecem cor, normal e MER; metalness fica nas ferragens, emissão é zero e o acabamento base independe de PBR.
+Evangeliário original: `assets-src/design.mjs`. São 31 cuboides, nove bones no attachable e oito no livro colocado, abaixo dos orçamentos de 80/20. Capas, lombada, miolo, relevos e fitas derivam do mesmo modelo. O livro é vinho e dourado, com papel marfim e iconografia autoral simplificada. Três mapas de 256 × 256 fornecem cor, normal e MER; metalness fica nas ferragens, emissão é zero e o acabamento base independe de PBR.
 
 UVs são inteiros por face, com padding. Geometria `1.16.0`, raiz `evangeliarium_bound` neutra e binding exato `q.item_slot_to_bone_name(context.item_slot)`. O ajuste fica na camada de apresentação. A abertura gira a capa e seu conjunto de páginas ao redor da lombada. Os traços impressos são decorativos; o texto selecionado aparece no leitor.
 
@@ -87,8 +89,8 @@ Testes verificam continuidade e existência de todas as referências, transferê
 
 ## Build e evidência
 
-`npm run check` gera assets e conteúdo, verifica tipos, executa 42 testes de domínio/aplicação/adaptadores simulados/UI e valida estrutura. `npm run package` acrescenta o `.mcaddon`, hashes e Microsoft Creator Tools offline. As quatro referências a ingredientes vanilla da receita geram avisos offline conhecidos; qualquer outro warning, Error ou Failure interrompe o empacotamento.
+`npm run check` gera assets e conteúdo, verifica tipos, executa 58 testes de domínio/aplicação/adaptadores simulados/UI e valida estrutura. `npm run package` acrescenta o `.mcaddon`, hashes e Microsoft Creator Tools offline. As referências a ingredientes vanilla das três receitas geram avisos offline conhecidos; qualquer outro warning, Error ou Failure interrompe o empacotamento.
 
-Saídas: `dist/releases/` e `dist/validation/0.2.5/`. `release-summary.json` registra bytes, hash, arquivos e avisos. O Content Log começa pendente e só recebe aceitação por `runtime-audit.mjs --archive` após comprovar versão, hashes, referências únicas e ausência de erros. Nenhuma revisão já importada é substituída sob o mesmo número.
+Saídas: `dist/releases/` e `dist/validation/0.3.0/`. `release-summary.json` registra bytes, hash, arquivos e avisos. O Content Log começa pendente e só recebe aceitação por `runtime-audit.mjs --archive` após comprovar versão, hashes, referências únicas e ausência de erros. Nenhuma revisão já importada é substituída sob o mesmo número.
 
 O [roteiro manual](TESTING.md) completa a evidência necessária. Um pacote que passa no validador não constitui aprovação de animação, input ou renderização.

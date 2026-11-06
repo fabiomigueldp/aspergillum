@@ -27,3 +27,7 @@ Conferir leitura curta e longa, primeira/última página, retorno de busca, refe
 A 0.2.0 revelou no jogo uma janela vanilla sobre a página do livro e um rodapé fora da moldura, embora o Content Log não tivesse erros. Essas capturas são exemplos de por que checks estruturais não bastam.
 
 Referências primárias: [elementos JSON UI](https://github.com/MicrosoftDocs/minecraft-creator/blob/main/creator/Reference/Content/JsonUiReference/Examples/JsonUiComponents/ui_element.md), [catálogo de assets e overrides](https://learn.microsoft.com/en-us/minecraft/creator/documents/overwritingassets?view=minecraft-bedrock-stable), [formulários vanilla](https://github.com/Mojang/bedrock-samples/blob/7844835b6baad4c0010f46901a4accf87413a022/resource_pack/ui/server_form.json) e [compatibilidade entre add-ons](https://learn.microsoft.com/en-us/minecraft/creator/documents/practices/guidelinesforbuildingcooperativeaddons?view=minecraft-bedrock-stable).
+
+## Seleção diária 0.4.1
+
+Hoje identifica a celebração nacional e oferece somente formulários disponíveis; Data conserva rascunhos inválidos. Índice e busca continuam secundários. Consulta não grava a seleção; Livro concentra Marcar página, Seguir hoje e Abrir pelo índice. O Pontifical não ganha falsa seleção por data. Ausências no Missal e escolhas de Missa são explícitas. Rótulos de instrução redundantes foram retirados das listas e os exemplos de busca correspondem a cada livro.

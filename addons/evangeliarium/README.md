@@ -1,27 +1,33 @@
-# Evangeliário
+# Evangeliarium
 
-Add-on independente para Minecraft Bedrock. O livro pode ser levado nas duas mãos, depositado fechado, colocado aberto, consultado e recolhido com a passagem preservada.
+Quatro livros litúrgicos independentes para Minecraft Bedrock: **Evangeliário, Lecionário, Missal Romano e Pontifical Romano**. Cada exemplar pode ser levado nas duas mãos, colocado aberto ou fechado, consultado e recolhido com sua marca preservada.
 
-**Versão 0.2.5 — revisão de leitura e interface, 25/10/2026.** Página marfim, moldura vinho, navegação fixa, menus separados e campos com validação sem perder o texto digitado. Resultados e limites em [VERIFICATION.md](docs/VERIFICATION.md). O Aspergillum continua `1.2.5`.
+**Candidato 0.5.2 — 05/11/2026.** Acrescenta ao índice do Missal o formulário da memória de Santa Teresa do Menino Jesus, com transcrição visual e corroboração paroquial brasileira documentadas. Não acrescenta leituras, seleção diária ou aplicação votiva. [Fontes, emenda e limites](docs/SANTA_TERESA_FORMULARY.md); [verificação do pacote](docs/VERIFICATION_0.5.2.md). O Ordo conserva o comportamento da 0.5.1: configuração global por operador, reset na próxima meia-noite de Brasília e consulta de votivas por membros. [Uso e reteste](docs/ORDO_0.5.0.md). Marcas e leituras em andamento permanecem intactas; Pontifical continua por rito. A validação nativa desta versão está pendente. Aspergillum permanece 1.2.5.
 
 ![Modelo distribuído, captura diagnóstica](assets-src/branding/book-closed.png)
 
 ## Testar
 
-Importe `dist/releases/Evangeliarium-0.2.5.mcaddon` e ative os packs de comportamento e recursos. Mínimo declarado: Bedrock `26.50`; alvo local de teste: `26.52`. APIs estáveis `@minecraft/server 2.10.0` e `@minecraft/server-ui 2.2.0`, sem experimentos.
+Importe `dist/releases/Evangeliarium-0.5.2.mcaddon` e ative os packs de comportamento e recursos. Mínimo declarado: Bedrock `26.50`; alvo local de teste: `26.52`. APIs estáveis `@minecraft/server 2.10.0` e `@minecraft/server-ui 2.2.0`, sem experimentos.
 
 ```mcfunction
 /give @s evangeliarium:book
+/give @s evangeliarium:lectionary
+/give @s evangeliarium:ordo
+/give @s evangeliarium:missal
+/give @s evangeliarium:pontifical
 ```
 
-- Use olhando para o ar para ler. `Leituras` oferece Hoje, Passagem, Data e Livro. Em Passagem, escolha o Evangelho/capítulo ou digite uma referência.
+- O Ordo abre a configuração; agachar + usar coloca o calendário. Somente operadores alteram a celebração.
+- Evangeliário, Lecionário e Missal seguem a celebração; Pontifical abre por rito. Escolha o grupo/seção, use Buscar ou retome uma página marcada; `Seções > Livro` reúne marca, créditos e ações do exemplar.
+- No Evangeliário, use olhando para o ar para ler. `Leituras` oferece Hoje, Passagem, Data e Livro. Em Passagem, escolha o Evangelho/capítulo ou digite uma referência.
 - Use sobre o topo de um bloco cheio de pedra ou madeira para colocar aberto. Agachar + usar deposita fechado.
 - Use o livro colocado para abrir e ler. Agachar + usar, quebrar diretamente ou `Retirar` devolve o mesmo item se houver espaço.
 - A consulta é privada. Em `Leituras > Livro`, `Marcar passagem` grava a referência; `Seguir hoje` retoma o calendário diário. Fechar fisicamente e Retirar também ficam em Livro.
 
-O rito é romano, com calendário brasileiro e data de Brasília. A cobertura incorporada é **2026–2027**. Os quatro Evangelhos completos têm **89 capítulos e 3.779 versículos**, da **Bíblia Livre**, licenciada em CC BY 4.0. Não é a tradução litúrgica da CNBB. Tudo funciona offline no jogo.
+O rito é romano, com calendário brasileiro e data de Brasília. O calendário nacional tem revisão para **2026–2035** e projeção pelas normas atuais para outras datas gregorianas de 1583 a 9999. Os quatro Evangelhos completos têm **89 capítulos e 3.779 versículos**, da **Bíblia Livre**, licenciada em CC BY 4.0. Não é a tradução litúrgica da CNBB. Tudo funciona offline no jogo. Missal e Pontifical usam as fontes da comunidade, com rubricas e atribuição próprias; não são uma extensão do corpus da Bíblia Livre.
 
-O calendário deriva de referências públicas de uma fonte comunitária, com correções e proveniência documentadas; não constitui homologação litúrgica. Próprios diocesanos e paroquiais não estão incluídos. Fora da cobertura, a consulta por passagem continua disponível.
+O calendário deriva de referências públicas de uma fonte comunitária, com correções e proveniência documentadas; não constitui homologação litúrgica. Próprios diocesanos e paroquiais não estão incluídos. As consultas por passagem e índice continuam disponíveis independentemente da data.
 
 ## Documentação
 

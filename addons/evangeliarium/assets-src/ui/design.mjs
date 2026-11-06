@@ -22,17 +22,17 @@ export function texture(name){
 const ns='evangeliarium_ui',tex=name=>'textures/evangeliarium/ui/'+name;
 const view=(expression,target='#visible')=>({binding_type:'view',source_property_name:expression,target_property_name:target});
 const selected=prefix=>`(not (#title_text = (#title_text - '${prefix}')))`;
-const any=`(${selected(contract.readerPrefix)} or ${selected(contract.menuPrefix)})`;
-const native=`((#title_text = (#title_text - '${contract.readerPrefix}')) and (#title_text = (#title_text - '${contract.menuPrefix}')))`;
+const any=`(${selected(contract.readerPrefix)} or ${selected(contract.menuPrefix)} or ${selected(contract.catalogPrefix)})`;
+const native=`((#title_text = (#title_text - '${contract.readerPrefix}')) and (#title_text = (#title_text - '${contract.menuPrefix}')) and (#title_text = (#title_text - '${contract.catalogPrefix}')))`;
 const visible=expr=>[{binding_name:'#title_text'},view(expr)];
 const label=(text,size=['100%','default'],extra={})=>({type:'label',text,size,layer:3,color:colors.ink,shadow:false,text_alignment:'left',anchor_from:'top_left',anchor_to:'top_left',...extra});
 const picture=(name,size,extra={})=>({type:'image',texture:tex(name),size,keep_ratio:false,...extra});
 const control=(name,data)=>({[name]:data});
-const state=(background,light=false)=>({type:'panel',size:['100%','100%'],controls:[control('surface',picture(background,['100%','100%'],{nineslice_size:2})),control('text',label('#form_button_text',['100% - 8px',12],{color:light?colors.paper:colors.ink,anchor_from:'center',anchor_to:'center',text_alignment:'center',bindings:[{binding_name:'#form_button_text',binding_type:'collection',binding_collection_name:'form_buttons'}]}))]});
+const state=(background,light=false,multiline=false)=>({type:'panel',size:['100%','100%'],controls:[control('surface',picture(background,['100%','100%'],{nineslice_size:2})),control('text',label('#form_button_text',[multiline?'100% - 12px':'100% - 8px',multiline?40:12],{color:light?colors.paper:colors.ink,anchor_from:'center',anchor_to:'center',text_alignment:'center',bindings:[{binding_name:'#form_button_text',binding_type:'collection',binding_collection_name:'form_buttons'}]}))]});
 function frame(content,reader=false){
  return{type:'panel',size:['92%','90%'],max_size:[reader?400:330,reader?340:282],layer:2,controls:[
   control('paper',picture('paper',['100%','100%'],{nineslice_size:8})),
-  control('heading',label('#ev_title',['100% - 74px',22],{offset:[25,19],font_scale_factor:1.25,color:colors.wine,bindings:[{binding_name:'#title_text'},view(`(#title_text - '${contract.readerPrefix}' - '${contract.menuPrefix}')`,'#ev_title')]})),
+  control('heading',label('#ev_title',['100% - 74px',22],{offset:[25,19],font_scale_factor:1.25,color:colors.wine,bindings:[{binding_name:'#title_text'},view(`(#title_text - '${contract.readerPrefix}' - '${contract.menuPrefix}' - '${contract.catalogPrefix}')`,'#ev_title')]})),
   control('close@common.close_button',{$close_button_offset:[-12,11]}),
   control('rule',picture('rule',['100% - 50px',1],{nineslice_size:1,anchor_from:'top_left',anchor_to:'top_left',offset:[25,42]})),
   control('inside_header_panel@common.scrolling_panel',{anchor_from:'top_left',anchor_to:'top_left',offset:[25,52],size:['100% - 50px',reader?'100% - 106px':'100% - 74px'],$show_background:false,$scrolling_content:ns+'.'+content,$scroll_size:[3,'100%'],$scrolling_pane_size:['100%','100%'],$scroll_bar_right_padding_size:[0,0],$allow_scrolling_even_when_content_fits:false}),
@@ -44,9 +44,11 @@ export function definitions(){
  d.long_router={type:'panel',size:['100%','100%'],controls:[
   control('native_container',{type:'panel',size:['100%','100%'],bindings:visible(native),controls:[control('native@server_form.long_form',{})]}),
   control('reader@'+ns+'.reader_frame',{bindings:visible(selected(contract.readerPrefix))}),
-  control('menu@'+ns+'.menu_frame',{bindings:visible(selected(contract.menuPrefix))})
+  control('menu@'+ns+'.menu_frame',{bindings:visible(selected(contract.menuPrefix))}),
+  control('catalog@'+ns+'.catalog_frame',{bindings:visible(selected(contract.catalogPrefix))})
  ]};
  d.modal_router={type:'panel',size:['100%','100%'],controls:[control('native_container',{type:'panel',size:['100%','100%'],bindings:visible(native),controls:[control('native@server_form.custom_form',{})]}),control('input@'+ns+'.modal_frame',{bindings:visible(any)})]};
+ d.catalog_frame=frame('catalog');
  d.reader_frame=frame('reading',true);d.menu_frame=frame('menu');d.modal_frame=frame('input');d.modal_frame.max_size=[330,230];
  d.reading={type:'stack_panel',orientation:'vertical',size:['100% - 8px','100%c'],anchor_from:'top_left',anchor_to:'top_left',controls:[control('text',label('#form_text',['100%','default'],{line_padding:2}))]};
  d.menu={type:'stack_panel',orientation:'vertical',size:['100% - 6px','100%c'],anchor_from:'top_left',anchor_to:'top_left',controls:[
@@ -54,6 +56,11 @@ export function definitions(){
   control('choices',{type:'stack_panel',orientation:'vertical',size:['100%','100%c'],factory:{name:'buttons',control_ids:{button:ns+'.menu_cell',label:'@server_form.dynamic_label',header:'@server_form.dynamic_header',divider:'@settings_common.option_group_section_divider'}},collection_name:'form_buttons',bindings:[{binding_name:'#form_button_contents',binding_name_override:'#collection_length'}]})
  ]};
  d['choice@common.button']={size:['100% - 4px',26],$pressed_button_name:'button.form_button_click',$button_tts_header:'#form_button_text',bindings:[{binding_type:'collection_details',binding_collection_name:'form_buttons'},{binding_name:'#form_button_text',binding_type:'collection',binding_collection_name:'form_buttons'},view("(not (#form_button_text = ''))")],controls:[control('default',state('button')),control('hover',state('hover',true)),control('pressed',state('pressed',true))]};
+ // Only the large liturgical indices use multiline rows; existing Gospel menus stay unchanged.
+ d.catalog=structuredClone(d.menu);
+ d.catalog.controls.find(c=>c.choices).choices.factory.control_ids.button=ns+'.catalog_cell';
+ d['catalog_choice@common.button']={...structuredClone(d['choice@common.button']),size:['100%',50],controls:[control('default',state('button',false,true)),control('hover',state('hover',true,true)),control('pressed',state('pressed',true,true))]};
+ d.catalog_cell={type:'panel',size:['100%',56],controls:[control('button@'+ns+'.catalog_choice',{})]};
  d.nav_cell={type:'panel',size:['33.333%',28],controls:[control('button@'+ns+'.choice',{})]};
  d.menu_cell={type:'panel',size:['100%',32],controls:[control('button@'+ns+'.choice',{size:['100%',27]})]};
  d.input={type:'stack_panel',orientation:'vertical',size:['100% - 6px','100%c'],anchor_from:'top_left',anchor_to:'top_left',$main_header_text_color:colors.ink,controls:[

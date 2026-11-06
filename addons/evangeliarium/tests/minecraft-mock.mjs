@@ -1,3 +1,4 @@
+export const PlayerPermissionLevel={Visitor:0,Member:1,Operator:2,Custom:3};
 export const EntityComponentTypes={Inventory:'inventory',Health:'health',Item:'item',Equippable:'equippable',Riding:'riding'};
 export const GameMode={Survival:'Survival',Creative:'Creative',Adventure:'Adventure',Spectator:'Spectator'};
 export const EquipmentSlot={Offhand:'Offhand'};
@@ -30,7 +31,7 @@ class Entity{
  getDynamicProperty(k){return this.props[k];}setDynamicProperty(k,v){this.props[k]=v;}setProperty(k,v){this.props[k]=v;}setRotation(v){this.rotation=v;}remove(){this.isValid=false;}
 }
 export class Player{
- isValid=true;selectedSlotIndex=0;inventory=new Container();location={x:0,y:1,z:0};mode=GameMode.Survival;messages=[];
+ isValid=true;playerPermissionLevel=1;selectedSlotIndex=0;inventory=new Container();location={x:0,y:1,z:0};mode=GameMode.Survival;messages=[];
  onScreenDisplay={setActionBar:t=>this.messages.push(t)};
  constructor(id,dimension){this.id=id;this.dimension=dimension;}
  getComponent(id){return id==='inventory'?{container:this.inventory}:id==='health'?{currentValue:20}:undefined;}

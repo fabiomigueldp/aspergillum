@@ -5,6 +5,8 @@ import {PNG} from 'pngjs';
 import {colors} from '../assets-src/ui/design.mjs';
 const root=path.resolve(import.meta.dirname,'..');
 const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
+const books=read('assets-src/catalog/items.json').items;
+assert.equal(books.length,4);assert.equal(new Set(books.flatMap(b=>[b.id,b.blockId,b.visualId])).size,12);
 const bp=read('packs/behavior/manifest.json'),rp=read('packs/resource/manifest.json');
 const ids=[bp.header.uuid,rp.header.uuid,...bp.modules.map(m=>m.uuid),...rp.modules.map(m=>m.uuid)];
 assert.equal(new Set(ids).size,5);assert.deepEqual(bp.header.min_engine_version,[1,26,50]);
@@ -37,6 +39,9 @@ assert.ok(ui.long_router.controls.some(c=>c.native_container?.controls.some(n=>n
 assert.ok(ui.modal_router.controls.some(c=>c.native_container?.controls.some(n=>n['native@server_form.custom_form'])));
 for(const state of ui['choice@common.button'].controls){const children=Object.values(state)[0].controls;assert.ok(children.find(c=>c.text).text.layer>0,'Button text must render above its surface');}
 assert.deepEqual(read('packs/resource/ui/_ui_defs.json').ui_defs,['ui/evangeliarium.json']);
+assert.ok(ui.long_router.controls.some(c=>c['catalog@evangeliarium_ui.catalog_frame']));
+assert.equal(ui.catalog_cell.size[1],56);assert.equal(ui.menu_cell.size[1],32);assert.equal(ui.nav_cell.size[1],28);
+for(const state of ui['catalog_choice@common.button'].controls){const text=Object.values(state)[0].controls.find(c=>c.text).text;assert.equal(text.size[1],40);assert.ok(text.layer>0);}
 assert.ok(!fs.existsSync(path.join(root,'packs/resource/font')));
 const luminance=c=>c.map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((n,v,i)=>n+v*[.2126,.7152,.0722][i],0);
 const contrast=(a,b)=>(Math.max(luminance(a),luminance(b))+.05)/(Math.min(luminance(a),luminance(b))+.05);
@@ -59,4 +64,24 @@ for(const [name,a] of Object.entries(animations)){
 }
 assert.ok(animations['animation.evangeliarium.player.carry'].bones.rightarm);
 assert.ok(animations['animation.evangeliarium.player.carry'].bones.leftarm);
-console.log(`Validated 5 UUIDs, ${cubes} cuboids, neutral binding, 3 atlases, 730 dates, 3779 verses, stable APIs.`);
+for(const book of books){
+ const item=read(`packs/behavior/items/${book.localId}.item.json`)['minecraft:item'];
+ assert.equal(item.description.identifier,book.id);assert.equal(item.components['minecraft:max_stack_size'],1);
+ const block=read(`packs/behavior/blocks/${book.localId}.block.json`)['minecraft:block'];assert.equal(block.description.identifier,book.blockId);
+ const attachable=read(`packs/resource/attachables/${book.localId}.attachable.json`)['minecraft:attachable'];assert.equal(attachable.description.identifier,book.id);
+ assert.equal(read(`packs/behavior/entities/${book.localId}_visual.entity.json`)['minecraft:entity'].description.identifier,book.visualId);
+ for(const kind of ['held','open','closed','animated']){
+  const geometry=read(`packs/resource/models/entity/${book.localId}_${kind}.geo.json`);assert.equal(geometry.format_version,'1.16.0');
+  const model=geometry['minecraft:geometry'][0],bones=model.bones;
+  assert.equal(model.description.identifier,`geometry.evangeliarium.${book.bookId==='gospel'?'':book.bookId+'.'}${kind}`);
+  assert.ok(bones.length<=20);assert.ok(bones.reduce((sum,b)=>sum+(b.cubes?.length??0),0)<=80);
+  if(kind==='held')assert.deepEqual(bones.find(b=>b.name==='evangeliarium_bound'),{name:'evangeliarium_bound',pivot:[0,0,0],binding:'q.item_slot_to_bone_name(context.item_slot)'});
+  for(const bone of bones)for(const cube of bone.cubes??[]){assert.ok(cube.size.every(n=>Number.isFinite(n)&&n>0));for(const uv of Object.values(cube.uv)){assert.ok([...uv.uv,...uv.uv_size].every(Number.isInteger));assert.ok(uv.uv.every((n,i)=>n>=0&&n+uv.uv_size[i]<=256));}}
+ }
+ const icon=PNG.sync.read(fs.readFileSync(path.join(root,`packs/resource/textures/items/${book.localId}.png`)));assert.equal(icon.width,64);assert.equal(icon.height,64);assert.ok(icon.data.some((v,i)=>i%4===3&&v>200));
+ for(const suffix of ['', '_normal','_mer']){const image=PNG.sync.read(fs.readFileSync(path.join(root,`packs/resource/textures/entity/${book.localId}${suffix}.png`)));assert.equal(image.width,256);assert.equal(image.height,256);if(suffix==='_mer')for(let i=1;i<image.data.length;i+=4)assert.equal(image.data[i],0);}
+ assert.ok(fs.readFileSync(path.join(root,'packs/resource/render_controllers/book_first_person_bridge.json'),'utf8').includes(book.id));
+}
+const liturgy=read('out/liturgy-manifest.json');for(const id of ['missal','pontifical'])assert.ok(liturgy.books[id].sections>0&&liturgy.books[id].pages>0);
+const lectionary=read('out/lectionary-manifest.json');assert.equal(lectionary.books.book.sections,766);assert.equal(lectionary.books.gospel.sections,766);assert.equal(lectionary.dateMapping,'none');
+console.log(`Validated ${books.length} book families, 5 UUIDs, neutral binding, 4 PBR atlas sets, ${liturgy.books.missal.sections+liturgy.books.pontifical.sections} liturgical sections, 766 lectionary forms and gospel forms, 730 dates and 3779 verses.`);

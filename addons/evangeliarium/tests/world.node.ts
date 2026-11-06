@@ -78,3 +78,38 @@ test('diário sem entrega recupera o livro, sem sobrescrever inventário',()=>{
  const {player,base,target,books}=setup();books.place(player,address(base),0,undefined,true);const key=[...world.props.keys()][0],r=JSON.parse(world.props.get(key));r.phase='taking';r.owner=player.id;r.slot=0;world.props.set(key,JSON.stringify(r));target.setType('minecraft:air');player.inventory.setItem(0,new ItemStack('minecraft:diamond'));
  const restarted=new Books();restarted.load();restarted.recover();assert.equal(target.typeId,BLOCK);assert.equal(player.inventory.getItem(0).typeId,'minecraft:diamond');
 });
+for(const book of ['missal','pontifical','lectionary'])test(`${book}: tipo, marca, visual e identidade sobrevivem a colocação, reinício e retirada`,()=>{
+ const {player,base,target,books}=setup();player.inventory.setItem(0,new ItemStack('evangeliarium:'+book));let handle=books.held(player);
+ assert.equal(handle.book,book);assert.equal(handle.state.selection.mode,book==='pontifical'?'index':'today');handle=books.select(player,handle,{mode:'section',sectionId:'rito-inicial',page:4});
+ const original=player.inventory.getItem(0);original.nameTag='Exemplar da comunidade';player.inventory.setItem(0,original);
+ books.place(player,address(base),0,original.getDynamicProperty(STATE),true,original.typeId);assert.equal(target.typeId,'evangeliarium:'+book+'_stand');
+ assert.equal(world.dimension.getEntities({type:'evangeliarium:'+book+'_visual'}).length,1);assert.equal(world.dimension.getEntities({type:m.VISUAL}).length,0);
+ const restarted=new Books();restarted.load();restarted.recover();const placed=restarted.placed(target);assert.equal(placed.book,book);assert.equal(placed.state.instanceId,handle.state.instanceId);
+ restarted.retrieve(player,placed);const returned=player.inventory.getItem(0);assert.equal(returned.typeId,'evangeliarium:'+book);assert.equal(returned.nameTag,'Exemplar da comunidade');assert.deepEqual(itemState(returned).selection,{mode:'section',sectionId:'rito-inicial',page:4});assert.equal(world.props.size,0);
+});
+test('tipo capturado impede colocar outro livro no mesmo slot antes do callback',()=>{
+ const {player,base,target,books}=setup();player.inventory.setItem(0,new ItemStack('evangeliarium:missal'));books.place(player,address(base),0,undefined,true,ITEM);assert.equal(target.typeId,'minecraft:air');assert.equal(player.inventory.getItem(0).typeId,'evangeliarium:missal');
+});
+test('marca do Evangelho não é aplicada ao Missal e vice-versa',()=>{
+ const {player,books}=setup();assert.throws(()=>books.select(player,books.held(player),{mode:'index'}),/Seleção inválida/);
+ player.inventory.setItem(0,new ItemStack('evangeliarium:missal'));assert.throws(()=>books.select(player,books.held(player),{mode:'passage',reference:'Jo 3,16'}),/Seleção inválida/);
+});
+test('recuperação remove visual de outro tipo sem duplicar livro',()=>{
+ const {player,base,target,books}=setup();player.inventory.setItem(0,new ItemStack('evangeliarium:pontifical'));books.place(player,address(base),0,undefined,true);
+ const correct=world.dimension.getEntities({type:'evangeliarium:pontifical_visual'})[0];correct.remove();const wrong=world.dimension.spawnEntity(m.VISUAL,{x:.5,y:1,z:.5});wrong.setDynamicProperty('evangeliarium:anchor',m.addressKey(address(target)));
+ books.reconcileBlock(target);assert.equal(wrong.isValid,false);assert.equal(world.dimension.getEntities({type:'evangeliarium:pontifical_visual'}).length,1);assert.equal(world.dimension.getEntities({type:'minecraft:item'}).length,0);
+});
+test('registro de estado futuro permanece intacto sem bloquear outros livros',()=>{
+ const {player,base,target,books}=setup();books.place(player,address(base),0,undefined,true);const key=m.addressKey(address(target));const record=JSON.parse(world.getDynamicProperty(key));const state=JSON.parse(record.snapshot.properties[STATE]);state.schema=2;record.snapshot.properties[STATE]=JSON.stringify(state);const raw=JSON.stringify(record);world.setDynamicProperty(key,raw);
+ const restarted=new Books();const oldWarn=console.warn;console.warn=()=>{};try{restarted.load();}finally{console.warn=oldWarn;}
+ player.inventory.setItem(0,new ItemStack('evangeliarium:missal'));assert.equal(restarted.held(player).book,'missal');restarted.recover();assert.equal(world.getDynamicProperty(key),raw);assert.throws(()=>restarted.reconcileBlock(target),/Registro de outra versão preservado/);
+});
+for(const stored of ['future','unreadable'])test(`colocação não sobrescreve diário ${stored} numa posição vazia`,()=>{
+ const {player,base,target,books}=setup();books.place(player,address(base),0,undefined,true);const key=m.addressKey(address(target));
+ const record=JSON.parse(world.getDynamicProperty(key));const state=JSON.parse(record.snapshot.properties[STATE]);state.schema=2;record.snapshot.properties[STATE]=JSON.stringify(state);
+ const raw=stored==='future'?JSON.stringify(record):'{invalid journal';world.setDynamicProperty(key,raw);target.setType('minecraft:air');
+ const restarted=new Books(),oldWarn=console.warn;console.warn=()=>{};try{restarted.load();}finally{console.warn=oldWarn;}
+ player.inventory.setItem(0,new ItemStack('evangeliarium:missal'));
+ assert.throws(()=>restarted.place(player,address(base),0,undefined,true),/superfície livre/);
+ assert.equal(world.getDynamicProperty(key),raw);assert.equal(target.typeId,'minecraft:air');assert.equal(player.inventory.getItem(0).typeId,'evangeliarium:missal');
+});

@@ -1,16 +1,16 @@
 {
   "name": "evangeliarium-bedrock-addon",
-  "version": "0.2.5",
+  "version": "0.5.2",
   "private": true,
   "type": "module",
   "engines": {
     "node": ">=24"
   },
-  "description": "Evangeliário com leitura offline, calendário brasileiro e porte cerimonial.",
+  "description": "Quatro livros litúrgicos offline: Evangeliário, Lecionário, Missal Romano e Pontifical Romano.",
   "addonManager": {
     "schemaVersion": 1,
     "id": "evangeliarium",
-    "displayName": "Evangeliário",
+    "displayName": "Evangeliarium",
     "artifactPrefix": "Evangeliarium",
     "sharedDirectory": "pack.evangeliarium",
     "worldDirectory": "evangeliarium.managed",
@@ -27,7 +27,8 @@
     "package": "npm run check && node tools/package.mjs",
     "calendar:import": "python tools/import_calendar.py",
     "render": "node tools/render.mjs",
-    "capture:pose": "node tools/capture-pose.mjs"
+    "capture:pose": "node tools/capture-pose.mjs",
+    "calendar:audit": "node --experimental-strip-types tools/audit-calendar-coverage.ts"
   },
   "devDependencies": {
     "@minecraft/server": "2.10.0",

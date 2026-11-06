@@ -1,0 +1,1299 @@
+{
+  "schema": 1,
+  "name": "missal",
+  "atlasSize": 256,
+  "tiles": {
+    "front": [
+      2,
+      2,
+      64,
+      96
+    ],
+    "back": [
+      70,
+      2,
+      64,
+      96
+    ],
+    "leftPage": [
+      138,
+      2,
+      52,
+      88
+    ],
+    "rightPage": [
+      194,
+      2,
+      52,
+      88
+    ],
+    "spine": [
+      2,
+      104,
+      16,
+      96
+    ],
+    "edge": [
+      22,
+      104,
+      64,
+      12
+    ],
+    "leather": [
+      22,
+      122,
+      16,
+      16
+    ],
+    "gold": [
+      42,
+      122,
+      16,
+      16
+    ],
+    "paper": [
+      62,
+      122,
+      16,
+      16
+    ],
+    "ribbon_red": [
+      82,
+      122,
+      8,
+      48
+    ],
+    "lining": [
+      94,
+      104,
+      52,
+      88
+    ],
+    "ribbon_green": [
+      150,
+      104,
+      8,
+      48
+    ],
+    "ribbon_gold": [
+      162,
+      104,
+      8,
+      48
+    ],
+    "ribbon_blue": [
+      174,
+      104,
+      8,
+      48
+    ],
+    "ribbon_violet": [
+      186,
+      104,
+      8,
+      48
+    ],
+    "tab": [
+      198,
+      104,
+      12,
+      12
+    ],
+    "headband": [
+      214,
+      104,
+      16,
+      8
+    ],
+    "edgeTall": [
+      234,
+      104,
+      12,
+      96
+    ],
+    "hinge": [
+      214,
+      118,
+      16,
+      16
+    ]
+  },
+  "configuration": {
+    "title": "MISSALE",
+    "subtitle": "ROMANUM",
+    "color": [
+      103,
+      27,
+      30
+    ],
+    "lining": [
+      124,
+      49,
+      40
+    ],
+    "width": 3.9,
+    "height": 5.65,
+    "thickness": 1.44,
+    "ribbons": [
+      "red",
+      "green",
+      "gold",
+      "blue",
+      "violet"
+    ]
+  },
+  "bones": [
+    {
+      "name": "spine",
+      "parent": "book_action",
+      "pivot": [
+        0.0,
+        0.0,
+        0
+      ],
+      "cubes": [
+        {
+          "name": "Recessed cloth hinge",
+          "origin": [
+            -0.039,
+            0.1695,
+            0.045
+          ],
+          "size": [
+            0.078,
+            5.311,
+            0.085
+          ],
+          "surface": "hinge",
+          "faces": {}
+        }
+      ]
+    },
+    {
+      "name": "binding_shell",
+      "parent": "spine",
+      "pivot": [
+        0.039,
+        0.0,
+        0.54
+      ],
+      "cubes": [
+        {
+          "name": "Stepped binding core",
+          "origin": [
+            -0.1404,
+            -0.012107,
+            -0.7
+          ],
+          "size": [
+            0.2028,
+            5.674214,
+            1.4
+          ],
+          "surface": "spine",
+          "faces": {
+            "up": "leather",
+            "down": "leather"
+          }
+        },
+        {
+          "name": "Spine crown",
+          "origin": [
+            -0.1794,
+            0.040357,
+            -0.62
+          ],
+          "size": [
+            0.0624,
+            5.569286,
+            1.24
+          ],
+          "surface": "spine",
+          "faces": {
+            "up": "leather",
+            "down": "leather"
+          },
+          "omit": [
+            "east"
+          ]
+        },
+        {
+          "name": "Raised spine band 0.64",
+          "origin": [
+            -0.2145,
+            0.516571,
+            -0.66
+          ],
+          "size": [
+            0.0468,
+            0.104929,
+            1.32
+          ],
+          "surface": "gold",
+          "faces": {}
+        },
+        {
+          "name": "Raised spine band 2.04",
+          "origin": [
+            -0.2145,
+            1.646571,
+            -0.66
+          ],
+          "size": [
+            0.0468,
+            0.104929,
+            1.32
+          ],
+          "surface": "gold",
+          "faces": {}
+        },
+        {
+          "name": "Raised spine band 4.8",
+          "origin": [
+            -0.2145,
+            3.874286,
+            -0.66
+          ],
+          "size": [
+            0.0468,
+            0.104929,
+            1.32
+          ],
+          "surface": "gold",
+          "faces": {}
+        },
+        {
+          "name": "Raised spine band 6.2",
+          "origin": [
+            -0.2145,
+            5.004286,
+            -0.66
+          ],
+          "size": [
+            0.0468,
+            0.104929,
+            1.32
+          ],
+          "surface": "gold",
+          "faces": {}
+        },
+        {
+          "name": "Woven headband 0.19",
+          "origin": [
+            -0.0156,
+            0.153357,
+            -0.56
+          ],
+          "size": [
+            0.0936,
+            0.080714,
+            1.12
+          ],
+          "surface": "headband",
+          "faces": {}
+        },
+        {
+          "name": "Woven headband 6.7",
+          "origin": [
+            -0.0156,
+            5.407857,
+            -0.56
+          ],
+          "size": [
+            0.0936,
+            0.080714,
+            1.12
+          ],
+          "surface": "headband",
+          "faces": {}
+        }
+      ]
+    },
+    {
+      "name": "back_cover",
+      "parent": "spine",
+      "pivot": [
+        0.0,
+        0.0,
+        0
+      ],
+      "cubes": [
+        {
+          "name": "Back board",
+          "origin": [
+            0.0,
+            0.0,
+            0.56
+          ],
+          "size": [
+            3.9,
+            5.65,
+            0.16
+          ],
+          "surface": "leather",
+          "faces": {
+            "south": "back",
+            "north": "lining"
+          }
+        },
+        {
+          "name": "Corner 00 horizontal",
+          "origin": [
+            0.078,
+            0.080714,
+            0.72
+          ],
+          "size": [
+            0.4134,
+            0.096857,
+            0.055
+          ],
+          "surface": "gold",
+          "faces": {},
+          "omit": [
+            "north"
+          ]
+        },
+        {
+          "name": "Corner 00 vertical",
+          "origin": [
+            0.078,
+            0.177571,
+            0.72
+          ],
+          "size": [
+            0.0936,
+            0.330929,
+            0.055
+          ],
+          "surface": "gold",
+          "faces": {},
+          "omit": [
+            "north"
+          ]
+        },
+        {
+          "name": "Corner 01 horizontal",
+          "origin": [
+            0.078,
+            5.472429,
+            0.72
+          ],
+          "size": [
+            0.4134,
+            0.096857,
+            0.055
+          ],
+          "surface": "gold",
+          "faces": {},
+          "omit": [
+            "north"
+          ]
+        },
+        {
+          "name": "Corner 01 vertical",
+          "origin": [
+            0.078,
+            5.1415,
+            0.72
+          ],
+          "size": [
+            0.0936,
+            0.330929,
+            0.055
+          ],
+          "surface": "gold",
+          "faces": {},
+          "omit": [
+            "north"
+          ]
+        },
+        {
+          "name": "Corner 10 horizontal",
+          "origin": [
+            3.4086,
+            0.080714,
+            0.72
+          ],
+          "size": [
+            0.4134,
+            0.096857,
+            0.055
+          ],
+          "surface": "gold",
+          "faces": {},
+          "omit": [
+            "north"
+          ]
+        },
+        {
+          "name": "Corner 10 vertical",
+          "origin": [
+            3.7284,
+            0.177571,
+            0.72
+          ],
+          "size": [
+            0.0936,
+            0.330929,
+            0.055
+          ],
+          "surface": "gold",
+          "faces": {},
+          "omit": [
+            "north"
+          ]
+        },
+        {
+          "name": "Corner 11 horizontal",
+          "origin": [
+            3.4086,
+            5.472429,
+            0.72
+          ],
+          "size": [
+            0.4134,
+            0.096857,
+            0.055
+          ],
+          "surface": "gold",
+          "faces": {},
+          "omit": [
+            "north"
+          ]
+        },
+        {
+          "name": "Corner 11 vertical",
+          "origin": [
+            3.7284,
+            5.1415,
+            0.72
+          ],
+          "size": [
+            0.0936,
+            0.330929,
+            0.055
+          ],
+          "surface": "gold",
+          "faces": {},
+          "omit": [
+            "north"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "front_cover",
+      "parent": "spine",
+      "pivot": [
+        0.0,
+        0.0,
+        0
+      ],
+      "cubes": [
+        {
+          "name": "Front board",
+          "origin": [
+            0.0,
+            0.0,
+            -0.72
+          ],
+          "size": [
+            3.9,
+            5.65,
+            0.16
+          ],
+          "surface": "leather",
+          "faces": {
+            "north": "front",
+            "south": "lining"
+          }
+        },
+        {
+          "name": "Corner 00 horizontal",
+          "origin": [
+            0.078,
+            0.080714,
+            -0.775
+          ],
+          "size": [
+            0.4134,
+            0.096857,
+            0.055
+          ],
+          "surface": "gold",
+          "faces": {},
+          "omit": [
+            "south"
+          ]
+        },
+        {
+          "name": "Corner 00 vertical",
+          "origin": [
+            0.078,
+            0.177571,
+            -0.775
+          ],
+          "size": [
+            0.0936,
+            0.330929,
+            0.055
+          ],
+          "surface": "gold",
+          "faces": {},
+          "omit": [
+            "south"
+          ]
+        },
+        {
+          "name": "Corner 01 horizontal",
+          "origin": [
+            0.078,
+            5.472429,
+            -0.775
+          ],
+          "size": [
+            0.4134,
+            0.096857,
+            0.055
+          ],
+          "surface": "gold",
+          "faces": {},
+          "omit": [
+            "south"
+          ]
+        },
+        {
+          "name": "Corner 01 vertical",
+          "origin": [
+            0.078,
+            5.1415,
+            -0.775
+          ],
+          "size": [
+            0.0936,
+            0.330929,
+            0.055
+          ],
+          "surface": "gold",
+          "faces": {},
+          "omit": [
+            "south"
+          ]
+        },
+        {
+          "name": "Corner 10 horizontal",
+          "origin": [
+            3.4086,
+            0.080714,
+            -0.775
+          ],
+          "size": [
+            0.4134,
+            0.096857,
+            0.055
+          ],
+          "surface": "gold",
+          "faces": {},
+          "omit": [
+            "south"
+          ]
+        },
+        {
+          "name": "Corner 10 vertical",
+          "origin": [
+            3.7284,
+            0.177571,
+            -0.775
+          ],
+          "size": [
+            0.0936,
+            0.330929,
+            0.055
+          ],
+          "surface": "gold",
+          "faces": {},
+          "omit": [
+            "south"
+          ]
+        },
+        {
+          "name": "Corner 11 horizontal",
+          "origin": [
+            3.4086,
+            5.472429,
+            -0.775
+          ],
+          "size": [
+            0.4134,
+            0.096857,
+            0.055
+          ],
+          "surface": "gold",
+          "faces": {},
+          "omit": [
+            "south"
+          ]
+        },
+        {
+          "name": "Corner 11 vertical",
+          "origin": [
+            3.7284,
+            5.1415,
+            -0.775
+          ],
+          "size": [
+            0.0936,
+            0.330929,
+            0.055
+          ],
+          "surface": "gold",
+          "faces": {},
+          "omit": [
+            "south"
+          ]
+        },
+        {
+          "name": "Cross stem",
+          "origin": [
+            1.8408,
+            1.388286,
+            -0.795
+          ],
+          "size": [
+            0.2184,
+            2.179286,
+            0.075
+          ],
+          "surface": "gold",
+          "faces": {},
+          "omit": [
+            "south"
+          ]
+        },
+        {
+          "name": "Cross arm left",
+          "origin": [
+            1.209,
+            2.865357,
+            -0.795
+          ],
+          "size": [
+            0.6318,
+            0.209857,
+            0.075
+          ],
+          "surface": "gold",
+          "faces": {},
+          "omit": [
+            "south",
+            "east"
+          ]
+        },
+        {
+          "name": "Cross arm right",
+          "origin": [
+            2.0592,
+            2.865357,
+            -0.795
+          ],
+          "size": [
+            0.6318,
+            0.209857,
+            0.075
+          ],
+          "surface": "gold",
+          "faces": {},
+          "omit": [
+            "south",
+            "west"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "right_pages",
+      "parent": "back_cover",
+      "pivot": [
+        0.0,
+        0.0,
+        0
+      ],
+      "cubes": [
+        {
+          "name": "Right signature 1",
+          "origin": [
+            0.1248,
+            0.1695,
+            0.025
+          ],
+          "size": [
+            3.627,
+            5.311,
+            0.178333
+          ],
+          "surface": "edge",
+          "faces": {
+            "east": "edgeTall",
+            "west": "edgeTall",
+            "north": "rightPage"
+          },
+          "omit": [
+            "south"
+          ]
+        },
+        {
+          "name": "Right signature 2",
+          "origin": [
+            0.1248,
+            0.157393,
+            0.203333
+          ],
+          "size": [
+            3.6387,
+            5.335214,
+            0.178333
+          ],
+          "surface": "edge",
+          "faces": {
+            "east": "edgeTall",
+            "west": "edgeTall",
+            "north": "paper"
+          },
+          "omit": [
+            "south"
+          ]
+        },
+        {
+          "name": "Right signature 3",
+          "origin": [
+            0.1248,
+            0.145286,
+            0.381667
+          ],
+          "size": [
+            3.6504,
+            5.359429,
+            0.178333
+          ],
+          "surface": "edge",
+          "faces": {
+            "east": "edgeTall",
+            "west": "edgeTall",
+            "north": "paper"
+          },
+          "omit": [
+            "south"
+          ]
+        },
+        {
+          "name": "Sewn gutter fold 1",
+          "origin": [
+            0.0546,
+            0.1695,
+            0.045
+          ],
+          "size": [
+            0.0234,
+            5.311,
+            0.515
+          ],
+          "surface": "paper",
+          "faces": {},
+          "omit": [
+            "east",
+            "south"
+          ]
+        },
+        {
+          "name": "Sewn gutter fold 2",
+          "origin": [
+            0.078,
+            0.1695,
+            0.035
+          ],
+          "size": [
+            0.0234,
+            5.311,
+            0.525
+          ],
+          "surface": "paper",
+          "faces": {},
+          "omit": [
+            "east",
+            "south"
+          ]
+        },
+        {
+          "name": "Sewn gutter fold 3",
+          "origin": [
+            0.1014,
+            0.1695,
+            0.025
+          ],
+          "size": [
+            0.0234,
+            5.311,
+            0.535
+          ],
+          "surface": "paper",
+          "faces": {},
+          "omit": [
+            "east",
+            "south"
+          ]
+        },
+        {
+          "name": "Fore-edge index 1",
+          "origin": [
+            3.6816,
+            2.179286,
+            0.18
+          ],
+          "size": [
+            0.3198,
+            0.258286,
+            0.025
+          ],
+          "surface": "tab",
+          "faces": {}
+        },
+        {
+          "name": "Fore-edge index 2",
+          "origin": [
+            3.6816,
+            2.865357,
+            0.23
+          ],
+          "size": [
+            0.3198,
+            0.258286,
+            0.025
+          ],
+          "surface": "tab",
+          "faces": {}
+        },
+        {
+          "name": "Fore-edge index 3",
+          "origin": [
+            3.6816,
+            3.551429,
+            0.28
+          ],
+          "size": [
+            0.3198,
+            0.258286,
+            0.025
+          ],
+          "surface": "tab",
+          "faces": {}
+        },
+        {
+          "name": "Fore-edge index 4",
+          "origin": [
+            3.6816,
+            4.2375,
+            0.33
+          ],
+          "size": [
+            0.3198,
+            0.258286,
+            0.025
+          ],
+          "surface": "tab",
+          "faces": {}
+        }
+      ]
+    },
+    {
+      "name": "left_pages",
+      "parent": "front_cover",
+      "pivot": [
+        0.0,
+        0.0,
+        0
+      ],
+      "cubes": [
+        {
+          "name": "Left signature 1",
+          "origin": [
+            0.1248,
+            0.1695,
+            -0.203333
+          ],
+          "size": [
+            3.627,
+            5.311,
+            0.178333
+          ],
+          "surface": "edge",
+          "faces": {
+            "east": "edgeTall",
+            "west": "edgeTall",
+            "south": "leftPage"
+          },
+          "omit": [
+            "north"
+          ]
+        },
+        {
+          "name": "Left signature 2",
+          "origin": [
+            0.1248,
+            0.157393,
+            -0.381667
+          ],
+          "size": [
+            3.6387,
+            5.335214,
+            0.178333
+          ],
+          "surface": "edge",
+          "faces": {
+            "east": "edgeTall",
+            "west": "edgeTall",
+            "south": "paper"
+          },
+          "omit": [
+            "north"
+          ]
+        },
+        {
+          "name": "Left signature 3",
+          "origin": [
+            0.1248,
+            0.145286,
+            -0.56
+          ],
+          "size": [
+            3.6504,
+            5.359429,
+            0.178333
+          ],
+          "surface": "edge",
+          "faces": {
+            "east": "edgeTall",
+            "west": "edgeTall",
+            "south": "paper"
+          },
+          "omit": [
+            "north"
+          ]
+        },
+        {
+          "name": "Sewn gutter fold 1",
+          "origin": [
+            0.0546,
+            0.1695,
+            -0.56
+          ],
+          "size": [
+            0.0234,
+            5.311,
+            0.515
+          ],
+          "surface": "paper",
+          "faces": {},
+          "omit": [
+            "east",
+            "north"
+          ]
+        },
+        {
+          "name": "Sewn gutter fold 2",
+          "origin": [
+            0.078,
+            0.1695,
+            -0.56
+          ],
+          "size": [
+            0.0234,
+            5.311,
+            0.525
+          ],
+          "surface": "paper",
+          "faces": {},
+          "omit": [
+            "east",
+            "north"
+          ]
+        },
+        {
+          "name": "Sewn gutter fold 3",
+          "origin": [
+            0.1014,
+            0.1695,
+            -0.56
+          ],
+          "size": [
+            0.0234,
+            5.311,
+            0.535
+          ],
+          "surface": "paper",
+          "faces": {},
+          "omit": [
+            "east",
+            "north"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ribbons",
+      "parent": "right_pages",
+      "pivot": [
+        0.0,
+        5.488571,
+        0
+      ],
+      "cubes": [
+        {
+          "name": "Silk marker red",
+          "origin": [
+            0.6552,
+            0.145286,
+            0.112
+          ],
+          "size": [
+            0.078,
+            5.262571,
+            0.02
+          ],
+          "surface": "ribbon_red",
+          "faces": {},
+          "omit": [
+            "down"
+          ]
+        },
+        {
+          "name": "Silk marker green",
+          "origin": [
+            1.1778,
+            0.145286,
+            0.1904
+          ],
+          "size": [
+            0.078,
+            5.262571,
+            0.02
+          ],
+          "surface": "ribbon_green",
+          "faces": {},
+          "omit": [
+            "down"
+          ]
+        },
+        {
+          "name": "Silk marker gold",
+          "origin": [
+            1.7004,
+            0.145286,
+            0.2688
+          ],
+          "size": [
+            0.078,
+            5.262571,
+            0.02
+          ],
+          "surface": "ribbon_gold",
+          "faces": {},
+          "omit": [
+            "down"
+          ]
+        },
+        {
+          "name": "Silk marker blue",
+          "origin": [
+            2.223,
+            0.145286,
+            0.3472
+          ],
+          "size": [
+            0.078,
+            5.262571,
+            0.02
+          ],
+          "surface": "ribbon_blue",
+          "faces": {},
+          "omit": [
+            "down"
+          ]
+        },
+        {
+          "name": "Silk marker violet",
+          "origin": [
+            2.7456,
+            0.145286,
+            0.448
+          ],
+          "size": [
+            0.078,
+            5.262571,
+            0.02
+          ],
+          "surface": "ribbon_violet",
+          "faces": {},
+          "omit": [
+            "down"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ribbon_tips",
+      "parent": "ribbons",
+      "pivot": [
+        0.0,
+        0.145286,
+        -0.012
+      ],
+      "cubes": []
+    },
+    {
+      "name": "ribbon_tip_red",
+      "parent": "ribbon_tips",
+      "pivot": [
+        0.0,
+        0.145286,
+        0.112
+      ],
+      "cubes": [
+        {
+          "name": "Stored marker tip red",
+          "origin": [
+            0.6552,
+            -0.096857,
+            0.112
+          ],
+          "size": [
+            0.078,
+            0.242143,
+            0.02
+          ],
+          "surface": "ribbon_red",
+          "faces": {},
+          "omit": [
+            "up"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ribbon_tip_green",
+      "parent": "ribbon_tips",
+      "pivot": [
+        0.0,
+        0.145286,
+        0.1904
+      ],
+      "cubes": [
+        {
+          "name": "Stored marker tip green",
+          "origin": [
+            1.1778,
+            -0.145286,
+            0.1904
+          ],
+          "size": [
+            0.078,
+            0.290571,
+            0.02
+          ],
+          "surface": "ribbon_green",
+          "faces": {},
+          "omit": [
+            "up"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ribbon_tip_gold",
+      "parent": "ribbon_tips",
+      "pivot": [
+        0.0,
+        0.145286,
+        0.2688
+      ],
+      "cubes": [
+        {
+          "name": "Stored marker tip gold",
+          "origin": [
+            1.7004,
+            -0.193714,
+            0.2688
+          ],
+          "size": [
+            0.078,
+            0.339,
+            0.02
+          ],
+          "surface": "ribbon_gold",
+          "faces": {},
+          "omit": [
+            "up"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ribbon_tip_blue",
+      "parent": "ribbon_tips",
+      "pivot": [
+        0.0,
+        0.145286,
+        0.3472
+      ],
+      "cubes": [
+        {
+          "name": "Stored marker tip blue",
+          "origin": [
+            2.223,
+            -0.096857,
+            0.3472
+          ],
+          "size": [
+            0.078,
+            0.242143,
+            0.02
+          ],
+          "surface": "ribbon_blue",
+          "faces": {},
+          "omit": [
+            "up"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ribbon_tip_violet",
+      "parent": "ribbon_tips",
+      "pivot": [
+        0.0,
+        0.145286,
+        0.448
+      ],
+      "cubes": [
+        {
+          "name": "Stored marker tip violet",
+          "origin": [
+            2.7456,
+            -0.145286,
+            0.448
+          ],
+          "size": [
+            0.078,
+            0.290571,
+            0.02
+          ],
+          "surface": "ribbon_violet",
+          "faces": {},
+          "omit": [
+            "up"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -50,3 +50,12 @@ for(const failure of ['removeSource','writeDestination','commit'] as const)test(
  const p:TransferPort={validate(){},prepare(){journal=true;},removeSource(){events.push('remove');if(failure==='removeSource')throw Error('x');source=false;},writeDestination(){dest=true;if(failure==='writeDestination')throw Error('x');},commit(){throw Error('x');},restoreSource(){source=true;},clearDestination(){dest=false;},abort(){journal=false;}};
  assert.throws(()=>transfer(p));assert.equal(source,true);assert.equal(dest,false);assert.equal(journal,false);
 });
+
+test('data de Brasília independe do fuso do processo e mantém virada civil até 2035',()=>{
+ const original=process.env.TZ;
+ try{for(const zone of ['UTC','Pacific/Auckland','America/Los_Angeles']){
+  process.env.TZ=zone;
+  assert.equal(brazilDate(Date.parse('2035-01-01T02:59:59.999Z')),'2034-12-31');
+  assert.equal(brazilDate(Date.parse('2035-01-01T03:00:00.000Z')),'2035-01-01');
+ }}finally{if(original===undefined)delete process.env.TZ;else process.env.TZ=original;}
+});

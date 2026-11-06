@@ -1,5 +1,68 @@
 # Changelog
 
+## 0.5.2 — 05/11/2026 — formulário de Santa Teresa
+
+- Acrescenta ao índice do Missal o formulário da memória, com transcrição visual e corroboração paroquial brasileira documentadas.
+- Snapshot anterior preservado; nenhuma leitura, seleção diária ou aplicação votiva acrescentada. Comportamento do Ordo e pacote 0.5.1 permanecem intactos.
+- [Fontes, emenda e limites](docs/SANTA_TERESA_FORMULARY.md); [verificação do candidato local](docs/VERIFICATION_0.5.2.md). Validação Minecraft pendente.
+
+## 0.5.1 — 05/11/2026 — polimento do Ordo
+
+- Consulta das votivas disponível também para membros, com posição no catálogo e disponibilidade editorial apenas no detalhe. Voltar da prévia conserva a data digitada; fechar descarta o rascunho.
+- Papel em folha fina sobre miolo revelado, grade mais legível e veios discretos na madeira. Grampos, marcador e bordas têm encaixe e UVs protegidos por testes.
+- Mesmos UUIDs, IDs, schemas, permissão de escrita, marcas e poses; sem alterações nos outros add-ons. O pacote 0.5.0 é preservado.
+- [Verificação e pacote](docs/VERIFICATION_0.5.1.md). Importação e Content Log no Minecraft permanecem pendentes.
+
+## 0.5.0 — Ordo global
+
+- Calendário de sacristia em item/bloco: um único Ordo por mundo, independente dos exemplares.
+- Escolha explícita de data/Missa, somente para operadores, com revisão concorrente e expiração na próxima meia-noite de Brasília, inclusive após reload.
+- Livros seguem a celebração ao reabrir, sem interromper páginas abertas ou apagar marcas. Pontifical permanece por rito.
+- Catálogo votivo consultável; sincronização votiva aguarda vínculos brasileiros validados.
+- [Contrato, limites e teste nativo](docs/ORDO_0.5.0.md).
+
+## 0.4.1 — 05/11/2026 — seleção diária
+
+- Calendário nacional próprio, revisado em 2026–2035 e projetável pelas normas atuais em 1583–9999, com chaves exatas de formulários, precedência, ciclos A/B/C e I/II e festas móveis.
+- Evangeliário e Lecionário abrem a celebração da data de Brasília; dias simples abrem diretamente e escolhas necessárias permanecem disponíveis, sem escolher Missa noturna pelo relógio.
+- Missal identifica apenas os próprios disponíveis; não substitui lacunas por textos votivos ou rubricas. Pontifical permanece por rito.
+- Consulta privada de Hoje/Data não altera marcas. Seguir hoje restaura a abertura diária; exemplares antigos pelo índice e marcas são preservados.
+- Não executa código do ZIP; não amplia sua licença. Calendários locais e validação Minecraft permanecem fora da verificação automatizada. Consulte `docs/DAILY_SELECTION_0.4.1.md`.
+
+## 0.4.0 — 05/11/2026 — Lecionário
+
+- Acrescenta Lecionário como quarto exemplar, com modelo, material, ícone, receita e persistência próprios.
+- Importa 766 formulários do acervo fornecido, preservando leituras, salmos, aclamações, alternativas, Missas e notas editoriais.
+- Evangeliário oferece os mesmos formulários filtrados para Evangelhos e alternativas; índice, busca, partes da leitura e marca por página.
+- Leitura sem identificação da tradução na interface. A proveniência e os limites acompanham as fontes e a documentação.
+- Calendário diário 2026–2027 existente preservado, sem deduzir formulários completos por uma referência isolada; não foi executado o motor do arquivo recebido.
+- UUIDs, registros, transferências e demais add-ons preservados; teste no Minecraft pendente. Consulte `docs/LECTIONARY_0.4.0.md`.
+
+## 0.3.2 — 05/11/2026 — encadernação aberta
+
+- Reconstrói a abertura dos três livros: lombada articulada e comprimida sob o miolo, canal central raso e terminais de fitas com caimento.
+- Preserva apresentação em mãos, binding, texto, identidades e persistência; reset explícito de escala/rotações ao fechar.
+- Testes geométricos comparam endpoints estáticos/animados e 51 fases por livro, incluindo apoio, bounds e UVs. Fontes Blender dos três livros e roteiro em `docs/OPEN_BOOK_REBUILD.md`.
+- Validação nativa no Minecraft permanece pendente.
+
+## 0.3.1 — 04/11/2026 — navegação e acabamento
+
+- Salto de página nos três livros, retorno à lista/busca na mesma posição e referências internas com retorno à página anterior.
+- Grupos compartilhados preservados; nove rótulos desambiguados e 11 associações de grupo verificadas, mantendo títulos e textos originais. Duas referências incorretas do índice recebem correção explícita; destinos não verificados não são presumidos.
+- Missal: abas e marcadores encaixados nas páginas e ícone regenerado a partir da geometria, sem alterar o binding ou a pose.
+- Contrato, fontes editoriais e testes: `docs/POLISH_0.3.1.md`. Validação Minecraft pendente.
+
+## 0.3.0 — 04/11/2026 — três livros litúrgicos
+
+- A colocação recusa posições com diário persistente ilegível ou não reconhecido, mesmo com bloco vazio, preservando registro e novo livro; dois testes de regressão cobrem a guarda.
+
+- Acrescenta Missal Romano e Pontifical Romano como itens, blocos e visuais distintos, com modelos autorais construídos em Blender e atlas próprios.
+- Integra textos da comunidade em catálogo offline com fontes, índices por grupos, busca, rubricas e marca de seção/página.
+- Compartilha o porte, leitor seguro e transferência persistente sem duplicar sistemas nem transformar os novos livros em Evangelhos.
+- Preserva identidade, tipo, marca e metadados após colocação, reinício e retirada. Callbacks antigos também verificam o tipo do livro.
+- Mantém UUIDs, modelo e conteúdo do Evangeliário; Aspergillum e outros add-ons não mudam.
+- Expande testes de domínio, UI e mundo; validação nativa de 0.3.0 permanece pendente. Contrato e limites em `docs/THREE_BOOKS_0.3.0.md`.
+
 ## 0.2.5 — 25/10/2026 — página e navegação
 
 - Substitui o leitor estreito por uma página em JSON UI com texto nativo, papel marfim, filete e moldura vinho. Margens, entrelinha e altura útil maiores; rolagem contida e navegação fixa.

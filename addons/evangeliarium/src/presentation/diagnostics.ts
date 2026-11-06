@@ -27,7 +27,7 @@ export function registerDiagnostics(poses:Poses){
    }
    const state=poses.inspect(p);
    console.log('[Evangeliarium:inspect] '+JSON.stringify({version:VERSION,command,...state}));
-   p.sendMessage(`Evangeliário ${VERSION} · ${command} · porte ${state.eligible?'habilitado':'suspenso'} · observadores ${state.viewers}`);
+   p.sendMessage(`Evangeliarium ${VERSION} · ${command} · porte ${state.eligible?'habilitado':'suspenso'} · observadores ${state.viewers}`);
   }catch(error){console.warn('[Evangeliarium:inspect] '+String(error));p.sendMessage('Diagnóstico: '+String(error));}
  });
  world.afterEvents.playerLeave.subscribe(e=>{const old=cameras.get(e.playerId);if(old){system.clearRun(old.timeout);cameras.delete(e.playerId);}});

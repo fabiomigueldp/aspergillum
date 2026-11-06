@@ -19,7 +19,7 @@ if(result.error)throw result.error;if(result.status!==0)process.exit(result.stat
 const csv=fs.readFileSync(path.join(report,`evangeliarium-${version}.csv`),'utf8');
 const failures=csv.split(/\r?\n/).filter(l=>/,"?(Error|Failure)"?,/i.test(l));
 const warnings=csv.split(/\r?\n/).filter(l=>/,"?Warning"?,/i.test(l));
-const vanillaItems=['minecraft:gold_nugget','minecraft:red_dye','minecraft:book','minecraft:leather'];
+const vanillaItems=['minecraft:paper','minecraft:stick','minecraft:gold_nugget','minecraft:red_dye','minecraft:blue_dye','minecraft:purple_dye','minecraft:green_dye','minecraft:book','minecraft:leather'];
 const unexpected=warnings.filter(l=>!l.includes('Link to item type is not found in this pack')||!vanillaItems.some(id=>l.includes('`'+id+'`')));
 fs.writeFileSync(path.join(report,'release-summary.json'),JSON.stringify({version,bytes:artifact.bytes,sha256:artifact.sha256,files:entries.length,failures,warnings,unexpectedWarnings:unexpected,minecraftContentLog:'PENDING — import and testing by user'},null,2)+'\n');
 if(failures.length||unexpected.length)throw Error([...failures,...unexpected].join('\n'));

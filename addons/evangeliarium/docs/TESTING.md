@@ -1,11 +1,19 @@
-# Teste no Minecraft — Evangeliarium 0.2.5
+## Santa Teresa — candidato 0.5.2
+
+Importar `Evangeliarium-0.5.2.mcaddon`, sem cópia antiga/cache concorrente. No Missal, abrir Índice → Próprio dos Santos e buscar `Teresa` e `Teresinha`; ambas as buscas devem encontrar a mesma memória. Conferir entrada, coleta, oferendas, comunhão e pós-comunhão, incluindo o texto final. Marcar a página, fechar, reabrir e verificar retorno. Marcas antigas e consulta das votivas do Ordo devem continuar intactas; a nova seção não aplica celebração nem escolhe leituras. Registrar Content Log e hash do pacote. [Evidências e limites](VERIFICATION_0.5.2.md).
+
+## Lecionário 0.4.0
+
+Retestar os quatro livros e o índice por tempo/ciclo/semana; busca incremental, cancelamento, partes com Missas/alternativas, marca e retorno à mesma lista. Conferir leitura e Content Log no pacote exato 0.4.0, inclusive custo de primeira abertura e busca. Escopo completo: [LECTIONARY_0.4.0](LECTIONARY_0.4.0.md); evidências e hash: [VERIFICATION_0.4.0](VERIFICATION_0.4.0.md).
+
+# Teste no Minecraft — Evangeliarium 0.3.0
 
 Este é o roteiro de aceitação do candidato integrado. Checks automatizados e capturas externas já existem; **input, renderização, encaixe dos braços e Content Log ainda precisam deste teste no jogo**.
 
 ## Teste inicial
 
 1. Use Minecraft Bedrock **26.52**, a versão instalada identificada durante a pesquisa. O mínimo do manifest é 26.50. Crie um mundo de teste, com comandos habilitados para obter o item.
-2. Importe `dist/releases/Evangeliarium-0.2.5.mcaddon`. Ative **Evangeliário — Comportamento** e **Evangeliário — Recursos**. Não é necessário habilitar experimentos. Não ative cópias antigas ou diagnósticos do mesmo pack.
+2. Importe `dist/releases/Evangeliarium-0.3.0.mcaddon`. Ative **Evangeliarium — Comportamento** e **Evangeliarium — Recursos**. Não é necessário habilitar experimentos. Não ative cópias antigas ou diagnósticos do mesmo pack.
 3. Execute `/give @s evangeliarium:book`. Selecione o item e observe a elevação dos dois braços, a capa vertical, o contato das mãos e a linha de visão utilizável, em primeira pessoa e nas duas câmeras de terceira pessoa.
 4. Olhe para o ar e use. O leitor deve abrir diretamente na passagem de hoje em Brasília. Navegue por todas as páginas. Em `Leituras > Passagem > Digitar referência`, leia `Jo 3,16-21`; marque e reabra.
 5. Use sobre a face superior de um bloco cheio de **pedra ou tábuas**, com ar acima. O item deve sair do inventário e aparecer aberto sobre o bloco. Use-o para ler a referência marcada.
@@ -15,15 +23,29 @@ Este é o roteiro de aceitação do candidato integrado. Checks automatizados e 
 
 O item também possui receita na bancada: cinco pepitas de ouro, dois corantes vermelhos, um livro e um couro, no padrão `GGG / RBR / GLG`.
 
+## Missal e Pontifical — expansão 0.3.0
+
+1. Execute `/function evangeliarium/dev_kit`. Os três itens devem ser distintos no inventário e ter capa/modelo próprios. Confirme título e ícone antes de usar.
+2. Abra o Missal: índice por grupos, lista de dez seções e próximos resultados. Leia um título de 72 caracteres; o rótulo não pode ficar cortado. Abra o Pontifical e confirme seu conteúdo próprio.
+3. Busque `bênção` e `ordenacao` (sem acento). Valide resultados, ausência de resultados e campo curto inválido preservado. Escape retorna ao índice; no índice inicial, fecha o livro.
+4. Leia uma seção com parágrafos de rubrica e fala misturadas. Vermelho e texto normal devem acompanhar somente os trechos certos. Avance até o fim de uma seção longa, incluindo divisão de um parágrafo entre páginas, sem perda de palavras.
+5. Em `Seções > Livro`, marque uma página posterior à primeira. Navegue privadamente para outra seção, feche e reabra: a marca permanece. `Abrir pelo índice` remove a marca explícita.
+6. Coloque, feche, abra, recolha, salve e recarregue cada tipo, também com nome customizado e inventário cheio. Nunca deve retornar um Evangeliário no lugar do Missal/Pontifical.
+7. Com a tela de marcação aberta, troque Missal por Pontifical, slot ou dimensão. A resposta antiga não pode marcar o novo exemplar; morrer/sair também encerra a sessão.
+8. Observe porte bimanual, cancelamentos e recuperação nas três câmeras. Os novos livros usam a mesma animação, mas os modelos ainda precisam da validação nativa de clipping/encaixe.
+9. Confira `Livro > Créditos` nos três livros. Bíblia Livre pertence somente ao Evangeliário; os outros dois identificam as fontes da comunidade.
+
+Nenhum render Blender/Three.js substitui esses passos. Fontes, limitações e inconsistências conhecidas: [Três livros](THREE_BOOKS_0.3.0.md).
+
 ## Content Log
 
 Ative o log de conteúdo nas opções de Criador. Ao carregar o mundo, deve aparecer uma única mensagem informativa:
 
 ```text
-[Evangeliarium] 0.2.5 ready; 3779 verses; Brazil 2026-2027; stable APIs.
+[Evangeliarium] 0.3.0 ready; 3 books; 3779 verses; Brazil 2026-2027; stable APIs.
 ```
 
-Não devem aparecer erros de script, módulo indisponível, custom component não registrado, Molang inválido, geometria/textura não encontrada, render controller ausente ou exceção de formulário. Os quatro avisos de links vanilla descritos no relatório são do **validador offline**, não erros que se espera aceitar no Content Log do jogo.
+Não devem aparecer erros de script, módulo indisponível, custom component não registrado, Molang inválido, geometria/textura não encontrada, render controller ausente ou exceção de formulário. Os avisos de links vanilla descritos no relatório são do **validador offline**, não erros que se espera aceitar no Content Log do jogo.
 
 Para relatar um problema, registre a versão exata do Minecraft, versão do pack, perspectiva, skin wide/slim, gráficos, modo de jogo, outros RPs ativos e o trecho correspondente do Content Log. Para ajuste de pose, vistas frontal, lateral e primeira pessoa do mesmo estado permitem distinguir binding, apresentação e animação.
 
@@ -70,7 +92,7 @@ A Bíblia Livre é identificada no leitor e em Créditos. Ela não deve aparecer
 
 O candidato só recebe aceitação de runtime depois de importado, com o percurso inicial aprovado, os casos relevantes da matriz executados e ausência de novos erros do add-on no Content Log. Uma pose que falhe deve gerar uma calibração controlada e **outra versão**; não substituir silenciosamente o arquivo já testado.
 
-Relatórios automáticos: `dist/validation/0.2.5/`. Hash e tamanho exatos do pacote: `release-summary.json` e `dist/releases/Evangeliarium-0.2.5.mcaddon.sha256`. Capturas Three.js não comprovam paridade Bedrock.
+Relatórios automáticos: `dist/validation/0.3.0/`. Hash e tamanho exatos do pacote: `release-summary.json` e `dist/releases/Evangeliarium-0.3.0.mcaddon.sha256`. Capturas Three.js não comprovam paridade Bedrock.
 
 
 Ferramentas de inspeção: [RUNTIME_DIAGNOSTICS.md](RUNTIME_DIAGNOSTICS.md). Após entrar ou trocar a câmera, aguarde até três segundos para a renovação do porte. Registre o tronco além da cabeça: o jogador vanilla pode manter a cabeça girada em relação ao corpo.
